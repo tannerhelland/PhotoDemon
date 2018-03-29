@@ -44,12 +44,9 @@ End Sub
 Private Function VerifyDrawBackends(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen) As Boolean
     
     If m_DebugMode Then
-        If (Not (dstSurface Is Nothing)) And (Not (srcPen Is Nothing)) Then
-            If (dstSurface.GetSurfaceBackend <> srcPen.GetPenBackend) Then
-                InternalError "Mismatched backends", "Draw functions require matching surface and pen backends!"
-            Else
-                VerifyDrawBackends = True
-            End If
+        If (Not dstSurface Is Nothing) And (Not srcPen Is Nothing) Then
+            VerifyDrawBackends = (dstSurface.GetSurfaceBackend = srcPen.GetPenBackend)
+            If (Not VerifyDrawBackends) Then InternalError "Mismatched backends", "Draw functions require matching surface and pen backends!"
         Else
             InternalError "Null object", "You can't pass null objects to draw functions and expect them to work!"
         End If

@@ -312,8 +312,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     'If the box ID has changed, update the tooltip and redraw the control to match
     If (m_MouseInsideRegion <> oldMouseIndex) Then
+        RedrawBackBuffer True
         MakeNewTooltip m_MouseInsideRegion
-        RedrawBackBuffer
     End If
     
 End Sub
@@ -742,11 +742,14 @@ Private Sub CalculateVariantColors()
 End Sub
 
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
-Private Sub RedrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCV_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -791,7 +794,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint redrawImmediately
     
 End Sub
 

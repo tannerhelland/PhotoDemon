@@ -436,6 +436,12 @@ Public Function ProcUndoValue(ByVal hkIndex As Long) As PD_UndoType
     ProcUndoValue = m_Hotkeys(hkIndex).AccProcUndo
 End Function
 
+'Dummy theme function; this control isn't visible, so theming isn't relevant - but having a bare sub spares
+' pointless errors inside the central theme engine.
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+
+End Sub
+
 'VB exposes a UserControl.EventsFrozen property to check for IDE breaks, but in my testing it isn't reliable.
 Private Function AreEventsFrozen() As Boolean
     

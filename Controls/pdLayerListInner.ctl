@@ -717,10 +717,7 @@ Private Sub UserControl_Initialize()
     m_MouseY = -1
     m_ScrollValue = 0
     m_ScrollMax = 0
-
-    'Update the control size parameters at least once
-    UpdateControlLayout
-
+    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -868,7 +865,7 @@ Private Function UpdateHoveredLayer(ByVal newLayerUnderMouse As Long) As Boolean
 End Function
 
 'Unlike other control's UpdateControlLayout() function(s), this control can't easily predict whether or not
-' it will need to redraw the control (because it depends on some unpredictable factors like "does the new size
+' it will need to redraw the control (because it depends on some unpredictable factors like "does our new size
 ' require a scroll bar").  If this control *does* redraw the underlying window, it will return TRUE.  Use this
 ' to know whether you need to manually call RedrawBackBuffer after updating the control's layout.
 Private Function UpdateControlLayout() As Boolean
@@ -913,6 +910,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDLB_Background, enabledState))
+    If (bufferDC = 0) Then Exit Sub
     
     'This bunch of checks are basically failsafes to ensure we have valid pdLayer objects to pull from
     If pdMain.IsProgramRunning() Then
@@ -924,25 +922,23 @@ Private Sub RedrawBackBuffer()
         
         'Wrap the rendering area in a pd2D surface; this greatly simplifies paint ops
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
         
         'Determine an offset based on the current scroll bar value
         Dim scrollOffset As Long
         scrollOffset = m_ScrollValue
         
-        Dim layerIndex As Long, offsetX As Long, offsetY As Long
-        Dim layerHoverIndex As Long, layerSelectedIndex As Long, layerIsHovered As Boolean, layerIsSelected As Boolean
         Dim layerFont As pdFont
-        Dim paintColor As Long
-        
+        Dim layerIndex As Long, offsetX As Long, offsetY As Long, paintColor As Long
+        Dim layerHoverIndex As Long, layerSelectedIndex As Long, layerIsHovered As Boolean, layerIsSelected As Boolean
         layerHoverIndex = -1: layerSelectedIndex = -1
         
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
-        If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
-            zeroLayers = Not (pdImages(g_CurrentImage).GetNumOfLayers > 0)
-        Else
+        If (pdImages(g_CurrentImage) Is Nothing) Or (g_OpenImageCount <= 0) Then
             zeroLayers = True
+        Else
+            zeroLayers = (pdImages(g_CurrentImage).GetNumOfLayers <= 0)
         End If
         
         'If we are not in "zero layers" mode, proceed with drawing the various list items
@@ -971,7 +967,12 @@ Private Sub RedrawBackBuffer()
             fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
             
             'Retrieve a font object that we can use for rendering layer names
-            Set layerFont = Fonts.GetMatchingUIFont(10, False, False, False)
+            Set layerFont = Fonts.GetMatchingUIFont(10!)
+            layerFont.AttachToDC bufferDC
+            layerFont.SetTextAlignment vbLeftJustify
+            
+            Dim blockHeightDPIAware As Long
+            blockHeightDPIAware = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
             
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
@@ -985,14 +986,14 @@ Private Sub RedrawBackBuffer()
                 
                 'Start by figuring out if this layer is even visible in the current box; if it isn't,
                 ' skip drawing entirely
-                If (((offsetY + Interface.FixDPI(LAYER_BLOCK_HEIGHT)) > 0) And (offsetY < m_ListRect.Top + m_ListRect.Height)) Then
+                If (((offsetY + blockHeightDPIAware) > 0) And (offsetY < m_ListRect.Top + m_ListRect.Height)) Then
                     
                     'For performance reasons, retrieve a local reference to the corresponding pdLayer object.
                     ' We need to pull a *lot* of information from this object.
                     Dim tmpLayerRef As pdLayer
                     Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
                     
-                    If (Not (tmpLayerRef Is Nothing)) Then
+                    If (Not tmpLayerRef Is Nothing) Then
                         
                         layerIsHovered = (layerIndex = m_CurLayerHover)
                         If (layerIsHovered) Then layerHoverIndex = layerIndex
@@ -1006,7 +1007,7 @@ Private Sub RedrawBackBuffer()
                             .Left = offsetX
                             .Top = offsetY
                             .Width = m_ListRect.Width - offsetX
-                            .Height = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+                            .Height = blockHeightDPIAware
                         End With
                         
                         If layerIsHovered Then
@@ -1037,13 +1038,13 @@ Private Sub RedrawBackBuffer()
                                     .Left = blockRect.Left
                                     .Right = .Left + HORIZONTAL_ITEM_PADDING * 2 + img_EyeOpen.GetDIBWidth
                                     .Top = blockRect.Top
-                                    .Bottom = .Top + Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+                                    .Bottom = .Top + blockHeightDPIAware
                                 End With
                             End If
                             
                             'Paint the appropriate visibility icon, centered in the current area
                             objOffsetX = blockRect.Left + HORIZONTAL_ITEM_PADDING
-                            objOffsetY = blockRect.Top + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - img_EyeOpen.GetDIBHeight) \ 2
+                            objOffsetY = blockRect.Top + (blockHeightDPIAware - img_EyeOpen.GetDIBHeight) \ 2
                             
                             If tmpLayerRef.GetLayerVisibility Then
                                 img_EyeOpen.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
@@ -1062,7 +1063,7 @@ Private Sub RedrawBackBuffer()
                         If Not (m_LayerThumbnails(layerIndex).thumbDIB Is Nothing) Then
                             
                             objOffsetX = offsetX + HORIZONTAL_ITEM_PADDING
-                            objOffsetY = offsetY + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - m_ThumbHeight) \ 2
+                            objOffsetY = offsetY + (blockHeightDPIAware - m_ThumbHeight) \ 2
                             
                             If tmpLayerRef.GetLayerVisibility Then
                                 m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
@@ -1089,8 +1090,6 @@ Private Sub RedrawBackBuffer()
                         End If
                         
                         layerFont.SetFontColor paintColor
-                        layerFont.AttachToDC bufferDC
-                        layerFont.SetTextAlignment vbLeftJustify
                         
                         'Calculate where the string will actually lie.  This is important, as the text region is clickable
                         ' (the user can double-click to edit the layer's name).
@@ -1100,7 +1099,6 @@ Private Sub RedrawBackBuffer()
                         If (LenB(drawString) <> 0) Then yTextHeight = layerFont.GetHeightOfString(drawString) Else yTextHeight = Fonts.GetDefaultStringHeight(layerFont.GetFontSize)
                         yTextOffset = offsetY + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - yTextHeight) \ 2
                         layerFont.FastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
-                        layerFont.ReleaseFromDC
                         
                         'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
                         With m_NameRect
@@ -1108,7 +1106,7 @@ Private Sub RedrawBackBuffer()
                                 .Left = offsetX
                                 .Top = offsetY
                                 .Right = m_ListRect.Left + m_ListRect.Width - 2
-                                .Bottom = offsetY + Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+                                .Bottom = offsetY + blockHeightDPIAware
                             End If
                         End With
                         
@@ -1133,6 +1131,8 @@ Private Sub RedrawBackBuffer()
                 
             Next i
             
+            layerFont.ReleaseFromDC
+            
             'After painting all layers, if a layer is currently hovered by the mouse, highlight any clickable regions
             If (layerHoverIndex >= 0) Then
                 
@@ -1141,9 +1141,10 @@ Private Sub RedrawBackBuffer()
                 Drawing2D.QuickCreateSolidPen cPen, 1, paintColor
                 m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
                 
-                'Next, if the mouse is specifically within the
+                'Next, if the mouse is specifically within the "toggle layer visibility" rect, paint *that* region
+                ' with a chunky border.
                 If PDMath.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
-                    Drawing2D.QuickCreateSolidPen cPen, 3, paintColor
+                    Drawing2D.QuickCreateSolidPen cPen, 3!, paintColor
                     m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
                 End If
                 
@@ -1156,15 +1157,15 @@ Private Sub RedrawBackBuffer()
         ' which is slightly inset from the list box boundaries, then a second border - pure background color,
         ' erasing any item rendering that may have fallen outside the clipping area.
         Dim borderWidth As Single, borderColor As Long
-        If (listHasFocus And Not zeroLayers) Then borderWidth = 3# Else borderWidth = 1#
+        If (listHasFocus And Not zeroLayers) Then borderWidth = 3! Else borderWidth = 1!
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus And (Not zeroLayers))
         
         Drawing2D.QuickCreateSolidPen cPen, borderWidth, borderColor
         m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
         
         If (Not listHasFocus) Then
-            Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDLB_Background, enabledState)
-            m_Painter.DrawRectangleF cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
+            Drawing2D.QuickCreateSolidPen cPen, 1!, m_Colors.RetrieveColor(PDLB_Background, enabledState)
+            m_Painter.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
         End If
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing

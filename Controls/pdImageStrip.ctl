@@ -159,6 +159,9 @@ Private Const MAX_STRIP_SIZE As Long = 300
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'pd2D is used for rendering
+Private m_Painter As pd2DPainter
+
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -708,7 +711,7 @@ Private Function GetThumbIndexFromPDIndex(ByVal pdImageIndex As Long) As Long
     
     Dim i As Long
     For i = 0 To m_NumOfThumbs - 1
-        If m_Thumbs(i).indexInPDImages = pdImageIndex Then
+        If (m_Thumbs(i).indexInPDImages = pdImageIndex) Then
             GetThumbIndexFromPDIndex = i
             Exit For
         End If
@@ -890,6 +893,9 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDImageStrip", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
     
+    'pd2D is used for rendering
+    Drawing2D.QuickCreatePainter m_Painter
+    
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
     m_CloseTriggeredOnThumbnail = -1
@@ -900,9 +906,6 @@ Private Sub UserControl_Initialize()
     'If the tabstrip ever becomes long enough to scroll, this will be set to TRUE
     m_ListScrollable = False
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -994,7 +997,7 @@ Private Sub GetCloseImageResources()
 
     'Retrieve all PNGs necessary to render the "close by hovering" X that appears
     Dim xCloseSize As Long, xClosePadding As Long
-    xCloseSize = FixDPI(16): xClosePadding = FixDPI(0)
+    xCloseSize = Interface.FixDPI(16): xClosePadding = Interface.FixDPI(0)
     
     If (m_CloseIconRed Is Nothing) Then Set m_CloseIconRed = New pdDIB
     LoadResourceToDIB "file_close", m_CloseIconRed, xCloseSize, xCloseSize, xClosePadding, g_Themer.GetGenericUIColor(UI_ErrorRed)
@@ -1012,7 +1015,7 @@ Private Sub GetCloseImageResources()
     Set cFilter = New pdFilterLUT
     cFilter.FillLUT_Invert tmpLUT
     PadDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
-    QuickBlurDIB m_CloseIconShadow, FixDPI(2), False
+    QuickBlurDIB m_CloseIconShadow, Interface.FixDPI(2), False
     m_CloseIconShadow.SetAlphaPremultiplication False
     cFilter.ApplyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     m_CloseIconShadow.SetAlphaPremultiplication True
@@ -1073,8 +1076,11 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'Retrieve DPI-aware control dimensions from the support class
-    Dim bWidth As Long, bHeight As Long, bufferDC As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDIS_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -1111,7 +1117,16 @@ Private Sub RedrawBackBuffer()
             
         End If
         
-        'Render each thumbnail block
+        'pd2D is used for rendering
+        Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+        Drawing2D.QuickCreateSolidBrush cBrush
+        Drawing2D.QuickCreateSolidPen cPen, 3!
+        
+        Dim isEnabled As Boolean, isHovered As Boolean, isSelected As Boolean
+        isEnabled = Me.Enabled
+        
+        'Render each thumbnail block in turn
         Dim thumbRect As RectF
         thumbRect.Width = m_ThumbWidth
         thumbRect.Height = m_ThumbHeight
@@ -1124,37 +1139,55 @@ Private Sub RedrawBackBuffer()
             'Fill in the rest of this thumbnail's rect
             If m_VerticalLayout Then
                 thumbRect.Top = (i * m_ThumbHeight) - m_ScrollValue
-                If Me.Alignment = vbAlignLeft Then thumbRect.Left = 0 Else thumbRect.Left = 2
-                If ((thumbRect.Top + thumbRect.Height) >= 0) And (thumbRect.Top <= bHeight) Then tabVisible = True
+                If (Me.Alignment = vbAlignLeft) Then thumbRect.Left = 0 Else thumbRect.Left = 2
+                tabVisible = ((thumbRect.Top + thumbRect.Height) >= 0) And (thumbRect.Top <= bHeight)
             Else
                 thumbRect.Left = (i * m_ThumbWidth) - m_ScrollValue
-                If Me.Alignment = vbAlignTop Then thumbRect.Top = 0 Else thumbRect.Top = 2
-                If ((thumbRect.Left + thumbRect.Width) >= 0) And (thumbRect.Left <= bWidth) Then tabVisible = True
+                If (Me.Alignment = vbAlignTop) Then thumbRect.Top = 0 Else thumbRect.Top = 2
+                tabVisible = ((thumbRect.Left + thumbRect.Width) >= 0) And (thumbRect.Left <= bWidth)
             End If
             
-            If tabVisible Then RenderThumbTab bufferDC, i, thumbRect
+            If tabVisible Then
+                
+                isSelected = (i = m_CurrentThumb)
+                isHovered = (i = m_CurrentThumbHover)
+                
+                If isSelected Then
+                    cBrush.SetBrushColor m_Colors.RetrieveColor(PDIS_SelectedFill, isEnabled, , isHovered)
+                    cPen.SetPenColor m_Colors.RetrieveColor(PDIS_SelectedBorder, isEnabled, , isHovered)
+                Else
+                    cBrush.SetBrushColor m_Colors.RetrieveColor(PDIS_UnselectedFill, isEnabled, , isHovered)
+                    cPen.SetPenColor m_Colors.RetrieveColor(PDIS_UnselectedBorder, isEnabled, , isHovered)
+                End If
+                
+                RenderThumbTab i, thumbRect, cSurface, cBrush, cPen
+                
+            End If
             
         Next i
         
-        'Eventually we'll do something nicer, but for now, draw a line across the edge of the tabstrip nearest the image.
-        Dim separatorColor As Long
-        separatorColor = m_Colors.RetrieveColor(PDIS_Separator, Me.Enabled)
+        'Finally, draw a colored line between the tabstrip and the canvas (to create a little more
+        ' visual separation)
+        Set cPen = Nothing
+        Drawing2D.QuickCreateSolidPen cPen, 2!, m_Colors.RetrieveColor(PDIS_Separator, Me.Enabled)
         
         Select Case Me.Alignment
         
             Case vbAlignLeft
-                GDIPlusDrawLineToDC bufferDC, bWidth - 1, 0, bWidth - 1, bHeight, separatorColor, 255, 2, False
-            
+                m_Painter.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
+                
             Case vbAlignTop
-                GDIPlusDrawLineToDC bufferDC, 0, bHeight - 1, bWidth, bHeight - 1, separatorColor, 255, 2, False
-            
+                m_Painter.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
+                
             Case vbAlignRight
-                GDIPlusDrawLineToDC bufferDC, 1, 0, 1, bHeight, separatorColor, 255, 2, False
-            
+                m_Painter.DrawLineI cSurface, cPen, 1, 0, 1, bHeight
+                
             Case vbAlignBottom
-                GDIPlusDrawLineToDC bufferDC, 0, 1, bWidth, 1, separatorColor, 255, 2, False
-        
+                m_Painter.DrawLineI cSurface, cPen, 0, 1, bWidth, 1
+                
         End Select
+        
+        Set cPen = Nothing: Set cBrush = Nothing: Set cSurface = Nothing
         
     End If
     
@@ -1164,64 +1197,45 @@ Private Sub RedrawBackBuffer()
 End Sub
 
 'Render a given thumbnail onto the background form at the specified offset
-Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByRef thumbRectF As RectF)
+Private Sub RenderThumbTab(ByVal thumbIndex As Long, ByRef thumbRectF As RectF, ByRef dstSurface As pd2DSurface, ByRef fillBrush As pd2DBrush, ByRef outlinePen As pd2DPen)
     
-    Dim isSelected As Boolean, isHovered As Boolean, isEnabled As Boolean
-    isSelected = (thumbIndex = m_CurrentThumb)
-    isHovered = (thumbIndex = m_CurrentThumbHover)
-    isEnabled = Me.Enabled
+    'Fill the thumbnail's background
+    m_Painter.FillRectangleF_FromRectF dstSurface, fillBrush, thumbRectF
     
-    Dim targetColor As Long
-    
-    'Rendering each thumb follows a simple pattern.  Start by rendering the background fill.
-    If isSelected Then
-        targetColor = m_Colors.RetrieveColor(PDIS_SelectedFill, isEnabled, , isHovered)
-    Else
-        targetColor = m_Colors.RetrieveColor(PDIS_UnselectedFill, isEnabled, , isHovered)
-    End If
-    
-    GDI_Plus.GDIPlusFillRectFToDC targetDC, thumbRectF, targetColor
-    
-    '...then a border
-    If isSelected Then
-        targetColor = m_Colors.RetrieveColor(PDIS_SelectedBorder, isEnabled, , isHovered)
-    Else
-        targetColor = m_Colors.RetrieveColor(PDIS_UnselectedBorder, isEnabled, , isHovered)
-    End If
-    
+    '...then paint a border around it (if it's selected)
     With thumbRectF
-        GDI_Plus.GDIPlusDrawRectOutlineToDC targetDC, .Left + 1, .Top + 1, .Left + .Width - 2, .Top + .Height - 2, targetColor, , 3, True, GP_LJ_Miter
+        m_Painter.DrawRectangleF dstSurface, outlinePen, .Left + 1!, .Top + 1!, .Width - 2!, .Height - 2!
     End With
     
-    '...folowed by the thumbnail image itself...
+    '...then paint the thumbnail image itself...
     Dim offsetX As Long, offsetY As Long
     offsetX = thumbRectF.Left
     offsetY = thumbRectF.Top
     
-    m_Thumbs(thumbIndex).thumbDIB.AlphaBlendToDC targetDC, 255, offsetX + FixDPI(THUMB_BORDER_PADDING), offsetY + FixDPI(THUMB_BORDER_PADDING)
+    m_Thumbs(thumbIndex).thumbDIB.AlphaBlendToDC dstSurface.GetSurfaceDC(), 255, offsetX + FixDPI(THUMB_BORDER_PADDING), offsetY + FixDPI(THUMB_BORDER_PADDING)
     m_Thumbs(thumbIndex).thumbDIB.FreeFromDC
     
-    '...then an asterisk in the bottom-left if the parent image has unsaved changes...
+    '...then paint an asterisk in the bottom-left if the parent image has unsaved changes...
     If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
         If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave)) Then
             If (m_ModifiedIcon Is Nothing) Then GetChangedImageResources
-            m_ModifiedIcon.AlphaBlendToDC targetDC, 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
+            m_ModifiedIcon.AlphaBlendToDC dstSurface.GetSurfaceDC(), 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
             m_ModifiedIcon.FreeFromDC
         End If
     End If
     
     '...and finally, if this thumb is being hovered, we paint a "close" icon in the top-right corner.
-    If isHovered Then
+    If (thumbIndex = m_CurrentThumbHover) Then
         
         If (m_CloseIconShadow Is Nothing) Then GetCloseImageResources
-        m_CloseIconShadow.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
+        m_CloseIconShadow.AlphaBlendToDC dstSurface.GetSurfaceDC(), 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
         m_CloseIconShadow.FreeFromDC
         
         If (thumbIndex = m_CloseIconHovered) Then
-            m_CloseIconRed.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconRed.AlphaBlendToDC dstSurface.GetSurfaceDC(), 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
             m_CloseIconRed.FreeFromDC
         Else
-            m_CloseIconGray.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconGray.AlphaBlendToDC dstSurface.GetSurfaceDC(), 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
             m_CloseIconGray.FreeFromDC
         End If
         

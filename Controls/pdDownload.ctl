@@ -713,3 +713,10 @@ End Function
 Public Function GetLastErrorDescription() As String
     GetLastErrorDescription = m_LastErrorDescription
 End Function
+
+'Dummy theme function; this control isn't visible, so theming isn't relevant - but having a bare sub spares
+' pointless errors inside the central theme engine.
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+
+End Sub
+

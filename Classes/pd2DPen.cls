@@ -476,18 +476,18 @@ Friend Function ReleasePen() As Boolean
 End Function
 
 Friend Sub ResetAllProperties()
-    Me.SetPenProperty P2_PenStyle, P2_DS_Solid
-    Me.SetPenProperty P2_PenColor, vbBlack
-    Me.SetPenProperty P2_PenOpacity, 100
-    Me.SetPenProperty P2_PenWidth, 1#
-    Me.SetPenProperty P2_PenLineJoin, P2_LJ_Miter
-    Me.SetPenProperty P2_PenLineCap, P2_LC_Flat
-    Me.SetPenProperty P2_PenDashCap, P2_DC_Flat
-    Me.SetPenProperty P2_PenMiterLimit, 3#
-    Me.SetPenProperty P2_PenAlignment, P2_PA_Center
-    Me.SetPenProperty P2_PenStartCap, P2_LC_Flat
-    Me.SetPenProperty P2_PenEndCap, P2_LC_Flat
-    Me.SetPenProperty P2_PenDashOffset, 0#
+    Me.SetPenStyle P2_DS_Solid
+    Me.SetPenColor vbBlack
+    Me.SetPenOpacity 100!
+    Me.SetPenWidth 1!
+    Me.SetPenLineJoin P2_LJ_Miter
+    Me.SetPenLineCap P2_LC_Flat
+    Me.SetPenDashCap P2_DC_Flat
+    Me.SetPenMiterLimit 3#
+    Me.SetPenAlignment P2_PA_Center
+    Me.SetPenStartCap P2_LC_Flat
+    Me.SetPenEndCap P2_LC_Flat
+    Me.SetPenDashOffset 0!
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.

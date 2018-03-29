@@ -396,10 +396,7 @@ Private Sub UserControl_Initialize()
     Dim colorCount As PDTITLE_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDTitle", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
+      
 End Sub
 
 'Set default properties
@@ -566,6 +563,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, ctlFillColor)
+    If (bufferDC = 0) Then Exit Sub
     
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth

@@ -349,8 +349,8 @@ Private Sub Form_Load()
     
     Dim dibSize As Long
     dibSize = Interface.FixDPI(38)
-    cmdMove(0).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_UP, dibSize)
-    cmdMove(1).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWN, dibSize)
+    cmdMove(0).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_UP, dibSize), dibSize, dibSize
+    cmdMove(1).AssignImage vbNullString, Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWN, dibSize), dibSize, dibSize
     
 End Sub
 

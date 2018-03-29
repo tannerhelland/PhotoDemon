@@ -218,10 +218,11 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
     
     If (m_hWnd <> 0) Then
         
-        UserControls.IncrementPDControlCount
-        
         'Subclass the user control immediately
-        If pdMain.IsProgramRunning() Then VBHacks.StartSubclassing m_hWnd, Me
+        If pdMain.IsProgramRunning() Then
+            UserControls.IncrementPDControlCount
+            VBHacks.StartSubclassing m_hWnd, Me
+        End If
         
         'Synchronize initial window visiblity
         m_Visibility = (IsWindowVisible(m_hWnd) <> 0)
@@ -482,8 +483,8 @@ Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
     If m_NoBackBufferMode Then
         pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
     Else
-        If newX = -1 Then newX = m_CustomCaptionRect.Left
-        If newY = -1 Then newY = m_CustomCaptionRect.Top
+        If (newX = -1) Then newX = m_CustomCaptionRect.Left
+        If (newY = -1) Then newY = m_CustomCaptionRect.Top
         m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, newX, newY, m_BackBuffer.GetDIBWidth - newX, m_BackBuffer.GetDIBHeight - newY, customColor, useEllipses
     End If
 End Sub
@@ -677,7 +678,7 @@ End Function
 ' NOTE: If a custom backcolor has been specified, it won't be applied until the caller requests a copy of the DC.
 Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     
-    'At compile-time, this event will likely be fired; because the back buffer doesn't exist, ignore the request
+    'At compile-time, this event will likely be fired; if the back buffer doesn't exist, ignore this request entirely
     If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Then Exit Sub
     
     'We only want to recreate the buffer when absolutely necessary, so start with a size check.
@@ -1314,7 +1315,7 @@ Friend Sub UpdateAgainstThemeAndLanguage()
     
     If pdMain.IsProgramRunning() Then
         
-        If Me.ThemeUpdateRequired Then
+        If Me.ThemeUpdateRequired() Then
         
             'Tooltips must be refreshed (in case the active language has changed)
             If g_Language.TranslationActive() Then
@@ -1337,7 +1338,7 @@ Friend Sub UpdateAgainstThemeAndLanguage()
             
             'Make a note of the current theme+language ID.  If this function gets called again but this ID hasn't changed,
             ' we can skip additional redraws.
-            m_LastThemeID = Interface.GetCurrentInterfaceID
+            m_LastThemeID = Interface.GetCurrentInterfaceID()
             
         End If
         

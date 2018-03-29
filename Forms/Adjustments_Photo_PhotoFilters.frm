@@ -271,6 +271,8 @@ End Sub
 
 Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
+    If (bufferDC = 0) Then Exit Sub
+    
     'Retrieve the boundary region for this list entry
     Dim tmpRectF As RectF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&

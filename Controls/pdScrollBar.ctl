@@ -176,6 +176,9 @@ End Enum
 
 Private m_VisualStyle As ScrollBarVisualStyle
 
+'pd2D is used for rendering
+Private m_Painter As pd2DPainter
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -261,7 +264,7 @@ Public Property Let Max(ByVal newValue As Double)
     m_Max = newValue
     
     'If the current control .Value is greater than the new max, change it to match
-    If m_Value > m_Max Then
+    If (m_Value > m_Max) Then
         m_Value = m_Max
         RaiseEvent Scroll(True)
     End If
@@ -285,7 +288,7 @@ Public Property Let Min(ByVal newValue As Double)
     m_Min = newValue
     
     'If the current control .Value is less than the new minimum, change it to match
-    If m_Value < m_Min Then
+    If (m_Value < m_Min) Then
         m_Value = m_Min
         RaiseEvent Scroll(True)
     End If
@@ -425,7 +428,7 @@ Private Sub m_DownButtonTimer_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+    If (m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
         m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
@@ -444,7 +447,7 @@ Private Sub m_UpButtonTimer_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+    If (m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
         m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
@@ -710,7 +713,7 @@ End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
-    If Button = pdLeftButton Then
+    If (Button = pdLeftButton) Then
         
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
@@ -755,7 +758,7 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
         
         'If the mouse is over the scroll bar, wheel actions may cause the thumb to move into (and/or out of) the
         ' cursor's position.  As such, we must update that value here.
-        If m_MouseOverThumb <> IsPointInRectF(x, y, thumbRect) Then
+        If (m_MouseOverThumb <> IsPointInRectF(x, y, thumbRect)) Then
             m_MouseOverThumb = Not m_MouseOverThumb
             RedrawBackBuffer
         End If
@@ -825,6 +828,9 @@ Private Sub UserControl_Initialize()
     
     m_MouseInsideUC = False
     
+    'Prep a pd2D renderer
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSCROLL_COLOR_LIST: colorCount = [_Count]
@@ -836,9 +842,6 @@ Private Sub UserControl_Initialize()
         Set m_UpButtonTimer = New pdTimer
         Set m_DownButtonTimer = New pdTimer
     End If
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
     
 End Sub
 
@@ -991,6 +994,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDS_Track, enabledState))
+    If (bufferDC = 0) Then Exit Sub
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -1012,23 +1016,39 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
         downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
         
-        'With colors decided (finally!), we can actually draw the damn thing
-    
+        'With colors decided (finally!), we can actually draw the damn thing.
+        
+        'pd2D is used for rendering
+        Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+        Drawing2D.QuickCreateSolidBrush cBrush
+        Drawing2D.QuickCreateSolidPen cPen, 1!
+        
+        'The up and down buttons are rendered using integer rendering (because we don't require or want
+        ' subpixel positioning - these need to be pixel-aligned).
+        
         'Up button
-        GDI_Plus.GDIPlusFillRectLToDC bufferDC, upLeftRect, upButtonFillColor
-        GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, upLeftRect, upButtonBorderColor, , , False
+        cBrush.SetBrushColor upButtonFillColor
+        m_Painter.FillRectangleI_FromRectL cSurface, cBrush, upLeftRect
+        cPen.SetPenColor upButtonBorderColor
+        m_Painter.DrawRectangleI_FromRectL cSurface, cPen, upLeftRect
         
         'Down button
-        GDI_Plus.GDIPlusFillRectLToDC bufferDC, downRightRect, downButtonFillColor
-        GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, downRightRect, downButtonBorderColor, , , False
+        cBrush.SetBrushColor downButtonFillColor
+        m_Painter.FillRectangleI_FromRectL cSurface, cBrush, downRightRect
+        cPen.SetPenColor downButtonBorderColor
+        m_Painter.DrawRectangleI_FromRectL cSurface, cPen, downRightRect
         
-        'Thumb
+        'Unlike the up/down buttons, we want the thumb to be antialiased and to use subpixel positioning.
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         If (m_ThumbSize > 0) Then
-            GDI_Plus.GDIPlusFillRectFToDC bufferDC, thumbRect, thumbFillColor
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, thumbRect, thumbBorderColor
+            cBrush.SetBrushColor thumbFillColor
+            m_Painter.FillRectangleF_FromRectF cSurface, cBrush, thumbRect
+            cPen.SetPenColor thumbBorderColor
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, thumbRect
         End If
         
-        'Finally, paint the arrows themselves
+        'Finally, paint the arrows themselves.  (Note that antialiasing remains on.)
         Dim buttonPt1 As PointFloat, buttonPt2 As PointFloat, buttonPt3 As PointFloat
                     
         'Start with the up/left arrow
@@ -1052,8 +1072,11 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         End If
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
+        cPen.SetPenColor upButtonArrowColor
+        cPen.SetPenWidth 2!
+        cPen.SetPenLineCap P2_LC_Round
+        m_Painter.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
+        m_Painter.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
                     
         'Next, the down/right-pointing arrow
         If m_OrientationHorizontal Then
@@ -1076,8 +1099,11 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         End If
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
+        cPen.SetPenColor downButtonArrowColor
+        m_Painter.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
+        m_Painter.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
+        
+        Set cBrush = Nothing: Set cPen = Nothing: Set cSurface = Nothing
         
     End If
     
@@ -1109,9 +1135,9 @@ Private Sub DetermineThumbSize()
     Else
     
         Dim totalIncrements As Single
-        totalIncrements = Abs(m_Max - m_Min) + 1
+        totalIncrements = Abs(m_Max - m_Min) + 1!
         
-        If (totalIncrements <> 0) Then
+        If (totalIncrements <> 0!) Then
         
             m_ThumbSize = maxThumbSize / totalIncrements
             
@@ -1146,10 +1172,10 @@ Private Sub DetermineThumbRect()
     
     'Some coordinates are always the same, regardless of position.
     If m_OrientationHorizontal Then
-        thumbRect.Top = 0
+        thumbRect.Top = 0!
         thumbRect.Height = (trackRect.Bottom - trackRect.Top) - 1
     Else
-        thumbRect.Left = 0
+        thumbRect.Left = 0!
         thumbRect.Width = (trackRect.Right - trackRect.Left) - 1
     End If
     
@@ -1222,7 +1248,7 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     
     'Next, figure out where the relevant coordinate (x or y, depending on orientation) lies as a fraction of the total width
     Dim posRatio As Double
-    If (availablePixels <> 0) Then
+    If (availablePixels <> 0#) Then
         If m_OrientationHorizontal Then
             posRatio = (x - trackRect.Left) / availablePixels
         Else
@@ -1231,7 +1257,7 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     End If
     
     'Convert that to a matching position on the control's min/max scale
-    If m_Min = m_Max Then
+    If (m_Min = m_Max) Then
         GetValueFromMouseCoords = m_Max
     Else
     
@@ -1239,9 +1265,9 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
         
         'Clamp output to min/max ranges, as a convenience to the caller
         If padToMaxMinRange Then
-            If GetValueFromMouseCoords < m_Min Then
+            If (GetValueFromMouseCoords < m_Min) Then
                 GetValueFromMouseCoords = m_Min
-            ElseIf GetValueFromMouseCoords > m_Max Then
+            ElseIf (GetValueFromMouseCoords > m_Max) Then
                 GetValueFromMouseCoords = m_Max
             End If
         End If

@@ -581,6 +581,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDS_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
     
     If pdMain.IsProgramRunning() Then
         

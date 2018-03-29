@@ -1453,11 +1453,11 @@ Private Function ShouldImageStripBeVisible() As Boolean
     
     'User preference = "Always visible"
     If (ImageStrip.VisibilityMode = 0) Then
-        If (g_OpenImageCount > 0) Then ShouldImageStripBeVisible = True
+        ShouldImageStripBeVisible = (g_OpenImageCount > 0)
     
     'User preference = "Visible if 2+ images loaded"
     ElseIf (ImageStrip.VisibilityMode = 1) Then
-        If (g_OpenImageCount > 1) Then ShouldImageStripBeVisible = True
+        ShouldImageStripBeVisible = (g_OpenImageCount > 1)
         
     'User preference = "Never visible"
     End If
@@ -1535,14 +1535,14 @@ Public Sub AlignCanvasView()
     
     'Using the DPI-aware measurements, construct a rect that defines the entire available control area
     Dim ucRect As RectF
-    ucRect.Left = 0
-    ucRect.Top = 0
+    ucRect.Left = 0!
+    ucRect.Top = 0!
     ucRect.Width = bWidth
     ucRect.Height = bHeight
     
     'The image tabstrip, if visible, gets placement preference
     Dim tabstripVisible As Boolean, tabstripRect As RectF
-    tabstripVisible = ShouldImageStripBeVisible
+    tabstripVisible = ShouldImageStripBeVisible()
     
     'If we are showing the tabstrip for the first time, we need to position it prior to displaying it
     If tabstripVisible Then
@@ -1576,9 +1576,7 @@ Public Sub AlignCanvasView()
     
     'Move the CanvasView box into position first
     If (CanvasView.GetLeft <> cvLeft) Or (CanvasView.GetTop <> cvTop) Or (CanvasView.GetWidth <> cvWidth) Or (CanvasView.GetHeight <> cvHeight) Then
-        If ((cvWidth > 0) And (cvHeight > 0)) Then
-            CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
-        End If
+        If ((cvWidth > 0) And (cvHeight > 0)) Then CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
     End If
     
     '...Followed by the scrollbars

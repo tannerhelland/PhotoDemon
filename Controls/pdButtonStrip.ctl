@@ -537,12 +537,12 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
 End Sub
 
 'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
-Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal preventMonoIcons As Boolean = False)
+Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal preventMonoIcons As Boolean = False)
     
     'Load the requested resource DIB, as necessary
     If (imgWidth = 0) Then imgWidth = 32
     If (imgHeight = 0) Then imgHeight = 32
-    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , , preventMonoIcons
+    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , , preventMonoIcons
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -856,8 +856,11 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     

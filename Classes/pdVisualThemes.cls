@@ -700,9 +700,9 @@ End Function
 'Given the raw value retrieved by LookUpColor(), above, retrieve that color's ultimate representation (e.g. not a
 ' named color variable, but an actual color literal, like #ff0000).
 Private Function ResolveColor(ByVal initialColorValue As String) As String
-
-    Do
         
+    Do
+    
         'First, reject any empty strings (to prevent subsequent parse errors)
         If (LenB(initialColorValue) = 0) Then
             ResolveColor = vbNullString

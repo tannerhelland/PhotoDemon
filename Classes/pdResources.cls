@@ -55,6 +55,8 @@ Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
 'Similarly, a persistent load buffer is also used when copying raw bytes out of individual resource blocks
 Private m_Buffer() As Byte
 
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+
 'Called early in PD's startup, this function checks to see if we've already extracted PD's resource file to a
 ' separate working folder.  If we have, grab the data from there instead of from the .exe.  (This is helpful
 ' during debugging.)
@@ -219,7 +221,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                 
                 'Copy the received bytes into a string, then initialize an XML object from it
                 retString = Space$(retSize \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(m_Buffer(0)), retSize
+                CopyMemoryStrict StrPtr(retString), VarPtr(m_Buffer(0)), retSize
                 
                 If m_XML.LoadXMLFromString(retString) Then
                 
@@ -289,8 +291,8 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                                 If m_Resources.GetNodeDataByIndex(nodeIndex, False, m_Buffer, False) Then
                                     
                                     'Copy the palette and pixel data into place
-                                    CopyMemory ByVal VarPtr(m_Palette(0)), ByVal VarPtr(m_Buffer(0)), numColors * 4
-                                    CopyMemory ByVal VarPtr(m_Pixels(0, 0)), ByVal VarPtr(m_Buffer(numColors * 4)), imgWidth * imgHeight
+                                    CopyMemoryStrict VarPtr(m_Palette(0)), VarPtr(m_Buffer(0)), numColors * 4
+                                    CopyMemoryStrict VarPtr(m_Pixels(0, 0)), VarPtr(m_Buffer(numColors * 4)), imgWidth * imgHeight
                                     
                                     'Build a matching 32-bpp DIB from the palette and pixel data
                                     LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, m_Palette, m_Pixels)
@@ -312,15 +314,11 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     
                     'Resize the DIB into the destination
                     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-                    If (desiredWidth = 0) Then desiredWidth = 16#
-                    If (desiredHeight = 0) Then desiredHeight = 16#
+                    If (desiredWidth = 0) Then desiredWidth = 16
+                    If (desiredHeight = 0) Then desiredHeight = 16
                     
-                    Dim desiredWidthInt As Long, desiredHeightInt As Long
-                    desiredWidthInt = Int(desiredWidth + 0.9999)
-                    desiredHeightInt = Int(desiredHeight + 0.9999)
-                    
-                    If (dstDIB.GetDIBWidth <> desiredWidthInt) Or (dstDIB.GetDIBHeight <> desiredHeightInt) Then
-                        dstDIB.CreateBlank desiredWidthInt, desiredHeightInt, 32, 0, 0
+                    If (dstDIB.GetDIBWidth <> desiredWidth) Or (dstDIB.GetDIBHeight <> desiredHeight) Then
+                        dstDIB.CreateBlank desiredWidth, desiredHeight, 32, 0, 0
                     Else
                         dstDIB.ResetDIB 0
                     End If

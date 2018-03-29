@@ -845,11 +845,12 @@ Private Sub RedrawBackBuffer()
     
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
-    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() Then
     
         'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
         RelayUpdatedColorsToEditBox

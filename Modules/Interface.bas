@@ -195,7 +195,7 @@ Public Sub SyncInterfaceToCurrentImage()
     'Start by breaking our interface decisions into two broad categories: "no images are loaded" and "one or more images are loaded".
     
     'If no images are loaded, we can disable a whole swath of controls
-    If (g_OpenImageCount = 0) Then
+    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then
     
         'Because this set of UI changes is immutable, there is no reason to repeat it if it was the last synchronization we performed.
         If Not (m_LastUISync_HadNoImages = PD_BOOL_TRUE) Then
@@ -207,74 +207,71 @@ Public Sub SyncInterfaceToCurrentImage()
     ' while others (Undo and Redo) are only enabled if the current image requires it.
     Else
         
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-        
-            'Start with controls that are *always* enabled if at least one image is active.  These controls only need to be addressed when
-            ' we move between the "no images" and "at least one image" state.
-            If Not (m_LastUISync_HadNoImages = PD_BOOL_FALSE) Then
-                SetUIMode_AtLeastOneImage
-                m_LastUISync_HadNoImages = PD_BOOL_FALSE
-            End If
-        
-            'Next, we have controls whose appearance varies according to the current image's state.  These include things like the
-            ' window caption (which changes if the filename changes), Undo/Redo state (changes based on tool actions), image size
-            ' and zoom indicators, etc.  These settings are more difficult to cache, because they can legitimately change for the
-            ' same image object, so detecting meaningful vs repeat changes is trickier.
-            SyncUI_CurrentImageSettings
-            
-            'Next, we are going to deal with layer-specific settings.
-            
-            'Start with settings that are ALWAYS visible if there is at least one layer in the image.
-            ' (NOTE: PD doesn't currently support 0-layer images, so this is primarily a failsafe measure.)
-            
-            'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
-            ' are visible, and other criteria.
-            If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-                
-                'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
-                If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
-                    SetUIMode_AtLeastOneLayer
-                    m_LastUISync_HadNoLayers = PD_BOOL_FALSE
-                End If
-                
-                'Next, activate UI parameters whose behavior changes depending on the current layer's settings
-                SyncUI_CurrentLayerSettings
-                
-                'Next, we must deal with controls whose enablement depends on how many layers are in the image.  Some options
-                ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
-                
-                'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
-                If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then
-                
-                    If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
-                        SetUIMode_OnlyOneLayer
-                        m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
-                    End If
-                    
-                'This image contains multiple layers.  Enable additional menu items (if they aren't already).
-                Else
-                    
-                    If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE) Then
-                        SetUIMode_MultipleLayers
-                        m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE
-                    End If
-                    
-                    'Next, activate UI parameters whose behavior changes depending on the settings of multiple layers in the image
-                    ' (e.g. "delete hidden layers" requires at least one hidden layer in the image)
-                    SyncUI_MultipleLayerSettings
-                    
-                End If
-                
-            'This Else branch should never be triggered, because PD doesn't allow zero-layer images, by design.
-            Else
-                If Not (m_LastUISync_HadNoLayers = PD_BOOL_TRUE) Then
-                    SetUIMode_NoLayers
-                    m_LastUISync_HadNoLayers = PD_BOOL_TRUE
-                End If
-                m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
-            End If
-                    
+        'Start with controls that are *always* enabled if at least one image is active.  These controls only need to be addressed when
+        ' we move between the "no images" and "at least one image" state.
+        If Not (m_LastUISync_HadNoImages = PD_BOOL_FALSE) Then
+            SetUIMode_AtLeastOneImage
+            m_LastUISync_HadNoImages = PD_BOOL_FALSE
         End If
+    
+        'Next, we have controls whose appearance varies according to the current image's state.  These include things like the
+        ' window caption (which changes if the filename changes), Undo/Redo state (changes based on tool actions), image size
+        ' and zoom indicators, etc.  These settings are more difficult to cache, because they can legitimately change for the
+        ' same image object, so detecting meaningful vs repeat changes is trickier.
+        SyncUI_CurrentImageSettings
+        
+        'Next, we are going to deal with layer-specific settings.
+        
+        'Start with settings that are ALWAYS visible if there is at least one layer in the image.
+        ' (NOTE: PD doesn't currently support 0-layer images, so this is primarily a failsafe measure.)
+        
+        'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
+        ' are visible, and other criteria.
+        If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+            
+            'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
+            If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
+                SetUIMode_AtLeastOneLayer
+                m_LastUISync_HadNoLayers = PD_BOOL_FALSE
+            End If
+            
+            'Next, activate UI parameters whose behavior changes depending on the current layer's settings
+            SyncUI_CurrentLayerSettings
+            
+            'Next, we must deal with controls whose enablement depends on how many layers are in the image.  Some options
+            ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
+            
+            'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
+            If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then
+            
+                If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
+                    SetUIMode_OnlyOneLayer
+                    m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
+                End If
+                
+            'This image contains multiple layers.  Enable additional menu items (if they aren't already).
+            Else
+                
+                If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE) Then
+                    SetUIMode_MultipleLayers
+                    m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE
+                End If
+                
+                'Next, activate UI parameters whose behavior changes depending on the settings of multiple layers in the image
+                ' (e.g. "delete hidden layers" requires at least one hidden layer in the image)
+                SyncUI_MultipleLayerSettings
+                
+            End If
+            
+        'This Else branch should never be triggered, because PD doesn't allow zero-layer images, by design.
+        Else
+            If Not (m_LastUISync_HadNoLayers = PD_BOOL_TRUE) Then
+                SetUIMode_NoLayers
+                m_LastUISync_HadNoLayers = PD_BOOL_TRUE
+            End If
+            m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
+        End If
+            
         
         'TODO: move selection settings into the tool handler; they're too low-level for this function
         'If a selection is active on this image, update the text boxes to match
@@ -391,8 +388,8 @@ Private Sub SyncUI_CurrentImageSettings()
     If (pdImages(g_CurrentImage).Width <> 0) Then DisplaySize pdImages(g_CurrentImage)
             
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-    If (pdImages(g_CurrentImage).GetImageIcon(False) = 0) Or (pdImages(g_CurrentImage).GetImageIcon(True) = 0) Then CreateCustomFormIcons pdImages(g_CurrentImage)
-    ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+    If (pdImages(g_CurrentImage).GetImageIcon(False) = 0) Or (pdImages(g_CurrentImage).GetImageIcon(True) = 0) Then IconsAndCursors.CreateCustomFormIcons pdImages(g_CurrentImage)
+    IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If (pdImages(g_CurrentImage).Width <> 0) Then
@@ -1127,7 +1124,7 @@ Public Function FixDPI(ByVal pxMeasurement As Long) As Long
     If (m_DPIRatio = 0#) Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        m_DPIRatio = 1440# / TwipsPerPixelXFix
+        m_DPIRatio = 1440# / TwipsPerPixelXFix()
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
@@ -1145,7 +1142,7 @@ Public Function FixDPIFloat(ByVal pxMeasurement As Long) As Double
     If (m_DPIRatio = 0#) Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        m_DPIRatio = 1440# / TwipsPerPixelXFix
+        m_DPIRatio = 1440# / TwipsPerPixelXFix()
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
@@ -1220,13 +1217,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
-    'Want to measure time on this function?  Use this line to isolate specific forms for further analysis.
-    'Dim debugTest As Boolean
-    'If (StrComp(dstForm.Name, "layerpanel_Layers", vbBinaryCompare) = 0) Then debugTest = True
-    'Dim timeDict As pdDictionary
-    'Set timeDict = New pdDictionary
-    'Static firstCheck As Long
-    
     'This function can be a rather egregious time hog, so I profile it from time-to-time to check for regressions
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -1243,7 +1233,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     hostFormhWnd = dstForm.hWnd
     NavKey.NotifyFormLoading dstForm
     
-    Dim isPDControl As Boolean
+    Dim ctlThemedOK As Boolean
     
     'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
@@ -1255,7 +1245,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' to reset their cursors as well.
         If (TypeOf eControl Is PictureBox) Then
         
-            SetArrowCursor eControl
+            IconsAndCursors.SetArrowCursor eControl
             
             'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus,
             ' but I often forget to change this at design-time.
@@ -1267,122 +1257,30 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             
             'Do nothing!
             
-        Else
+        'I still haven't found all the old windowless controls in the project, so I'm keeping an eye out
+        ' for them.
+        ElseIf (TypeOf eControl Is Line) Then
+            pdDebug.LogAction "Found a legacy line control on " & dstForm.Name & ": consider removing it!"
         
+        Else
+            
+            On Error GoTo ControlIsNotPD
+            ctlThemedOK = False
+            
             'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates
             ' two things:
             ' 1) The control's visual appearance (to reflect any changes to visual themes)
             ' 2) Updating any translatable text against the current translation
-            isPDControl = False
-                
-            'These controls are fully compatible with PD's theming and translation engines:
-            If (TypeOf eControl Is pdLabel) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdButtonStrip) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdButtonStripVertical) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdButton) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdButtonToolbox) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdDropDown) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdTextBox) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdSpinner) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdSlider) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdSliderStandalone) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdScrollBar) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdTitle) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdCheckBox) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdRadioButton) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdContainer) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdListBox) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdListBoxView) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdColorVariants) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdColorWheel) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdNavigator) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdNavigatorInner) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdCommandBar) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdCommandBarMini) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdResize) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdColorDepth) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdCanvas) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdCanvasView) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdListBoxOD) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdListBoxViewOD) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdLayerList) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdLayerListInner) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdHyperlink) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdColorSelector) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdBrushSelector) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdGradientSelector) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdPenSelector) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdFxPreviewCtl) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdPreview) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdPictureBox) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdMetadataExport) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdNewOld) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdHistory) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdStrip) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdDropDownFont) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdPaletteUI) Then
-                isPDControl = True
-            ElseIf (TypeOf eControl Is pdProgressBar) Then
-                isPDControl = True
-            End If
             
-            If isPDControl Then
-                
-                'One of the items on my "to-do" list is to time theming calls for each type of PD control.
-                ' If there are any outliers, it would be nice to know, so I could optimize them further.
-                'VBHacks.GetHighResTime startTime
-        
-                'Request a theme and language update.  (As of 7.0, this function also handles registration
-                ' with the central tab key manager.)
-                eControl.UpdateAgainstCurrentTheme hostFormhWnd
-                
-                'Want to measure time on a per-control basis?  Use this line to do so
-                'timeDict.AddEntry eControl.Name, VBHacks.GetTimerDifferenceNow(startTime)
-        
+            'Request a theme and language update.  (As of 7.0, this function also handles registration
+            ' with the central tab key manager.)
+            eControl.UpdateAgainstCurrentTheme hostFormhWnd
+            ctlThemedOK = True
+            
+ControlIsNotPD:
+            If (Not ctlThemedOK) Then
+                pdDebug.LogAction "WARNING!  Non-PD control found on " & dstForm.Caption & ": " & eControl.Name
+                On Error GoTo 0
             End If
             
         End If
@@ -1390,13 +1288,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     Next
     
     'Report timing results here:
-'    If (debugTest And (firstCheck = 0)) Then
-'        Dim i As Long
-'        For i = 0 To timeDict.GetNumOfEntries - 1
-'            Debug.Print timeDict.GetKeyByIndex(i) & ": " & timeDict.GetValueByIndex(i)
-'        Next i
-'        firstCheck = 1
-'    End If
+    pdDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption;
     ' everything else is handled internally.
@@ -1483,6 +1375,8 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
         'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
         If (Not OS.IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
         
+    Else
+        GetWindowCaption = captionBase
     End If
 
 End Function

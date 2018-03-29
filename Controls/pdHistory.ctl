@@ -481,9 +481,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDHistory", colorCount
     If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
 End Sub
 
 'Set default properties
@@ -677,8 +674,9 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDH_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
     
-    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() Then
         
         Dim i As Long
         

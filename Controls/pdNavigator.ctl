@@ -186,9 +186,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDNavigator", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -233,8 +230,11 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDN_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     

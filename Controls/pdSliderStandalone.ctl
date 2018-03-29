@@ -700,9 +700,6 @@ Private Sub UserControl_Initialize()
     Set m_Painter = New pd2DPainter
     Set m_SliderBackgroundDIB = New pdDIB
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -1393,6 +1390,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     Dim finalBackColor As Long, bufferDC As Long
     finalBackColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)

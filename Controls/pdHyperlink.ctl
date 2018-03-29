@@ -573,6 +573,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, targetColor)
+    If (bufferDC = 0) Then Exit Sub
     
     'Text color also varies by theme, control enablement, hover status
     If m_UseCustomForeColor Then

@@ -222,9 +222,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDListBox", colorCount
     If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.

@@ -552,19 +552,18 @@ End Function
 ' For convenience, I've separated these into separate functions, as the underlying logic is actually quite different.
 Friend Function GetHeightOfString(ByRef srcString As String) As Long
     
-    Dim txtSize As POINTAPI
-    
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If curDC = 0 Then
+    If (curDC <> 0) Then
+        targetDC = curDC
+    Else
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
-    Else
-        targetDC = curDC
     End If
     
     'Retrieve the string's dimensions
+    Dim txtSize As POINTAPI
     GetTextExtentPoint32 targetDC, StrPtr(srcString), Len(srcString), txtSize
     GetHeightOfString = txtSize.y
     
@@ -586,12 +585,12 @@ Friend Function GetHeightOfWordwrapString(ByRef srcString As String, ByVal strWi
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If curDC = 0 Then
+    If (curDC <> 0) Then
+        targetDC = curDC
+    Else
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
-    Else
-        targetDC = curDC
     End If
     
     'Retrieve the string's dimensions

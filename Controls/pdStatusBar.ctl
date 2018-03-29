@@ -181,6 +181,9 @@ Private m_LinePositions() As Single
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'pd2D is used for painting
+Private m_Painter As pd2DPainter
+
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -288,7 +291,7 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     End If
     
     'Align the right-hand line control with the newly captioned label
-    m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
+    m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + Interface.FixDPI(10)
     
     'Make the message area shrink to match the new coordinate display size
     FitMessageArea
@@ -327,18 +330,17 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
             Case 1
                 iWidth = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
                 iHeight = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
+                sizeString = Format$(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
             
             'CM
             Case 2
                 iWidth = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
                 iHeight = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
+                sizeString = Format$(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
             
         End Select
         
         lblImgSize.Caption = sizeString
-        lblImgSize.UpdateAgainstCurrentTheme
         ReflowStatusBar True
         
     End If
@@ -471,10 +473,8 @@ Private Sub UserControl_Initialize()
     If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
+    Drawing2D.QuickCreatePainter m_Painter
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -511,41 +511,44 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
     m_LastEnabledState = enabledState
     
     'The zoom drop-down can now change width if a translation is active.  Make sure the zoom-in button is positioned accordingly.
-    cmdZoomIn.SetLeft cmbZoom.GetLeft + cmbZoom.GetWidth + FixDPI(3)
+    cmdZoomIn.SetLeft cmbZoom.GetLeft + cmbZoom.GetWidth + Interface.FixDPI(3)
     
     'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
     ' on high-DPI displays)
-    m_LinePositions(0) = (cmdZoomIn.GetLeft + cmdZoomIn.GetWidth) + FixDPI(6)
+    m_LinePositions(0) = (cmdZoomIn.GetLeft + cmdZoomIn.GetWidth) + Interface.FixDPI(6)
     
     'We will only draw subsequent interface elements if at least one image is currently loaded.
     If enabledState Then
         
-        If (Not cmdZoomFit.Visible) Then cmdZoomFit.Visible = True
-        If (Not cmdZoomIn.Visible) Then cmdZoomIn.Visible = True
-        If (Not cmdZoomOut.Visible) Then cmdZoomOut.Visible = True
-        If (Not cmbZoom.Visible) Then cmbZoom.Visible = True
+        'Ensure all relevant controls are visible.  (These controls are always shown/hidden as a group,
+        ' so if one is visible, we know all are visible.)
+        If (Not cmdZoomFit.Visible) Then
+            cmdZoomFit.Visible = True
+            cmdZoomIn.Visible = True
+            cmdZoomOut.Visible = True
+            cmbZoom.Visible = True
+            cmdImgSize.Visible = True
+            lblImgSize.Visible = True
+            cmbSizeUnit.Visible = True
+            lblCoordinates.Visible = True
+        End If
         
         'Start with the "image size" button
-        cmdImgSize.SetLeft m_LinePositions(0) + FixDPI(4)
-        If (Not cmdImgSize.Visible) Then cmdImgSize.Visible = True
+        cmdImgSize.SetLeft m_LinePositions(0) + Interface.FixDPI(4)
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
         ' plus a 4px buffer on either size (contingent on DPI)
-        If Not lblImgSize.Visible Then lblImgSize.Visible = True
-        lblImgSize.SetLeft cmdImgSize.GetLeft + cmdImgSize.GetWidth + FixDPI(4)
+        lblImgSize.SetLeft cmdImgSize.GetLeft + cmdImgSize.GetWidth + Interface.FixDPI(4)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
-        If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
-        cmbSizeUnit.SetLeft lblImgSize.GetLeft + lblImgSize.GetWidth + FixDPI(10)
-        
-        m_LinePositions(1) = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + FixDPI(10)
+        cmbSizeUnit.SetLeft lblImgSize.GetLeft + lblImgSize.GetWidth + Interface.FixDPI(10)
+        m_LinePositions(1) = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + Interface.FixDPI(10)
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
-        If Not lblCoordinates.Visible Then lblCoordinates.Visible = True
-        lblCoordinates.SetLeft m_LinePositions(1) + FixDPI(14) + FixDPI(16)
+        lblCoordinates.SetLeft m_LinePositions(1) + Interface.FixDPI(14) + Interface.FixDPI(16)
         
-        m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
+        m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + Interface.FixDPI(10)
         
     'Images are not loaded.  Hide the lines and other items.
     Else
@@ -612,8 +615,8 @@ Private Sub UpdateControlLayout()
     bHeight = ucSupport.GetBackBufferHeight
     
     'Center all combo boxes vertically (this is necessary for high-DPI displays)
-    cmbZoom.Top = (bHeight - cmbZoom.GetHeight) \ 2
-    cmbSizeUnit.Top = (bHeight - cmbSizeUnit.GetHeight) \ 2
+    cmbZoom.SetTop (bHeight - cmbZoom.GetHeight) \ 2
+    cmbSizeUnit.SetTop (bHeight - cmbSizeUnit.GetHeight) \ 2
 
     'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
     ' also realign all chrome elements, so we don't need a manual FitMessageArea call here.
@@ -633,43 +636,38 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDSB_Background, Me.Enabled))
-        
+    If (bufferDC = 0) Then Exit Sub
+    
     If pdMain.IsProgramRunning() Then
-        
-        If (Not sbIconCoords Is Nothing) And m_LastEnabledState Then
-            sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
-        End If
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
             If m_LastEnabledState Then
-                sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
+                sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4)
             Else
-                sbIconNetwork.AlphaBlendToDC bufferDC, , FixDPI(8), FixDPI(4), sbIconNetwork.GetDIBWidth, sbIconNetwork.GetDIBHeight
+                sbIconNetwork.AlphaBlendToDC bufferDC, , FixDPI(8), FixDPI(4)
             End If
         End If
         
-        'Render all separator lines
-        Dim lineTop As Single, lineBottom As Single
-        lineTop = FixDPI(1)
-        lineBottom = bHeight - FixDPI(2)
-        
-        Dim lineColor As Long
-        lineColor = m_Colors.RetrieveColor(PDSB_Separator, Me.Enabled)
-        
+        'When the control is enabled, render all separator lines and a few non-button icons
         If m_LastEnabledState Then
             
-            Dim cSurface As pd2DSurface, cPainter As pd2DPainter, cPen As pd2DPen
-            Drawing2D.QuickCreatePainter cPainter
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
-            Drawing2D.QuickCreateSolidPen cPen, 1#, lineColor
+            If (Not sbIconCoords Is Nothing) Then sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), sbIconCoords.GetDIBWidth, sbIconCoords.GetDIBHeight
+            
+            Dim lineTop As Single, lineBottom As Single
+            lineTop = Interface.FixDPI(1)
+            lineBottom = bHeight - Interface.FixDPI(2)
+            
+            Dim cSurface As pd2DSurface, cPen As pd2DPen
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+            Drawing2D.QuickCreateSolidPen cPen, 1!, m_Colors.RetrieveColor(PDSB_Separator, Me.Enabled)
             
             Dim i As Long
             For i = 0 To UBound(m_LinePositions)
-                cPainter.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
+                m_Painter.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
             Next i
             
-            Set cSurface = Nothing: Set cPainter = Nothing: Set cPen = Nothing
+            Set cSurface = Nothing: Set cPen = Nothing
             
         End If
         

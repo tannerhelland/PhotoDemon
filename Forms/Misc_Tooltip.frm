@@ -150,6 +150,7 @@ Private Sub RedrawBackBuffer()
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDTT_Background, True))
+        If (bufferDC = 0) Then Exit Sub
         
         'Start by rendering a border around the outside of the form
         Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush

@@ -78,6 +78,9 @@ Attribute listSupport.VB_VarHelpID = -1
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'pd2D is used for rendering
+Private m_Painter As pd2DPainter
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -363,13 +366,13 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDListBoxView", colorCount
     If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
+    'Initialize a pd2D painter
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
     listSupport.ListSupportMode = PDLM_LISTBOX
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
     
 End Sub
 
@@ -434,37 +437,40 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
     finalBackColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Cache colors in advance, so we can simply reuse them in the inner loop
-    Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
-    Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
-    Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
-    Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
-    Dim fontColorSelected As Long, fontColorSelectedHover As Long
-    Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
-    Dim separatorColor As Long
-    
-    itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
-    itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
-    itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
-    itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
-    itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
-    itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
-    itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
-    itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
-        
-    fontColorSelected = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, False)
-    fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
-    fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
-    fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
-    
-    separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
-    
     If pdMain.IsProgramRunning() Then
+    
+        'Cache colors in advance, so we can simply reuse them in the inner loop
+        Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
+        Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
+        Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
+        Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
+        Dim fontColorSelected As Long, fontColorSelectedHover As Long
+        Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
+        Dim separatorColor As Long
+        
+        itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
+        itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
+        itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
+        itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
+        itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
+        itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
+        itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
+        itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
+            
+        fontColorSelected = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, False)
+        fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
+        fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
+        fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
+        
+        separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
         
         'Start by retrieving basic rendering metrics from the support object
         Dim firstItemIndex As Long, lastItemIndex As Long, listIsEmpty As Boolean
@@ -475,7 +481,13 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         Dim listHasFocus As Boolean
         listHasFocus = ucSupport.DoIHaveFocus Or listSupport.IsMouseInsideListBox
         
-        If Not listIsEmpty Then
+        'pd2D is used for painting
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+        Drawing2D.QuickCreateSolidBrush cBrush
+        Drawing2D.QuickCreateSolidPen cPen
+        
+        If (Not listIsEmpty) Then
             
             Dim curListIndex As Long, curColor As Long
             curListIndex = listSupport.ListIndex
@@ -485,6 +497,9 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
             Dim tmpFont As pdFont, textPadding As Single
             Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize)
+            tmpFont.AttachToDC bufferDC
+            tmpFont.SetTextAlignment vbLeftJustify
+                
             textPadding = LIST_PADDING_HORIZONTAL
             If listHasFocus Then textPadding = textPadding - 1
             
@@ -506,34 +521,29 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 
                 'For each list item, we follow a pretty standard formula: retrieve the item's data...
                 listSupport.GetRenderingItem i, tmpListItem, tmpTop, tmpHeight, tmpHeightWithoutSeparator
-                itemHasSeparator = tmpListItem.isSeparator
                 tmpRect.Top = tmpTop
-                
-                If itemHasSeparator Then
-                    tmpRect.Height = tmpHeightWithoutSeparator - 1
-                Else
-                    tmpRect.Height = tmpHeight - 1
-                End If
+                itemHasSeparator = tmpListItem.isSeparator
+                If itemHasSeparator Then tmpRect.Height = tmpHeightWithoutSeparator - 1 Else tmpRect.Height = tmpHeight - 1
                 
                 itemIsSelected = (i = curListIndex)
                 itemIsHovered = (i = listSupport.ListIndexHovered)
                 
                 '...then render its fill...
                 If itemIsSelected Then
-                    If itemIsHovered Then curColor = itemColorSelectedFillHover Else curColor = itemColorSelectedFill
+                    If itemIsHovered Then cBrush.SetBrushColor itemColorSelectedFillHover Else cBrush.SetBrushColor itemColorSelectedFill
                 Else
-                    If itemIsHovered Then curColor = itemColorUnselectedFillHover Else curColor = itemColorUnselectedFill
+                    If itemIsHovered Then cBrush.SetBrushColor itemColorUnselectedFillHover Else cBrush.SetBrushColor itemColorUnselectedFill
                 End If
                 
-                GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRect, curColor
+                m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRect
                 
                 '...followed by its border...
                 If itemIsSelected Then
-                    If itemIsHovered Then curColor = itemColorSelectedBorderHover Else curColor = itemColorSelectedBorder
+                    If itemIsHovered Then cPen.SetPenColor itemColorSelectedBorderHover Else cPen.SetPenColor itemColorSelectedBorder
                 Else
-                    If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
+                    If itemIsHovered Then cPen.SetPenColor itemColorUnselectedBorderHover Else cPen.SetPenColor itemColorUnselectedBorder
                 End If
-                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , GP_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRect
                 
                 '...and finally, its caption
                 If itemIsSelected Then
@@ -543,19 +553,18 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 End If
                 
                 tmpFont.SetFontColor curColor
-                tmpFont.AttachToDC bufferDC
-                tmpFont.SetTextAlignment vbLeftJustify
                 tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, tmpListItem.textTranslated, True, True, False
-                tmpFont.ReleaseFromDC
                 
                 'Separators are drawn separately, external to the other items
                 If itemHasSeparator Then
-                    lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) / 2
-                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, m_ListRect.Left + FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - FixDPI(12), lineY, separatorColor, 255
+                    lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) * 0.5
+                    cPen.SetPenColor separatorColor
+                    m_Painter.DrawLineF cSurface, cPen, m_ListRect.Left + Interface.FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - Interface.FixDPI(12), lineY
                 End If
                 
             Next i
             
+            tmpFont.ReleaseFromDC
             Set tmpFont = Nothing
         
         End If
@@ -564,14 +573,19 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         ' which is slightly inset from the list box boundaries, then a second border - pure white, erasing any item
         ' rendering that may have fallen outside the clipping area.
         Dim borderWidth As Single, borderColor As Long
-        If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
+        If listHasFocus Then borderWidth = 3! Else borderWidth = 1!
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
-        
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
+        cPen.SetPenWidth borderWidth
+        cPen.SetPenColor borderColor
+        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
         
         If (Not listHasFocus) Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
+            cPen.SetPenColor finalBackColor
+            cPen.SetPenWidth 1!
+            m_Painter.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
         End If
+        
+        Set cPen = Nothing: Set cBrush = Nothing: Set cSurface = Nothing
         
     End If
     

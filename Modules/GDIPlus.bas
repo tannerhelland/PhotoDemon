@@ -1526,10 +1526,6 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
 
 End Function
 
-Public Function GDIPlusDrawRectLOutlineToDC(ByVal dstDC As Long, ByRef srcRectL As RectL, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As GP_LineJoin = GP_LJ_Bevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
-    GDIPlusDrawRectLOutlineToDC = GDIPlusDrawRectOutlineToDC(dstDC, srcRectL.Left, srcRectL.Top, srcRectL.Right, srcRectL.Bottom, eColor, cTransparency, lineWidth, useAA, customLinejoin, hqOffsets, useInsetMode)
-End Function
-
 Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF As RectF, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As GP_LineJoin = GP_LJ_Bevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
     GDIPlusDrawRectFOutlineToDC = GDIPlusDrawRectOutlineToDC(dstDC, srcRectF.Left, srcRectF.Top, srcRectF.Left + srcRectF.Width, srcRectF.Top + srcRectF.Height, eColor, cTransparency, lineWidth, useAA, customLinejoin, hqOffsets, useInsetMode)
 End Function
@@ -1551,27 +1547,6 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
         
     'Release all created objects
     GdipDeletePen iPen
-    GdipDeleteGraphics hGraphics
-
-End Function
-
-'Use GDI+ to render a filled circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
-
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
-    
-    'Create a brush, which will be used to stroke the circle
-    Dim hBrush As Long
-    hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
-    
-    If (hBrush <> 0) Then
-        GDIPlusFillCircleToDC = (GdipFillEllipse(hGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
-        GDI_Plus.ReleaseGDIPlusBrush hBrush
-    End If
-    
     GdipDeleteGraphics hGraphics
 
 End Function
@@ -3521,6 +3496,17 @@ Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal gra
     End If
 End Function
 
+'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
+' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
+Public Function GetGDIPlusGraphicsFromDC_Fast(ByVal srcDC As Long) As Long
+    Dim gpResult As GP_Result
+    gpResult = (GdipCreateFromHDC(srcDC, GetGDIPlusGraphicsFromDC_Fast) = GP_OK)
+    If (Not gpResult) Then
+        GetGDIPlusGraphicsFromDC_Fast = 0
+        InternalGDIPlusError "GetGDIPlusGraphicsFromDC_Fast failed", "CreateFromHDC failed", gpResult
+    End If
+End Function
+
 'Shorthand function for quickly creating a new GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
 ' (Note that a single parameter is used to set both pen and dash endcaps; if you want these to differ, you must call the separate
 ' SetPenDashCap function, below.)
@@ -3812,6 +3798,38 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         InternalGDIPlusError "GetGDIPlusGraphicsProperty Error", "Null graphics handle"
     End If
     
+End Function
+
+Public Function SetGDIPlusGraphicsAntialiasing(ByVal hGraphics As Long, ByVal newSetting As GP_SmoothingMode) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsAntialiasing = (GdipSetSmoothingMode(hGraphics, newSetting) = GP_OK)
+End Function
+                
+Public Function SetGDIPlusGraphicsPixelOffset(ByVal hGraphics As Long, ByVal newSetting As GP_PixelOffsetMode) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsPixelOffset = (GdipSetPixelOffsetMode(hGraphics, newSetting) = GP_OK)
+End Function
+            
+Public Function SetGDIPlusGraphicsRenderingOriginX(ByVal hGraphics As Long, ByVal newSetting As Long) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsRenderingOriginX = (GdipSetRenderingOrigin(hGraphics, newSetting, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginY)) = GP_OK)
+End Function
+
+Public Function SetGDIPlusGraphicsRenderingOriginY(ByVal hGraphics As Long, ByVal newSetting As Long) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsRenderingOriginY = (GdipSetRenderingOrigin(hGraphics, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginX), newSetting) = GP_OK)
+End Function
+
+Public Function SetGDIPlusGraphicsBlendUsingSRGBGamma(ByVal hGraphics As Long, ByVal newSetting As GP_CompositingQuality) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsBlendUsingSRGBGamma = (GdipSetCompositingQuality(hGraphics, newSetting) = GP_OK)
+End Function
+
+Public Function SetGDIPlusGraphicsResizeQuality(ByVal hGraphics As Long, ByVal newSetting As GP_InterpolationMode) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsResizeQuality = (GdipSetInterpolationMode(hGraphics, newSetting) = GP_OK)
+End Function
+
+Public Function SetGDIPlusGraphicsCompositeMode(ByVal hGraphics As Long, ByVal newSetting As GP_CompositingMode) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsCompositeMode = (GdipSetCompositingMode(hGraphics, newSetting) = GP_OK)
+End Function
+
+Public Function SetGDIPlusGraphicsWorldTransform(ByVal hGraphics As Long, ByVal newSetting As Long) As Boolean
+    If (hGraphics <> 0) Then SetGDIPlusGraphicsWorldTransform = (GdipSetWorldTransform(hGraphics, newSetting) = GP_OK)
 End Function
 
 'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]

@@ -488,7 +488,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     
     'Start by creating this font, as necessary
     Dim fontIndex As Long
-    fontIndex = m_FontCollection.AddFontToCache(tmpString, m_FontSize + 4)
+    fontIndex = m_FontCollection.AddFontToCache(tmpString, m_FontSize + 4!)
 
     'Retrieve a handle to the created font
     Dim fontHandle As Long
@@ -513,8 +513,8 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
         ' 1) the length of the font name (as drawn in the UI font), plus a few extra pixels for padding
         ' 2) the halfway point in the drop-down area
         Dim calcLeft As Long, calcLeftAlternate As Long
-        calcLeft = tmpRectF.Left + 4 + fontNameWidth + FixDPI(32)
-        calcLeftAlternate = tmpRectF.Left + 4 + ((tmpRectF.Left + tmpRectF.Width) - tmpRectF.Left - 8) * 0.5
+        calcLeft = tmpRectF.Left + 4 + fontNameWidth + Interface.FixDPI(32)
+        calcLeftAlternate = tmpRectF.Left + 4 + ((tmpRectF.Left + tmpRectF.Width) - tmpRectF.Left - 8) \ 2
         
         If (calcLeft > calcLeftAlternate) Then .Left = calcLeftAlternate Else .Left = calcLeft
         
@@ -522,6 +522,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
         .Right = tmpRectF.Left + tmpRectF.Width - COMBO_PADDING_HORIZONTAL
         .Top = tmpRectF.Top
         .Bottom = tmpRectF.Top + tmpRectF.Height
+        
     End With
     
     'Create sample text based on the scripts supported by this font.  If no special scripts are supported,
@@ -555,7 +556,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     End If
     
     'Render right-aligned preview text
-    If (Len(sampleText) <> 0) Then DrawText bufferDC, StrPtr(sampleText), Len(sampleText), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
+    If (LenB(sampleText) <> 0) Then DrawText bufferDC, StrPtr(sampleText), Len(sampleText), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
     
     'Release our font
     SelectObject bufferDC, oldFont
@@ -710,9 +711,6 @@ Private Sub UserControl_Initialize()
     m_Text_Hebrew = ChrW(&H5D3) & ChrW(&H5D5) & ChrW(&H5BC) & ChrW(&H5D2) & ChrW(&H5DE) & ChrW(&H5B8) & ChrW(&H5D4)
     
     'CJK char previews are handled specially, in UpdateAgainstCurrentTheme - look there for details.
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
     
 End Sub
 
@@ -1089,8 +1087,11 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     If m_UseCustomBackgroundColor Then finalBackColor = m_BackgroundColor Else finalBackColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     

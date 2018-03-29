@@ -111,6 +111,9 @@ Private Const STRETCHBLT_HALFTONE As Long = 4
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Sub ZeroMemory Lib "kernel32" Alias "RtlZeroMemory" (ByVal dstPointer As Long, ByVal Length As Long)
+
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'DIB API functions
@@ -318,7 +321,7 @@ Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray 
 End Sub
 
 Friend Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
-    CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
+    PutMem4 VarPtrArray(srcArray), 0
 End Sub
 
 Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SafeArray2D)
@@ -332,7 +335,7 @@ Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeAr
 End Sub
 
 Friend Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
-    CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
+    PutMem4 VarPtrArray(srcArray), 0
 End Sub
 
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
@@ -1029,7 +1032,9 @@ Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
     RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
     
     'Erase everything
-    If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then FillMemory tmpDIBPointer, tmpDIBSize, fillValue
+    If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then
+        If (fillValue = 0) Then ZeroMemory tmpDIBPointer, tmpDIBSize Else FillMemory tmpDIBPointer, tmpDIBSize, fillValue
+    End If
     
 End Sub
 
@@ -1914,6 +1919,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         
         Dim dibPixels() As Byte, dibSA As SafeArray1D
         PrepInternalSafeArray1D dibSA
+        CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
         
         Dim x As Long, y As Long
         Dim r As Long, g As Long, b As Long
@@ -1924,7 +1930,6 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
             
             'Point our 1D pixel array at the proper scanline
             dibSA.pvData = dibPointer + scanlineSize * y
-            CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
             
         For x = initX To finalX Step 4
             
@@ -1938,7 +1943,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
                 If (tmpAlpha <> 255) Then
                 
                     'We can shortcut the calculation of full transparent pixels (they are made black)
-                    If tmpAlpha = 0 Then
+                    If (tmpAlpha = 0) Then
                         dibPixels(x) = 0
                         dibPixels(x + 1) = 0
                         dibPixels(x + 2) = 0

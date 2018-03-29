@@ -614,10 +614,10 @@ Private Sub ReflowToolboxLayout()
         m_rightBoundary = g_WindowManager.GetClientWidth(Me.hWnd) - rightBoundPadding
         
         'Establish default positioning values (some of which are dependent on screen DPI)
-        m_hOffsetDefaultLabel = FixDPI(4) 'Left-position of labels
+        m_hOffsetDefaultLabel = Interface.FixDPI(4) 'Left-position of labels
         m_hOffsetDefaultButton = 0        'Left-position of left-most buttons
-        m_labelMarginBottom = FixDPI(4)   'Distance between the bottom of labels and the top of buttons
-        m_labelMarginTop = FixDPI(2)      'Distance between the bottom of buttons and top of labels
+        m_labelMarginBottom = Interface.FixDPI(4)   'Distance between the bottom of labels and the top of buttons
+        m_labelMarginTop = Interface.FixDPI(2)      'Distance between the bottom of buttons and top of labels
         m_buttonMarginBottom = 0          'Distance between button rows
         m_buttonMarginRight = 0           'Distance between buttons
         
@@ -670,10 +670,10 @@ Private Sub ReflowToolboxLayout()
     'File group.  We position this label manually, and it serves as the reference for all subsequent labels.
     If m_ShowCategoryLabels Then
         ttlCategories(0).SetLeft m_hOffsetDefaultLabel
-        ttlCategories(0).SetTop FixDPI(2)
+        ttlCategories(0).SetTop Interface.FixDPI(2)
         vOffset = ttlCategories(0).GetTop + ttlCategories(0).GetHeight + m_labelMarginBottom
     Else
-        vOffset = FixDPI(2)
+        vOffset = Interface.FixDPI(2)
     End If
     
     ReflowButtonSet 0, False, FILE_NEW, FILE_SAVEAS_FLAT, hOffset, vOffset
@@ -699,8 +699,8 @@ Private Sub ReflowToolboxLayout()
     ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_FILL, hOffset, vOffset
     
     'Macro recording message
-    If (vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height) Then
-        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + m_buttonMarginBottom
+    If (vOffset < cmdTools(cmdTools.UBound).GetTop + cmdTools(cmdTools.UBound).GetHeight) Then
+        vOffset = cmdTools(cmdTools.UBound).GetTop + cmdTools(cmdTools.UBound).GetHeight + m_buttonMarginBottom
     End If
     
     vOffset = vOffset + m_labelMarginTop
@@ -1171,7 +1171,7 @@ Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     'g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
     
     'Reflow the interface as requested
-    UpdateAgainstCurrentTheme
+    If Me.Visible Then UpdateAgainstCurrentTheme
     If (Not suppressRedraw) Then ReflowToolboxLayout
     
 End Sub

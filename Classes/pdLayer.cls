@@ -2166,22 +2166,22 @@ Friend Sub ResetLayerParameters()
         .l_GroupID = 0
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
-        .l_OffsetX = 0
-        .l_OffsetY = 0
-        .l_CanvasXModifier = 1
-        .l_CanvasYModifier = 1
-        .l_Angle = 0
+        .l_OffsetX = 0#
+        .l_OffsetY = 0#
+        .l_CanvasXModifier = 1#
+        .l_CanvasYModifier = 1#
+        .l_Angle = 0#
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
         .l_Visibility = True
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
-        .l_ShearX = 0
-        .l_ShearY = 0
+        .l_ShearX = 0#
+        .l_ShearY = 0#
         .l_AlphaMode = LA_NORMAL
     End With
     
     'Reset color management settings
-    ' (TODO 7.0: pull these from user preferences)
+    ' (TODO 7.2: pull these from user preferences)
     m_ColorManagementState = LCM_NoManagement
     m_ICCProfileIndex = -1
     

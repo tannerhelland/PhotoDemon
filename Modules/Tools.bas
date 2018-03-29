@@ -529,6 +529,7 @@ End Function
 Public Sub InitializeToolsDependentOnImage()
     
     If (g_OpenImageCount > 0) Then
+    
         If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL) Then
             
             'A couple things require us to reset the scratch layer...
@@ -553,6 +554,7 @@ Public Sub InitializeToolsDependentOnImage()
             FormMain.MainCanvas(0).SetMouseInput_HighRes False
             
         End If
+        
     End If
     
 End Sub

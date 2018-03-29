@@ -500,9 +500,6 @@ Private Sub UserControl_Initialize()
     UpdateTransparencyOptions
     ReflowColorPanel
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.

@@ -645,10 +645,10 @@ Private Sub Class_Initialize()
     'Prep a default gradient handler and gradient-related properties
     Set m_Gradient = New pd2DGradient
     With m_BoundaryRect
-        .Left = 0
-        .Top = 0
-        .Width = 100
-        .Height = 100
+        .Left = 0!
+        .Top = 0!
+        .Width = 100!
+        .Height = 100!
     End With
     
     m_DebugMode = Drawing2D.GetLibraryDebugMode()

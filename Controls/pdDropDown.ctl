@@ -499,9 +499,6 @@ Private Sub UserControl_Initialize()
     listSupport.SetAutomaticRedraws False
     listSupport.ListSupportMode = PDLM_COMBOBOX
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -884,8 +881,11 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     If m_UseCustomBackgroundColor Then finalBackColor = m_BackgroundColor Else finalBackColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -924,9 +924,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         Dim arrowLeftLimit As Single
         arrowLeftLimit = buttonPt1.x - FixDPI(2)
         
-        'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
-        ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
-        ' next to regular Windows drop-downs...
+        'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again;
+        ' I personally prefer this behavior (as the list box may extend up or down), but I'm not sold on implementing
+        ' it just yet, because it's out of place next to regular Windows drop-downs...
         'buttonPt1.y = fullWinRect.Bottom - buttonPt1.y
         'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
         'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y

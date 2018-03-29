@@ -335,6 +335,8 @@ End Sub
 
 Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
+    If (bufferDC = 0) Then Exit Sub
+    
     'Calculate text colors (which vary depending on hover state and URL availability)
     Dim itemIsClickable As Boolean
     itemIsClickable = (LenB(m_contributorList(itemIndex).ctbURL) <> 0)

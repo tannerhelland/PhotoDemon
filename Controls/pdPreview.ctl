@@ -678,6 +678,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDP_Background))
+    If (bufferDC = 0) Then Exit Sub
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -746,11 +747,11 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         ctlBackColor = m_Colors.RetrieveColor(PDP_PreviewBackground, True)
         
         Dim hoverMatters As Boolean, borderWidth As Single
-        borderWidth = 1#
+        borderWidth = 1!
         hoverMatters = AllowColorSelection Or AllowPointSelection Or (AllowZoomPan And Not ViewportFitFullImage)
         If hoverMatters Then
             hoverMatters = ucSupport.IsMouseInside
-            If hoverMatters Then borderWidth = 3#
+            If hoverMatters Then borderWidth = 3!
         End If
         ctlBorderColor = m_Colors.RetrieveColor(PDP_PreviewBorder, True, , hoverMatters)
         

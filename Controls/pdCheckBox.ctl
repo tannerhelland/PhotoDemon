@@ -296,10 +296,7 @@ Private Sub UserControl_Initialize()
     Dim colorCount As PDCHECKBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCheckBox", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
+             
 End Sub
 
 'Set default properties
@@ -406,11 +403,7 @@ Private Sub UpdateControlLayout()
     'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
     ' size, but the caption was *still* too long), set a module-level failure state to TRUE.  This notifies the renderer
     ' that ellipses must be forcibly appended to the caption.
-    If ucSupport.GetCaptionWidth(True) > bWidth - m_CaptionRect.Left Then
-        m_FitFailure = True
-    Else
-        m_FitFailure = False
-    End If
+    m_FitFailure = (ucSupport.GetCaptionWidth(True) > bWidth - m_CaptionRect.Left)
     
     RedrawBackBuffer
             
@@ -423,6 +416,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCB_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
     
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth

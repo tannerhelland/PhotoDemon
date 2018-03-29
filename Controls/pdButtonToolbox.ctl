@@ -240,15 +240,9 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+Public Sub AssignImage(Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
     If (Not pdMain.IsProgramRunning) Then Exit Sub
-    
-    'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
-    ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
-    ' at multiple sizes!)
-    If (useImgWidth = 0) Then useImgWidth = (ucSupport.GetBackBufferWidth \ 8) * 8
-    If (useImgHeight = 0) Then useImgHeight = (ucSupport.GetBackBufferHeight \ 8) * 8
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
@@ -277,12 +271,9 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         'A separate function will automatically generate "glowy hovered" and "grayscale disabled" versions for us
         GenerateVariantButtonImages
         
-        'Reset alpha premultiplication
+        'Reset alpha premultiplication and release this DIB from its DC (as it may not be rendered right away)
         m_ButtonImages.SetAlphaPremultiplication True
-        If (LenB(resName) = 0) Then
-            If initAlphaState Then srcDIB.SetAlphaPremultiplication True
-        End If
-        
+        If (LenB(resName) = 0) And initAlphaState Then srcDIB.SetAlphaPremultiplication True
         m_ButtonImages.FreeFromDC
         
     End If
@@ -580,10 +571,7 @@ Private Sub UserControl_Initialize()
     Dim colorCount As PDTOOLBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDToolButton", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
+           
 End Sub
 
 'Set default properties
@@ -668,8 +656,11 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, btnColorFill)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
         

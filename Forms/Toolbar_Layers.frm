@@ -95,12 +95,6 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   4471
       _ExtentY        =   1085
    End
-   Begin VB.Line lnSeparatorLeft 
-      X1              =   0
-      X2              =   0
-      Y1              =   0
-      Y2              =   440
-   End
 End
 Attribute VB_Name = "toolbar_Layers"
 Attribute VB_GlobalNameSpace = False
@@ -442,12 +436,6 @@ Private Sub ReflowInterface()
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
     
-    'Before doing anything complicated, left-align the separator line between the canvas area and the toolbox
-    lnSeparatorLeft.x1 = 0
-    lnSeparatorLeft.y1 = 0
-    lnSeparatorLeft.x2 = 0
-    lnSeparatorLeft.y2 = formHeight
-    
     'Next, we want to resize all subpanel picture boxes, so that their size reflects the new form size.  This is a
     ' bit complicated, as each form has a different base size, and the user can toggle panel visibility at any time.
     
@@ -681,13 +669,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = Fal
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
-    
-    'The left separator line is colored according to the current shadow accent color
-    If Not (g_Themer Is Nothing) Then
-        lnSeparatorLeft.borderColor = g_Themer.GetGenericUIColor(UI_GrayDark)
-    Else
-        lnSeparatorLeft.borderColor = vbHighlight
-    End If
     
     'Pass the theme update request to any active child forms.
     ' (Note that we don't have to do this on our initial load, because the panels will automatically

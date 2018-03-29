@@ -224,7 +224,7 @@ End Function
 
 'Simple - does a given tag exist?  Both simple and complex tags will be checked.
 Friend Function DoesTagExist(ByRef tagName As String, Optional ByRef attributeName As String = vbNullString, Optional ByRef attributeValue As String = vbNullString, Optional ByRef foundPosition As Long = 0) As Boolean
-
+    
     'If an attribute is provided, finding the tag is a bit messier
     If (LenB(attributeName) <> 0) Then
         foundPosition = InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode)

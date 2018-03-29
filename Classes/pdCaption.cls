@@ -46,8 +46,7 @@ Private m_FontSizeCaption As Single, m_FontSizeCaptionFit As Single
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
 ' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
 ' by any caption change, or by a call to UpdateAgainstCurrentTheme.
-Private m_CaptionEn As String
-Private m_CaptionTranslated As String
+Private m_CaptionEn As String, m_CaptionTranslated As String
 
 'Width and height of our parent container.  This is used to calculate automatic font sizing.
 Private m_ContainerWidth As Single, m_ContainerHeight As Single
@@ -93,7 +92,7 @@ Friend Function GetAlignment() As AlignmentConstants
 End Function
 
 Friend Function SetAlignment(ByVal newAlignment As AlignmentConstants) As Boolean
-    If newAlignment <> m_Alignment Then
+    If (newAlignment <> m_Alignment) Then
         m_Alignment = newAlignment
         SetAlignment = True
     End If
@@ -155,13 +154,7 @@ End Function
 
 'Simplified wrapper for checking if a caption is active
 Friend Function IsCaptionActive() As Boolean
-    
-    If (Len(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0) Then
-        IsCaptionActive = True
-    Else
-        IsCaptionActive = False
-    End If
-    
+    IsCaptionActive = (LenB(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0)
 End Function
 
 'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
@@ -175,7 +168,7 @@ Friend Function GetFontBold() As Boolean
 End Function
 
 Friend Function SetFontBold(ByVal newValue As Boolean) As Boolean
-    If m_FontBold <> newValue Then
+    If (m_FontBold <> newValue) Then
         m_FontBold = newValue
         m_FontSizeVerified = False
         SetFontBold = True
@@ -189,7 +182,7 @@ Friend Function GetFontItalic() As Boolean
 End Function
 
 Friend Function SetFontItalic(ByVal newValue As Boolean) As Boolean
-    If m_FontItalic <> newValue Then
+    If (m_FontItalic <> newValue) Then
         m_FontItalic = newValue
         m_FontSizeVerified = False
         SetFontItalic = True
@@ -203,7 +196,7 @@ Friend Function GetFontUnderline() As Boolean
 End Function
 
 Friend Function SetFontUnderline(ByVal newValue As Boolean) As Boolean
-    If m_FontUnderline <> newValue Then
+    If (m_FontUnderline <> newValue) Then
         m_FontUnderline = newValue
         m_FontSizeVerified = False
         SetFontUnderline = True
@@ -235,7 +228,7 @@ End Function
 
 'Wordwrap can now be optionally enabled on-the-fly
 Friend Sub SetWordWrapSupport(ByVal newSupportValue As Boolean)
-    If m_WordWrapAllowed <> newSupportValue Then
+    If (m_WordWrapAllowed <> newSupportValue) Then
         m_WordWrapAllowed = newSupportValue
         m_FontSizeVerified = False
     End If
@@ -575,7 +568,7 @@ Friend Sub UpdateAgainstCurrentTheme()
     End If
     
     'If our translated caption has changed, the new text may overflow its container, so we need to run size heuristics.
-    If Strings.StringsNotEqual(oldTranslatedText, m_CaptionTranslated, False) Then m_FontSizeVerified = False
+    m_FontSizeVerified = Strings.StringsEqual(oldTranslatedText, m_CaptionTranslated, False)
     
     'Theme changes may also affect caption coloring; update the relevant color now
     m_CaptionColor = -1

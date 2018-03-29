@@ -389,9 +389,6 @@ Private Sub UserControl_Initialize()
     listSupport.SetAutomaticRedraws False
     listSupport.ListSupportMode = PDLM_LISTBOX
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -458,30 +455,33 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
     finalBackColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Cache colors in advance, so we can simply reuse them in the inner loop
-    Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
-    Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
-    Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
-    Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
-    Dim separatorColor As Long
-    
-    itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
-    itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
-    itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
-    itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
-    itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
-    itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
-    itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
-    itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
-    
-    separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
-    
     If pdMain.IsProgramRunning() Then
+    
+        'Cache colors in advance, so we can simply reuse them in the inner loop
+        Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
+        Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
+        Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
+        Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
+        Dim separatorColor As Long
+        
+        itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
+        itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
+        itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
+        itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
+        itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
+        itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
+        itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
+        itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
+        
+        separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
         
         'Start by retrieving basic rendering metrics from the support object
         Dim firstItemIndex As Long, lastItemIndex As Long, listIsEmpty As Boolean
@@ -507,11 +507,11 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             
                 'Left and Width start out the same for all list entries
                 If listHasFocus Then
-                    tmpRect.Left = m_ListRect.Left + 2
-                    tmpRect.Width = m_ListRect.Width - 3
+                    tmpRect.Left = m_ListRect.Left + 2!
+                    tmpRect.Width = m_ListRect.Width - 3!
                 Else
-                    tmpRect.Left = m_ListRect.Left + 1
-                    tmpRect.Width = m_ListRect.Width - 2
+                    tmpRect.Left = m_ListRect.Left + 1!
+                    tmpRect.Width = m_ListRect.Width - 2!
                 End If
                 
                 'For each list item, we follow a pretty standard formula: retrieve the item's data...
@@ -572,7 +572,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         If (Not m_BorderlessMode) Then
         
             Dim borderWidth As Single, borderColor As Long
-            If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
+            If listHasFocus Then borderWidth = 3! Else borderWidth = 1!
             borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
             
             GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter

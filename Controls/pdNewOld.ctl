@@ -249,9 +249,6 @@ Private Sub UserControl_Initialize()
         m_OldCaptionTranslated = "original:"
     End If
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
 End Sub
 
 'Set default properties
@@ -383,33 +380,30 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDNO_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
+        
+    'Before doing anything else, ask our owner to paint the "new" and "old" areas
+    RaiseEvent DrawNewItem(bufferDC, VarPtr(m_NewItemRect))
+    RaiseEvent DrawOldItem(bufferDC, VarPtr(m_OldItemRect))
     
-    If (bufferDC <> 0) Then
-        
-        'Before doing anything else, ask our owner to paint the "new" and "old" areas
-        RaiseEvent DrawNewItem(bufferDC, VarPtr(m_NewItemRect))
-        RaiseEvent DrawOldItem(bufferDC, VarPtr(m_OldItemRect))
-        
-        'Next, paint the "new" and "old" captions
-        Dim tmpFont As pdFont
-        Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
-        
-        With tmpFont
-            .SetTextAlignment vbLeftJustify
-            .SetFontColor m_Colors.RetrieveColor(PDNO_Caption, Me.Enabled)
-        End With
-        
-        tmpFont.AttachToDC bufferDC
-        tmpFont.FastRenderText m_NewCaptionPt.x, m_NewCaptionPt.y, m_NewCaptionTranslated
-        tmpFont.FastRenderText m_OldCaptionPt.x, m_OldCaptionPt.y, m_OldCaptionTranslated
-        
-        tmpFont.ReleaseFromDC
-        Set tmpFont = Nothing
-        
-    End If
+    'Next, paint the "new" and "old" captions
+    Dim tmpFont As pdFont
+    Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
+    
+    With tmpFont
+        .SetTextAlignment vbLeftJustify
+        .SetFontColor m_Colors.RetrieveColor(PDNO_Caption, Me.Enabled)
+    End With
+    
+    tmpFont.AttachToDC bufferDC
+    tmpFont.FastRenderText m_NewCaptionPt.x, m_NewCaptionPt.y, m_NewCaptionTranslated
+    tmpFont.FastRenderText m_OldCaptionPt.x, m_OldCaptionPt.y, m_OldCaptionTranslated
+    
+    tmpFont.ReleaseFromDC
+    Set tmpFont = Nothing
     
     'Next, draw borders around the new and old items
-    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() Then
             
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True

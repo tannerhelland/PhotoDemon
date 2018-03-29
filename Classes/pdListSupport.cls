@@ -237,10 +237,10 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     On Error GoTo FailsafeReset
     
     'Failsafe bounds check
-    If newListSize <= 0 Then newListSize = INITIAL_LIST_SIZE
+    If (newListSize <= 0) Then newListSize = INITIAL_LIST_SIZE
     
     'Reset the array (but only if necessary!)
-    If m_NumOfItems = 0 Then
+    If (m_NumOfItems = 0) Then
         ReDim m_Items(0 To newListSize - 1) As PD_LISTITEM
     Else
         If UBound(m_Items) = newListSize - 1 Then
@@ -269,7 +269,7 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     Exit Sub
     
 FailsafeReset:
-    If newListSize <= 0 Then newListSize = INITIAL_LIST_SIZE
+    If (newListSize <= 0) Then newListSize = INITIAL_LIST_SIZE
     ReDim m_Items(0 To newListSize - 1) As PD_LISTITEM
     
 End Sub
@@ -856,7 +856,7 @@ Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_
     
     dstListItem = m_Items(srcListIndex)
     
-    If m_SizeMode = PDLH_FIXED Then
+    If (m_SizeMode = PDLH_FIXED) Then
         dstItemTop = (srcListIndex * m_DefaultHeight) - m_ScrollValue
         dstItemHeight = m_DefaultHeight
         dstItemHeightWithoutSeparator = m_DefaultHeight
@@ -1017,7 +1017,7 @@ Friend Sub UpdateAgainstCurrentTheme()
     
     If (Not g_Language Is Nothing) Then
         
-        If (m_NumOfItems > 0) And Strings.StringsNotEqual(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, False) Then
+        If (m_NumOfItems > 0) And (m_LanguageAtLastCheck <> g_Language.GetCurrentLanguage()) Then
             
             m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
             

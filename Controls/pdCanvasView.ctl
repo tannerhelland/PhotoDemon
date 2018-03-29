@@ -189,8 +189,11 @@ End Sub
 Public Sub ClearCanvas()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDC_Background))
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
         
@@ -450,9 +453,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDCanvas", colorCount
     If (Not pdMain.IsProgramRunning()) Then UpdateColorList
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there, or even better, stop being lazy
@@ -499,8 +499,11 @@ End Sub
 Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = False)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(False)
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
 

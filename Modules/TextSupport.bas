@@ -267,9 +267,33 @@ Public Function ValidateCharacters(ByVal srcText As String, ByVal listOfValidCha
     Dim i As Long
     For i = 1 To Len(srcText)
         
-        'If this invalid character exists in the target string, replace it with whatever the user specified
+        'If this invalid character exists in the target string, return FALSE
         If (InStr(1, listOfValidChars, Mid$(srcText, i, 1), vbBinaryCompare) = 0) Then
             ValidateCharacters = False
+            Exit For
+        End If
+        
+    Next i
+    
+End Function
+
+'Return TRUE if a test string is comprised only of valid hex chars (0-9, a-f).
+Public Function ValidateHexChars(ByRef srcText As String) As Boolean
+    
+    ValidateHexChars = True
+    
+    'I'm not sure if there's a better way to do this, but basically, we need to individually
+    ' check each character in the string against the valid hex char list.  If a character is
+    ' NOT located in the valid char list, return FALSE, and if the whole string checks out,
+    ' return TRUE.
+    Dim i As Long, chrTest As Long
+    For i = 1 To Len(srcText)
+        
+        chrTest = AscW(Mid$(srcText, i, 1))
+        
+        'If this invalid character exists in the target string, return FALSE
+        If (chrTest < 48) Or (chrTest > 103) Or ((chrTest > 57) And (chrTest < 65)) Or ((chrTest > 70) And (chrTest < 97)) Then
+            ValidateHexChars = False
             Exit For
         End If
         

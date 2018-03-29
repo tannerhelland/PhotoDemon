@@ -531,43 +531,6 @@ Public Sub DestroyAllIcons()
 
 End Sub
 
-'Given an image in the .exe's resource section (typically a PNG image), return an icon handle to it (hIcon).
-' The calling function is responsible for deleting this object once they are done with it.
-Private Function CreateIconFromResource(ByVal resTitle As String) As Long
-    
-    'Start by extracting the PNG data into a bytestream
-    Dim imageData() As Byte
-    imageData() = LoadResData(resTitle, "CUSTOM")
-    
-    Dim hBitmap As Long, hIcon As Long
-    
-    Dim IStream As IUnknown
-    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(imageData(0)), UBound(imageData) - LBound(imageData) + 1)
-    
-    If Not (IStream Is Nothing) Then
-        
-        'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
-        If (GdipLoadImageFromStream(IStream, hBitmap) = 0) Then
-        
-            'hBitmap now contains the PNG file as an hBitmap (obviously).  Now we need to convert it to icon format.
-            If (GdipCreateHICONFromBitmap(hBitmap, hIcon) = 0) Then
-                CreateIconFromResource = hIcon
-            Else
-                CreateIconFromResource = 0
-            End If
-            
-            GdipDisposeImage hBitmap
-                
-        End If
-    
-        Set IStream = Nothing
-    
-    End If
-    
-    Exit Function
-    
-End Function
-
 'Given an image in PD's theme file, return it as a system cursor handle.
 'PLEASE NOTE: PD auto-caches created cursors, and retains them for the life of the program.  They should not be manually freed.
 Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
@@ -746,12 +709,10 @@ Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDI
         ' that expects an initialized DIB), report the problem, then exit.  (As of v7.0, this failsafe check
         ' will only be triggered by misspelling a resource name!)
         If (Not LoadResourceToDIB) Then
-        
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
             dstDIB.CreateBlank 16, 16, 32, 0, 0
             LoadResourceToDIB = False
             pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
-            
         End If
         
     Else

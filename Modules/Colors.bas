@@ -693,22 +693,15 @@ End Function
 Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'To make things simpler, remove variability from the source string
-    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then
-        srcHex = LCase$(Right$(srcHex, Len(srcHex) - 1))
-    Else
-        srcHex = LCase$(srcHex)
-    End If
-    
-    Dim txtLen As Long
-    txtLen = Len(srcHex)
+    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then srcHex = (Right$(srcHex, Len(srcHex) - 1))
     
     'If short-hand length is in use, expand it to 6 chars now
-    If (txtLen < 6) Then
+    If (Len(srcHex) < 6) Then
         
-        If (txtLen = 3) Then
+        If (Len(srcHex) = 3) Then
             'Three characters is standard shorthand hex; expand each character as a pair
             srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
-        ElseIf (txtLen = 1) Then
+        ElseIf (Len(srcHex) = 1) Then
             'One character is treated as a shade of gray; extend it to six characters.
             srcHex = String$(6, srcHex)
         Else
@@ -728,7 +721,7 @@ Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'Return the RGB Long
     GetRGBLongFromHex = RGB(r, g, b)
-
+    
 End Function
 
 'Given an RGB triplet (Long-type), return a matching hex representation.
@@ -753,26 +746,25 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     
     dstColorType = ColorUnknown
     
-    Dim testString As String, validChars As String
-    
     'Hex validation is fairly easy: is the string prepended with a hash?
-    If Strings.StringsEqual(Left$(srcString, 1), "#", False) Then
+    If (Left$(srcString, 1) = "#") Then
         
         dstColorType = ColorHex
         
         'Only perform additional validation as requested
         If validateActualColorValue Then
-        
+            
             'Trim out the non-hash characters
+            Dim testString As String
             testString = Right$(srcString, Len(srcString) - 1)
-    
+            
             'Is the string 1/3/6 chars long?
-            If (Len(testString) = 1) Or (Len(testString) = 3) Or (Len(testString) = 6) Then
+            Dim lenStr As Long
+            lenStr = Len(testString)
+            If (lenStr = 1) Or (lenStr = 3) Or (lenStr = 6) Then
     
                 'Does the string only consist of the chars 0-9 and A-F?
-                validChars = "0123456789abcdef"
-                If TextSupport.ValidateCharacters(testString, validChars, True) Then
-                    'We can convert this into a hex color value
+                If TextSupport.ValidateHexChars(testString) Then
                     dstColorType = ColorHex
                 Else
                     dstColorType = ColorUnknown
@@ -788,17 +780,13 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     '/End hex validation
     
     'TODO: if the color is still unkown, continue checking other color possibilities
-    If (dstColorType = ColorUnknown) Then
-        '???
-    End If
+    'If (dstColorType = ColorUnknown) Then
+    '    '???
+    'End If
     
     'If we've attempted to match all existing color types without success, return failure
-    If (dstColorType = ColorUnknown) Then
-        dstColorType = ColorInvalid
-        IsStringAColor = False
-    Else
-        IsStringAColor = True
-    End If
+    IsStringAColor = (dstColorType <> ColorUnknown)
+    If (Not IsStringAColor) Then dstColorType = ColorInvalid
     
 End Function
 
@@ -807,12 +795,10 @@ End Function
 ' NOTE: at present, opacity is not actually retrieved; it always returns 100.0.  Also, per comments elsewhere in this module,
 ' not all color representations have been implemented.  Stick to hex for now.
 ' RETURNS: TRUE if successful; FALSE otherwise
-Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong As Long, Optional ByVal srcColorType As PD_COLOR_STRING = ColorUnknown, Optional ByRef dstOpacity As Double = 100#) As Boolean
+Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong As Long, Optional ByVal srcColorType As PD_COLOR_STRING = ColorUnknown) As Boolean
 
     'If the color type is unknown, attempt to identify it now.
-    If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
-        GetColorFromString = IsStringAColor(srcString, srcColorType)
-    End If
+    If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then GetColorFromString = IsStringAColor(srcString, srcColorType)
     
     'If the color type is STILL unknown and/or invalid, there's nothing we can do.  Exit immediately.
     If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
@@ -829,8 +815,7 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     
         Case ColorHex
             dstRGBLong = GetRGBLongFromHex(srcString)
-            dstOpacity = 100#
-        
+            
         Case ColorRGB
         
         Case ColorRGBA

@@ -295,6 +295,8 @@ End Sub
 
 Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered As Boolean, ByVal ptrToRectF As Long)
     
+    If (bufferDC = 0) Then Exit Sub
+    
     If pdMain.IsProgramRunning Then
     
         Dim cPainter As pd2DPainter

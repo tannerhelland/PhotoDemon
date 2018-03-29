@@ -410,12 +410,12 @@ End Sub
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal useCustomColor As Long = -1)
+Public Sub AssignImage(Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal useCustomColor As Long = -1)
     
     'Load the requested resource DIB, as necessary
-    If (Len(resName) <> 0) Or (Not srcDIB Is Nothing) Then
+    If (LenB(resName) <> 0) Or (Not srcDIB Is Nothing) Then
     
-        If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , useCustomColor
+        If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , useCustomColor
         
         'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
         ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -491,10 +491,7 @@ Private Sub UserControl_Initialize()
     Dim colorCount As PDBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDButton", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
-                
+         
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -625,6 +622,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, targetColor)
+    If (bufferDC = 0) Then Exit Sub
     
     'Colors used throughout this paint function are determined by several factors:
     ' 1) Control enablement (disabled buttons are grayed)
@@ -651,21 +649,21 @@ Private Sub RedrawBackBuffer()
         If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, GP_LJ_Miter
     
-    End If
-    
-    'Paint the image, if any
-    If (Not m_Images Is Nothing) Then
-        
-        'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
-        Dim pxOffset As Long
-        If Me.Enabled Then
-            If m_MouseInsideUC Then pxOffset = m_ImageHeight Else pxOffset = 0
-        Else
-            pxOffset = m_ImageHeight * 2
+        'Paint the image, if any
+        If (Not m_Images Is Nothing) Then
+            
+            'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
+            Dim pxOffset As Long
+            If Me.Enabled Then
+                If m_MouseInsideUC Then pxOffset = m_ImageHeight Else pxOffset = 0
+            Else
+                pxOffset = m_ImageHeight * 2
+            End If
+            
+            m_Images.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
+            m_Images.FreeFromDC
+            
         End If
-        
-        m_Images.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
-        m_Images.FreeFromDC
         
     End If
     

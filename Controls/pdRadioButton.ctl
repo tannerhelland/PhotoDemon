@@ -89,6 +89,9 @@ Private m_RadioButtonRect As RectF
 ' padding calculations involved in positioning the radio button and caption relative to the control as a whole.
 Private m_ClickableRect As RectF, m_MouseInsideClickableRect As Boolean
 
+'pd2D is used for rendering
+Private m_Painter As pd2DPainter
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -171,7 +174,7 @@ End Property
 
 Public Property Let Value(ByVal newValue As Boolean)
     
-    If m_Value <> newValue Then
+    If (m_Value <> newValue) Then
     
         m_Value = newValue
         RedrawBackBuffer
@@ -295,7 +298,7 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
-    If m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y) Then
+    If (m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y)) Then
         m_MouseInsideClickableRect = IsMouseOverClickArea(x, y)
         RedrawBackBuffer
     End If
@@ -329,22 +332,22 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
+    'Prep a pd2D painter
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRADIOBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDRadioButton", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
-    
-    'Update the control size parameters at least once
-    UpdateControlLayout
                 
 End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Caption = "caption"
-    FontSize = 10
-    Value = True
+    Me.Caption = "caption"
+    Me.FontSize = 10
+    m_Value = True
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -354,9 +357,9 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Caption = .ReadProperty("Caption", vbNullString)
-        FontSize = .ReadProperty("FontSize", 10)
-        Value = .ReadProperty("Value", False)
+        Me.Caption = .ReadProperty("Caption", vbNullString)
+        Me.FontSize = .ReadProperty("FontSize", 10)
+        Me.Value = .ReadProperty("Value", False)
     End With
 End Sub
 
@@ -368,7 +371,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, "caption"
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
-        .WriteProperty "Value", Value, False
+        .WriteProperty "Value", m_Value, False
     End With
 End Sub
 
@@ -388,8 +391,8 @@ Private Sub UpdateControlLayout()
     If ucSupport.IsCaptionActive Then
         
         'Start by making sure the control is tall enough to fit the caption.  (Control height is auto-controlled at present.)
-        If (ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2 <> bHeight) Then
-            bHeight = ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2
+        If (ucSupport.GetCaptionHeight(False) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
+            bHeight = ucSupport.GetCaptionHeight(False) + Interface.FixDPI(vTextPadding) * 2
             ucSupport.RequestNewSize bWidth, bHeight, False
         End If
         
@@ -412,8 +415,8 @@ Private Sub UpdateControlLayout()
     'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
     ' 1px border around the user control as a whole (which is used for a keyboard focus rect).
     Dim offsetX As Long, offsetY As Long, radioButtonSize As Long
-    offsetX = 1 + FixDPI(2)
-    offsetY = 1 + FixDPI(2)
+    offsetX = 1 + Interface.FixDPI(2)
+    offsetY = offsetX
     radioButtonSize = bHeight - (offsetY * 2)
     
     'Use that to populate the radio button rect; we store it at module-level, and use it for rendering and hit-detection
@@ -426,7 +429,7 @@ Private Sub UpdateControlLayout()
     
     'Pass the available space to the support class; it needs this information to auto-fit the caption
     Dim captionLeft As Long
-    captionLeft = (m_RadioButtonRect.Left + m_RadioButtonRect.Width) + FixDPI(hBoxCaptionPadding)
+    captionLeft = (m_RadioButtonRect.Left + m_RadioButtonRect.Width) + Interface.FixDPI(hBoxCaptionPadding)
     ucSupport.SetCaptionCustomPosition captionLeft, 0, bWidth - captionLeft, bHeight
     
     'While here, calculate a caption rect, taking into account the auto-sized caption text (which may be using a different font size)
@@ -457,32 +460,44 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDRB_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
     
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Populate colors from the master theme object
-    Dim radioColorBorder As Long, radioColorFill As Long, txtColor As Long
-    radioColorBorder = m_Colors.RetrieveColor(PDRB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
-    radioColorFill = m_Colors.RetrieveColor(PDRB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    txtColor = m_Colors.RetrieveColor(PDRB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
-    
     If pdMain.IsProgramRunning() Then
         
+        'Populate colors from the master theme object
+        Dim radioColorBorder As Long, radioColorFill As Long, txtColor As Long
+        radioColorBorder = m_Colors.RetrieveColor(PDRB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
+        radioColorFill = m_Colors.RetrieveColor(PDRB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+        txtColor = m_Colors.RetrieveColor(PDRB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
+        
+        'pd2D is used for painting
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
         'Draw the radio button border
-        Dim borderWidth As Single
-        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3# Else borderWidth = 1.5
+        Dim borderWidth As Single, cPen As pd2DPen
+        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3! Else borderWidth = 1.5!
+        Drawing2D.QuickCreateSolidPen cPen, borderWidth, radioColorBorder
+        
         With m_RadioButtonRect
-            GDI_Plus.GDIPlusDrawCircleToDC bufferDC, .Left + .Width / 2, .Top + .Height / 2, .Width / 2, radioColorBorder, 255, borderWidth, True
+            m_Painter.DrawCircleF cSurface, cPen, .Left + .Width * 0.5, .Top + .Height * 0.5, .Width * 0.5
         End With
         
         'If the button state is TRUE, draw a smaller circle inside the border
+        Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreateSolidBrush cBrush, radioColorFill
+        
         If m_Value Then
             With m_RadioButtonRect
-                GDI_Plus.GDIPlusFillEllipseToDC bufferDC, .Left + FixDPIFloat(3), .Top + FixDPIFloat(3), .Width - FixDPIFloat(6), .Height - FixDPIFloat(6), radioColorFill
+                m_Painter.FillEllipseF cSurface, cBrush, .Left + Interface.FixDPIFloat(3), .Top + Interface.FixDPIFloat(3), .Width - Interface.FixDPIFloat(6), .Height - Interface.FixDPIFloat(6)
             End With
         End If
+        
+        Set cPen = Nothing: Set cBrush = Nothing: Set cSurface = Nothing
         
     End If
     

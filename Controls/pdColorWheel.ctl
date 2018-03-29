@@ -370,6 +370,9 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
     End If
     
+    'Redraw the UC to match
+    RedrawBackBuffer True
+    
     'If the mouse is inside the wheel or box, update our tooltip accordingly
     If (m_MouseInsideWheel Or m_MouseInsideBox) Then
         
@@ -384,9 +387,6 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     Else
         Me.AssignTooltip vbNullString, , , False
     End If
-    
-    'Redraw the UC to match
-    RedrawBackBuffer True
     
     'If the LMB is down, raise an event to match
     If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color, True)
@@ -590,8 +590,14 @@ Private Sub CreateColorWheel()
     m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
     
     If pdMain.IsProgramRunning() Then
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_WheelBuffer.GetDIBDC, True
+        Drawing2D.QuickCreateSolidBrush cBrush, RGB(255, 255, 255)
+        cPainter.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
+        cBrush.SetBrushColor RGB(0, 0, 0)
+        cPainter.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
+        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
     End If
     
     'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
@@ -801,8 +807,11 @@ End Function
 Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCW_Background, Me.Enabled))
+    If (bufferDC = 0) Then Exit Sub
+    
+    Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     

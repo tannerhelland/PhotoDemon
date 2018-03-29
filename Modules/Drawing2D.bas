@@ -600,7 +600,7 @@ Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, By
 End Function
 
 'Shortcut function for creating a solid pen
-Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
+Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1!, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100!, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
     If (dstPen Is Nothing) Then Set dstPen = New pd2DPen Else dstPen.ResetAllProperties
     With dstPen
         .SetPenWidth penWidth

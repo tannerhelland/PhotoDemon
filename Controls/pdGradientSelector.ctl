@@ -271,9 +271,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDGradientSelector", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
     
-    'Update the control size parameters at least once
-    UpdateControlLayout
-    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -348,6 +345,7 @@ Private Sub RedrawBackBuffer()
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True)
+    If (bufferDC = 0) Then Exit Sub
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If pdMain.IsProgramRunning() Then
