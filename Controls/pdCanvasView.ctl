@@ -252,8 +252,13 @@ Public Sub ClearCanvas()
 End Sub
 
 'Is the mouse over the canvas view right now?
-Public Function IsMouseOverCanvasView()
+Public Function IsMouseOverCanvasView() As Boolean
     IsMouseOverCanvasView = ucSupport.IsMouseInside() Or m_ManualMouseMode
+End Function
+
+'Is the user interacting with the canvas right now?
+Public Function IsMouseDown(ByVal whichButton As PDMouseButtonConstants) As Boolean
+    IsMouseDown = ucSupport.IsMouseButtonDown(whichButton)
 End Function
 
 'Certain criteria prevent the user from interacting with this canvas object (e.g. no images being loaded).  External functions

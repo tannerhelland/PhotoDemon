@@ -1352,11 +1352,13 @@ Private Sub Form_Load()
         'If OS.IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 2
         
         'Fill AA options
+        cboTextRenderingHint.SetAutomaticRedraws False
         cboTextRenderingHint.Clear
         cboTextRenderingHint.AddItem "none", 0
         cboTextRenderingHint.AddItem "normal", 1
         cboTextRenderingHint.AddItem "crisp", 2
         cboTextRenderingHint.ListIndex = 1
+        cboTextRenderingHint.SetAutomaticRedraws True
         
         'Add dummy entries to the various alignment buttons; we'll populate these with theme-specific
         ' images in the UpdateAgainstCurrentTheme() function.
@@ -1369,13 +1371,16 @@ Private Sub Form_Load()
         btsVAlignment.AddItem vbNullString, 2
         
         'Fill various character positioning settings
+        cboCharMirror.SetAutomaticRedraws False
         cboCharMirror.Clear
         cboCharMirror.AddItem "none", 0
         cboCharMirror.AddItem "horizontal", 1
         cboCharMirror.AddItem "vertical", 2
         cboCharMirror.AddItem "both", 3
         cboCharMirror.ListIndex = 0
+        cboCharMirror.SetAutomaticRedraws True
         
+        cboCharCase.SetAutomaticRedraws False
         cboCharCase.Clear
         cboCharCase.AddItem "none", 0
         cboCharCase.AddItem "lowercase", 1
@@ -1386,14 +1391,17 @@ Private Sub Form_Load()
         cboCharCase.AddItem "traditional Chinese", 6
         If OS.IsWin7OrLater Then cboCharCase.AddItem "Titlecase", 7
         cboCharCase.ListIndex = 0
+        cboCharCase.SetAutomaticRedraws True
         
         'Fill wordwrap options
+        cboWordWrap.SetAutomaticRedraws False
         cboWordWrap.Clear
         cboWordWrap.AddItem "none", 0
         cboWordWrap.AddItem "manual only", 1
         cboWordWrap.AddItem "characters", 2
         cboWordWrap.AddItem "words", 3
         cboWordWrap.ListIndex = 3
+        cboWordWrap.SetAutomaticRedraws True
         
         'Draw the appearance sub-category selector
         btsAppearanceCategory.AddItem "text", 0
@@ -1404,9 +1412,6 @@ Private Sub Form_Load()
         Set lastUsedSettings = New pdLastUsedSettings
         lastUsedSettings.SetParentForm Me
         lastUsedSettings.LoadAllControlValues
-        
-        'Update everything against the current theme.  This will also set tooltips for various controls.
-        UpdateAgainstCurrentTheme
         
     End If
     

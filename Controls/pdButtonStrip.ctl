@@ -78,9 +78,7 @@ Private m_FontBold As Boolean
 Private m_ButtonStripRect As RECT
 
 'Current button indices
-Private m_ButtonIndex As Long
-Private m_ButtonHoverIndex As Long
-Private m_ButtonMouseDown As Long
+Private m_ButtonIndex As Long, m_ButtonHoverIndex As Long, m_ButtonMouseDown As Long
 
 'Array of current button entries
 Private Type ButtonEntry
@@ -101,6 +99,9 @@ Private m_numOfButtons As Long
 
 'Index of which button has the focus.  The user can use arrow keys to move focus between buttons.
 Private m_FocusRectActive As Long
+
+'To improve rendering performance, we suspend layout updates until the control is actually visible
+Private m_LayoutNeedsUpdate As Boolean
 
 'Color mode.  Buttons with text are easier to read if the background color is extremely dark and text is inverted over the top.
 ' On the main window interface, we use some button strips that are image-only, and the images are lost on such a dark background.
@@ -489,7 +490,7 @@ Public Property Get ListCount() As Long
 End Property
 
 'To simplify translation handling, this public sub is used to add buttons to the UC.  An optional index can also be specified.
-Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long = -1)
+Public Sub AddItem(ByRef srcString As String, Optional ByVal itemIndex As Long = -1)
 
     'If an index was not requested, force the index to the current number of parameters.
     If (itemIndex = -1) Then itemIndex = m_numOfButtons
@@ -512,7 +513,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     m_Buttons(itemIndex).btCaptionEn = srcString
     
     'We must also determine a translated caption, if any
-    If (Not (g_Language Is Nothing)) And (Len(srcString) <> 0) Then
+    If (Not g_Language Is Nothing) And (LenB(srcString) <> 0) Then
     
         If g_Language.TranslationActive Then
             m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(itemIndex).btCaptionEn)
@@ -588,6 +589,10 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As 
 
 End Sub
 
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If m_LayoutNeedsUpdate Then UpdateControlLayout
+End Sub
+
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
@@ -659,7 +664,14 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub UpdateControlLayout(Optional ByVal forceUpdate As Boolean = False)
+    
+    'If this control isn't visible, skip all control layout decisions; we'll handle them before the
+    ' control is shown.
+    If (Not forceUpdate) And (Not ucSupport.AmIVisible) Then
+        m_LayoutNeedsUpdate = True
+        Exit Sub
+    End If
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -671,7 +683,7 @@ Private Sub UpdateControlLayout()
     With m_ButtonStripRect
         If ucSupport.IsCaptionActive Then
             .Top = ucSupport.GetCaptionBottom + 2
-            .Left = FixDPI(8)
+            .Left = Interface.FixDPI(8)
         Else
             .Top = 1
             .Left = 1
@@ -837,6 +849,7 @@ Private Sub UpdateControlLayout()
     End If
     
     'With all metrics successfully measured, we can now recreate the back buffer
+    m_LayoutNeedsUpdate = False
     If ucSupport.AmIVisible Then RedrawBackBuffer
             
 End Sub

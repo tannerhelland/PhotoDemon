@@ -214,9 +214,6 @@ Private Sub Form_Load()
     lastUsedSettings.SetParentForm Me
     lastUsedSettings.LoadAllControlValues
     
-    'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
-    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)

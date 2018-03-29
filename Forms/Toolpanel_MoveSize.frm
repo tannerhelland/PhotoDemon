@@ -342,7 +342,7 @@ Private Sub cboLayerResizeQuality_Click()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -362,16 +362,16 @@ End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
@@ -420,9 +420,6 @@ Private Sub Form_Load()
     'lastUsedSettings.SetParentForm Me
     'lastUsedSettings.LoadAllControlValues
     
-    'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
-    
     Tools.SetToolBusyState False
     
 End Sub
@@ -453,7 +450,7 @@ Private Sub sltLayerAngle_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -490,7 +487,7 @@ Private Sub sltLayerShearX_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -527,7 +524,7 @@ Private Sub sltLayerShearY_Change()
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -581,7 +578,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)

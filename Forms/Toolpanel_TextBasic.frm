@@ -595,11 +595,13 @@ Private Sub Form_Load()
         cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(Fonts.GetUIFontName(), vbBinaryCompare)
         
         'Antialiasing options behave slightly differently from the typography tool
+        cboTextRenderingHint.SetAutomaticRedraws False
         cboTextRenderingHint.Clear
         cboTextRenderingHint.AddItem "None", 0
         cboTextRenderingHint.AddItem "Normal", 1
         cboTextRenderingHint.AddItem "Crisp", 2
         cboTextRenderingHint.ListIndex = 1
+        cboTextRenderingHint.SetAutomaticRedraws True
         
         'Add dummy entries to the various alignment buttons; we'll populate these with theme-specific
         ' images in the UpdateAgainstCurrentTheme() function.
@@ -615,9 +617,6 @@ Private Sub Form_Load()
         Set lastUsedSettings = New pdLastUsedSettings
         lastUsedSettings.SetParentForm Me
         lastUsedSettings.LoadAllControlValues
-        
-        'Update everything against the current theme.  This will also set tooltips for various controls.
-        UpdateAgainstCurrentTheme
         
     End If
     

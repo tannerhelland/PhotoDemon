@@ -106,6 +106,9 @@ Private m_numOfButtons As Long
 'Index of which button has the focus.  The user can use arrow keys to move focus between buttons.
 Private m_FocusRectActive As Long
 
+'To improve rendering performance, we suspend layout updates until the control is actually visible
+Private m_LayoutNeedsUpdate As Boolean
+
 'To prevent over-frequent tooltip updates, we track the last index we received and ignore matching requests
 Private m_LastToolTipIndex As Long
 
@@ -572,6 +575,10 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As 
 
 End Sub
 
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If m_LayoutNeedsUpdate Then UpdateControlLayout
+End Sub
+
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
@@ -640,8 +647,15 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub UpdateControlLayout(Optional ByVal forceUpdate As Boolean = False)
 
+    'If this control isn't visible, skip all control layout decisions; we'll handle them before the
+    ' control is shown.
+    If (Not forceUpdate) And (Not ucSupport.AmIVisible) Then
+        m_LayoutNeedsUpdate = True
+        Exit Sub
+    End If
+    
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
@@ -792,6 +806,7 @@ Private Sub UpdateControlLayout()
     Next i
     
     'With all metrics successfully measured, we can now recreate the back buffer
+    m_LayoutNeedsUpdate = False
     If ucSupport.AmIVisible Then RedrawBackBuffer
             
 End Sub

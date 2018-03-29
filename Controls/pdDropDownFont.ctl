@@ -261,7 +261,7 @@ Public Property Get BackgroundColor() As OLE_COLOR
 End Property
 
 Public Property Let BackgroundColor(ByVal newColor As OLE_COLOR)
-    If m_BackgroundColor <> newColor Then
+    If (m_BackgroundColor <> newColor) Then
         m_BackgroundColor = newColor
         RedrawBackBuffer
     End If

@@ -1940,6 +1940,11 @@ Public Function IsMouseOverCanvas() As Boolean
     IsMouseOverCanvas = m_IsMouseOverCanvas
 End Function
 
+'Is the user interacting with the canvas right now?
+Public Function IsMouseDown(ByVal whichButton As PDMouseButtonConstants) As Boolean
+    IsMouseDown = CanvasView.IsMouseDown(whichButton)
+End Function
+
 'Simple, unified way to see if canvas interaction is allowed.
 Public Function IsCanvasInteractionAllowed() As Boolean
     IsCanvasInteractionAllowed = CanvasView.IsCanvasInteractionAllowed

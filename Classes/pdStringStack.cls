@@ -444,11 +444,11 @@ End Function
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)
     
     'Initialize this stack to the size of the target
-    Me.ResetStack stackToClone.GetNumOfStrings
+    Me.ResetStack stackToClone.GetNumOfStrings()
     
     'Copy all strings
     Dim i As Long
-    For i = 0 To stackToClone.GetNumOfStrings - 1
+    For i = 0 To stackToClone.GetNumOfStrings() - 1
         Me.AddString stackToClone.GetString(i)
     Next i
     

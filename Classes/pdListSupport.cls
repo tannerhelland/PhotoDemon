@@ -125,7 +125,7 @@ End Sub
 'Add an item to the list.  Note that all parameters are optional; if the owner is managing a list with custom data, for example,
 ' they do not need to pass strings to this function.  Similarly, things like separators and custom height can be happily
 ' ignored if those features are not required.
-Friend Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
+Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
     
     'Make sure there's room in the array for this item.
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM

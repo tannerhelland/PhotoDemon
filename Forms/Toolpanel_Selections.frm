@@ -709,22 +709,26 @@ Private Sub Form_Load()
     'Initialize various selection tool settings
     
     'Selection visual styles (Highlight, Lightbox, or Outline)
+    cboSelRender.SetAutomaticRedraws False
     cboSelRender.Clear
     cboSelRender.AddItem " highlight", 0
     cboSelRender.AddItem " lightbox", 1
     cboSelRender.AddItem " ants", 2
     cboSelRender.AddItem " outline", 3
     cboSelRender.ListIndex = 0
+    cboSelRender.SetAutomaticRedraws True
     
     csSelectionHighlight.Color = RGB(255, 58, 72)
     csSelectionHighlight.Visible = True
     
     'Selection smoothing (currently none, antialiased, fully feathered)
+    cboSelSmoothing.SetAutomaticRedraws False
     cboSelSmoothing.Clear
     cboSelSmoothing.AddItem " none", 0
     cboSelSmoothing.AddItem " antialiased", 1
     cboSelSmoothing.AddItem " feathered", 2
     cboSelSmoothing.ListIndex = 1
+    cboSelSmoothing.SetAutomaticRedraws True
     
     'Selection types (currently interior, exterior, border)
     Dim i As Long
@@ -762,9 +766,6 @@ Private Sub Form_Load()
     
     ViewportEngine.EnableRendering
     
-    'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
-
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
