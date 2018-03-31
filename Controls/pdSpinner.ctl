@@ -298,12 +298,12 @@ Public Property Let Value(ByVal newValue As Double)
         'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
         ' will momentarily solve any faulty bound/value relationships.)
         If pdMain.IsProgramRunning() Then
-            If m_Value < m_Min Then m_Value = m_Min
-            If m_Value > m_Max Then m_Value = m_Max
+            If (m_Value < m_Min) Then m_Value = m_Min
+            If (m_Value > m_Max) Then m_Value = m_Max
         End If
                 
         'With the value guaranteed to be in-bounds, we can now mirror it to the text box
-        If Not m_TextBoxInitiated Then
+        If (Not m_TextBoxInitiated) Then
         
             'Perform a final validity check
             If (Not IsValid(False)) Then
@@ -313,7 +313,7 @@ Public Property Let Value(ByVal newValue As Double)
                     RedrawBackBuffer
                 End If
             Else
-                If (LenB(m_EditBox.Text) > 0) Then
+                If (LenB(Trim$(m_EditBox.Text)) > 0) Then
                     If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
                 End If
             End If
