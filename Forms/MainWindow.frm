@@ -1605,7 +1605,7 @@ Private m_AllowedToReflowInterface As Boolean
 
 Private Sub MnuTest_Click()
     
-    Filters_Sci.InternalFFTTest
+    Filters_Scientific.InternalFFTTest
     
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest

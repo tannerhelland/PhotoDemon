@@ -1,10 +1,10 @@
-Attribute VB_Name = "Filters_Sci"
+Attribute VB_Name = "Filters_Scientific"
 Option Explicit
 
 'This sub is for TESTING PURPOSES ONLY!!
 Public Sub InternalFFTTest()
 
-    Message "Testing FFT implementation..."
+    PDDebug.LogAction "Launching FFT test..."
     
     Dim tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
@@ -17,7 +17,10 @@ Public Sub InternalFFTTest()
     
     EffectPrep.FinalizeImageData
     
-    Message "Time taken: %1", VBHacks.GetTimeDiffNowAsString(startTime)
+    Dim timingString As String
+    timingString = g_Language.TranslateMessage("Time taken")
+    timingString = timingString & ": " & VBHacks.GetTimeDiffNowAsString(startTime)
+    Message timingString
     
 End Sub
 

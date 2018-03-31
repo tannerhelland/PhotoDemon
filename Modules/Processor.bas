@@ -107,9 +107,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
     If raiseDialog Then
-        pdDebug.LogAction "Show """ & processID & """ dialog", PDM_Processor
+        PDDebug.LogAction "Show """ & processID & """ dialog", PDM_Processor
     Else
-        pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
+        PDDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     End If
     
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
@@ -291,7 +291,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
             'This function should never be passed a process ID it can't parse, but if that happens,
             ' ask the user to report the unparsed ID
-            If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical Or vbOKOnly, "Processor Error", processID
+            If (LenB(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical Or vbOKOnly, "Processor Error", processID
             
         End If
         
@@ -359,7 +359,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     Dim procFinalStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procFinalStopTime
-    If (Not raiseDialog) Then pdDebug.LogAction "Net time for """ & processID & """: " & VBHacks.GetTimeDiffAsString(procStartTime, procFinalStopTime) & ".  (init: " & VBHacks.GetTimeDiffAsString(procStartTime, procSortStartTime) & ", sort: " & VBHacks.GetTimeDiffAsString(procSortStartTime, procSortStopTime) & ", pre-Undo: " & VBHacks.GetTimeDiffAsString(procSortStopTime, procUndoStartTime) & ", undo: " & VBHacks.GetTimeDiffAsString(procUndoStartTime, procUndoStopTime) & ", UI: " & VBHacks.GetTimeDiffAsString(procUndoStopTime, procFinalStopTime) & ")"
+    If (Not raiseDialog) Then PDDebug.LogAction "Net time for """ & processID & """: " & VBHacks.GetTimeDiffAsString(procStartTime, procFinalStopTime) & ".  (init: " & VBHacks.GetTimeDiffAsString(procStartTime, procSortStartTime) & ", sort: " & VBHacks.GetTimeDiffAsString(procSortStartTime, procSortStopTime) & ", pre-Undo: " & VBHacks.GetTimeDiffAsString(procSortStopTime, procUndoStartTime) & ", undo: " & VBHacks.GetTimeDiffAsString(procUndoStartTime, procUndoStopTime) & ", UI: " & VBHacks.GetTimeDiffAsString(procUndoStopTime, procFinalStopTime) & ")"
     
     Exit Sub
 
@@ -581,7 +581,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     End If
     
     'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
-    pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
+    PDDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
@@ -917,7 +917,7 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
     Exit Sub
     
 CheckForCanvasModifyFail:
-    pdDebug.LogAction "WARNING!  Processor.CheckForCanvasModifications failed unexpectedly (#" & Err.Number & ", " & Err.Description & ")"
+    PDDebug.LogAction "WARNING!  Processor.CheckForCanvasModifications failed unexpectedly (#" & Err.Number & ", " & Err.Description & ")"
     
 End Sub
 

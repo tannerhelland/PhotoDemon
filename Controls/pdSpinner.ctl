@@ -313,7 +313,7 @@ Public Property Let Value(ByVal newValue As Double)
                     RedrawBackBuffer
                 End If
             Else
-                If (Len(m_EditBox.Text) > 0) Then
+                If (LenB(m_EditBox.Text) > 0) Then
                     If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
                 End If
             End If

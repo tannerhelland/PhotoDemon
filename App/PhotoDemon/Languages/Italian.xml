@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.339</langversion>
+<langversion>6.7.341</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -15361,12 +15361,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Filters_Scientific.bas -->
+
+<!-- Filters_Scientific.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for Filters_Scientific.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4684 phrases. -->
-<!-- 2108 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4686 phrases. -->
+<!-- 2110 are duplicates, so only 2576 unique phrases have been written to file. -->
 <!-- These 2576 phrases contain approximately 12506 total words. -->
 
 </pdData>
