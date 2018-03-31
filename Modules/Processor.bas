@@ -1367,6 +1367,7 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
             ShowPDDialog vbModal, FormUndoHistory
         Else
             pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
+            Interface.NotifyImageChanged g_CurrentImage
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
