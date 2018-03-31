@@ -875,7 +875,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
             Next i
             
             'Make sure at least one valid palette was loaded
-            If (m_NumOfGroups > baseIndex) Then
+            If (numGroupsFound > baseIndex) Then
                 
                 'Unlike other palette files, we now need to loop through all child palettes (as there may be
                 ' multiple ones) and assign proper values to each!
@@ -1239,12 +1239,12 @@ Private Function LoadPalettePaintShopPro(ByRef srcFile As String, ByRef srcStrea
                 
                 'Next, check the version.  To my knowledge, this never varies from 0100
                 curLine = Trim$(fileLines.GetString(1))
-                If Strings.StringsNotEqual(curLine, "0100", False) Then pdDebug.LogAction "WARNING!  JASC palette contains unexpected version number: " & curLine
+                If Strings.StringsNotEqual(curLine, "0100", False) Then PDDebug.LogAction "WARNING!  JASC palette contains unexpected version number: " & curLine
                 
                 'Finally, retrieve line 3.  This line should be some number on the range [1, 256].
                 curLine = Trim$(fileLines.GetString(2))
                 If (CLng(curLine) < 1 Or CLng(curLine) > 256) Then
-                    pdDebug.LogAction "WARNING!  JASC palette contains invalid color count: " & curLine
+                    PDDebug.LogAction "WARNING!  JASC palette contains invalid color count: " & curLine
                     okayToParseColors = False
                 End If
                 
@@ -1833,7 +1833,7 @@ Friend Sub Reset()
 End Sub
 
 Private Sub InternalProblem(ByRef errMsg As String)
-    pdDebug.LogAction "WARNING!  pdPalette returned an error: " & errMsg
+    PDDebug.LogAction "WARNING!  pdPalette returned an error: " & errMsg
 End Sub
 
 Private Sub Class_Initialize()
