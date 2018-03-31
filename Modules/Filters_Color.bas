@@ -57,10 +57,9 @@ Public Sub MenuInvert()
     Message "Inverting the image..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    Dim imageData() As Byte, tmpSA As SafeArray2D
     EffectPrep.PrepImageData tmpSA
-        
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left

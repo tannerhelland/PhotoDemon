@@ -851,3 +851,17 @@ End Function
 Public Function ConvertDPIToPels(ByVal srcDPI As Double) As Double
     ConvertDPIToPels = (srcDPI / 2.54) * 100#
 End Function
+
+'Cheap and easy way to find the nearest power of two
+Public Function NearestPowerOfTwo(ByVal srcNumber As Long) As Long
+    
+    Dim curPower As Long
+    curPower = 1
+    
+    Do While (curPower < srcNumber)
+        curPower = curPower * 2
+    Loop
+    
+    NearestPowerOfTwo = curPower
+    
+End Function

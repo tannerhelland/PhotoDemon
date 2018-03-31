@@ -554,9 +554,9 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         quickX = x * qvDepth
     For y = initY To finalY
         
-        r = imageData(quickX + 2, y)
-        g = imageData(quickX + 1, y)
         b = imageData(quickX, y)
+        g = imageData(quickX + 1, y)
+        r = imageData(quickX + 2, y)
         
         rFloat(x, y) = r * ONE_DIV_255
         gFloat(x, y) = g * ONE_DIV_255

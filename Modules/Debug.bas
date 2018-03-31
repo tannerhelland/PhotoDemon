@@ -1,4 +1,4 @@
-Attribute VB_Name = "pdDebug"
+Attribute VB_Name = "PDDebug"
 '***************************************************************************
 'PhotoDemon Custom Debug Logger
 'Copyright 2014-2018 by Tanner Helland

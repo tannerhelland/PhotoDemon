@@ -1933,7 +1933,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        PDDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2084,7 +2084,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        PDDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2250,7 +2250,7 @@ Public Function HorizontalBlur_SubRegion(ByVal lRadius As Long, ByVal rRadius As
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        pdDebug.LogAction "WARNING!  HorizontalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
+        PDDebug.LogAction "WARNING!  HorizontalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2384,7 +2384,7 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
     
     'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
     If (srcDIB.GetDIBColorDepth <> 32) Then
-        pdDebug.LogAction "WARNING!  VerticalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
+        PDDebug.LogAction "WARNING!  VerticalBlur_SubRegion requires 32-bpp inputs.  Function abandoned."
         Exit Function
     End If
     
@@ -2648,6 +2648,7 @@ End Function
 Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
 
     'Start by resizing the destination DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.CreateBlank srcDIB.GetDIBWidth + hExtend * 2, srcDIB.GetDIBHeight + vExtend * 2, srcDIB.GetDIBColorDepth
     
     'Copy the valid part of the source image into the center of the destination image
@@ -2679,6 +2680,54 @@ Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
     PadDIBClampedPixels = 1
+    
+End Function
+
+'Variation on PadDIBClampedPixels, but this one takes a precise new width/height value.  This is useful with
+' FFT functions that require a power-of-two size.  IMPORTANTLY, make sure the newwidth/height values are
+' *larger* than the source ones, or the function may not behave as expected.
+'
+'Note that as a convenience, this function also returns (via parameter) the destination x/y of the image.
+' This makes it simple to retrieve the image after processing.
+'
+'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function PadDIBClampedPixelsEx(ByVal newWidth As Long, ByVal newHeight As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long) As Long
+
+    'Start by resizing the destination DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth
+    
+    'Copy the valid part of the source image into the center of the destination image
+    dstX = (newWidth - srcDIB.GetDIBWidth) \ 2
+    dstY = (newHeight - srcDIB.GetDIBHeight) \ 2
+    GDI.BitBltWrapper dstDIB.GetDIBDC, dstX, dstY, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+    
+    'We now need to fill the blank areas (borders) of the destination canvas with clamped values from the source image.  We do this
+    ' by extending the nearest valid pixels across the empty area.
+    
+    'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
+    SetStretchBltMode dstDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
+    
+    'Top, bottom
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, dstX, 0, srcDIB.GetDIBWidth, dstY, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, dstX, dstY + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, dstY, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    
+    'Left, right
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, dstY, dstX, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + dstX, dstY, dstX, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    
+    'Next, the four corners
+    
+    'Top-left, top-right
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, 0, dstX, dstY, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + dstX, 0, dstX, dstY, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
+    
+    'Bottom-left, bottom-right
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + dstY, dstX, dstY, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    GDI.StretchBltWrapper dstDIB.GetDIBDC, srcDIB.GetDIBWidth + dstX, srcDIB.GetDIBHeight + dstY, dstX, dstY, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    
+    'The destination DIB now contains a fully clamped, extended copy of the original image
+    PadDIBClampedPixelsEx = 1
     
 End Function
 
@@ -2906,7 +2955,7 @@ Public Function FastGammaDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double) As
     
     'Ensure gamma is valid; bad crashes will occur otherwise
     If (newGamma <= 0#) Or (newGamma >= 100#) Then
-        pdDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
+        PDDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
         FastGammaDIB = 0
         Exit Function
     End If
