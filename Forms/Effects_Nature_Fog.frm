@@ -24,15 +24,15 @@ Begin VB.Form FormFog
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButton cmdRandomize 
-      Height          =   600
-      Left            =   6600
+   Begin PhotoDemon.pdRandomizeUI rndSeed 
+      Height          =   735
+      Left            =   6000
       TabIndex        =   6
-      Top             =   4920
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   1058
-      Caption         =   "Randomize cloud base"
+      Top             =   4800
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "random seed:"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -157,7 +157,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim fxScale As Double, fxContrast As Double, rndSeed As Double
+    Dim fxScale As Double, fxContrast As Double, fxRndSeed As String
     Dim fxDensity As Long, fxQuality As Long
     
     With cParams
@@ -165,7 +165,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
         fxContrast = .GetDouble("contrast", sltContrast.Value)
         fxDensity = .GetLong("density", sltDensity.Value)
         fxQuality = .GetLong("quality", sltQuality.Value)
-        rndSeed = .GetDouble("rndseed")
+        fxRndSeed = .GetString("rndseed")
     End With
     
     'Contrast is presented to the user on a [0, 100] scale, but the algorithm needs it on [0, 1]; convert it now
@@ -240,7 +240,7 @@ Public Sub fxFog(ByVal effectParams As String, Optional ByVal toPreview As Boole
     ' into the "infinite grid" of possible noise values.  This yields (perceptually) random results.
     Dim rndOffsetX As Double, rndOffsetY As Double
     If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
-    m_Random.SetSeed_Float rndSeed
+    m_Random.SetSeed_String fxRndSeed
     rndOffsetX = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
     rndOffsetY = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
     
@@ -340,12 +340,6 @@ Private Sub cmdBar_ResetClick()
     sltContrast = 50
     sltDensity = 50
     sltQuality = 5
-    m_Random.SetSeed_AutomaticAndRandom
-End Sub
-
-Private Sub cmdRandomize_Click()
-    m_Random.SetSeed_AutomaticAndRandom
-    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -353,9 +347,8 @@ Private Sub Form_Load()
     'Disable previews
     cmdBar.MarkPreviewStatus False
     
-    'Calculate a random z offset for the noise function
+    'pdRandomize is used for all random number generation in PD
     Set m_Random = New pdRandomize
-    m_Random.SetSeed_AutomaticAndRandom
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -366,6 +359,10 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub rndSeed_Change()
+    UpdatePreview
 End Sub
 
 Private Sub sltContrast_Change()
@@ -404,7 +401,7 @@ Private Function GetLocalParamString() As String
         .AddParam "contrast", sltContrast.Value
         .AddParam "density", sltDensity.Value
         .AddParam "quality", sltQuality.Value
-        .AddParam "rndseed", m_Random.GetSeed()
+        .AddParam "rndseed", rndSeed.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

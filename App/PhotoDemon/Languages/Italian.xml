@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.341</langversion>
+<langversion>6.7.342</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -586,6 +586,17 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <!-- Filters_Render.bas contains 0 phrases. -->
 
 <!-- END text for Filters_Render.bas-->
+
+<!-- BEGIN text for Filters_Scientific.bas -->
+
+<phrase>
+<original>Time taken</original>
+<translation>Tempo trascorso</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for Filters_Scientific.bas-->
 
 <!-- BEGIN text for Filters_Stylize.bas -->
 
@@ -1979,11 +1990,6 @@ Descrizione: %2
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Tempo trascorso</translation>
-</phrase>
-
-<phrase>
 <original>seconds</original>
 <translation>secondi</translation>
 </phrase>
@@ -2288,7 +2294,7 @@ Quando hai finito, fai clic sul pulsante Submit.  Grazie!</translation>
 <translation>Istruzioni sul rapporto del bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -4436,6 +4442,17 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdRadioButton.ctl-->
+
+<!-- BEGIN text for pdRandomizeUI.ctl -->
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdRandomizeUI.ctl-->
 
 <!-- BEGIN text for pdResize.ctl -->
 
@@ -9994,8 +10011,8 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>Randomize cloud base</original>
-<translation>Base della nube casuale</translation>
+<original>random seed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15361,18 +15378,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for File_Export_Palette.frm-->
 
-<!-- BEGIN text for Filters_Scientific.bas -->
-
-<!-- Filters_Scientific.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for Filters_Scientific.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4686 phrases. -->
-<!-- 2110 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12506 total words. -->
+<!-- As of this build, PhotoDemon contains 4687 phrases. -->
+<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12511 total words. -->
 
 </pdData>

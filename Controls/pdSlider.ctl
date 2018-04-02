@@ -107,7 +107,7 @@ Public Event LostFocusAPI()
 Public Event RenderTrackImage(ByRef dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
 
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
-Private textBoxInitiated As Boolean
+Private m_textBoxInitiated As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -434,11 +434,11 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub tudPrimary_Change()
-    If (Not textBoxInitiated) Then
+    If (Not m_textBoxInitiated) Then
         If tudPrimary.IsValid(False) Then
-            textBoxInitiated = True
+            m_textBoxInitiated = True
             Me.Value = tudPrimary.Value
-            textBoxInitiated = False
+            m_textBoxInitiated = False
         End If
     End If
 End Sub

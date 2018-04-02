@@ -111,7 +111,7 @@ Private m_HashHandle As Long
 ' By default, the first 16 characters of an SHA-256 hash is used for these purposes.
 Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLength As Long = 16) As String
     
-    If (Len(srcString) <> 0) Then
+    If (LenB(srcString) <> 0) Then
     
         Dim i As Long
             
@@ -218,6 +218,42 @@ Friend Function RetrieveHashedData(ByRef dstBytes() As Byte, ByRef dataLength As
     Else
         InternalCryptError "RetrieveHashedData", "Hash object doesn't exist"
         RetrieveHashedData = False
+    End If
+    
+End Function
+
+'IMPORTANT NOTE: like any VB function that uses pointers, you need to be careful when specifying data length.
+' If you pass a pointer and the passed length doesn't match the given crypto function, you'll crash (or worse).
+' Be secure and calculate pointers correctly.
+Friend Function RetrieveHashedDataPtr(ByVal dstPtr As Long, ByVal dstLength As Long) As Boolean
+    
+    If (m_HashHandle <> 0) Then
+        
+        'Start by retrieving the size of the hashed data
+        Dim hashPtrLength As Long
+        hashPtrLength = 4
+        
+        Dim sizeReq As Long
+        If (CryptGetHashParam(m_HashHandle, PDHP_HASHSIZE, VarPtr(sizeReq), hashPtrLength, 0&) <> 0) Then
+            
+            If (sizeReq <= dstLength) Then
+            
+                'Retrieve the hash result
+                RetrieveHashedDataPtr = (CryptGetHashParam(m_HashHandle, PDHP_HASHVAL, dstPtr, sizeReq, 0&) <> 0)
+                If (Not RetrieveHashedDataPtr) Then InternalCryptError "RetrieveHashedDataPtr", "Couldn't retrieve hashed data"
+                
+            Else
+                InternalCryptError "RetrieveHashedDataPtr", "Your destination buffer is too small!"
+            End If
+            
+        Else
+            InternalCryptError "RetrieveHashedData", "Couldn't retrieve hash size"
+            RetrieveHashedDataPtr = False
+        End If
+        
+    Else
+        InternalCryptError "RetrieveHashedData", "Hash object doesn't exist"
+        RetrieveHashedDataPtr = False
     End If
     
 End Function
@@ -337,7 +373,7 @@ Private Sub InternalCryptError(ByVal funcName As String, ByVal errName As String
     Else
         errString = errString & " (FYI, last DLL error is #" & Hex(Err.LastDllError) & ")"
     End If
-    pdDebug.LogAction errString
+    PDDebug.LogAction errString
     
 End Sub
 

@@ -411,7 +411,7 @@ Private Sub RandomizeSettings()
     
     'Now, pick a random option button to be set as TRUE
     Dim selectedOptionButton As Long
-    If numOfOptionButtons > 0 Then selectedOptionButton = Int(Rnd * numOfOptionButtons)
+    If (numOfOptionButtons > 0) Then selectedOptionButton = Int(Rnd * numOfOptionButtons)
     numOfOptionButtons = 0
     
     'Iterate through each control on the form.  Check its type, then write out its relevant "value" property.
@@ -442,7 +442,7 @@ Private Sub RandomizeSettings()
             
             'Check boxes have a 50/50 chance of being set to checked
             Case "pdCheckBox"
-                If Int(Rnd * 2) = 0 Then
+                If (Int(Rnd * 2) = 0) Then
                     eControl.Value = vbUnchecked
                 Else
                     eControl.Value = vbChecked
@@ -470,8 +470,12 @@ Private Sub RandomizeSettings()
                 End If
             
             'Text boxes are set to a random value between -10 and 10
-            Case "TextBox", "pdTextBox"
-                eControl.Text = Str(-10 + Int(Rnd * 21))
+            Case "pdTextBox"
+                eControl.Text = Trim$(Str$(-10 + Int(Rnd * 21)))
+            
+            'pdRandomize controls have built-in randomization capabilities (as you'd expect!)
+            Case "pdRandomizeUI"
+                eControl.Randomize
         
         End Select
         
@@ -702,10 +706,8 @@ Private Sub ResetSettings()
             'List boxes and combo boxes are set to their first entry
             Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"
             
-                'Make sure the combo box is not the preset box on this control!
-                If (eControl.hWnd <> cboPreset.hWnd) Then
-                    eControl.ListIndex = 0
-                End If
+                'Make sure the combo box is not the preset box on this command button!
+                If (eControl.hWnd <> cboPreset.hWnd) Then eControl.ListIndex = 0
                 
             'PD's font combo box is reset to the current system font
             Case "pdDropDownFont"
@@ -715,10 +717,10 @@ Private Sub ResetSettings()
             Case "TextBox", "pdTextBox"
                 eControl.Text = "0"
                 
-            'A metadata management control has its own "reset" function
-            Case "pdMetadataExport"
+            'More modern PD controls have built-in reset functionality
+            Case "pdMetadataExport", "pdRandomizeUI"
                 eControl.Reset
-        
+                
         End Select
         
     Next eControl
@@ -1035,6 +1037,9 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
             Case "pdPaletteUI"
                 controlValue = eControl.SerializeToXML()
                 
+            Case "pdRandomizeUI"
+                controlValue = eControl.Value
+                
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
@@ -1213,6 +1218,9 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
                             
                         Case "pdPaletteUI"
                             eControl.CreateFromXML controlValue
+                            
+                        Case "pdRandomizeUI"
+                            eControl.Value = controlValue
                             
                     End Select
         

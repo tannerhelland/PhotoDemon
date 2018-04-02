@@ -38,6 +38,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'Current seed.  Both float and int versions are stored, as different PRNGs need different inputs
 Private m_Seed_Float As Double, m_Seed_Int As Long
@@ -48,16 +49,6 @@ Private m_Seed_WH_Int As Long
 
 'Current bounds (integer functions only; the floating point functions return values between 0 and 1, by design).
 Private m_LowBound As Long, m_HighBound As Long
-
-'These two custom types are used for hashing input strings into pseudo-random seeds
-Private Type CURRENCY_CURRENCY
-    Value As Currency
-End Type
-
-Private Type CURRENCY_2LONGS
-    ValueLo As Long
-    ValueHi As Long
-End Type
 
 'Intermediary calculation values for the Wichmann-Hill algorithm; thank you to
 ' http://www.vbforums.com/showthread.php?499661-Wichmann-Hill-Pseudo-Random-Number-Generator-an-alternative-for-VB-Rnd%28%29-function
@@ -78,27 +69,25 @@ Friend Sub SetSeed_Float(ByVal newSeed As Double)
     ApplySeed
 End Sub
 
-'Hash a given string into a pseudo-random seed, using the well-known djb2 hash function
+'Hash a given string into a pseudo-random seed, using a fast (but arbitrary) hash function
 Friend Sub SetSeed_String(ByRef seedString As String)
-
-    'Basic djb2 string hash based on http://www.cse.yorku.ca/~oz/hash.html
-    ' Thanks to Bob77 for a quick-and-dirty VB implementation (http://stackoverflow.com/questions/22384451/vb6-how-to-get-c-like-integer-overflow/22389687#22389687)
-    Dim C2L As CURRENCY_2LONGS
-    C2L.ValueLo = 5381
     
-    Dim CC As CURRENCY_CURRENCY
-    
-    Dim i As Long
-    For i = 1 To Len(seedString)
-        LSet CC = C2L
-        CC.Value = CC.Value * 33@ + CCur(AscW(Mid$(seedString, i, 1))) / 10000@
-        LSet C2L = CC
-        C2L.ValueHi = 0
-    Next i
-
-    m_Seed_Int = C2L.ValueLo
-    m_Seed_Float = m_Seed_Int
-    ApplySeed
+    'Use MD5 to get a "numerical"-ish representation of the underlying string.
+    Dim cCrypto As pdCrypto
+    Set cCrypto = New pdCrypto
+    If cCrypto.QuickHash(PDCA_MD5, StrPtr(seedString), LenB(seedString)) Then
+        
+        'MD5 requires 16 bytes; we ultimately want to use a double-type value to seed our generator, so go ahead
+        ' and grab all 16 bytes but just seed the first 8.
+        Dim twoDoubles() As Double
+        ReDim twoDoubles(0 To 1) As Double
+        If (cCrypto.RetrieveHashedDataPtr(VarPtr(twoDoubles(0)), 16&)) Then
+            m_Seed_Float = twoDoubles(0)
+            CopyMemoryStrict VarPtr(m_Seed_Int), VarPtr(twoDoubles(1)), 4&
+            ApplySeed
+        End If
+        
+    End If
 
 End Sub
 
@@ -108,12 +97,14 @@ Friend Sub SetSeed_AutomaticAndRandom()
     ApplySeed
 End Sub
 
-'PD uses Doubles for maximum randomness, but some random number generation schemes use Integer inputs.  To safely generate a random
-' Int from a given Double value (which has a much larger range!), we use a custom Mod function (necessary because VB's built-in
-' Mod only works on Longs).
+'PD uses Doubles for maximum randomness, but some random number generation schemes use Integer inputs.
+' To safely generate a random Int from a given Double value (which has a much larger range!), we need to
+' use a helper function.
 Private Function GetSafeIntFromDouble(ByVal srcDouble As Double) As Long
-    Const LONG_MAX_AS_DOUBLE As Double = LONG_MAX
-    GetSafeIntFromDouble = srcDouble - (Int(srcDouble / LONG_MAX_AS_DOUBLE) * LONG_MAX_AS_DOUBLE)
+    Dim val1 As Long, val2 As Long
+    CopyMemoryStrict VarPtr(val1), VarPtr(srcDouble), 4
+    CopyMemoryStrict VarPtr(val2), VarPtr(srcDouble) + 4, 4
+    GetSafeIntFromDouble = val1 Xor val2
 End Function
 
 'Return the current seed.  Note that this class always stores the seed as a Double, regardless of how it was originally supplied.

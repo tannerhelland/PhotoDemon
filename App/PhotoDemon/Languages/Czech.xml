@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3324</langversion>
+<langversion>6.8.3325</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -585,6 +585,17 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 <!-- Filters_Render.bas contains 0 phrases. -->
 
 <!-- END text for Filters_Render.bas-->
+
+<!-- BEGIN text for Filters_Scientific.bas -->
+
+<phrase>
+<original>Time taken</original>
+<translation>Čas potřebný</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for Filters_Scientific.bas-->
 
 <!-- BEGIN text for Filters_Stylize.bas -->
 
@@ -1978,11 +1989,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Čas potřebný</translation>
-</phrase>
-
-<phrase>
 <original>seconds</original>
 <translation>sekundy</translation>
 </phrase>
@@ -2286,7 +2292,7 @@ Po dokončení klikněte na tlačítko Odeslat. Děkuji!</translation>
 <translation>Pokyny k hlášení chyb</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -4433,6 +4439,17 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdRadioButton.ctl-->
+
+<!-- BEGIN text for pdRandomizeUI.ctl -->
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdRandomizeUI.ctl-->
 
 <!-- BEGIN text for pdResize.ctl -->
 
@@ -9990,8 +10007,8 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>Randomize cloud base</original>
-<translation>Randomize cloud base</translation>
+<original>random seed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15357,18 +15374,12 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for File_Export_Palette.frm-->
 
-<!-- BEGIN text for Filters_Scientific.bas -->
-
-<!-- Filters_Scientific.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for Filters_Scientific.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4686 phrases. -->
-<!-- 2110 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12506 total words. -->
+<!-- As of this build, PhotoDemon contains 4687 phrases. -->
+<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12511 total words. -->
 
 </pdData>

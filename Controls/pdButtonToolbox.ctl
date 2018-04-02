@@ -179,6 +179,10 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     If ucSupport.AmIVisible Then RedrawBackBuffer
 End Property
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus()
+End Property
+
 'Sticky toggle allows this button to operate as a checkbox, where each click toggles its value.  If I was smart, I would have implemented
 ' the button's toggle behavior as a single property with multiple enum values, but I didn't think of it in advance, so now I'm stuck
 ' with this.  Do not set both StickyToggle and AutoToggle, as the button will not behave correctly.
@@ -375,7 +379,7 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, 
     If (useImgHeight = 0) Then useImgHeight = (ucSupport.GetBackBufferHeight \ 8) * 8
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
+    If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
     If (srcDIB Is Nothing) Then Exit Sub
     
     'Start by making a copy of the source DIB

@@ -98,7 +98,7 @@ Private m_SigDigits As Long
 Private m_DefaultValue As Double
 
 'If the text box initiates a value change, we must track that so as to not overwrite the user's entry mid-typing
-Private m_TextBoxInitiated As Boolean
+Private m_textBoxInitiated As Boolean
 
 'To simplify mouse_down handling, resize events fill four rects: one for the "reset" button, one for the "up" spin
 ' button, one for the "down" spin button, and one for the edit box itself.  Use these for simplified hit-detection.
@@ -303,7 +303,7 @@ Public Property Let Value(ByVal newValue As Double)
         End If
                 
         'With the value guaranteed to be in-bounds, we can now mirror it to the text box
-        If (Not m_TextBoxInitiated) Then
+        If (Not m_textBoxInitiated) Then
         
             'Perform a final validity check
             If (Not IsValid(False)) Then
@@ -558,12 +558,12 @@ End Sub
 
 'When the control value is moved UP via button, this function is called
 Private Sub MoveValueUp()
-    Value = m_Value - (1# / (10# ^ m_SigDigits))
+    Me.Value = m_Value - (1# / (10# ^ m_SigDigits))
 End Sub
 
 'When the control value is moved DOWN via button, this function is called
 Private Sub MoveValueDown()
-    Value = m_Value + (1# / (10# ^ m_SigDigits))
+    Me.Value = m_Value + (1# / (10# ^ m_SigDigits))
 End Sub
 
 Private Sub m_EditBox_Change()
@@ -573,9 +573,9 @@ Private Sub m_EditBox_Change()
             m_ErrorState = False
             RedrawBackBuffer
         End If
-        m_TextBoxInitiated = True
-        Value = CDblCustom(m_EditBox.Text)
-        m_TextBoxInitiated = False
+        m_textBoxInitiated = True
+        Me.Value = CDblCustom(m_EditBox.Text)
+        m_textBoxInitiated = False
     Else
         If Me.Enabled Then
             m_ErrorState = True
@@ -1015,11 +1015,11 @@ Private Sub RedrawBackBuffer()
         With m_ResetRect
             resetCenterX = .Left + (.Width / 2)
             resetCenterY = .Top + (.Height / 2)
-            resetArcRadius = (.Width / 2) - 3.5
+            resetArcRadius = (.Width / 2) - 3.5!
         End With
         
         cSurface.SetSurfacePixelOffset P2_PO_Half
-        Drawing2D.QuickCreateSolidPen cPen, 1#, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidPen cPen, 1!, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
         
         'New single-arrow design (which matches "reset" icons in the rest of PD):
         cPen.SetPenStartCap P2_LC_Round

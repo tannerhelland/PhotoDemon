@@ -160,6 +160,9 @@ Private Sub FillXMLSettings()
                 
             Case "pdPaletteUI"
                 controlValue = eControl.SerializeToXML()
+                
+            Case "pdRandomizeUI"
+                controlValue = eControl.Value
             
         End Select
         
@@ -292,6 +295,9 @@ Private Function ReadXMLSettings() As Boolean
                     
                 Case "pdPaletteUI"
                     eControl.CreateFromXML controlValue
+                    
+                Case "pdRandomizeUI"
+                    eControl.Value = controlValue
             
             End Select
 

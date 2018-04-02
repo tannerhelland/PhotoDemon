@@ -59,15 +59,16 @@ Public Enum PD_ControlType
     pdct_Preview = 38
     pdct_ProgressBar = 39
     pdct_RadioButton = 40
-    pdct_Resize = 41
-    pdct_ScrollBar = 42
-    pdct_Slider = 43
-    pdct_SliderStandalone = 44
-    pdct_Spinner = 45
-    pdct_StatusBar = 46
-    pdct_Strip = 47
-    pdct_TextBox = 48
-    pdct_Title = 49
+    pdct_RandomizeUI = 41
+    pdct_Resize = 42
+    pdct_ScrollBar = 43
+    pdct_Slider = 44
+    pdct_SliderStandalone = 45
+    pdct_Spinner = 46
+    pdct_StatusBar = 47
+    pdct_Strip = 48
+    pdct_TextBox = 49
+    pdct_Title = 50
 End Enum
 
 #If False Then
@@ -75,7 +76,8 @@ End Enum
     Private Const pdct_ColorSelector = 10, pdct_ColorVariants = 11, pdct_ColorWheel = 12, pdct_CommandBar = 13, pdct_CommandBarMini = 14, pdct_Container = 15, pdct_Download = 16, pdct_DropDown = 17, pdct_DropDownFont = 18, pdct_FxPreviewCtl = 19
     Private Const pdct_GradientSelector = 20, pdct_History = 21, pdct_Hyperlink = 22, pdct_ImageStrip = 23, pdct_Label = 24, pdct_LayerList = 25, pdct_LayerListInner = 26, pdct_ListBox = 27, pdct_ListBoxOD = 28, pdct_ListBoxView = 29
     Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_PaletteUI = 35, pdct_PenSelector = 36, pdct_PictureBox = 37, pdct_Preview = 38, pdct_ProgressBar = 39
-    Private Const pdct_RadioButton = 40, pdct_Resize = 41, pdct_ScrollBar = 42, pdct_Slider = 43, pdct_SliderStandalone = 44, pdct_Spinner = 45, pdct_StatusBar = 46, pdct_Strip = 47, pdct_TextBox = 48, pdct_Title = 49
+    Private Const pdct_RadioButton = 40, pdct_RandomizeUI = 41, pdct_Resize = 42, pdct_ScrollBar = 43, pdct_Slider = 44, pdct_SliderStandalone = 45, pdct_Spinner = 46, pdct_StatusBar = 47, pdct_Strip = 48, pdct_TextBox = 49
+    Private Const pdct_Title = 50
 #End If
 
 Public Type PD_LISTITEM
@@ -421,7 +423,7 @@ Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&,
         End If
     Next i
     
-    If (pmReturn = 0) Then pdDebug.LogAction "PostPDMessage was unable to post message ID #" & wMsg & " to one or more windows."
+    If (pmReturn = 0) Then PDDebug.LogAction "PostPDMessage was unable to post message ID #" & wMsg & " to one or more windows."
     
 End Sub
 
@@ -661,7 +663,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
         If (Not Fonts.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
-            pdDebug.LogAction "WARNING!  UserControls.GetSharedGDIFont() failed to create a new UI font handle."
+            PDDebug.LogAction "WARNING!  UserControls.GetSharedGDIFont() failed to create a new UI font handle."
         End If
         
         'Return the newly created font handle, increment the font count, and exit
@@ -780,6 +782,8 @@ Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
             GetNameOfControlType = "pdProgressBar"
         Case pdct_RadioButton
             GetNameOfControlType = "pdRadioButton"
+        Case pdct_RandomizeUI
+            GetNameOfControlType = "pdRandomizeUI"
         Case pdct_Resize
             GetNameOfControlType = "pdResize"
         Case pdct_ScrollBar
@@ -1190,7 +1194,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     Exit Sub
     
 UnexpectedTTTrouble:
-    pdDebug.LogAction "WARNING!  UserControls.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  UserControls.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 

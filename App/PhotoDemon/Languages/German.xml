@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.301</langversion>
+<langversion>7.2.352</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -586,6 +586,17 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 <!-- Filters_Render.bas contains 0 phrases. -->
 
 <!-- END text for Filters_Render.bas-->
+
+<!-- BEGIN text for Filters_Scientific.bas -->
+
+<phrase>
+<original>Time taken</original>
+<translation>Benötigte Zeit</translation>
+</phrase>
+
+<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for Filters_Scientific.bas-->
 
 <!-- BEGIN text for Filters_Stylize.bas -->
 
@@ -1981,11 +1992,6 @@ Beschreibung: %2
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Benötigte Zeit</translation>
-</phrase>
-
-<phrase>
 <original>seconds</original>
 <translation>Sekunden</translation>
 </phrase>
@@ -2290,7 +2296,7 @@ Nach Abschluss klicken Sie bitte auf den Button "Einreichen". Vielen Dank!</tran
 <translation>Instruktionen zum Fehlerbericht</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 59 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -4438,6 +4444,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdRadioButton.ctl-->
+
+<!-- BEGIN text for pdRandomizeUI.ctl -->
+
+<phrase>
+<original>Generate a new random number seed.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdRandomizeUI.ctl-->
 
 <!-- BEGIN text for pdResize.ctl -->
 
@@ -9996,8 +10013,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>Randomize cloud base</original>
-<translation>Wolkenbasis randomisieren</translation>
+<original>random seed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11226,7 +11243,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbei- tenden Bilder) verlorengehen. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
+<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verlorengehen. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
 
 Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
@@ -11248,7 +11265,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
-<translation>Sie haben bereits eine Bilderliste zur Verarbeitung erstellt. Die Bilderliste innerhalb dieser Datei wird an das Ende Ihrer aktuellen Liste angehängt.</translation>
+<translation>Sie haben bereits eine Bilderliste zur Verarbeitung erstellt. Die Bilderliste innerhalb dieser Datei wird an das Ende Ihrer aktuellen Liste angefügt.</translation>
 </phrase>
 
 <phrase>
@@ -11328,12 +11345,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.</original>
-<translation>Beginnen Sie, indem Sie die Fotobear- beitungsaktion(en) auswählen, die Sie anwenden wollen. Wenn multiple Aktionen ausgewählt sind, werden sie in der auf dieser Seite erscheinenden Reihenfolge angewandt.</translation>
+<translation>Beginnen Sie, indem Sie die Fotobearbeitungsaktion(en) auswählen, die Sie anwenden wollen. Wenn multiple Aktionen ausgewählt sind, werden sie in der auf dieser Seite erscheinenden Reihenfolge angewandt.</translation>
 </phrase>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Haupt- fenster von PhotoDemon im Menü "Tools > Makros > Neues Makro aufnehmen" verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Tools > Makros > Neues Makro aufnehmen" verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -11363,7 +11380,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>In the next step, you will choose how you want the processed images saved.</original>
-<translation>Im nächsten Schritt wählen Sie, wie Sie die verarbeiteten Bilder spei- chern wollen.</translation>
+<translation>Im nächsten Schritt wählen Sie, wie Sie die verarbeiteten Bilder speichern wollen.</translation>
 </phrase>
 
 <phrase>
@@ -11373,7 +11390,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-<translation>PhotoDemon muss wissen, welches Format beim Speichern der Bilder in Ihrer Batchliste Verwendung fin- den soll.</translation>
+<translation>PhotoDemon muss wissen, welches Format beim Speichern der Bilder in Ihrer Batchliste Verwendung finden soll.</translation>
 </phrase>
 
 <phrase>
@@ -11403,12 +11420,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>Zu Ihrem Komfort werden auch eine Reihe von Standardoptionen zur Umbennung angeboten. Beachten Sie, dass alle Items unter "Weitere Umbennungsoptionen" optional sind.</translation>
+<translation>Zu Ihrem Komfort werden auch eine Reihe von Standardoptionen zur Umbennung angeboten. Beachten Sie, dass alle Items unter "Weitere Umbennungsop- tionen" optional sind.</translation>
 </phrase>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Originaldateinamen" ausgewählt ist, werden solchen Dateien nach dem Speichern automatisch ein- deutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
+<translation>Schließlich, wenn zwei oder mehr Bilder in der Batchliste denselben Dateinamen haben und die Option "Originaldateinamen" ausgewählt ist, werden solchen Dateien nach dem Speichern automatisch eindeutige Dateinamen gegeben (z. B. "Originaldateiname (2)").</translation>
 </phrase>
 
 <phrase>
@@ -15306,7 +15323,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>target palette file</original>
-<translation></translation>
+<translation>Zielpalettendatei</translation>
 </phrase>
 
 <phrase>
@@ -15321,7 +15338,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>palette color count</original>
-<translation></translation>
+<translation>Palettenfarbanzahl</translation>
 </phrase>
 
 <phrase>
@@ -15346,35 +15363,29 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>overwrite</original>
-<translation></translation>
+<translation>Überschreiben</translation>
 </phrase>
 
 <phrase>
 <original>append</original>
-<translation></translation>
+<translation>Anfügen</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation></translation>
+<translation>Adobe Swatch Exchange (ASE) -Dateien können mehrere Paletten innerhalb einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche Paletten, die sich bereits in der Datei befinden, werden nicht modifiziert.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
 
-<!-- BEGIN text for Filters_Scientific.bas -->
-
-<!-- Filters_Scientific.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for Filters_Scientific.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4686 phrases. -->
-<!-- 2110 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12506 total words. -->
+<!-- As of this build, PhotoDemon contains 4687 phrases. -->
+<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12511 total words. -->
 
 </pdData>
