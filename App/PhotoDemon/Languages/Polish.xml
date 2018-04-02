@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.20</langversion>
+<langversion>7.0.21</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8964,11 +8964,16 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 </phrase>
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Projekcja obrazu poprzez symulowane szkła</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_FiguredGlass.frm-->
 
@@ -9993,16 +9998,11 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Generating artificial fog</original>
 <translation>Generowanie sztucznej mgły</translation>
 </phrase>
 
-<!-- Effects_Nature_Fog.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Fog.frm-->
 
@@ -10035,16 +10035,11 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
 
 <phrase>
-<original>randomize lava flow</original>
-<translation>Randomizuj przepływ lawy</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Eksplodujący wyimaginowany wulkan</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Lava.frm-->
 
@@ -10078,11 +10073,6 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
 
 <phrase>
-<original>new turbulence seed</original>
-<translation>nowe ziarno burzliwości</translation>
-</phrase>
-
-<phrase>
 <original>color shift</original>
 <translation>przesunięcie kolorów</translation>
 </phrase>
@@ -10092,7 +10082,7 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <translation>Zanurzenie obrazu w sztucznej wodzie</translation>
 </phrase>
 
-<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Water.frm-->
 
@@ -15359,10 +15349,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4688 phrases. -->
+<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12505 total words. -->
 
 </pdData>

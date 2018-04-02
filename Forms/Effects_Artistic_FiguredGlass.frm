@@ -28,7 +28,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   735
       Left            =   6000
       TabIndex        =   2
-      Top             =   4080
+      Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
@@ -48,7 +48,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   840
+      Top             =   360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -72,7 +72,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   705
       Left            =   6000
       TabIndex        =   4
-      Top             =   1920
+      Top             =   1320
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -86,7 +86,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   705
       Left            =   6000
       TabIndex        =   5
-      Top             =   3000
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -96,6 +96,16 @@ Begin VB.Form FormFiguredGlass
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdRandomizeUI rndSeed 
+      Height          =   735
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   4260
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "random seed:"
    End
 End
 Attribute VB_Name = "FormFiguredGlass"
@@ -147,12 +157,14 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     cParams.SetParamString effectParams
     
     Dim fxScale As Double, fxTurbulence As Double, edgeHandling As Long, superSamplingAmount As Long
+    Dim fxSeed As String
     
     With cParams
         fxScale = .GetDouble("scale", sltScale.Value)
         fxTurbulence = .GetDouble("turbulence", sltTurbulence.Value)
         superSamplingAmount = .GetLong("quality", sltQuality.Value)
         edgeHandling = .GetLong("edges", cboEdges.ListIndex)
+        fxSeed = .GetString("seed")
     End With
     
     'Create a local array and point it at the pixel data of the current image
@@ -201,9 +213,9 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
     ' values, but at some point it distorts the image beyond recognition.
     If (curDIBValues.Width > curDIBValues.Height) Then
-        fxScale = (fxScale / 100) * curDIBValues.Height
+        fxScale = (fxScale * 0.01) * curDIBValues.Height
     Else
-        fxScale = (fxScale / 100) * curDIBValues.Width
+        fxScale = (fxScale * 0.01) * curDIBValues.Width
     End If
     
     Dim invScale As Double
@@ -263,13 +275,9 @@ Public Sub FiguredGlassFX(ByVal effectParams As String, Optional ByVal toPreview
     'To generate "random" values despite using a fixed 2D noise generator, we calculate random offsets
     ' into the "infinite grid" of possible noise values.  This yields (perceptually) random results.
     Dim rndOffsetX As Double, rndOffsetY As Double
-    If (m_Random Is Nothing) Then
-        Set m_Random = New pdRandomize
-        m_Random.SetSeed_AutomaticAndRandom
-    Else
-        m_Random.SetSeed_Float m_Random.GetSeed()
-    End If
-
+    If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
+    m_Random.SetSeed_String fxSeed
+    
     rndOffsetX = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
     rndOffsetY = m_Random.GetRandomFloat_WH * 10000000# - 5000000#
     
@@ -418,6 +426,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub rndSeed_Change()
+    UpdatePreview
+End Sub
+
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
@@ -450,6 +462,7 @@ Private Function GetLocalParamString() As String
         .AddParam "turbulence", sltTurbulence.Value
         .AddParam "quality", sltQuality.Value
         .AddParam "edges", cboEdges.ListIndex
+        .AddParam "seed", rndSeed.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

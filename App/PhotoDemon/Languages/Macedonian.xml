@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.138</langversion>
+<langversion>1.0.139</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -8983,11 +8983,16 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Проектирање на сликата преку симулирани стакло</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_FiguredGlass.frm-->
 
@@ -10012,16 +10017,11 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Generating artificial fog</original>
 <translation>Генерирање на вештачка магла</translation>
 </phrase>
 
-<!-- Effects_Nature_Fog.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Fog.frm-->
 
@@ -10054,16 +10054,11 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
 
 <phrase>
-<original>randomize lava flow</original>
-<translation>рандомизирање на протокот на лава</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Експлодира имагинарен вулкан</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Lava.frm-->
 
@@ -10097,11 +10092,6 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
 
 <phrase>
-<original>new turbulence seed</original>
-<translation>ново семе од турбуленции</translation>
-</phrase>
-
-<phrase>
 <original>color shift</original>
 <translation>промена во боја</translation>
 </phrase>
@@ -10111,7 +10101,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Нурнат слика во вештачки вода</translation>
 </phrase>
 
-<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Water.frm-->
 
@@ -15383,10 +15373,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4688 phrases. -->
+<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12505 total words. -->
 
 </pdData>

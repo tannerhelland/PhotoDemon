@@ -24,16 +24,6 @@ Begin VB.Form FormLava
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButton cmdRandomize 
-      Height          =   600
-      Left            =   6600
-      TabIndex        =   3
-      Top             =   4320
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   1058
-      Caption         =   "randomize lava flow"
-   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -48,7 +38,7 @@ Begin VB.Form FormLava
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   960
+      Top             =   360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -73,8 +63,8 @@ Begin VB.Form FormLava
    Begin PhotoDemon.pdSlider sldOpacity 
       Height          =   705
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2040
+      TabIndex        =   3
+      Top             =   1320
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -88,12 +78,22 @@ Begin VB.Form FormLava
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   735
       Left            =   6000
-      TabIndex        =   5
-      Top             =   3120
+      TabIndex        =   4
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
       Caption         =   "blend mode"
+   End
+   Begin PhotoDemon.pdRandomizeUI rndSeed 
+      Height          =   735
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3300
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "random seed:"
    End
 End
 Attribute VB_Name = "FormLava"
@@ -119,15 +119,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'To ensure consistent results across sessions, a dedicated randomizer is used
-Private m_Random As pdRandomize
-
 'To improve performance, we cache a local temporary DIB when previewing the effect
 Private m_tmpDIB As pdDIB
-
-Private Sub cmbEdges_Click()
-    UpdatePreview
-End Sub
 
 Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
@@ -139,15 +132,19 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     'At present, some parameters are hard-coded.  This is primarily to free up UI space and simplify the
     ' potential set of effect parameters.
-    Dim fxScale As Double, fxOpacity As Double, fxBlendMode As PD_BlendMode, rndSeed As Double
+    Dim fxScale As Double, fxOpacity As Double, fxBlendMode As PD_BlendMode, fxSeed As String
     
     With cParams
         fxScale = .GetDouble("scale", sltScale.Value)
         fxOpacity = .GetDouble("opacity", sldOpacity.Value)
         fxBlendMode = .GetLong("blendmode", cboBlendMode.ListIndex)
-        If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
-        rndSeed = .GetDouble("rndSeed", m_Random.GetSeed())
+        fxSeed = .GetString("seed")
     End With
+    
+    'Random number generation is handled by pdRandomize
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_String fxSeed
     
     'Create a local array and point it at the pixel data of the current image
     Dim tmpSA As SafeArray2D
@@ -157,7 +154,7 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     m_tmpDIB.CreateFromExistingDIB workingDIB
     
     'The initial noise render is handled by a dedicated function
-    Filters_Render.GetCloudDIB m_tmpDIB, fxScale, 4, rndSeed, toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, 0
+    Filters_Render.GetCloudDIB m_tmpDIB, fxScale, 4, cRandom.GetSeed(), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, 0
     
     'Chrome-ify it using hard-coded "lava" colors
     Filters_Natural.GetChromeDIB m_tmpDIB, 8, fxScale * 0.25, RGB(50, 0, 0), RGB(250, 140, 95), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight
@@ -198,12 +195,6 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     cboBlendMode.ListIndex = BL_OVERLAY
-    m_Random.SetSeed_AutomaticAndRandom
-End Sub
-
-Private Sub cmdRandomize_Click()
-    m_Random.SetSeed_AutomaticAndRandom
-    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -213,10 +204,6 @@ Private Sub Form_Load()
     
     'Populate the blend mode drop-down
     Interface.PopulateBlendModeDropDown cboBlendMode, BL_OVERLAY
-    
-    'Calculate a random z offset for the noise function
-    Set m_Random = New pdRandomize
-    m_Random.SetSeed_AutomaticAndRandom
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -229,15 +216,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub sltContrast_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sltDensity_Change()
-    UpdatePreview
-End Sub
-
-Private Sub sltQuality_Change()
+Private Sub rndSeed_Change()
     UpdatePreview
 End Sub
 
@@ -268,7 +247,7 @@ Private Function GetLocalParamString() As String
         .AddParam "scale", sltScale.Value
         .AddParam "opacity", sldOpacity.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
-        .AddParam "rndSeed", m_Random.GetSeed()
+        .AddParam "seed", rndSeed.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

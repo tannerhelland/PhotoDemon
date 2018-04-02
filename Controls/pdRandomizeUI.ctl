@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdRandomizeUI 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   495
+   ClientHeight    =   420
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   6000
@@ -18,7 +18,7 @@ Begin VB.UserControl pdRandomizeUI
    EndProperty
    HasDC           =   0   'False
    MousePointer    =   99  'Custom
-   ScaleHeight     =   33
+   ScaleHeight     =   28
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
    ToolboxBitmap   =   "pdRandomizeUI.ctx":0000
@@ -26,16 +26,16 @@ Begin VB.UserControl pdRandomizeUI
       Height          =   375
       Left            =   120
       TabIndex        =   1
-      Top             =   15
-      Width           =   3735
-      _ExtentX        =   6588
+      Top             =   360
+      Width           =   5175
+      _ExtentX        =   9128
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdButtonToolbox cmdRandomize 
       Height          =   375
-      Left            =   4560
+      Left            =   5400
       TabIndex        =   0
-      Top             =   0
+      Top             =   360
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661

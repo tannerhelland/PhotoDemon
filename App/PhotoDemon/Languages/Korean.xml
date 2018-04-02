@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.10</langversion>
+<langversion>1.0.11</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8977,11 +8977,16 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>시뮬레이션 된 유리를 통해 이미지 투사</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_FiguredGlass.frm-->
 
@@ -10006,16 +10011,11 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Generating artificial fog</original>
 <translation>인공 안개 생성</translation>
 </phrase>
 
-<!-- Effects_Nature_Fog.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Fog.frm-->
 
@@ -10048,16 +10048,11 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
 
 <phrase>
-<original>randomize lava flow</original>
-<translation>용암 흐름을 무작위로 추출하다</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>상상의 화산 폭발</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Lava.frm-->
 
@@ -10091,11 +10086,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
 
 <phrase>
-<original>new turbulence seed</original>
-<translation>새로운 난기류</translation>
-</phrase>
-
-<phrase>
 <original>color shift</original>
 <translation>색상 이동</translation>
 </phrase>
@@ -10105,7 +10095,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>인공 물에서 이미지를 서브 머지하기</translation>
 </phrase>
 
-<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Water.frm-->
 
@@ -15376,10 +15366,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4688 phrases. -->
+<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12505 total words. -->
 
 </pdData>

@@ -31,24 +31,24 @@ Begin VB.Form FormWater
       TabIndex        =   0
       Top             =   5805
       Width           =   12090
-      _ExtentX        =   21325
-      _ExtentY        =   1323
+      _extentx        =   21325
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   960
+      Top             =   600
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "scale"
-      Max             =   250
-      SigDigits       =   1
-      ScaleStyle      =   1
-      Value           =   10
-      NotchPosition   =   2
-      NotchValueCustom=   10
+      _extentx        =   10398
+      _extenty        =   1270
+      caption         =   "scale"
+      sigdigits       =   1
+      max             =   250
+      scalestyle      =   1
+      value           =   10
+      notchposition   =   2
+      notchvaluecustom=   10
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -56,48 +56,48 @@ Begin VB.Form FormWater
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
-      DisableZoomPan  =   -1  'True
+      _extentx        =   9922
+      _extenty        =   9922
+      disablezoompan  =   -1
    End
    Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   3120
+      Top             =   2520
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "turbulence"
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   0.5
-   End
-   Begin PhotoDemon.pdButton cmdRandomize 
-      Height          =   600
-      Left            =   6720
-      TabIndex        =   4
-      Top             =   4320
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   1058
-      Caption         =   "new turbulence seed"
+      _extentx        =   10398
+      _extenty        =   1270
+      caption         =   "turbulence"
+      sigdigits       =   2
+      max             =   1
+      value           =   0.5
+      notchposition   =   2
+      notchvaluecustom=   0.5
    End
    Begin PhotoDemon.pdSlider sldColor 
       Height          =   705
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2040
+      TabIndex        =   4
+      Top             =   1560
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "color shift"
-      Max             =   100
-      Value           =   50
-      NotchPosition   =   2
-      NotchValueCustom=   50
+      _extentx        =   10398
+      _extenty        =   1270
+      caption         =   "color shift"
+      max             =   100
+      value           =   50
+      notchposition   =   2
+      notchvaluecustom=   50
+   End
+   Begin PhotoDemon.pdRandomizeUI rndSeed 
+      Height          =   735
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3540
+      Width           =   5895
+      _extentx        =   10398
+      _extenty        =   1296
+      caption         =   "random seed:"
    End
 End
 Attribute VB_Name = "FormWater"
@@ -122,8 +122,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_Random As pdRandomize
-
 Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If (Not toPreview) Then Message "Submerging image in artificial water..."
@@ -132,17 +130,18 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    Dim fxScale As Double, fxTurbulence As Double, rndSeed As Double, fxColor As Double
+    Dim fxScale As Double, fxTurbulence As Double, fxSeed As String, fxColor As Double
     
     With cParams
         fxScale = .GetDouble("scale", sltScale.Value)
         fxTurbulence = .GetDouble("turbulence", sltTurbulence.Value)
-        rndSeed = .GetDouble("rndseed")
+        fxSeed = .GetString("seed")
         fxColor = .GetDouble("color", 0.5) * 0.01
     End With
     
-    If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
-    m_Random.SetSeed_Float rndSeed
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_String fxSeed
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -230,8 +229,8 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
         
         'If turbulence is active, apply it now
         If (fxTurbulence > 0#) Then
-            srcX = srcX + (m_Random.GetRandomFloat_WH() - 0.5) * fxTurbulence
-            srcY = srcY + (m_Random.GetRandomFloat_WH() - 0.5) * fxTurbulence
+            srcX = srcX + (cRandom.GetRandomFloat_WH() - 0.5) * fxTurbulence
+            srcY = srcY + (cRandom.GetRandomFloat_WH() - 0.5) * fxTurbulence
         End If
         
         'Make sure the source coordinates are in-bounds
@@ -309,24 +308,10 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    m_Random.SetSeed_AutomaticAndRandom
-End Sub
-
-Private Sub cmdRandomize_Click()
-    If (m_Random Is Nothing) Then Set m_Random = New pdRandomize
-    m_Random.SetSeed_AutomaticAndRandom
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previews
     cmdBar.MarkPreviewStatus False
-    
-    'Calculate a random z offset for the noise function
-    Set m_Random = New pdRandomize
-    m_Random.SetSeed_AutomaticAndRandom
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -337,6 +322,10 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub rndSeed_Change()
+    UpdatePreview
 End Sub
 
 Private Sub sldColor_Change()
@@ -370,7 +359,7 @@ Private Function GetLocalParamString() As String
         .AddParam "scale", sltScale.Value
         .AddParam "turbulence", sltTurbulence.Value
         .AddParam "color", sldColor.Value
-        .AddParam "rndseed", m_Random.GetSeed()
+        .AddParam "seed", rndSeed.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

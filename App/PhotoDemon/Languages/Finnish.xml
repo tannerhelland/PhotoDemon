@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3325</langversion>
+<langversion>6.8.3326</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8977,11 +8977,16 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
+<original>random seed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Projecting image through simulated glass</original>
 <translation>Ulkonevat kuva kautta simuloitu lasi</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_FiguredGlass.frm-->
 
@@ -10006,16 +10011,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Nature_Fog.frm (FormFog) -->
 
 <phrase>
-<original>random seed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Generating artificial fog</original>
 <translation>Luodaan keinotekoinen sumu</translation>
 </phrase>
 
-<!-- Effects_Nature_Fog.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Fog.frm-->
 
@@ -10048,16 +10048,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Nature_Lava.frm (FormLava) -->
 
 <phrase>
-<original>randomize lava flow</original>
-<translation>satunnaisotetaan laavavirtausta</translation>
-</phrase>
-
-<phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Räjähtävä kuvitteellinen tulivuori</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Lava.frm-->
 
@@ -10091,11 +10086,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Nature_Water.frm (FormWater) -->
 
 <phrase>
-<original>new turbulence seed</original>
-<translation>uusia turbulensseja</translation>
-</phrase>
-
-<phrase>
 <original>color shift</original>
 <translation>värinvaihto</translation>
 </phrase>
@@ -10105,7 +10095,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Upottamalla kuva keinolammen</translation>
 </phrase>
 
-<!-- Effects_Nature_Water.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Nature_Water.frm-->
 
@@ -15377,10 +15367,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2110 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4688 phrases. -->
+<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12505 total words. -->
 
 </pdData>
