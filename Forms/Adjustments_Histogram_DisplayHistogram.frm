@@ -729,9 +729,9 @@ Private Sub DrawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
         iX(i) = (i - 1) * (histWidth / 255)
         
         If renderInLogMode Then
-            iy(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
+            If (hMaxLog > 0) Then iy(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight Else iy(i) = tHeight
         Else
-            iy(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
+            If (hMax > 0) Then iy(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight Else iy(i) = tHeight
         End If
         
     Next i

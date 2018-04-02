@@ -22,9 +22,16 @@ Attribute VB_Name = "Filters_Layers"
 
 Option Explicit
 
-Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
-Private Const STRETCHBLT_COLORONCOLOR As Long = 3
-Private Const STRETCHBLT_HALFTONE As Long = 4
+Private Enum GDI_StretchBltMode
+    sbm_ColorOnColor = 3
+    sbm_Halftone = 4
+End Enum
+
+#If False Then
+    Private Const sbm_ColorOnColor = 3, sbm_Halftone = 4
+#End If
+
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As GDI_StretchBltMode) As Long
 
 'Constants required for creating a gamma curve from .1 to 10
 Private Const MAXGAMMA As Double = 1.8460498941512
@@ -151,7 +158,7 @@ End Function
 Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
 
     'If the source DIB is not 32bpp, exit.
-    If srcDIB.GetDIBColorDepth <> 32 Then
+    If (srcDIB.GetDIBColorDepth <> 32) Then
         CreateShadowDIB = False
         Exit Function
     End If
@@ -1498,12 +1505,8 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalX Else SetProgBarMax modifyProgBarMax
         progBarCheck = ProgressBars.FindBestProgBarValue()
     End If
     
@@ -1538,13 +1541,19 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
               
     sRadius = sRadius * (polarRadius / 100#)
+    If (sRadius < 1E-20) Then sRadius = 1E-20
     sRadius2 = sRadius * sRadius
     
     polarRadius = 1# / (polarRadius / 100#)
-        
-    Dim iAspect As Double
-    iAspect = tHeight / tWidth
-              
+    
+    'Check for extremely small images and exit, to avoid OOB problems
+    If (tWidth <= 1) Or (tHeight <= 1) Then
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        CreatePolarCoordDIB = 1
+        Exit Function
+    End If
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -1563,7 +1572,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
                 
-                If sDistance <= sRadius2 Then
+                If (sDistance <= sRadius2) Then
                 
                     'X is handled differently based on its relation to the center of the image
                     If x >= midX Then
@@ -1662,11 +1671,11 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
                 'Calculate distance automatically
                 sDistance = (nX * nX) + (nY * nY)
                 
-                If sDistance <> 0 Then
+                If (sDistance <> 0#) Then
                     srcX = midX + midX * midX * (nX / sDistance) * polarRadius
                     srcY = midY + midY * midY * (nY / sDistance) * polarRadius
-                    srcX = Modulo(srcX, finalX)
-                    srcY = Modulo(srcY, finalY)
+                    srcX = PDMath.Modulo(srcX, finalX)
+                    srcY = PDMath.Modulo(srcY, finalY)
                 Else
                     srcX = x
                     srcY = y
@@ -1768,13 +1777,19 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2
               
     sRadius = sRadius * (polarRadius / 100#)
+    If (sRadius < 1E-20) Then sRadius = 1E-20
     sRadius2 = sRadius * sRadius
         
     polarRadius = 1# / (polarRadius / 100#)
-        
-    Dim iAspect As Double
-    iAspect = tHeight / tWidth
-              
+    
+    'Check for extremely small images and exit, to avoid OOB problems
+    If (tWidth <= 1) Or (tHeight <= 1) Then
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        CreateXSwappedPolarCoordDIB = 1
+        Exit Function
+    End If
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         quickVal = x * qvDepth
@@ -2658,7 +2673,7 @@ Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     ' by extending the nearest valid pixels across the empty area.
     
     'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
-    SetStretchBltMode dstDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
+    SetStretchBltMode dstDIB.GetDIBDC, sbm_ColorOnColor
     
     'Top, bottom
     GDI.StretchBltWrapper dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
@@ -2706,7 +2721,7 @@ Public Function PadDIBClampedPixelsEx(ByVal newWidth As Long, ByVal newHeight As
     ' by extending the nearest valid pixels across the empty area.
     
     'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
-    SetStretchBltMode dstDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
+    SetStretchBltMode dstDIB.GetDIBDC, sbm_ColorOnColor
     
     'Top, bottom
     GDI.StretchBltWrapper dstDIB.GetDIBDC, dstX, 0, srcDIB.GetDIBWidth, dstY, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy

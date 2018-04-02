@@ -272,8 +272,8 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     ' calculations in terms of the unit square.  Thus the transform values of a 1000x1000 image will still be valid
     ' for say a 100x100 image.)
     Dim invWidth As Double, invHeight As Double
-    invWidth = 1# / imgWidth
-    invHeight = 1# / imgHeight
+    If (imgWidth > 0#) Then invWidth = 1# / imgWidth Else invWidth = 999999#
+    If (imgHeight > 0#) Then invHeight = 1# / imgHeight Else invHeight = 999999#
     
     'Copy the points given by the user (which are currently strings) into individual floating-point variables
     Dim x0 As Double, x1 As Double, x2 As Double, x3 As Double
@@ -329,7 +329,7 @@ Public Sub PerspectiveImage(ByVal effectParams As String, Optional ByVal toPrevi
     'Certain values can lead to divide-by-zero problems - check those in advance and convert 0 to something like 0.000001
     Dim chkDenom As Double
     chkDenom = (dx1 * dy2 - dy1 * dx2)
-    If chkDenom = 0# Then chkDenom = 1E-20
+    If (chkDenom < 1E-20) And (chkDenom > -1 * 1E-20) Then chkDenom = 1E-20
     
     h13 = (dx3 * dy2 - dx2 * dy3) / chkDenom
     h23 = (dx1 * dy3 - dy1 * dx3) / chkDenom

@@ -202,7 +202,11 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
         
         For j = 0 To 255
             histogramShape(j).x = hLookupX(j)
-            histogramShape(j).y = imgHeight - (histogramData(i, j) / channelMax(i)) * yMax
+            If (channelMax(i) > 0) Then
+                histogramShape(j).y = imgHeight - (histogramData(i, j) / channelMax(i)) * yMax
+            Else
+                histogramShape(j).y = imgHeight - yMax
+            End If
         Next j
         
         'Complete each shape by tracing the outline of the DIB

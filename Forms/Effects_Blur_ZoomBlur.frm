@@ -208,15 +208,25 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     
     Dim tmpSamples As Long, sampRatio As Single
     
-    Dim maxRadius As Double
+    Dim maxRadius As Double, invMaxRadius As Double
     maxRadius = Sqr(finalX * finalX + finalY * finalY)
+    
+    'If the source image is extremely small, exit now to avoid OOB problems
+    If (maxRadius <= 1#) Then
+        srcDIB.UnwrapArrayFromDIB srcImageData
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        EffectPrep.FinalizeImageData toPreview, dstPic, True
+        Exit Sub
+    Else
+        invMaxRadius = 1# / maxRadius
+    End If
     
     Dim i As Long
     Dim tmpDistance As Double
     Dim cosTheta As Single, sinTheta As Single
     
     Dim distRatio As Double
-    distRatio = CDbl(zDistance) / 100
+    distRatio = CDbl(zDistance) / 100#
     
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
@@ -251,7 +261,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         
         'Figure out how many times we're going to sample this line.  The number of samples directly correlates to this pixel's
         ' distance from the center of the image.  (Pixels nearer the center are sampled less, because they are blurred less.)
-        tmpSamples = CDbl(numSamples) * (sDistance / maxRadius)
+        tmpSamples = CDbl(numSamples) * (sDistance * invMaxRadius)
         If (tmpSamples < 4) Then
             tmpSamples = 4
         ElseIf (tmpSamples > numSamples) Then
@@ -265,7 +275,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
             
             'Calculate a new distance, but do not allow the distance to flip sign
             tmpDistance = (i * sampRatio) * distCalc + sDistance
-            If (tmpDistance < 0) Then tmpDistance = 0
+            If (tmpDistance < 0#) Then tmpDistance = 0#
             
             'If this sample is very close to the previous sample, there's no point in calculating it.
             ' (This function performs no subsampling, so pixel coordinates are always integer-clamped; this means that two
@@ -319,7 +329,6 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     
     'Safely deallocate all image arrays
     srcDIB.UnwrapArrayFromDIB srcImageData
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering

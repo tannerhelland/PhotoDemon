@@ -134,7 +134,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     
     'Local histogram equalizing requires a second copy of the source image
     Dim srcDIB As pdDIB
-    If ehMode <> 0 Then
+    If (ehMode <> 0) Then
         Set srcDIB = New pdDIB
         srcDIB.CreateFromExistingDIB workingDIB
     End If
@@ -231,7 +231,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             
             'Store those values in the correct histogram
             'RGB
-            If ehTarget = 0 Then
+            If (ehTarget = 0) Then
                 rValues(r) = rValues(r) + 1
                 gValues(g) = gValues(g) + 1
                 bValues(b) = bValues(b) + 1
@@ -283,7 +283,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             Next i
             
             For i = 0 To 255
-                If lData(i) > 255 Then lData(i) = 255
+                If (lData(i) > 255) Then lData(i) = 255
             Next i
         
         End If
@@ -341,7 +341,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         
         If cPixelIterator.InitializeIterator(srcDIB, ehRadius, ehRadius, kernelShape) Then
             
-            If ehTarget = 0 Then
+            If (ehTarget = 0) Then
                 numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
             Else
                 numOfPixels = cPixelIterator.LockTargetHistograms_Luminance(lValues)
@@ -363,7 +363,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 
                 'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
                 For y = startY To stopY Step yStep
-                
+                    
+                    If (numOfPixels < 1) Then numOfPixels = 1
+            
                     'With a local histogram successfully built for the area surrounding this pixel, we can now proceed
                     ' with processing the local histogram.
                     
@@ -376,7 +378,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     scaleFactor = 255# / numOfPixels
                     
                     'RGB
-                    If ehTarget = 0 Then
+                    If (ehTarget = 0) Then
                     
                         rData(0) = CDbl(rValues(0)) * scaleFactor
                         If (r > 0) Then
@@ -473,7 +475,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             Next x
             
             'Release the pixel iterator and second copy of the source image
-            If ehTarget = 0 Then
+            If (ehTarget = 0) Then
                 cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
             Else
                 cPixelIterator.ReleaseTargetHistograms_Luminance lValues

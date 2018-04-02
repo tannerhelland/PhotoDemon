@@ -78,14 +78,14 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
     ' the *image* coordinate space - to the current layer's coordinate space.)
     Dim fillStartX As Long, fillStartY As Long
     If m_FillSampleMerged Then
-        fillStartX = PDMath.NearestInt(imgX)
-        fillStartY = PDMath.NearestInt(imgY)
+        fillStartX = Int(imgX)
+        fillStartY = Int(imgY)
     Else
         
         Dim newX As Single, newY As Single
         Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, newX, newY
-        fillStartX = PDMath.NearestInt(newX)
-        fillStartY = PDMath.NearestInt(newY)
+        fillStartX = Int(newX)
+        fillStartY = Int(newY)
         
     End If
     
@@ -244,7 +244,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
             'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
             If (pdImages(g_CurrentImage).ScratchLayer Is Nothing) Then
-                pdDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
+                PDDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
                 pdImages(g_CurrentImage).ResetScratchLayer True
             End If
             

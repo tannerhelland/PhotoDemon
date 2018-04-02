@@ -236,56 +236,62 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 lowG = 0
                 lowB = 0
                 cutoffTotal = 0.01 * numOfPixels
-                If cutoffTotal = 0 Then cutoffTotal = 1
+                If (cutoffTotal < 1) Then cutoffTotal = 1
                 
-                i = 0
-                Do
-                    If rValues(i) <> 0 Then lowR = lowR + rValues(i)
-                    i = i + 1
-                Loop While (lowR < cutoffTotal)
-                lowR = i - 1
+                For i = 0 To 255
+                    lowR = lowR + rValues(i)
+                    If (lowR >= cutoffTotal) Then
+                        lowR = i
+                        Exit For
+                    End If
+                Next i
                 
-                i = 0
-                Do
-                    If gValues(i) <> 0 Then lowG = lowG + gValues(i)
-                    i = i + 1
-                Loop While (lowG < cutoffTotal)
-                lowG = i - 1
-        
-                i = 0
-                Do
-                    If bValues(i) <> 0 Then lowB = lowB + bValues(i)
-                    i = i + 1
-                Loop While (lowB < cutoffTotal)
-                lowB = i - 1
+                For i = 0 To 255
+                    lowG = lowG + gValues(i)
+                    If (lowG >= cutoffTotal) Then
+                        lowG = i
+                        Exit For
+                    End If
+                Next i
+                
+                For i = 0 To 255
+                    lowB = lowB + bValues(i)
+                    If (lowB >= cutoffTotal) Then
+                        lowB = i
+                        Exit For
+                    End If
+                Next i
                 
                 'Now do the same thing at the top of the histogram
                 highR = 0
                 highG = 0
                 highB = 0
                 cutoffTotal = 0.01 * numOfPixels
-                If cutoffTotal = 0 Then cutoffTotal = 1
+                If (cutoffTotal < 1) Then cutoffTotal = 1
                 
-                i = 255
-                Do
-                    If rValues(i) <> 0 Then highR = highR + rValues(i)
-                    i = i - 1
-                Loop While (highR < cutoffTotal)
-                highR = i + 1
+                For i = 255 To 0 Step -1
+                    highR = highR + rValues(i)
+                    If (highR >= cutoffTotal) Then
+                        highR = i
+                        Exit For
+                    End If
+                Next i
                 
-                i = 255
-                Do
-                    If gValues(i) <> 0 Then highG = highG + gValues(i)
-                    i = i - 1
-                Loop While (highG < cutoffTotal)
-                highG = i + 1
+                For i = 255 To 0 Step -1
+                    highG = highG + gValues(i)
+                    If (highG >= cutoffTotal) Then
+                        highG = i
+                        Exit For
+                    End If
+                Next i
                 
-                i = 255
-                Do
-                    If bValues(i) <> 0 Then highB = highB + bValues(i)
-                    i = i - 1
-                Loop While (highB < cutoffTotal)
-                highB = i + 1
+                For i = 255 To 0 Step -1
+                    highB = highB + bValues(i)
+                    If (highB >= cutoffTotal) Then
+                        highB = i
+                        Exit For
+                    End If
+                Next i
                 
                 'Retrieve the original pixel data, and replace it with the processed result
                 b = dstImageData(x, y)
@@ -311,16 +317,16 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If (Not toPreview) Then

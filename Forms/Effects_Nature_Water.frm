@@ -31,8 +31,8 @@ Begin VB.Form FormWater
       TabIndex        =   0
       Top             =   5805
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
+      _ExtentX        =   21325
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
@@ -40,15 +40,15 @@ Begin VB.Form FormWater
       TabIndex        =   2
       Top             =   600
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "scale"
-      sigdigits       =   1
-      max             =   250
-      scalestyle      =   1
-      value           =   10
-      notchposition   =   2
-      notchvaluecustom=   10
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "scale"
+      Max             =   250
+      SigDigits       =   1
+      ScaleStyle      =   1
+      Value           =   10
+      NotchPosition   =   2
+      NotchValueCustom=   10
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -56,9 +56,9 @@ Begin VB.Form FormWater
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      disablezoompan  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
@@ -66,14 +66,14 @@ Begin VB.Form FormWater
       TabIndex        =   3
       Top             =   2520
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "turbulence"
-      sigdigits       =   2
-      max             =   1
-      value           =   0.5
-      notchposition   =   2
-      notchvaluecustom=   0.5
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "turbulence"
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.pdSlider sldColor 
       Height          =   705
@@ -81,13 +81,13 @@ Begin VB.Form FormWater
       TabIndex        =   4
       Top             =   1560
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "color shift"
-      max             =   100
-      value           =   50
-      notchposition   =   2
-      notchvaluecustom=   50
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "color shift"
+      Max             =   100
+      Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
    Begin PhotoDemon.pdRandomizeUI rndSeed 
       Height          =   735
@@ -95,9 +95,9 @@ Begin VB.Form FormWater
       TabIndex        =   5
       Top             =   3540
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1296
-      caption         =   "random seed:"
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "random seed:"
    End
 End
 Attribute VB_Name = "FormWater"
@@ -173,6 +173,14 @@ Public Sub ApplyWaterFX(ByVal effectParams As String, Optional ByVal toPreview A
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
+    
+    'If the source image is tiny, abandon ship to prevent OOB errors
+    If (finalX < 1) Or (finalY < 1) Then
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        EffectPrep.FinalizeImageData toPreview, dstPic
+        Exit Sub
+    End If
             
     'Because interpolation may be used, it's necessary to keep pixel values within special ranges.
     ' (This spares us needing to check for OOB on the inner pixel loop.)

@@ -101,7 +101,7 @@ Public Function FindBestProgBarValue() As Long
     Const LOG_TWO As Double = 0.693147180559945
     
     Dim nearestP2 As Long
-    nearestP2 = Log(progBarRange) / LOG_TWO
+    If (progBarRange > 0#) Then nearestP2 = Log(progBarRange) / LOG_TWO Else nearestP2 = 1
     FindBestProgBarValue = (2 ^ nearestP2) - 1
     
 End Function
@@ -109,7 +109,7 @@ End Function
 'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
 Public Sub ReleaseProgressBar()
     
-    pdDebug.LogAction "Releasing progress bar..."
+    PDDebug.LogAction "Releasing progress bar..."
     
     'Briefly display a full progress bar before exiting
     FormMain.MainCanvas(0).ProgBar_SetValue FormMain.MainCanvas(0).ProgBar_GetMax()

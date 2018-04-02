@@ -441,7 +441,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
         
         'If the max distance is greater than 0, return it.  If it equals zero (e.g. the source location lies directly
         ' atop a Voronoi point), the calculation will hit a divide-by-zero error, so catch that case and return 1 explicitly.
-        If (m_vPointsMaxDistance(nearestPointIndex) > 0!) Then
+        If (m_vPointsMaxDistance(nearestPointIndex) > 0.000001!) Then
         
             'Use the getShadingDistance function to calculate a shade value for this pixel, per the user's requested
             ' shading method.

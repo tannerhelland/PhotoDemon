@@ -244,6 +244,14 @@ Public Sub SquishImage(ByVal effectParams As String, Optional ByVal toPreview As
     iWidth = finalX - initX
     iHeight = finalY - initY
     
+    'If the source image is very small, abandon ship!
+    If (finalY < 1) Or (finalX < 1) Then
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        EffectPrep.FinalizeImageData toPreview, dstPic
+        Exit Sub
+    End If
+    
     'Build a look-up table for horizontal line size and offset
     Dim leftX() As Double, lineWidth() As Double
     ReDim leftX(initY To finalY) As Double

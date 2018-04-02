@@ -298,7 +298,7 @@ Public Sub SyncInterfaceToCurrentImage()
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
     
-    pdDebug.LogAction "Interface.SyncInterfaceToCurrentImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "Interface.SyncInterfaceToCurrentImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -1041,7 +1041,7 @@ Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoadi
             IconsAndCursors.ChangeWindowIcon m_PopupHWnds(m_NumOfPopupHWnds), m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         Else
             m_NumOfPopupHWnds = 0
-            pdDebug.LogAction "WARNING!  Interface.FixPopupWindow() has somehow unloaded more windows than it's loaded."
+            PDDebug.LogAction "WARNING!  Interface.FixPopupWindow() has somehow unloaded more windows than it's loaded."
         End If
     
     End If
@@ -1260,7 +1260,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         'I still haven't found all the old windowless controls in the project, so I'm keeping an eye out
         ' for them.
         ElseIf (TypeOf eControl Is Line) Then
-            pdDebug.LogAction "Found a legacy line control on " & dstForm.Name & ": consider removing it!"
+            PDDebug.LogAction "Found a legacy line control on " & dstForm.Name & ": consider removing it!"
         
         Else
             
@@ -1279,7 +1279,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             
 ControlIsNotPD:
             If (Not ctlThemedOK) Then
-                pdDebug.LogAction "WARNING!  Non-PD control found on " & dstForm.Caption & ": " & eControl.Name
+                PDDebug.LogAction "WARNING!  Non-PD control found on " & dstForm.Caption & ": " & eControl.Name
                 On Error GoTo 0
             End If
             
@@ -1288,7 +1288,7 @@ ControlIsNotPD:
     Next
     
     'Report timing results here:
-    pdDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption;
     ' everything else is handled internally.
@@ -1457,13 +1457,13 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         If UserPrefs.GenerateDebugLogs Then
         
             If UBound(ExtraText) < LBound(ExtraText) Then
-                pdDebug.LogAction tmpDupeCheckString, PDM_User_Message
+                PDDebug.LogAction tmpDupeCheckString, PDM_User_Message
             Else
             
                 'Check the last param passed.  If it's the string "DONOTLOG", do not log this entry.  (PD sometimes uses this
                 ' to avoid logging useless data, like layer hover events or download updates.)
                 If Strings.StringsNotEqual(CStr(ExtraText(UBound(ExtraText))), "DONOTLOG", False) Then
-                    pdDebug.LogAction tmpDupeCheckString, PDM_User_Message
+                    PDDebug.LogAction tmpDupeCheckString, PDM_User_Message
                 End If
             
             End If
