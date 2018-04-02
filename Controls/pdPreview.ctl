@@ -760,9 +760,10 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         GDI_Plus.GDIPlusFillPatternToDC bufferDC, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern, True
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
-        Dim interpMode As GP_InterpolationMode
-        If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then interpMode = GP_IM_NearestNeighbor Else interpMode = GP_IM_HighQualityBicubic
-        GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpMode, bufferDC
+        Dim interpMode As GP_InterpolationMode, isZoomedIn As Boolean
+        isZoomedIn = (srcWidth < dstWidth) And (srcHeight < dstHeight)
+        If isZoomedIn Then interpMode = GP_IM_NearestNeighbor Else interpMode = GP_IM_HighQualityBicubic
+        GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpMode, bufferDC, , isZoomedIn
         srcDIB.FreeFromDC
         
         'We also draw a border around the final result
