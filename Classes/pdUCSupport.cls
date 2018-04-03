@@ -268,7 +268,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         If (Not m_NoBackBufferMode) Then SyncBackBufferSize True
         
     Else
-        pdDebug.LogAction "WARNING!  pdUCSupport.RegisterControl was called with hWnd = 0."
+        PDDebug.LogAction "WARNING!  pdUCSupport.RegisterControl was called with hWnd = 0."
     End If
     
 End Sub
@@ -300,7 +300,7 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
             ' (so we can grab dialog navigation events).
             If (m_KeyEvents Is Nothing) Then
                 
-                If m_ControlWantsKeyData Then pdDebug.LogAction "WARNING!  Why is a control requesting keyboard data, when the control itself is marked as [can't receive focus]??"
+                If m_ControlWantsKeyData Then PDDebug.LogAction "WARNING!  Why is a control requesting keyboard data, when the control itself is marked as [can't receive focus]??"
                 Set m_KeyEvents = New pdInputKeyboard
                 If pdMain.IsProgramRunning() Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
             
@@ -309,7 +309,7 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  You can't request custom functionality prior to calling pdUCSupport.RegisterControl()!"
+        PDDebug.LogAction "WARNING!  You can't request custom functionality prior to calling pdUCSupport.RegisterControl()!"
     End If
     
 End Sub
@@ -333,7 +333,7 @@ Friend Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
+        PDDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
     End If
     
 End Sub
@@ -481,7 +481,7 @@ End Sub
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any location of their choosing.
 Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False)
     If m_NoBackBufferMode Then
-        pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
+        PDDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
     Else
         If (newX = -1) Then newX = m_CustomCaptionRect.Left
         If (newY = -1) Then newY = m_CustomCaptionRect.Top
@@ -492,7 +492,7 @@ End Sub
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any rect of their choosing.
 Friend Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
     If m_NoBackBufferMode Then
-        pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
+        PDDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
     Else
         m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
     End If
@@ -740,8 +740,8 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             With tmpRect
                 .Left = 0
                 .Top = 0
-                .Right = m_BackBuffer.GetDIBWidth - 1
-                .Bottom = m_BackBuffer.GetDIBHeight - 1
+                .Right = m_BackBuffer.GetDIBWidth
+                .Bottom = m_BackBuffer.GetDIBHeight
             End With
             
             DrawFocusRect m_BackBuffer.GetDIBDC, tmpRect
@@ -1071,7 +1071,7 @@ End Sub
 Friend Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = False, Optional ByVal newBackColor As Long = -1&) As Long
     
     If m_NoBackBufferMode Then
-        pdDebug.LogAction "WARNING!  You cannot request a back buffer DC when backbuffering has been disabled!"
+        PDDebug.LogAction "WARNING!  You cannot request a back buffer DC when backbuffering has been disabled!"
         GetBackBufferDC = 0
         Exit Function
     End If

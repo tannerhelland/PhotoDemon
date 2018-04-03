@@ -280,8 +280,8 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         Dim xScroll_Canvas As Single, xScroll_Image As Single, yScroll_Canvas As Single, yScroll_Image As Single
         
         'Scroll bar values always represent pixel measurements *in the image coordinate space*.
-        xScroll_Image = dstCanvas.GetScrollValue(PD_HORIZONTAL)
-        yScroll_Image = dstCanvas.GetScrollValue(PD_VERTICAL)
+        xScroll_Image = dstCanvas.GetScrollValue(pdo_Horizontal)
+        yScroll_Image = dstCanvas.GetScrollValue(pdo_Vertical)
         
         'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
         If (m_ZoomRatio = 0#) Then m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
@@ -503,7 +503,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             
             'Before querying the canvas object for sizes, make sure scroll bars are visible.  (As of v7.0, viewport scrollbars
             ' are *always* visible.)
-            FormMain.MainCanvas(0).SetScrollVisibility PD_BOTH, True
+            FormMain.MainCanvas(0).SetScrollVisibility pdo_Both, True
             
             'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is responsible for determining this, as it must
             ' account for the positioning of scroll bars, a status bar, rulers, and whatever else the user has enabled.
@@ -572,24 +572,24 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             'We now have scroll bar max/min values.  Forward them to the destination pdCanvas object.
             With dstCanvas
                 .SetRedrawSuspension True
-                .SetScrollMin PD_HORIZONTAL, hScrollMin
-                .SetScrollMax PD_HORIZONTAL, hScrollMax
-                .SetScrollMin PD_VERTICAL, vScrollMin
-                .SetScrollMax PD_VERTICAL, vScrollMax
+                .SetScrollMin pdo_Horizontal, hScrollMin
+                .SetScrollMax pdo_Horizontal, hScrollMax
+                .SetScrollMin pdo_Vertical, vScrollMin
+                .SetScrollMax pdo_Vertical, vScrollMax
                 .SetRedrawSuspension False
             End With
             
             'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
             If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
-                dstCanvas.SetScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
+                dstCanvas.SetScrollLargeChange pdo_Horizontal, hScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange PD_HORIZONTAL, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
+                dstCanvas.SetScrollLargeChange pdo_Horizontal, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
             End If
             
             If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
-                dstCanvas.SetScrollLargeChange PD_VERTICAL, vScrollMax \ 16
+                dstCanvas.SetScrollLargeChange pdo_Vertical, vScrollMax \ 16
             Else
-                dstCanvas.SetScrollLargeChange PD_VERTICAL, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
+                dstCanvas.SetScrollLargeChange pdo_Vertical, PDMath.Max2Int(64# / g_Zoom.GetZoomValue(srcImage.GetZoom), 1)
             End If
             
             'Scroll bars are now prepped and ready!
@@ -629,11 +629,11 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 Select Case specialRequestID
                 
                     Case VSR_ResetToZero
-                        dstCanvas.SetScrollValue PD_BOTH, 0
+                        dstCanvas.SetScrollValue pdo_Both, 0
                         
                     Case VSR_ResetToCustom
-                        dstCanvas.SetScrollValue PD_HORIZONTAL, CLng(ExtraSettings(1))
-                        dstCanvas.SetScrollValue PD_VERTICAL, CLng(ExtraSettings(2))
+                        dstCanvas.SetScrollValue pdo_Horizontal, CLng(ExtraSettings(1))
+                        dstCanvas.SetScrollValue pdo_Vertical, CLng(ExtraSettings(2))
                     
                     'If the user has a point they want us to preserve, they will have passed two sets of coordinates:
                     ' 1) The literal (x, y) of the mouse on the current canvas (e.g. the coordinates returned by a mouse event)
@@ -666,8 +666,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                         
                         'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
-                        dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / m_ZoomRatio
-                        dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / m_ZoomRatio
+                        dstCanvas.SetScrollValue pdo_Horizontal, (newXCanvas - oldXCanvas) / m_ZoomRatio
+                        dstCanvas.SetScrollValue pdo_Vertical, (newYCanvas - oldYCanvas) / m_ZoomRatio
                         
                 End Select
                 
@@ -762,10 +762,10 @@ End Sub
 Public Sub ReportViewportProfilingData()
 
     If (m_TotalTime <> 0#) Then
-        pdDebug.LogAction "Final viewport perf data, by stage:"
-        pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
-        pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
-        pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
+        PDDebug.LogAction "Final viewport perf data, by stage:"
+        PDDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
+        PDDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
+        PDDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
     End If
 
 End Sub

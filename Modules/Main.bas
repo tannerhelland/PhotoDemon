@@ -49,7 +49,7 @@ Private m_hShellModule As Long
 'This constant is the number of "discrete" loading steps involved in loading the program.
 ' It is relevant for displaying the progress bar on the initial splash screen; this value is the
 ' progress bar's maximum value.
-Private Const NUMBER_OF_LOADING_STEPS As Long = 18
+Private Const NUMBER_OF_LOADING_STEPS As Long = 19
 
 'After Main() has been invoked, this will be set to TRUE.  This is important in VBy as some functions (like those
 ' inside user controls) will be called during either design-time or compilation-time.  PD relies on this variable,
@@ -137,7 +137,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Regardless of debug mode, we initialize our internal debugger.  (As of 7.2, the user can opt-out of debug tracking,
     ' or they can manually enable it in stable builds.)
-    pdDebug.InitializeDebugger
+    PDDebug.InitializeDebugger
     
     'During development, I find it helpful to profile PhotoDemon's startup process (so I can watch for obvious regressions).
     ' PD utilizes several different profiler-types; the LT type is "long-term" profiling, where data is written to a persistent
@@ -231,7 +231,7 @@ Public Function ContinueLoadingProgram() As Boolean
     'Normally, PD logs a bunch of internal data before exporting its first debug log, but if things are really dire,
     ' we can forcibly initialize debugging here.  (Just note that things like plugin data will *not* be accurate,
     ' as they haven't been loaded yet!)
-    If ENABLE_EMERGENCY_DEBUGGER Then pdDebug.StartDebugger True, False
+    If ENABLE_EMERGENCY_DEBUGGER Then PDDebug.StartDebugger True, False
     
     
     '*************************************************************************************************************************************
@@ -356,7 +356,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
     perfCheck.MarkEvent "Initialize debugger"
-    If UserPrefs.GenerateDebugLogs Then pdDebug.StartDebugger True
+    If UserPrefs.GenerateDebugLogs Then PDDebug.StartDebugger True
     
     
     '*************************************************************************************************************************************
@@ -587,9 +587,9 @@ Public Function ContinueLoadingProgram() As Boolean
     If g_IsFirstRun Then g_WindowManager.SetFirstRunMainWindowPosition
     
     'In debug mode, make a baseline memory reading here, before the main form is displayed.
-    pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
-    pdDebug.LogAction vbNullString, PDM_Mem_Report
-    pdDebug.LogAction "Proceeding to load main window..."
+    PDDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
+    PDDebug.LogAction vbNullString, PDM_Mem_Report
+    PDDebug.LogAction "Proceeding to load main window..."
     
     Unload FormSplash
     
@@ -598,8 +598,8 @@ End Function
 'FormMain's Unload step calls this process as its final action.
 Public Sub FinalShutdown()
     
-    pdDebug.LogAction "FinalShutdown() reached."
-    pdDebug.LogAction "Manually unloading all remaining public class instances..."
+    PDDebug.LogAction "FinalShutdown() reached."
+    PDDebug.LogAction "Manually unloading all remaining public class instances..."
     
     Set g_RecentFiles = Nothing
     Set g_RecentMacros = Nothing
@@ -619,14 +619,14 @@ Public Sub FinalShutdown()
     
     'Report final profiling data
     ViewportEngine.ReportViewportProfilingData
-    pdDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
+    PDDebug.LogAction "Final translation engine time was: " & Format$(g_Language.GetNetTranslationTime() * 1000#, "0.0") & " ms"
     
     'Free any ugly VB-specific workaround data
-    pdDebug.LogAction "Releasing VB-specific hackarounds..."
+    PDDebug.LogAction "Releasing VB-specific hackarounds..."
     VBHacks.ShutdownCleanup
     
     'Delete any remaining temp files in the cache
-    pdDebug.LogAction "Clearing temp file cache..."
+    PDDebug.LogAction "Clearing temp file cache..."
     Files.DeleteTempFiles
     
     'Release each potentially active plugin in turn
@@ -636,20 +636,20 @@ Public Sub FinalShutdown()
     Drawing.ReleaseUIPensAndBrushes
     Set g_CheckerboardPattern = Nothing
     Set g_CheckerboardBrush = Nothing
-    If Drawing2D.StopRenderingEngine(P2_DefaultBackend) Then pdDebug.LogAction "GDI+ released"
+    If Drawing2D.StopRenderingEngine(P2_DefaultBackend) Then PDDebug.LogAction "GDI+ released"
     
     'Write all preferences out to file and terminate the XML parser
-    pdDebug.LogAction "Writing user preferences to file..."
+    PDDebug.LogAction "Writing user preferences to file..."
     UserPrefs.StopPrefEngine
     
-    pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
+    PDDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
     VBHacks.FreeLib m_hShellModule
     
-    pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
-    pdDebug.LogAction "Final memory report", PDM_Mem_Report
-    pdDebug.TerminateDebugger
+    PDDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
+    PDDebug.LogAction "Final memory report", PDM_Mem_Report
+    PDDebug.TerminateDebugger
     
     m_IsProgramRunning = False
     

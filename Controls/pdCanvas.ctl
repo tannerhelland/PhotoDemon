@@ -25,6 +25,27 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdRuler vRuler 
+      Height          =   4935
+      Left            =   0
+      TabIndex        =   8
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   255
+      _ExtentX        =   450
+      _ExtentY        =   8705
+      Orientation     =   1
+   End
+   Begin PhotoDemon.pdRuler hRuler 
+      Height          =   255
+      Left            =   360
+      TabIndex        =   7
+      Top             =   240
+      Visible         =   0   'False
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   450
+   End
    Begin PhotoDemon.pdProgressBar mainProgBar 
       Height          =   255
       Left            =   360
@@ -239,6 +260,9 @@ Private m_SelectionActiveBeforeMouseEvents As Boolean
 'When we reflow the interface, we mark a special "resize" state to prevent recursive automatic reflow event notifications
 Private m_InternalResize As Boolean
 
+'Are canvas rulers currently visible?  Outside callers can access/modify this via the dedicated Get/Set functions.
+Private m_RulersVisible As Boolean
+
 'In Feb '15, Raj added a great context menu to the image tabstrip.  To help simplify menu enable/disable behavior,
 ' this enum can be used to identify individual menu entries.
 Private Enum POPUP_MENU_ENTRIES
@@ -331,30 +355,25 @@ Public Sub ClearCanvas()
     CanvasView.ClearCanvas
     StatusBar.ClearCanvas
     
-    If (g_OpenImageCount <= 0) Then
-        SetScrollVisibility PD_HORIZONTAL, False
-        SetScrollVisibility PD_VERTICAL, False
-    
     'If any valid images are loaded, scroll bars are always made visible
-    Else
-        SetScrollVisibility PD_HORIZONTAL, True
-        SetScrollVisibility PD_VERTICAL, True
-    End If
+    SetScrollVisibility pdo_Horizontal, (g_OpenImageCount > 0)
+    SetScrollVisibility pdo_Vertical, (g_OpenImageCount > 0)
     
+    'With appropriate elements shown/hidden, we can now
     Me.AlignCanvasView
     
 End Sub
 
 'Get/Set scroll bar value
-Public Function GetScrollValue(ByVal barType As PD_ORIENTATION) As Long
-    If (barType = PD_HORIZONTAL) Then GetScrollValue = hScroll.Value Else GetScrollValue = vScroll.Value
+Public Function GetScrollValue(ByVal barType As PD_Orientation) As Long
+    If (barType = pdo_Horizontal) Then GetScrollValue = hScroll.Value Else GetScrollValue = vScroll.Value
 End Function
 
-Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
+Public Sub SetScrollValue(ByVal barType As PD_Orientation, ByVal newValue As Long)
     
-    If (barType = PD_HORIZONTAL) Then
+    If (barType = pdo_Horizontal) Then
         hScroll.Value = newValue
-    ElseIf (barType = PD_VERTICAL) Then
+    ElseIf (barType = pdo_Vertical) Then
         vScroll.Value = newValue
     Else
         hScroll.Value = newValue
@@ -367,50 +386,46 @@ Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Lon
 End Sub
 
 'Get/Set scroll max/min
-Public Function GetScrollMax(ByVal barType As PD_ORIENTATION) As Long
-    If (barType = PD_HORIZONTAL) Then GetScrollMax = hScroll.Max Else GetScrollMax = vScroll.Max
+Public Function GetScrollMax(ByVal barType As PD_Orientation) As Long
+    If (barType = pdo_Horizontal) Then GetScrollMax = hScroll.Max Else GetScrollMax = vScroll.Max
 End Function
 
-Public Function GetScrollMin(ByVal barType As PD_ORIENTATION) As Long
-    If (barType = PD_HORIZONTAL) Then GetScrollMin = hScroll.Min Else GetScrollMin = vScroll.Min
+Public Function GetScrollMin(ByVal barType As PD_Orientation) As Long
+    If (barType = pdo_Horizontal) Then GetScrollMin = hScroll.Min Else GetScrollMin = vScroll.Min
 End Function
 
-Public Sub SetScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
-    If (barType = PD_HORIZONTAL) Then hScroll.Max = newMax Else vScroll.Max = newMax
+Public Sub SetScrollMax(ByVal barType As PD_Orientation, ByVal newMax As Long)
+    If (barType = pdo_Horizontal) Then hScroll.Max = newMax Else vScroll.Max = newMax
 End Sub
 
-Public Sub SetScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
-    If (barType = PD_HORIZONTAL) Then hScroll.Min = newMin Else vScroll.Min = newMin
+Public Sub SetScrollMin(ByVal barType As PD_Orientation, ByVal newMin As Long)
+    If (barType = pdo_Horizontal) Then hScroll.Min = newMin Else vScroll.Min = newMin
 End Sub
 
 'Set scroll bar LargeChange value
-Public Sub SetScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
-    If (barType = PD_HORIZONTAL) Then hScroll.LargeChange = newLargeChange Else vScroll.LargeChange = newLargeChange
+Public Sub SetScrollLargeChange(ByVal barType As PD_Orientation, ByVal newLargeChange As Long)
+    If (barType = pdo_Horizontal) Then hScroll.LargeChange = newLargeChange Else vScroll.LargeChange = newLargeChange
 End Sub
 
 'Get/Set scrollbar visibility.  Note that visibility is only toggled as necessary, so this function is preferable to
 ' calling .Visible properties directly.
-Public Function GetScrollVisibility(ByVal barType As PD_ORIENTATION) As Boolean
-    If (barType = PD_HORIZONTAL) Then
-        GetScrollVisibility = hScroll.Visible
-    Else
-        GetScrollVisibility = vScroll.Visible
-    End If
+Public Function GetScrollVisibility(ByVal barType As PD_Orientation) As Boolean
+    If (barType = pdo_Horizontal) Then GetScrollVisibility = hScroll.Visible Else GetScrollVisibility = vScroll.Visible
 End Function
 
-Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
+Public Sub SetScrollVisibility(ByVal barType As PD_Orientation, ByVal newVisibility As Boolean)
     
     'If the scroll bar status wasn't actually changed, we can avoid a forced screen refresh
     Dim changesMade As Boolean
     changesMade = False
     
-    If (barType = PD_HORIZONTAL) Then
+    If (barType = pdo_Horizontal) Then
         If (newVisibility <> hScroll.Visible) Then
             hScroll.Visible = newVisibility
             changesMade = True
         End If
     
-    ElseIf (barType = PD_VERTICAL) Then
+    ElseIf (barType = pdo_Vertical) Then
         If (newVisibility <> vScroll.Visible) Then
             vScroll.Visible = newVisibility
             changesMade = True
@@ -1555,6 +1570,29 @@ Public Sub AlignCanvasView()
     Dim statusBarRect As RectF
     FillStatusBarRect ucRect, statusBarRect
     
+    'Next comes ruler rects.  Note that rulers may or may not be visible, depending on user settings.
+    Dim hRulerRectF As RectF, vRulerRectF As RectF
+    With hRulerRectF
+        .Top = ucRect.Top
+        .Left = ucRect.Left
+        .Width = ucRect.Width
+        .Height = hRuler.GetHeight()
+    End With
+    
+    With vRulerRectF
+        .Top = ucRect.Top + hRulerRectF.Height
+        .Left = ucRect.Left
+        .Width = vRuler.GetWidth()
+        .Height = ucRect.Height - hRulerRectF.Height
+    End With
+    
+    If m_RulersVisible Then
+        ucRect.Top = ucRect.Top + hRulerRectF.Height
+        ucRect.Height = ucRect.Height - hRulerRectF.Height
+        ucRect.Left = ucRect.Left + vRulerRectF.Width
+        ucRect.Width = ucRect.Width - vRulerRectF.Width
+    End If
+    
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
     ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
     ' scroll behavior like GIMP).
@@ -1580,11 +1618,11 @@ Public Sub AlignCanvasView()
     End If
     
     '...Followed by the scrollbars
-    If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> cvWidth) Then
+    If (hScroll.GetLeft <> hScrollLeft) Or (hScroll.GetTop <> hScrollTop) Or (hScroll.GetWidth <> cvWidth) Then
         If (cvWidth > 0) Then hScroll.SetPositionAndSize hScrollLeft, hScrollTop, cvWidth, hScroll.GetHeight
     End If
     
-    If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> cvHeight) Then
+    If (vScroll.GetLeft <> vScrollLeft) Or (vScroll.GetTop <> vScrollTop) Or (vScroll.GetHeight <> cvHeight) Then
         If (cvHeight > 0) Then vScroll.SetPositionAndSize vScrollLeft, vScrollTop, vScroll.GetWidth, cvHeight
     End If
     
@@ -1593,6 +1631,17 @@ Public Sub AlignCanvasView()
         cmdCenter.SetLeft vScrollLeft
         cmdCenter.SetTop hScrollTop
     End If
+    
+    '...Followed by rulers
+    With hRulerRectF
+        If m_RulersVisible And ((hRuler.GetLeft <> .Left) Or (hRuler.GetTop <> .Top) Or (hRuler.GetWidth <> .Width)) Then hRuler.SetPositionAndSize .Left, .Top, .Width, .Height
+        hRuler.Visible = m_RulersVisible And (g_OpenImageCount > 0)
+    End With
+    
+    With vRulerRectF
+        If m_RulersVisible And ((vRuler.GetLeft <> .Left) Or (vRuler.GetTop <> .Top) Or (vRuler.GetHeight <> .Height)) Then vRuler.SetPositionAndSize .Left, .Top, .Width, .Height
+        vRuler.Visible = m_RulersVisible And (g_OpenImageCount > 0)
+    End With
     
     '...Followed by the status bar
     With statusBarRect
@@ -1625,15 +1674,6 @@ Private Sub UserControl_Resize()
     If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
-'At present, the only component of the canvas that saves preferences is the image tabstrip
-Public Sub ReadUserPreferences()
-    ImageStrip.ReadUserPreferences
-End Sub
-
-Public Sub WriteUserPreferences()
-    ImageStrip.WriteUserPreferences
-End Sub
-
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         
     'Regardless of viewport state, cache the current scroll bar value inside the current image
@@ -1656,6 +1696,39 @@ End Sub
 Public Function PopulateSizeUnits()
     StatusBar.PopulateSizeUnits
 End Function
+
+'To improve performance, the canvas is notified when it should read/write user preferences in a given session.
+' This allows it to cache relevant values, then manage them independent of the preferences engine for the
+' duration of a session.
+Public Sub ReadUserPreferences()
+    ImageStrip.ReadUserPreferences
+    m_RulersVisible = UserPrefs.GetPref_Boolean("Toolbox", "RulersVisible", True)
+    FormMain.MnuView(6).Checked = m_RulersVisible
+End Sub
+
+Public Sub WriteUserPreferences()
+    ImageStrip.WriteUserPreferences
+    UserPrefs.SetPref_Boolean "Toolbox", "RulersVisible", m_RulersVisible
+End Sub
+
+'Get/set ruler settings
+Public Function GetRulerVisibility() As Boolean
+    GetRulerVisibility = m_RulersVisible
+End Function
+
+Public Sub SetRulerVisibility(ByVal newState As Boolean)
+    
+    Dim changesMade As Boolean
+    
+    If (newState <> hRuler.Visible) Then
+        m_RulersVisible = newState
+        changesMade = True
+    End If
+    
+    'When ruler visibility is changed, we must reflow the canvas area to match
+    If changesMade Then Me.AlignCanvasView
+    
+End Sub
 
 'Various drawing tools support high-rate mouse input.  Change that behavior here.
 Public Sub SetMouseInput_HighRes(ByVal newState As Boolean)
@@ -1999,10 +2072,12 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         StatusBar.UpdateAgainstCurrentTheme
         ImageStrip.UpdateAgainstCurrentTheme
         mainProgBar.UpdateAgainstCurrentTheme
+        hRuler.UpdateAgainstCurrentTheme
+        vRuler.UpdateAgainstCurrentTheme
         
         'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
         Dim centerButtonIconSize As Long
-        centerButtonIconSize = FixDPI(14)
+        centerButtonIconSize = Interface.FixDPI(14)
         cmdCenter.AssignImage "zoom_center", , centerButtonIconSize, centerButtonIconSize
         cmdCenter.AssignTooltip "Center the image inside the viewport"
         cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)

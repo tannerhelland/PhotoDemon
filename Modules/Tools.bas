@@ -127,8 +127,8 @@ End Sub
 
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
 Public Sub SetInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
-    m_InitHScroll = srcCanvas.GetScrollValue(PD_HORIZONTAL)
-    m_InitVScroll = srcCanvas.GetScrollValue(PD_VERTICAL)
+    m_InitHScroll = srcCanvas.GetScrollValue(pdo_Horizontal)
+    m_InitVScroll = srcCanvas.GetScrollValue(pdo_Vertical)
 End Sub
 
 'The drag-to-pan tool uses this function to actually scroll the viewport area
@@ -151,20 +151,20 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     vOffset = m_InitVScroll + vOffset
         
     'If these values lie within the bounds of their respective scroll bar(s), apply 'em
-    If (hOffset < srcCanvas.GetScrollMin(PD_HORIZONTAL)) Then
-        srcCanvas.SetScrollValue PD_HORIZONTAL, srcCanvas.GetScrollMin(PD_HORIZONTAL)
-    ElseIf (hOffset > srcCanvas.GetScrollMax(PD_HORIZONTAL)) Then
-        srcCanvas.SetScrollValue PD_HORIZONTAL, srcCanvas.GetScrollMax(PD_HORIZONTAL)
+    If (hOffset < srcCanvas.GetScrollMin(pdo_Horizontal)) Then
+        srcCanvas.SetScrollValue pdo_Horizontal, srcCanvas.GetScrollMin(pdo_Horizontal)
+    ElseIf (hOffset > srcCanvas.GetScrollMax(pdo_Horizontal)) Then
+        srcCanvas.SetScrollValue pdo_Horizontal, srcCanvas.GetScrollMax(pdo_Horizontal)
     Else
-        srcCanvas.SetScrollValue PD_HORIZONTAL, hOffset
+        srcCanvas.SetScrollValue pdo_Horizontal, hOffset
     End If
     
-    If (vOffset < srcCanvas.GetScrollMin(PD_VERTICAL)) Then
-        srcCanvas.SetScrollValue PD_VERTICAL, srcCanvas.GetScrollMin(PD_VERTICAL)
-    ElseIf (vOffset > srcCanvas.GetScrollMax(PD_VERTICAL)) Then
-        srcCanvas.SetScrollValue PD_VERTICAL, srcCanvas.GetScrollMax(PD_VERTICAL)
+    If (vOffset < srcCanvas.GetScrollMin(pdo_Vertical)) Then
+        srcCanvas.SetScrollValue pdo_Vertical, srcCanvas.GetScrollMin(pdo_Vertical)
+    ElseIf (vOffset > srcCanvas.GetScrollMax(pdo_Vertical)) Then
+        srcCanvas.SetScrollValue pdo_Vertical, srcCanvas.GetScrollMax(pdo_Vertical)
     Else
-        srcCanvas.SetScrollValue PD_VERTICAL, vOffset
+        srcCanvas.SetScrollValue pdo_Vertical, vOffset
     End If
     
     'Reinstate canvas redraws

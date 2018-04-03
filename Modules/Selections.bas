@@ -1363,16 +1363,16 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             srcCanvas.SetRedrawSuspension True
             
             'If scrollbars are visible, nudge the canvas in the direction of the arrows.
-            If srcCanvas.GetScrollVisibility(PD_VERTICAL) Then
+            If srcCanvas.GetScrollVisibility(pdo_Vertical) Then
                 If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then canvasUpdateRequired = True
-                If (vkCode = VK_UP) Then srcCanvas.SetScrollValue PD_VERTICAL, srcCanvas.GetScrollValue(PD_VERTICAL) - 1
-                If (vkCode = VK_DOWN) Then srcCanvas.SetScrollValue PD_VERTICAL, srcCanvas.GetScrollValue(PD_VERTICAL) + 1
+                If (vkCode = VK_UP) Then srcCanvas.SetScrollValue pdo_Vertical, srcCanvas.GetScrollValue(pdo_Vertical) - 1
+                If (vkCode = VK_DOWN) Then srcCanvas.SetScrollValue pdo_Vertical, srcCanvas.GetScrollValue(pdo_Vertical) + 1
             End If
             
-            If srcCanvas.GetScrollVisibility(PD_HORIZONTAL) Then
+            If srcCanvas.GetScrollVisibility(pdo_Horizontal) Then
                 If (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then canvasUpdateRequired = True
-                If (vkCode = VK_LEFT) Then srcCanvas.SetScrollValue PD_HORIZONTAL, srcCanvas.GetScrollValue(PD_HORIZONTAL) - 1
-                If (vkCode = VK_RIGHT) Then srcCanvas.SetScrollValue PD_HORIZONTAL, srcCanvas.GetScrollValue(PD_HORIZONTAL) + 1
+                If (vkCode = VK_LEFT) Then srcCanvas.SetScrollValue pdo_Horizontal, srcCanvas.GetScrollValue(pdo_Horizontal) - 1
+                If (vkCode = VK_RIGHT) Then srcCanvas.SetScrollValue pdo_Horizontal, srcCanvas.GetScrollValue(pdo_Horizontal) + 1
             End If
             
             'Re-enable automatic redraws

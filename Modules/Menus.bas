@@ -185,325 +185,328 @@ Public Sub InitializeMenus()
     AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 14
     
     
-    'View Menu
-    AddMenuItem "&View", "view_top", 2
-    AddMenuItem "&Fit image on screen", "zoom_fit", 2, 0, , "zoom_fit"
-    AddMenuItem "-", "-", 2, 1
-    AddMenuItem "Zoom &in", "zoom_in", 2, 2, , "zoom_in"
-    AddMenuItem "Zoom &out", "zoom_out", 2, 3, , "zoom_out"
-    AddMenuItem "-", "-", 2, 4
-    AddMenuItem "16:1 (1600%)", "zoom_16_1", 2, 5
-    AddMenuItem "8:1 (800%)", "zoom_8_1", 2, 6
-    AddMenuItem "4:1 (400%)", "zoom_4_1", 2, 7
-    AddMenuItem "2:1 (200%)", "zoom_2_1", 2, 8
-    AddMenuItem "1:1 (actual size, 100%)", "zoom_actual", 2, 9, , "zoom_actual"
-    AddMenuItem "1:2 (50%)", "zoom_1_2", 2, 10
-    AddMenuItem "1:4 (25%)", "zoom_1_4", 2, 11
-    AddMenuItem "1:8 (12.5%)", "zoom_1_8", 2, 12
-    AddMenuItem "1:16 (6.25%)", "zoom_1_16", 2, 13
-    
-    
     'Image Menu
-    AddMenuItem "&Image", "image_top", 3
-    AddMenuItem "&Duplicate", "image_duplicate", 3, 0, , "edit_copy"
-    AddMenuItem "-", "-", 3, 1
-    AddMenuItem "Resize...", "image_resize", 3, 2, , "image_resize"
-    AddMenuItem "Content-aware resize...", "image_contentawareresize", 3, 3
-    AddMenuItem "-", "-", 3, 4
-    AddMenuItem "Canvas size...", "image_canvassize", 3, 5, , "image_canvassize"
-    AddMenuItem "Fit canvas to active layer", "image_fittolayer", 3, 6
-    AddMenuItem "Fit canvas around all layers", "image_fitalllayers", 3, 7
-    AddMenuItem "-", "-", 3, 8
-    AddMenuItem "Crop to selection", "image_crop", 3, 9, , "image_crop"
-    AddMenuItem "Trim empty borders", "image_trim", 3, 10
-    AddMenuItem "-", "-", 3, 11
-    AddMenuItem "Rotate", "image_rotate", 3, 12
-        AddMenuItem "Straighten...", "image_straighten", 3, 12, 0
-        AddMenuItem "-", "-", 3, 12, 1
-        AddMenuItem "90 clockwise", "image_rotate90", 3, 12, 2, "generic_rotateright"
-        AddMenuItem "90 counter-clockwise", "image_rotate270", 3, 12, 3, "generic_rotateleft"
-        AddMenuItem "180", "image_rotate180", 3, 12, 4
-        AddMenuItem "Arbitrary...", "image_rotatearbitrary", 3, 12, 5
-    AddMenuItem "Flip horizontal", "image_fliphorizontal", 3, 13, , "image_fliphorizontal"
-    AddMenuItem "Flip vertical", "image_flipvertical", 3, 14, , "image_flipvertical"
-    AddMenuItem "-", "-", 3, 15
-    AddMenuItem "Metadata", "image_metadata", 3, 16
-        AddMenuItem "Edit metadata...", "image_editmetadata", 3, 16, 0, "image_metadata"
-        AddMenuItem "Remove all metadata", "image_removemetadata", 3, 16, 1
-        AddMenuItem "-", "-", 3, 16, 2
-        AddMenuItem "Count unique colors", "image_countcolors", 3, 16, 3
-        AddMenuItem "Map photo location...", "image_maplocation", 3, 16, 4, "image_maplocation"
+    AddMenuItem "&Image", "image_top", 2
+    AddMenuItem "&Duplicate", "image_duplicate", 2, 0, , "edit_copy"
+    AddMenuItem "-", "-", 2, 1
+    AddMenuItem "Resize...", "image_resize", 2, 2, , "image_resize"
+    AddMenuItem "Content-aware resize...", "image_contentawareresize", 2, 3
+    AddMenuItem "-", "-", 2, 4
+    AddMenuItem "Canvas size...", "image_canvassize", 2, 5, , "image_canvassize"
+    AddMenuItem "Fit canvas to active layer", "image_fittolayer", 2, 6
+    AddMenuItem "Fit canvas around all layers", "image_fitalllayers", 2, 7
+    AddMenuItem "-", "-", 2, 8
+    AddMenuItem "Crop to selection", "image_crop", 2, 9, , "image_crop"
+    AddMenuItem "Trim empty borders", "image_trim", 2, 10
+    AddMenuItem "-", "-", 2, 11
+    AddMenuItem "Rotate", "image_rotate", 2, 12
+        AddMenuItem "Straighten...", "image_straighten", 2, 12, 0
+        AddMenuItem "-", "-", 2, 12, 1
+        AddMenuItem "90 clockwise", "image_rotate90", 2, 12, 2, "generic_rotateright"
+        AddMenuItem "90 counter-clockwise", "image_rotate270", 2, 12, 3, "generic_rotateleft"
+        AddMenuItem "180", "image_rotate180", 2, 12, 4
+        AddMenuItem "Arbitrary...", "image_rotatearbitrary", 2, 12, 5
+    AddMenuItem "Flip horizontal", "image_fliphorizontal", 2, 13, , "image_fliphorizontal"
+    AddMenuItem "Flip vertical", "image_flipvertical", 2, 14, , "image_flipvertical"
+    AddMenuItem "-", "-", 2, 15
+    AddMenuItem "Metadata", "image_metadata", 2, 16
+        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 16, 0, "image_metadata"
+        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 16, 1
+        AddMenuItem "-", "-", 2, 16, 2
+        AddMenuItem "Count unique colors", "image_countcolors", 2, 16, 3
+        AddMenuItem "Map photo location...", "image_maplocation", 2, 16, 4, "image_maplocation"
     
     
     'Layer menu
-    AddMenuItem "&Layer", "layer_top", 4
-    AddMenuItem "Add", "layer_add", 4, 0
-        AddMenuItem "Basic layer...", "layer_addbasic", 4, 0, 0
-        AddMenuItem "Blank layer", "layer_addblank", 4, 0, 1
-        AddMenuItem "Duplicate of current layer", "layer_duplicate", 4, 0, 2, "edit_copy"
-        AddMenuItem "-", "-", 4, 0, 3
-        AddMenuItem "From clipboard", "layer_addfromclipboard", 4, 0, 4, "edit_paste"
-        AddMenuItem "From file...", "layer_addfromfile", 4, 0, 5, "file_open"
-        AddMenuItem "From visible layers", "layer_addfromvisiblelayers", 4, 0, 6
-    AddMenuItem "Delete", "layer_delete", 4, 1
-        AddMenuItem "Current layer", "layer_deletecurrent", 4, 1, 0, "generic_trash"
-        AddMenuItem "Hidden layers", "layer_deletehidden", 4, 1, 1, "generic_invisible"
-    AddMenuItem "-", "-", 4, 2
-    AddMenuItem "Merge up", "layer_mergeup", 4, 3, , "layer_mergeup"
-    AddMenuItem "Merge down", "layer_mergedown", 4, 4, , "layer_mergedown"
-    AddMenuItem "Order", "layer_order", 4, 5
-        AddMenuItem "Raise layer", "layer_up", 4, 5, 0, "layer_up"
-        AddMenuItem "Lower layer", "layer_down", 4, 5, 1, "layer_down"
-        AddMenuItem "-", "-", 4, 5, 2
-        AddMenuItem "Layer to top", "layer_totop", 4, 5, 3
-        AddMenuItem "Layer to bottom", "layer_tobottom", 4, 5, 4
-    AddMenuItem "-", "-", 4, 6
-    AddMenuItem "Orientation", "layer_orientation", 4, 7
-        AddMenuItem "Straighten...", "layer_straighten", 4, 7, 0
-        AddMenuItem "-", "-", 4, 7, 1
-        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 4, 7, 2, "generic_rotateright"
-        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 4, 7, 3, "generic_rotateleft"
-        AddMenuItem "Rotate 180", "layer_rotate180", 4, 7, 4
-        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 4, 7, 5
-        AddMenuItem "-", "-", 4, 7, 6
-        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 4, 7, 7, "image_fliphorizontal"
-        AddMenuItem "Flip vertical", "layer_flipvertical", 4, 7, 8, "image_flipvertical"
-    AddMenuItem "-", "-", 4, 7
-    AddMenuItem "Size", "layer_resize", 4, 8
-        AddMenuItem "Reset to actual size", "layer_resetsize", 4, 8, 0, "generic_reset"
-        AddMenuItem "-", "-", 4, 8, 1
-        AddMenuItem "Resize...", "layer_resize", 4, 8, 2, "image_resize"
-        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 4, 8, 3
-    AddMenuItem "-", "-", 4, 8
-    AddMenuItem "Crop to selection", "layer_crop", 4, 9, , "image_crop"
-    AddMenuItem "-", "-", 4, 10
-    AddMenuItem "Transparency", "layer_transparency", 4, 11
-        AddMenuItem "Make color transparent", "layer_colortoalpha", 4, 11, 0
-        AddMenuItem "Remove transparency...", "layer_removealpha", 4, 11, 1, "generic_trash"
-    AddMenuItem "-", "-", 4, 12
-    AddMenuItem "Rasterize", "layer_rasterize", 4, 13
-        AddMenuItem "Current layer", "layer_rasterizecurrent", 4, 13, 0
-        AddMenuItem "All layers", "layer_rasterizeall", 4, 13, 1
-        AddMenuItem "-", "-", 4, 14
-    AddMenuItem "Merge visible layers", "layer_mergevisible", 4, 15, , "generic_visible"
-    AddMenuItem "Flatten image...", "layer_flatten", 4, 16, , "layer_flatten"
+    AddMenuItem "&Layer", "layer_top", 3
+    AddMenuItem "Add", "layer_add", 3, 0
+        AddMenuItem "Basic layer...", "layer_addbasic", 3, 0, 0
+        AddMenuItem "Blank layer", "layer_addblank", 3, 0, 1
+        AddMenuItem "Duplicate of current layer", "layer_duplicate", 3, 0, 2, "edit_copy"
+        AddMenuItem "-", "-", 3, 0, 3
+        AddMenuItem "From clipboard", "layer_addfromclipboard", 3, 0, 4, "edit_paste"
+        AddMenuItem "From file...", "layer_addfromfile", 3, 0, 5, "file_open"
+        AddMenuItem "From visible layers", "layer_addfromvisiblelayers", 3, 0, 6
+    AddMenuItem "Delete", "layer_delete", 3, 1
+        AddMenuItem "Current layer", "layer_deletecurrent", 3, 1, 0, "generic_trash"
+        AddMenuItem "Hidden layers", "layer_deletehidden", 3, 1, 1, "generic_invisible"
+    AddMenuItem "-", "-", 3, 2
+    AddMenuItem "Merge up", "layer_mergeup", 3, 3, , "layer_mergeup"
+    AddMenuItem "Merge down", "layer_mergedown", 3, 4, , "layer_mergedown"
+    AddMenuItem "Order", "layer_order", 3, 5
+        AddMenuItem "Raise layer", "layer_up", 3, 5, 0, "layer_up"
+        AddMenuItem "Lower layer", "layer_down", 3, 5, 1, "layer_down"
+        AddMenuItem "-", "-", 3, 5, 2
+        AddMenuItem "Layer to top", "layer_totop", 3, 5, 3
+        AddMenuItem "Layer to bottom", "layer_tobottom", 3, 5, 4
+    AddMenuItem "-", "-", 3, 6
+    AddMenuItem "Orientation", "layer_orientation", 3, 7
+        AddMenuItem "Straighten...", "layer_straighten", 3, 7, 0
+        AddMenuItem "-", "-", 3, 7, 1
+        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 7, 2, "generic_rotateright"
+        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 7, 3, "generic_rotateleft"
+        AddMenuItem "Rotate 180", "layer_rotate180", 3, 7, 4
+        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 7, 5
+        AddMenuItem "-", "-", 3, 7, 6
+        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 7, 7, "image_fliphorizontal"
+        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 7, 8, "image_flipvertical"
+    AddMenuItem "-", "-", 3, 7
+    AddMenuItem "Size", "layer_resize", 3, 8
+        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 8, 0, "generic_reset"
+        AddMenuItem "-", "-", 3, 8, 1
+        AddMenuItem "Resize...", "layer_resize", 3, 8, 2, "image_resize"
+        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 8, 3
+    AddMenuItem "-", "-", 3, 8
+    AddMenuItem "Crop to selection", "layer_crop", 3, 9, , "image_crop"
+    AddMenuItem "-", "-", 3, 10
+    AddMenuItem "Transparency", "layer_transparency", 3, 11
+        AddMenuItem "Make color transparent", "layer_colortoalpha", 3, 11, 0
+        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 11, 1, "generic_trash"
+    AddMenuItem "-", "-", 3, 12
+    AddMenuItem "Rasterize", "layer_rasterize", 3, 13
+        AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 13, 0
+        AddMenuItem "All layers", "layer_rasterizeall", 3, 13, 1
+        AddMenuItem "-", "-", 3, 14
+    AddMenuItem "Merge visible layers", "layer_mergevisible", 3, 15, , "generic_visible"
+    AddMenuItem "Flatten image...", "layer_flatten", 3, 16, , "layer_flatten"
     
    
     'Select Menu
-    AddMenuItem "&Select", "select_top", 5
-    AddMenuItem "All", "select_all", 5, 0
-    AddMenuItem "None", "select_none", 5, 1
-    AddMenuItem "Invert", "select_invert", 5, 2
-    AddMenuItem "-", "-", 5, 3
-    AddMenuItem "Grow...", "select_grow", 5, 4
-    AddMenuItem "Shrink...", "select_shrink", 5, 5
-    AddMenuItem "Border...", "select_border", 5, 6
-    AddMenuItem "Feather...", "select_feather", 5, 7
-    AddMenuItem "Sharpen...", "select_sharpen", 5, 8
-    AddMenuItem "-", "-", 5, 9
-    AddMenuItem "Erase selected area", "select_erasearea", 5, 10
-    AddMenuItem "-", "-", 5, 11
-    AddMenuItem "Load selection...", "select_load", 5, 12, , "file_open"
-    AddMenuItem "Save current selection...", "select_save", 5, 13, , "file_save"
-    AddMenuItem "Export", "select_export", 5, 14
-        AddMenuItem "Selected area as image...", "select_exportarea", 5, 14, 0
-        AddMenuItem "Selection mask as image...", "select_exportmask", 5, 14, 1
+    AddMenuItem "&Select", "select_top", 4
+    AddMenuItem "All", "select_all", 4, 0
+    AddMenuItem "None", "select_none", 4, 1
+    AddMenuItem "Invert", "select_invert", 4, 2
+    AddMenuItem "-", "-", 4, 3
+    AddMenuItem "Grow...", "select_grow", 4, 4
+    AddMenuItem "Shrink...", "select_shrink", 4, 5
+    AddMenuItem "Border...", "select_border", 4, 6
+    AddMenuItem "Feather...", "select_feather", 4, 7
+    AddMenuItem "Sharpen...", "select_sharpen", 4, 8
+    AddMenuItem "-", "-", 4, 9
+    AddMenuItem "Erase selected area", "select_erasearea", 4, 10
+    AddMenuItem "-", "-", 4, 11
+    AddMenuItem "Load selection...", "select_load", 4, 12, , "file_open"
+    AddMenuItem "Save current selection...", "select_save", 4, 13, , "file_save"
+    AddMenuItem "Export", "select_export", 4, 14
+        AddMenuItem "Selected area as image...", "select_exportarea", 4, 14, 0
+        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 14, 1
         
     
     'Adjustments Menu
-    AddMenuItem "&Adjustments", "adj_top", 6
-    AddMenuItem "Auto correct", "adj_autocorrect", 6, 0
-        AddMenuItem "Color", "adj_autocorrectcolor", 6, 0, 0
-        AddMenuItem "Contrast", "adj_autocorrectcontrast", 6, 0, 1
-        AddMenuItem "Lighting", "adj_autocorrectlighting", 6, 0, 2
-        AddMenuItem "Shadows and highlights", "adj_autocorrectsandh", 6, 0, 3
-    AddMenuItem "Auto enhance", "adj_autoenhance", 6, 1
-        AddMenuItem "Color", "adj_autoenhancecolor", 6, 1, 0
-        AddMenuItem "Contrast", "adj_autoenhancecontrast", 6, 1, 1
-        AddMenuItem "Lighting", "adj_autoenhancelighting", 6, 1, 2
-        AddMenuItem "Shadows and highlights", "adj_autoenhancesandh", 6, 1, 3
-    AddMenuItem "-", "-", 6, 2
-    AddMenuItem "Black and white...", "adj_blackandwhite", 6, 3
-    AddMenuItem "Brightness and contrast...", "adj_bandc", 6, 4
-    AddMenuItem "Color balance...", "adj_colorbalance", 6, 5
-    AddMenuItem "Curves...", "adj_curves", 6, 6
-    AddMenuItem "Levels...", "adj_levels", 6, 7
-    AddMenuItem "Shadows and highlights...", "adj_sandh", 6, 8
-    AddMenuItem "Vibrance...", "adj_vibrance", 6, 9
-    AddMenuItem "White balance...", "adj_whitebalance", 6, 10
-    AddMenuItem "-", "-", 6, 11
-    AddMenuItem "Channels", "adj_channels", 6, 12
-        AddMenuItem "Channel mixer...", "adj_channelmixer", 6, 12, 0
-        AddMenuItem "Rechannel...", "adj_rechannel", 6, 12, 1
-        AddMenuItem "-", "-", 6, 12, 2
-        AddMenuItem "Maximum channel", "adj_maxchannel", 6, 12, 3
-        AddMenuItem "Minimum channel", "adj_minchannel", 6, 12, 4
-        AddMenuItem "-", "-", 6, 12, 5
-        AddMenuItem "Shift left", "adj_shiftchannelsleft", 6, 12, 6
-        AddMenuItem "Shift right", "adj_shiftchannelsright", 6, 12, 7
-    AddMenuItem "Color", "adj_color", 6, 13
-        AddMenuItem "Color balance...", "adj_colorbalance", 6, 13, 0
-        AddMenuItem "White balance...", "adj_whitebalance", 6, 13, 1
-        AddMenuItem "-", "-", 6, 13, 2
-        AddMenuItem "Hue and saturation...", "adj_hsl", 6, 13, 3
-        AddMenuItem "Temperature...", "adj_temperature", 6, 13, 4
-        AddMenuItem "Tint...", "adj_tint", 6, 13, 5
-        AddMenuItem "Vibrance...", "adj_vibrance", 6, 13, 6
-        AddMenuItem "-", "-", 6, 13, 7
-        AddMenuItem "Black and white...", "adj_blackandwhite", 6, 13, 8
-        AddMenuItem "Colorize...", "adj_colorize", 6, 13, 9
-        AddMenuItem "Replace color...", "adj_replacecolor", 6, 13, 10
-        AddMenuItem "Sepia", "adj_sepia", 6, 13, 11
-    AddMenuItem "Histogram", "adj_histogram", 6, 14
-        AddMenuItem "Display...", "adj_histogramdisplay", 6, 14, 0
-        AddMenuItem "-", "-", 6, 14, 1
-        AddMenuItem "Equalize...", "adj_histogramequalize", 6, 14, 2
-        AddMenuItem "Stretch", "adj_histogramstretch", 6, 14, 3
-    AddMenuItem "Invert", "adj_invert", 6, 15
-        AddMenuItem "CMYK (film negative)", "adj_invertcmyk", 6, 15, 0
-        AddMenuItem "Hue", "adj_inverthue", 6, 15, 1
-        AddMenuItem "RGB", "adj_invertrgb", 6, 15, 2
-    AddMenuItem "Lighting", "adj_lighting", 6, 16
-        AddMenuItem "Brightness and contrast...", "adj_bandc", 6, 16, 0
-        AddMenuItem "Curves...", "adj_curves", 6, 16, 1
-        AddMenuItem "Gamma...", "adj_gamma", 6, 16, 2
-        AddMenuItem "Levels...", "adj_levels", 6, 16, 3
-        AddMenuItem "Shadows and highlights...", "adj_sandh", 6, 16, 4
-    AddMenuItem "Monochrome", "adj_monochrome", 6, 17
-        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 6, 17, 0
-        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 6, 17, 1
-    AddMenuItem "Photography", "adj_photo", 6, 18
-        AddMenuItem "Exposure...", "adj_exposure", 6, 18, 0
-        AddMenuItem "HDR...", "adj_hdr", 6, 18, 1
-        AddMenuItem "Photo filters...", "adj_photofilters", 6, 18, 2
-        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 6, 18, 3
-        AddMenuItem "Split toning...", "adj_splittone", 6, 18, 4
+    AddMenuItem "&Adjustments", "adj_top", 5
+    AddMenuItem "Auto correct", "adj_autocorrect", 5, 0
+        AddMenuItem "Color", "adj_autocorrectcolor", 5, 0, 0
+        AddMenuItem "Contrast", "adj_autocorrectcontrast", 5, 0, 1
+        AddMenuItem "Lighting", "adj_autocorrectlighting", 5, 0, 2
+        AddMenuItem "Shadows and highlights", "adj_autocorrectsandh", 5, 0, 3
+    AddMenuItem "Auto enhance", "adj_autoenhance", 5, 1
+        AddMenuItem "Color", "adj_autoenhancecolor", 5, 1, 0
+        AddMenuItem "Contrast", "adj_autoenhancecontrast", 5, 1, 1
+        AddMenuItem "Lighting", "adj_autoenhancelighting", 5, 1, 2
+        AddMenuItem "Shadows and highlights", "adj_autoenhancesandh", 5, 1, 3
+    AddMenuItem "-", "-", 5, 2
+    AddMenuItem "Black and white...", "adj_blackandwhite", 5, 3
+    AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 4
+    AddMenuItem "Color balance...", "adj_colorbalance", 5, 5
+    AddMenuItem "Curves...", "adj_curves", 5, 6
+    AddMenuItem "Levels...", "adj_levels", 5, 7
+    AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 8
+    AddMenuItem "Vibrance...", "adj_vibrance", 5, 9
+    AddMenuItem "White balance...", "adj_whitebalance", 5, 10
+    AddMenuItem "-", "-", 5, 11
+    AddMenuItem "Channels", "adj_channels", 5, 12
+        AddMenuItem "Channel mixer...", "adj_channelmixer", 5, 12, 0
+        AddMenuItem "Rechannel...", "adj_rechannel", 5, 12, 1
+        AddMenuItem "-", "-", 5, 12, 2
+        AddMenuItem "Maximum channel", "adj_maxchannel", 5, 12, 3
+        AddMenuItem "Minimum channel", "adj_minchannel", 5, 12, 4
+        AddMenuItem "-", "-", 5, 12, 5
+        AddMenuItem "Shift left", "adj_shiftchannelsleft", 5, 12, 6
+        AddMenuItem "Shift right", "adj_shiftchannelsright", 5, 12, 7
+    AddMenuItem "Color", "adj_color", 5, 13
+        AddMenuItem "Color balance...", "adj_colorbalance", 5, 13, 0
+        AddMenuItem "White balance...", "adj_whitebalance", 5, 13, 1
+        AddMenuItem "-", "-", 5, 13, 2
+        AddMenuItem "Hue and saturation...", "adj_hsl", 5, 13, 3
+        AddMenuItem "Temperature...", "adj_temperature", 5, 13, 4
+        AddMenuItem "Tint...", "adj_tint", 5, 13, 5
+        AddMenuItem "Vibrance...", "adj_vibrance", 5, 13, 6
+        AddMenuItem "-", "-", 5, 13, 7
+        AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
+        AddMenuItem "Colorize...", "adj_colorize", 5, 13, 9
+        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 10
+        AddMenuItem "Sepia", "adj_sepia", 5, 13, 11
+    AddMenuItem "Histogram", "adj_histogram", 5, 14
+        AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
+        AddMenuItem "-", "-", 5, 14, 1
+        AddMenuItem "Equalize...", "adj_histogramequalize", 5, 14, 2
+        AddMenuItem "Stretch", "adj_histogramstretch", 5, 14, 3
+    AddMenuItem "Invert", "adj_invert", 5, 15
+        AddMenuItem "CMYK (film negative)", "adj_invertcmyk", 5, 15, 0
+        AddMenuItem "Hue", "adj_inverthue", 5, 15, 1
+        AddMenuItem "RGB", "adj_invertrgb", 5, 15, 2
+    AddMenuItem "Lighting", "adj_lighting", 5, 16
+        AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 16, 0
+        AddMenuItem "Curves...", "adj_curves", 5, 16, 1
+        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 2
+        AddMenuItem "Levels...", "adj_levels", 5, 16, 3
+        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 4
+    AddMenuItem "Monochrome", "adj_monochrome", 5, 17
+        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 17, 0
+        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 17, 1
+    AddMenuItem "Photography", "adj_photo", 5, 18
+        AddMenuItem "Exposure...", "adj_exposure", 5, 18, 0
+        AddMenuItem "HDR...", "adj_hdr", 5, 18, 1
+        AddMenuItem "Photo filters...", "adj_photofilters", 5, 18, 2
+        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 5, 18, 3
+        AddMenuItem "Split toning...", "adj_splittone", 5, 18, 4
     
     
     'Effects (Filters) Menu
-    AddMenuItem "Effe&cts", "effects_top", 7
-    AddMenuItem "Artistic", "effects_artistic", 7, 0
-        AddMenuItem "Colored pencil...", "effects_colorpencil", 7, 0, 0
-        AddMenuItem "Comic book...", "effects_comicbook", 7, 0, 1
-        AddMenuItem "Figured glass (dents)...", "effects_figuredglass", 7, 0, 2
-        AddMenuItem "Film noir...", "effects_filmnoir", 7, 0, 3
-        AddMenuItem "Glass tiles...", "effects_glasstiles", 7, 0, 4
-        AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 7, 0, 5
-        AddMenuItem "Modern art...", "effects_modernart", 7, 0, 6
-        AddMenuItem "Oil painting...", "effects_oilpainting", 7, 0, 7
-        AddMenuItem "Plastic wrap...", "effects_plasticwrap", 7, 0, 8
-        AddMenuItem "Posterize...", "effects_posterize", 7, 0, 9
-        AddMenuItem "Relief...", "effects_relief", 7, 0, 10
-        AddMenuItem "Stained glass...", "effects_stainedglass", 7, 0, 11
-    AddMenuItem "Blur", "effects_blur", 7, 1
-        AddMenuItem "Box blur...", "effects_boxblur", 7, 1, 0
-        AddMenuItem "Gaussian blur...", "effects_gaussianblur", 7, 1, 1
-        AddMenuItem "Surface blur...", "effects_surfaceblur", 7, 1, 2
-        AddMenuItem "-", "-", 7, 1, 3
-        AddMenuItem "Motion blur...", "effects_motionblur", 7, 1, 4
-        AddMenuItem "Radial blur...", "effects_radialblur", 7, 1, 5
-        AddMenuItem "Zoom blur...", "effects_zoomblur", 7, 1, 6
-        AddMenuItem "-", "-", 7, 1, 7
-        AddMenuItem "Kuwahara filter...", "effects_kuwahara", 7, 1, 8
-        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 7, 1, 9
-    AddMenuItem "Distort", "effects_distort", 7, 2
-        AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 7, 2, 0
-        AddMenuItem "-", "-", 7, 2, 1
-        AddMenuItem "Donut...", "effects_donut", 7, 2, 2
-        AddMenuItem "Lens...", "effects_lens", 7, 2, 3
-        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 7, 2, 4
-        AddMenuItem "Poke...", "effects_poke", 7, 2, 5
-        AddMenuItem "Ripple...", "effects_ripple", 7, 2, 6
-        AddMenuItem "Squish...", "effects_squish", 7, 2, 7
-        AddMenuItem "Swirl...", "effects_swirl", 7, 2, 8
-        AddMenuItem "Waves...", "effects_waves", 7, 2, 9
-        AddMenuItem "-", "-", 7, 2, 10
-        AddMenuItem "Miscellaneous...", "effects_miscdistort", 7, 2, 11
-    AddMenuItem "Edge", "effects_edges", 7, 3
-        AddMenuItem "Emboss...", "effects_emboss", 7, 3, 0
-        AddMenuItem "Enhance edges...", "effects_enhanceedges", 7, 3, 1
-        AddMenuItem "Find edges...", "effects_findedges", 7, 3, 2
-        AddMenuItem "Range filter...", "effects_rangefilter", 7, 3, 3
-        AddMenuItem "Trace contour...", "effects_tracecontour", 7, 3, 4
-    AddMenuItem "Light and shadow", "effects_lightandshadow", 7, 4
-        AddMenuItem "Black light...", "effects_blacklight", 7, 4, 0
-        AddMenuItem "Cross-screen...", "effects_crossscreen", 7, 4, 1
-        AddMenuItem "Rainbow...", "effects_rainbow", 7, 4, 2
-        AddMenuItem "Sunshine...", "effects_sunshine", 7, 4, 3
-        AddMenuItem "-", "-", 7, 4, 4
-        AddMenuItem "Dilate...", "effects_dilate", 7, 4, 5
-        AddMenuItem "Erode...", "effects_erode", 7, 4, 6
-    AddMenuItem "Natural", "effects_natural", 7, 5
-        AddMenuItem "Atmosphere...", "effects_atmosphere", 7, 5, 0
-        AddMenuItem "Fog...", "effects_fog", 7, 5, 1
-        AddMenuItem "Ignite...", "effects_ignite", 7, 5, 2
-        AddMenuItem "Lava...", "effects_lava", 7, 5, 3
-        AddMenuItem "Metal...", "effects_metal", 7, 5, 4
-        AddMenuItem "Snow...", "effects_snow", 7, 5, 5
-        AddMenuItem "Underwater...", "effects_underwater", 7, 5, 6
-    AddMenuItem "Noise", "effects_noise", 7, 6
-        AddMenuItem "Add film grain...", "effects_filmgrain", 7, 6, 0
-        AddMenuItem "Add RGB noise...", "effects_rgbnoise", 7, 6, 1
-        AddMenuItem "-", "-", 7, 6, 2
-        AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 7, 6, 3
-        AddMenuItem "Bilateral filter...", "effects_bilateral", 7, 6, 4
-        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 7, 6, 5
-        AddMenuItem "Mean shift...", "effects_meanshift", 7, 6, 6
-        AddMenuItem "Median...", "effects_median", 7, 6, 7
-    AddMenuItem "Pixelate", "effects_pixelate", 7, 7
-        AddMenuItem "Color halftone...", "effects_colorhalftone", 7, 7, 0
-        AddMenuItem "Crystallize...", "effects_crystallize", 7, 7, 1
-        AddMenuItem "Fragment...", "effects_fragment", 7, 7, 2
-        AddMenuItem "Mezzotint...", "effects_mezzotint", 7, 7, 3
-        AddMenuItem "Mosaic...", "effects_mosaic", 7, 7, 4
-    AddMenuItem "Sharpen", "effects_sharpentop", 7, 8
-        AddMenuItem "Sharpen...", "effects_sharpen", 7, 8, 0
-        AddMenuItem "Unsharp masking...", "effects_unsharp", 7, 8, 1
-    AddMenuItem "Stylize", "effects_stylize", 7, 9
-        AddMenuItem "Antique...", "effects_antique", 7, 9, 0
-        AddMenuItem "Diffuse...", "effects_diffuse", 7, 9, 1
-        AddMenuItem "Outline...", "effects_outline", 7, 9, 2
-        AddMenuItem "Palettize...", "effects_palettize", 7, 9, 3
-        AddMenuItem "Portrait glow...", "effects_portraitglow", 7, 9, 4
-        AddMenuItem "Solarize...", "effects_solarize", 7, 9, 5
-        AddMenuItem "Twins...", "effects_twins", 7, 9, 6
-        AddMenuItem "Vignetting...", "effects_vignetting", 7, 9, 7
-    AddMenuItem "Transform", "effects_transform", 7, 10
-        AddMenuItem "Pan and zoom...", "effects_panandzoom", 7, 10, 0
-        AddMenuItem "Perspective...", "effects_perspective", 7, 10, 1
-        AddMenuItem "Polar conversion...", "effects_polarconversion", 7, 10, 2
-        AddMenuItem "Rotate...", "effects_rotate", 7, 10, 3
-        AddMenuItem "Shear...", "effects_shear", 7, 10, 4
-        AddMenuItem "Spherize...", "effects_spherize", 7, 10, 5
-    AddMenuItem "-", "-", 7, 11
-    AddMenuItem "Custom filter...", "effects_customfilter", 7, 12
+    AddMenuItem "Effe&cts", "effects_top", 6
+    AddMenuItem "Artistic", "effects_artistic", 6, 0
+        AddMenuItem "Colored pencil...", "effects_colorpencil", 6, 0, 0
+        AddMenuItem "Comic book...", "effects_comicbook", 6, 0, 1
+        AddMenuItem "Figured glass (dents)...", "effects_figuredglass", 6, 0, 2
+        AddMenuItem "Film noir...", "effects_filmnoir", 6, 0, 3
+        AddMenuItem "Glass tiles...", "effects_glasstiles", 6, 0, 4
+        AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 6, 0, 5
+        AddMenuItem "Modern art...", "effects_modernart", 6, 0, 6
+        AddMenuItem "Oil painting...", "effects_oilpainting", 6, 0, 7
+        AddMenuItem "Plastic wrap...", "effects_plasticwrap", 6, 0, 8
+        AddMenuItem "Posterize...", "effects_posterize", 6, 0, 9
+        AddMenuItem "Relief...", "effects_relief", 6, 0, 10
+        AddMenuItem "Stained glass...", "effects_stainedglass", 6, 0, 11
+    AddMenuItem "Blur", "effects_blur", 6, 1
+        AddMenuItem "Box blur...", "effects_boxblur", 6, 1, 0
+        AddMenuItem "Gaussian blur...", "effects_gaussianblur", 6, 1, 1
+        AddMenuItem "Surface blur...", "effects_surfaceblur", 6, 1, 2
+        AddMenuItem "-", "-", 6, 1, 3
+        AddMenuItem "Motion blur...", "effects_motionblur", 6, 1, 4
+        AddMenuItem "Radial blur...", "effects_radialblur", 6, 1, 5
+        AddMenuItem "Zoom blur...", "effects_zoomblur", 6, 1, 6
+        AddMenuItem "-", "-", 6, 1, 7
+        AddMenuItem "Kuwahara filter...", "effects_kuwahara", 6, 1, 8
+        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 1, 9
+    AddMenuItem "Distort", "effects_distort", 6, 2
+        AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 6, 2, 0
+        AddMenuItem "-", "-", 6, 2, 1
+        AddMenuItem "Donut...", "effects_donut", 6, 2, 2
+        AddMenuItem "Lens...", "effects_lens", 6, 2, 3
+        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 6, 2, 4
+        AddMenuItem "Poke...", "effects_poke", 6, 2, 5
+        AddMenuItem "Ripple...", "effects_ripple", 6, 2, 6
+        AddMenuItem "Squish...", "effects_squish", 6, 2, 7
+        AddMenuItem "Swirl...", "effects_swirl", 6, 2, 8
+        AddMenuItem "Waves...", "effects_waves", 6, 2, 9
+        AddMenuItem "-", "-", 6, 2, 10
+        AddMenuItem "Miscellaneous...", "effects_miscdistort", 6, 2, 11
+    AddMenuItem "Edge", "effects_edges", 6, 3
+        AddMenuItem "Emboss...", "effects_emboss", 6, 3, 0
+        AddMenuItem "Enhance edges...", "effects_enhanceedges", 6, 3, 1
+        AddMenuItem "Find edges...", "effects_findedges", 6, 3, 2
+        AddMenuItem "Range filter...", "effects_rangefilter", 6, 3, 3
+        AddMenuItem "Trace contour...", "effects_tracecontour", 6, 3, 4
+    AddMenuItem "Light and shadow", "effects_lightandshadow", 6, 4
+        AddMenuItem "Black light...", "effects_blacklight", 6, 4, 0
+        AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 4, 1
+        AddMenuItem "Rainbow...", "effects_rainbow", 6, 4, 2
+        AddMenuItem "Sunshine...", "effects_sunshine", 6, 4, 3
+        AddMenuItem "-", "-", 6, 4, 4
+        AddMenuItem "Dilate...", "effects_dilate", 6, 4, 5
+        AddMenuItem "Erode...", "effects_erode", 6, 4, 6
+    AddMenuItem "Natural", "effects_natural", 6, 5
+        AddMenuItem "Atmosphere...", "effects_atmosphere", 6, 5, 0
+        AddMenuItem "Fog...", "effects_fog", 6, 5, 1
+        AddMenuItem "Ignite...", "effects_ignite", 6, 5, 2
+        AddMenuItem "Lava...", "effects_lava", 6, 5, 3
+        AddMenuItem "Metal...", "effects_metal", 6, 5, 4
+        AddMenuItem "Snow...", "effects_snow", 6, 5, 5
+        AddMenuItem "Underwater...", "effects_underwater", 6, 5, 6
+    AddMenuItem "Noise", "effects_noise", 6, 6
+        AddMenuItem "Add film grain...", "effects_filmgrain", 6, 6, 0
+        AddMenuItem "Add RGB noise...", "effects_rgbnoise", 6, 6, 1
+        AddMenuItem "-", "-", 6, 6, 2
+        AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 6, 6, 3
+        AddMenuItem "Bilateral filter...", "effects_bilateral", 6, 6, 4
+        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 6, 5
+        AddMenuItem "Mean shift...", "effects_meanshift", 6, 6, 6
+        AddMenuItem "Median...", "effects_median", 6, 6, 7
+    AddMenuItem "Pixelate", "effects_pixelate", 6, 7
+        AddMenuItem "Color halftone...", "effects_colorhalftone", 6, 7, 0
+        AddMenuItem "Crystallize...", "effects_crystallize", 6, 7, 1
+        AddMenuItem "Fragment...", "effects_fragment", 6, 7, 2
+        AddMenuItem "Mezzotint...", "effects_mezzotint", 6, 7, 3
+        AddMenuItem "Mosaic...", "effects_mosaic", 6, 7, 4
+    AddMenuItem "Sharpen", "effects_sharpentop", 6, 8
+        AddMenuItem "Sharpen...", "effects_sharpen", 6, 8, 0
+        AddMenuItem "Unsharp masking...", "effects_unsharp", 6, 8, 1
+    AddMenuItem "Stylize", "effects_stylize", 6, 9
+        AddMenuItem "Antique...", "effects_antique", 6, 9, 0
+        AddMenuItem "Diffuse...", "effects_diffuse", 6, 9, 1
+        AddMenuItem "Outline...", "effects_outline", 6, 9, 2
+        AddMenuItem "Palettize...", "effects_palettize", 6, 9, 3
+        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 9, 4
+        AddMenuItem "Solarize...", "effects_solarize", 6, 9, 5
+        AddMenuItem "Twins...", "effects_twins", 6, 9, 6
+        AddMenuItem "Vignetting...", "effects_vignetting", 6, 9, 7
+    AddMenuItem "Transform", "effects_transform", 6, 10
+        AddMenuItem "Pan and zoom...", "effects_panandzoom", 6, 10, 0
+        AddMenuItem "Perspective...", "effects_perspective", 6, 10, 1
+        AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 10, 2
+        AddMenuItem "Rotate...", "effects_rotate", 6, 10, 3
+        AddMenuItem "Shear...", "effects_shear", 6, 10, 4
+        AddMenuItem "Spherize...", "effects_spherize", 6, 10, 5
+    AddMenuItem "-", "-", 6, 11
+    AddMenuItem "Custom filter...", "effects_customfilter", 6, 12
     
     
     'Tools Menu
-    AddMenuItem "&Tools", "tools_top", 8
-    AddMenuItem "Language", "tools_language", 8, 0, , "tools_language"
-    AddMenuItem "Language editor...", "tools_languageeditor", 8, 1
-    AddMenuItem "-", "-", 8, 2
-    AddMenuItem "Theme...", "tools_theme", 8, 3
-    AddMenuItem "-", "-", 8, 4
-    AddMenuItem "Record macro", "tools_macrotop", 8, 5, , "macro_record"
-        AddMenuItem "Start recording", "tools_recordmacro", 8, 5, 0, "macro_record"
-        AddMenuItem "Stop recording...", "tools_stopmacro", 8, 5, 1, "macro_stop"
-    AddMenuItem "Play macro...", "tools_playmacro", 8, 6, , "macro_play"
-    AddMenuItem "Recent macros", "tools_recentmacros", 8, 7
-    AddMenuItem "-", "-", 8, 8
-    AddMenuItem "Options...", "tools_options", 8, 9, , "pref_advanced"
-    AddMenuItem "Plugin manager...", "tools_plugins", 8, 10, , "tools_plugin"
+    AddMenuItem "&Tools", "tools_top", 7
+    AddMenuItem "Language", "tools_language", 7, 0, , "tools_language"
+    AddMenuItem "Language editor...", "tools_languageeditor", 7, 1
+    AddMenuItem "-", "-", 7, 2
+    AddMenuItem "Theme...", "tools_theme", 7, 3
+    AddMenuItem "-", "-", 7, 4
+    AddMenuItem "Record macro", "tools_macrotop", 7, 5, , "macro_record"
+        AddMenuItem "Start recording", "tools_recordmacro", 7, 5, 0, "macro_record"
+        AddMenuItem "Stop recording...", "tools_stopmacro", 7, 5, 1, "macro_stop"
+    AddMenuItem "Play macro...", "tools_playmacro", 7, 6, , "macro_play"
+    AddMenuItem "Recent macros", "tools_recentmacros", 7, 7
+    AddMenuItem "-", "-", 7, 8
+    AddMenuItem "Options...", "tools_options", 7, 9, , "pref_advanced"
+    AddMenuItem "Plugin manager...", "tools_plugins", 7, 10, , "tools_plugin"
     
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     If debugMenuVisibility Then
-        AddMenuItem "-", "-", 8, 11
-        AddMenuItem "Developers", "tools_developers", 8, 12
-            AddMenuItem "Theme editor...", "tools_themeeditor", 8, 12, 0
-            AddMenuItem "Build theme package...", "tools_themepackage", 8, 12, 1
-        AddMenuItem "Test", "effects_developertest", 8, 13
+        AddMenuItem "-", "-", 7, 11
+        AddMenuItem "Developers", "tools_developers", 7, 12
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 12, 0
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 12, 1
+        AddMenuItem "Test", "effects_developertest", 7, 13
     End If
+    
+    
+    'View Menu
+    AddMenuItem "&View", "view_top", 8
+    AddMenuItem "&Fit image on screen", "view_fit", 8, 0, , "zoom_fit"
+    AddMenuItem "-", "-", 8, 1
+    AddMenuItem "Zoom &in", "view_zoomin", 8, 2, , "zoom_in"
+    AddMenuItem "Zoom &out", "view_zoomout", 8, 3, , "zoom_out"
+    AddMenuItem "Zoom to value", "view_zoomtop", 8, 4
+        AddMenuItem "16:1 (1600%)", "zoom_16_1", 8, 4, 0
+        AddMenuItem "8:1 (800%)", "zoom_8_1", 8, 4, 1
+        AddMenuItem "4:1 (400%)", "zoom_4_1", 8, 4, 2
+        AddMenuItem "2:1 (200%)", "zoom_2_1", 8, 4, 3
+        AddMenuItem "1:1 (actual size, 100%)", "zoom_actual", 8, 4, 4, "zoom_actual"
+        AddMenuItem "1:2 (50%)", "zoom_1_2", 8, 4, 5
+        AddMenuItem "1:4 (25%)", "zoom_1_4", 8, 4, 6
+        AddMenuItem "1:8 (12.5%)", "zoom_1_8", 8, 4, 7
+        AddMenuItem "1:16 (6.25%)", "zoom_1_16", 8, 4, 8
+    AddMenuItem "-", "-", 8, 5
+    AddMenuItem "Show rulers", "view_showrulers", 8, 6
+    
     
     'Window Menu
     AddMenuItem "&Window", "window_top", 9
@@ -642,7 +645,7 @@ Private Sub CacheCommonTranslations()
         m_CommonMenuText(cmt_Alt) = g_Language.TranslateMessage("Alt")
         m_CommonMenuText(cmt_Shift) = g_Language.TranslateMessage("Shift")
     Else
-        pdDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
+        PDDebug.LogAction "WARNING!  g_Language isn't available, so hotkey captions won't be correct."
     End If
 End Sub
 
@@ -864,22 +867,6 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", "edit_pasteasimage", True, False, False, UNDO_Nothing
         .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", "edit_pasteaslayer", True, False, False, UNDO_Image_VectorSafe
         
-        'View menu
-        .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_Nothing
-        '.AddAccelerator vbKeyAdd, 0, "Zoom_In", "zoom_in", False, True, False, UNDO_NOTHING
-        '.AddAccelerator VK_OEM_PLUS, 0, "Zoom_In", , False, True, False, UNDO_NOTHING
-        '.AddAccelerator vbKeySubtract, 0, "Zoom_Out", "zoom_out", False, True, False, UNDO_NOTHING
-        '.AddAccelerator VK_OEM_MINUS, 0, "Zoom_Out", , False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKey5, 0, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey4, 0, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey3, 0, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey2, 0, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey1, 0, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_Nothing
-        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, True, False, UNDO_Nothing
-        
         'Image menu
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", "image_duplicate", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", "image_resize", True, True, True, UNDO_Image
@@ -949,6 +936,22 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", "tools_options", False, False, True, UNDO_Nothing
         .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", "tools_plugins", False, False, True, UNDO_Nothing
         
+        
+        'View menu
+        .AddAccelerator vbKey0, 0, "FitOnScreen", "zoom_fit", False, True, False, UNDO_Nothing
+        '.AddAccelerator vbKeyAdd, 0, "Zoom_In", "zoom_in", False, True, False, UNDO_NOTHING
+        '.AddAccelerator VK_OEM_PLUS, 0, "Zoom_In", , False, True, False, UNDO_NOTHING
+        '.AddAccelerator vbKeySubtract, 0, "Zoom_Out", "zoom_out", False, True, False, UNDO_NOTHING
+        '.AddAccelerator VK_OEM_MINUS, 0, "Zoom_Out", , False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKey5, 0, "Zoom_161", "zoom_16_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey4, 0, "Zoom_81", "zoom_8_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey3, 0, "Zoom_41", "zoom_4_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey2, 0, "Zoom_21", "zoom_2_1", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey1, 0, "Actual_Size", "zoom_actual", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey2, vbShiftMask, "Zoom_12", "zoom_1_2", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey3, vbShiftMask, "Zoom_14", "zoom_1_4", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey4, vbShiftMask, "Zoom_18", "zoom_1_8", False, True, False, UNDO_Nothing
+        .AddAccelerator vbKey5, vbShiftMask, "Zoom_116", "zoom_1_16", False, True, False, UNDO_Nothing
         
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", "window_next", False, True, False, UNDO_Nothing
@@ -1128,7 +1131,7 @@ Public Sub UpdateSpecialMenu_Language(ByVal numOfLanguages As Long, ByRef availa
     'Retrieve handles to the parent menu
     Dim hMenu As Long
     hMenu = GetMenu(FormMain.hWnd)
-    hMenu = GetSubMenu(hMenu, 8)
+    hMenu = GetSubMenu(hMenu, 7)
     hMenu = GetSubMenu(hMenu, 0)
     
     'Prepare a MenuItemInfo struct
@@ -1239,7 +1242,7 @@ Public Sub UpdateSpecialMenu_RecentMacros()
     
         Dim hMenu As Long
         hMenu = GetMenu(FormMain.hWnd)
-        hMenu = GetSubMenu(hMenu, 8&)
+        hMenu = GetSubMenu(hMenu, 7&)
         hMenu = GetSubMenu(hMenu, 7&)
         
         'Prepare a MenuItemInfo struct
@@ -1362,5 +1365,5 @@ Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
 End Function
 
 Private Sub InternalMenuWarning(ByVal funcName As String, ByVal errMsg As String)
-    pdDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg
+    PDDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg
 End Sub

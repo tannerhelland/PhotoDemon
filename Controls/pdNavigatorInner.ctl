@@ -228,15 +228,15 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         
         'Next, convert those to the (min, max) scale of the current viewport scrollbars
         Dim hScrollRange As Double, vScrollRange As Double, newHScroll As Double, newVscroll As Double
-        hScrollRange = FormMain.MainCanvas(0).GetScrollMax(PD_HORIZONTAL) - FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL)
-        vScrollRange = FormMain.MainCanvas(0).GetScrollMax(PD_VERTICAL) - FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL)
-        newHScroll = (xRatio * hScrollRange) + FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL)
-        newVscroll = (yRatio * vScrollRange) + FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL)
+        hScrollRange = FormMain.MainCanvas(0).GetScrollMax(pdo_Horizontal) - FormMain.MainCanvas(0).GetScrollMin(pdo_Horizontal)
+        vScrollRange = FormMain.MainCanvas(0).GetScrollMax(pdo_Vertical) - FormMain.MainCanvas(0).GetScrollMin(pdo_Vertical)
+        newHScroll = (xRatio * hScrollRange) + FormMain.MainCanvas(0).GetScrollMin(pdo_Horizontal)
+        newVscroll = (yRatio * vScrollRange) + FormMain.MainCanvas(0).GetScrollMin(pdo_Vertical)
         
         'Assign the new scrollbar values, then request a viewport refresh
         FormMain.MainCanvas(0).SetRedrawSuspension True
-        FormMain.MainCanvas(0).SetScrollValue PD_HORIZONTAL, newHScroll
-        FormMain.MainCanvas(0).SetScrollValue PD_VERTICAL, newVscroll
+        FormMain.MainCanvas(0).SetScrollValue pdo_Horizontal, newHScroll
+        FormMain.MainCanvas(0).SetScrollValue pdo_Vertical, newVscroll
         FormMain.MainCanvas(0).SetRedrawSuspension False
         
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)

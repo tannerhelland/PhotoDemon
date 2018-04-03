@@ -145,14 +145,14 @@ End Enum
 #End If
 
 'Orientation (used in a whole bunch of different situations)
-Public Enum PD_ORIENTATION
-    PD_HORIZONTAL = 0
-    PD_VERTICAL = 1
-    PD_BOTH = 2
+Public Enum PD_Orientation
+    pdo_Horizontal = 0
+    pdo_Vertical = 1
+    pdo_Both = 2
 End Enum
 
 #If False Then
-    Private Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
+    Private Const pdo_Horizontal = 0, pdo_Vertical = 1, pdo_Both = 2
 #End If
 
 'Some PhotoDemon actions can operate on the whole image, or on just a specific layer (e.g. resize).  When initiating

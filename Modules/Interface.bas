@@ -682,7 +682,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'View (top-menu level)
         Case PDUI_View
-            If (FormMain.MnuView.Enabled <> newState) Then FormMain.MnuView.Enabled = newState
+            If (FormMain.MnuViewTop.Enabled <> newState) Then FormMain.MnuViewTop.Enabled = newState
         
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case PDUI_ImageMenu

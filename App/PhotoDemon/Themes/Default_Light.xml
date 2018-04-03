@@ -432,6 +432,13 @@
 				<Background>BackgroundDefault</Background>
 			</PDResize>
 			
+			<PDRuler>
+				<Background>BackgroundDefault</Background>
+				<Text>TextDefault</Text>
+				<Notch>GrayDefault></Notch>
+				<Mouse>AccentDefault</Mouse>
+			</PDRuler>
+			
 			<PDScrollBar>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>
 				<ButtonFill>BackgroundDefault</ButtonFill>

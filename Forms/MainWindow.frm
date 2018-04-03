@@ -238,60 +238,6 @@ Begin VB.Form FormMain
          Index           =   14
       End
    End
-   Begin VB.Menu MnuView 
-      Caption         =   "&View"
-      Begin VB.Menu MnuFitOnScreen 
-         Caption         =   "&Fit image on screen"
-      End
-      Begin VB.Menu MnuViewSepBar0 
-         Caption         =   "-"
-      End
-      Begin VB.Menu MnuZoomIn 
-         Caption         =   "Zoom &in"
-      End
-      Begin VB.Menu MnuZoomOut 
-         Caption         =   "Zoom &out"
-      End
-      Begin VB.Menu MnuViewSepBar1 
-         Caption         =   "-"
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "16:1 (1600%)"
-         Index           =   0
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "8:1 (800%)"
-         Index           =   1
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "4:1 (400%)"
-         Index           =   2
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "2:1 (200%)"
-         Index           =   3
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "1:1 (actual size, 100%)"
-         Index           =   4
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "1:2 (50%)"
-         Index           =   5
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "1:4 (25%)"
-         Index           =   6
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "1:8 (12.5%)"
-         Index           =   7
-      End
-      Begin VB.Menu MnuSpecificZoom 
-         Caption         =   "1:16 (6.25%)"
-         Index           =   8
-      End
-   End
    Begin VB.Menu MnuImageTop 
       Caption         =   "&Image"
       Begin VB.Menu MnuImage 
@@ -1414,6 +1360,73 @@ Begin VB.Form FormMain
          Caption         =   "Test"
       End
    End
+   Begin VB.Menu MnuViewTop 
+      Caption         =   "&View"
+      Begin VB.Menu MnuView 
+         Caption         =   "&Fit image on screen"
+         Index           =   0
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Zoom &in"
+         Index           =   2
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Zoom &out"
+         Index           =   3
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Zoom to value"
+         Index           =   4
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "16:1 (1600%)"
+            Index           =   0
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "8:1 (800%)"
+            Index           =   1
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "4:1 (400%)"
+            Index           =   2
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "2:1 (200%)"
+            Index           =   3
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "1:1 (actual size, 100%)"
+            Index           =   4
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "1:2 (50%)"
+            Index           =   5
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "1:4 (25%)"
+            Index           =   6
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "1:8 (12.5%)"
+            Index           =   7
+         End
+         Begin VB.Menu MnuSpecificZoom 
+            Caption         =   "1:16 (6.25%)"
+            Index           =   8
+         End
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "-"
+         Index           =   5
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Show rulers"
+         Index           =   6
+      End
+   End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
       Begin VB.Menu MnuWindow 
@@ -2369,6 +2382,46 @@ Private Sub MnuRecordMacro_Click(Index As Integer)
     
 End Sub
 
+Private Sub MnuView_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Fit on screen
+        Case 0
+            CanvasManager.FitOnScreen
+            
+        'Separator
+        Case 1
+        
+        'Zoom in
+        Case 2
+            If FormMain.MainCanvas(0).IsZoomEnabled Then
+                If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
+            End If
+        
+        'Zoom out
+        Case 3
+            If FormMain.MainCanvas(0).IsZoomEnabled Then
+                If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
+            End If
+        
+        'Zoom to value (top level
+        Case 4
+        
+        'Separator
+        Case 5
+        
+        'Show rulers
+        Case 6
+            Dim newRulerState As Boolean
+            newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
+            FormMain.MnuView(6).Checked = newRulerState
+            FormMain.MainCanvas(0).SetRulerVisibility newRulerState
+        
+    End Select
+
+End Sub
+
 Private Sub MnuWindowToolbox_Click(Index As Integer)
     
     Select Case Index
@@ -2495,14 +2548,10 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         If .HotKeyName(acceleratorIndex) = "FitOnScreen" Then FitOnScreen
         
         'Zoom in
-        If .HotKeyName(acceleratorIndex) = "Zoom_In" Then
-            Call MnuZoomIn_Click
-        End If
+        If .HotKeyName(acceleratorIndex) = "Zoom_In" Then Call MnuView_Click(3)
         
         'Zoom out
-        If .HotKeyName(acceleratorIndex) = "Zoom_Out" Then
-            Call MnuZoomOut_Click
-        End If
+        If .HotKeyName(acceleratorIndex) = "Zoom_Out" Then Call MnuView_Click(4)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
@@ -3419,10 +3468,6 @@ Private Sub MnuFileExport_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuFitOnScreen_Click()
-    CanvasManager.FitOnScreen
-End Sub
-
 'All help menu entries are launched from here
 Private Sub MnuHelp_Click(Index As Integer)
 
@@ -4266,19 +4311,6 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-'Zoom in/out rely on the g_Zoom object to calculate a new value
-Private Sub MnuZoomIn_Click()
-    If FormMain.MainCanvas(0).IsZoomEnabled Then
-        If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
-    End If
-End Sub
-
-Private Sub MnuZoomOut_Click()
-    If FormMain.MainCanvas(0).IsZoomEnabled Then
-        If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
-    End If
 End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,

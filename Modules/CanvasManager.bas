@@ -132,8 +132,8 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
         FormMain.MainCanvas(0).SetRedrawSuspension True
         
         'Set both canvas scrollbars to their midpoint
-        FormMain.MainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.MainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.MainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
-        FormMain.MainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.MainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.MainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
+        FormMain.MainCanvas(0).SetScrollValue pdo_Horizontal, (FormMain.MainCanvas(0).GetScrollMin(pdo_Horizontal) + FormMain.MainCanvas(0).GetScrollMax(pdo_Horizontal)) / 2
+        FormMain.MainCanvas(0).SetScrollValue pdo_Vertical, (FormMain.MainCanvas(0).GetScrollMin(pdo_Vertical) + FormMain.MainCanvas(0).GetScrollMax(pdo_Vertical)) / 2
         
         'Re-enable scrolling
         FormMain.MainCanvas(0).SetRedrawSuspension False
@@ -485,8 +485,8 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
     ' making sure a scratch layer exists, and that it matches the current image's size.)
     Tools.InitializeToolsDependentOnImage
-    pdDebug.LogAction "CanvasManager.ActivatePDImage says: image #" & g_CurrentImage & " - " & Interface.GetWindowCaption(pdImages(g_CurrentImage), False) & " - was activated because " & reasonForActivation
-    pdDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "CanvasManager.ActivatePDImage says: image #" & g_CurrentImage & " - " & Interface.GetWindowCaption(pdImages(g_CurrentImage), False) & " - was activated because " & reasonForActivation
+    PDDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
         
 End Sub
 
