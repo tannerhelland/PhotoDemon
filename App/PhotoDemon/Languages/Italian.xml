@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.343</langversion>
+<langversion>6.7.344</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -6614,13 +6614,13 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>Falso (Rapido) Floyd-Steinberg</translation>
+<original>Single neighbor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>Genuino Floyd-Steinberg</translation>
+<original>Floyd-Steinberg</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15374,6 +15374,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- As of this build, PhotoDemon contains 4688 phrases. -->
 <!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12505 total words. -->
+<!-- These 2575 phrases contain approximately 12503 total words. -->
 
 </pdData>

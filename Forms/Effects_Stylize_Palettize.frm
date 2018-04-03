@@ -397,8 +397,8 @@ Private Sub Form_Load()
         cboDither(i).AddItem "None", 0
         cboDither(i).AddItem "Ordered (Bayer 4x4)", 1
         cboDither(i).AddItem "Ordered (Bayer 8x8)", 2
-        cboDither(i).AddItem "False (Fast) Floyd-Steinberg", 3
-        cboDither(i).AddItem "Genuine Floyd-Steinberg", 4
+        cboDither(i).AddItem "Single neighbor", 3
+        cboDither(i).AddItem "Floyd-Steinberg", 4
         cboDither(i).AddItem "Jarvis, Judice, and Ninke", 5
         cboDither(i).AddItem "Stucki", 6
         cboDither(i).AddItem "Burkes", 7

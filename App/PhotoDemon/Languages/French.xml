@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.343</langversion>
+<langversion>6.7.344</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -6615,13 +6615,13 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>Faux (rapide) de Floyd-Steinberg</translation>
+<original>Single neighbor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>Véritable Floyd -Steinberg</translation>
+<original>Floyd-Steinberg</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15377,6 +15377,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- As of this build, PhotoDemon contains 4688 phrases. -->
 <!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12505 total words. -->
+<!-- These 2575 phrases contain approximately 12503 total words. -->
 
 </pdData>

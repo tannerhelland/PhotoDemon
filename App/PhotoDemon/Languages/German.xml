@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.353</langversion>
+<langversion>7.2.354</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6616,13 +6616,13 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>Unechter (Schnell) Floyd-Steinberg</translation>
+<original>Single neighbor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>Echter Floyd-Steinberg</translation>
+<original>Floyd-Steinberg</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15376,6 +15376,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4688 phrases. -->
 <!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12505 total words. -->
+<!-- These 2575 phrases contain approximately 12503 total words. -->
 
 </pdData>

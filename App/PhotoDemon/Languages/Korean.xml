@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.11</langversion>
+<langversion>1.0.12</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6609,13 +6609,13 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>거짓 (빠른) 플로이드 - 스타인버그</translation>
+<original>Single neighbor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>정품 Floyd-Steinberg</translation>
+<original>Floyd-Steinberg</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15370,6 +15370,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- As of this build, PhotoDemon contains 4688 phrases. -->
 <!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12505 total words. -->
+<!-- These 2575 phrases contain approximately 12503 total words. -->
 
 </pdData>

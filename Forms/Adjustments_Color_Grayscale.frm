@@ -108,8 +108,8 @@ Attribute VB_Exposed = False
 'Grayscale Conversion Handler
 'Copyright 2002-2018 by Tanner Helland
 'Created: 1/12/02
-'Last updated: 20/July/17
-'Last update: migrate to XML params, simplify a bunch of code
+'Last updated: 02/April/18
+'Last update: add "single neighbor" as a dithering option
 '
 'Updated version of the grayscale handler; utilizes five different methods (average, ISU, desaturate, max/min decomposition,
 ' single color channel) with the option for variable # of gray shades with/without dithering for all available methods. A
@@ -321,16 +321,16 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
-        imageData(quickVal + 2, y) = LookUp(grayVal)
-        imageData(quickVal + 1, y) = LookUp(grayVal)
         imageData(quickVal, y) = LookUp(grayVal)
+        imageData(quickVal + 1, y) = LookUp(grayVal)
+        imageData(quickVal + 2, y) = LookUp(grayVal)
         
     Next y
         If Not suppressMessages Then
@@ -349,7 +349,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 End Function
 
 'Reduce to X # gray shades (dithered)
-Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMethod As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Point an array at the source DIB's image data
     Dim imageData() As Byte
@@ -397,45 +397,42 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         LookUp(x) = grayVal
     Next x
     
-    Dim DitherTable() As Byte
+    Dim ditherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Double
     Dim dDivisor As Double
     Dim l As Long, newL As Long
     
     'Start by preparing a dithering table, which is obviously dependent on the requested dithering method
-    Select Case DitherMethod
+    Select Case ditherMethod
         
         'No dithering
         Case 0
         
-        'False Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        'Basic error-diffusion.  Errors are only propagated one pixel to the right.
         Case 1
         
             'First, prepare a dither table
-            ReDim DitherTable(0 To 1, 0 To 1) As Byte
+            ReDim ditherTable(0 To 1, 0) As Byte
             
-            DitherTable(1, 0) = 3
-            DitherTable(0, 1) = 3
-            DitherTable(1, 1) = 2
-            
-            dDivisor = 8
+            ditherTable(1, 0) = 1
+            dDivisor = 1
         
             'Second, mark the size of the array in the left, right, and down directions
             xLeft = 0
             xRight = 1
-            yDown = 1
+            yDown = 0
             
         'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 2
         
             'First, prepare a Floyd-Steinberg dither table
-            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            ReDim ditherTable(-1 To 1, 0 To 1) As Byte
             
-            DitherTable(1, 0) = 7
-            DitherTable(-1, 1) = 3
-            DitherTable(0, 1) = 5
-            DitherTable(1, 1) = 1
+            ditherTable(1, 0) = 7
+            ditherTable(-1, 1) = 3
+            ditherTable(0, 1) = 5
+            ditherTable(1, 1) = 1
             
             dDivisor = 16
         
@@ -448,22 +445,22 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 3
         
             'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            ReDim ditherTable(-2 To 2, 0 To 2) As Byte
             
-            DitherTable(1, 0) = 7
-            DitherTable(2, 0) = 5
+            ditherTable(1, 0) = 7
+            ditherTable(2, 0) = 5
             
-            DitherTable(-2, 1) = 3
-            DitherTable(-1, 1) = 5
-            DitherTable(0, 1) = 7
-            DitherTable(1, 1) = 5
-            DitherTable(2, 1) = 3
+            ditherTable(-2, 1) = 3
+            ditherTable(-1, 1) = 5
+            ditherTable(0, 1) = 7
+            ditherTable(1, 1) = 5
+            ditherTable(2, 1) = 3
             
-            DitherTable(-2, 2) = 1
-            DitherTable(-1, 2) = 3
-            DitherTable(0, 2) = 5
-            DitherTable(1, 2) = 3
-            DitherTable(2, 2) = 1
+            ditherTable(-2, 2) = 1
+            ditherTable(-1, 2) = 3
+            ditherTable(0, 2) = 5
+            ditherTable(1, 2) = 3
+            ditherTable(2, 2) = 1
             
             dDivisor = 48
         
@@ -476,22 +473,22 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 4
         
             'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            ReDim ditherTable(-2 To 2, 0 To 2) As Byte
             
-            DitherTable(1, 0) = 8
-            DitherTable(2, 0) = 4
+            ditherTable(1, 0) = 8
+            ditherTable(2, 0) = 4
             
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 8
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
+            ditherTable(-2, 1) = 2
+            ditherTable(-1, 1) = 4
+            ditherTable(0, 1) = 8
+            ditherTable(1, 1) = 4
+            ditherTable(2, 1) = 2
             
-            DitherTable(-2, 2) = 1
-            DitherTable(-1, 2) = 2
-            DitherTable(0, 2) = 4
-            DitherTable(1, 2) = 2
-            DitherTable(2, 2) = 1
+            ditherTable(-2, 2) = 1
+            ditherTable(-1, 2) = 2
+            ditherTable(0, 2) = 4
+            ditherTable(1, 2) = 2
+            ditherTable(2, 2) = 1
             
             dDivisor = 42
         
@@ -504,16 +501,16 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 5
         
             'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            ReDim ditherTable(-2 To 2, 0 To 1) As Byte
             
-            DitherTable(1, 0) = 8
-            DitherTable(2, 0) = 4
+            ditherTable(1, 0) = 8
+            ditherTable(2, 0) = 4
             
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 8
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
+            ditherTable(-2, 1) = 2
+            ditherTable(-1, 1) = 4
+            ditherTable(0, 1) = 8
+            ditherTable(1, 1) = 4
+            ditherTable(2, 1) = 2
             
             dDivisor = 32
         
@@ -526,22 +523,22 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 6
         
             'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
+            ReDim ditherTable(-2 To 2, 0 To 2) As Byte
             
-            DitherTable(1, 0) = 5
-            DitherTable(2, 0) = 3
+            ditherTable(1, 0) = 5
+            ditherTable(2, 0) = 3
             
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 5
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
+            ditherTable(-2, 1) = 2
+            ditherTable(-1, 1) = 4
+            ditherTable(0, 1) = 5
+            ditherTable(1, 1) = 4
+            ditherTable(2, 1) = 2
             
-            DitherTable(-2, 2) = 0
-            DitherTable(-1, 2) = 2
-            DitherTable(0, 2) = 3
-            DitherTable(1, 2) = 2
-            DitherTable(2, 2) = 0
+            ditherTable(-2, 2) = 0
+            ditherTable(-1, 2) = 2
+            ditherTable(0, 2) = 3
+            ditherTable(1, 2) = 2
+            ditherTable(2, 2) = 0
             
             dDivisor = 32
         
@@ -554,16 +551,16 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 7
         
             'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
+            ReDim ditherTable(-2 To 2, 0 To 1) As Byte
             
-            DitherTable(1, 0) = 4
-            DitherTable(2, 0) = 3
+            ditherTable(1, 0) = 4
+            ditherTable(2, 0) = 3
             
-            DitherTable(-2, 1) = 1
-            DitherTable(-1, 1) = 2
-            DitherTable(0, 1) = 3
-            DitherTable(1, 1) = 2
-            DitherTable(2, 1) = 1
+            ditherTable(-2, 1) = 1
+            ditherTable(-1, 1) = 2
+            ditherTable(0, 1) = 3
+            ditherTable(1, 1) = 2
+            ditherTable(2, 1) = 1
             
             dDivisor = 16
         
@@ -576,12 +573,12 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 8
         
             'First, prepare a dither table
-            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            ReDim ditherTable(-1 To 1, 0 To 1) As Byte
             
-            DitherTable(1, 0) = 2
+            ditherTable(1, 0) = 2
 
-            DitherTable(-1, 1) = 1
-            DitherTable(0, 1) = 1
+            ditherTable(-1, 1) = 1
+            ditherTable(0, 1) = 1
             
             dDivisor = 4
         
@@ -596,16 +593,16 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Case 9
         
             'First, prepare a dither table
-            ReDim DitherTable(-1 To 2, 0 To 2) As Byte
+            ReDim ditherTable(-1 To 2, 0 To 2) As Byte
             
-            DitherTable(1, 0) = 1
-            DitherTable(2, 0) = 1
+            ditherTable(1, 0) = 1
+            ditherTable(2, 0) = 1
             
-            DitherTable(-1, 1) = 1
-            DitherTable(0, 1) = 1
-            DitherTable(1, 1) = 1
+            ditherTable(-1, 1) = 1
+            ditherTable(0, 1) = 1
+            ditherTable(1, 1) = 1
             
-            DitherTable(0, 2) = 1
+            ditherTable(0, 2) = 1
             
             dDivisor = 8
         
@@ -618,7 +615,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
     
     
     'With out dithering table complete, we can now proceed to process the image
-    If DitherMethod > 0 Then
+    If ditherMethod > 0 Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
@@ -626,7 +623,6 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         ReDim dErrors(0 To workingDIB.GetDIBWidth, 0 To workingDIB.GetDIBHeight) As Single
         
         Dim i As Long, j As Long
-        
         Dim quickX As Long, QuickY As Long
         
         'Now loop through the image, calculating errors as we go
@@ -636,31 +632,31 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
             quickVal = x * qvDepth
             
             'Get the source pixel color values.  Because we know the image we're handed is already going to be grayscale,
-            ' we can shortcut this calculation by only grabbing the red channel.
-            g = imageData(quickVal + 2, y)
+            ' we can shortcut this calculation by only grabbing one channel.
+            g = imageData(quickVal, y)
             
             'Convert those to a luminance value and add the value of the error at this location
             l = g + dErrors(x, y)
             
             'Convert that to a lookup-table-safe luminance (e.g. 0-255)
-            If l < 0 Then
+            If (l < 0) Then
                 newL = 0
-            ElseIf l > 255 Then
+            ElseIf (l > 255) Then
                 newL = 255
             Else
                 newL = l
             End If
             
             'Write the new luminance value out to the image array
-            imageData(quickVal + 2, y) = LookUp(newL)
-            imageData(quickVal + 1, y) = LookUp(newL)
             imageData(quickVal, y) = LookUp(newL)
+            imageData(quickVal + 1, y) = LookUp(newL)
+            imageData(quickVal + 2, y) = LookUp(newL)
             
             'Calculate an error for this calculation
             errorVal = l - LookUp(newL)
             
             'If there is an error, spread it
-            If errorVal <> 0 Then
+            If (errorVal <> 0) Then
             
                 'Now, spread that error across the relevant pixels according to the dither table formula
                 For i = xLeft To xRight
@@ -670,18 +666,18 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
                     If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                     
                     'Second, ignore pixels that have a zero in the dither table
-                    If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                    If (ditherTable(i, j) = 0) Then GoTo NextDitheredPixel
                     
                     quickX = x + i
                     QuickY = y + j
                     
                     'Next, ignore target pixels that are off the image boundary
-                    If quickX < initX Then GoTo NextDitheredPixel
-                    If quickX > finalX Then GoTo NextDitheredPixel
-                    If QuickY > finalY Then GoTo NextDitheredPixel
+                    If (quickX < initX) Then GoTo NextDitheredPixel
+                    If (quickX > finalX) Then GoTo NextDitheredPixel
+                    If (QuickY > finalY) Then GoTo NextDitheredPixel
                     
                     'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                    dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
                 
 NextDitheredPixel:     Next j
                 Next i
@@ -759,9 +755,9 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -830,13 +826,13 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
-        If grayVal > 255 Then grayVal = 255
+        If (grayVal > 255) Then grayVal = 255
         
         'Assign that gray value to each color channel
         imageData(quickVal, y) = grayVal
@@ -902,9 +898,9 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
         grayVal = CByte(GetLuminance(r, g, b))
@@ -973,9 +969,9 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Find the highest or lowest of the RGB values
         If maxOrMin = 0 Then grayVal = CByte(Min3Int(r, g, b)) Else grayVal = CByte(Max3Int(r, g, b))
@@ -1044,9 +1040,9 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
         b = imageData(quickVal, y)
+        g = imageData(quickVal + 1, y)
+        r = imageData(quickVal + 2, y)
         
         'Assign the gray value to a single color channel based on the value of cChannel
         Select Case cChannel
@@ -1086,25 +1082,25 @@ Private Sub Form_Load()
     
     'Set up the grayscale options combo box
     cboMethod.Clear
-    cboMethod.AddItem " Fastest Calculation (average value)", 0
-    cboMethod.AddItem " Highest Quality (ITU Standard)", 1
-    cboMethod.AddItem " Desaturate", 2
-    cboMethod.AddItem " Decompose", 3
-    cboMethod.AddItem " Single color channel", 4
+    cboMethod.AddItem "Fastest Calculation (average value)", 0
+    cboMethod.AddItem "Highest Quality (ITU Standard)", 1
+    cboMethod.AddItem "Desaturate", 2
+    cboMethod.AddItem "Decompose", 3
+    cboMethod.AddItem "Single color channel", 4
     cboMethod.ListIndex = 1
     
     'Populate the dither combobox
     cboDithering.Clear
-    cboDithering.AddItem " None", 0
-    cboDithering.AddItem " False (Fast) Floyd-Steinberg", 1
-    cboDithering.AddItem " Genuine Floyd-Steinberg", 2
-    cboDithering.AddItem " Jarvis, Judice, and Ninke", 3
-    cboDithering.AddItem " Stucki", 4
-    cboDithering.AddItem " Burkes", 5
-    cboDithering.AddItem " Sierra-3", 6
-    cboDithering.AddItem " Two-Row Sierra", 7
-    cboDithering.AddItem " Sierra Lite", 8
-    cboDithering.AddItem " Atkinson / Classic Macintosh", 9
+    cboDithering.AddItem "None", 0
+    cboDithering.AddItem "Single neighbor", 1
+    cboDithering.AddItem "Floyd-Steinberg", 2
+    cboDithering.AddItem "Jarvis, Judice, and Ninke", 3
+    cboDithering.AddItem "Stucki", 4
+    cboDithering.AddItem "Burkes", 5
+    cboDithering.AddItem "Sierra-3", 6
+    cboDithering.AddItem "Two-Row Sierra", 7
+    cboDithering.AddItem "Sierra Lite", 8
+    cboDithering.AddItem "Atkinson / Classic Macintosh", 9
     cboDithering.ListIndex = 0
     
     'Populate any other per-method controls

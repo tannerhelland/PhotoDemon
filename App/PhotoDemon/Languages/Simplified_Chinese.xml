@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3422</langversion>
+<langversion>7.0.3423</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -6604,13 +6604,13 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>False (Fast) Floyd-Steinberg</original>
-<translation>Floyd- Steinberg虚假（快速）</translation>
+<original>Single neighbor</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Genuine Floyd-Steinberg</original>
-<translation>斯坦伯格弗洛依德</translation>
+<original>Floyd-Steinberg</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15360,6 +15360,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 4688 phrases. -->
 <!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12505 total words. -->
+<!-- These 2575 phrases contain approximately 12503 total words. -->
 
 </pdData>

@@ -496,7 +496,7 @@ Public Type PDThemeColor
     baseColor As Long
     disabledColor As Long
     ActiveColor As Long
-    HoverColor As Long
+    hoverColor As Long
     ActiveHoverColor As Long
 End Type
 
@@ -601,7 +601,7 @@ Public Enum PD_DITHER_METHOD
     PDDM_None = 0
     PDDM_Ordered_Bayer4x4 = 1
     PDDM_Ordered_Bayer8x8 = 2
-    PDDM_FalseFloydSteinberg = 3
+    PDDM_SingleNeighbor = 3
     PDDM_FloydSteinberg = 4
     PDDM_JarvisJudiceNinke = 5
     PDDM_Stucki = 6
@@ -613,7 +613,7 @@ Public Enum PD_DITHER_METHOD
 End Enum
 
 #If False Then
-    Private Const PDDM_None = 0, PDDM_Ordered_Bayer4x4 = 1, PDDM_Ordered_Bayer8x8 = 2, PDDM_FalseFloydSteinberg = 3, PDDM_FloydSteinberg = 4, PDDM_JarvisJudiceNinke = 5, PDDM_Stucki = 6, PDDM_Burkes = 7, PDDM_Sierra3 = 8, PDDM_SierraTwoRow = 9, PDDM_SierraLite = 10, PDDM_Atkinson = 11
+    Private Const PDDM_None = 0, PDDM_Ordered_Bayer4x4 = 1, PDDM_Ordered_Bayer8x8 = 2, PDDM_SingleNeighbor = 3, PDDM_FloydSteinberg = 4, PDDM_JarvisJudiceNinke = 5, PDDM_Stucki = 6, PDDM_Burkes = 7, PDDM_Sierra3 = 8, PDDM_SierraTwoRow = 9, PDDM_SierraLite = 10, PDDM_Atkinson = 11
 #End If
 
 'Points of interest.  These are typically used to associate a current mouse position with a relevant point in the active object

@@ -131,8 +131,8 @@ Attribute VB_Exposed = False
 'Monochrome Conversion Form
 'Copyright 2002-2018 by Tanner Helland
 'Created: some time 2002
-'Last updated: 07/June/16
-'Last update: add option for stripping transparency from the image
+'Last updated: 02/April/18
+'Last update: add "single neighbor" as a dithering option
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -211,8 +211,8 @@ Private Sub Form_Load()
     lstDither.AddItem "None", 0
     lstDither.AddItem "Ordered (Bayer 4x4)", 1
     lstDither.AddItem "Ordered (Bayer 8x8)", 2
-    lstDither.AddItem "False (Fast) Floyd-Steinberg", 3
-    lstDither.AddItem "Genuine Floyd-Steinberg", 4
+    lstDither.AddItem "Single neighbor", 3
+    lstDither.AddItem "Floyd-Steinberg", 4
     lstDither.AddItem "Jarvis, Judice, and Ninke", 5
     lstDither.AddItem "Stucki", 6
     lstDither.AddItem "Burkes", 7
@@ -245,7 +245,7 @@ Private Function CalculateOptimalThreshold() As Long
     Dim imageData() As Byte
     Dim tmpSA As SafeArray2D
     
-    EffectPrep.PrepImageData tmpSA
+    EffectPrep.PrepImageData tmpSA, True, pdFxPreview
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -309,7 +309,7 @@ Private Function CalculateOptimalThreshold() As Long
     Loop While pixelCount < numOfPixels
     
     'Make sure our suggestion doesn't exceed the limits allowed by the tool
-    If x > 254 Then x = 220
+    If (x > 254) Then x = 220
     
     CalculateOptimalThreshold = x
         
@@ -383,7 +383,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Dim r As Long, g As Long, b As Long
     Dim l As Long, newL As Long
     Dim xModQuick As Long
-    Dim DitherTable() As Byte
+    Dim ditherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Single
     Dim dDivisor As Single
@@ -432,32 +432,32 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         Case 1
         
             'First, prepare a Bayer dither table
-            ReDim DitherTable(0 To 3, 0 To 3) As Byte
+            ReDim ditherTable(0 To 3, 0 To 3) As Byte
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 9
-            DitherTable(0, 2) = 3
-            DitherTable(0, 3) = 11
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 9
+            ditherTable(0, 2) = 3
+            ditherTable(0, 3) = 11
             
-            DitherTable(1, 0) = 13
-            DitherTable(1, 1) = 5
-            DitherTable(1, 2) = 15
-            DitherTable(1, 3) = 7
+            ditherTable(1, 0) = 13
+            ditherTable(1, 1) = 5
+            ditherTable(1, 2) = 15
+            ditherTable(1, 3) = 7
             
-            DitherTable(2, 0) = 4
-            DitherTable(2, 1) = 12
-            DitherTable(2, 2) = 2
-            DitherTable(2, 3) = 10
+            ditherTable(2, 0) = 4
+            ditherTable(2, 1) = 12
+            ditherTable(2, 2) = 2
+            ditherTable(2, 3) = 10
             
-            DitherTable(3, 0) = 16
-            DitherTable(3, 1) = 8
-            DitherTable(3, 2) = 14
-            DitherTable(3, 3) = 6
+            ditherTable(3, 0) = 16
+            ditherTable(3, 1) = 8
+            ditherTable(3, 2) = 14
+            ditherTable(3, 3) = 6
     
             'Convert the dither entries to 255-based values
             For x = 0 To 3
             For y = 0 To 3
-                DitherTable(x, y) = DitherTable(x, y) * 16 - 1
+                ditherTable(x, y) = ditherTable(x, y) * 16 - 1
             Next y
             Next x
             
@@ -475,7 +475,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                 b = imageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
+                l = GetLuminance(r, g, b) + ditherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -502,84 +502,84 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         Case 2
         
             'First, prepare a Bayer dither table
-            ReDim DitherTable(0 To 7, 0 To 7) As Byte
+            ReDim ditherTable(0 To 7, 0 To 7) As Byte
             
-            DitherTable(0, 0) = 1
-            DitherTable(0, 1) = 49
-            DitherTable(0, 2) = 13
-            DitherTable(0, 3) = 61
-            DitherTable(0, 4) = 4
-            DitherTable(0, 5) = 52
-            DitherTable(0, 6) = 16
-            DitherTable(0, 7) = 64
+            ditherTable(0, 0) = 1
+            ditherTable(0, 1) = 49
+            ditherTable(0, 2) = 13
+            ditherTable(0, 3) = 61
+            ditherTable(0, 4) = 4
+            ditherTable(0, 5) = 52
+            ditherTable(0, 6) = 16
+            ditherTable(0, 7) = 64
             
-            DitherTable(1, 0) = 33
-            DitherTable(1, 1) = 17
-            DitherTable(1, 2) = 45
-            DitherTable(1, 3) = 29
-            DitherTable(1, 4) = 36
-            DitherTable(1, 5) = 20
-            DitherTable(1, 6) = 48
-            DitherTable(1, 7) = 32
+            ditherTable(1, 0) = 33
+            ditherTable(1, 1) = 17
+            ditherTable(1, 2) = 45
+            ditherTable(1, 3) = 29
+            ditherTable(1, 4) = 36
+            ditherTable(1, 5) = 20
+            ditherTable(1, 6) = 48
+            ditherTable(1, 7) = 32
             
-            DitherTable(2, 0) = 9
-            DitherTable(2, 1) = 57
-            DitherTable(2, 2) = 5
-            DitherTable(2, 3) = 53
-            DitherTable(2, 4) = 12
-            DitherTable(2, 5) = 60
-            DitherTable(2, 6) = 8
-            DitherTable(2, 7) = 56
+            ditherTable(2, 0) = 9
+            ditherTable(2, 1) = 57
+            ditherTable(2, 2) = 5
+            ditherTable(2, 3) = 53
+            ditherTable(2, 4) = 12
+            ditherTable(2, 5) = 60
+            ditherTable(2, 6) = 8
+            ditherTable(2, 7) = 56
             
-            DitherTable(3, 0) = 41
-            DitherTable(3, 1) = 25
-            DitherTable(3, 2) = 37
-            DitherTable(3, 3) = 21
-            DitherTable(3, 4) = 44
-            DitherTable(3, 5) = 28
-            DitherTable(3, 6) = 40
-            DitherTable(3, 7) = 24
+            ditherTable(3, 0) = 41
+            ditherTable(3, 1) = 25
+            ditherTable(3, 2) = 37
+            ditherTable(3, 3) = 21
+            ditherTable(3, 4) = 44
+            ditherTable(3, 5) = 28
+            ditherTable(3, 6) = 40
+            ditherTable(3, 7) = 24
             
-            DitherTable(4, 0) = 3
-            DitherTable(4, 1) = 51
-            DitherTable(4, 2) = 15
-            DitherTable(4, 3) = 63
-            DitherTable(4, 4) = 2
-            DitherTable(4, 5) = 50
-            DitherTable(4, 6) = 14
-            DitherTable(4, 7) = 62
+            ditherTable(4, 0) = 3
+            ditherTable(4, 1) = 51
+            ditherTable(4, 2) = 15
+            ditherTable(4, 3) = 63
+            ditherTable(4, 4) = 2
+            ditherTable(4, 5) = 50
+            ditherTable(4, 6) = 14
+            ditherTable(4, 7) = 62
             
-            DitherTable(5, 0) = 35
-            DitherTable(5, 1) = 19
-            DitherTable(5, 2) = 47
-            DitherTable(5, 3) = 31
-            DitherTable(5, 4) = 34
-            DitherTable(5, 5) = 18
-            DitherTable(5, 6) = 46
-            DitherTable(5, 7) = 30
+            ditherTable(5, 0) = 35
+            ditherTable(5, 1) = 19
+            ditherTable(5, 2) = 47
+            ditherTable(5, 3) = 31
+            ditherTable(5, 4) = 34
+            ditherTable(5, 5) = 18
+            ditherTable(5, 6) = 46
+            ditherTable(5, 7) = 30
     
-            DitherTable(6, 0) = 11
-            DitherTable(6, 1) = 59
-            DitherTable(6, 2) = 7
-            DitherTable(6, 3) = 55
-            DitherTable(6, 4) = 10
-            DitherTable(6, 5) = 58
-            DitherTable(6, 6) = 6
-            DitherTable(6, 7) = 54
+            ditherTable(6, 0) = 11
+            ditherTable(6, 1) = 59
+            ditherTable(6, 2) = 7
+            ditherTable(6, 3) = 55
+            ditherTable(6, 4) = 10
+            ditherTable(6, 5) = 58
+            ditherTable(6, 6) = 6
+            ditherTable(6, 7) = 54
             
-            DitherTable(7, 0) = 43
-            DitherTable(7, 1) = 27
-            DitherTable(7, 2) = 39
-            DitherTable(7, 3) = 23
-            DitherTable(7, 4) = 42
-            DitherTable(7, 5) = 26
-            DitherTable(7, 6) = 38
-            DitherTable(7, 7) = 22
+            ditherTable(7, 0) = 43
+            ditherTable(7, 1) = 27
+            ditherTable(7, 2) = 39
+            ditherTable(7, 3) = 23
+            ditherTable(7, 4) = 42
+            ditherTable(7, 5) = 26
+            ditherTable(7, 6) = 38
+            ditherTable(7, 7) = 22
             
             'Convert the dither entries to 255-based values
             For x = 0 To 7
             For y = 0 To 7
-                DitherTable(x, y) = DitherTable(x, y) * 4 - 1
+                ditherTable(x, y) = ditherTable(x, y) * 4 - 1
             Next y
             Next x
 
@@ -597,7 +597,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                 b = imageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
+                l = GetLuminance(r, g, b) + ditherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
@@ -623,48 +623,48 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         ' /Modules/Palettes.bas file.  (We do this because other functions also need to retrieve these tables,
         ' e.g. the Effects > Stylize > Palettize menu.)
         
-        'False Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
+        'Single neighbor.  Simplest form of error-diffusion.
         Case 3
-            Palettes.GetDitherTable PDDM_FalseFloydSteinberg, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_SingleNeighbor, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 4
-            Palettes.GetDitherTable PDDM_FloydSteinberg, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_FloydSteinberg, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Jarvis, Judice, Ninke.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 5
-            Palettes.GetDitherTable PDDM_JarvisJudiceNinke, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_JarvisJudiceNinke, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Stucki.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 6
-            Palettes.GetDitherTable PDDM_Stucki, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_Stucki, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Burkes.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 7
-            Palettes.GetDitherTable PDDM_Burkes, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_Burkes, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-3.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 8
-            Palettes.GetDitherTable PDDM_Sierra3, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_Sierra3, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-2.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 9
-            Palettes.GetDitherTable PDDM_SierraTwoRow, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_SierraTwoRow, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-2-4A.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 10
-            Palettes.GetDitherTable PDDM_SierraLite, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_SierraLite, ditherTable, dDivisor, xLeft, xRight, yDown
             
         'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw,
         ' and HyperCard.)  This is the dithering algorithm used on the original Apple Macintosh.
         ' Coefficients derived from http://gazs.github.com/canvas-atkinson-dither/
         Case 11
-            Palettes.GetDitherTable PDDM_Atkinson, DitherTable, dDivisor, xLeft, xRight, yDown
+            Palettes.GetDitherTable PDDM_Atkinson, ditherTable, dDivisor, xLeft, xRight, yDown
             
     End Select
     
     'If we have been asked to use a non-ordered dithering method, apply it now
-    If (ditherMethod >= PDDM_FalseFloydSteinberg) Then
+    If (ditherMethod >= PDDM_SingleNeighbor) Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
@@ -694,7 +694,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             newL = l + dErrors(x, y)
             
             'Check our modified luminance value against the threshold, and set new values accordingly
-            If newL >= cThreshold Then
+            If (newL >= cThreshold) Then
                 errorVal = newL - 255
                 imageData(xQuick, y) = highB
                 imageData(xQuick + 1, y) = highG
@@ -717,7 +717,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                     If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                     
                     'Second, ignore pixels that have a zero in the dither table
-                    If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                    If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                     
                     xQuickInner = x + i
                     yQuick = y + j
@@ -732,7 +732,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                     If (yQuick > finalY) Then GoTo NextDitheredPixel
                     
                     'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                    dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
                 
 NextDitheredPixel:     Next j
                 Next i
@@ -763,7 +763,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then MasterBlackWhiteConversion GetFunctionParamString, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MasterBlackWhiteConversion GetFunctionParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

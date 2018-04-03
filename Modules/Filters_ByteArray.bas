@@ -546,11 +546,12 @@ Public Function ThresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     
 End Function
 
-'Given a byte array, convert all values to 0 or 255 using a user-supplied threshold value and a given dithering type (currently
-' Floyd-Steinberg, but nothing prevents the use of other kernels).
+'Given a byte array, convert all values to 0 or 255 using a user-supplied threshold value and
+' a given dithering type (currently Floyd-Steinberg, but nothing prevents the use of other kernels).
 '
-'If the autoCalculateThreshold value is TRUE, the array will be scanned and the median value of the array will be used as the threshold.
-' (This should result in an image with a relatively even split between white and black pixels.)
+'If the autoCalculateThreshold value is TRUE, the array will be scanned and the median value of the
+' array will be used as the threshold.  (This should result in an image with a relatively even split
+' between white and black pixels.)
 Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -602,13 +603,13 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     Dim errorVal As Double
     Dim dDivisor As Double
     
-    Dim DitherTable() As Byte
-    ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+    Dim ditherTable() As Byte
+    ReDim ditherTable(-1 To 1, 0 To 1) As Byte
             
-    DitherTable(1, 0) = 7
-    DitherTable(-1, 1) = 3
-    DitherTable(0, 1) = 5
-    DitherTable(1, 1) = 1
+    ditherTable(1, 0) = 7
+    ditherTable(-1, 1) = 3
+    ditherTable(0, 1) = 5
+    ditherTable(1, 1) = 1
     
     dDivisor = 16
 
@@ -624,7 +625,7 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     Dim i As Long, j As Long
     Dim g As Long, newG As Long
-    Dim quickX As Long, QuickY As Long
+    Dim quickX As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -654,18 +655,18 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
                 If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                 
                 'Second, ignore pixels that have a zero in the dither table
-                If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                QuickY = y + j
+                quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If QuickY > finalY Then GoTo NextDitheredPixel
+                If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
@@ -713,13 +714,13 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     Dim errorVal As Double
     Dim dDivisor As Double
     
-    Dim DitherTable() As Byte
-    ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+    Dim ditherTable() As Byte
+    ReDim ditherTable(-1 To 1, 0 To 1) As Byte
             
-    DitherTable(1, 0) = 7
-    DitherTable(-1, 1) = 3
-    DitherTable(0, 1) = 5
-    DitherTable(1, 1) = 1
+    ditherTable(1, 0) = 7
+    ditherTable(-1, 1) = 3
+    ditherTable(0, 1) = 5
+    ditherTable(1, 1) = 1
     
     dDivisor = 16
 
@@ -734,7 +735,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     ReDim dErrors(initX To finalX, initY To finalY) As Single
     
     Dim i As Long, j As Long
-    Dim quickX As Long, QuickY As Long
+    Dim quickX As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -770,18 +771,18 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
                 
                 'Second, ignore pixels that have a zero in the dither table
-                If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
+                If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                QuickY = y + j
+                quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If QuickY > finalY Then GoTo NextDitheredPixel
+                If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
