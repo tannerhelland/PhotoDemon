@@ -405,17 +405,8 @@ Private Sub CmbZoom_Click()
         pdImages(g_CurrentImage).SetZoom cmbZoom.ListIndex
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
-        If cmbZoom.ListIndex = 0 Then
-            cmdZoomIn.Enabled = False
-        Else
-            If Not cmdZoomIn.Enabled Then cmdZoomIn.Enabled = True
-        End If
-        
-        If cmbZoom.ListIndex = g_Zoom.GetZoomCount Then
-            cmdZoomOut.Enabled = False
-        Else
-            If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
-        End If
+        cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)
+        cmdZoomOut.Enabled = (cmbZoom.ListIndex <> g_Zoom.GetZoomCount)
         
         'Highlight the "zoom fit" button while fit mode is active
         cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex)

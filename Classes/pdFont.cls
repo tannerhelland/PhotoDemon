@@ -18,20 +18,20 @@ Attribute VB_Exposed = False
 'Last updated: 25/August/17
 'Last update: improve font creation performance
 '
-'While VB6 actually provides pretty good font support, PhotoDemon has some unique needs (as usual).  Chief among these
-' are detailed handling over font positioning, rendering to arbitrary DCs, and managing fonts in a more speed-friendly
-' way to maximize peformance.
+'While VB6 actually provides pretty good font support, PhotoDemon has unique needs (as usual).  In particular,
+' we need detailed handling over font positioning, we often render to arbitrary DCs, and we need to manage
+' fonts in specialized ways to maximize peformance while minimizing GDI resources.
 '
-'This class provides persistent storage for a variety of font parameters.  To maximize performance, it breaks down font
-' management into three steps:
-' 1) Set font parameters.  This can be done via a variety of support functions.  All attributes (minus color and
-'     alignment, which are set separately) should be set before attempting to create the font.
-' 2) Create font.  Do not do this until all settings are specified, because font creation is computationally expensive.
-' 3) Attach font to DC.  Font color and text alignment should be set prior to this action.
-' 4) (Optional) Render font to attached DC.  At present, ClearType antialiasing is assumed, but in the future it may
-'     become user-settable.
-'
-'Obviously, this class relies heavily on WAPI.  Functions are documented to the best of my knowledge and ability.
+'This class provides a (fairly) comprehensive wrapper for common GDI-based font operations.  In general,
+' it separates font management into three steps:
+' 1) Set font parameters.  This can be done via a variety of support functions.  For maximum performance,
+'    all font attributes should be set *before* creating the font.
+' 2) Create font.  Do not do this any more than you need to; font creation is expensive.
+' 3) Attach font to a DC.  Font color and text alignment can be set prior to this action; this class is
+'    smart enough to track these properties and assign them to attached DCs as necessary.
+' 4) Render text to the attached DC (using this font, obviously).  GDI provides a number of different
+'    text-rendering functions, and we wrap different ones in different ways.  If you aren't sure which
+'    one is fastest (or best for your needs), profile several.  GDI performance is not always predictable.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -57,20 +57,19 @@ Private Type LOGFONT
     lfFaceName(0 To 63) As Byte
 End Type
 
-'Previously we only suppored an ANSI charset, but now we want to default to the system value
-Private Const ANSI_CHARSET = 0
-Private Const DEFAULT_CHARSET = 1
+'GDI still takes a legacy charset value as input; this doesn't matter for our purposes, so pass a default value
+Private Const DEFAULT_CHARSET As Long = 1
 
 'Pitch and family constants
-Private Const DEFAULT_PITCH = 0
-Private Const FIXED_PITCH = 1
-Private Const VARIABLE_PITCH = 2
-Private Const FF_DONTCARE = 0    'Any family works
-Private Const FF_ROMAN = 16      'Variable stroke width + serifs
-Private Const FF_SWISS = 32      'Variable stroke width + sans-serif
-Private Const FF_MODERN = 48     'Constant stroke width + serif AND sans-serif
-Private Const FF_SCRIPT = 64
-Private Const FF_DECORATIVE = 80
+Private Const DEFAULT_PITCH As Long = 0
+Private Const FIXED_PITCH As Long = 1
+Private Const VARIABLE_PITCH As Long = 2
+Private Const FF_DONTCARE As Long = 0    'Any family works
+Private Const FF_ROMAN As Long = 16       'Variable stroke width + serifs
+Private Const FF_SWISS As Long = 32       'Variable stroke width + sans-serif
+Private Const FF_MODERN As Long = 48      'Constant stroke width + serif AND sans-serif
+Private Const FF_SCRIPT As Long = 64
+Private Const FF_DECORATIVE As Long = 80
 
 'Constants for font weight (bold)
 Private Const FW_DONTCARE As Long = 0
@@ -103,51 +102,66 @@ Private Const ANTIALIASED_QUALITY As Long = 4
 Private Const CLEARTYPE_QUALITY As Byte = 5
 
 'Text alignment
-Private Const TA_LEFT = 0
-Private Const TA_RIGHT = 2
-Private Const TA_CENTER = 6
-
-Private Const TA_TOP = 0
-Private Const TA_BOTTOM = 8
-Private Const TA_BASELINE = 24
-
-Private Const TA_UPDATECP = 1
-Private Const TA_NOUPDATECP = 0
+Private Const TA_LEFT As Long = 0
+Private Const TA_RIGHT As Long = 2
+Private Const TA_CENTER As Long = 6
+Private Const TA_TOP As Long = 0
+Private Const TA_BOTTOM As Long = 8
+Private Const TA_BASELINE As Long = 24
+Private Const TA_UPDATECP As Long = 1
+Private Const TA_NOUPDATECP As Long = 0
 
 'Transparent font background
-Private Const FONT_TRANSPARENT = &H3
+Private Const FONT_TRANSPARENT As Long = &H3
 
 'Formatting constants for DrawText
-Private Const DT_TOP = &H0&
-Private Const DT_LEFT = &H0&
-Private Const DT_CENTER = &H1&
-Private Const DT_RIGHT = &H2&
-Private Const DT_VCENTER = &H4&
-Private Const DT_BOTTOM = &H8&
-Private Const DT_WORDBREAK = &H10&
-Private Const DT_SINGLELINE = &H20&
-Private Const DT_EXPANDTABS = &H40&
-Private Const DT_TABSTOP = &H80&
-Private Const DT_NOCLIP = &H100&
-Private Const DT_EXTERNALLEADING = &H200&
-Private Const DT_CALCRECT = &H400&
-Private Const DT_NOPREFIX = &H800&
-Private Const DT_INTERNAL = &H1000&
-Private Const DT_EDITCONTROL = &H2000&
-Private Const DT_PATH_ELLIPSIS = &H4000&
-Private Const DT_END_ELLIPSIS = &H8000&
-Private Const DT_MODIFYSTRING = &H10000
-Private Const DT_RTLREADING = &H20000
-Private Const DT_WORD_ELLIPSIS = &H40000
+Private Enum DT_Flags
+    DT_TOP = &H0&
+    DT_LEFT = &H0&
+    DT_CENTER = &H1&
+    DT_RIGHT = &H2&
+    DT_VCENTER = &H4&
+    DT_BOTTOM = &H8&
+    DT_WORDBREAK = &H10&
+    DT_SINGLELINE = &H20&
+    DT_EXPANDTABS = &H40&
+    DT_TABSTOP = &H80&
+    DT_NOCLIP = &H100&
+    DT_EXTERNALLEADING = &H200&
+    DT_CALCRECT = &H400&
+    DT_NOPREFIX = &H800&
+    DT_INTERNAL = &H1000&
+    DT_EDITCONTROL = &H2000&
+    DT_PATH_ELLIPSIS = &H4000&
+    DT_END_ELLIPSIS = &H8000&
+    DT_MODIFYSTRING = &H10000
+    DT_RTLREADING = &H20000
+    DT_WORD_ELLIPSIS = &H40000
+End Enum
+
+#If False Then
+    Private Const DT_TOP = &H0&, DT_LEFT = &H0&, DT_CENTER = &H1&, DT_RIGHT = &H2&, DT_VCENTER = &H4&, DT_BOTTOM = &H8&, DT_WORDBREAK = &H10&, DT_SINGLELINE = &H20&, DT_EXPANDTABS = &H40&, DT_TABSTOP = &H80&, DT_NOCLIP = &H100&, DT_EXTERNALLEADING = &H200&, DT_CALCRECT = &H400&, DT_NOPREFIX = &H800&, DT_INTERNAL = &H1000&, DT_EDITCONTROL = &H2000&, DT_PATH_ELLIPSIS = &H4000&, DT_END_ELLIPSIS = &H8000&, DT_MODIFYSTRING = &H10000, DT_RTLREADING = &H20000, DT_WORD_ELLIPSIS = &H40000
+#End If
+
+'GDI Graphics mode
+Private Enum GDI_GraphicsMode
+    GM_Compatible = 1
+    GM_Advanced = 2
+End Enum
+
+#If False Then
+    Private Const GM_Compatible = 1, GM_Advanced = 2
+#End If
 
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByVal ptrToLogFont As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As DT_Flags) As Long
 Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
+Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal gMode As GDI_GraphicsMode) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
@@ -158,16 +172,16 @@ Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, By
 Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
 
 'Used to track the created font
-Private curFont As Long, oldFont As Long
+Private m_hFont As Long, m_oldHFont As Long
 
 'Used to track the DC we are rendering to
-Private curDC As Long
+Private m_hDC As Long
 
 'Current text alignment (as an API constant, not a VB one)
-Private curTextAlignment As Long
+Private m_TextAlignment As Long
 
 'Current font color
-Private fontColor As Long
+Private m_fontColor As Long
 
 'This LOGFONT object stores all current settings for the font
 Private m_currentLogFont As LOGFONT
@@ -182,7 +196,7 @@ Private m_origFontItalic As Boolean
 'If the user wants to call DrawText manually, they can use this function.  Note that hDC is *not* part of the call, as it's assumed
 ' the caller has already selected this object into the relevant DC!
 Friend Function DrawTextWrapper(ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
-    DrawText curDC, lpStr, nCount, lpRect, wFormat
+    DrawText m_hDC, lpStr, nCount, lpRect, wFormat
 End Function
 
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
@@ -192,7 +206,7 @@ Friend Sub DrawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect.
     ' (Note that this does not work when rendering to a windowless DC, like a DIB.)
     Dim winClientRect As winRect
-    GetClientRect WindowFromDC(curDC), winClientRect
+    GetClientRect WindowFromDC(m_hDC), winClientRect
     
     'Use the client rectangle to determine a width and height midpoint for the target DC
     Dim halfDCWidth As Long, halfDCHeight As Long
@@ -213,7 +227,7 @@ Friend Sub DrawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     tmpRect.Bottom = tmpRect.Top + GetHeightOfWordwrapString(srcString, GetWidthOfString(srcString))
     
     'DrawText handles the actual rendering
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
+    DrawText m_hDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
     
 End Sub
 
@@ -231,14 +245,14 @@ Friend Sub DrawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RE
     End If
     
     'Rendering this style of text is pretty damn easy
-    DrawText curDC, StrPtr(srcString), Len(srcString), dstRect, dtFlags
+    DrawText m_hDC, StrPtr(srcString), Len(srcString), dstRect, dtFlags
     
 End Sub
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
 ' additional parameters have to be set).  Note that it only works for left-aligned text, as no contraining rect is used.
 Friend Sub FastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
-    ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
+    ExtTextOutNoRect m_hDC, dstX, dstY, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
@@ -266,13 +280,13 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' string is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.
     ' As such, we pass only the currently relevant length of the string, without our added null chars, and DrawText can use
     ' the extra buffer space as necessary.)
-    Dim dtFlags As Long
+    Dim dtFlags As DT_Flags
     If centerVertically Then dtFlags = DT_VCENTER Else dtFlags = DT_TOP
     If (Not treatAmpAsControlChar) Then dtFlags = dtFlags Or DT_NOPREFIX
     
     Const ELLIPSES_METHOD As Long = DT_WORD_ELLIPSIS
     
-    Select Case curTextAlignment
+    Select Case m_TextAlignment
         
         Case TA_LEFT
             If useEllipses Then
@@ -297,7 +311,7 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
         
     End Select
     
-    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
+    DrawText m_hDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
     
 End Sub
 
@@ -316,7 +330,7 @@ Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     
     'When rendering multiline text, we want top-alignment by default (vertical centering is handled manually).
     ' We must also specify word-breaking, and the caller can control whether ampersands are treated as control chars.
-    Dim dtFlags As Long
+    Dim dtFlags As DT_Flags
     dtFlags = DT_WORDBREAK Or DT_TOP
     If (Not preProcessAmps) Then dtFlags = dtFlags Or DT_NOPREFIX
     
@@ -327,7 +341,7 @@ Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
         tmpRect.Top = dstY + (dstHeight - tmpHeight) \ 2
     End If
     
-    Select Case curTextAlignment
+    Select Case m_TextAlignment
         
         Case TA_LEFT
             dtFlags = dtFlags Or DT_LEFT
@@ -340,7 +354,7 @@ Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
         
     End Select
     
-    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
+    DrawText m_hDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
     
 End Sub
 
@@ -357,7 +371,7 @@ Friend Sub FastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef
     tmpRect.Bottom = dstY + GetHeightOfWordwrapString(srcString, GetWidthOfString(srcString))
     
     'If the text is going to extend past the target rect, draw it with ellipses
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
+    DrawText m_hDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
     
 End Sub
 
@@ -366,18 +380,18 @@ End Sub
 Friend Sub AttachToDC(ByVal targetDC As Long)
     
     If (targetDC = 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
-    If (curDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
-    If (targetDC = curDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
+    If (m_hDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
+    If (targetDC = m_hDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
     
     'Set the font
-    If (targetDC <> curDC) Then
-        oldFont = SelectObject(targetDC, curFont)
-        curDC = targetDC
+    If (targetDC <> m_hDC) Then
+        m_oldHFont = SelectObject(targetDC, m_hFont)
+        m_hDC = targetDC
     End If
     
     'Set other font parameters
-    SetTextColor targetDC, fontColor
-    SetTextAlign targetDC, curTextAlignment
+    SetTextColor targetDC, m_fontColor
+    SetTextAlign targetDC, m_TextAlignment
     
     'Enable transparent font rendering
     SetBkMode targetDC, FONT_TRANSPARENT
@@ -386,21 +400,29 @@ End Sub
 
 'If we want to detach this font from its current DC, use this call
 Friend Sub ReleaseFromDC()
-    If (curDC <> 0) Then
-        SelectObject curDC, oldFont
-        curDC = 0
+    If (m_hDC <> 0) Then
+        SelectObject m_hDC, m_oldHFont
+        m_hDC = 0
     End If
 End Sub
 
-'Create the font object on-demand
-Friend Function CreateFontObject() As Boolean
+'Create the font object on-demand.
+' IMPORTANT NOTE: the "createWithEscapement" parameter is *not* well-tested.  PD uses it infrequently,
+' in very specialized circumstances, and I can't guarantee that caches and other font interfaces will work
+' correctly with it.  Generally speaking, rotated fonts should be cached specially.
+Friend Function CreateFontObject(Optional ByVal createWithAngle As Long = 0) As Boolean
 
     'If a font has already been created, delete it now
-    If (curDC <> 0) Then Me.ReleaseFromDC
-    If (curFont <> 0) Then Me.DeleteCurrentFont
+    If (m_hDC <> 0) Then Me.ReleaseFromDC
+    If (m_hFont <> 0) Then Me.DeleteCurrentFont
     
-    curFont = CreateFontIndirect(VarPtr(m_currentLogFont))
-    CreateFontObject = (curFont <> 0)
+    If (createWithAngle <> 0) Then
+        m_currentLogFont.lfEscapement = createWithAngle
+        m_currentLogFont.lfOrientation = createWithAngle
+    End If
+    
+    m_hFont = CreateFontIndirect(VarPtr(m_currentLogFont))
+    CreateFontObject = (m_hFont <> 0)
     
     'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
     If CreateFontObject Then g_FontsCreated = g_FontsCreated + 1
@@ -419,9 +441,9 @@ Friend Sub SetFontPropsAllAtOnce(ByRef newFace As String, ByVal newFontSize As S
     'Next, translate these into actual LOGFONT properties
     
     'Make sure we have a trailing null char before copying the font name into place
-    If (Len(newFace) < 32) Then
+    If (LenB(newFace) < 64) Then
         FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
-        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), Len(newFace) * 2
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), LenB(newFace)
     Else
         CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), 64
     End If
@@ -439,20 +461,13 @@ End Function
 
 Friend Sub SetFontBold(ByVal newBold As Boolean)
     m_origFontBold = newBold
-    If newBold Then
-        m_currentLogFont.lfWeight = FW_BOLD
-    Else
-        m_currentLogFont.lfWeight = FW_NORMAL
-    End If
+    If newBold Then m_currentLogFont.lfWeight = FW_BOLD Else m_currentLogFont.lfWeight = FW_NORMAL
 End Sub
 
+'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
 Friend Sub SetFontColor(ByVal newFontColor As Long)
-    
-    fontColor = newFontColor
-    
-    'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
-    If (curDC <> 0) Then SetTextColor curDC, fontColor
-    
+    m_fontColor = newFontColor
+    If (m_hDC <> 0) Then SetTextColor m_hDC, m_fontColor
 End Sub
 
 Friend Function GetFontFace() As String
@@ -464,9 +479,9 @@ Friend Sub SetFontFace(ByRef newFace As String)
     m_origFontFace = newFace
     
     'Make sure we have a trailing null char before copying the font name into place
-    If (Len(newFace) < 32) Then
+    If (LenB(newFace) < 64) Then
         FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
-        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), Len(newFace) * 2
+        CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), LenB(newFace)
     Else
         CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(newFace), 64
     End If
@@ -507,16 +522,16 @@ Friend Sub SetTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     Select Case newAlignment
         Case vbLeftJustify
-            curTextAlignment = TA_LEFT
+            m_TextAlignment = TA_LEFT
         Case vbCenter
-            curTextAlignment = TA_CENTER
+            m_TextAlignment = TA_CENTER
         Case vbRightJustify
-            curTextAlignment = TA_RIGHT
+            m_TextAlignment = TA_RIGHT
     End Select
     
     'All alignment settings are handled via flags to DrawText.  For DrawText flags to work, the alignment of the current DC must be
     ' set to TA_LEFT, TA_TOP, and TA_NOUPDATECP (see http://msdn.microsoft.com/en-us/library/dd162498.aspx)
-    If (curDC <> 0) Then SetTextAlign curDC, TA_LEFT Or TA_TOP Or TA_NOUPDATECP
+    If (m_hDC <> 0) Then SetTextAlign m_hDC, TA_LEFT Or TA_TOP Or TA_NOUPDATECP
     
 End Sub
 
@@ -528,12 +543,12 @@ Friend Function GetWidthOfString(ByRef srcString As String) As Long
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If (curDC = 0) Then
+    If (m_hDC = 0) Then
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
     Else
-        targetDC = curDC
+        targetDC = m_hDC
     End If
     
     'Retrieve the string's dimensions
@@ -554,8 +569,8 @@ Friend Function GetHeightOfString(ByRef srcString As String) As Long
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If (curDC <> 0) Then
-        targetDC = curDC
+    If (m_hDC <> 0) Then
+        targetDC = m_hDC
     Else
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
@@ -585,8 +600,8 @@ Friend Function GetHeightOfWordwrapString(ByRef srcString As String, ByVal strWi
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If (curDC <> 0) Then
-        targetDC = curDC
+    If (m_hDC <> 0) Then
+        targetDC = m_hDC
     Else
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
@@ -622,12 +637,12 @@ Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVa
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If curDC = 0 Then
+    If m_hDC = 0 Then
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
     Else
-        targetDC = curDC
+        targetDC = m_hDC
     End If
     
     'Create the magical combination of DrawText flags
@@ -659,7 +674,7 @@ Private Sub Class_Initialize()
     ' the current OS, so external functions do not need to set this manually.
     With m_currentLogFont
     
-        .lfHeight = Fonts.ConvertToGDIFontSize(11#)
+        .lfHeight = Fonts.ConvertToGDIFontSize(11!)
         .lfWidth = 0        'This will automatically set the width based on the height
         
         .lfEscapement = 0   'Used for rotation; not utilized at present
@@ -689,64 +704,64 @@ Private Sub Class_Initialize()
         End If
         
         'Make sure we have a trailing null char before copying the font name into place
-        If (Len(m_origFontFace) < 32) Then
+        If (LenB(m_origFontFace) < 64) Then
             FillMemory VarPtr(m_currentLogFont.lfFaceName(0)), 64, 0
-            CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(m_origFontFace), Len(m_origFontFace) * 2
+            CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(m_origFontFace), LenB(m_origFontFace)
         Else
             CopyMemoryStrict VarPtr(m_currentLogFont.lfFaceName(0)), StrPtr(m_origFontFace), 64
         End If
         
     End With
     
-    curFont = 0
-    curDC = 0
+    m_hFont = 0
+    m_hDC = 0
         
     m_origFontBold = False
     m_origFontItalic = False
     m_origFontSize = 11
     
-    fontColor = 0
-    curTextAlignment = TA_LEFT
+    m_fontColor = 0
+    m_TextAlignment = TA_LEFT
         
 End Sub
 
 'Like most things, it's ideal if the caller frees resources when they no longer need them, but this class should successfully
 ' release all attached GDI objects regardless of caller behavior.
 Private Sub Class_Terminate()
-    If curDC <> 0 Then ReleaseFromDC
+    If (m_hDC <> 0) Then Me.ReleaseFromDC
     DeleteCurrentFont
 End Sub
 
 Friend Function HasFontBeenCreated() As Boolean
-    HasFontBeenCreated = (curFont <> 0)
+    HasFontBeenCreated = (m_hFont <> 0)
 End Function
 
 Friend Function GetAttachedDC() As Long
-    GetAttachedDC = curDC
+    GetAttachedDC = m_hDC
 End Function
 
 Friend Function GetFontHandle() As Long
-    GetFontHandle = curFont
+    GetFontHandle = m_hFont
 End Function
 
 Friend Sub DeleteCurrentFont()
     
     'If a font was created, delete it now
-    If (curFont <> 0) Then
+    If (m_hFont <> 0) Then
         
         'If the font is inside a DC, remove it (otherwise we can't delete it)
-        If (curDC <> 0) Then
-            pdDebug.LogAction "HEY!  Font was not removed from DC - please do that before deleting it!"
+        If (m_hDC <> 0) Then
+            PDDebug.LogAction "HEY!  Font was not removed from DC - please do that before deleting it!"
             Me.ReleaseFromDC
         End If
         
-        If (DeleteObject(curFont) = 0) Then
-            pdDebug.LogAction "WARNING! Could not delete font resource - is it selected into a DC??"
+        If (DeleteObject(m_hFont) = 0) Then
+            PDDebug.LogAction "WARNING! Could not delete font resource - is it selected into a DC??"
         Else
             g_FontsDestroyed = g_FontsDestroyed + 1
         End If
         
-        curFont = 0
+        m_hFont = 0
         
     End If
     
@@ -784,9 +799,9 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     
     'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long
-    backupDC = curDC
+    backupDC = m_hDC
     
-    If (curDC = 0) Then
+    If (m_hDC = 0) Then
         targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
@@ -798,8 +813,8 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     backupFontSize = m_origFontSize
     
     'Create the font anew, using the default string size we were passed
-    If (startingFontSize <> m_origFontSize) Or (curFont = 0) Then
-        If (curFont <> 0) Then DeleteCurrentFont
+    If (startingFontSize <> m_origFontSize) Or (m_hFont = 0) Then
+        If (m_hFont <> 0) Then DeleteCurrentFont
         m_origFontSize = startingFontSize
         SetFontSize m_origFontSize
         CreateFontObject
@@ -816,7 +831,7 @@ Friend Function GetMaxFontSizeToFitStringWidth(ByRef srcString As String, ByVal 
     Do While (stringWidth > desiredWidth) And (m_origFontSize >= 7!)
         
         'Shrink the font size
-        m_origFontSize = m_origFontSize - 0.5
+        m_origFontSize = m_origFontSize - 0.5!
         
         'Recreate the font
         ReleaseFromDC
@@ -861,9 +876,9 @@ Friend Function GetMaxFontSizeToFitWordWrap(ByRef srcString As String, ByVal des
     
     'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long
-    backupDC = curDC
+    backupDC = m_hDC
     
-    If (curDC = 0) Then
+    If (m_hDC = 0) Then
         targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
@@ -886,10 +901,10 @@ Friend Function GetMaxFontSizeToFitWordWrap(ByRef srcString As String, ByVal des
     stringHeight = GetHeightOfWordwrapString(srcString, desiredWidth)
     
     'If the string does not fit within the control size, shrink the font accordingly.
-    Do While (stringHeight > desiredHeight) And (m_origFontSize >= 7)
+    Do While (stringHeight > desiredHeight) And (m_origFontSize >= 7!)
         
         'Shrink the font size
-        m_origFontSize = m_origFontSize - 0.5
+        m_origFontSize = m_origFontSize - 0.5!
         
         'Recreate the font
         ReleaseFromDC

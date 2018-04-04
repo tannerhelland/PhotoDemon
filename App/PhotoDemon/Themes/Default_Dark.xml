@@ -434,10 +434,10 @@
 			</PDResize>
 			
 			<PDRuler>
-				<Background>BackgroundDefault</Background>
+				<Background>#1e1e22</Background>
 				<Text>TextDefault</Text>
-				<Notch>GrayDefault></Notch>
-				<Mouse>AccentDefault</Mouse>
+				<Notch>GrayDefault</Notch>
+				<Mouse>AccentSemidark</Mouse>
 			</PDRuler>
 			
 			<PDScrollBar>

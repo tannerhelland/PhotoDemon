@@ -51,7 +51,7 @@ End Enum
 ' use this, so it's cached by the first pipeline staged and simply reused after that.
 Private m_ZoomRatio As Double
 
-'m_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
+'m_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection tool effects)
 Private m_FrontBuffer As pdDIB
 
 'In most cases, viewport rendering is automatically triggered as underlying actions require it, but if a bunch of requests need to
@@ -65,8 +65,10 @@ Private m_DisableViewportRendering As Boolean
 Private m_TimeStage2 As Currency, m_TimeStage3 As Currency, m_TimeStage4 As Currency
 Private m_TotalTime As Currency, m_TotalTimeStage2 As Currency, m_TotalTimeStage3 As Currency, m_TotalTimeStage4 As Currency
 
-'The last POI ("point of interest") passed to this class.  When a marching ant selection outline is active, we want to reuse this
-' value instead of whatever the marching ant viewport request passes in.
+'The last POI ("point of interest") passed to this class.  When a marching ant selection outline is active, it operates on
+' a timer, sending us redraw requests every (n) ms.  Rather than ask *it* to remember any active POIs (e.g. interactive bits
+' on the active canvas that need to be drawn differently), we cache the last POI we received and automatically render it on
+' marching-ant timer-initiated redraws.
 Private m_LastPOI As PD_PointOfInterest
 
 'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
@@ -497,8 +499,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             'First is the image, translated to the canvas coordinate space (e.g. multiplied by zoom).
             Dim imageRect_CanvasCoords As RectF
             With imageRect_CanvasCoords
-                .Width = (srcImage.Width * m_ZoomRatio)
-                .Height = (srcImage.Height * m_ZoomRatio)
+                .Width = Int(srcImage.Width * m_ZoomRatio)
+                .Height = Int(srcImage.Height * m_ZoomRatio)
             End With
             
             'Before querying the canvas object for sizes, make sure scroll bars are visible.  (As of v7.0, viewport scrollbars
@@ -527,8 +529,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             'We now want to center the zoomed image relative to the canvas space.  The top-left of the centered image gives us a baseline
             ' for all scroll bar behavior, if the image is smaller than the available canvas space.
             With imageRect_CanvasCoords
-                .Left = (canvasRect_ActualPixels.Width * 0.5) - (.Width * 0.5)
-                .Top = (canvasRect_ActualPixels.Height * 0.5) - (.Height * 0.5)
+                .Left = Int((canvasRect_ActualPixels.Width * 0.5) - (.Width * 0.5))
+                .Top = Int((canvasRect_ActualPixels.Height * 0.5) - (.Height * 0.5))
             End With
             
             'NEW IN 7.0: convert our calculated RectFs to their nearest integer-only estimates.  This should solve some obnoxious,
@@ -564,8 +566,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             hScrollMin = -1 * (canvasRect_ImageCoords.Width * 0.5)
             vScrollMin = -1 * (canvasRect_ImageCoords.Height * 0.5)
             
-            'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.  When this happens,
-            ' rely solely on the "halfway off screen" scroll measurement.
+            'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.
+            ' When this happens, rely solely on the "halfway off screen" scroll measurement.
             If (hScrollMax > 0) Then hScrollMax = hScrollMax - hScrollMin Else hScrollMax = -hScrollMin
             If (vScrollMax > 0) Then vScrollMax = vScrollMax - vScrollMin Else vScrollMax = -vScrollMin
             
@@ -608,6 +610,17 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 .SetCanvasRectImageCoords canvasRect_ImageCoords
                 .SetImageRectCanvasCoords imageRect_CanvasCoords
             End With
+            
+            'Want to debug viewport things?  Knowing rect contents is a good place to start:
+            'With canvasRect_ActualPixels
+            '    Debug.Print "canvasRect_ActualPixels", .Left, .Top, .Width, .Height
+            'End With
+            'With canvasRect_ImageCoords
+            '    Debug.Print "canvasRect_ImageCoords", .Left, .Top, .Width, .Height
+            'End With
+            'With imageRect_CanvasCoords
+            '    Debug.Print "imageRect_CanvasCoords", .Left, .Top, .Width, .Height
+            'End With
             
             'The final step of this pipeline is optional.  If the user wants us to calculate specific scroll bar values, they must pass
             ' a special request enum via the function ParamArray().  At present, this class is capable of three different auto-calculations,
@@ -665,7 +678,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                         Dim newXCanvas As Double, newYCanvas As Double
                         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                         
-                        'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
+                        'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new
+                        ' scroll bar values.
                         dstCanvas.SetScrollValue pdo_Horizontal, (newXCanvas - oldXCanvas) / m_ZoomRatio
                         dstCanvas.SetScrollValue pdo_Vertical, (newYCanvas - oldYCanvas) / m_ZoomRatio
                         

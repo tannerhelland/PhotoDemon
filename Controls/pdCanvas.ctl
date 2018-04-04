@@ -235,6 +235,9 @@ Private m_IsMouseOverCanvas As Boolean
 'Track initial mouse button locations
 Private m_InitMouseX As Double, m_InitMouseY As Double
 
+'Last mouse x/y positions, in canvas coordinates
+Private m_LastCanvasX As Double, m_LastCanvasY As Double
+
 'On the canvas's MouseDown event, this control will mark the relevant point of interest index for the active layer (if any).
 ' If a point of interest has not been selected, this value will be reset to poi_Undefined (-1).
 Private m_CurPOI As PD_PointOfInterest
@@ -346,6 +349,10 @@ End Function
 
 Public Sub SetRedrawSuspension(ByVal newRedrawValue As Boolean)
     CanvasView.SetRedrawSuspension newRedrawValue
+    If m_RulersVisible Then
+        hRuler.SetRedrawSuspension newRedrawValue
+        vRuler.SetRedrawSuspension newRedrawValue
+    End If
     m_SuspendRedraws = newRedrawValue
 End Sub
 
@@ -461,6 +468,17 @@ End Sub
 
 Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Double, Optional ByVal clearCoords As Boolean = False)
     StatusBar.DisplayCanvasCoordinates xCoord, yCoord, clearCoords
+    If m_RulersVisible Then
+        hRuler.NotifyMouseCoords m_LastCanvasX, m_LastCanvasY, xCoord, yCoord, clearCoords
+        vRuler.NotifyMouseCoords m_LastCanvasX, m_LastCanvasY, xCoord, yCoord, clearCoords
+    End If
+End Sub
+
+Public Sub RequestRulerUpdate(Optional ByVal refreshImmediately As Boolean = False)
+    If m_RulersVisible Then
+        hRuler.NotifyViewportChange
+        vRuler.NotifyViewportChange
+    End If
 End Sub
 
 Public Sub RequestViewportRedraw(Optional ByVal refreshImmediately As Boolean = False)
@@ -778,6 +796,9 @@ Private Sub cmdCenter_Click()
 End Sub
 
 Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+        
+    m_LastCanvasX = x
+    m_LastCanvasY = y
     
     'Make sure interactions with this canvas are allowed
     If (Not Me.IsCanvasInteractionAllowed()) Then Exit Sub
@@ -935,6 +956,8 @@ End Sub
 
 Private Sub CanvasView_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_IsMouseOverCanvas = True
+    m_LastCanvasX = x
+    m_LastCanvasY = y
 End Sub
 
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
@@ -950,13 +973,15 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
-    If (Not m_LMBDown) And (Not m_RMBDown) Then ClearImageCoordinatesDisplay
+    If (Not m_LMBDown) And (Not m_RMBDown) Then Interface.ClearImageCoordinatesDisplay
     
 End Sub
 
 Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     m_IsMouseOverCanvas = True
+    m_LastCanvasX = x
+    m_LastCanvasY = y
     
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
@@ -967,8 +992,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Double, imgY As Double
     
-    'Display the image coordinates under the mouse pointer
-    DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    'Display the image coordinates under the mouse pointer, and if rulers are active, mirror the coordinates there, also
+    Interface.DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't reuse image coordinates as layer coordinates!)
@@ -991,8 +1016,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Color picker
             Case COLOR_PICKER
-                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
                 ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
             
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1017,9 +1042,6 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     'This else means the LEFT mouse button is NOT down
     Else
         
-        'Display a relevant cursor for the current action
-        SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
-    
         Select Case g_CurrentTool
         
             'Drag-to-navigate
@@ -1089,11 +1111,17 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
         End Select
         
+        'Now that everything's been updated, render a cursor to match
+        SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+        
     End If
     
 End Sub
 
 Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+        
+    m_LastCanvasX = x
+    m_LastCanvasY = y
     
     'Make sure interactions with this canvas are allowed
     If Not Me.IsCanvasInteractionAllowed() Then Exit Sub
@@ -1275,6 +1303,8 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     
     'Suspend automatic viewport redraws until we are done with our calculations
     ViewportEngine.DisableRendering
+    hRuler.SetRedrawSuspension True
+    vRuler.SetRedrawSuspension True
     
     'Calculate a new zoom value
     If StatusBar.IsZoomEnabled Then
@@ -1293,13 +1323,15 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
     
     'Notify external UI elements of the change
+    hRuler.SetRedrawSuspension False, False
+    vRuler.SetRedrawSuspension False, False
     RelayViewportChanges
 
 End Sub
 
 Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    If (Button And pdRightButton) <> 0 Then
+    If ((Button And pdRightButton) <> 0) Then
         
         ucSupport.RequestCursor IDC_DEFAULT
         
@@ -2028,6 +2060,10 @@ End Function
 ' TODO: migrate this function elsewhere, so things other than the canvas can easily utilize it.
 Public Sub RelayViewportChanges()
     toolbar_Layers.NotifyViewportChange
+    If m_RulersVisible Then
+        hRuler.NotifyViewportChange
+        vRuler.NotifyViewportChange
+    End If
 End Sub
 
 Public Sub NotifyImageStripVisibilityMode(ByVal newMode As Long)

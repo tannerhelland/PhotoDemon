@@ -332,7 +332,7 @@ Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As POINT
     ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
     ' (although I don't know how well that would work in VB, given the way Err.LastDllError works),
     ' but we simply assume success and always return TRUE.
-    MapWindowPoints srcHwnd, 0, VarPtr(srcPoint), 1
+    MapWindowPoints srcHwnd, 0, VarPtr(srcPoint), 1&
     GetClientToScreen = True
     
 End Function
@@ -340,7 +340,7 @@ End Function
 Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
     
     'See the notes for GetClientToScreen, above
-    MapWindowPoints 0, srcHwnd, VarPtr(srcPoint), 1
+    MapWindowPoints 0, srcHwnd, VarPtr(srcPoint), 1&
     GetScreenToClient = True
     
 End Function
