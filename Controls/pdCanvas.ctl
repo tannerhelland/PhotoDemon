@@ -1667,11 +1667,13 @@ Public Sub AlignCanvasView()
     With hRulerRectF
         If m_RulersVisible And ((hRuler.GetLeft <> .Left) Or (hRuler.GetTop <> .Top) Or (hRuler.GetWidth <> .Width)) Then hRuler.SetPositionAndSize .Left, .Top, .Width, .Height
         hRuler.Visible = m_RulersVisible And (g_OpenImageCount > 0)
+        hRuler.NotifyViewportChange
     End With
     
     With vRulerRectF
         If m_RulersVisible And ((vRuler.GetLeft <> .Left) Or (vRuler.GetTop <> .Top) Or (vRuler.GetHeight <> .Height)) Then vRuler.SetPositionAndSize .Left, .Top, .Width, .Height
         vRuler.Visible = m_RulersVisible And (g_OpenImageCount > 0)
+        vRuler.NotifyViewportChange
     End With
     
     '...Followed by the status bar

@@ -295,6 +295,9 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
     
     If m_SuspendRedraws Then Exit Sub
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
@@ -433,9 +436,9 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             
             Do
                 startAmount = startAmount * 10#
-                xStart = Int(imgRectCurUnit.Left * (1# / startAmount)) * startAmount
-                xEnd = Int(imgRectCurUnit.Width * (1# / startAmount)) * startAmount
-                numBlocksThisSize = CDbl(xEnd - xStart) / startAmount
+                xStart = (imgRectCurUnit.Left * (1# / startAmount)) * startAmount
+                xEnd = (imgRectCurUnit.Width * (1# / startAmount)) * startAmount
+                numBlocksThisSize = Int(CDbl(xEnd - xStart) / startAmount)
             Loop While (numBlocksThisSize > numBlocksAllowed)
             
             'We now have a proper base-10 scaling factor for this run.  Use it to calculate starting and
@@ -460,7 +463,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             ' strings up to 4-digits long; as such, we don't want individual ruler blocks that are less
             ' than GetWidthOfText("0000") wide.  (Unlike the x-direction, note that we don't add artificial
             ' padding here; vertical text already includes a large amount of padding, due to hinting differences.)
-            minAllowableSize = m_VerticalFont.GetWidthOfString("0000") * 2 - 8
+            minAllowableSize = m_VerticalFont.GetWidthOfString("0000") * 2 - 9
             
             'To figure out which base-10 scale to use, we need to know how many "minAllowableSize" blocks we
             ' can fit into the current ruler area.
@@ -474,9 +477,9 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             
             Do
                 startAmount = startAmount * 10#
-                yStart = Int(imgRectCurUnit.Top * (1# / startAmount)) * startAmount
-                yEnd = Int(imgRectCurUnit.Height * (1# / startAmount)) * startAmount
-                numBlocksThisSize = CDbl(yEnd - yStart) / startAmount
+                yStart = (imgRectCurUnit.Top * (1# / startAmount)) * startAmount
+                yEnd = (imgRectCurUnit.Height * (1# / startAmount)) * startAmount
+                numBlocksThisSize = Int(CDbl(yEnd - yStart) / startAmount)
             Loop While (numBlocksThisSize > numBlocksAllowed)
             
             'We now have a proper base-10 scaling factor for this run.  Use it to calculate starting and
@@ -508,6 +511,9 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
     
     'No other special preparation is required for this control, so proceed with recreating the back buffer
     RedrawBackBuffer redrawImmediately
+    
+    'Profile performance here:
+    'PDDebug.LogAction "Ruler was rendered in " & VBHacks.GetTimeDiffNowAsString(startTime)
             
 End Sub
 
