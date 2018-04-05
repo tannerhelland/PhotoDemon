@@ -187,6 +187,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
         
         'Use GDI+ to apply the inverse rotation.  Note that it will automatically center the rotated image within
         ' the destination boundaries, sparing us the trouble of manually trimming the clamped edges
+        If (DIBs.IsDIBTransparent(workingDIB)) Then workingDIB.ResetDIB 0
         GDI_Plus.GDIPlus_RotateDIBPlgStyle rotateDIB, workingDIB, -bAngle, True
         
     End If
