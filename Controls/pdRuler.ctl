@@ -32,13 +32,16 @@ Attribute VB_Exposed = False
 'PhotoDemon Viewport Ruler UI element
 'Copyright 2018-2018 by Tanner Helland
 'Created: 03/April/18
-'Last updated: 03/April/18
-'Last update: initial build
+'Last updated: 05/April/18
+'Last update: wrap up initial build
 '
 'At present, this control is only designed for use on PD's primary canvas.  A few things to note:
 '
 ' 1) High DPI settings are handled automatically.
 ' 2) Coloration is automatically handled by PD's internal theming engine.
+' 3) Multiple measurement units are supported (px, in, cm - same as PD's resize dialogs and status bar)
+' 4) Performance penalty of the current build is basically unmeasurable - a goal I'd like to maintain
+'     through any future enhancements, as well!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -54,6 +57,11 @@ Attribute ucSupport.VB_VarHelpID = -1
 
 'Rulers can be horizontal or vertical, obviously
 Private m_Orientation As PD_Orientation
+
+'Rulers can render their units in pixels, cm, or inches.  The current *image DPI* (not screen DPI) is used
+' for these calculations.  Percent is not currently supported, mostly because I haven't quite figured out how
+' to handle the unit dropdown in the status bar (e.g. "%" makes no sense there).
+Private m_RulerUnit As PD_MeasurementUnit
 
 'This control relies on a number of "conversion maps" to move points between the current canvas space and this control's
 ' canvas space (where we render notches, text, etc).  The purposes of these objects are described in more detail in the
@@ -71,6 +79,13 @@ Private m_Step As Long, m_LoopStart As Long, m_LoopEnd As Long
 ' require different notch strategies.  This value is cached in the UpdateControlLayout function, and used
 ' by the RedrawBackBuffer function to determine how/where sub-notches are rendered.
 Private m_Interval As Long
+
+'Non-pixel units (inch, cm) require us to know the underlying image DPI.  Some program operations can
+' modify image DPI; when this happens, we need to revise ruler layout to reflect the new settings.
+' PD tracks the last image DPI used when calculating ruler settings; if this value changes, and an
+' outside function requests a redraw, we can automatially call "UpdateControlLayout" for them.  (This is
+' safer than attempting to modify all external functions to notify us of their changes.)
+Private m_LastDPI As Double
 
 'Current mouse position, if any - in both canvas and image coordinate spaces
 Private m_MouseCanvasX As Double, m_MouseCanvasY As Double, m_MouseImgX As Double, m_MouseImgY As Double
@@ -206,6 +221,9 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDRuler", colorCount
     If Not pdMain.IsProgramRunning() Then UpdateColorList
     
+    'Pixels are used by default
+    m_RulerUnit = mu_Pixels
+    
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -257,6 +275,13 @@ Public Sub NotifyMouseCoords(ByVal canvasX As Double, ByVal canvasY As Double, B
     
     RedrawBackBuffer True
     
+End Sub
+
+Public Sub NotifyUnitChange(ByVal newUnit As PD_MeasurementUnit)
+    If (newUnit <> m_RulerUnit) Then
+        m_RulerUnit = newUnit
+        UpdateControlLayout
+    End If
 End Sub
 
 Public Sub SetRedrawSuspension(ByVal newState As Boolean, Optional ByVal redrawImmediately As Boolean = False)
@@ -344,6 +369,44 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         Dim tmpFont As pdFont
         Set tmpFont = Fonts.GetMatchingUIFont(8!)
         
+        'If a measurement unit other than "pixels" is used, we need to convert the underlying image coordinate
+        ' rectangle from pixels to the relevant unit.
+        Dim curImgDPI As Double
+        curImgDPI = pdImages(g_CurrentImage).GetDPI()
+        If (curImgDPI < 1#) Then curImgDPI = 1#
+        
+        'Cache the DPI we're using to lay out the ruler.  If RedrawBackBuffer detects DPI changes, it will
+        ' automatically notify us so we can modify our layout settings accordingly.
+        m_LastDPI = curImgDPI
+        
+        Dim imgRectCurUnit As RectF
+        With imgRectCurUnit
+        
+            Select Case m_RulerUnit
+            
+                Case mu_Centimeters
+                    .Left = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Left, curImgDPI)
+                    .Top = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Top, curImgDPI)
+                    .Width = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Width, curImgDPI)
+                    .Height = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Height, curImgDPI)
+                    
+                Case mu_Inches
+                    .Left = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Left, curImgDPI)
+                    .Top = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Top, curImgDPI)
+                    .Width = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Width, curImgDPI)
+                    .Height = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Height, curImgDPI)
+                
+                'Pixels are the only remaining supported unit; just use the image coordinates as-is!
+                Case Else
+                    .Left = m_imgCoordRectF.Left
+                    .Top = m_imgCoordRectF.Top
+                    .Width = m_imgCoordRectF.Width
+                    .Height = m_imgCoordRectF.Height
+            
+            End Select
+            
+        End With
+        
         'We have to perform a number of intermediary calculations, and note that *some* of these results get
         ' cached at class level (so that RedrawBackBuffer can use 'em).
         Dim minAllowableSize As Long, numBlocksAllowed As Long, numBlocksThisSize As Long
@@ -370,16 +433,16 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             
             Do
                 startAmount = startAmount * 10#
-                xStart = Int(m_imgCoordRectF.Left * (1# / startAmount)) * startAmount
-                xEnd = Int(m_imgCoordRectF.Width * (1# / startAmount)) * startAmount
+                xStart = Int(imgRectCurUnit.Left * (1# / startAmount)) * startAmount
+                xEnd = Int(imgRectCurUnit.Width * (1# / startAmount)) * startAmount
                 numBlocksThisSize = CDbl(xEnd - xStart) / startAmount
             Loop While (numBlocksThisSize > numBlocksAllowed)
             
             'We now have a proper base-10 scaling factor for this run.  Use it to calculate starting and
             ' ending values for the interior notch rendering loop.
             m_Step = Int(startAmount)
-            m_LoopStart = Int(m_imgCoordRectF.Left * (1# / startAmount)) * m_Step - m_Step
-            m_LoopEnd = Int(m_imgCoordRectF.Width * (1# / startAmount)) * m_Step + m_Step
+            m_LoopStart = Int(imgRectCurUnit.Left * (1# / startAmount)) * m_Step - m_Step
+            m_LoopEnd = Int(imgRectCurUnit.Width * (1# / startAmount)) * m_Step + m_Step
             m_Interval = 10
             
         'Vertical rulers
@@ -411,29 +474,32 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             
             Do
                 startAmount = startAmount * 10#
-                yStart = Int(m_imgCoordRectF.Top * (1# / startAmount)) * startAmount
-                yEnd = Int(m_imgCoordRectF.Height * (1# / startAmount)) * startAmount
+                yStart = Int(imgRectCurUnit.Top * (1# / startAmount)) * startAmount
+                yEnd = Int(imgRectCurUnit.Height * (1# / startAmount)) * startAmount
                 numBlocksThisSize = CDbl(yEnd - yStart) / startAmount
             Loop While (numBlocksThisSize > numBlocksAllowed)
             
             'We now have a proper base-10 scaling factor for this run.  Use it to calculate starting and
             ' ending values for the interior notch rendering loop.
             m_Step = Int(startAmount)
-            m_LoopStart = Int(m_imgCoordRectF.Top * (1# / startAmount)) * m_Step - m_Step
-            m_LoopEnd = Int(m_imgCoordRectF.Height * (1# / startAmount)) * m_Step + m_Step
+            m_LoopStart = Int(imgRectCurUnit.Top * (1# / startAmount)) * m_Step - m_Step
+            m_LoopEnd = Int(imgRectCurUnit.Height * (1# / startAmount)) * m_Step + m_Step
             m_Interval = 10
             
         End If
         
         'If possible, I also like to render text alongside other, intermediate numbers (e.g. not just
         ' powers of 10, but if there's room, every 2 or 5 values, also).  If room is available for
-        ' also rendering one of these factors, use it.
-        If ((numBlocksThisSize * 5) <= numBlocksAllowed) Then
-            m_Step = m_Step \ 5
-            m_Interval = 5
-        ElseIf ((numBlocksThisSize * 2) <= numBlocksAllowed) Then
-            m_Step = m_Step \ 2
-            m_Interval = 2
+        ' also rendering one of these factors, use it.  (Note that we only do this if we're rendering
+        ' in increments larger than "1".)
+        If (m_Step > 1) Then
+            If ((numBlocksThisSize * 5) <= numBlocksAllowed) Then
+                m_Step = m_Step \ 5
+                m_Interval = 5
+            ElseIf ((numBlocksThisSize * 2) <= numBlocksAllowed) Then
+                m_Step = m_Step \ 2
+                m_Interval = 2
+            End If
         End If
         
         Set tmpFont = Nothing
@@ -466,6 +532,19 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     If okToRender Then okToRender = (Not pdImages(g_CurrentImage) Is Nothing)
     If okToRender Then
         
+        'Before proceeding with the render, make sure the current image's DPI matches the last DPI
+        ' setting we used when calculating ruler layout.  If the two values *don't* match, we need
+        ' to update our internal settings before proceeding.
+        Dim srcImgDPI As Double
+        If (m_RulerUnit <> mu_Pixels) Then
+            srcImgDPI = pdImages(g_CurrentImage).GetDPI()
+            If (srcImgDPI < 1#) Then srcImgDPI = 1#
+            If (m_LastDPI <> srcImgDPI) Then
+                UpdateControlLayout
+                Exit Sub
+            End If
+        End If
+        
         Dim cPainter As pd2DPainter
         Drawing2D.QuickCreatePainter cPainter
         
@@ -490,8 +569,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         Dim midPointNotch As Double, halfSize As Long, quarterSize As Long
         midPointNotch = m_Step / 2
         
-        'TESTING ONLY: draw lines at every 100 px
-        Dim x As Long, y As Long, i As Long, tmpStep As Double
+        'Start the rendering loop (which varies by ruler orientation, obviously)
+        Dim x As Long, y As Long, srcX As Long, srcY As Long, i As Long, tmpStep As Double
         Dim xNew As Double, yNew As Double, xNewInt As Long, yNewInt As Long
         If (m_Orientation = pdo_Horizontal) Then
         
@@ -510,7 +589,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             For x = m_LoopStart To m_LoopEnd Step m_Step
                 
                 'Convert this "hypothetical" coordinate from image space to canvas coordinate space
-                Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x, 0, xNew, yNew
+                Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x), 0, xNew, yNew
                 xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                 
                 'Render this line, and position text to the right of it
@@ -523,7 +602,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 If (m_Interval = 10) Then
                     
                     For i = 1 To 9
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.1) * i, 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.1) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If ((i And &H1) = 0) Then
                             cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
@@ -537,7 +616,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 ElseIf (m_Interval = 5) Then
                 
                     For i = 1 To 3
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.25) * i, 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.25) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If (i = 2) Then
                             cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
@@ -550,7 +629,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 ' We want to draw four small notches for intermediary values.
                 ElseIf (m_Interval = 2) Then
                     For i = 1 To 4
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.2) * i, 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.2) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
                     Next i
@@ -577,9 +656,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 m_VerticalFont.AttachToDC bufferDC
                     
                 For y = m_LoopStart To m_LoopEnd Step m_Step
-                
+                    
                     'Convert this "hypothetical" coordinate from image space to canvas coordinate space
-                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y, xNew, yNew
+                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y), xNew, yNew
                     yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                     
                     'Render this line, and position text to the right of it
@@ -592,7 +671,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     If (m_Interval = 10) Then
                         
                         For i = 1 To 9
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.1) * i, xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.1) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If ((i And &H1) = 0) Then
                                 cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
@@ -606,7 +685,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     ElseIf (m_Interval = 5) Then
                     
                         For i = 1 To 3
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.25) * i, xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.25) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If (i = 2) Then
                                 cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
@@ -619,7 +698,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     ' We want to draw four small notches for intermediary values.
                     ElseIf (m_Interval = 2) Then
                         For i = 1 To 4
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.2) * i, xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.2) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
                         Next i
@@ -672,6 +751,24 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
+
+'Internal coordinate measurements can rely on this function for conversion from the unit in question to pixels.
+Private Function GetConvertedValue(ByVal srcValue As Double) As Long
+
+    'If a unit other than pixels is active, we need to transform this coordinate to pixels prior to rendering
+    If (m_RulerUnit = mu_Pixels) Then
+        GetConvertedValue = Int(srcValue)
+    ElseIf (m_RulerUnit = mu_Centimeters) Then
+        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(mu_Centimeters, srcValue, m_LastDPI))
+    ElseIf (m_RulerUnit = mu_Inches) Then
+        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(mu_Inches, srcValue, m_LastDPI))
+    
+    'Failsafe check only; this should never trigger
+    Else
+        GetConvertedValue = Int(srcValue)
+    End If
+
+End Function
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.

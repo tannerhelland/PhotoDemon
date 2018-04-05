@@ -309,7 +309,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = mu_Pixels
     ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
     ucResize.LockAspectRatio = False
         
@@ -338,7 +338,7 @@ End Sub
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeCanvas(ByVal functionParams As String)
     
-    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As MeasurementUnit, iDPI As Long
+    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Long
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -348,7 +348,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
         iWidth = .GetDouble("width", pdImages(g_CurrentImage).Width)
         iHeight = .GetDouble("height", pdImages(g_CurrentImage).Height)
         anchorPosition = .GetLong("anchor", 0&)
-        curUnit = .GetLong("unit", MU_PIXELS)
+        curUnit = .GetLong("unit", mu_Pixels)
         iDPI = .GetDouble("dpi", pdImages(g_CurrentImage).GetDPI)
     End With
     

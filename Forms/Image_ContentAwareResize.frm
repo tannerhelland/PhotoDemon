@@ -152,7 +152,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
 
-    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = mu_Pixels
     
     'Automatically set the width and height text boxes to match the relevant image or layer's current dimensions
     Select Case m_ResizeTarget
@@ -183,7 +183,7 @@ Private Sub Form_Activate()
     End Select
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = mu_Pixels
     
     Select Case m_ResizeTarget
         
@@ -243,13 +243,13 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     Set cParams = New pdParamXML
     cParams.SetParamString xmlParams
     
-    Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As MeasurementUnit, imgDPI As Long
+    Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Long
     Dim thingToResize As PD_ACTION_TARGET
     
     With cParams
         imgWidth = .GetDouble("width")
         imgHeight = .GetDouble("height")
-        imgResizeUnit = .GetLong("unit", MU_PIXELS)
+        imgResizeUnit = .GetLong("unit", mu_Pixels)
         imgDPI = .GetLong("ppi", 96)
         thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
     End With
@@ -302,7 +302,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
     'Failsafe check for seam carving failure; this should never trigger
     Else

@@ -181,7 +181,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'If FreeImage doesn't recognize the filetype, abandon the import attempt.
     If (fileFIF = FIF_UNKNOWN) Then
-        pdDebug.LogAction "Filetype not supported by FreeImage.  Import abandoned."
+        PDDebug.LogAction "Filetype not supported by FreeImage.  Import abandoned."
         FI_LoadImage_V5 = PD_FAILURE_GENERIC
         Exit Function
     End If
@@ -752,7 +752,7 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  Failed to lock page #" & pageToLoad
+            PDDebug.LogAction "WARNING!  Failed to lock page #" & pageToLoad
         End If
     
     Next pageToLoad
@@ -1125,7 +1125,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
             
         End If
         
-        pdDebug.LogAction "Preparing to color-manage incoming image; grayscale=" & UCase$(CStr(isGrayscale)) & ", specialHandling=" & UCase$(CStr(specialGrayscaleRequired)) & ", transparency=" & UCase$(CStr(hasTransparency))
+        PDDebug.LogAction "Preparing to color-manage incoming image; grayscale=" & UCase$(CStr(isGrayscale)) & ", specialHandling=" & UCase$(CStr(specialGrayscaleRequired)) & ", transparency=" & UCase$(CStr(hasTransparency))
         
         Dim dstProfileSuccess As Long
         If isGrayscale Then
@@ -1424,7 +1424,7 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
             HandleSpecialGrayscaleICC = cTransform.ApplyTransformToArbitraryMemory(VarPtr(srcGraysInt(0, 0)), VarPtr(cmBytes(0, 0)), dstDIB.GetDIBWidth * 2, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth)
             Erase srcGraysInt
             
-            pdDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
+            PDDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
             
             If HandleSpecialGrayscaleICC Then
                 
@@ -1503,7 +1503,7 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
             HandleSpecialGrayscaleICC = cTransform.ApplyTransformToArbitraryMemory(VarPtr(srcGraysByte(0, 0)), VarPtr(cmBytes(0, 0)), dstDIB.GetDIBWidth, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth)
             Erase srcGraysByte
             
-            pdDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
+            PDDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
             
             If HandleSpecialGrayscaleICC Then
                 
@@ -3451,5 +3451,5 @@ Public Sub ReleaseFreeImageObject(ByVal srcFIHandle As Long)
 End Sub
 
 Private Sub FI_DebugMsg(ByVal debugMsg As String, Optional ByVal suppressDebugData As Boolean = False)
-    If (Not suppressDebugData) Then pdDebug.LogAction debugMsg, PDM_External_Lib
+    If (Not suppressDebugData) Then PDDebug.LogAction debugMsg, PDM_External_Lib
 End Sub

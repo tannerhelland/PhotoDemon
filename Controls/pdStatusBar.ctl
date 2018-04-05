@@ -163,6 +163,9 @@ Public Event LostFocusAPI()
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
 Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 
+'The current "unit of measurement" set by the status bar dropdown.
+Private m_UnitOfMeasurement As PD_MeasurementUnit
+
 'External functions can notify the status bar of PD's network access.  When PD is downloading various update bits, a relevant icon
 ' will be displayed in the status bar.  As the canvas has no knowledge of network stuff, it's imperative that the caller notify
 ' us of both TRUE and FALSE states.
@@ -286,8 +289,19 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     
     If clearCoords Then
         lblCoordinates.Caption = vbNullString
+    
+    'The position displayed changes based on the current measurement unit (px, in, cm)
     Else
-        lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
+        If (g_OpenImageCount > 0) Then
+            Select Case m_UnitOfMeasurement
+                Case mu_Pixels
+                    lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
+                Case mu_Inches
+                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(mu_Inches, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(mu_Inches, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
+                Case mu_Centimeters
+                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(mu_Centimeters, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(mu_Centimeters, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
+            End Select
+        End If
     End If
     
     'Align the right-hand line control with the newly captioned label
@@ -320,22 +334,19 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         Dim sizeString As String
         
         'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
-        Select Case cmbSizeUnit.ListIndex
+        Select Case m_UnitOfMeasurement
             
-            'Pixels
-            Case 0
+            Case mu_Pixels
                 sizeString = srcImage.Width & " x " & srcImage.Height
                 
-            'Inches
-            Case 1
-                iWidth = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-                iHeight = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
+            Case mu_Inches
+                iWidth = ConvertPixelToOtherUnit(mu_Inches, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+                iHeight = ConvertPixelToOtherUnit(mu_Inches, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format$(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
             
-            'CM
-            Case 2
-                iWidth = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-                iHeight = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
+            Case mu_Centimeters
+                iWidth = ConvertPixelToOtherUnit(mu_Centimeters, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+                iHeight = ConvertPixelToOtherUnit(mu_Centimeters, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format$(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
             
         End Select
@@ -384,7 +395,11 @@ Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
 End Sub
 
 Private Sub cmbSizeUnit_Click()
-    If g_OpenImageCount > 0 Then DisplayImageSize pdImages(g_CurrentImage)
+    m_UnitOfMeasurement = cmbSizeUnit.ListIndex + 1
+    If (g_OpenImageCount > 0) Then
+        DisplayImageSize pdImages(g_CurrentImage)
+        FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex + 1
+    End If
 End Sub
 
 Private Sub CmbZoom_Click()
@@ -465,6 +480,7 @@ Private Sub UserControl_Initialize()
     
     ReDim m_LinePositions(0 To 2) As Single
     Drawing2D.QuickCreatePainter m_Painter
+    m_UnitOfMeasurement = mu_Pixels
     
 End Sub
 

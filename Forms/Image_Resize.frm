@@ -299,7 +299,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = mu_Pixels
     
     Select Case m_ResizeTarget
     
@@ -340,7 +340,7 @@ Private Sub Form_Activate()
     End Select
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = mu_Pixels
     
     Select Case m_ResizeTarget
         
@@ -454,7 +454,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     'Parse incoming parameters into type-appropriate vars
     Dim imgWidth As Double, imgHeight As Double, imgDPI As Long
     Dim resampleMethod As PD_RESAMPLE_ADVANCED, fitMethod As PD_RESIZE_FIT, newBackColor As Long
-    Dim imgResizeUnit As MeasurementUnit
+    Dim imgResizeUnit As PD_MeasurementUnit
     Dim thingToResize As PD_ACTION_TARGET
     
     Dim cParams As pdParamXML
@@ -464,7 +464,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     With cParams
         imgWidth = .GetDouble("width")
         imgHeight = .GetDouble("height")
-        imgResizeUnit = .GetLong("unit", MU_PIXELS)
+        imgResizeUnit = .GetLong("unit", mu_Pixels)
         imgDPI = .GetLong("ppi", 96)
         resampleMethod = .GetLong("algorithm", ResizeNormal)
         fitMethod = .GetLong("fit", ResizeFitStretch)

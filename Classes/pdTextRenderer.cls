@@ -160,13 +160,13 @@ Private Const gdipNotTrueTypeFont As Long = 16
 'GDI+ supports multiple measurement modes, and these may actually be relevant for fonts.  Because GDI+ provides some units
 ' that we don't want to expose to users (e.g. "World", "Display"), PD uses its own font size enumeration, which we translate
 ' to corresponding GDI+ units as necessary.
-Public Enum pdFontUnit
-    pdfu_Pixel = 0
-    pdfu_Point = 1
+Public Enum PD_FontUnit
+    fu_Pixel = 0
+    fu_Point = 1
 End Enum
 
 #If False Then
-    Private Const pdfu_Pixel = 0, pdfu_Point = 1
+    Private Const fu_Pixel = 0, fu_Point = 1
 #End If
 
 Private Enum GdiPlusMeasurementUnit
@@ -377,7 +377,7 @@ Private m_CurrentText As String
 Private m_FontFace As String
 Private m_FontColor As Long
 Private m_FontSize As Single
-Private m_FontSizeUnit As pdFontUnit
+Private m_FontSizeUnit As PD_FontUnit
 Private m_FontBold As Boolean
 Private m_FontItalic As Boolean
 Private m_FontUnderline As Boolean
@@ -541,18 +541,18 @@ Friend Function GetFontSize() As Single
 End Function
 
 Friend Sub SetFontSize(ByVal newValue As Single)
-    If newValue <> m_FontSize Then
+    If (newValue <> m_FontSize) Then
         m_FontSize = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Friend Function GetFontSizeUnit() As pdFontUnit
+Friend Function GetFontSizeUnit() As PD_FontUnit
     GetFontSizeUnit = m_FontSizeUnit
 End Function
 
-Friend Sub SetFontSizeUnit(ByVal newUnit As pdFontUnit)
-    If newUnit <> m_FontSizeUnit Then
+Friend Sub SetFontSizeUnit(ByVal newUnit As PD_FontUnit)
+    If (newUnit <> m_FontSizeUnit) Then
         m_FontSizeUnit = newUnit
         m_FontCacheClean = False
     End If
@@ -637,7 +637,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
         SetGenericTextProperty ptp_FontColor, .GetLong("TextLayerColor", 0)
         SetGenericTextProperty ptp_FontFace, .GetString("TextLayerFontFace", Fonts.GetUIFontName())
         SetGenericTextProperty ptp_FontSize, .GetDouble("TextLayerFontSize", 16#)
-        SetGenericTextProperty ptp_FontSizeUnit, .GetLong("TextLayerFontSizeUnit", pdfu_Pixel)
+        SetGenericTextProperty ptp_FontSizeUnit, .GetLong("TextLayerFontSizeUnit", fu_Pixel)
         SetGenericTextProperty ptp_FontBold, .GetBool("TextLayerFontBold", False)
         SetGenericTextProperty ptp_FontItalic, .GetBool("TextLayerFontItalic", False)
         SetGenericTextProperty ptp_FontUnderline, .GetBool("TextLayerFontUnderline", False)
@@ -1070,16 +1070,16 @@ Friend Sub SetFontFace(ByVal fontName As String)
     
 End Sub
 
-'Convert a pdFontUnit enum to a GDI+ format measurement unit.  Note that not all GDI+ units are reachable this way, by design.
-Private Function ConvertPDFontUnitToGDIPlusFontUnit(ByRef srcPDFontUnit As pdFontUnit) As GdiPlusMeasurementUnit
+'Convert a PD_FontUnit enum to a GDI+ format measurement unit.  Note that not all GDI+ units are reachable this way, by design.
+Private Function ConvertPDFontUnitToGdipFontUnit(ByRef srcFontUnit As PD_FontUnit) As GdiPlusMeasurementUnit
     
-    Select Case srcPDFontUnit
+    Select Case srcFontUnit
     
-        Case pdfu_Pixel
-            ConvertPDFontUnitToGDIPlusFontUnit = gpUnitPixel
+        Case fu_Pixel
+            ConvertPDFontUnitToGdipFontUnit = gpUnitPixel
         
-        Case pdfu_Point
-            ConvertPDFontUnitToGDIPlusFontUnit = gpUnitPoint
+        Case fu_Point
+            ConvertPDFontUnitToGdipFontUnit = gpUnitPoint
             
     End Select
     
@@ -1151,7 +1151,7 @@ Friend Function CreateFontObject() As Boolean
         Else
         
             'For some reason, this combination of settings doesn't work at all.  I hope this never happens, but you never know.
-            pdDebug.LogAction "WARNING!  pdTextRenderer's CreateFontObject failed with both GDI+ and GDI; sorry!"
+            PDDebug.LogAction "WARNING!  pdTextRenderer's CreateFontObject failed with both GDI+ and GDI; sorry!"
             m_CurrentBackend = fb_UNKNOWN
             m_FontCacheClean = False
             CreateFontObject = False
@@ -1195,7 +1195,7 @@ Private Function CreateGDIPlusFont() As Boolean
         
         'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc) and the
         ' current font size.
-        gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+        gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGdipFontUnit(m_FontSizeUnit), m_GDIPlusFont)
         
         'Check for known errors; GDI+ cannot synthesize some font sizes, for example
         If (gdipReturn = 0) And (m_GDIPlusFont <> 0) Then
@@ -1266,16 +1266,16 @@ Private Sub ReportGDIPlusFailure(ByVal failCode As Long)
     Select Case failCode
     
         Case gdipFontFamilyNotFound
-            pdDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
+            PDDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
             
         Case gdipFontStyleNotFound
-            pdDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
+            PDDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
             
         Case gdipNotTrueTypeFont
-            pdDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
+            PDDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
             
         Case Else
-            pdDebug.LogAction "(GDI+ failed for an unknown reason: #" & failCode & ")"
+            PDDebug.LogAction "(GDI+ failed for an unknown reason: #" & failCode & ")"
     
     End Select
     
@@ -2128,7 +2128,7 @@ Private Sub Class_Initialize()
     m_CurrentBackend = fb_UNKNOWN
         
     'By default, this class uses pixels
-    m_FontSizeUnit = pdfu_Pixel
+    m_FontSizeUnit = fu_Pixel
     
     'Set some default font properties
     m_FontFace = Fonts.GetUIFontName()

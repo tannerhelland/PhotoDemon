@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.356</langversion>
+<langversion>7.2.379</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -726,7 +726,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>GDI+ failed to set effect parameters.</original>
-<translation>GDI+ fehlgeschlagen beim Festlegen der Effektparameter.</translation>
+<translation>GDI+ fehlgeschlagen beim Setzen der Effektparameter.</translation>
 </phrase>
 
 <phrase>
@@ -4449,7 +4449,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Generate a new random number seed.</original>
-<translation></translation>
+<translation>Einen neuen Zufallszahlen-Startwert generieren.</translation>
 </phrase>
 
 <!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5925,7 +5925,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Zoom to value</original>
-<translation></translation>
+<translation>Auf Wert zoomen</translation>
 </phrase>
 
 <phrase>
@@ -5935,7 +5935,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Show rulers</original>
-<translation></translation>
+<translation>Lineale zeigen</translation>
 </phrase>
 
 <phrase>
@@ -6638,12 +6638,12 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Single neighbor</original>
-<translation></translation>
+<translation>Neighbor einzeln</translation>
 </phrase>
 
 <phrase>
 <original>Floyd-Steinberg</original>
-<translation></translation>
+<translation>Floyd-Steinberg</translation>
 </phrase>
 
 <phrase>
@@ -7001,7 +7001,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Farbe zum Ersetzen (Rechtsklick auf Vorschau zum Auswählen)</translation>
+<translation>Zu ersetzende Farbe (Rechtsklick auf Vorschau zum Auswählen)</translation>
 </phrase>
 
 <phrase>
@@ -9006,7 +9006,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random seed</original>
-<translation></translation>
+<translation>Zufälliger Startwert</translation>
 </phrase>
 
 <phrase>
@@ -12974,7 +12974,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>Auf neue Größe strecken (Default)</translation>
+<translation>Strecken auf neue Größe (Default)</translation>
 </phrase>
 
 <phrase>
@@ -14690,7 +14690,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when using the "Save As" command, set the default file format according to</original>
-<translation>Bei Verwendung des Befehls "Speichern unter" das Default-Dateiformat entsprechend festlegen auf</translation>
+<translation>Bei Verwendung des Befehls "Speichern unter" das Default-Dateiformat entsprechend setzen auf</translation>
 </phrase>
 
 <phrase>

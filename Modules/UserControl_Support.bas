@@ -657,7 +657,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         'Font creation is cumbersome, but PD provides some helper functions to simplify it
         Dim tmpLogFont As LOGFONTW
         Fonts.FillLogFontW_Basic tmpLogFont, Fonts.GetUIFontName(), False, False, False, False
-        Fonts.FillLogFontW_Size tmpLogFont, requestedSize, pdfu_Point
+        Fonts.FillLogFontW_Size tmpLogFont, requestedSize, fu_Point
         Fonts.FillLogFontW_Quality tmpLogFont, TextRenderingHintClearTypeGridFit
         
         'Update the cache entry with new stats (including the created font)

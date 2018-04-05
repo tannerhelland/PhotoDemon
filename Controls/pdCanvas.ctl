@@ -2085,6 +2085,15 @@ Public Sub RelayViewportChanges()
     End If
 End Sub
 
+'When the status bar changes its current measurement unit (e.g. pixels, cm, inches), it needs to notify the canvas
+' so that other UI elements - like rulers - can synchronize.
+Public Sub NotifyRulerUnitChange(ByVal newUnit As PD_MeasurementUnit)
+    If m_RulersVisible Then
+        hRuler.NotifyUnitChange newUnit
+        vRuler.NotifyUnitChange newUnit
+    End If
+End Sub
+
 Public Sub NotifyImageStripVisibilityMode(ByVal newMode As Long)
     ImageStrip.VisibilityMode = newMode
 End Sub

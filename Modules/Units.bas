@@ -19,44 +19,44 @@ Option Explicit
 
 
 'Units of measurement, as used by PD (particularly the resize dialogs)
-Public Enum MeasurementUnit
-    MU_PERCENT = 0
-    MU_PIXELS = 1
-    MU_INCHES = 2
-    MU_CENTIMETERS = 3
+Public Enum PD_MeasurementUnit
+    mu_Percent = 0
+    mu_Pixels = 1
+    mu_Inches = 2
+    mu_Centimeters = 3
 End Enum
 
 #If False Then
-    Const MU_PERCENT = 0, MU_PIXELS = 1, MU_INCHES = 2, MU_CENTIMETERS = 3
+    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3
 #End If
 
-Public Enum ResolutionUnit
-    RU_PPI = 0
-    RU_PPCM = 1
+Public Enum PD_ResolutionUnit
+    ru_PPI = 0
+    ru_PPCM = 1
 End Enum
 
 #If False Then
-    Const RU_PPI = 0, RU_PPCM = 1
+    Private Const ru_PPI = 0, ru_PPCM = 1
 #End If
 
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
 ' or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.
-Public Function ConvertPixelToOtherUnit(ByVal curUnit As MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function ConvertPixelToOtherUnit(ByVal curUnit As PD_MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     Select Case curUnit
     
-        Case MU_PERCENT
+        Case mu_Percent
             If (initPixelValue <> 0) Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
             
-        Case MU_PIXELS
+        Case mu_Pixels
             ConvertPixelToOtherUnit = srcPixelValue
             
-        Case MU_INCHES
+        Case mu_Inches
             If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
         
-        Case MU_CENTIMETERS
+        Case mu_Centimeters
             If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
     
     End Select
@@ -68,25 +68,25 @@ End Function
 ' optional parameters may also be necessary: a resolution, expressed as PPI (needed to convert from absolute measurements like
 ' inches or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.  Note that in the unique case of percent,
 ' the "srcUnitValue" will be the percent used for conversion (as a percent, e.g. 100.0 for 100%).
-Public Function ConvertOtherUnitToPixels(ByVal curUnit As MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function ConvertOtherUnitToPixels(ByVal curUnit As PD_MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     'The translation function used depends on the currently selected unit
     Select Case curUnit
     
         'Percent
-        Case MU_PERCENT
+        Case mu_Percent
             ConvertOtherUnitToPixels = CDbl(srcUnitValue / 100) * initPixelValue
             
         'Pixels
-        Case MU_PIXELS
+        Case mu_Pixels
             ConvertOtherUnitToPixels = srcUnitValue
         
         'Inches
-        Case MU_INCHES
+        Case mu_Inches
             ConvertOtherUnitToPixels = srcUnitValue * srcUnitResolution
         
         'CM
-        Case MU_CENTIMETERS
+        Case mu_Centimeters
             ConvertOtherUnitToPixels = GetInchesFromCM(srcUnitValue) * srcUnitResolution
             
     End Select

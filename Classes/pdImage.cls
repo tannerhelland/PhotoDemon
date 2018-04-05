@@ -876,8 +876,8 @@ Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sou
     ' or if it is the actual DPI value of the file.  If this occurs, we can use ExifTool to retrieve an actual value as
     ' stored in the file.
     If sourceIsFreeImage Then
-        If Int(xRes) = 72 Then xRes = 96#
-        If Int(yRes) = 72 Then yRes = 96#
+        If (Int(xRes) = 72) Then xRes = 96#
+        If (Int(yRes) = 72) Then yRes = 96#
     End If
     
     m_XResolution = xRes
@@ -1016,7 +1016,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
-    pdDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

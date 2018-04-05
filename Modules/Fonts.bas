@@ -472,7 +472,7 @@ Public Function BuildFontCaches() As Long
     
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
-    pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
+    PDDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
     
     'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions can use for
     ' their own UI painting.
@@ -646,7 +646,7 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As PD_FontUnit)
 
     With dstLogFontW
         
@@ -654,7 +654,7 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
         
             'Pixels use a modified version of the standard Windows formula; note that this assumes 96 DPI at present - high DPI
             ' systems still need testing!  TODO!
-            Case pdfu_Pixel
+            Case fu_Pixel
                 
                 'Convert font size to points
                 FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
@@ -663,7 +663,7 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
                 .lfHeight = Fonts.ConvertToGDIFontSize(FontSize)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
-            Case pdfu_Point
+            Case fu_Point
                 .lfHeight = Fonts.ConvertToGDIFontSize(FontSize)
         
         End Select
