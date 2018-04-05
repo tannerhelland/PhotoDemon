@@ -505,7 +505,8 @@ Public Sub InitializeMenus()
         AddMenuItem "1:8 (12.5%)", "zoom_1_8", 8, 4, 7
         AddMenuItem "1:16 (6.25%)", "zoom_1_16", 8, 4, 8
     AddMenuItem "-", "-", 8, 5
-    AddMenuItem "Show rulers", "view_showrulers", 8, 6
+    AddMenuItem "Show rulers", "view_rulers", 8, 6
+    AddMenuItem "Show status bar", "view_statusbar", 8, 7
     
     
     'Window Menu

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.15</langversion>
+<langversion>7.0.16</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5897,6 +5897,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Show status bar</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>視窗(&W)</translation>
 </phrase>
@@ -6541,7 +6546,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation></translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15324,10 +15329,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4690 phrases. -->
-<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12508 total words. -->
+<!-- As of this build, PhotoDemon contains 4691 phrases. -->
+<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12511 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.48</langversion>
+<langversion>1.0.49</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5934,6 +5934,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Show status bar</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>खिड़की</translation>
 </phrase>
@@ -6580,7 +6585,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>अल्फा चैनल निकालें</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15384,10 +15389,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4690 phrases. -->
-<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12508 total words. -->
+<!-- As of this build, PhotoDemon contains 4691 phrases. -->
+<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12511 total words. -->
 
 </pdData>

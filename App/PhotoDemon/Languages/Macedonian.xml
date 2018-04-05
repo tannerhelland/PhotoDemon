@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.141</langversion>
+<langversion>1.0.142</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -5938,6 +5938,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Show status bar</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>прозорец</translation>
 </phrase>
@@ -6584,7 +6589,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15389,10 +15394,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4690 phrases. -->
-<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12508 total words. -->
+<!-- As of this build, PhotoDemon contains 4691 phrases. -->
+<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12511 total words. -->
 
 </pdData>

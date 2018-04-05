@@ -263,8 +263,8 @@ Private m_SelectionActiveBeforeMouseEvents As Boolean
 'When we reflow the interface, we mark a special "resize" state to prevent recursive automatic reflow event notifications
 Private m_InternalResize As Boolean
 
-'Are canvas rulers currently visible?  Outside callers can access/modify this via the dedicated Get/Set functions.
-Private m_RulersVisible As Boolean
+'Are various canvas elements currently visible?  Outside callers can access/modify these via dedicated Get/Set functions.
+Private m_RulersVisible As Boolean, m_StatusBarVisible As Boolean
 
 'In Feb '15, Raj added a great context menu to the image tabstrip.  To help simplify menu enable/disable behavior,
 ' this enum can be used to identify individual menu entries.
@@ -538,10 +538,6 @@ End Function
 Public Sub ProgBar_SetValue(ByVal newValue As Double)
     mainProgBar.Value = newValue
 End Sub
-
-'Public Function GetProgBarReference() As pdProgressBar
-'    Set GetProgBarReference = UserControl.mainProgBar
-'End Function
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -1561,11 +1557,14 @@ End Sub
 'Given the current user control rect, modify it to account for the status bar's position, and also fill a new rect
 ' with the status bar's dimensions.
 Private Sub FillStatusBarRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
-    ucRect.Height = ucRect.Height - StatusBar.GetHeight
+    
+    If m_StatusBarVisible Then ucRect.Height = ucRect.Height - StatusBar.GetHeight
+    
     dstRect.Top = ucRect.Top + ucRect.Height
     dstRect.Height = StatusBar.GetHeight
     dstRect.Left = ucRect.Left
     dstRect.Width = ucRect.Width
+    
 End Sub
 
 Public Sub AlignCanvasView()
@@ -1598,7 +1597,7 @@ Public Sub AlignCanvasView()
         ImageStrip.Visible = tabstripVisible
     End If
     
-    'With the tabstrip rect in place, we now need to calculate a status bar rect
+    'With the tabstrip rect in place, we now need to calculate a status bar rect (if any)
     Dim statusBarRect As RectF
     FillStatusBarRect ucRect, statusBarRect
     
@@ -1678,6 +1677,7 @@ Public Sub AlignCanvasView()
     '...Followed by the status bar
     With statusBarRect
         StatusBar.SetPositionAndSize .Left, .Top, .Width, .Height
+        StatusBar.Visible = m_StatusBarVisible
     End With
     
     '...and the progress bar placeholder.  (Note that it doesn't need a special rect - we always just position it
@@ -1709,9 +1709,7 @@ End Sub
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         
     'Regardless of viewport state, cache the current scroll bar value inside the current image
-    If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).ImgViewport.SetVScrollValue vScroll.Value
-    End If
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).ImgViewport.SetVScrollValue vScroll.Value
         
     If (Not Me.GetRedrawSuspension) Then
     
@@ -1736,11 +1734,14 @@ Public Sub ReadUserPreferences()
     ImageStrip.ReadUserPreferences
     m_RulersVisible = UserPrefs.GetPref_Boolean("Toolbox", "RulersVisible", True)
     FormMain.MnuView(6).Checked = m_RulersVisible
+    m_StatusBarVisible = UserPrefs.GetPref_Boolean("Toolbox", "StatusBarVisible", True)
+    FormMain.MnuView(7).Checked = m_StatusBarVisible
 End Sub
 
 Public Sub WriteUserPreferences()
     ImageStrip.WriteUserPreferences
     UserPrefs.SetPref_Boolean "Toolbox", "RulersVisible", m_RulersVisible
+    UserPrefs.SetPref_Boolean "Toolbox", "StatusBarVisible", m_StatusBarVisible
 End Sub
 
 'Get/set ruler settings
@@ -1758,6 +1759,24 @@ Public Sub SetRulerVisibility(ByVal newState As Boolean)
     End If
     
     'When ruler visibility is changed, we must reflow the canvas area to match
+    If changesMade Then Me.AlignCanvasView
+    
+End Sub
+
+'Get/set status bar settings
+Public Function GetStatusBarVisibility() As Boolean
+    GetStatusBarVisibility = m_StatusBarVisible
+End Function
+
+Public Sub SetStatusBarVisibility(ByVal newState As Boolean)
+
+    Dim changesMade As Boolean
+    
+    If (newState <> StatusBar.Visible) Then
+        m_StatusBarVisible = newState
+        changesMade = True
+    End If
+    
     If changesMade Then Me.AlignCanvasView
     
 End Sub

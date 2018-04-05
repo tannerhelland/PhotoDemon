@@ -1426,6 +1426,10 @@ Begin VB.Form FormMain
          Caption         =   "Show rulers"
          Index           =   6
       End
+      Begin VB.Menu MnuView 
+         Caption         =   "Show status bar"
+         Index           =   7
+      End
    End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
@@ -2417,6 +2421,13 @@ Private Sub MnuView_Click(Index As Integer)
             newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
             FormMain.MnuView(6).Checked = newRulerState
             FormMain.MainCanvas(0).SetRulerVisibility newRulerState
+            
+        'Show status bar
+        Case 7
+            Dim newStatusBarState As Boolean
+            newStatusBarState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
+            FormMain.MnuView(7).Checked = newStatusBarState
+            FormMain.MainCanvas(0).SetStatusBarVisibility newStatusBarState
         
     End Select
 

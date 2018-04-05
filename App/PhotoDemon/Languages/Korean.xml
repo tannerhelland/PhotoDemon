@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.13</langversion>
+<langversion>1.0.14</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5933,6 +5933,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Show status bar</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>창문</translation>
 </phrase>
@@ -6578,7 +6583,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15382,10 +15387,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4690 phrases. -->
-<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12508 total words. -->
+<!-- As of this build, PhotoDemon contains 4691 phrases. -->
+<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12511 total words. -->
 
 </pdData>
