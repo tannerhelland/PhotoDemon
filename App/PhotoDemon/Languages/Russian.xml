@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3327</langversion>
+<langversion>6.8.3328</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4546,6 +4546,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4869,31 +4875,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Пустой буфер обмена</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>Посмотреть</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>Установить изображение на экране</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Приблизить</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Уменьшить</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1: 1 (фактический размер, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5922,6 +5903,41 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>Посмотреть</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>Установить изображение на экране</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>Приблизить</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>Уменьшить</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1: 1 (фактический размер, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>Окно</translation>
 </phrase>
@@ -6568,7 +6584,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15373,10 +15389,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

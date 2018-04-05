@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3327</langversion>
+<langversion>6.8.3328</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4542,6 +4542,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4865,31 +4871,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>tom Urklipp</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>View</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>Montera bilden på skärmen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>zooma in</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>zooma ut</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>01:01 (faktisk storlek, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5918,6 +5899,41 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>View</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>Montera bilden på skärmen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>zooma in</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>zooma ut</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>01:01 (faktisk storlek, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>Fönster</translation>
 </phrase>
@@ -6564,7 +6580,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15368,10 +15384,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

@@ -61,8 +61,16 @@ Private m_Orientation As PD_Orientation
 Private m_CanvasOffsetX As Long, m_CanvasOffsetY As Long
 Private m_imgCoordRectF As RectF
 
-'"Step" of the current ruler.  This only needs to be updated if viewport zoom changes.
+'"Step", notch iteration start, and notch iteration end of the current ruler.
+' "Step" only needs to be updated if viewport zoom changes; loop start and end need to be updated on zoom
+' *and* scroll events.
 Private m_Step As Long, m_LoopStart As Long, m_LoopEnd As Long
+
+'Rulers can render themselves in increments of base-10 (0, 1, 2... or 0, 10, 20... or 0, 100, 200...),
+' or 5 (0, 5, 10... 100, 150, 200, 250...) or 2 (0, 2, 4... or 10, 12, 14, 16, 18...).  Different intervals
+' require different notch strategies.  This value is cached in the UpdateControlLayout function, and used
+' by the RedrawBackBuffer function to determine how/where sub-notches are rendered.
+Private m_Interval As Long
 
 'Current mouse position, if any - in both canvas and image coordinate spaces
 Private m_MouseCanvasX As Double, m_MouseCanvasY As Double, m_MouseImgX As Double, m_MouseImgY As Double
@@ -372,6 +380,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             m_Step = Int(startAmount)
             m_LoopStart = Int(m_imgCoordRectF.Left * (1# / startAmount)) * m_Step - m_Step
             m_LoopEnd = Int(m_imgCoordRectF.Width * (1# / startAmount)) * m_Step + m_Step
+            m_Interval = 10
             
         'Vertical rulers
         Else
@@ -412,6 +421,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             m_Step = Int(startAmount)
             m_LoopStart = Int(m_imgCoordRectF.Top * (1# / startAmount)) * m_Step - m_Step
             m_LoopEnd = Int(m_imgCoordRectF.Height * (1# / startAmount)) * m_Step + m_Step
+            m_Interval = 10
             
         End If
         
@@ -420,8 +430,10 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         ' also rendering one of these factors, use it.
         If ((numBlocksThisSize * 5) <= numBlocksAllowed) Then
             m_Step = m_Step \ 5
+            m_Interval = 5
         ElseIf ((numBlocksThisSize * 2) <= numBlocksAllowed) Then
             m_Step = m_Step \ 2
+            m_Interval = 2
         End If
         
         Set tmpFont = Nothing
@@ -475,17 +487,19 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         rulerFontColor = m_Colors.RetrieveColor(PDR_Text, Me.Enabled)
         
         'Regardless of ruler distance, we always draw midpoint notches
-        Dim midPointNotch As Double, halfSize As Long
+        Dim midPointNotch As Double, halfSize As Long, quarterSize As Long
         midPointNotch = m_Step / 2
         
         'TESTING ONLY: draw lines at every 100 px
-        Dim x As Long, y As Long, xNew As Double, yNew As Double, xNewInt As Long, yNewInt As Long
+        Dim x As Long, y As Long, i As Long, tmpStep As Double
+        Dim xNew As Double, yNew As Double, xNewInt As Long, yNewInt As Long
         If (m_Orientation = pdo_Horizontal) Then
         
             'Start by drawing a full-width line across the bottom of the ruler
             cPainter.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
             
             halfSize = bHeight * 0.4
+            quarterSize = bHeight * 0.25
             
             Dim tmpFont As pdFont
             Set tmpFont = Fonts.GetMatchingUIFont(8!)
@@ -503,10 +517,44 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 cPainter.DrawLineI cSurface, cPen, xNewInt, 0, xNewInt, bHeight
                 tmpFont.FastRenderText xNewInt + 3, -1, CStr(x)
                 
-                'Next, draw a midpoint notch at half-height
-                Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + midPointNotch, 0, xNew, yNew
-                xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
-                cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
+                'Next, draw midpoint notches.  Which notches we draw varies based on the current interval.
+                ' The default interval setting is base-10 (e.g. 0, 1, 2 or 0, 100, 200).  In this setting,
+                ' we want to draw *9* intermediary notches.
+                If (m_Interval = 10) Then
+                    
+                    For i = 1 To 9
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.1) * i, 0, xNew, yNew
+                        xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
+                        If ((i And &H1) = 0) Then
+                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
+                        Else
+                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                        End If
+                    Next i
+                
+                'When the interval is 2, it means that every *base-2* value renders text (e.g. 0, 2, 4, 6).
+                ' We want render three points, with the midpoint being drawn slightly larger than the other two.
+                ElseIf (m_Interval = 5) Then
+                
+                    For i = 1 To 3
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.25) * i, 0, xNew, yNew
+                        xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
+                        If (i = 2) Then
+                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
+                        Else
+                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                        End If
+                    Next i
+                
+                'When the interval is 2, it means that every *base-5* value renders text (e.g. 0, 5, 10).
+                ' We want to draw four small notches for intermediary values.
+                ElseIf (m_Interval = 2) Then
+                    For i = 1 To 4
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), x + (m_Step * 0.2) * i, 0, xNew, yNew
+                        xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
+                        cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                    Next i
+                End If
                 
             Next x
             
@@ -519,6 +567,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             cPainter.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
             
             halfSize = bWidth * 0.4
+            quarterSize = bWidth * 0.25
             
             'Vertical fonts are rendered using a special font object.
             If (Not m_VerticalFont Is Nothing) Then
@@ -537,10 +586,44 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     cPainter.DrawLineI cSurface, cPen, 0, yNewInt, bWidth, yNewInt
                     m_VerticalFont.FastRenderText -4, yNewInt + 3 + m_VerticalFont.GetWidthOfString(CStr(y)), CStr(y)
                     
-                    'Next, draw a midpoint notch at half-height
-                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + midPointNotch, xNew, yNew
-                    yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
-                    cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
+                    'Next, draw midpoint notches.  Which notches we draw varies based on the current interval.
+                    ' The default interval setting is base-10 (e.g. 0, 1, 2 or 0, 100, 200).  In this setting,
+                    ' we want to draw *9* intermediary notches.
+                    If (m_Interval = 10) Then
+                        
+                        For i = 1 To 9
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.1) * i, xNew, yNew
+                            yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
+                            If ((i And &H1) = 0) Then
+                                cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
+                            Else
+                                cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                            End If
+                        Next i
+                    
+                    'When the interval is 2, it means that every *base-2* value renders text (e.g. 0, 2, 4, 6).
+                    ' We want render three points, with the midpoint being drawn slightly larger than the other two.
+                    ElseIf (m_Interval = 5) Then
+                    
+                        For i = 1 To 3
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.25) * i, xNew, yNew
+                            yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
+                            If (i = 2) Then
+                                cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
+                            Else
+                                cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                            End If
+                        Next i
+                    
+                    'When the interval is 2, it means that every *base-5* value renders text (e.g. 0, 5, 10).
+                    ' We want to draw four small notches for intermediary values.
+                    ElseIf (m_Interval = 2) Then
+                        For i = 1 To 4
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, y + (m_Step * 0.2) * i, xNew, yNew
+                            yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
+                            cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                        Next i
+                    End If
                     
                 Next y
                     

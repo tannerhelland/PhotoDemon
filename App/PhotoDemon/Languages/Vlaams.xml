@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.344</langversion>
+<langversion>6.7.345</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4546,6 +4546,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4869,31 +4875,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>&Ledigen klembord</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>&Beeld</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>&Afbeelding aanpassen aan scherm</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Zoom &In</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Zoom &uit</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1:1 (ware grootte, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5922,6 +5903,41 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>&Beeld</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>&Afbeelding aanpassen aan scherm</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>Zoom &In</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>Zoom &uit</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1:1 (ware grootte, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Venster</translation>
 </phrase>
@@ -6568,7 +6584,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15373,10 +15389,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

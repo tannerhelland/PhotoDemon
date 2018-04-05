@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.354</langversion>
+<langversion>7.2.355</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4547,6 +4547,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4870,31 +4876,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Zwischenablage &leeren</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>&Ansicht</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>Bild an Bildschirm &anpassen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>&Heranzoomen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>&Herauszoomen</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1:1 (tatsächliche Größe, 100 %)</translation>
 </phrase>
 
 <phrase>
@@ -5923,6 +5904,41 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>&Ansicht</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>Bild an Bildschirm &anpassen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>&Heranzoomen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>&Herauszoomen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1:1 (tatsächliche Größe, 100 %)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Fenster</translation>
 </phrase>
@@ -6569,7 +6585,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15372,10 +15388,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

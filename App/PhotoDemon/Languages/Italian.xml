@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.344</langversion>
+<langversion>6.7.345</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4545,6 +4545,12 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4868,31 +4874,6 @@ o il menù File > Apri e File > Importa.</translation>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>&Svuota gli appunti</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>&Visualizza</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>&Adatta l'immagine allo schermo</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Zoom &avanti</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Zoom i&ndietro</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1:1 (dimensione attuale, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5921,6 +5902,41 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>&Visualizza</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>&Adatta l'immagine allo schermo</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>Zoom &avanti</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>Zoom i&ndietro</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1:1 (dimensione attuale, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Finestra</translation>
 </phrase>
@@ -6567,7 +6583,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15370,10 +15386,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

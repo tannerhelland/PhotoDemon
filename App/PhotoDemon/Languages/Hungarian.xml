@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3327</langversion>
+<langversion>6.8.3328</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4532,6 +4532,12 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4855,31 +4861,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <phrase>
 <original>&Empty clipboard</original>
 <translation>üres vágólap</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>Kilátás</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>Fit kép a képernyőn</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Nagyítás</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Kicsinyítés</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1: 1 (tényleges méret, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5908,6 +5889,41 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>Kilátás</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>Fit kép a képernyőn</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>Nagyítás</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>Kicsinyítés</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1: 1 (tényleges méret, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>Ablak</translation>
 </phrase>
@@ -6551,7 +6567,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15350,10 +15366,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

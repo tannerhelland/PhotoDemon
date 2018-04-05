@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3423</langversion>
+<langversion>7.0.3424</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4537,6 +4537,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4860,31 +4866,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>&E 清空剪切板</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>&V 显示</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>&F 填充图像到屏幕大小</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>&I 放大</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>&O 缩小</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1:1（实际尺寸，100%）</translation>
 </phrase>
 
 <phrase>
@@ -5913,6 +5894,41 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>&V 显示</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>&F 填充图像到屏幕大小</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>&I 放大</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>&O 缩小</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1:1（实际尺寸，100%）</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&W 窗口</translation>
 </phrase>
@@ -6557,7 +6573,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15356,10 +15372,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>

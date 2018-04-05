@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3327</langversion>
+<langversion>6.8.3328</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4542,6 +4542,12 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 
 <!-- END text for pdResize.ctl-->
 
+<!-- BEGIN text for pdRuler.ctl -->
+
+<!-- pdRuler.ctl contains 0 phrases. -->
+
+<!-- END text for pdRuler.ctl-->
+
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
@@ -4865,31 +4871,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Prázdný schránka</translation>
-</phrase>
-
-<phrase>
-<original>&View</original>
-<translation>Pohled</translation>
-</phrase>
-
-<phrase>
-<original>&Fit image on screen</original>
-<translation>Přizpůsobit obrázek na obrazovce</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &in</original>
-<translation>Přiblížit</translation>
-</phrase>
-
-<phrase>
-<original>Zoom &out</original>
-<translation>Oddálit</translation>
-</phrase>
-
-<phrase>
-<original>1:1 (actual size, 100%)</original>
-<translation>1: 1 (skutečná velikost, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -5918,6 +5899,41 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
+<original>&View</original>
+<translation>Pohled</translation>
+</phrase>
+
+<phrase>
+<original>&Fit image on screen</original>
+<translation>Přizpůsobit obrázek na obrazovce</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &in</original>
+<translation>Přiblížit</translation>
+</phrase>
+
+<phrase>
+<original>Zoom &out</original>
+<translation>Oddálit</translation>
+</phrase>
+
+<phrase>
+<original>Zoom to value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1 (actual size, 100%)</original>
+<translation>1: 1 (skutečná velikost, 100%)</translation>
+</phrase>
+
+<phrase>
+<original>Show rulers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>Okno</translation>
 </phrase>
@@ -6563,7 +6579,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Odstraňte alfa kanál</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 188 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 188 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15366,10 +15382,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4688 phrases. -->
-<!-- 2113 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12503 total words. -->
+<!-- As of this build, PhotoDemon contains 4690 phrases. -->
+<!-- 2113 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12508 total words. -->
 
 </pdData>
