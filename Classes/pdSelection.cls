@@ -1816,23 +1816,44 @@ Private Sub CreateSelectionMask()
     surfaceOK = dstSurface.WrapSurfaceAroundPDDIB(m_SelMask)
     
     'Set some surface properties in advance, like antialiasing and compositing.
+    Dim useAA As Boolean
+    
     If (Me.GetSelectionProperty_Long(sp_Smoothing) > es_None) Then
         
         'Rectangle selections are an exception here; we don't want to antialias them at all, even if antialiasing is enabled.
         ' (GDI+ tends to mess up antialiasing for perfect rects.)
-        If (m_SelectionShape = ss_Rectangle) And (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#) Then
-            dstSurface.SetSurfaceAntialiasing P2_AA_None
-        Else
-            dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
-        End If
-        
+        useAA = Not ((m_SelectionShape = ss_Rectangle) And (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#))
     Else
+        useAA = False
+    End If
+                
+    If useAA Then
+        dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+    Else
+        
         dstSurface.SetSurfaceAntialiasing P2_AA_None
+        
+        'If we're *not* using antialiasing, clip the selection to fixed integer boundaries.
+        ' (Note that this only applies to rectangular and elliptical selection shapes.)
+        If (Me.GetSelectionShape = ss_Circle) Or (Me.GetSelectionShape = ss_Rectangle) Then
+        
+            Dim lFrac As Single, tFrac As Single
+            lFrac = PDMath.Frac(m_CornersLocked.Left)
+            tFrac = PDMath.Frac(m_CornersLocked.Top)
+            With m_CornersLocked
+                .Left = Int(.Left)
+                .Top = Int(.Top)
+                .Width = Int(.Width + lFrac)
+                .Height = Int(.Height + tFrac)
+            End With
+            
+        End If
+            
     End If
     
     dstSurface.SetSurfaceCompositing P2_CM_Overwrite
     
-    If (Not surfaceOK) Then pdDebug.LogAction "WARNING!  pdSelection.CreateSelectionMask() failed to wrap the destination mask surface."
+    If (Not surfaceOK) Then PDDebug.LogAction "WARNING!  pdSelection.CreateSelectionMask() failed to wrap the destination mask surface."
     
     'Interior/exterior selections use brushes to fill the appropriate region; bordered selections use a pen to *stroke*
     ' the selection outline.  (For bordered selections, note that we also generate a matching pd2DPath object, which is
@@ -2459,8 +2480,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     With viewportIntersectRectCanvas
         imgViewportRectL.Left = Int(.Left)
         imgViewportRectL.Top = Int(.Top)
-        imgViewportRectL.Width = Int(PDMath.Frac(.Left) + .Width + 0.999999)
-        imgViewportRectL.Height = Int(PDMath.Frac(.Top) + .Height + 0.999999)
+        imgViewportRectL.Width = Int(PDMath.Frac(.Left) + .Width + 0.999999!)
+        imgViewportRectL.Height = Int(PDMath.Frac(.Top) + .Height + 0.999999!)
     End With
     
     'Next, we need to convert the current selection boundary coordinates from "image coordinates" to "viewport coordinates".
@@ -2541,7 +2562,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             .Top = dstRectF.Top - viewportIntersectRectCanvas.Top
             .Width = dstRectF.Width
             .Height = dstRectF.Height
-            GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
+            GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, False  'True
         End With
         
         'Mark the finished viewport cache as "ready"; we won't regenerate it unless the underlying selection mask
@@ -2777,7 +2798,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_OverlayIsReady = True
             
         Else
-            pdDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
+            PDDebug.LogAction "WARNING!  pdSelection.RenderSelectionAsOverlay received catastrophically bad inputs."
         End If
         
     End If
@@ -3072,7 +3093,7 @@ End Sub
 Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
     ReadSelectionFromFile = False
-    pdDebug.LogAction "Reading selection data from file: " & srcFilename
+    PDDebug.LogAction "Reading selection data from file: " & srcFilename
     
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackager
@@ -3186,21 +3207,21 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     ReadSelectionFromFile = True
                     
                 Else
-                    pdDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
+                    PDDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
                 End If
             
             Else
-                pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header; header XML follows:"
-                pdDebug.LogAction headerXML.GetParamString()
+                PDDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header; header XML follows:"
+                PDDebug.LogAction headerXML.GetParamString()
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
+            PDDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
         End If
         
     End If
     
-    pdDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
+    PDDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
     
 End Function
 
