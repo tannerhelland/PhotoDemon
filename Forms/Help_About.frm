@@ -243,6 +243,7 @@ Private Sub Form_Load()
     GenerateContributor "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1"
     GenerateContributor "Alexander Dorn"
     GenerateContributor "Allan Lima"
+    GenerateContributor "Alric Rahl", "https://t.me/Alricrahl"
     GenerateContributor "Andrew Yeoman"
     GenerateContributor "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/"
     GenerateContributor "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"

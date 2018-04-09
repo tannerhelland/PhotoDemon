@@ -21,6 +21,7 @@ Other contributors
 Abhijit Mhapsekar
 AG Violette
 Allan Lima
+Alric Rahl (https://t.me/Alricrahl)
 Andrew Yeoman
 Ari Sohandri Putra (http://arisohandrip.indonesiaz.com/)
 Audioglider (https://github.com/audioglider)
