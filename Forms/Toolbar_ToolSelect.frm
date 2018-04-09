@@ -772,7 +772,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Set m_MouseEvents = Nothing
         UserPrefs.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     Else
-        pdDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
+        PDDebug.LogAction "WARNING!  toolbar_Toolbox was unloaded prematurely - why??"
         Cancel = True
     End If
 End Sub
@@ -801,9 +801,14 @@ Private Sub NewToolSelected()
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
                     If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Rectangle) Then
                         pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Circle
-
+                        
+                        'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
+                        ' against the current selection's settings.
+                        Selections.SyncTextToCurrentSelection g_CurrentImage
+                        
                     ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Circle) Then
                         pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Rectangle
+                        Selections.SyncTextToCurrentSelection g_CurrentImage
 
                     End If
                     
