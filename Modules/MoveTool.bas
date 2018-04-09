@@ -16,6 +16,11 @@ Attribute VB_Name = "MoveTool"
 
 Option Explicit
 
+'The move/size tool exposes a number of UI-only options (like drawing borders around active layers).
+' To improve viewport performance, we cache those settings locally, and the viewport queries us instead
+' of directly querying the associated UI elements.
+Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
     
     Dim hOffset As Long, vOffset As Long
@@ -180,4 +185,29 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     'Reset the generic tool mouse tracking function
     Tools.TerminateGenericToolTracking
                 
+End Sub
+
+'Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+Public Function GetDrawLayerBorders() As Boolean
+    GetDrawLayerBorders = m_DrawLayerBorders
+End Function
+
+Public Function GetDrawLayerCornerNodes() As Boolean
+    GetDrawLayerCornerNodes = m_DrawCornerNodes
+End Function
+
+Public Function GetDrawLayerRotateNodes() As Boolean
+    GetDrawLayerRotateNodes = m_DrawRotateNodes
+End Function
+
+Public Sub SetDrawLayerBorders(ByVal newState As Boolean)
+    m_DrawLayerBorders = newState
+End Sub
+
+Public Sub SetDrawLayerCornerNodes(ByVal newState As Boolean)
+    m_DrawCornerNodes = newState
+End Sub
+
+Public Sub SetDrawLayerRotateNodes(ByVal newState As Boolean)
+    m_DrawRotateNodes = newState
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3329</langversion>
+<langversion>6.8.3330</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3809,28 +3809,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>Törlés réteg</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Új réteg</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift gomb: megőrizni réteg méretarány</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Cél réteg: %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(egyik sem)</translation>
 </phrase>
 
 <phrase>
@@ -3853,7 +3833,7 @@ Please enter a numeric value.</original>
 <translation>A kép középre belül az ablakon</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4283,11 +4263,21 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>Törlés réteg</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Új réteg</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>átrendezése rétegeket</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14782,6 +14772,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(egyik sem)</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>kímélő beállítások</translation>
 </phrase>
@@ -15188,7 +15183,7 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <translation>Ez az új ideiglenes mappa helyét nem lép érvénybe, amíg újra nem indítja a programot.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15368,6 +15363,17 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Cél réteg: %1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

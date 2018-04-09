@@ -632,8 +632,8 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     Dim cornerSize As Single, halfCornerSize As Single
-    cornerSize = 12#
-    halfCornerSize = cornerSize * 0.5
+    cornerSize = 12!
+    halfCornerSize = cornerSize * 0.5!
     
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
@@ -729,20 +729,20 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             '
             'In my testing, 80-ish pixels is a reasonably good size across many image dimensions.  Note that we *do* correct for DPI here.
             Dim arcLength As Double
-            arcLength = FixDPIFloat(70)
+            arcLength = Interface.FixDPIFloat(70)
             
             'Switching between arc length and sweep is easy; see https://en.wikipedia.org/wiki/Arc_%28geometry%29#Length_of_an_arc_of_a_circle
             Dim arcSweep As Double
-            arcSweep = (arcLength * 180) / (PI * rRadius)
+            arcSweep = (arcLength * 180#) / (PI * rRadius)
             
             'Make sure the arc fits within a valid range (e.g. no complete circles or nearly-straight lines)
-            If (arcSweep > 90) Then arcSweep = 90
-            If (arcSweep < 30) Then arcSweep = 30
+            If (arcSweep > 90#) Then arcSweep = 90#
+            If (arcSweep < 30#) Then arcSweep = 30#
             
             'We need to modify the default layer angle depending on the current POI
             Dim relevantAngle As Double
-            relevantAngle = srcLayer.GetLayerAngle + ((curPOI - 1) * 90)
-            tmpPath.AddArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
+            relevantAngle = srcLayer.GetLayerAngle + ((curPOI - 1) * 90#)
+            tmpPath.AddArc rotateBoundRect, relevantAngle - (arcSweep * 0.5), arcSweep
             
             Dim prevLineCap As PD_2D_LineCap
             prevLineCap = m_PenUIBase.GetPenLineCap
@@ -763,7 +763,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
     'Render the circles at each rotation point
     Dim circRadius As Single
-    circRadius = 7#
+    circRadius = 7!
     
     Dim i As Long
     For i = 1 To 4

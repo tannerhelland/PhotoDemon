@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.16</langversion>
+<langversion>7.0.17</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3779,28 +3779,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>刪除圖層</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>新增圖層</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift 鍵: 保持圖層長寬比</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>目標圖層: %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(無)</translation>
 </phrase>
 
 <phrase>
@@ -3823,7 +3803,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4256,11 +4236,21 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>刪除圖層</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>新增圖層</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation></translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14744,6 +14734,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(無)</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>正在儲存偏好設定</translation>
 </phrase>
@@ -15146,7 +15141,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15326,6 +15321,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>目標圖層: %1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

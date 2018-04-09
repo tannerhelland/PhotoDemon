@@ -616,6 +616,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
 End Sub
 
 Public Sub NDFXUiUpdate()
+    If (g_OpenImageCount = 0) Then Exit Sub
     If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
         'Notify all relevant parties of the changes.  (This must be done first, so that things like thumbnail caches

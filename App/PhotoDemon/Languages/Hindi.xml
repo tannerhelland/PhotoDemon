@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.49</langversion>
+<langversion>1.0.50</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3818,28 +3818,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>परत हटाएं</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>नई परत जोड़ें</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>शिफ्ट कुंजी: परत पहलू अनुपात को संरक्षित करें</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>लक्ष्य परत: %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(कोई नहीं)</translation>
 </phrase>
 
 <phrase>
@@ -3862,7 +3842,7 @@ Please enter a numeric value.</original>
 <translation>व्यूपोर्ट के अंदर की छवि को केंद्र में रखें</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4293,11 +4273,21 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>परत हटाएं</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>नई परत जोड़ें</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>परतों को पुनर्व्यवस्थित करें</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14801,6 +14791,11 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(कोई नहीं)</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>प्राथमिकताएं सहेजना</translation>
 </phrase>
@@ -15206,7 +15201,7 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation>यह नया अस्थायी फ़ोल्डर स्थान प्रभावी नहीं होगा जब तक कि आप प्रोग्राम को पुनरारंभ न करें।</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15386,6 +15381,17 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>लक्ष्य परत: %1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

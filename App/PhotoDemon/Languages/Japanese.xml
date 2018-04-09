@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.37</langversion>
+<langversion>1.0.38</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3818,28 +3818,8 @@ P数値を入力してください。</translation>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>レイヤーを削除する</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>新しいレイヤーを追加する</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shiftキー：レイヤのアスペクト比を保持する</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>ターゲットレイヤー：％1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>（なし）</translation>
 </phrase>
 
 <phrase>
@@ -3862,7 +3842,7 @@ P数値を入力してください。</translation>
 <translation>ビューポートの内側に画像を配置する</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4293,11 +4273,21 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>レイヤーを削除する</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>新しいレイヤーを追加する</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>層の再配列</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14800,6 +14790,11 @@ To引き続き、photemonの新しいコピーをphotodemon.orgからダウン�
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>（なし）</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>環境設定を保存する</translation>
 </phrase>
@@ -15205,7 +15200,7 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <translation>この新しい一時フォルダの場所は、プログラムを再起動するまで有効になりません。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15385,6 +15380,17 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>ターゲットレイヤー：％1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

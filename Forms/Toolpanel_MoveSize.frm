@@ -297,8 +297,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 06/November/17
-'Last update: improve the rate at which things like taskbar icons are refreshed during non-destructive modifications
+'Last updated: 09/April/18
+'Last update: synchronize viewport-specific settings against the new MoveTool module, which manages
+'             direct interactions with the viewport.
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -362,15 +363,18 @@ End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
+    MoveTool.SetDrawLayerBorders CBool(chkLayerBorder.Value)
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
+    MoveTool.SetDrawLayerCornerNodes CBool(chkLayerNodes.Value)
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
+    MoveTool.SetDrawLayerRotateNodes CBool(chkRotateNode.Value)
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
@@ -408,12 +412,19 @@ Private Sub Form_Load()
     cmdLayerMove(0).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
+    cboLayerResizeQuality.SetAutomaticRedraws False
     cboLayerResizeQuality.Clear
     cboLayerResizeQuality.AddItem "Nearest neighbor", 0
     cboLayerResizeQuality.AddItem "Bilinear", 1
     cboLayerResizeQuality.AddItem "Bicubic", 2
+    cboLayerResizeQuality.SetAutomaticRedraws True
     cboLayerResizeQuality.ListIndex = 1
-        
+    
+    'Ensure our corresponding tool manager is synchronized with default layer rendering styles
+    MoveTool.SetDrawLayerBorders CBool(chkLayerBorder.Value)
+    MoveTool.SetDrawLayerCornerNodes CBool(chkLayerNodes.Value)
+    MoveTool.SetDrawLayerRotateNodes CBool(chkRotateNode.Value)
+    
     'Load any last-used settings for this form
     'NOTE: this is currently disabled, as all settings on this form are synched to the active layer
     'Set lastUsedSettings = New pdLastUsedSettings
@@ -620,18 +631,8 @@ End Sub
 'When a layer property control (either a slider or spinner) has a "FinalChange" event, use this control to update any
 ' necessary UI elements that may need to be adjusted due to non-destructive changes.
 Private Sub FinalChangeHandler(Optional ByVal performFullUISync As Boolean = False)
-    
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tools.GetToolBusyState
-    'If (Not Tools.CanvasToolsAllowed) Then Exit Sub
-    
-    'Redraw the viewport and any relevant UI elements
-    'ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
     Processor.NDFXUiUpdate
-    
     If performFullUISync Then Interface.SyncInterfaceToCurrentImage
-    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -644,7 +645,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'UI images must be updated against theme-specific colors
     Dim buttonSize As Long
-    buttonSize = FixDPI(32)
+    buttonSize = Interface.FixDPI(32)
     cmdLayerMove(0).AssignImage "generic_commit", , buttonSize, buttonSize
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     

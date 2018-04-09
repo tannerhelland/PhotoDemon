@@ -102,19 +102,11 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'Lastly, do any tool-specific rendering directly onto the canvas itself.
             
-            'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
+            'The layer move/size tool provides a number of rendering options specific to that tool
             If (g_CurrentTool = NAV_MOVE) Then
-                
-                'If the user has requested visible layer borders, draw them now
-                If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                    
-                'If the user has requested visible transformation nodes, draw them now.
-                ' (TODO: cache these values in either public variables, or inside this module via some kind of setViewportProperties
-                '        function - either way, that will let us access drawing settings much more quickly!)
-                If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
-                    
-                'Same as above, but for the current rotation node
-                If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                If MoveTool.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+                If MoveTool.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                If MoveTool.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
             ElseIf (g_CurrentTool = COLOR_PICKER) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then ColorPicker.RenderColorPickerCursor dstCanvas

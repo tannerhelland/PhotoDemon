@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.14</langversion>
+<langversion>1.0.15</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3817,28 +3817,8 @@ P 숫자 값을 입력하십시오.</translation>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>레이어 삭제</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>새 레이어 추가</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift 키: 레이어 종횡비 유지</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>대상 레이어:  %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(없음)</translation>
 </phrase>
 
 <phrase>
@@ -3861,7 +3841,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>이미지를 뷰포트의 가운데에 배치하십시오.</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4292,11 +4272,21 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>레이어 삭제</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>새 레이어 추가</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>계층 재정렬</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14799,6 +14789,11 @@ To 계속 하시겠습니까? photodemon.org에서 PhotoDemon의 새 복사본�
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(없음)</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>환경 설정 저장</translation>
 </phrase>
@@ -15204,7 +15199,7 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation>이 새 임시 폴더 위치는 프로그램을 다시 시작해야 적용됩니다.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15384,6 +15379,17 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>대상 레이어:  %1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

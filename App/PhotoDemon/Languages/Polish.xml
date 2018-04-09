@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.24</langversion>
+<langversion>7.0.25</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3805,28 +3805,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Delete layer</original>
-<translation>Usuń warstwę</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Dodaj nową warstwę</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Klawisz Shift: zachować proporcje warstwy</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Warstwa docelowa: %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(żaden)</translation>
 </phrase>
 
 <phrase>
@@ -3849,7 +3829,7 @@ Please enter a numeric value.</original>
 <translation>Wyśrodkuj obraz wewnątrz okienka ekranu</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4281,11 +4261,21 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
+<original>Delete layer</original>
+<translation>Usuń warstwę</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Dodaj nową warstwę</translation>
+</phrase>
+
+<phrase>
 <original>Rearrange layers</original>
 <translation>Ponowne rozmieszczanie warstw</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14781,6 +14771,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(none)</original>
+<translation>(żaden)</translation>
+</phrase>
+
+<phrase>
 <original>Saving preferences</original>
 <translation>Zapisywanie preferencji</translation>
 </phrase>
@@ -15187,7 +15182,7 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 <translation>Nowa lokalizacja folderu tymczasowego osiągnie efekt dopiero po ponownym uruchomieniu programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15367,6 +15362,17 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Warstwa docelowa: %1</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
