@@ -340,9 +340,12 @@ Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     StatusBar.SetNetworkState newNetworkState
 End Sub
 
-'Use these functions to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
-' (Also note that this function relays state changes to the underlying pdCanvasView object; as such, do not set m_SuspendRedraws
-'  manually - only set it via this function, to ensure the canvas and underlying canvas view stay in sync.)
+'Use these functions to forcibly prevent the canvas from redrawing itself.
+' REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
+'
+'(Also note that this function relays state changes to the underlying pdCanvasView object; as such, do not set
+' m_SuspendRedraws manually - only set it via this function, to ensure the canvas and underlying canvas view
+' remain in sync.)
 Public Function GetRedrawSuspension() As Boolean
     GetRedrawSuspension = m_SuspendRedraws Or CanvasView.GetRedrawSuspension()
 End Function
@@ -450,7 +453,8 @@ Public Sub SetScrollVisibility(ByVal barType As PD_Orientation, ByVal newVisibil
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
     If changesMade Then
     
-        'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
+        'The "center" button between the scroll bars has the same visibility as the scrollbars;
+        ' it's only visible if *both* bars are visible.
         cmdCenter.Visible = (hScroll.Visible And vScroll.Visible)
         Me.AlignCanvasView
         
@@ -664,94 +668,13 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If Me.IsCanvasInteractionAllowed() Then
-    
-        Dim hOffset As Long, vOffset As Long
-        Dim canvasUpdateRequired As Boolean
-
+        
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
-        
-            'Drag-to-pan canvas
-            Case NAV_DRAG
                     
             'Move stuff around
             Case NAV_MOVE
-            
-                'Handle arrow keys first
-                If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
-            
-                    'Calculate offset modifiers for the current layer
-                    If (vkCode = VK_UP) Then vOffset = vOffset - 1
-                    If (vkCode = VK_DOWN) Then vOffset = vOffset + 1
-                    If (vkCode = VK_LEFT) Then hOffset = hOffset - 1
-                    If (vkCode = VK_RIGHT) Then hOffset = hOffset + 1
-                    
-                    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then canvasUpdateRequired = True
-                    
-                    'Apply the offsets
-                    With pdImages(g_CurrentImage).GetActiveLayer
-                        .SetLayerOffsetX .GetLayerOffsetX + hOffset
-                        .SetLayerOffsetY .GetLayerOffsetY + vOffset
-                    End With
-                    
-                    'Redraw the viewport if necessary
-                    If canvasUpdateRequired Then
-                        markEventHandled = True
-                        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-                    End If
-                    
-                'Handle non-arrow keys next
-                Else
-                
-                    'Delete key: delete the active layer (if allowed)
-                    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
-                        markEventHandled = True
-                        Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
-                    End If
-                    
-                    'Insert: raise Add New Layer dialog
-                    If (vkCode = VK_INSERT) Then
-                        markEventHandled = True
-                        Process "Add new layer", True
-                    End If
-                
-                    'Tab and Shift+Tab: move through layer stack
-                    If (vkCode = VK_TAB) Then
-                        
-                        markEventHandled = True
-                        
-                        'Retrieve the active layer index
-                        Dim curLayerIndex As Long
-                        curLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
-                        
-                        'Advance the layer index according to the Shift modifier
-                        If (Shift And vbShiftMask) <> 0 Then
-                            curLayerIndex = curLayerIndex + 1
-                        Else
-                            curLayerIndex = curLayerIndex - 1
-                        End If
-                        
-                        If (curLayerIndex < 0) Then curLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
-                        If (curLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then curLayerIndex = 0
-                        
-                        'Activate the new layer
-                        pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
-                        
-                        'Redraw the viewport and interface to match
-                        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
-                        SyncInterfaceToCurrentImage
-                        
-                    End If
-                
-                    'Space bar: toggle active layer visibility
-                    If (vkCode = VK_SPACE) Then
-                        markEventHandled = True
-                        pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
-                        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-                        Interface.SyncInterfaceToCurrentImage
-                    End If
-                
-                End If
+                MoveTool.NotifyKeyDown Shift, vkCode, markEventHandled
             
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -773,10 +696,6 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
         
-            Case NAV_DRAG
-            
-            Case NAV_MOVE
-            
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
@@ -827,9 +746,6 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         m_InitMouseX = x
         m_InitMouseY = y
         
-        'Some functions may not operate on the current layer, but on the layer under the mouse
-        Dim layerUnderMouse As Long
-        
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
@@ -844,30 +760,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Move stuff around
             Case NAV_MOVE
-            
-                'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
-                ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
-                If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
+                MoveTool.NotifyMouseDown Me, imgX, imgY
                 
-                    layerUnderMouse = Layers.GetLayerUnderMouse(imgX, imgY, True)
-                    
-                    'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
-                    ' over a layer, it will return -1.
-                    If (layerUnderMouse > -1) Then
-                    
-                        'If the layer under the mouse is not already active, activate it now
-                        If (layerUnderMouse <> pdImages(g_CurrentImage).GetActiveLayerIndex) Then
-                            Layers.SetActiveLayerByIndex layerUnderMouse, False
-                            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
-                        End If
-                    
-                    End If
-                
-                End If
-                
-                'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
-            
             'Color picker
             Case COLOR_PICKER
                 ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
@@ -1007,9 +901,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Move stuff around
             Case NAV_MOVE
-                Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
-                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
-        
+                MoveTool.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
+                
             'Color picker
             Case COLOR_PICKER
                 ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
@@ -1045,46 +938,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Move stuff around
             Case NAV_MOVE
-            
-                'If the user has the "auto-activate layer beneath mouse" option set, report the current layer name in the
-                ' message bar; this is helpful for determining what layer will be affected by a given action.
-                If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
-                
-                    Dim layerUnderMouse As Long
-                    layerUnderMouse = Layers.GetLayerUnderMouse(imgX, imgY, True)
-                    
-                    'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
-                    ' over a layer, it will return -1.
-                    If (layerUnderMouse > -1) Then
-                        m_LayerAutoActivateIndex = layerUnderMouse
-                        
-                        'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
-                        ' while in debug mode.
-                        If UserPrefs.GenerateDebugLogs Then
-                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
-                        Else
-                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName
-                        End If
-                    
-                    'The mouse is not over a layer.  Default to the active layer, which allows the user to interact with the
-                    ' layer even if it lies off-canvas.
-                    Else
-                        m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
-                        
-                        If UserPrefs.GenerateDebugLogs Then
-                            Message "Target layer: %1", g_Language.TranslateMessage("(none)"), "DONOTLOG"
-                        Else
-                            Message "Target layer: %1", g_Language.TranslateMessage("(none)")
-                        End If
-                        
-                    End If
-                
-                'Auto-activation is disabled.  Don't bother reporting the layer beneath the mouse to the user, as actions can
-                ' only affect the active layer!
-                Else
-                    Message vbNullString
-                    m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
-                End If
+                m_LayerAutoActivateIndex = MoveTool.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
             
             'Color picker
             Case COLOR_PICKER
@@ -1146,12 +1000,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
             'Move stuff around
             Case NAV_MOVE
-            
-                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-                If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
-                
-                'Reset the generic tool mouse tracking function
-                Tools.TerminateGenericToolTracking
+                MoveTool.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Color picker
             Case COLOR_PICKER
@@ -1350,7 +1199,7 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         mnuTabstripPopup(POP_CLOSE).Enabled = (g_OpenImageCount > 1)
         
         'Raise the context menu
-        UserControl.PopupMenu mnuImageTabsContext, x:=x, y:=y
+        UserControl.PopupMenu mnuImageTabsContext, x, y
         ShowCursor 1
         
     End If
@@ -1473,14 +1322,10 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).ImgViewport.SetHScrollValue hScroll.Value
     
+    'Request the scroll-specific viewport pipeline stage, and notify all relevant UI elements of the change
     If (Not Me.GetRedrawSuspension) Then
-        
-        'Request the scroll-specific viewport pipeline stage
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-        
-        'Notify any other relevant UI elements
         RelayViewportChanges
-        
     End If
     
 End Sub
