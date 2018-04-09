@@ -1200,7 +1200,7 @@ Private Sub cmdBarMini_OKClick()
                 
                 'Invoke and/or terminate the current debugger, as necessary
                 If (curLogBehavior <> UserPrefs.GenerateDebugLogs()) Then
-                    If UserPrefs.GenerateDebugLogs Then pdDebug.StartDebugger True, , False Else pdDebug.TerminateDebugger False
+                    If UserPrefs.GenerateDebugLogs Then PDDebug.StartDebugger True, , False Else PDDebug.TerminateDebugger False
                 End If
                 
             End If
@@ -1342,8 +1342,8 @@ Private Sub LoadAllPreferences()
         
         'START image window caption length
             cboTitleText.Clear
-            cboTitleText.AddItem " compact - image names only", 0
-            cboTitleText.AddItem " descriptive - full image locations, including folder(s)", 1
+            cboTitleText.AddItem "compact - image names only", 0
+            cboTitleText.AddItem "descriptive - full image locations, including folder(s)", 1
             cboTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
             cboTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
         'END image window caption length
@@ -1356,8 +1356,8 @@ Private Sub LoadAllPreferences()
         
         'START MRU caption length
             cboMRUStyle.Clear
-            cboMRUStyle.AddItem " compact - image names only", 0
-            cboMRUStyle.AddItem " descriptive - full image locations, including folder(s)", 1
+            cboMRUStyle.AddItem "compact - image names only", 0
+            cboMRUStyle.AddItem "descriptive - full image locations, including folder(s)", 1
             cboMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
             cboMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
         'END MRU caption length
@@ -1365,10 +1365,10 @@ Private Sub LoadAllPreferences()
         'START alpha-channel checkerboard rendering
             m_userInitiatedAlphaSelection = False
             cboAlphaCheck.Clear
-            cboAlphaCheck.AddItem " Highlight checks", 0
-            cboAlphaCheck.AddItem " Midtone checks", 1
-            cboAlphaCheck.AddItem " Shadow checks", 2
-            cboAlphaCheck.AddItem " Custom (click boxes to customize)", 3
+            cboAlphaCheck.AddItem "Highlight checks", 0
+            cboAlphaCheck.AddItem "Midtone checks", 1
+            cboAlphaCheck.AddItem "Shadow checks", 2
+            cboAlphaCheck.AddItem "Custom (click boxes to customize)", 3
             
             cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
             
@@ -1384,9 +1384,9 @@ Private Sub LoadAllPreferences()
         
         'START alpha-channel checkerboard size
             cboAlphaCheckSize.Clear
-            cboAlphaCheckSize.AddItem " Small (4x4 pixels)", 0
-            cboAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
-            cboAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
+            cboAlphaCheckSize.AddItem "Small (4x4 pixels)", 0
+            cboAlphaCheckSize.AddItem "Medium (8x8 pixels)", 1
+            cboAlphaCheckSize.AddItem "Large (16x16 pixels)", 2
             
             cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
             
@@ -1436,8 +1436,8 @@ Private Sub LoadAllPreferences()
             
         'START suggested save as format
             cboDefaultSaveFormat.Clear
-            cboDefaultSaveFormat.AddItem " the current file format of the image being saved", 0
-            cboDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
+            cboDefaultSaveFormat.AddItem "the current file format of the image being saved", 0
+            cboDefaultSaveFormat.AddItem "the last image format I used in the ""Save As"" screen", 1
             cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
             
             cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
@@ -1445,8 +1445,8 @@ Private Sub LoadAllPreferences()
         
         'START overwrite vs copy when saving
             cboSaveBehavior.Clear
-            cboSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
-            cboSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
+            cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0
+            cboSaveBehavior.AddItem "save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
             cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
             
             cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
@@ -1467,9 +1467,9 @@ Private Sub LoadAllPreferences()
         
         For i = 0 To cboPerformance.UBound
             cboPerformance(i).Clear
-            cboPerformance(i).AddItem " maximize quality", 0
-            cboPerformance(i).AddItem " balance performance and quality", 1
-            cboPerformance(i).AddItem " maximize performance", 2
+            cboPerformance(i).AddItem "maximize quality", 0
+            cboPerformance(i).AddItem "balance performance and quality", 1
+            cboPerformance(i).AddItem "maximize performance", 2
         Next i
         
         'START Interface decorations performance

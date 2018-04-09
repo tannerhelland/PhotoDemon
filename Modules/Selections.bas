@@ -18,25 +18,25 @@ Attribute VB_Name = "Selections"
 
 Option Explicit
 
-Public Enum SelectionDialogType
-    SEL_GROW = 0
-    SEL_SHRINK = 1
-    SEL_BORDER = 2
-    SEL_FEATHER = 3
-    SEL_SHARPEN = 4
+Public Enum PD_SelectionDialog
+    pdsd_Grow = 0
+    pdsd_Shrink = 1
+    pdsd_Border = 2
+    pdsd_Feather = 3
+    pdsd_Sharpen = 4
 End Enum
 
 #If False Then
-    Private Const SEL_GROW = 0, SEL_SHRINK = 1, SEL_BORDER = 2, SEL_FEATHER = 3, SEL_SHARPEN = 4
+    Private Const pdsd_Grow = 0, pdsd_Shrink = 1, pdsd_Border = 2, pdsd_Feather = 3, pdsd_Sharpen = 4
 #End If
 
 Public Enum PD_SelectionRenderSetting
-    PDSR_RenderMode = 0
-    PDSR_HighlightColor = 1
+    pdsr_RenderMode = 0
+    pdsr_HighlightColor = 1
 End Enum
 
 #If False Then
-    Private Const PDSR_RenderMode = 0, PDSR_HighlightColor = 1
+    Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1
 #End If
 
 'This module caches the current selection mode and/or color, and the viewport pipeline retrieves these cached values as necessary
@@ -46,7 +46,7 @@ Private m_CurSelectionMode As PD_SelectionRender, m_CurSelectionColor As Long
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
 ' returnValue variable.
-Public Function DisplaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef ReturnValue As Double) As VbMsgBoxResult
+Public Function DisplaySelectionDialog(ByVal typeOfDialog As PD_SelectionDialog, ByRef ReturnValue As Double) As VbMsgBoxResult
 
     Load FormSelectionDialogs
     FormSelectionDialogs.ShowDialog typeOfDialog
@@ -744,7 +744,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
     If displayDialog Then
         
         Dim retRadius As Double
-        If DisplaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
+        If DisplaySelectionDialog(pdsd_Feather, retRadius) = vbOK Then
             Process "Feather selection", False, BuildParamList("filtervalue", retRadius), UNDO_Selection
         End If
         
@@ -798,7 +798,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
     If displayDialog Then
         
         Dim retRadius As Double
-        If (DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK) Then
+        If (DisplaySelectionDialog(pdsd_Sharpen, retRadius) = vbOK) Then
             Process "Sharpen selection", False, BuildParamList("filtervalue", retRadius), UNDO_Selection
         End If
         
@@ -905,7 +905,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
     If displayDialog Then
         
         Dim retSize As Double
-        If DisplaySelectionDialog(SEL_GROW, retSize) = vbOK Then
+        If DisplaySelectionDialog(pdsd_Grow, retSize) = vbOK Then
             Process "Grow selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
@@ -960,7 +960,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     If displayDialog Then
         
         Dim retSize As Double
-        If DisplaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
+        If DisplaySelectionDialog(pdsd_Shrink, retSize) = vbOK Then
             Process "Shrink selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
@@ -1015,7 +1015,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
     If displayDialog Then
         
         Dim retSize As Double
-        If DisplaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
+        If DisplaySelectionDialog(pdsd_Border, retSize) = vbOK Then
             Process "Border selection", False, BuildParamList("filtervalue", retSize), UNDO_Selection
         End If
         
@@ -1322,7 +1322,7 @@ Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSe
     
     Select Case settingType
         
-        Case PDSR_RenderMode
+        Case pdsr_RenderMode
             m_CurSelectionMode = newValue
             
             'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
@@ -1330,7 +1330,7 @@ Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSe
             ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
             If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str(m_CurSelectionMode))
             
-        Case PDSR_HighlightColor
+        Case pdsr_HighlightColor
             m_CurSelectionColor = newValue
             If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_CurSelectionColor)
             

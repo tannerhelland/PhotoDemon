@@ -599,8 +599,8 @@ Private Sub Form_Load()
     
     'Populate the mapping type combo box
     cboMapping.Clear
-    cboMapping.AddItem " forward (outline defines destination area)", 0
-    cboMapping.AddItem " reverse (outline defines source area)", 1
+    cboMapping.AddItem "forward (outline defines destination area)", 0
+    cboMapping.AddItem "reverse (outline defines source area)", 1
     
     'Note the current image's width and height, which is needed to map between the on-screen interactive UI area,
     ' and the final transform.

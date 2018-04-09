@@ -91,30 +91,30 @@ Public Property Get paramValue() As Double
 End Property
 
 'The ShowDialog routine presents the user with the form.
-Public Sub ShowDialog(ByVal typeOfDialog As SelectionDialogType)
+Public Sub ShowDialog(ByVal typeOfDialog As PD_SelectionDialog)
     
     'Based on the type of dialog requested, rebuild the dialog's text
     Dim titleText As String, sliderText As String
     
     Select Case typeOfDialog
     
-        Case SEL_GROW
+        Case pdsd_Grow
             titleText = g_Language.TranslateMessage("Grow selection")
             sliderText = g_Language.TranslateMessage("grow radius")
         
-        Case SEL_SHRINK
+        Case pdsd_Shrink
             titleText = g_Language.TranslateMessage("Shrink selection")
             sliderText = g_Language.TranslateMessage("shrink radius")
         
-        Case SEL_BORDER
+        Case pdsd_Border
             titleText = g_Language.TranslateMessage("Border selection")
             sliderText = g_Language.TranslateMessage("border radius")
         
-        Case SEL_FEATHER
+        Case pdsd_Feather
             titleText = g_Language.TranslateMessage("Feather selection")
             sliderText = g_Language.TranslateMessage("feather radius")
         
-        Case SEL_SHARPEN
+        Case pdsd_Sharpen
             titleText = g_Language.TranslateMessage("Sharpen selection")
             sliderText = g_Language.TranslateMessage("sharpen radius")
     

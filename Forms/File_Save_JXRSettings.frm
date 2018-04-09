@@ -331,12 +331,12 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Populate the quality drop-down box with presets corresponding to the JPEG XR file format
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem " Lossless (100)", 0
-    cboSaveQuality.AddItem " Low compression, good image quality (80)", 1
-    cboSaveQuality.AddItem " Moderate compression, medium image quality (60)", 2
-    cboSaveQuality.AddItem " High compression, poor image quality (40)", 3
-    cboSaveQuality.AddItem " Super compression, very poor image quality (20)", 4
-    cboSaveQuality.AddItem " Custom ratio (X:1)", 5
+    cboSaveQuality.AddItem "Lossless (100)", 0
+    cboSaveQuality.AddItem "Low compression, good image quality (80)", 1
+    cboSaveQuality.AddItem "Moderate compression, medium image quality (60)", 2
+    cboSaveQuality.AddItem "High compression, poor image quality (40)", 3
+    cboSaveQuality.AddItem "Super compression, very poor image quality (20)", 4
+    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
     cboSaveQuality.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel

@@ -1258,6 +1258,7 @@ End Function
 Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
 
     cboPreset.Clear
+    cboPreset.SetAutomaticRedraws False
     
     'We always add one blank entry to the preset combo box, which is selected by default
     cboPreset.AddItem " ", 0
@@ -1270,12 +1271,13 @@ Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
         ' as that would cause the preset order to be reversed!
         Dim i As Long
         For i = 0 To listOfPresets.GetNumOfStrings - 1
-            cboPreset.AddItem " " & listOfPresets.GetString(i), i + 1, (i = 0) And (listOfPresets.GetNumOfStrings > 1)
+            cboPreset.AddItem listOfPresets.GetString(i), i + 1, (i = 0) And (listOfPresets.GetNumOfStrings > 1)
         Next i
         
     End If
     
     'When finished, set the requested list index
+    cboPreset.SetAutomaticRedraws True
     cboPreset.ListIndex = newListIndex
 
 End Sub

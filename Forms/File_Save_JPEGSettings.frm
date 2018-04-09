@@ -381,12 +381,12 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Populate the "basic" options panel
     cboSaveQuality.SetAutomaticRedraws False
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem " perfect (99)", 0
-    cboSaveQuality.AddItem " excellent (92)", 1
-    cboSaveQuality.AddItem " good (80)", 2
-    cboSaveQuality.AddItem " average (65)", 3
-    cboSaveQuality.AddItem " low (40)", 4
-    cboSaveQuality.AddItem " custom quality", 5
+    cboSaveQuality.AddItem "perfect (99)", 0
+    cboSaveQuality.AddItem "excellent (92)", 1
+    cboSaveQuality.AddItem "good (80)", 2
+    cboSaveQuality.AddItem "average (65)", 3
+    cboSaveQuality.AddItem "low (40)", 4
+    cboSaveQuality.AddItem "custom quality", 5
     cboSaveQuality.ListIndex = 1
     cboSaveQuality.SetAutomaticRedraws True, True
     

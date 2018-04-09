@@ -308,12 +308,12 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Populate the quality drop-down box with presets corresponding to the JPEG-2000 file format
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem " Lossless (1:1)", 0
-    cboSaveQuality.AddItem " Low compression, good image quality (16:1)", 1
-    cboSaveQuality.AddItem " Moderate compression, medium image quality (32:1)", 2
-    cboSaveQuality.AddItem " High compression, poor image quality (64:1)", 3
-    cboSaveQuality.AddItem " Super compression, very poor image quality (256:1)", 4
-    cboSaveQuality.AddItem " Custom ratio (X:1)", 5
+    cboSaveQuality.AddItem "Lossless (1:1)", 0
+    cboSaveQuality.AddItem "Low compression, good image quality (16:1)", 1
+    cboSaveQuality.AddItem "Moderate compression, medium image quality (32:1)", 2
+    cboSaveQuality.AddItem "High compression, poor image quality (64:1)", 3
+    cboSaveQuality.AddItem "Super compression, very poor image quality (256:1)", 4
+    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
     cboSaveQuality.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel

@@ -1520,11 +1520,11 @@ End Sub
 Public Sub PopDistortEdgeBox(ByRef cboEdges As pdDropDown, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
 
     cboEdges.Clear
-    cboEdges.AddItem " clamp them to the nearest available pixel"
-    cboEdges.AddItem " reflect them across the nearest edge"
-    cboEdges.AddItem " wrap them around the image"
-    cboEdges.AddItem " erase them"
-    cboEdges.AddItem " ignore them"
+    cboEdges.AddItem "clamp them to the nearest available pixel"
+    cboEdges.AddItem "reflect them across the nearest edge"
+    cboEdges.AddItem "wrap them around the image"
+    cboEdges.AddItem "erase them"
+    cboEdges.AddItem "ignore them"
     cboEdges.ListIndex = defaultEdgeMethod
     
 End Sub
@@ -1689,13 +1689,13 @@ Public Sub PopulateFloodFillTypes(ByRef dstCombo As pdDropDown, Optional ByVal s
     
     dstCombo.Clear
 
-    dstCombo.AddItem " color", 0
-    dstCombo.AddItem " color and opacity", 1
-    dstCombo.AddItem " luminance", 2, True
-    dstCombo.AddItem " red only", 3
-    dstCombo.AddItem " green only", 4
-    dstCombo.AddItem " blue only", 5
-    dstCombo.AddItem " alpha only", 6
+    dstCombo.AddItem "color", 0
+    dstCombo.AddItem "color and opacity", 1
+    dstCombo.AddItem "luminance", 2, True
+    dstCombo.AddItem "red only", 3
+    dstCombo.AddItem "green only", 4
+    dstCombo.AddItem "blue only", 5
+    dstCombo.AddItem "alpha only", 6
     
     dstCombo.ListIndex = startingIndex
     

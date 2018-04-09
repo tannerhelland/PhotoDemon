@@ -650,7 +650,7 @@ Private Sub cboSelRender_Click()
     csSelectionHighlight.Visible = (cboSelRender.ListIndex = PDSR_Highlight)
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange PDSR_RenderMode, cboSelRender.ListIndex
+    Selections.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
     If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 
 End Sub
@@ -690,7 +690,7 @@ End Sub
 Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange PDSR_HighlightColor, csSelectionHighlight.Color
+    Selections.NotifySelectionRenderChange pdsr_HighlightColor, csSelectionHighlight.Color
     If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
@@ -711,10 +711,10 @@ Private Sub Form_Load()
     'Selection visual styles (Highlight, Lightbox, or Outline)
     cboSelRender.SetAutomaticRedraws False
     cboSelRender.Clear
-    cboSelRender.AddItem " highlight", 0
-    cboSelRender.AddItem " lightbox", 1
-    cboSelRender.AddItem " ants", 2
-    cboSelRender.AddItem " outline", 3
+    cboSelRender.AddItem "highlight", 0
+    cboSelRender.AddItem "lightbox", 1
+    cboSelRender.AddItem "ants", 2
+    cboSelRender.AddItem "outline", 3
     cboSelRender.ListIndex = 2
     cboSelRender.SetAutomaticRedraws True
     
@@ -724,9 +724,9 @@ Private Sub Form_Load()
     'Selection smoothing (currently none, antialiased, fully feathered)
     cboSelSmoothing.SetAutomaticRedraws False
     cboSelSmoothing.Clear
-    cboSelSmoothing.AddItem " none", 0
-    cboSelSmoothing.AddItem " antialiased", 1
-    cboSelSmoothing.AddItem " feathered", 2
+    cboSelSmoothing.AddItem "none", 0
+    cboSelSmoothing.AddItem "antialiased", 1
+    cboSelSmoothing.AddItem "feathered", 2
     cboSelSmoothing.ListIndex = 1
     cboSelSmoothing.SetAutomaticRedraws True
     
@@ -734,9 +734,9 @@ Private Sub Form_Load()
     Dim i As Long
     For i = 0 To cboSelArea.Count - 1
         cboSelArea(i).SetAutomaticRedraws False
-        cboSelArea(i).AddItem " interior", 0
-        cboSelArea(i).AddItem " exterior", 1
-        cboSelArea(i).AddItem " border", 2
+        cboSelArea(i).AddItem "interior", 0
+        cboSelArea(i).AddItem "exterior", 1
+        cboSelArea(i).AddItem "border", 2
         cboSelArea(i).ListIndex = 0
         cboSelArea(i).SetAutomaticRedraws True
     Next i

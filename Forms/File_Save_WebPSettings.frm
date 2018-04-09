@@ -265,12 +265,12 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Populate the quality drop-down box with presets corresponding to the WebP file format
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem " Lossless (100)", 0
-    cboSaveQuality.AddItem " Low compression, good image quality (80)", 1
-    cboSaveQuality.AddItem " Moderate compression, medium image quality (60)", 2
-    cboSaveQuality.AddItem " High compression, poor image quality (40)", 3
-    cboSaveQuality.AddItem " Super compression, very poor image quality (20)", 4
-    cboSaveQuality.AddItem " Custom ratio (X:1)", 5
+    cboSaveQuality.AddItem "Lossless (100)", 0
+    cboSaveQuality.AddItem "Low compression, good image quality (80)", 1
+    cboSaveQuality.AddItem "Moderate compression, medium image quality (60)", 2
+    cboSaveQuality.AddItem "High compression, poor image quality (40)", 3
+    cboSaveQuality.AddItem "Super compression, very poor image quality (20)", 4
+    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
     cboSaveQuality.ListIndex = 0
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except

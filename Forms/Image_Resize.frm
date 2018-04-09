@@ -237,14 +237,18 @@ Private Sub RefillResampleBoxes()
     Dim i As Long
     
     cboResampleFriendly.Clear
+    cboResampleFriendly.SetAutomaticRedraws False
     For i = 0 To m_numResamples(rsFriendly) - 1
-        cboResampleFriendly.AddItem " " & m_resampleTypes(rsFriendly, i).Name, i
+        cboResampleFriendly.AddItem m_resampleTypes(rsFriendly, i).Name, i
     Next i
+    cboResampleFriendly.SetAutomaticRedraws True
     
     cboResampleTechnical.Clear
+    cboResampleTechnical.SetAutomaticRedraws False
     For i = 0 To m_numResamples(rsTechnical) - 1
-        cboResampleTechnical.AddItem " " & m_resampleTypes(rsTechnical, i).Name, i
+        cboResampleTechnical.AddItem m_resampleTypes(rsTechnical, i).Name, i
     Next i
+    cboResampleTechnical.SetAutomaticRedraws True
     
     'Intelligently select default values for the user.
     
@@ -364,9 +368,9 @@ Private Sub Form_Load()
     
     'Populate the "fit" options
     cmbFit.Clear
-    cmbFit.AddItem " stretching to new size  (default)", 0
-    cmbFit.AddItem " fitting inclusively, with transparent borders as necessary", 1
-    cmbFit.AddItem " fitting exclusively, and cropping as necessary", 2
+    cmbFit.AddItem "stretching to new size  (default)", 0
+    cmbFit.AddItem "fitting inclusively, with transparent borders as necessary", 1
+    cmbFit.AddItem "fitting exclusively, and cropping as necessary", 2
     cmbFit.ListIndex = 0
     
     'Automatically set the width and height text boxes to match the image's current dimensions.  (Note that we must
