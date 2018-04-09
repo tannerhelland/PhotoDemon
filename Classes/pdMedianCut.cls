@@ -102,9 +102,6 @@ Private m_OldMeanR As Double, m_OldMeanG As Double, m_OldMeanB As Double
 Private m_VarianceR As Double, m_VarianceG As Double, m_VarianceB As Double
 Private m_VarianceUpToDate As Boolean
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
-
 Friend Function GetQuantizeMode() As PD_QuantizeMode
     GetQuantizeMode = m_QuantizeMode
 End Function
@@ -198,15 +195,6 @@ Private Sub CalculateMinMax()
         End With
     Next i
     
-End Sub
-
-Private Sub GetMinMax(ByRef dstRMin As Long, ByRef dstRMax As Long, ByRef dstGMin As Long, ByRef dstGMax As Long, ByRef dstBMin As Long, ByRef dstBMax As Long)
-    dstRMin = m_RMin
-    dstRMax = m_RMax
-    dstGMin = m_GMin
-    dstGMax = m_GMax
-    dstBMin = m_BMin
-    dstBMax = m_BMax
 End Sub
 
 Friend Sub GetVariance(ByRef dstRV As Single, ByRef dstGV As Single, ByRef dstBV As Single)

@@ -233,7 +233,7 @@ End Property
 
 'If the current text value is NOT valid, this will return FALSE.  Note that this property is read-only.
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
-    IsValid = tudPrimary.IsValid
+    IsValid = tudPrimary.IsValid(showError)
 End Property
 
 'Note: the control's maximum value is settable at run-time
@@ -647,13 +647,6 @@ Private Sub UpdateControlLayout()
     m_InternalResizeActive = False
     
 End Sub
-
-'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
-' numeric, and allow the user to display a warning message if necessary.  (As of v6.6, all validation is off-loaded
-' to the embedded text up/down control.)
-Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
-    IsTextEntryValid = tudPrimary.IsValid(displayErrorMsg)
-End Function
 
 'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
 ' Got/LostFocusAPI events, which are important as an API text box is part of this control.

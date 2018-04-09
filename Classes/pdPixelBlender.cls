@@ -171,7 +171,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
-                pdDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
+                PDDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
                 
         End Select
         
@@ -4289,40 +4289,6 @@ End Function
 'Return the maximum of two floating-point values
 Private Function fMax(x As Single, y As Single) As Single
     If (x < y) Then fMax = y Else fMax = x
-End Function
-
-'Return the maximum of three floating point values
-Private Function fMax3(rR As Single, rG As Single, rB As Single) As Single
-   If (rR > rG) Then
-      If (rR > rB) Then
-         fMax3 = rR
-      Else
-         fMax3 = rB
-      End If
-   Else
-      If (rB > rG) Then
-         fMax3 = rB
-      Else
-         fMax3 = rG
-      End If
-   End If
-End Function
-
-'Return the minimum of three floating point values
-Private Function fMin3(rR As Single, rG As Single, rB As Single) As Single
-   If (rR < rG) Then
-      If (rR < rB) Then
-         fMin3 = rR
-      Else
-         fMin3 = rB
-      End If
-   Else
-      If (rB < rG) Then
-         fMin3 = rB
-      Else
-         fMin3 = rG
-      End If
-   End If
 End Function
 
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function

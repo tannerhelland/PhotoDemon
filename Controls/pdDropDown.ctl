@@ -67,17 +67,12 @@ Public Event LostFocusAPI()
 ' in the screen's coordinate space (even on high-DPI displays)
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
-Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Const GWL_EXSTYLE As Long = -20
+
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
 Private Const WS_EX_WINDOWEDGE As Long = &H100&
 Private Const WS_EX_TOPMOST As Long = &H8&
 Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
-Private Const WS_CHILD As Long = &H40000000
-Private Const WS_POPUP As Long = &H80000000
 Private m_WindowStyleHasBeenSet As Boolean
 Private m_OriginalWindowBits As Long, m_OriginalWindowBitsEx As Long
 Private m_popupRectCopy As RectL
@@ -762,7 +757,7 @@ Private Sub RaiseListBox()
     Exit Sub
     
 UnexpectedListBoxTrouble:
-    pdDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 

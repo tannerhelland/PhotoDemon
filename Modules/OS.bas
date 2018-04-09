@@ -29,7 +29,8 @@ Private Const IID_ITASKBARLIST3 As String = "{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEF
 
 Private Const ASM_CALL_REL32 As Byte = &HE8
 Private Const ASM_PUSH_IMM32 As Byte = &H68
-Private Const ASM_RET_IMM16 As Byte = &HC2
+Private Const UNK_Release As Long = 2
+
 Private Const TH32CS_SNAPPROCESS As Long = 2
 Private Const GW_OWNER As Long = 4
 Private Const INVALID_HANDLE_VALUE As Long = -1
@@ -44,10 +45,7 @@ Private Const PROCESSOR_ARCHITECTURE_AMD64 As Long = 9        'x64 (AMD or Intel
 Private Const PROCESSOR_ARCHITECTURE_IA64 As Long = 6         'Intel Itanium Processor Family (IPF)
 Private Const PROCESSOR_ARCHITECTURE_INTEL As Long = 0
 Private Const PROCESSOR_ARCHITECTURE_UNKNOWN As Long = &HFFFF&
-Private Const SHGFP_TYPE_CURRENT As Long = &H0 'current value for user, verify it exists
-Private Const UNK_AddRef As Long = 1
-Private Const UNK_QueryInterface As Long = 0
-Private Const UNK_Release As Long = 2
+Private Const SHGFP_TYPE_CURRENT As Long = &H0                'current value for user, verify it exists
 Private Const VER_NT_WORKSTATION As Long = &H1&
 
 Public Enum OS_CSIDL
@@ -273,15 +271,6 @@ Private Type OS_SystemTime
     wSecond As Integer
     wMilliseconds As Integer
 End Type
-    
-Private Type OS_VersionInfo
-    dwOSVersionInfoSize As Long
-    dwMajorVersion As Long
-    dwMinorVersion As Long
-    dwBuildNumber As Long
-    dwPlatformId As Long
-    szCSDVersion As String * 128
-End Type
 
 Private Type OS_VersionInfoEx
     dwOSVersionInfoSize As Long
@@ -303,7 +292,6 @@ Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags A
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
 Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As OS_SystemInfo)
-Private Declare Sub GetSystemTime Lib "kernel32" (ByRef lpSystemTime As OS_SystemTime)
 Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (ByRef dstTime As Currency)
 Private Declare Function GetTempPathW Lib "kernel32" (ByVal nBufferLength As Long, ByVal lpStrBuffer As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExW" (ByVal lpVersionInformation As Long) As Long
@@ -325,8 +313,6 @@ Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, ByRe
 Private Declare Function CoCreateGuid Lib "ole32" (ByRef pGuid As OS_Guid) As Long
 Private Declare Function CoCreateInstance Lib "ole32" (ByRef rClsID As OS_Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByRef rIID As OS_Guid, ByRef ppv As Any) As Long
 Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, ByRef lpiid As OS_Guid) As Long
-Private Declare Sub OleInitialize Lib "ole32" (ByRef pvReserved As Any)
-Private Declare Sub OleUninitialize Lib "ole32" ()
 Private Declare Function StringFromGUID2 Lib "ole32" (ByRef rguid As Any, ByVal lpstrClsID As Long, ByVal cbMax As Long) As Long
 
 Private Declare Function GetProcessMemoryInfo Lib "psapi" (ByVal hProcess As Long, ByRef ppsmemCounters As OS_ProcessMemoryCounter, ByVal cb As Long) As Long
@@ -552,7 +538,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     'Rewritten by Tanner: VirtualAlloc is required to not make DEP angry
     hGlobal = VirtualAlloc(0&, 5 * ParamsCount + 5 + 5 + 3 + 1, MEM_COMMIT Or MEM_RESERVE, PAGE_EXECUTE_READWRITE)
     If (hGlobal = 0) Then
-        pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
+        PDDebug.LogAction "WARNING!  Windows.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
         Exit Function
     End If
     hGlobalOffset = hGlobal
@@ -588,7 +574,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     
     'Edit by Tanner: match VirtualAlloc(), above
     If (VirtualFree(hGlobal, 0&, MEM_RELEASE) = 0) Then
-        pdDebug.LogAction "WARNING!  Windows.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
+        PDDebug.LogAction "WARNING!  Windows.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
     End If
   
 End Function
@@ -1098,9 +1084,9 @@ End Function
 ' you can choose to handle errors differently.
 Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber As Long = 0)
     If (errNumber <> 0) Then
-        pdDebug.LogAction "WARNING!  VB error in OS module (#" & Err.Number & "): " & Err.Description & " || " & errComment
+        PDDebug.LogAction "WARNING!  VB error in OS module (#" & Err.Number & "): " & Err.Description & " || " & errComment
     Else
-        pdDebug.LogAction "WARNING!  OS module internal error: " & errComment
+        PDDebug.LogAction "WARNING!  OS module internal error: " & errComment
     End If
 End Sub
 

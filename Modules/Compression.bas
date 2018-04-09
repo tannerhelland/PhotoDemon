@@ -129,7 +129,7 @@ Public Function InitializeCompressionEngine(ByVal whichEngine As PD_CompressionE
         
         'Only 3rd-party DLLs need to be initialized.
         If (whichEngine = PD_CE_ZLib) Then
-            m_CompressorAvailable(whichEngine) = Plugin_zLib.InitializeZLib(pathToDLLFolder)
+            m_CompressorAvailable(whichEngine) = Plugin_zLib.InitializeZLib()
         ElseIf (whichEngine = PD_CE_Zstd) Then
             m_CompressorAvailable(whichEngine) = Plugin_zstd.InitializeZStd(pathToDLLFolder)
         ElseIf ((whichEngine = PD_CE_Lz4) Or (whichEngine = PD_CE_Lz4HC)) Then
@@ -483,5 +483,5 @@ Public Function GetCompressorName(ByVal whichEngine As PD_CompressionEngine) As 
 End Function
 
 Private Sub InternalErrorMsg(ByVal errMsg As String)
-    pdDebug.LogAction "WARNING! Compression module error: " & errMsg
+    PDDebug.LogAction "WARNING! Compression module error: " & errMsg
 End Sub

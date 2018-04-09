@@ -37,7 +37,6 @@ End Type
 
 'We use Karl E. Peterson's approach of declaring subclass functions by ordinal, per the documentation at http://vb.mvps.org/samples/HookXP/
 Private Declare Function SetWindowSubclass Lib "comctl32" Alias "#410" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
-Private Declare Function GetWindowSubclass Lib "comctl32" Alias "#411" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, pdwRefData As Long) As Long
 Private Declare Function RemoveWindowSubclass Lib "comctl32" Alias "#412" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long) As Long
 Private Declare Function DefSubclassProc Lib "comctl32" Alias "#413" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
@@ -45,7 +44,6 @@ Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibraryW Lib "kernel32" (ByVal lpLibFileName As Long) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
@@ -72,7 +70,6 @@ Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wM
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
 
-Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
 Private Const WH_KEYBOARD = 2
@@ -215,15 +212,15 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
                     GlobalUnlock ptrGlobal
                     CreateStreamOnHGlobal hGlobalHandle, 1&, GetStreamFromVBArray
                 Else
-                    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to retrieve a pointer to its hGlobal data!"
+                    PDDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to retrieve a pointer to its hGlobal data!"
                 End If
             
             Else
-                pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to create a valid hGlobal!"
+                PDDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to create a valid hGlobal!"
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  GetStreamFromVBArray() requires a valid stream length!"
+            PDDebug.LogAction "WARNING!  GetStreamFromVBArray() requires a valid stream length!"
         End If
         
     End If
@@ -231,7 +228,7 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
     Exit Function
     
 StreamDied:
-    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
+    PDDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
     
 End Function
 
@@ -265,17 +262,17 @@ Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArra
         If (DispCallFunc(ptrSrcStream, ISTREAM_READ, CC_STDCALL, vbLong, 3&, pVartypes(0), pVars(0), varRtn) = 0) Then
             ReadIStreamIntoVBArray = True
         Else
-            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed to initiate a successful DispCallFunc-based IStream read."
+            PDDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed to initiate a successful DispCallFunc-based IStream read."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer and/or size!"
+        PDDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer and/or size!"
     End If
     
     Exit Function
     
 StreamConversionFailed:
-    pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
+    PDDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
     
 End Function
 

@@ -283,8 +283,8 @@ Private Sub UpdateControlLayout()
     End With
     
     With m_ProgressRect
-        .Left = 2
-        .Top = 2
+        .Left = 2!
+        .Top = 2!
         .Width = bWidth - 4
         .Height = bHeight - 4
     End With

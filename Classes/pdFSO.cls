@@ -39,9 +39,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Const CREATE_ALWAYS As Long = &H2
-Private Const CREATE_NEW As Long = &H1
-Private Const DATE_MINIMUM As Date = #1/1/100#
-Private Const DATE_MAXIMUM As Date = #12/31/9999 11:59:59 PM#
 Private Const DAY_ZERO_BIAS As Double = 109205# 'Difference between day zero for VB dates and Win32 dates (or #12-30-1899# - #01-01-1601#)
 Private Const ERROR_FILE_NOT_FOUND As Long = 2
 Private Const ERROR_NO_MORE_FILES As Long = 18
@@ -56,10 +53,7 @@ Private Const ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 As Long = &H499    'The replace
                                                                     ' lpBackupFileName is specified, it will be the name of the replaced file.
 Private Const ERROR_UNABLE_TO_REMOVE_REPLACED As Long = &H497       'The replaced file could not be deleted. The replaced and replacement files retain their
                                                                     ' original file names.
-Private Const FILE_ATTRIBUTE_ARCHIVE As Long = &H20
-Private Const FILE_ATTRIBUTE_HIDDEN As Long = &H2
-Private Const FILE_ATTRIBUTE_READONLY As Long = &H1
-Private Const FILE_ATTRIBUTE_SYSTEM As Long = &H4
+
 Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
 Private Const FILE_ATTRIBUTE_TEMPORARY As Long = &H100&
 Private Const FILE_FLAG_SEQUENTIAL_SCAN As Long = &H8000000
@@ -129,12 +123,6 @@ End Enum
     Private Const PDFT_CreateTime = 0, PDFT_AccessTime = 1, PDFT_WriteTime = 2
 #End If
 
-Private Type SECURITY_ATTRIBUTES
-    nLength As Long
-    lpSecurityDescriptor As Long
-    bInheritHandle As Long
-End Type
-
 'Type comments derived from http://allapi.mentalis.org/apilist/FileGetVersionInfo.shtml
 ' Thank you to those authors for demystifying obscure API calls.
 Private Type VS_FIXEDFILEINFO
@@ -188,7 +176,6 @@ Private Declare Function FindFirstFileW Lib "kernel32" (ByVal lpFileName As Long
 Private Declare Function FindNextFileW Lib "kernel32" (ByVal hFindFile As Long, ByVal lpFindFileData As Long) As Long
 Private Declare Function FlushViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long, ByVal dwNumberOfBytesToFlush As Long) As Long
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
-Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
 Private Declare Function GetFileSizeEx Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSize As Currency) As Long
 Private Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Long, ByRef lpCreationTime As WAPI_FILETIME, ByRef lpLastAccessTime As WAPI_FILETIME, ByRef lpLastWriteTime As WAPI_FILETIME) As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
@@ -2091,15 +2078,15 @@ Private Sub FSOError(ByVal functionName As String, ByVal errText As String, Opti
     
     If (LenB(functionName) <> 0) Then
         If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  pdFSO." & functionName & " error #" & CStr(errNumber) & ": " & errText
+            PDDebug.LogAction "WARNING!  pdFSO." & functionName & " error #" & CStr(errNumber) & ": " & errText
         Else
-            pdDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
+            PDDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
         End If
     Else
         If (errNumber <> 0) Then
-            pdDebug.LogAction "WARNING!  pdFSO error #" & CStr(errNumber) & ": " & errText
+            PDDebug.LogAction "WARNING!  pdFSO error #" & CStr(errNumber) & ": " & errText
         Else
-            pdDebug.LogAction "WARNING!  pdFSO problem: " & errText
+            PDDebug.LogAction "WARNING!  pdFSO problem: " & errText
         End If
     End If
         
@@ -2107,5 +2094,5 @@ End Sub
 
 'Non-error messages containing potentially useful nightly build info can be routed here.  Feel free to disregard at your leisure.
 Private Sub FSOFeedback(ByVal functionName As String, ByVal msgFeedback As String)
-    pdDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
+    PDDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
 End Sub

@@ -34,8 +34,6 @@ Private m_Ints() As String
 Private m_NumOfInts As Long
 Private Const INIT_STACK_SIZE As Long = 16
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'Add a value to the stack.  Return value is the index of the added location (which can be used to infer the
 ' number of ints in the stack, obviously).
 Friend Function AddInt(ByVal srcInt As Long) As Long

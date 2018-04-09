@@ -249,7 +249,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         ' (Note that in older versions, we only requested erase events if noBackBufferRequired = TRUE.  That has since changed,
         '  and we now request erase events for all types of user controls.)
         Set m_WindowPainter = New pdWindowPainter
-        If pdMain.IsProgramRunning() Then m_WindowPainter.StartPainter m_hWnd, , True
+        If pdMain.IsProgramRunning() Then m_WindowPainter.StartPainter m_hWnd, True
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector

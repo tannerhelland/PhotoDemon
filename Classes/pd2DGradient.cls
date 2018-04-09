@@ -403,8 +403,8 @@ Friend Sub CreateThreePointGradient(ByVal firstColor As Long, ByVal secondColor 
     m_GradientPoints(0).PointRGB = firstColor
     m_GradientPoints(0).PointOpacity = firstOpacity
     
-    m_GradientPoints(1).PointPosition = 0.5
-    m_GradientPoints(1).PointRGB = secondColorPosition
+    m_GradientPoints(1).PointPosition = secondColorPosition
+    m_GradientPoints(1).PointRGB = secondColor
     m_GradientPoints(1).PointOpacity = secondOpacity
     
     m_GradientPoints(2).PointPosition = 1#

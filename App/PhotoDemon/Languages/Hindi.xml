@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.50</langversion>
+<langversion>1.0.51</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -161,47 +161,7 @@
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
-<phrase>
-<original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
-<translation>एसआरजीबी रूपांतरण को लागू नहीं किया जा सका। छवि CMYK प्रारूप में बनी हुई है।</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but CMYK transformation could not be created.</original>
-<translation>आईसीसी प्रोफाइल दोनों सफलतापूर्वक लोड हो गए, लेकिन सीएमवाईके परिवर्तन नहीं बनाया जा सका।</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  CMYK transform abandoned.</original>
-<translation>मानक sRGB रंग प्रोफ़ाइल प्राप्त नहीं कर सका। सीएमवाइके ने छोड़ दिया</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  CMYK transform could not be performed.</original>
-<translation>एम्बेडेड आईसीसी प्रोफ़ाइल अमान्य है सीएमवाईके परिवर्तन को प्रदर्शन नहीं किया जा सका।</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>आईसीसी प्रोफ़ाइल लागू नहीं की जा सकती छवि मूल प्रोफ़ाइल में बनी हुई है।</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>दोनों आईसीसी प्रोफाइल सफलतापूर्वक लोड किए गए, लेकिन परिवर्तन नहीं बनाया जा सका।</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>मानक sRGB रंग प्रोफ़ाइल प्राप्त नहीं कर सका। इस छवि के लिए रंग प्रबंधन अक्षम कर दिया गया है</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>एम्बेडेड आईसीसी प्रोफ़ाइल अमान्य है इस छवि के लिए रंग प्रबंधन अक्षम कर दिया गया है</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 0 phrases. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
 
@@ -15395,10 +15355,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2570</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4691 phrases. -->
-<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4683 phrases. -->
+<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
+<!-- These 2570 phrases contain approximately 12411 total words. -->
 
 </pdData>

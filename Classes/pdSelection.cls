@@ -52,8 +52,6 @@ Option Explicit
 
 'Used when writing/reading selection data to/from a file
 Private Const SELECTION_IDENTIFIER As Long = &H64734450     'PDsd
-Private Const SELECTION_FILE_VERSION_2014 As Long = &H1002
-Private Const SELECTION_FILE_VERSION_2014_2 As Long = &H1003
 Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
 
 'What shape does this selection have?
@@ -3072,19 +3070,6 @@ Friend Sub FreeNonEssentialResources()
     'If the current selection mask isn't actively being rendered, it doesn't need a DC attached.
     m_SelMask.FreeFromDC
     
-End Sub
-
-'Sometimes a selection needs to directly access the bits of a target DIB. This routine sets up the corresponding SafeArray.
-Private Sub PrepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SafeArray2D)
-    With tmpSA
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcDIB.GetDIBHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcDIB.GetDIBStride
-        .pvData = srcDIB.GetDIBPointer
-    End With
 End Sub
 
 'Create a selection from selection data previously saved to file

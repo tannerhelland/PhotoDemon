@@ -195,21 +195,21 @@ Private Sub Form_Load()
     m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Navigator.hWnd
     layerpanel_Navigator.Show
     
-    pdDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     Load layerpanel_Colors
     m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
     
-    pdDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
-    pdDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     'Load any last-used settings for this form
@@ -220,7 +220,7 @@ Private Sub Form_Load()
     'Theme everything
     Me.UpdateAgainstCurrentTheme True
     
-    pdDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)
     
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
     ' However, UpdateAgainstCurrentTheme now calls that function automatically.
@@ -272,7 +272,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Unload layerpanel_Layers
         
     Else
-        pdDebug.LogAction "WARNING!  toolbar_Layers was unloaded prematurely - why??"
+        PDDebug.LogAction "WARNING!  toolbar_Layers was unloaded prematurely - why??"
         Cancel = True
     End If
     
@@ -286,7 +286,6 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.
     Dim mouseInResizeTerritory As Boolean
-    Dim hitCode As Long
     
     'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
     mouseInResizeTerritory = (y > 0) And (y < Me.ScaleHeight) And (x < Interface.FixDPI(RESIZE_BORDER))

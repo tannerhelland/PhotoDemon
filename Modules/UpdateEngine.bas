@@ -323,31 +323,6 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     
 End Function
 
-'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents
-' hijackers from intercepting the files mid-transit, and replacing them with their own.
-Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
-
-    'Find the position of this file's checksum
-    Dim pdTagPosition As Long
-    pdTagPosition = xmlEngine.GetLocationOfTagPlusAttribute("checksum", "component", relativePath, m_TrackStartPosition)
-    
-    'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
-    If (pdTagPosition >= m_TrackStartPosition) And (pdTagPosition <= m_TrackEndPosition) Then
-    
-        'This is the checksum tag we want!  Retrieve its value.
-        Dim thisChecksum As String
-        thisChecksum = xmlEngine.GetTagValueAtPreciseLocation(pdTagPosition)
-        
-        'Convert the checksum to a long and return it
-        GetFailsafeChecksum = thisChecksum
-        
-    'If the checksum doesn't exist in the file, return 0
-    Else
-        GetFailsafeChecksum = 0
-    End If
-    
-End Function
-
 'If a program update file has successfully downloaded during this session, FormMain calls this function at program termination.
 ' This lovely function actually patches any/all relevant files.
 Public Function PatchProgramFiles() As Boolean
@@ -355,7 +330,7 @@ Public Function PatchProgramFiles() As Boolean
     On Error GoTo ProgramPatchingFailure
     
     'If no update file is available, exit without doing anything
-    If (Len(m_UpdateFilePath) = 0) Then
+    If (LenB(m_UpdateFilePath) = 0) Then
         PatchProgramFiles = True
         Exit Function
     End If
@@ -905,8 +880,8 @@ End Function
 ' debug data throughout this module, to help us identify problems where we can.
 Private Sub InternalDebugMsg(ByRef srcMsg As String, ByRef srcFunctionName As String, Optional ByVal errNumber As Long = 0, Optional ByRef errDescription As String = vbNullString)
     If (errNumber <> 0) Then
-        pdDebug.LogAction "WARNING!  Updates." & srcFunctionName & " reported an error (#" & CStr(errNumber) & "): " & errDescription & ".  Further details: " & srcMsg
+        PDDebug.LogAction "WARNING!  Updates." & srcFunctionName & " reported an error (#" & CStr(errNumber) & "): " & errDescription & ".  Further details: " & srcMsg
     Else
-        pdDebug.LogAction "Updates." & srcFunctionName & " reports: " & srcMsg, , True
+        PDDebug.LogAction "Updates." & srcFunctionName & " reports: " & srcMsg, , True
     End If
 End Sub

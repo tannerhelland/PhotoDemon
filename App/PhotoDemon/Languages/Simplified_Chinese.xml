@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3426</langversion>
+<langversion>7.0.3427</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -161,47 +161,7 @@
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
-<phrase>
-<original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
-<translation>sRGB的变换不适用，图像保持为CMYK格式。</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but CMYK transformation could not be created.</original>
-<translation>成功加载两个ICC配置文件，但无法创建CMYK转换。</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  CMYK transform abandoned.</original>
-<translation>无法获得标准的sRGB色彩配置文件，取消CMYK转换。</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  CMYK transform could not be performed.</original>
-<translation>嵌入ICC配置文件无效，CMYK转换不能进行。</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>ICC配置文件无法应用。图像保持在原来的轮廓。</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>成功加载两个ICC配置文件，但无法创建的转换。</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>无法获得标准的sRGB色彩配置文件。色彩管理已被禁用这一形象。</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>嵌入ICC配置文件是无效的。色彩管理已被禁用这一形象。</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 0 phrases. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
 
@@ -15383,10 +15343,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2570</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4691 phrases. -->
-<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4683 phrases. -->
+<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
+<!-- These 2570 phrases contain approximately 12411 total words. -->
 
 </pdData>

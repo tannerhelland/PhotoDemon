@@ -66,13 +66,6 @@ Private m_defaultLanguage As Long
 'If the user needs to be shown a language select screen, this will be set to true at some point in the initialization process
 Private m_needToShowLanguageDialog As Boolean
 
-'If the select language dialog needs to be shown, this value can be used to determine "why"
-Private Const LANGREASON_USERINITIATED As Long = 0      ' 0) User-initiated dialog
-Private Const LANGREASON_APPROXIMATEMATCH As Long = 1   ' 1) Approximate (but not exact) language match found
-Private Const LANGREASON_NOMATCH As Long = 2            ' 2) No language match found
-Private Const LANGREASON_FILEMISSING As Long = 3        ' 3) Requested language file couldn't be located
-Private m_reasonForLanguageDialog As Long
-
 'The full contents of the translation file will be loaded into this string.
 Private m_XMLEngine As pdXML
 
@@ -126,23 +119,18 @@ Friend Function GetCurrentLanguageIndex() As Long
 End Function
 
 'External function for asking the translator if a language selection dialog is needed
-Friend Function IsLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
-    If (reasonForDialog <> -1) Then reasonForDialog = m_reasonForLanguageDialog
+Friend Function IsLanguageDialogNeeded() As Boolean
     IsLanguageDialogNeeded = m_needToShowLanguageDialog
 End Function
 
 'If a translation file has been requested and successfully loaded, this function will return TRUE
 Friend Function ReadyToTranslate() As Boolean
-    If (Not m_XMLEngine Is Nothing) Then
-        ReadyToTranslate = m_isReady
-    Else
-        ReadyToTranslate = False
-    End If
+    If (Not m_XMLEngine Is Nothing) Then ReadyToTranslate = m_isReady Else ReadyToTranslate = False
 End Function
 
 'If the currently active language is different from the default language, this function will return TRUE
 Friend Function TranslationActive() As Boolean
-    TranslationActive = Not (m_currentLanguage = m_defaultLanguage)
+    TranslationActive = (m_currentLanguage <> m_defaultLanguage)
 End Function
 
 Friend Sub WriteLanguagePreferencesToFile()
@@ -188,14 +176,12 @@ Friend Sub DetermineLanguage()
         ' present that as the default language - and note that we also need to show the language selection dialog.
         If (m_currentLanguage = -1) Then
             m_currentLanguage = IsApproximateLanguageMatch(curLangID)
-            m_reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
             m_needToShowLanguageDialog = True
         End If
         
         'If we still can't find a match, present the language selection screen in English.
         If (m_currentLanguage = -1) Then
             m_currentLanguage = m_defaultLanguage
-            m_reasonForLanguageDialog = LANGREASON_NOMATCH
             m_needToShowLanguageDialog = True
         End If
         
@@ -215,7 +201,6 @@ Friend Sub DetermineLanguage()
                 m_currentLanguage = GetLangIndexFromFile(curLangFile)
             Else
                 m_currentLanguage = m_defaultLanguage
-                m_reasonForLanguageDialog = LANGREASON_FILEMISSING
                 m_needToShowLanguageDialog = True
             End If
         End If
@@ -383,10 +368,10 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             
                 'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
                 fileValidationRequired = Strings.StringsNotEqual(chkCachedValue, GetLangFileChecksum(chkFile), False)
-                If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
+                If fileValidationRequired Then PDDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
                 
             Else
-                pdDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
+                PDDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
             End If
             
             'If validation is required, we need to load the file from scratch and run some checks on it
@@ -476,14 +461,14 @@ Friend Sub CheckAvailableLanguages()
     
     If Files.FileExists(langCacheFilename) Then cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     
-    pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     'If the cache exists, we won't write it back out to file unless it somehow changes during this session
     ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
     ' and force it to write out to file at the end of this initiation.
     If (Not cacheLoadedSuccessfully) Then
-        pdDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
+        PDDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
         m_LangCacheXML.PrepareNewXML "PDLanguageCache"
         m_LangCacheChanged = True
     End If
@@ -496,13 +481,13 @@ Friend Sub CheckAvailableLanguages()
     'Find all available OFFICIAL language files
     m_numOfLanguages = TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(False), 0, "Official")
     
-    pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     'Find all available USER language files
     m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
     
-    pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
@@ -537,7 +522,7 @@ Friend Sub CheckAvailableLanguages()
     If m_LangCacheChanged Then m_LangCacheXML.WriteXMLToFile langCacheFilename
     Set m_LangCacheXML = Nothing
     
-    pdDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+    PDDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     'TESTING: display the info we retrieved

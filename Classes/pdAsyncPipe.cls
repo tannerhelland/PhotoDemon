@@ -100,7 +100,6 @@ Private Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Long,
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Any) As Long
 Private Declare Function SetHandleInformation Lib "kernel32" (ByVal hObject As Long, ByVal dwMask As Long, ByVal dwFlags As Long) As Long
 Private Declare Function TerminateProcess Lib "kernel32" (ByVal hHandle As Long, ByVal uExitCode As Long) As Long
-Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuf As Long, ByVal cToWrite As Long, ByRef cWritten As Long, ByVal lpOverlapped As Any) As Long
 
 Private m_ProcInfo As PROCESSINFO
@@ -505,9 +504,9 @@ End Sub
 
 Private Sub InternalError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
     If (errNumber <> 0) Then
-        pdDebug.LogAction "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
+        PDDebug.LogAction "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
     Else
-        pdDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
+        PDDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
     End If
 End Sub
 
@@ -517,15 +516,15 @@ End Sub
 Private Sub InternalDataArrival()
     
     If (m_BufferIn.GetStreamSize() > 0) Then
-        pdDebug.LogAction "Asynchronously received " & m_BufferIn.GetStreamSize() & " new characters from ExifTool."
+        PDDebug.LogAction "Asynchronously received " & m_BufferIn.GetStreamSize() & " new characters from ExifTool."
         ExifTool.NewMetadataReceived
     End If
     
 End Sub
 
 Private Sub InternalErrDataArrival()
-    pdDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
-    pdDebug.LogAction Me.ErrGetDataAsString()
+    PDDebug.LogAction "FYI: pdAsyncPipe's source returned the following data on stderr: "
+    PDDebug.LogAction Me.ErrGetDataAsString()
 End Sub
 
 Private Sub Class_Initialize()

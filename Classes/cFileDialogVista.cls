@@ -1291,15 +1291,6 @@ Private Function pvCallFunction_COM(ByVal InterfacePointer As Long, ByVal VTable
 
 End Function
 
-Private Function pvGetDisplayName(IShell As Long, dFormat As IShellDisplayNameFormat) As String
-    Dim lPtr As Long
-    If pvCallFunction_COM(IShell, ifShellItem_GetDisplayName, dFormat, VarPtr(lPtr)) = 0& Then
-        pvGetDisplayName = pvComStrPtrToVBstring(lPtr)
-    ElseIf pvCallFunction_COM(IShell, ifShellItem_GetDisplayName, CLng(SIGDN_NORMALDISPLAY), VarPtr(lPtr)) = 0& Then
-        pvGetDisplayName = pvComStrPtrToVBstring(lPtr)
-    End If
-End Function
-
 Private Function pvComStrPtrToVBstring(pString As Long, Optional FreePointer As Boolean = True) As String
     Dim lLen As Long
     If Not pString = 0& Then

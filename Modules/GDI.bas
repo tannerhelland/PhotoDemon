@@ -85,7 +85,6 @@ Private Declare Function GetCurrentObject Lib "gdi32" (ByVal srcDC As Long, ByVa
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal sizeOfBuffer As Long, ByVal ptrToBuffer As Long) As Long
 Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Helper functions from user32
@@ -126,7 +125,7 @@ Public Function GetMemoryDC() As Long
     If (GetMemoryDC <> 0) Then
         g_DCsCreated = g_DCsCreated + 1
     Else
-        pdDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
+        PDDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
     End If
 End Function
 
@@ -136,7 +135,7 @@ Public Sub FreeMemoryDC(ByRef srcDC As Long)
             g_DCsDestroyed = g_DCsDestroyed + 1
             srcDC = 0
         Else
-            pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
+            PDDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
         End If
     End If
 End Sub
@@ -221,6 +220,6 @@ End Function
 
 'Add your own error-handling behavior here, as desired
 Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    pdDebug.LogAction "WARNING!  The GDI interface encountered an error: """ & errName & """ - " & errDescription
-    If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
+    PDDebug.LogAction "WARNING!  The GDI interface encountered an error: """ & errName & """ - " & errDescription
+    If (ErrNum <> 0) Then PDDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
 End Sub

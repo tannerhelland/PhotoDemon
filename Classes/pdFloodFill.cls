@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright 2014-2018 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 13/May/17
-'Last update: myriad performance improvements
+'Last updated: 09/April/18
+'Last update: performance improvements to "global" fill mode
 '
 'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
 ' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
@@ -798,29 +798,32 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     yBound = srcDIB.GetDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long, xInner As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray1D
+    srcDIB.WrapArrayAroundScanline srcImageData, srcSA, 0
+    
+    Dim dibPtr As Long, dibStride As Long
+    dibPtr = srcSA.pvData
+    dibStride = srcSA.cElements
     
     'A number of local variables are used to help optimize the flood function
-    Dim isWithinTolerance As Boolean
-    Dim modifiedTolerance As Double
+    Dim isWithinTolerance As Boolean, modifiedTolerance As Double
     
     'Populate our reference comparison values
     Dim r As Long, g As Long, b As Long, a As Long, l As Long
     Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
     Dim thisValue As Double
     
-    quickX = m_InitPoint.x * 4
+    x = m_InitPoint.x * 4
     y = m_InitPoint.y
+    srcSA.pvData = dibPtr + x + (y * dibStride)
     
-    refB = srcImageData(quickX, y)
-    refG = srcImageData(quickX + 1, y)
-    refR = srcImageData(quickX + 2, y)
-    refA = srcImageData(quickX + 3, y)
+    refB = srcImageData(x)
+    refG = srcImageData(x + 1)
+    refR = srcImageData(x + 2)
+    refA = srcImageData(x + 3)
     
     refL = (213 * refR + 715 * refG + 72 * refB)
     
@@ -853,21 +856,20 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     
     End If
     
-    Const FILLED_PIXEL As Long = &HFFFFFFFF
-    
     'Start processing the image!
-    For x = 0 To xBound
-        quickX = x * 4
     For y = 0 To yBound
-    
+        srcSA.pvData = dibPtr + (y * dibStride)
+    For x = 0 To xBound
+        
         'Reset the tolerance check
         isWithinTolerance = False
         
         'Retrieve RGB/A values for this point
-        b = srcImageData(quickX, y)
-        g = srcImageData(quickX + 1, y)
-        r = srcImageData(quickX + 2, y)
-        a = srcImageData(quickX + 3, y)
+        xInner = x * 4
+        b = srcImageData(xInner)
+        g = srcImageData(xInner + 1)
+        r = srcImageData(xInner + 2)
+        a = srcImageData(xInner + 3)
     
         'Compare this pixel against the reference
         If (m_CompareMode = pdfc_Composite) Then
@@ -899,11 +901,11 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then m_FillResults(x, y) = 255
         
-    Next y
     Next x
-        
+    Next y
+    
     'Release our array references
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB srcImageData
     
     FloodFillGlobal = True
     
@@ -927,12 +929,6 @@ Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     m_Stack(m_StackPosition).x = x
     m_Stack(m_StackPosition).y = y
     
-End Sub
-
-Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
-    x = m_Stack(m_StackPosition).x
-    y = m_Stack(m_StackPosition).y
-    m_StackPosition = m_StackPosition - 1
 End Sub
 
 'This class automatically handles its own memory management, but if you're using a persistent instance of it, you can manually call

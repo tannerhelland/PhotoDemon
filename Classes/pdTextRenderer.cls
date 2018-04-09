@@ -293,11 +293,9 @@ Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As
 
 'GDI+ string format functions
 Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
-Private Declare Function GdipStringFormatGetGenericTypographic Lib "gdiplus" (ByRef dstStringFormat As Long) As Long
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As Long
 Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newFlags As Long) As Long
 Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As Long
-Private Declare Function GdipGetStringFormatAlign Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstAlignment As GdiPlusStringAlignment) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal srcStringPtr As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RectF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RectF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As Long
@@ -319,28 +317,13 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'GDI DC settings
-Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
 'GDI font rendering functions
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
-
-'GDI text alignment flags
-Private Const TA_LEFT = 0
-Private Const TA_RIGHT = 2
-Private Const TA_CENTER = 6
-
-Private Const TA_TOP = 0
-Private Const TA_BOTTOM = 8
-Private Const TA_BASELINE = 24
-
-Private Const TA_UPDATECP = 1
-Private Const TA_NOUPDATECP = 0
 
 'Back color modes (not useful here except during debug mode)
 Private Const FONT_TRANSPARENT = &H1
@@ -1487,22 +1470,6 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     'Release the temporary GDI+ objects we created
     GDI_Plus.ReleaseGDIPlusBrush gdipBrush
     GDI_Plus.ReleaseGDIPlusGraphics dstGraphics
-
-End Function
-
-'Use GdipMeasureString to return the bounding box of a given string and assembled GDI+ objects.  This is helpful for knowing how the string
-' fits into the desired target rect.
-Private Function GetStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString As String, ByRef srcLayoutRect As RectF, ByRef dstBoundRect As RectF) As Boolean
-
-    If (m_GDIPlusFont <> 0) Then
-        
-        Dim gdipReturn As Long
-        gdipReturn = GdipMeasureString(srcGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, srcLayoutRect, m_GDIPlusStringFormat, dstBoundRect, ByVal 0&, ByVal 0&)
-        GetStringBoundingBox = (gdipReturn = 0)
-        
-    Else
-        GetStringBoundingBox = 0
-    End If
 
 End Function
 

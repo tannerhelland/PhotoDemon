@@ -143,9 +143,9 @@ Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
                             
                             colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-hover")
                             If (LenB(colorString) = 0) Then
-                                .HoverColor = baseColorValue
+                                .hoverColor = baseColorValue
                             Else
-                                If (Not Colors.GetColorFromString(colorString, .HoverColor, ColorHex)) Then .HoverColor = baseColorValue
+                                If (Not Colors.GetColorFromString(colorString, .hoverColor, ColorHex)) Then .hoverColor = baseColorValue
                             End If
                             
                             colorString = g_Themer.LookUpColor(m_ObjectName, srcColorName & "-activehover")
@@ -182,7 +182,7 @@ Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
                     .baseColor = baseColorValue
                     .disabledColor = baseColorValue
                     .ActiveColor = baseColorValue
-                    .HoverColor = baseColorValue
+                    .hoverColor = baseColorValue
                 End With
             Else
                 InternalProblem "WARNING!  Your IDE failsafe color (" & IDE_FailsafeColor & ") is invalid.  Fix it!"
@@ -198,22 +198,6 @@ Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
     End If
     
 End Function
-
-'Once a base color has been successfully retrieved, you can use this function to plug in any/all variant values
-Private Sub FillInColorVariant(ByRef objectName As String, ByRef srcColorName As String, ByRef variantStringTag As String, ByRef dstColor As Long, ByVal failsafeColor As Long)
-    
-    'By default, assign the fallback color value.  If the rest of this function is successful, it will overwrite this
-    ' value with a new, custom value.
-    dstColor = failsafeColor
-
-    Dim colorString As String
-    colorString = g_Themer.LookUpColor(objectName, srcColorName & "-" & variantStringTag)
-
-    If (LenB(colorString) <> 0) Then
-        If (Not Colors.GetColorFromString(colorString, dstColor, ColorHex)) Then dstColor = failsafeColor
-    End If
-    
-End Sub
 
 'Once all colors have been populated, this function is used to return actual color values.  It's all lookup-table based,
 ' so feel free to use it inside actual rendering functions.
@@ -232,7 +216,7 @@ Friend Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
                 End If
             Else
                 If hoverState Then
-                    RetrieveColor = m_ColorList(colorIndex).HoverColor
+                    RetrieveColor = m_ColorList(colorIndex).hoverColor
                 Else
                     RetrieveColor = m_ColorList(colorIndex).baseColor
                 End If
@@ -248,5 +232,5 @@ Friend Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
 End Function
 
 Private Sub InternalProblem(ByRef errMsg As String)
-    pdDebug.LogAction "WARNING!  pdThemeColors returned an error: " & errMsg
+    PDDebug.LogAction "WARNING!  pdThemeColors returned an error: " & errMsg
 End Sub

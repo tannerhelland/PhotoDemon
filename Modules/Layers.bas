@@ -16,9 +16,6 @@ Attribute VB_Name = "Layers"
 
 Option Explicit
 
-'Helper API for enlarging a given rect
-Private Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
-
 'XML-based wrapper for AddBlankLayer(), below
 Public Sub AddBlankLayer_XML(ByVal processParameters As String)
     Dim cParams As pdParamXML
@@ -1044,7 +1041,7 @@ End Sub
 '
 'If the pixel lies outside the layer boundaries, the function will return FALSE.  Make sure to check this before evaluating
 ' the RGBQUAD.
-Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As Long, ByVal layerY As Long, ByRef dstQuad As RGBQuad, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
+Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As Long, ByVal layerY As Long, ByRef dstQuad As RGBQuad) As Boolean
 
     'Before doing anything else, check to see if the x/y coordinate even lies inside the image
     Dim tmpLayerRef As pdLayer

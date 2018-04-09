@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.350</langversion>
+<langversion>6.7.351</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -161,47 +161,7 @@
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
-<phrase>
-<original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
-<translation>sRGB transformar no podría ser aplicado. De imagen permanece en formato CMYK.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but CMYK transformation could not be created.</original>
-<translation>Ambos perfiles ICC cargados con éxito, pero la transformación CMYK no pudo ser creada.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  CMYK transform abandoned.</original>
-<translation>No se pudo obtener el perfil de color estándar sRGB. CMYK transformar abandonado.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  CMYK transform could not be performed.</original>
-<translation>Perfil ICC incrustado no es válida. CMYK transformar no se pudo realizar.</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>Perfil ICC no se podría aplicar. De imagen permanece en perfil original.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>Ambos perfiles ICC cargados con éxito, pero la transformación no se podrían crear.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>No se pudo obtener el perfil de color estándar sRGB. La gestión del color ha sido deshabilitado para esta imagen.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>Perfil ICC incrustado no es válida. La gestión del color ha sido deshabilitado para esta imagen.</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 0 phrases. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
 
@@ -15398,10 +15358,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2570</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4691 phrases. -->
-<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4683 phrases. -->
+<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
+<!-- These 2570 phrases contain approximately 12411 total words. -->
 
 </pdData>

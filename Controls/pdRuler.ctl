@@ -431,7 +431,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             'We now want to find the scale that produces the closest result to numBlocksAllowed,
             ' without going over. (Like guesses on the "Price is Right".)  Start at 1 and multiply by 10 until
             ' we arrive at a satisfactory result.
-            Dim xStart As Long, xEnd As Long, xStep As Long
+            Dim xStart As Long, xEnd As Long
             startAmount = 0.1
             
             Do
@@ -472,7 +472,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             'We now want to find the scale that produces the closest result to numBlocksAllowed,
             ' without going over. (Like guesses on the "Price is Right".)  Start at 1 and multiply by 10 until
             ' we arrive at a satisfactory result.
-            Dim yStart As Long, yEnd As Long, yStep As Long
+            Dim yStart As Long, yEnd As Long
             startAmount = 0.1
             
             Do
@@ -576,7 +576,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         midPointNotch = m_Step / 2
         
         'Start the rendering loop (which varies by ruler orientation, obviously)
-        Dim x As Long, y As Long, srcX As Long, srcY As Long, i As Long, tmpStep As Double
+        Dim x As Long, y As Long, i As Long
         Dim xNew As Double, yNew As Double, xNewInt As Long, yNewInt As Long
         If (m_Orientation = pdo_Horizontal) Then
         

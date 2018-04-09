@@ -41,12 +41,8 @@ Private m_Permutation() As Byte
 'Simplex noise requires a number of specialized constants, including some messy vector arrays (which have
 ' no obvious corollary in VB6).
 Private m_PermMod12() As Byte
-Private Const F2 As Double = 0.366025404        '0.5*(Math.sqrt(3.0)-1.0)
+Private Const f2 As Double = 0.366025404        '0.5*(Math.sqrt(3.0)-1.0)
 Private Const g2 As Double = 0.211324865        '(3.0-Math.sqrt(3.0))/6.0
-Private Const F3 As Double = 0.333333333333333  '1.0/3.0
-Private Const G3 As Double = 0.166666666666667  '1.0/6.0
-Private Const F4 As Double = 0.309016994        '(Math.sqrt(5.0)-1.0)/4.0
-Private Const G4 As Double = 0.138196601        '(5.0-Math.sqrt(5.0))/20.0
 
 Private Type SmpVec3
     x As Double
@@ -58,9 +54,8 @@ Private m_Grad3() As SmpVec3
 
 'Open-simplex noise also uses gradients, but they use indices based on octagonal distance
 Private m_Grad2() As Integer
-Private Const STRETCH_CONSTANT_2D As Double = -0.211324865405187    '(1/Math.sqrt(2+1)-1)/2
-Private Const SQUISH_CONSTANT_2D  As Double = 0.366025403784439      '(Math.sqrt(2+1)-1)/2;
-Private Const NORM_CONSTANT_2D    As Double = 47#
+Private Const STRETCH_CONSTANT_2D As Double = -0.211324865405187    '(1 / Sqr(2 + 1) - 1) / 2
+Private Const SQUISH_CONSTANT_2D  As Double = 0.366025403784439     '(Sqr(2 + 1) - 1) / 2
 Private Const INV_NORM_CONSTANT_2D As Double = 1# / 47#
 
 'In PD, we don't need full-on 3D noise.  Instead, we create "random" 2D noise by using a fixed 2D Perlin generator
@@ -99,19 +94,6 @@ Friend Function PerlinNoise2d(ByVal xIn As Double, ByVal yIn As Double) As Doubl
     
 End Function
 
-'Perlin fade, linear interpolation, and gradient functions, adopted verbatim from the reference implementation at
-' http://mrl.nyu.edu/~perlin/noise/
-Private Function PerlinFade(ByVal t As Double) As Double
-    PerlinFade = t * t * t * (t * (t * 6# - 15#) + 10#)
-End Function
-
-'Alternative fade function.  In 2D, we don't case as much about the zero second derivative at endpoints, so we
-' can use Hermite blending instead of a 5th-degree polynomial.  (See discussion of trade-offs here:
-' http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf)
-Private Function PerlinFadeFast(ByVal t As Double) As Double
-    PerlinFadeFast = t * t * (3# - 2# * t)
-End Function
-
 Private Function PerlinLerp(ByVal t As Double, ByVal a As Double, ByVal b As Double) As Double
     PerlinLerp = a + t * (b - a)
 End Function
@@ -140,7 +122,7 @@ Friend Function SimplexNoise2d(ByVal xIn As Double, ByVal yIn As Double) As Doub
     
     'Skew the input space to determine which simplex cell we're in
     Dim s As Double
-    s = (xIn + yIn) * F2
+    s = (xIn + yIn) * f2
     
     Dim i As Long, j As Long
     i = Int(xIn + s)
@@ -230,10 +212,6 @@ Friend Function SimplexNoise2d(ByVal xIn As Double, ByVal yIn As Double) As Doub
     ' (The result is scaled to return values in the interval [-1,1].)
     SimplexNoise2d = 70# * (n0 + n1 + n2)
   
-End Function
-  
-Private Function Dot2(ByVal gradIndex As Long, ByVal x As Double, ByVal y As Double) As Double
-    Dot2 = m_Grad3(gradIndex).x * x + m_Grad3(gradIndex).y * y
 End Function
 
 '2D Open Simplex noise, translated from the Java original at this link (good as of Oct 2017):

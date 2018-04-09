@@ -513,10 +513,6 @@ Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     UpdatePreview
 End Sub
 
-Private Sub optShape_Click(Index As Integer)
-    UpdatePreview
-End Sub
-
 Private Sub sltAngle_Change()
     UpdatePreview
 End Sub

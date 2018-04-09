@@ -224,7 +224,6 @@ Private Type PDP_NODE
 End Type
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
 'When writing new pdPackage files, these variables hold the package's contents as they are being assembled.  When loading a pdPackage file,
 ' these structs will be filled after the file header is successfully verified.
@@ -939,11 +938,6 @@ End Function
 ' array will still be returned, and the caller can proceed normally with that data.)
 Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
     CopyPtrToArray = Compression.CompressPtrToDstArray(dstArray, dstSize, srcPointer, srcSize, useCompression, compressionLevel, , trimDestinationArray)
-End Function
-
-'This wrapper for CopyPtrToArray, above, that allows the user to specify an array reference instead of a pointer
-Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
-    CopyArray = CopyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
 'Close the current package.  Any used resources will be immediately freed, so make sure you're finished with the package data
@@ -2255,9 +2249,9 @@ End Sub
 Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
         
     If (UBound(ExtraText) >= LBound(ExtraText)) Then
-        pdDebug.LogAction msgString & " (extra parameters were supplied)"
+        PDDebug.LogAction msgString & " (extra parameters were supplied)"
     Else
-        pdDebug.LogAction msgString
+        PDDebug.LogAction msgString
     End If
     
 End Sub

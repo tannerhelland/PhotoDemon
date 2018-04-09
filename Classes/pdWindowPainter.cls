@@ -49,7 +49,6 @@ Public Event EraseBkgnd()
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
 Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
@@ -95,7 +94,7 @@ End Sub
 
 'This function must be called in the UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Friend Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
+Friend Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal wantEraseMessages As Boolean = False)
     
     If pdMain.IsProgramRunning() Then
     

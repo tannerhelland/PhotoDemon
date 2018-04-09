@@ -103,7 +103,6 @@ Private Const MENU_NONE As Long = -1
 'A number of menu features require us to interact directly with the API
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Boolean, ByRef dstMenuItemInfo As Win32_MenuItemInfoW) As Boolean
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Boolean, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Boolean

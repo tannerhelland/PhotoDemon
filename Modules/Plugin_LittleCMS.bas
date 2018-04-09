@@ -441,8 +441,6 @@ Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, By
 'I do not currently make use of this function, but given the efficiency caveat above, it may be worth investigating in the future.
 Private Declare Sub cmsDoTransformLineStride Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsPerLine As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
 
-Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
-
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
 
@@ -457,8 +455,8 @@ Public Function InitializeLCMS() As Boolean
     InitializeLCMS = (m_LCMSHandle <> 0)
     
     If (Not InitializeLCMS) Then
-        pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
-        pdDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
+        PDDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
+        PDDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
     End If
     
     'Initialize D65 primaries as well; these are helpful shortcuts when assembling RGB profiles on-the-fly
@@ -812,7 +810,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
     ApplyICCProfileToPDDIB = False
     
     If (targetDIB Is Nothing) Then
-        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
+        PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
         Exit Function
     End If
     
@@ -822,7 +820,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
         Exit Function
     End If
     
-    pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
+    PDDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
     
     'Start by creating two LCMS profile handles:
     ' 1) a source profile (the in-memory copy of the ICC profile associated with this DIB)
@@ -857,7 +855,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
                 Set srcProfile = Nothing: Set dstProfile = Nothing
                 
                 If cTransform.ApplyTransformToPDDib(targetDIB) Then
-                    pdDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
+                    PDDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
                     targetDIB.ICCProfile.MarkSuccessfulProfileApplication
                     ApplyICCProfileToPDDIB = True
                 End If
@@ -866,15 +864,15 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
                 ' is self-freeing upon destruction.)
                 
             Else
-                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
+                PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
             End If
         
         Else
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
+            PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
         End If
     
     Else
-        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
+        PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
     End If
     
 End Function

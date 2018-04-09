@@ -384,7 +384,7 @@ Private Sub UpdateControlLayout()
     bHeight = ucSupport.GetBackBufferHeight
     
     'A little bit of horizontal and vertical padding is applied around various control parts
-    Const hTextPadding As Long = 1&, vTextPadding As Long = 1&, hBoxCaptionPadding As Long = 8&
+    Const vTextPadding As Long = 1&, hBoxCaptionPadding As Long = 8&
     
     'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
     ' caption text ends vertically.)

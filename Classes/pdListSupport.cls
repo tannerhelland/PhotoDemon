@@ -47,8 +47,6 @@ Public Event ScrollMaxChanged()
 Public Event ScrollValueChanged()
 Public Event Click()
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
 ' - Separators (all list elements are the same height, but some have divider lines after them)

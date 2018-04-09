@@ -144,18 +144,6 @@ Private m_CurLayerHover As Long
 'The renderer highlights clickable elements, so it needs access to the current mouse coordinates
 Private m_MouseX As Single, m_MouseY As Single
 
-'Layer buttons are more easily referenced by this enum rather than their actual indices
-Private Enum LAYER_BUTTON_ID
-    LYR_BTN_ADD = 0
-    LYR_BTN_DELETE = 1
-    LYR_BTN_MOVE_UP = 2
-    LYR_BTN_MOVE_DOWN = 3
-End Enum
-
-#If False Then
-    Private Const LYR_BTN_ADD = 0, LYR_BTN_DELETE = 1, LYR_BTN_MOVE_UP = 2, LYR_BTN_MOVE_DOWN = 3
-#End If
-
 'Extra interface images are loaded as resources at run-time
 Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
 
@@ -1176,16 +1164,6 @@ Private Sub RedrawBackBuffer()
     ucSupport.RequestRepaint
     If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
     
-End Sub
-
-'Given a destination rect and a UI DIB, fill the rect with the UI DIB's coordinates
-Private Sub FillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, ByVal xOffset As Long, ByVal yOffset As Long)
-    With dstRect
-        .Left = xOffset
-        .Top = yOffset
-        .Right = xOffset + srcDIB.GetDIBWidth
-        .Bottom = yOffset + srcDIB.GetDIBHeight
-    End With
 End Sub
 
 'Given mouse coordinates over the control, return the layer at that location.  The optional parameter

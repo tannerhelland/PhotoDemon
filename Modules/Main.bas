@@ -40,9 +40,7 @@ End Type
 ' leaving it to VB, but during testing, I still sometimes find it helpful to suppress the default Windows crash dialog.
 ' In case this proves useful in the future, I'll leave the declaration here.
 Private Declare Function SetErrorMode Lib "kernel32" (ByVal wMode As Long) As Long
-Private Const SEM_FAILCRITICALERRORS = &H1
-Private Const SEM_NOGPFAULTERRORBOX = &H2
-Private Const SEM_NOOPENFILEERRORBOX = &H8000&
+Private Const SEM_NOGPFAULTERRORBOX As Long = &H2
 
 Private m_hShellModule As Long
 
@@ -505,9 +503,6 @@ Public Function ContinueLoadingProgram() As Boolean
         FormMain.Caption = Updates.GetPhotoDemonNameAndVersion()
     End If
     
-    'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
-    IconsAndCursors.InitializeIconHandler
-    
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.  (Note that PD exposes two versions of the checkerboard pattern: a GDI version
     ' and a GDI+ version.)
@@ -565,7 +560,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Finally, apply all of our various UI features
     perfCheck.MarkEvent "Apply theme/language to FormMain"
-    FormMain.UpdateAgainstCurrentTheme False
+    FormMain.UpdateAgainstCurrentTheme
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     perfCheck.MarkEvent "Final interface sync"

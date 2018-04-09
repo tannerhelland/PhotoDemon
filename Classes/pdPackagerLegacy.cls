@@ -88,7 +88,6 @@ Option Explicit
 ' - The lowest expected value for this constant is 64, representative of PhotoDemon 6.4, when the PDI format was first implemented.
 ' - v64, 65, and 66 packages are still supported by this class, but it will only write v66 packages.
 Private Const THIS_PDPACKAGE_VERSION As Long = 66
-Private Const OLD_PDPACKAGE_VERSION_AUTUMN_2014 As Long = 65
 Private Const OLD_PDPACKAGE_VERSION_SUMMER_2014 As Long = 64
 
 'The first four bytes of a valid pdPackage file must always be &H4B504450 ("PDPK" in ASCII, if viewed in a text editor
@@ -199,11 +198,8 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPo
 'zLib compression and checksum validation
 Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
 Private Declare Function uncompress_safe Lib "zlibwapi.dll" Alias "uncompress" (ByVal dstBufferPointer As Long, ByVal dstLenPointer As Long, ByVal srcBufferPointer As Long, ByVal srcLenNotAPointer As Long) As Long
 Private Declare Function adler32 Lib "zlibwapi.dll" (ByVal adlerStart As Long, ByRef srcBuffer As Any, ByVal srcLength As Long) As Long
-Private Declare Function crc32 Lib "zlibwapi.dll" (ByVal crcStart As Long, ByRef srcBuffer As Any, ByVal srcLength As Long) As Long
-Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
 
 'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
 ' us to call any DLL we like without first passing them through regsvr32.
@@ -827,7 +823,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         WritePackageToFile = True
     
     Else
-        pdDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
+        PDDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
     End If
         
@@ -894,11 +890,6 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
     
     End If
     
-End Function
-
-'This wrapper for copyPtrToArray, above, that allows the user to specify an array reference instead of a pointer
-Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
-    CopyArray = CopyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
 'Load a pdPackage file into memory.  A few things to note:
@@ -980,7 +971,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
+                PDDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1035,7 +1026,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
             Else
                 
-                pdDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
+                PDDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
                 
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
@@ -1083,7 +1074,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
     Else
         ReadPackageFromFile = False
-        pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
+        PDDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
     End If
     
     Exit Function
@@ -1101,7 +1092,7 @@ End Function
 ' Unicode-aware parsing code, FYI!
 Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
     
-    pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
+    PDDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
     
     'Open the file
     Dim fileNum As Integer
@@ -1787,9 +1778,9 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             Exit Function
         Else
             If useHeaderBuffer Then
-                pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
+                PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
             Else
-                pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
+                PDDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
             End If
         End If
         

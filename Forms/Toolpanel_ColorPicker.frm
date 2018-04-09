@@ -417,7 +417,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
             Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
             
             Dim srcRGBA As RGBQuad
-            If Layers.GetRGBAPixelFromLayer(pdImages(g_CurrentImage).GetActiveLayerIndex, Int(layerX), Int(layerY), srcRGBA, False) Then
+            If Layers.GetRGBAPixelFromLayer(pdImages(g_CurrentImage).GetActiveLayerIndex, Int(layerX), Int(layerY), srcRGBA) Then
             
                 'A valid color was found!  Fill our module-level color values.
                 Dim unPremult As Single

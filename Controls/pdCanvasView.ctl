@@ -489,17 +489,6 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
     
 End Sub
 
-'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
-' call this function to recalculate the control's internal layout
-Private Sub UpdateControlLayout()
-    
-    'Retrieve DPI-aware control dimensions from the support class
-    Dim bWidth As Long, bHeight As Long
-    bWidth = ucSupport.GetBackBufferWidth
-    bHeight = ucSupport.GetBackBufferHeight
-    
-End Sub
-
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = False)
     

@@ -538,7 +538,7 @@ Friend Function DestroyEditBox() As Boolean
         If DestroyEditBox Then
             UserControls.NotifyAPIWindowDestroyed
         Else
-            pdDebug.LogAction "WARNING!  pdEditBoxW.DestroyEditBox failed.  System edit box #" & m_EditBoxHwnd & " *was not* destroyed!  DLL error was #" & Err.LastDllError
+            PDDebug.LogAction "WARNING!  pdEditBoxW.DestroyEditBox failed.  System edit box #" & m_EditBoxHwnd & " *was not* destroyed!  DLL error was #" & Err.LastDllError
         End If
         
         m_EditBoxHwnd = 0
@@ -626,16 +626,6 @@ Private Sub ReleaseEditBoxGDIObjects()
         m_EditBoxFont = 0
     End If
     
-End Sub
-
-'Force the edit box to re-paint itself
-Private Sub RepaintEditBox()
-    If (m_EditBoxHwnd <> 0) Then
-        Dim tmpRect As winRect
-        GetWindowRect m_EditBoxHwnd, tmpRect
-        InvalidateRect m_EditBoxHwnd, tmpRect, 1&
-        UpdateWindow m_EditBoxHwnd
-    End If
 End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)

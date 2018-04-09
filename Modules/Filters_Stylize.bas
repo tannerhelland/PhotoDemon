@@ -368,7 +368,6 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     
-    Const ONE_DIV_255 As Double = 1# / 255#
     finalX = finalX * 4
     
     'Loop through each pixel in the image, converting values as we go

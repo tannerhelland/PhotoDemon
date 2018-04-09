@@ -46,7 +46,6 @@ Option Explicit
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function PutMem2 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Integer) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
 
 'shlwapi provides convenient C++ string wrappers, but note that they always rely on null-terminated strings,
 ' and they always return pointers (not 0-based offsets within the string).  We have to translate these
@@ -273,7 +272,7 @@ Friend Function XMLUpdateTagValue(ByRef tagName As String, ByRef newTagValue As 
     
     'Find the location of the specified tag.
     Dim tagPosStart As Long
-    tagPosStart = Me.StrStr("<" & tagName & ">")
+    tagPosStart = Me.StrStr("<" & tagName & ">", searchStartPos)
     
     'Only proceed if the tag was found
     If (tagPosStart > 0) Then

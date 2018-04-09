@@ -19,7 +19,6 @@ Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal 
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 Private Const SW_HIDE As Long = 0&
-Private Const SW_SHOW As Long = 5&
 Private Const SW_SHOWNA As Long = 8&
 
 Private Type PD_Toolbox_Data

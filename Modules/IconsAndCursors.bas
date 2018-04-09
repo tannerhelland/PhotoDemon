@@ -28,7 +28,6 @@ Option Explicit
 'API calls for building icons and cursors at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
@@ -63,29 +62,6 @@ Private Const IMAGE_ICON As Long = 1
 Private Const WM_SETICON As Long = &H80
 Private Const ICON_SMALL As Long = 0
 Private Const ICON_BIG As Long = 1
-
-'API needed for converting PNG data to icon or cursor format
-Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
-Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GP_Result
-Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef mSrcRect As RectF, ByRef mSrcUnit As Long) As Long
-Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal gdiBitmap As Long) As Long
-Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef PixelFormat As Long) As Long
-
-'Used to check GDI+ images for alpha channels
-Private Const PixelFormatAlpha = &H40000             ' Has an alpha component
-Private Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
-
-'GDI+ types and constants
-Private Const UnitPixel As Long = &H2&
-
-Private Type CURSORINFO
-    cbSize As Long
-    Flags As Long
-    hCursor As Long
-    ptScreenPosX As Long
-    ptScreenPosY As Long
-End Type
 
 'Type required to create an icon on-the-fly
 Private Type ICONINFO
@@ -130,11 +106,6 @@ Private m_numCustomCursors As Long
 Private m_customCursorNames() As String
 Private m_customCursorHandles() As Long
 
-'This array will be used to store our dynamically created icon handles so we can delete them on program exit
-Private Const INITIAL_ICON_CACHE_SIZE As Long = 16
-Private m_numOfIcons As Long
-Private m_iconHandles() As Long
-
 'As of v7.0, icon creation and destruction is tracked locally.
 Private m_IconsCreated As Long, m_IconsDestroyed As Long
 
@@ -143,10 +114,10 @@ Private Const ALLOW_DYNAMIC_ICONS As Boolean = True
 
 'This array tracks the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
 ' is arbitrary; just make sure it's larger than the max number of loaded icons.
-Private iconNames(0 To 511) As String
+Private m_IconNames(0 To 511) As String
 
 'We also need to track how many icons have been loaded; this counter will also be used to reference icons in the database
-Private curIcon As Long
+Private m_curIconIndex As Long
 
 'clsMenuImage does the heavy lifting for inserting icons into menus
 Private cMenuImage As clsMenuImage
@@ -202,8 +173,8 @@ Public Sub FreeMenuIconCache()
     Set cMenuImage = New clsMenuImage
     
     'Also reset the icon tracking array
-    curIcon = 0
-    Erase iconNames
+    m_curIconIndex = 0
+    Erase m_IconNames
     
 End Sub
 
@@ -230,9 +201,9 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
     'Loop through all icons that have been loaded, and see if this one has been requested already.
     ' (This is necessary because some menus reuse the same icons, and it's a waste of resources to maintain
     '  two copies of said icons.)
-    For i = 0 To curIcon
+    For i = 0 To m_curIconIndex
 
-        If Strings.StringsEqual(iconNames(i), resID, False) Then
+        If Strings.StringsEqual(m_IconNames(i), resID, False) Then
             iconAlreadyLoaded = True
             iconLocation = i
             Exit For
@@ -243,9 +214,9 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
     'If the icon was not found, load it and add it to the list
     If (Not iconAlreadyLoaded) Then
         AddImageResourceToClsMenu resID, cMenuImage
-        iconNames(curIcon) = resID
-        iconLocation = curIcon
-        curIcon = curIcon + 1
+        m_IconNames(m_curIconIndex) = resID
+        iconLocation = m_curIconIndex
+        m_curIconIndex = m_curIconIndex + 1
     End If
         
     'Place the icon onto the requested menu
@@ -499,38 +470,6 @@ Public Function GetCreatedIconCount(Optional ByRef iconsCreated As Long, Optiona
     GetCreatedIconCount = m_IconsCreated - m_IconsDestroyed
 End Function
 
-'Needs to be run only once, at the start of the program
-Public Sub InitializeIconHandler()
-    m_numOfIcons = 0
-    ReDim m_iconHandles(0 To INITIAL_ICON_CACHE_SIZE - 1) As Long
-End Sub
-
-Private Sub AddIconToList(ByVal hIcon As Long)
-    
-    If (m_numOfIcons > UBound(m_iconHandles)) Then ReDim Preserve m_iconHandles(0 To UBound(m_iconHandles) * 2 + 1) As Long
-    
-    m_iconHandles(m_numOfIcons) = hIcon
-    m_numOfIcons = m_numOfIcons + 1
-
-End Sub
-
-'Remove all icons generated since the program launched
-Public Sub DestroyAllIcons()
-
-    If (m_numOfIcons > 0) Then
-    
-        Dim i As Long
-        For i = 0 To m_numOfIcons - 1
-            If (m_iconHandles(i) <> 0) Then ReleaseIcon m_iconHandles(i)
-        Next i
-        
-        'Reinitialize the icon handler, which will also reset the icon count and handle array
-        InitializeIconHandler
-        
-    End If
-
-End Sub
-
 'Given an image in PD's theme file, return it as a system cursor handle.
 'PLEASE NOTE: PD auto-caches created cursors, and retains them for the life of the program.  They should not be manually freed.
 Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
@@ -552,7 +491,7 @@ Private Function CreateCursorFromResource(ByRef resTitle As String, Optional ByV
         CreateCursorFromResource = CreateCursorFromDIB(resDIB)
         
     Else
-        pdDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
+        PDDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
     End If
     
 End Function
@@ -712,7 +651,7 @@ Public Function LoadResourceToDIB(ByRef resTitle As String, ByRef dstDIB As pdDI
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
             dstDIB.CreateBlank 16, 16, 32, 0, 0
             LoadResourceToDIB = False
-            pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
+            PDDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
         End If
         
     Else
@@ -799,7 +738,7 @@ Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByR
     'Use DrawIconEx to render the cursor into the 32-bpp DIB, then premultiply the result
     GetSysCursorAsDIB = (DrawIconEx(dstDIB.GetDIBDC, 0, 0, hCursor, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, renderFrame, 0, DI_NORMAL) <> 0)
     dstDIB.SetAlphaPremultiplication True
-    If (Not GetSysCursorAsDIB) Then pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
+    If (Not GetSysCursorAsDIB) Then PDDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx."
     
     'We now want to see if the destination DIB contains valid data.  (We define this as meeting two criteria:
     ' 1) the image must contain at least some non-transparent bytes, and...
@@ -847,7 +786,7 @@ Private Function GetSysCursorAsDIB(ByVal cursorType As SystemCursorConstant, ByR
             End If
         
         Else
-            pdDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx, second attempt(s)."
+            PDDebug.LogAction "WARNING!  IconsAndCursors.GetSysCursorAsDIB failed on DrawIconEx, second attempt(s)."
         End If
         
     End If
@@ -910,7 +849,7 @@ Private Function GetHandAndResizeCursor() As Long
         GetHandAndResizeCursor = CreateCursorFromDIB(newDIB, handInfo.xHotspot, handInfo.yHotspot)
     
     Else
-        pdDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
+        PDDebug.LogAction "WARNING!  IconsAndCursors.GetHandAndResizeCursor failed."
     End If
 
 End Function

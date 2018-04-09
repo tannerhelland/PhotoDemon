@@ -48,8 +48,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Const PI As Single = 3.141593!
-Private Const PI_HALF As Single = 1.570796!
 Private Const PI_DOUBLE As Single = 6.283185!
 Private Const LOG_2 As Single = 0.6931472!
 

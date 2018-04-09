@@ -348,11 +348,11 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         m_IsClipboardOpen = True
         
         'When debugging, it's nice to know what clipboard formats the OS reports prior to actually retrieving them.
-        pdDebug.LogAction "Clipboard reports the following formats: " & m_Clipboard.GetListOfAvailableFormatNames()
+        PDDebug.LogAction "Clipboard reports the following formats: " & m_Clipboard.GetListOfAvailableFormatNames()
         
         'If PD was used to Cut or Copy something onto the clipboard, our own private format(s) will be listed first.
         If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) And PD_CB_ALLOW_INTERNAL_FORMAT_PASTE Then
-            pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer, CF_PD_DIB)
+            pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer)
         End If
         
         'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
@@ -413,7 +413,7 @@ Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         m_IsClipboardOpen = False
         
     Else
-        pdDebug.LogAction "WARNING!  Couldn't open the clipboard; is it possible another program has locked it?"
+        PDDebug.LogAction "WARNING!  Couldn't open the clipboard; is it possible another program has locked it?"
     End If
         
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
@@ -431,16 +431,16 @@ End Sub
 ' or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean, Optional ByVal clipFormatID As PredefinedClipboardFormatConstants = CF_PD_DIB) As Boolean
+Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_InternalData = False
     
     'See if a previous stash file exists
-    If (Len(m_StashFile) <> 0) Then
+    If (LenB(m_StashFile) <> 0) Then
         If Files.FileExists(m_StashFile) Then
             
-            pdDebug.LogAction "Loading internal PD clipboard data now..."
+            PDDebug.LogAction "Loading internal PD clipboard data now..."
             
             'We've previously saved a valid stash file.  Attempt to load it as a new file.
             Dim sTitle As String
@@ -459,10 +459,10 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
             ClipboardPaste_InternalData = True
                 
         Else
-            pdDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed to find a stash file.  Paste abandoned."
+            PDDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed to find a stash file.  Paste abandoned."
         End If
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed, because a stash file hasn't been created yet.  Paste abandoned."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed, because a stash file hasn't been created yet.  Paste abandoned."
     End If
     
 End Function
@@ -488,7 +488,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
     'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
     If m_Clipboard.DoesClipboardHaveFormatName(clipboardFormatName) Then
         
-        pdDebug.LogAction "ClipboardPaste_CustomImageFormat() will now attempt to load " & clipboardFormatName & " from the clipboard..."
+        PDDebug.LogAction "ClipboardPaste_CustomImageFormat() will now attempt to load " & clipboardFormatName & " from the clipboard..."
         
         'Because custom-format image data can be registered by many programs, retrieve this image format's unique ID now.
         clipFormatID = m_Clipboard.GetFormatIDFromName(clipboardFormatName)
@@ -527,15 +527,15 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 ClipboardPaste_CustomImageFormat = True
                 
             Else
-                pdDebug.LogAction "WARNING!  Clipboard image data (probably PNG) could not be written to a temp file."
+                PDDebug.LogAction "WARNING!  Clipboard image data (probably PNG) could not be written to a temp file."
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on custom image data (probably PNG).  Special paste action abandoned."
+            PDDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on custom image data (probably PNG).  Special paste action abandoned."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_CustomImageFormat was called, but the requested data doesn't exist on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_CustomImageFormat was called, but the requested data doesn't exist on the clipboard."
     End If
     
 End Function
@@ -560,7 +560,7 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
         m_ClipboardInfo.pdci_CurrentFormat = 0
         m_ClipboardInfo.pdci_OriginalFormat = 0
         
-        pdDebug.LogAction "ClipboardPaste_HTML() will now attempt to find valid image HTML on the clipboard..."
+        PDDebug.LogAction "ClipboardPaste_HTML() will now attempt to find valid image HTML on the clipboard..."
         
         'Pull the HTML data into a local string
         Dim htmlString As String
@@ -592,20 +592,20 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
                 'An image tag was found, but a parsing error occurred when trying to strip out the source URL.  This is okay;
                 ' exit immediately without raising any errors.
                 Else
-                    pdDebug.LogAction "Clipboard.GetClipboardHTML was successful and an image URL was located, but a parsing error occurred."
+                    PDDebug.LogAction "Clipboard.GetClipboardHTML was successful and an image URL was located, but a parsing error occurred."
                 End If
                 
             'No image tag found, which is fine; exit immediately without raising any errors.
             Else
-                pdDebug.LogAction "Clipboard.GetClipboardHTML was successful, but no image URL found."
+                PDDebug.LogAction "Clipboard.GetClipboardHTML was successful, but no image URL found."
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  Clipboard.GetClipboardHTML failed.  Special paste action abandoned."
+            PDDebug.LogAction "WARNING!  Clipboard.GetClipboardHTML failed.  Special paste action abandoned."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_HTML was called, but HTML data doesn't exist on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_HTML was called, but HTML data doesn't exist on the clipboard."
     End If
     
 End Function
@@ -616,7 +616,7 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
     'Make sure files actually exist on the clipboard
     If m_Clipboard.DoesClipboardHaveFiles() Then
         
-        pdDebug.LogAction "ClipboardPaste_ListOfFiles() will now attempt to load one or more files from the clipboard..."
+        PDDebug.LogAction "ClipboardPaste_ListOfFiles() will now attempt to load one or more files from the clipboard..."
         
         'File lists require no special behavior on the part of external load functions, so we mark the module-level tracker as blank
         m_ClipboardInfo.pdci_CurrentFormat = CF_HDROP
@@ -637,11 +637,11 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
             ClipboardPaste_ListOfFiles = True
             
         Else
-            pdDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles couldn't retrieve a valid file list from pdClipboard."
+            PDDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles couldn't retrieve a valid file list from pdClipboard."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles was called, but no file paths exist on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles was called, but no file paths exist on the clipboard."
     End If
         
 End Function
@@ -663,7 +663,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
     'Metafiles show up in a few different formats.  We want to use EMFs, if possible.
     If m_Clipboard.DoesClipboardHaveFormatID(CF_ENHMETAFILE) Then
         
-        pdDebug.LogAction "ClipboardPaste_Metafile() will now attempt to load an EMF from the clipboard..."
+        PDDebug.LogAction "ClipboardPaste_Metafile() will now attempt to load an EMF from the clipboard..."
         
         'Clipboard metafiles only store a *handle* to the source metafile.  They do not store the actual metafile data,
         ' which means we have to manually grab the handle and write the data out to file.
@@ -672,7 +672,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
         
         If (emfHandle <> 0) Then
         
-            pdDebug.LogAction "Clipboard metafile handle retrieved successfully.  Writing to temp file..."
+            PDDebug.LogAction "Clipboard metafile handle retrieved successfully.  Writing to temp file..."
             tmpClipboardFile = UserPrefs.GetTempPath & "PDClipboard.emf"
             
             Dim tmpEmfCopy As Long
@@ -706,15 +706,15 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
                 ClipboardPaste_Metafile = True
                 
             Else
-                pdDebug.LogAction "WARNING!  Clipboard metafile data could not be written to a temp file."
+                PDDebug.LogAction "WARNING!  Clipboard metafile data could not be written to a temp file."
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on metafile data.  Special paste action abandoned."
+            PDDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on metafile data.  Special paste action abandoned."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_Metafile was called, but the requested data doesn't exist on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_Metafile was called, but the requested data doesn't exist on the clipboard."
     End If
     
 End Function
@@ -727,7 +727,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
     'Make sure text actually exists on the clipboard
     If m_Clipboard.DoesClipboardHaveText() Then
         
-        pdDebug.LogAction "ClipboardPaste_TextSource() will now parse clipboard text, looking for image sources..."
+        PDDebug.LogAction "ClipboardPaste_TextSource() will now parse clipboard text, looking for image sources..."
         
         'Text requires no special behavior on the part of external load functions, so we mark the module-level tracker as blank
         m_ClipboardInfo.pdci_CurrentFormat = 0
@@ -770,11 +770,11 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  ClipboardPaste_TextSource couldn't retrieve actual text from pdClipboard."
+            PDDebug.LogAction "WARNING!  ClipboardPaste_TextSource couldn't retrieve actual text from pdClipboard."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_TextSource was called, but no text exists on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_TextSource was called, but no text exists on the clipboard."
     End If
         
 End Function
@@ -853,11 +853,11 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
         ' (Ignore CF_BITMAP for now, as it would require specialized handling.)
         Dim rawClipboardData() As Byte, successfulExtraction As Boolean
         If (priorityFormat = CF_DIBV5) Then
-            pdDebug.LogAction "DIBv5 selected as priority retrieval format."
+            PDDebug.LogAction "DIBv5 selected as priority retrieval format."
             successfulExtraction = m_Clipboard.GetClipboardBinaryData(CF_DIBV5, rawClipboardData)
             m_ClipboardInfo.pdci_CurrentFormat = CF_DIBV5
         Else
-            pdDebug.LogAction "Generic DIB selected as priority retrieval format."
+            PDDebug.LogAction "Generic DIB selected as priority retrieval format."
             successfulExtraction = m_Clipboard.GetClipboardBinaryData(CF_DIB, rawClipboardData)
             m_ClipboardInfo.pdci_CurrentFormat = CF_DIB
         End If
@@ -1033,19 +1033,19 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     End If
                     
                 Else
-                    pdDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed because the DIB header failed validation.  Paste abandoned."
+                    PDDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed because the DIB header failed validation.  Paste abandoned."
                 End If
                 
             Else
-                pdDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed because the DIB header is an invalid size.  Paste abandoned."
+                PDDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed because the DIB header is an invalid size.  Paste abandoned."
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed to retrieve raw DIB data.  Paste abandoned."
+            PDDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage failed to retrieve raw DIB data.  Paste abandoned."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage was called, but the requested data doesn't exist on the clipboard."
+        PDDebug.LogAction "WARNING!  ClipboardPaste_BitmapImage was called, but the requested data doesn't exist on the clipboard."
     End If
     
 End Function
@@ -1246,7 +1246,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
     Exit Function
     
 DragDropFilesFailed:
-    pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_FileList() experienced error #" & Err.Number & ": " & Err.Description
+    PDDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_FileList() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
 
@@ -1436,7 +1436,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
     Exit Function
     
 DragDropZippedFilesFailed:
-    pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_ZippedFileList() experienced error #" & Err.Number & ": " & Err.Description
+    PDDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_ZippedFileList() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
 
@@ -1500,7 +1500,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     Exit Function
     
 DragDropBMPFailed:
-    pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_BitmapData() experienced error #" & Err.Number & ": " & Err.Description
+    PDDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_BitmapData() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
 
@@ -1561,7 +1561,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
     Exit Function
     
 DragDropTextFailed:
-    pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_TextData() experienced error #" & Err.Number & ": " & Err.Description
+    PDDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_TextData() experienced error #" & Err.Number & ": " & Err.Description
     
 End Function
 
@@ -1579,14 +1579,14 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'First, check for an active selection
     If pdImages(g_CurrentImage).IsSelectionActive Then
         
-        pdDebug.LogAction "Clipboard stash update: generating processed selection area..."
+        PDDebug.LogAction "Clipboard stash update: generating processed selection area..."
         
         'Fill the temporary DIB with the selected area onlny, with any/all selection processing applied
         pdImages(g_CurrentImage).RetrieveProcessedSelection m_ClipboardDIB, True, copyMerged
         
     Else
         
-        pdDebug.LogAction "Clipboard stash update: generating composited image and/or layer..."
+        PDDebug.LogAction "Clipboard stash update: generating composited image and/or layer..."
         
         'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
         If copyMerged Then
@@ -1604,7 +1604,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'Grab a new temporary path name (TODO: use system-generated temp file names)
     If (LenB(m_StashFile) = 0) Then m_StashFile = UserPrefs.GetTempPath() & "cbStash.tmpdib"
     
-    pdDebug.LogAction "Writing clipboard stash now..."
+    PDDebug.LogAction "Writing clipboard stash now..."
     
     'Dump the temporary DIB to file
     m_ClipboardDIB.WriteToFile m_StashFile, PD_CE_Lz4
@@ -1612,7 +1612,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'Erase the temporary DIB
     m_ClipboardDIB.EraseDIB
     
-    pdDebug.LogAction "Clipboard stashed successfully."
+    PDDebug.LogAction "Clipboard stashed successfully."
     
 End Sub
 
@@ -1651,7 +1651,7 @@ End Function
 ' (PD does this prior to shutdown, because WM_RENDERALLFORMATS does not play nicely with the order VB unloads objects / destroys windows.)
 Friend Sub RenderAllClipboardFormatsManually()
     
-    pdDebug.LogAction "pdClipboardMain received notification to render all clipboard formats.  Rendering now..."
+    PDDebug.LogAction "pdClipboardMain received notification to render all clipboard formats.  Rendering now..."
     
     'Start by unstashing our previously unsaved clipboard data; this will populate m_ClipboardDIB accordingly
     Dim okayToProceed As Boolean
@@ -1724,12 +1724,12 @@ End Sub
 ' asserted ownership as part of a Paste operation; we simply plug-in the data they need.
 Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
 
-    pdDebug.LogAction "pdClipboardMain received notification to render clipboard format " & m_Clipboard.GetFormatNameFromID(clipFormatID)
+    PDDebug.LogAction "pdClipboardMain received notification to render clipboard format " & m_Clipboard.GetFormatNameFromID(clipFormatID)
     
     Dim okayToProceed As Boolean
     okayToProceed = False
     
-    pdDebug.LogAction "Unstashing previously saved clipboard data..."
+    PDDebug.LogAction "Unstashing previously saved clipboard data..."
     
     'Start by unstashing our previously unsaved clipboard data; this will populate m_ClipboardDIB accordingly
     If UnstashClipboardData() Then
@@ -1756,7 +1756,7 @@ Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
                 RenderClipboard_DIB (clipFormatID = CF_DIBV5)
             
             Case Else
-                pdDebug.LogAction "WARNING!  A clipboard render request was received for an unhandled format: " & clipFormatID
+                PDDebug.LogAction "WARNING!  A clipboard render request was received for an unhandled format: " & clipFormatID
                 
         End Select
         
@@ -1780,13 +1780,13 @@ Private Sub RenderClipboard_PNG()
     'FreeImage is used to perform the PNG transformation.  (We could use GDI+, but FreeImage is easier.)
     If g_ImageFormats.FreeImageEnabled Then
         
-        pdDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
+        PDDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
         
         'Most systems will already have PNG available as a setting; the AddFormat function will detect this
         Dim PNGID As Long
         PNGID = m_Clipboard.AddClipboardFormat("PNG")
         
-        pdDebug.LogAction "Clipboard copy update: creating FreeImage handle..."
+        PDDebug.LogAction "Clipboard copy update: creating FreeImage handle..."
         
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -1795,7 +1795,7 @@ Private Sub RenderClipboard_PNG()
         'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
         If (fi_DIB <> 0) Then
         
-            pdDebug.LogAction "Clipboard copy update: saving PNG to byte array..."
+            PDDebug.LogAction "Clipboard copy update: saving PNG to byte array..."
             
             Dim pngArray() As Byte
             Dim fi_Check As Long
@@ -1803,8 +1803,8 @@ Private Sub RenderClipboard_PNG()
             
             'If the save was successful, hand the new PNG byte array to the clipboard
             If fi_Check Then
-                pdDebug.LogAction "Clipboard copy update: uploading PNG to clipboard..."
-                If m_Clipboard.SetClipboardBinaryData(PNGID, pngArray) Then pdDebug.LogAction "Clipboard copy update: PNG clipboard operation complete."
+                PDDebug.LogAction "Clipboard copy update: uploading PNG to clipboard..."
+                If m_Clipboard.SetClipboardBinaryData(PNGID, pngArray) Then PDDebug.LogAction "Clipboard copy update: PNG clipboard operation complete."
             End If
             
             'Before exiting, restore the original scanline order
@@ -1814,11 +1814,11 @@ Private Sub RenderClipboard_PNG()
             FreeImage_Unload fi_DIB
             
         Else
-            pdDebug.LogAction "WARNING!  During ClipboardCopy, FreeImage was unable to create a handle around the target DIB.  PNG format abandoned."
+            PDDebug.LogAction "WARNING!  During ClipboardCopy, FreeImage was unable to create a handle around the target DIB.  PNG format abandoned."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  Prior to rendering PNG clipboard data, FreeImage was unloaded.  PNG copy abandoned."
+        PDDebug.LogAction "WARNING!  Prior to rendering PNG clipboard data, FreeImage was unloaded.  PNG copy abandoned."
     End If
     
 RenderClipboardPNG_Failure:
@@ -1839,7 +1839,7 @@ Private Sub RenderClipboard_BITMAP()
     
     If (tmpDC <> 0) Then
         
-        pdDebug.LogAction "Clipboard copy update: creating DDB copy of image..."
+        PDDebug.LogAction "Clipboard copy update: creating DDB copy of image..."
         
         'Create a DDB compatible with the current desktop. This will receive the actual pixel data of the current DIB,
         ' downsampled to 24-bpp.
@@ -1851,7 +1851,7 @@ Private Sub RenderClipboard_BITMAP()
             clipboardBMP = CreateCompatibleBitmap(tmpDC, m_ClipboardDIB.GetDIBWidth, Abs(m_ClipboardDIB.GetDIBHeight))
             If (clipboardBMP <> 0) Then
                 
-                pdDebug.LogAction "Clipboard copy update: compositing 24-bpp copy for DDB format..."
+                PDDebug.LogAction "Clipboard copy update: compositing 24-bpp copy for DDB format..."
                 
                 'Select the DDB into our temporary compatible DC so we can draw to it with GDI commands
                 Dim clipboardOldBMP As Long
@@ -1876,7 +1876,7 @@ Private Sub RenderClipboard_BITMAP()
                     
                 End If
                 
-                pdDebug.LogAction "Clipboard copy update: uploading DDB to clipboard..."
+                PDDebug.LogAction "Clipboard copy update: uploading DDB to clipboard..."
                 
                 'Remove the clipboard bitmap from the temporary DC
                 SelectObject clipboardDC, clipboardOldBMP
@@ -1893,15 +1893,15 @@ Private Sub RenderClipboard_BITMAP()
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  Prior to rendering BITMAP clipboard data, a compatible DC could not be created.  Copy abandoned."
+            PDDebug.LogAction "WARNING!  Prior to rendering BITMAP clipboard data, a compatible DC could not be created.  Copy abandoned."
         End If
         
-        pdDebug.LogAction "Clipboard copy update: freeing temporary clipboard resources..."
+        PDDebug.LogAction "Clipboard copy update: freeing temporary clipboard resources..."
         ReleaseDC desktopHWnd, tmpDC
         
     End If
     
-    pdDebug.LogAction "Clipboard copy update: DDB clipboard operation complete."
+    PDDebug.LogAction "Clipboard copy update: DDB clipboard operation complete."
     
 RenderClipboardBITMAP_Failure:
 
@@ -1915,9 +1915,9 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     On Error GoTo RenderClipboardDIB_Failure
     
     If useV5Header Then
-        pdDebug.LogAction "Clipboard copy update: allocating global memory for DIBv5 object..."
+        PDDebug.LogAction "Clipboard copy update: allocating global memory for DIBv5 object..."
     Else
-        pdDebug.LogAction "Clipboard copy update: allocating global memory for DIB object..."
+        PDDebug.LogAction "Clipboard copy update: allocating global memory for DIB object..."
     End If
     
     'DIBs should be unpremultiplied prior to copying; note that some esoteric software (*cough* XNView *cough*) wants
@@ -1947,7 +1947,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
         hGlobalPtr = m_Clipboard.GetPointerFromGlobalMemory(hGlobal)
         If (hGlobalPtr <> 0) Then
             
-            pdDebug.LogAction "Clipboard copy update: copying DIB and header into global memory..."
+            PDDebug.LogAction "Clipboard copy update: copying DIB and header into global memory..."
             
             'Populate the relevant DIB header
             If useV5Header Then
@@ -2000,7 +2000,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
             'Unlock the memory, then assign ownership to the clipboard
             m_Clipboard.FinishedWithGlobalMemoryPtr hGlobal
             
-            pdDebug.LogAction "Clipboard copy update: transferring ownership to the clipboard..."
+            PDDebug.LogAction "Clipboard copy update: transferring ownership to the clipboard..."
             
             If useV5Header Then
                 m_Clipboard.SetClipboardMemoryHandle CF_DIBV5, hGlobal
@@ -2009,14 +2009,14 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
             End If
             
         Else
-            pdDebug.LogAction "WARNING!  pdClipboardMain.RenderClipboard_DIB couldn't lock its global memory handle."
+            PDDebug.LogAction "WARNING!  pdClipboardMain.RenderClipboard_DIB couldn't lock its global memory handle."
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  pdClipboardMain.RenderClipboard_DIB couldn't allocate enough global memory for this operation."
+        PDDebug.LogAction "WARNING!  pdClipboardMain.RenderClipboard_DIB couldn't allocate enough global memory for this operation."
     End If
     
-    pdDebug.LogAction "Clipboard copy update: DIB clipboard operation complete."
+    PDDebug.LogAction "Clipboard copy update: DIB clipboard operation complete."
     
 RenderClipboardDIB_Failure:
 

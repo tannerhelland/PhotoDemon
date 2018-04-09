@@ -62,14 +62,6 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function GetNearestPaletteIndex Lib "gdi32" (ByVal hPalette As Long, ByVal crColor As Long) As Long
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
-'A specially designed QuickSort algorithm is used to sort the original palette.  This allows us to be
-' flexible with sort criteria, and to also cache our sort criteria values so we can reuse them during
-' the actual palette matching step.
-Private Type PaletteSort
-    pSortCriteria As Single
-    pOrigIndex As Byte
-End Type
-
 'When interacting with a pdPalette class instance, additional options are available.  In particular,
 ' pdPalette-based palettes support the following per-color features:
 ' - RGBA color descriptors (including alpha, although in many places PD does *not* guarantee that

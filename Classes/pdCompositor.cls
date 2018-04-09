@@ -444,7 +444,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     End If
     
     'The paintbrush layer has been merged successfully!  Any further actions (like resetting the paint layer) must be handled by the caller.
-    pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "Merged two layers paint-style.  Time taken: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -1708,31 +1708,6 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     End If
     
 End Sub
-
-'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
-' from the source coordinate space to the destination coordinate space.
-Private Function GetDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As RECT, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long)
-    
-    'Convert the source rectangle coordinates into a [0, 1] scale relative to the total source area.
-    ' Note that we use a RECTF here, which typically uses WIDTH and HEIGHT markers - however, we use them as RIGHT and BOTTOM here,
-    ' so ignore the original named values.
-    Dim srcRectF As RectF
-    With srcRectF
-        .Left = (srcRect.Left - srcX) / srcWidth
-        .Width = (srcRect.Right - srcX) / srcWidth
-        .Top = (srcRect.Top - srcY) / srcHeight
-        .Height = (srcRect.Bottom - srcY) / srcHeight
-    End With
-    
-    'Using those source values, fill the destination rect
-    With dstRect
-        .Left = dstX + (srcRectF.Left * dstWidth)
-        .Right = dstX + (srcRectF.Width * dstWidth)
-        .Top = dstY + (srcRectF.Top * dstHeight)
-        .Bottom = dstY + (srcRectF.Height * dstHeight)
-    End With
-
-End Function
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
 ' from the source coordinate space to the destination coordinate space.

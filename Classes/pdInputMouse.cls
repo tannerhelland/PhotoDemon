@@ -148,9 +148,7 @@ Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 
 'Set a new cursor for a given class
-Private Declare Function GetCursor Lib "user32" () As Long
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
@@ -169,7 +167,6 @@ End Enum
 
 Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As PD_MouseResolution) As Long
 Private Declare Function GetMessageTime Lib "user32" () As Long
-Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
@@ -788,7 +785,7 @@ Private Sub UpdateMouseModifiers(Optional ByVal lParam As Long = 0)
 End Sub
 
 'Wrapped up with MouseMove events are mouse enter/leave events, as well.
-Private Function HandleMouseMove(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseMove(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -851,7 +848,7 @@ Private Function HandleMouseMove(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal 
     
 End Function
 
-Private Function HandleMouseDown(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseDown(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -915,7 +912,7 @@ Private Function HandleMouseDown(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal 
                 
 End Function
 
-Private Function HandleMouseUp(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseUp(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -991,7 +988,7 @@ Private Function HandleMouseUp(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wP
 
 End Function
 
-Private Function HandleDblClick(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleDblClick(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -1033,7 +1030,7 @@ Private Function HandleDblClick(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     
 End Function
 
-Private Function HandleMouseLeave(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseLeave(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -1064,7 +1061,7 @@ Private Function HandleMouseLeave(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
     
 End Function
 
-Private Function HandleMouseHover(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseHover(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -1102,7 +1099,7 @@ Private Function HandleMouseHover(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
     
 End Function
 
-Private Function HandleMouseWheel(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleMouseWheel(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -1159,7 +1156,7 @@ End Function
 'App commands are meta functions like "back" or "increase volume" or "media rewind".  They can be triggered
 ' by a variety of actions, depending on system configuration: mouse gestures, dedicated keyboard keys,
 ' or gestures on a touch screen.
-Private Function HandleAppCommand(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleAppCommand(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
 
     'Grab current mouse and button state.  (The results are stored in module-level variables.)
     UpdateMouseModifiers lParam
@@ -1177,7 +1174,7 @@ Private Function HandleAppCommand(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
 
 End Function
 
-Private Function HandleSetCursor(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleSetCursor(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     ApplyCursor False
     msgEaten = True
     HandleSetCursor = 1
@@ -1191,31 +1188,31 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     Dim msgEaten As Boolean: msgEaten = False
     
     If (uiMsg = WM_MOUSEMOVE) Then
-        ISubclass_WindowMsg = HandleMouseMove(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleMouseMove(uiMsg, wParam, lParam, msgEaten)
         
     ElseIf ((uiMsg = WM_LBUTTONDOWN) Or (uiMsg = WM_MBUTTONDOWN) Or (uiMsg = WM_RBUTTONDOWN) Or (uiMsg = WM_XBUTTONDOWN)) Then
-        ISubclass_WindowMsg = HandleMouseDown(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleMouseDown(uiMsg, wParam, lParam, msgEaten)
         
     ElseIf ((uiMsg = WM_LBUTTONUP) Or (uiMsg = WM_MBUTTONUP) Or (uiMsg = WM_RBUTTONUP) Or (uiMsg = WM_XBUTTONUP)) Then
-        ISubclass_WindowMsg = HandleMouseUp(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleMouseUp(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf ((uiMsg = WM_LBUTTONDBLCLK) Or (uiMsg = WM_MBUTTONDBLCLK) Or (uiMsg = WM_RBUTTONDBLCLK) Or (uiMsg = WM_XBUTTONDBLCLK)) Then
-        ISubclass_WindowMsg = HandleDblClick(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleDblClick(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf (uiMsg = WM_MOUSELEAVE) Then
-        ISubclass_WindowMsg = HandleMouseLeave(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleMouseLeave(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf (uiMsg = WM_MOUSEHOVER) Then
-        ISubclass_WindowMsg = HandleMouseHover(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleMouseHover(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf ((uiMsg = WM_MOUSEWHEEL) Or (uiMsg = WM_MOUSEHWHEEL)) Then
-        If (Not m_DisregardWheelEvents) Then ISubclass_WindowMsg = HandleMouseWheel(hWnd, uiMsg, wParam, lParam, msgEaten)
+        If (Not m_DisregardWheelEvents) Then ISubclass_WindowMsg = HandleMouseWheel(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf (uiMsg = WM_APPCOMMAND) Then
-        If m_TrackAppCommands Then ISubclass_WindowMsg = HandleAppCommand(hWnd, uiMsg, wParam, lParam, msgEaten)
+        If m_TrackAppCommands Then ISubclass_WindowMsg = HandleAppCommand(uiMsg, wParam, lParam, msgEaten)
     
     ElseIf (uiMsg = WM_SETCURSOR) Then
-        ISubclass_WindowMsg = HandleSetCursor(hWnd, uiMsg, wParam, lParam, msgEaten)
+        ISubclass_WindowMsg = HandleSetCursor(uiMsg, wParam, lParam, msgEaten)
     
     'Failsafe check for parent window destruction
     ElseIf (uiMsg = WM_NCDESTROY) Then

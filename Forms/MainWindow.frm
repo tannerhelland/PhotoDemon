@@ -2853,7 +2853,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Destroy all custom-created icons and cursors
     PDDebug.LogAction "Destroying custom icons and cursors..."
-    IconsAndCursors.DestroyAllIcons
     IconsAndCursors.UnloadAllCursors
     
     'Destroy all paint-related resources
@@ -4326,10 +4325,10 @@ End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,
 ' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
-Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by notifying all controls that new translations and theme settings are required
-    Interface.ApplyThemeAndTranslations Me, useDoEvents
+    Interface.ApplyThemeAndTranslations Me
     
     'Next, menus must be handled separately, because they are implemented using API menus
     Menus.UpdateAgainstCurrentTheme

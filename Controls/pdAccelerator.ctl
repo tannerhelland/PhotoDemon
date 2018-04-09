@@ -64,9 +64,6 @@ Option Explicit
 'This control only raises a single "Accelerator" event, and it only does it when one (or more) keys in the combination are released
 Public Event Accelerator(ByVal acceleratorIndex As Long)
 
-' GetActiveWindow is used to determine if our main for is the active window in order to allow/prevent accelerator key accumulation
-Private Declare Function GetActiveWindow Lib "user32.dll" () As Long
-
 'Each hotkey stores several additional (and sometimes optional) parameters.  This spares us from writing specialized
 ' handling code for each individual keypress.
 Private Type pdHotkey
@@ -178,7 +175,7 @@ Private Sub m_FireTimer_Timer()
              m_AcceleratorIndex = m_AcceleratorQueue.Item(i)
          
              If (m_AcceleratorIndex <> -1) Then
-                pdDebug.LogAction "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ", " & HotKeyName(m_AcceleratorIndex) & ")"
+                PDDebug.LogAction "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ", " & HotKeyName(m_AcceleratorIndex) & ")"
                 RaiseEvent Accelerator(m_AcceleratorIndex)
                 m_AcceleratorIndex = -1
              End If
@@ -288,7 +285,7 @@ Public Function ActivateHook() As Boolean
             m_HookingActive = (m_HookID <> 0)
             
             If (Not m_SubsequentInitialization) Then
-                If (Not m_HookingActive) Then pdDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
+                If (Not m_HookingActive) Then PDDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
             End If
             m_SubsequentInitialization = True
             

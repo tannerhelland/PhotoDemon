@@ -71,35 +71,10 @@ Private Const FF_MODERN As Long = 48      'Constant stroke width + serif AND san
 Private Const FF_SCRIPT As Long = 64
 Private Const FF_DECORATIVE As Long = 80
 
-'Constants for font weight (bold)
-Private Const FW_DONTCARE As Long = 0
-Private Const FW_THIN As Long = 100
-Private Const FW_EXTRALIGHT As Long = 200
-Private Const FW_ULTRALIGHT As Long = 200
-Private Const FW_LIGHT As Long = 300
-Private Const FW_NORMAL As Long = 400
-Private Const FW_REGULAR As Long = 400
-Private Const FW_MEDIUM As Long = 500
-Private Const FW_SEMIBOLD As Long = 600
-Private Const FW_DEMIBOLD As Long = 600
-Private Const FW_BOLD As Long = 700
-Private Const FW_EXTRABOLD As Long = 800
-Private Const FW_ULTRABOLD As Long = 800
-Private Const FW_HEAVY As Long = 900
-Private Const FW_BLACK As Long = 900
-
 'Font precision
 Private Const OUT_DEFAULT_PRECIS As Long = 0
 Private Const OUT_CHARACTER_PRECIS As Long = 2
 Private Const OUT_DEVICE_PRECIS As Long = 5
-
-'Font quality
-Private Const DEFAULT_QUALITY As Long = 0
-Private Const DRAFT_QUALITY As Long = 1
-Private Const PROOF_QUALITY As Long = 2
-Private Const NONANTIALIASED_QUALITY As Long = 3
-Private Const ANTIALIASED_QUALITY As Long = 4
-Private Const CLEARTYPE_QUALITY As Byte = 5
 
 'Text alignment
 Private Const TA_LEFT As Long = 0
@@ -156,12 +131,10 @@ End Enum
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByVal ptrToLogFont As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As DT_Flags) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
-Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal gMode As GDI_GraphicsMode) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
@@ -181,7 +154,7 @@ Private m_hDC As Long
 Private m_TextAlignment As Long
 
 'Current font color
-Private m_fontColor As Long
+Private m_FontColor As Long
 
 'This LOGFONT object stores all current settings for the font
 Private m_currentLogFont As LOGFONT
@@ -390,7 +363,7 @@ Friend Sub AttachToDC(ByVal targetDC As Long)
     End If
     
     'Set other font parameters
-    SetTextColor targetDC, m_fontColor
+    SetTextColor targetDC, m_FontColor
     SetTextAlign targetDC, m_TextAlignment
     
     'Enable transparent font rendering
@@ -449,7 +422,7 @@ Friend Sub SetFontPropsAllAtOnce(ByRef newFace As String, ByVal newFontSize As S
     End If
     
     m_currentLogFont.lfHeight = Fonts.ConvertToGDIFontSize(newFontSize)
-    If newBold Then m_currentLogFont.lfWeight = FW_BOLD Else m_currentLogFont.lfWeight = FW_NORMAL
+    If newBold Then m_currentLogFont.lfWeight = fw_Bold Else m_currentLogFont.lfWeight = fw_Normal
     m_currentLogFont.lfItalic = -1 * newItalic
     m_currentLogFont.lfUnderline = -1 * newUnderline
     
@@ -461,13 +434,13 @@ End Function
 
 Friend Sub SetFontBold(ByVal newBold As Boolean)
     m_origFontBold = newBold
-    If newBold Then m_currentLogFont.lfWeight = FW_BOLD Else m_currentLogFont.lfWeight = FW_NORMAL
+    If newBold Then m_currentLogFont.lfWeight = fw_Bold Else m_currentLogFont.lfWeight = fw_Normal
 End Sub
 
 'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
 Friend Sub SetFontColor(ByVal newFontColor As Long)
-    m_fontColor = newFontColor
-    If (m_hDC <> 0) Then SetTextColor m_hDC, m_fontColor
+    m_FontColor = newFontColor
+    If (m_hDC <> 0) Then SetTextColor m_hDC, m_FontColor
 End Sub
 
 Friend Function GetFontFace() As String
@@ -680,7 +653,7 @@ Private Sub Class_Initialize()
         .lfEscapement = 0   'Used for rotation; not utilized at present
         .lfOrientation = 0  'An additional rotation parameter; not utilized at present
         
-        .lfWeight = FW_REGULAR
+        .lfWeight = fw_Regular
         
         .lfItalic = False
         .lfUnderline = False
@@ -690,7 +663,7 @@ Private Sub Class_Initialize()
         
         .lfOutPrecision = 0
         .lfClipPrecision = 0
-        .lfQuality = CLEARTYPE_QUALITY
+        .lfQuality = fq_ClearType
         
         'Ideally, we should allow the caller to specify pitch and family requests.  I may add this in the future.
         ' For PD's purposes, however, we want to fallback to a variable width, non-serifed font if (for some reason)
@@ -720,7 +693,7 @@ Private Sub Class_Initialize()
     m_origFontItalic = False
     m_origFontSize = 11
     
-    m_fontColor = 0
+    m_FontColor = 0
     m_TextAlignment = TA_LEFT
         
 End Sub

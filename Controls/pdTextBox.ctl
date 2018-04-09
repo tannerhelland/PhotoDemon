@@ -389,15 +389,6 @@ Private Sub CalculateDesiredEditBoxRect(ByRef targetRect As winRect)
     End With
 End Sub
 
-Private Sub CalculateDesiredUCRect(ByRef targetRect As winRect)
-    With targetRect
-        .x1 = ucSupport.GetControlLeft
-        .y1 = ucSupport.GetControlTop
-        .x2 = .x1 + m_EditBox.GetWidth + EDITBOX_BORDER_PADDING * 2
-        .y2 = .y1 + m_EditBox.GetHeight + EDITBOX_BORDER_PADDING * 2
-    End With
-End Sub
-
 Public Function PixelWidth() As Long
     PixelWidth = ucSupport.GetControlWidth
 End Function

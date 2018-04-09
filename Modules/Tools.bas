@@ -177,7 +177,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     ' of all canvas mouse events, but this tool is a little strange because we move the canvas
     ' *after* rulers have received mouse move notifications (so their coordinates are out of
     ' date by the time this function finishes).
-    srcCanvas.RequestRulerUpdate True
+    srcCanvas.RequestRulerUpdate
     
 End Sub
 

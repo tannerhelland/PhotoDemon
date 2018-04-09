@@ -22,9 +22,7 @@ Option Explicit
 
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
-Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 
 'These constants are used to toggle visibility of display elements.
 Public Const VISIBILITY_TOGGLE As Long = 0
@@ -130,11 +128,6 @@ Private m_CurrentInterfaceID As String
 'Various program functions related to the main window disable themselves while modal dialogs (including common dialogs)
 ' are active.  We track dialog state internally, although things like modal dialogs require external notifications.
 Private m_ModalDialogActive As Boolean, m_SystemDialogActive As Boolean
-
-Private Type FakeDWord
-    wordOne As Integer
-    wordTwo As Integer
-End Type
 
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
@@ -490,9 +483,8 @@ Private Sub SetUIMode_NoImages()
     ' previously visible.
     FormMain.MainCanvas(0).ClearCanvas
     
-    'Restore the default taskbar and titlebar icons and clear the custom icon cache
+    'Restore the default taskbar and titlebar icons
     IconsAndCursors.ResetAppIcons
-    IconsAndCursors.DestroyAllIcons
         
     'With all menus reset to their default values, we can now redraw all associated menu icons.
     ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
@@ -1212,7 +1204,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not pdMain.IsProgramRunning()) Then Exit Sub
@@ -1972,7 +1964,7 @@ Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False)
     
     If FormMain.Visible Then
         
-        FormMain.UpdateAgainstCurrentTheme useDoEvents
+        FormMain.UpdateAgainstCurrentTheme
         
         'Resync the interface to redraw any remaining text and/or buttons
         Interface.SyncInterfaceToCurrentImage

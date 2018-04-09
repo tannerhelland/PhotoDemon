@@ -340,14 +340,14 @@ Private Sub UpdateControlLayout()
     bHeight = ucSupport.GetBackBufferHeight
     
     'A little bit of horizontal and vertical padding is applied around various control parts
-    Const hTextPadding As Long = 1&, vTextPadding As Long = 1&, hBoxCaptionPadding As Long = 8&
+    Const vTextPadding As Long = 1&, hBoxCaptionPadding As Long = 8&
     
     'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
     ' caption text ends vertically.)
     If ucSupport.IsCaptionActive Then
         
         'Start by making sure the control is tall enough to fit the caption.  (Control height is auto-controlled at present.)
-        If ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2 <> bHeight Then
+        If (ucSupport.GetCaptionHeight(False) + Interface.FixDPI(vTextPadding) * 2 <> bHeight) Then
             bHeight = ucSupport.GetCaptionHeight(False) + FixDPI(vTextPadding) * 2
             ucSupport.RequestNewSize bWidth, bHeight, False
         End If
@@ -371,8 +371,8 @@ Private Sub UpdateControlLayout()
     'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
     ' 1px border around the user control as a whole (which is used for a keyboard focus rect).
     Dim offsetX As Long, offsetY As Long, chkBoxSize As Long
-    offsetX = 1 + FixDPI(2)
-    offsetY = 1 + FixDPI(2)
+    offsetX = 1 + Interface.FixDPI(2)
+    offsetY = 1 + Interface.FixDPI(2)
     chkBoxSize = bHeight - (offsetY * 2)
     
     'Use that to populate the checkbox rect
@@ -393,7 +393,7 @@ Private Sub UpdateControlLayout()
         .Left = captionLeft
         .Top = (bHeight - ucSupport.GetCaptionHeight(True)) / 2
         .Width = ucSupport.GetCaptionWidth(True) + 1
-        If .Left + .Width > bWidth Then .Width = (bWidth - .Left)
+        If (.Left + .Width > bWidth) Then .Width = (bWidth - .Left)
         .Height = ucSupport.GetCaptionHeight(True) + 1
     End With
     

@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3330</langversion>
+<langversion>6.8.3331</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -161,47 +161,7 @@
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
-<phrase>
-<original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
-<translation>Transformacija sRGB ne može se primijeniti. Slika ostaje u CMYK formatu.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but CMYK transformation could not be created.</original>
-<translation>Oba ICC profila uspješno su učitana, ali CMYK transformacija nije mogla biti kreirana.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  CMYK transform abandoned.</original>
-<translation>Nije moguće dobiti standardni profil sRGB boja. Napuštena CMYK transformacija.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  CMYK transform could not be performed.</original>
-<translation>Ugrađeni ICC profil nije valjan. CMYK transformacija nije mogla biti izvedena.</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>ICC profil nije moguće primijeniti. Slika ostaje u izvornom profilu.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>Oba ICC profila uspješno su učitana, ali transformacija nije mogla biti kreirana.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>Nije moguće dobiti standardni profil sRGB boja. Upravljanje bojama onemogućeno je za ovu sliku.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>Ugrađeni ICC profil nije valjan. Upravljanje bojama onemogućeno je za ovu sliku.</translation>
-</phrase>
-
-<!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 0 phrases. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
 
@@ -15396,10 +15356,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2570</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4691 phrases. -->
-<!-- 2113 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12511 total words. -->
+<!-- As of this build, PhotoDemon contains 4683 phrases. -->
+<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
+<!-- These 2570 phrases contain approximately 12411 total words. -->
 
 </pdData>

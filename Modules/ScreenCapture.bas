@@ -18,16 +18,11 @@ Attribute VB_Name = "ScreenCapture"
 Option Explicit
 
 'Various API calls required for screen capturing
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
@@ -52,9 +47,6 @@ Private Type WindowPlacement
 End Type
  
 Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, ByRef lpWndPl As WindowPlacement) As Long
-
-'Constant used to determine window owner.
-Private Const GWL_HWNDPARENT As Long = -8&
 
 'Local string stacks used to store open window names, and open window hWnds
 Private m_WindowNames As pdStringStack
@@ -155,7 +147,7 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     
     'Prepare the target DIB
     dstDIB.CreateBlank screenWidth, screenHeight, 32
-    pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
+    PDDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
     
     'Copy the image directly from the screen's DC to the target DIB's DC
     Dim screenHwnd As Long, desktopDC As Long

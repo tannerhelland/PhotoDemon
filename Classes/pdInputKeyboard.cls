@@ -67,9 +67,6 @@ Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef m
 Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 
 'This class tracks several different window messages.  Most objects won't need this level of tracking, but they're there if needed.
-Private Const WM_KEYDOWN As Long = &H100
-Private Const WM_GETDLGCODE As Long = &H87
-
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
@@ -84,10 +81,6 @@ Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_ME
 
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-
-'To see if a given key is marked as an "extended key" by the system (e.g. Return vs NumPad Enter key, which have the same
-' virtual key code), perform a bitwise AND (&&) of this flag against the lParam of the WM_KEYDOWN event
-Private Const KF_EXTENDED As Long = &H1000000
 
 'Master subclasser for all input actions
 Implements ISubclass
@@ -223,12 +216,12 @@ Friend Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
             End If
             
         Else
-            pdDebug.LogAction "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
+            PDDebug.LogAction "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
         End If
     
     'The calling function didn't supply an hWnd.  Warn and exit.
     Else
-        pdDebug.LogAction "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
+        PDDebug.LogAction "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
     End If
     
 End Function
@@ -262,14 +255,6 @@ End Sub
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
 Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
     IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
-End Function
-
-Private Function GetHiWord(ByVal lParam As Long) As Integer
-    If lParam And &H80000000 Then
-        GetHiWord = (lParam \ 65535) - 1
-    Else
-        GetHiWord = lParam \ 65535
-    End If
 End Function
 
 Private Function GetLoWord(ByVal lParam As Long) As Integer
@@ -473,7 +458,7 @@ Private Sub HandleWMSetFocus()
     If (Not m_HasFocus) Then
         InstallKeyboardHook
     Else
-        pdDebug.LogAction m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
+        PDDebug.LogAction m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
     End If
 End Sub
 
@@ -487,7 +472,7 @@ Private Sub HandleWMKillFocus()
     If m_HasFocus Then
         m_HasFocus = False
     Else
-        pdDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
+        PDDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
     End If
     
 End Sub

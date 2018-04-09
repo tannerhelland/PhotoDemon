@@ -56,17 +56,8 @@ Private m_XDirs() As Long, m_YDirs() As Long
 
 'Fast memory ops
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 
-'Faster WAPI interop.  Rigorous testing shows that GDI+ regions are significantly faster to hit-test than GDI regions, so these
-' GDI functions are not currently used.
-Private Declare Function CreatePolygonRgn Lib "gdi32" (ByVal ptrToPointLArray As Long, ByVal numOfPoints As Long, ByVal fnPolyFillMode As Long) As Long
-Private Const GDI_POLY_ALTERNATE As Long = &H1
-Private Declare Function PtInRegion Lib "gdi32" (ByVal hRgn As Long, ByVal x As Long, ByVal y As Long) As Long
-
-Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
-Private Declare Function GdipIsVisibleRegionPointI Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipGetRegionScansCount Lib "gdiplus" (ByVal hRegion As Long, ByRef dstRectCount As Long, ByVal optTransformMatrix As Long) As GP_Result
 Private Declare Function GdipGetRegionScansI Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrToRectLArray As Long, ByRef dstNumOfRects As Long, ByVal optTransformMatrix As Long) As GP_Result
 Private m_RectLCache() As RectL, m_SizeOfRectCache As Long

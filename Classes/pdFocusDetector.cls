@@ -35,14 +35,12 @@ Public Event GotFocusReliable()
 Public Event LostFocusReliable()
 
 'Various subclassing constants
-Private Const WM_ACTIVATE As Long = &H6
-Private Const WM_NCACTIVATE As Long = &H86
-Private Const WA_INACTIVE      As Long = 0
-Private Const WA_ACTIVE        As Long = 1
-Private Const WA_CLICKACTIVE   As Long = 2
+Private Const WM_ACTIVATE As Long = &H6&
+Private Const WM_NCACTIVATE As Long = &H86&
+Private Const WA_INACTIVE As Long = &H0&
 
-Private Const WM_SETFOCUS As Long = &H7
-Private Const WM_KILLFOCUS As Long = &H8
+Private Const WM_SETFOCUS As Long = &H7&
+Private Const WM_KILLFOCUS As Long = &H8&
 
 'The window being subclassed
 Private m_hWnd As Long
@@ -99,14 +97,6 @@ End Sub
 Friend Sub ActivateManually()
     g_WindowManager.ActivateWindowAPI m_hWnd
 End Sub
-
-Private Function GetHiWord(ByVal lParam As Long) As Integer
-    If (lParam And &H80000000) Then
-        GetHiWord = (lParam \ 65535) - 1
-    Else
-        GetHiWord = lParam \ 65535
-    End If
-End Function
 
 Private Function GetLoWord(ByVal lParam As Long) As Integer
     If (lParam And &H8000&) Then

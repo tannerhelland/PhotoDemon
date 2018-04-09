@@ -54,9 +54,6 @@ Private Type TT_FIXED
     IntValue As Integer
 End Type
 
-'The fractional component of FIXED values are converted by dividing by 65536
-Private Const FIXED_CONVERSION As Long = 65536
-
 'The MAT2 type consists of 4 FIXED values (16-bits of fraction (unsigned), followed by 16-bits of integer (signed)) that comprise the
 ' four top-left spots of a 3x3.  We do actually use this matrix to reorient characters against their top-left corner.
 Private Type MAT2
@@ -87,15 +84,9 @@ End Type
 'Generic GDI object management
 Private m_oldFontHandle As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-
-'If a glyph doesn't exist because a character is a whitespace character (fairly common case), retrieve a default width in its place.
-Private Declare Function GetCharWidthFloat Lib "gdi32" Alias "GetCharWidthFloatW" (ByVal hDC As Long, ByVal iFirstChar As Long, ByVal repeatIFirstChar As Long, ByRef dstSingle As Single) As Long
 
 'Glyph retrieval.  Per MSDN (https://msdn.microsoft.com/en-us/library/dd144891%28v=vs.85%29.aspx) I don't think there's any
 ' difference between the A and W variants, but W is declared for consistency with the rest of PD.
-Private Const GGO_METRICS As Long = 0
-Private Const GGO_NATIVE As Long = 2
 Private Const GGO_BEZIER As Long = 3
 Private Const GGO_GLYPH_INDEX As Long = &H80
 Private Const GGO_UNHINTED As Long = &H100
@@ -322,7 +313,7 @@ Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
                         'Glyph buffer parsing failed
                         Else
                         
-                            pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
+                            PDDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
                             m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                             glyphAdded = False
                             
@@ -1272,7 +1263,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
             lineDiff = boundingRectRight - m_LineWidths(curLine)
             
             If (horizontalAlignment = StringAlignmentCenter) Then
-                hLineOffsets(curLine) = lineDiff / 2
+                hLineOffsets(curLine) = lineDiff * 0.5!
             Else
                 hLineOffsets(curLine) = lineDiff
             End If
@@ -1303,7 +1294,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RectF, ByVal hori
         ' only comes into play if *multiple lines of text* are present.
         lineDiff = boundingRectBottom - (((numOfLines - 1) * lineHeight) + (m_TextMetrics.tmHeight))
         
-        If (verticalAlignment = StringAlignmentCenter) Then lineDiff = lineDiff / 2
+        If (verticalAlignment = StringAlignmentCenter) Then lineDiff = lineDiff * 0.5!
         
         'Apply the vertical offset to each glyph in turn.
         For curGlyph = 0 To m_NumOfGlyphs - 1
@@ -1412,13 +1403,8 @@ Private Function GetSingleFromFIXED(ByRef srcFixed As Long) As Single
     fracPortion = (srcFixed And &HFFFF&)
     
     'Finally, return these using the standard FIXED conversion
-    GetSingleFromFIXED = CDbl(integerPortion) + CDbl(fracPortion) / 65536#
+    GetSingleFromFIXED = CSng(integerPortion) + CSng(fracPortion) / 65536!
     
-End Function
-
-'GetCharWidthFloat is an interesting function; I've included it here in case I ever decide to test it further.
-Private Function GetWidthOfCharCode(ByVal srcCharCode As Long) As Single
-    GetCharWidthFloat m_tmpDIB.GetDIBDC, srcCharCode, srcCharCode, GetWidthOfCharCode
 End Function
 
 'Given an index in m_Glyphs(), returning a matching glyph outline index from m_GlyphOutlines.  (Because outline assembly is expensive,

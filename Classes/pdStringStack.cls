@@ -37,9 +37,7 @@ Private m_Strings() As String
 Private m_NumOfStrings As Long
 Private Const INIT_STACK_SIZE = 16
 
-Private Declare Sub CopyMemory_Custom Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByRef lpSrc As Long, ByVal byteLength As Long)
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
 
 'Because recursion is painfully slow in VB, our QuickSort implementation uses a stack instead.
 Private Type QSStack
@@ -425,20 +423,6 @@ NextSortItem:
     Loop While (m_qsStackPtr >= 0)
     
 End Sub
-
-'Simple insertion sort, designed to operate directly on the m_Strings() object.  highVal *MUST* be higher
-' than lowVal or the function will never exit.  (Note that this function is currently unused, but it is
-' provided here in case it proves useful in the future.)
-Private Function InsertSortStack(ByVal lowVal As Long, ByVal highVal As Long)
-    Dim i As Long, j As Long, tmpString As String
-    For i = lowVal To highVal - 1
-        tmpString = m_Strings(i + 1)
-            For j = i To 0 Step -1
-                If (Strings.StrCompSort(tmpString, m_Strings(j)) < 0) Then m_Strings(j + 1) = m_Strings(j) Else Exit For
-            Next j
-        m_Strings(j + 1) = tmpString
-    Next i
-End Function
 
 'Clone another string stack
 Friend Sub CloneStack(ByRef stackToClone As pdStringStack)

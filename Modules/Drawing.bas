@@ -18,7 +18,6 @@ Option Explicit
 
 'The following Enum and two API declarations are used to draw the system information icon
 Public Enum SystemIconConstants
-    IDI_APPLICATION = 32512
     IDI_HAND = 32513
     IDI_QUESTION = 32514
     IDI_EXCLAMATION = 32515
@@ -27,7 +26,7 @@ Public Enum SystemIconConstants
 End Enum
 
 #If False Then
-    Private Const IDI_APPLICATION = 32512, IDI_HAND = 32513, IDI_QUESTION = 32514, IDI_EXCLAMATION = 32515, IDI_ASTERISK = 32516, IDI_WINDOWS = 32517
+    Private Const IDI_HAND = 32513, IDI_QUESTION = 32514, IDI_EXCLAMATION = 32515, IDI_ASTERISK = 32516, IDI_WINDOWS = 32517
 #End If
 
 Private Declare Function LoadIconW Lib "user32" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long

@@ -295,7 +295,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
         Message "Rotation complete."
         SetProgBarVal 0
@@ -477,10 +477,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub OptRotate_Click(Index As Integer)
-    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the rotated image

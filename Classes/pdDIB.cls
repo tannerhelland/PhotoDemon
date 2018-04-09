@@ -62,25 +62,12 @@ Private Type BITMAPINFOHEADER
     ColorImportant As Long
 End Type
 
-Private Type BITMAPINFO
-    Header As BITMAPINFOHEADER
-    Colors(0 To 255) As RGBQuad
-End Type
-
 Private Type BITMAPFILEHEADER
     Type As Integer
     Size As Long
     Reserved1 As Integer
     Reserved2 As Integer
     OffBits As Long
-End Type
-
-'Rectangle type for use with SetRect/FillRect API calls
-Private Type RECT
-    x1 As Long
-    y1 As Long
-    x2 As Long
-    y2 As Long
 End Type
 
 'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data).
@@ -152,7 +139,6 @@ Private m_dibColorDepth As Long
 
 'Used when writing/reading DIB data to/from a file
 Private Const DIB_IDENTIFIER As Long = &H726C4450  'The ASCII chars "PDlr"
-Private Const DIB_FILE_VERSION_2012 As Long = &H1000&
 Private Const DIB_FILE_VERSION_2015 As Long = &H1001&
 Private Const DIB_FILE_VERSION_2016 As Long = &H1002&
 
@@ -1217,7 +1203,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     'If this is not an embedded file, create and open it now
     If (Not useEmbeddedLocation) Then
         If (Not cFile.FileCreateHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess)) Then
-            pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
+            PDDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
             CreateFromFile = False
             Exit Function
         End If
@@ -1265,7 +1251,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Make sure the dimensions are valid
     If (fWidth = 0) Or (fHeight = 0) Or (fArrayWidth = 0) Then
-        pdDebug.LogAction "WARNING!  pdDIB.CreateFromFile encountered invalid width/height measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
+        PDDebug.LogAction "WARNING!  pdDIB.CreateFromFile encountered invalid width/height measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
     End If
     
     'Check compression.  As of 2016, this is no longer a true/false value - it is an enum describing a specific
@@ -1311,7 +1297,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
             
             'If the data is decompressed successfully, convert it to a 2D array and copy it into this class's DIB memory chunk
             If (Not Compression.DecompressPtrToPtr(tmpDIBPointer, tmpDIBLength, VarPtr(fileData(0)), compressedDataSize, useDecompressionEngine)) Then
-                pdDebug.LogAction "Decompression was not successful (unspecified compression plugin error).  DIB processing abandoned."
+                PDDebug.LogAction "Decompression was not successful (unspecified compression plugin error).  DIB processing abandoned."
                 CreateFromFile = False
                 Exit Function
             End If
@@ -1324,7 +1310,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         CreateFromFile = True
         
     Else
-        pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
+        PDDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
         CreateFromFile = False
     End If
     
@@ -1343,7 +1329,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.GetDIBWidth <= 0) Or (Me.GetDIBHeight <= 0) Then
-        pdDebug.LogAction "WARNING!  pdDIB.WriteToFile was called on an empty DIB.  Fix this!"
+        PDDebug.LogAction "WARNING!  pdDIB.WriteToFile was called on an empty DIB.  Fix this!"
         WriteToFile = False
         Exit Function
     End If
@@ -1356,7 +1342,7 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
     If (Not embedInFile) Then
         If cFile.FileExists(dstFilename) Then cFile.FileDelete dstFilename
         If (Not cFile.FileCreateHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)) Then
-            pdDebug.LogAction "WARNING!  pdDIB.WriteToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
+            PDDebug.LogAction "WARNING!  pdDIB.WriteToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
             WriteToFile = False
             Exit Function
         End If
@@ -1502,10 +1488,10 @@ Friend Sub WriteToBitmapFile(ByRef dstFilename As String)
         
         'That's it!
         cFile.FileCloseHandle hFile
-        pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
+        PDDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
         
     Else
-        pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
+        PDDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
     End If
     
     'Minimize GDI resources by freeing our DC
@@ -1606,19 +1592,6 @@ Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SafeArray1D)
         .lBound = 0
         .cElements = m_dibStride
         .pvData = m_dibBits
-    End With
-End Sub
-
-'Sometimes this class needs to access the DIB bits of other DIBs. Here's how.
-Private Sub PrepExternalSafeArray(ByRef srcDIB As pdDIB, ByRef dstSafeArray As SafeArray2D)
-    With dstSafeArray
-        .cbElements = 1
-        .cDims = 2
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcDIB.GetDIBHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcDIB.GetDIBStride
-        .pvData = srcDIB.GetDIBPointer
     End With
 End Sub
 

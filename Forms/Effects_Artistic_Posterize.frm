@@ -159,10 +159,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub sltBits_Change()
-    UpdatePreview
-End Sub
-
 Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then Me.fxPosterize GetLocalParamString(), True, pdFxPreview
 End Sub

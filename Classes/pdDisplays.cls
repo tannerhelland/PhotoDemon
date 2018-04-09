@@ -41,15 +41,12 @@ Private Const SM_CXVIRTUALSCREEN As Long = 78
 Private Const SM_CYVIRTUALSCREEN As Long = 79
 
 'Current system DPI settings (used with the GetDeviceCaps API)
-Private Const GDC_VERTRES As Long = 10
 Private Const GDC_LOGPIXELSX As Long = 88
 Private Const GDC_LOGPIXELSY As Long = 90
-Private Const GDC_DESKTOPVERTRES As Long = 117
 
 Private Const DD_PRIMARY_DEVICE As Long = &H4
 Private Const CCHDEVICENAME As Long = 32
 
-Private Const MONITOR_DEFAULTTONULL As Long = 0
 Private Const MONITOR_DEFAULTTOPRIMARY As Long = 1
 Private Const MONITOR_DEFAULTTONEAREST As Long = 2
 
@@ -79,8 +76,6 @@ Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExW" (ByVa
 Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW" (ByVal hKey As Long, ByVal lpszValueName As Long, ByVal lpReserved As Long, ByRef lpType As Long, ByVal ptrToData As Long, ByRef lpcbData As Long) As Long
 
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesW" (ByVal ptrToDeviceName As Long, ByVal iDevNum As Long, ByRef lpDisplayDevice As DISPLAY_DEVICEW, ByVal dwFlags As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
@@ -196,7 +191,7 @@ Friend Function GetWindowsDPI() As Double
     'Convert that value into a fractional DPI modified (e.g. 1.0 for 100% scaling, 2.0 for 200% scaling)
     If (logPixelsX = 0) Then
         GetWindowsDPI = 1#
-        pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
+        PDDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
     Else
         GetWindowsDPI = logPixelsX / 96#
     End If
@@ -284,15 +279,15 @@ Friend Function RefreshDisplays() As Long
                 prefixText = "Found secondary monitor: "
             End If
             
-            pdDebug.LogAction prefixText & listOfDisplays(i).GetMonitorSizeAsString & " " & listOfDisplays(i).GetMonitorResolutionAsString & " " & listOfDisplays(i).GetBestMonitorName & " (powered by " & listOfDisplays(i).GetDescription & ")"
+            PDDebug.LogAction prefixText & listOfDisplays(i).GetMonitorSizeAsString & " " & listOfDisplays(i).GetMonitorResolutionAsString & " " & listOfDisplays(i).GetBestMonitorName & " (powered by " & listOfDisplays(i).GetDescription & ")"
             
         Next i
         
     Else
-        pdDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
+        PDDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
     End If
     
-    pdDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
+    PDDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
     
 End Function
 
@@ -353,7 +348,7 @@ Private Sub AddNewDisplay(ByVal hDisplay As Long)
         If (m_NumOfDisplays > UBound(listOfDisplays)) Then ReDim Preserve listOfDisplays(0 To m_NumOfDisplays * 2 - 1) As pdDisplay
         
     Else
-        pdDebug.LogAction "WARNING!  In pdDisplays.addNewDisplay, GetMonitorInfo inexplicably failed on handle " & hDisplay & "."
+        PDDebug.LogAction "WARNING!  In pdDisplays.addNewDisplay, GetMonitorInfo inexplicably failed on handle " & hDisplay & "."
     End If
     
 End Sub
@@ -476,7 +471,7 @@ Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     Exit Sub
 
 DetailedDisplayInfoBug:
-    pdDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.fillDetailedDisplayInfo.  Some display info may be missing."
+    PDDebug.LogAction "WARNING!  An error (" & Err.Description & ") occurred in pdDisplays.fillDetailedDisplayInfo.  Some display info may be missing."
     
 End Sub
 
@@ -522,19 +517,19 @@ Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
         
             'If the key was queried successfully but the EDID size was 0, we don't have a choice but to fail.
             RetrieveEDIDFromRegistry = False
-            pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
+            PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
             
         End If
         
         'Make sure to close the registry key when we're done with it.  Thank you to vbforums.com user Elroy for
         ' catching and reporting this.
         successCheck = RegCloseKey(regHandle)
-        If (successCheck <> 0) Then pdDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
+        If (successCheck <> 0) Then PDDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
         
     'Couldn't open the registry key.  Exit.
     Else
         RetrieveEDIDFromRegistry = False
-        pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
+        PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
     End If
     
     Exit Function
@@ -543,7 +538,7 @@ RegistryFetchError:
 
     'successCheck will contain the last return value of a registry API call; might as well return it in case it's helpful
     RetrieveEDIDFromRegistry = False
-    pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
+    PDDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
     
 End Function
 
@@ -654,7 +649,7 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
     
 CouldNotCenterForm:
     CenterFormViaReferenceRect = False
-    pdDebug.LogAction "WARNING!  pdDisplays.CenterFormViaReferenceRect() failed for unknown reasons."
+    PDDebug.LogAction "WARNING!  pdDisplays.CenterFormViaReferenceRect() failed for unknown reasons."
     
 End Function
 

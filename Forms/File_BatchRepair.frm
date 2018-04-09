@@ -223,8 +223,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Function mciSendStringW Lib "winmm" (ByVal lpstrCommand As Long, ByVal lpstrReturnString As Long, ByVal uReturnLength As Long, ByVal hwndCallback As Long) As Long
-Private Const MCI_OPEN_ERROR As Long = 277
-Private Const MCI_PLAY_ERROR As Long = 263
 
 Private m_OkayToProceed As Boolean
 

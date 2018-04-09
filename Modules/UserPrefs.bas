@@ -61,11 +61,6 @@ Private m_UpdatesPath As String       '6.6 greatly improved update support.  Upd
 'XML engine for reading/writing preference values from file
 Private m_XMLEngine As pdXML
 
-'To improve performance when saving many preferences at once (as we do when closing the Preferences dialog), this class can be placed in
-' "batch preference mode".  While active, a single XML class instance will be persistently used to handle all preference updates, and
-' when the mode is released, all updates will be dumped to file.
-Private m_BatchModeActive As Boolean
-
 'Some preferences are used in performance-sensitive areas.  These preferences are cached internally to improve responsiveness.
 ' Outside callers can retrieve them via their dedicated functions.
 Private m_ThumbnailPerformance As PD_PerformanceSetting, m_ThumbnailInterpolation As GP_InterpolationMode
@@ -291,7 +286,7 @@ Public Function InitializePaths() As Boolean
         
     If m_NonPortableModeActive Then
         
-        pdDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
+        PDDebug.LogAction "WARNING!  Portable mode has been deactivated due to folder rights.  Attempting to salvage session..."
         
         'Because we don't have access to our own folder, we need a plan B for PD's expected user data folders.
         ' (Note that we still need access to required plugin DLLs, which must exist *somewhere* we can access.)
@@ -314,7 +309,7 @@ Public Function InitializePaths() As Boolean
         
         'If we're still here, we were able to create a data folder in a backup location.
         ' Try to proceed with the load process.
-        pdDebug.LogAction "Non-portable mode activated successfully.  Continuing program initialization..."
+        PDDebug.LogAction "Non-portable mode activated successfully.  Continuing program initialization..."
         
     'This is a normal portable session.  The base folder is the same as PD's app path.
     Else
@@ -380,8 +375,8 @@ Public Function InitializePaths() As Boolean
         
     End If
     
-    pdDebug.LogAction "PD base folder is " & m_ProgramPath
-    pdDebug.LogAction "PD data folder points at " & m_DataPath
+    PDDebug.LogAction "PD base folder is " & m_ProgramPath
+    PDDebug.LogAction "PD data folder points at " & m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     m_DebugPath = m_DataPath & "Debug\"
@@ -473,7 +468,7 @@ Public Sub LoadUserSettings()
     
     'If no preferences file exists, construct a default one
     If (Not Files.FileExists(m_PreferencesPath)) Then
-        pdDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
+        PDDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
         CreateNewPreferencesFile
     End If
     
@@ -510,14 +505,14 @@ Public Sub LoadUserSettings()
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         
     Else
-        pdDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
+        PDDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
     End If
                 
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub ResetPreferences()
-    pdDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
+    PDDebug.LogAction "WARNING!  pdPreferences.ResetPreferences() has been called.  Any previous settings will now be erased."
     Files.FileDeleteIfExists m_PreferencesPath
     CreateNewPreferencesFile
     LoadUserSettings

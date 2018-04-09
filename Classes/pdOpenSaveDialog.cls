@@ -149,7 +149,7 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     
     Interface.NotifySystemDialogState True
     
-    Dim lReturn As Long, lInitPathSize As Long, Flags As Long
+    Dim lReturn As Long, lInitPathSize As Long
     
     'Prep a relevant OFN struct
     Dim tmpOFN As OPENFILENAME
@@ -214,7 +214,7 @@ Friend Function GetOpenFileName(ByRef FileName As String, _
     If (lReturn = 0) And (CommDlgExtendedError() = FNERR_BUFFERTOOSMALL) Then
         
         PDMsgBox "Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.", vbExclamation Or vbOKOnly, "Error: too many images"
-        pdDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
+        PDDebug.LogAction "WARNING: pdOpenSaveDialog experienced a common dialog buffer size error.", PDM_Normal
         
     End If
     
@@ -278,7 +278,7 @@ Friend Function GetSaveFileName(ByRef FileName As String, _
 
     Interface.NotifySystemDialogState True
     
-    Dim lReturn As Long, lInitPathSize As Long, Flags As Long
+    Dim lReturn As Long, lInitPathSize As Long
     
     'Prep a relevant OFN struct
     Dim tmpOFN As OPENFILENAME

@@ -66,7 +66,6 @@ Public Event LostFocusAPI()
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
-Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -105,8 +104,8 @@ Private m_LargestWidth As Single
 
 'Padding around the currently selected list item when painted to the combo box.  These values are also added to the
 ' default font metrics to arrive at a default control size.
-Private Const COMBO_PADDING_HORIZONTAL As Single = 4#
-Private Const COMBO_PADDING_VERTICAL As Single = 2#
+Private Const COMBO_PADDING_HORIZONTAL As Single = 4!
+Private Const COMBO_PADDING_VERTICAL As Single = 2!
 
 'Change this value to control the maximum number of visible items in the dropped box.  (Note that it's technically
 ' this value + 1, with the +1 representing the currently selected item.)
@@ -159,46 +158,15 @@ Private m_Text_Hebrew As String
 
 'DrawText functions
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 
-'GDI text alignment flags
-Private Const TA_LEFT = 0
-Private Const TA_RIGHT = 2
-Private Const TA_CENTER = 6
-Private Const TA_TOP = 0
-Private Const TA_BOTTOM = 8
-Private Const TA_BASELINE = 24
-Private Const TA_UPDATECP = 1
-Private Const TA_NOUPDATECP = 0
-
-'Back color modes (not useful here except during debug mode)
-Private Const FONT_TRANSPARENT = &H1
-Private Const FONT_OPAQUE = &H2
-
 'Formatting constants for DrawText
-Private Const DT_TOP = &H0
 Private Const DT_LEFT = &H0
-Private Const DT_CENTER = &H1
 Private Const DT_RIGHT = &H2
 Private Const DT_VCENTER = &H4
-Private Const DT_BOTTOM = &H8
-Private Const DT_WORDBREAK = &H10
 Private Const DT_SINGLELINE = &H20
-Private Const DT_EXPANDTABS = &H40
-Private Const DT_TABSTOP = &H80
-Private Const DT_NOCLIP = &H100
-Private Const DT_EXTERNALLEADING = &H200
 Private Const DT_CALCRECT = &H400
 Private Const DT_NOPREFIX = &H800
-Private Const DT_INTERNAL = &H1000
-Private Const DT_EDITCONTROL = &H2000
-Private Const DT_PATH_ELLIPSIS = &H4000
-Private Const DT_END_ELLIPSIS = &H8000
-Private Const DT_MODIFYSTRING = &H10000
-Private Const DT_RTLREADING = &H20000
-Private Const DT_WORD_ELLIPSIS = &H40000
-
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -972,7 +940,7 @@ Private Sub RaiseListBox()
     Exit Sub
     
 UnexpectedListBoxTrouble:
-    pdDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 

@@ -25,6 +25,16 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdProgressBar mainProgBar 
+      Height          =   255
+      Left            =   360
+      TabIndex        =   6
+      Top             =   6600
+      Visible         =   0   'False
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   450
+   End
    Begin PhotoDemon.pdRuler vRuler 
       Height          =   4935
       Left            =   0
@@ -44,16 +54,6 @@ Begin VB.UserControl pdCanvas
       Visible         =   0   'False
       Width           =   4575
       _ExtentX        =   8070
-      _ExtentY        =   450
-   End
-   Begin PhotoDemon.pdProgressBar mainProgBar 
-      Height          =   255
-      Left            =   360
-      TabIndex        =   6
-      Top             =   6600
-      Visible         =   0   'False
-      Width           =   4935
-      _ExtentX        =   8705
       _ExtentY        =   450
    End
    Begin PhotoDemon.pdImageStrip ImageStrip 
@@ -480,7 +480,7 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     End If
 End Sub
 
-Public Sub RequestRulerUpdate(Optional ByVal refreshImmediately As Boolean = False)
+Public Sub RequestRulerUpdate()
     If m_RulersVisible Then
         hRuler.NotifyViewportChange
         vRuler.NotifyViewportChange

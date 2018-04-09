@@ -195,7 +195,7 @@ Public Sub ApplyMezzotintEffect(ByVal effectParams As String, Optional ByVal toP
         
         'Coarse (monochrome, no dithering)
         Case 1
-            Filters_ByteArray.Dither_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 3, True
+            Filters_ByteArray.Dither_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 3
          
         'Fine (monochrome, with dithering)
         Case 2

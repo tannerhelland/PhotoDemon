@@ -380,10 +380,11 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         hoverColor = Colors.ConvertSystemColor(GetProposedColor())
         
         'Construct hex and RGB string representations of the target color
-        Dim hexString As String, rgbString As String, indexString As String
+        Dim hexString As String, rgbString As String
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
         rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
         Me.AssignTooltip hexString & vbCrLf & rgbString, , , True
+        
     Else
         Me.AssignTooltip vbNullString, , , False
     End If

@@ -342,10 +342,6 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
     
 End Sub
 
-Private Sub btsTone_Click(ByVal buttonIndex As Long)
-    UpdatePreview
-End Sub
-
 Private Sub chkLuminance_Click()
     UpdatePreview
 End Sub

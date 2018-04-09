@@ -75,13 +75,10 @@ Private m_MonochromeIcons As Boolean
 'Extra API functions for painting form backgrounds
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
 Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
 Private Declare Function BeginPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
 Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'As part of the painting process, we're gonna be generating a looot of paint messages.  To avoid churn, we'll declare
 ' a single paint struct and update rect up front.
@@ -327,18 +324,18 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
     'The theme file is missing.  Let's see if we can find it.
     Else
     
-        pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> is missing.  Scanning alternate folders..."
+        PDDebug.LogAction "WARNING!  Theme file <" & themeFile & "> is missing.  Scanning alternate folders..."
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
         If Files.FileExists(UserPrefs.GetProgramPath & themeFile) Then
             
-            pdDebug.LogAction "UPDATE!  Theme file found in the base PD folder.  Attempting to relocate..."
+            PDDebug.LogAction "UPDATE!  Theme file found in the base PD folder.  Attempting to relocate..."
             
             'Move the file to the proper folder
             If cFile.FileCopyW(UserPrefs.GetProgramPath & themeFile, UserPrefs.GetThemePath & themeFile) Then
                 
-                pdDebug.LogAction "UPDATE!  Theme file relocated successfully."
+                PDDebug.LogAction "UPDATE!  Theme file relocated successfully."
                 
                 'Kill the old file instance
                 Files.FileDeleteIfExists UserPrefs.GetProgramPath & themeFile
@@ -349,14 +346,14 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case
             ' this program session is pretty much doomed.  Exit now.
             Else
-                pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> could not be relocated.  Initialization abandoned."
+                PDDebug.LogAction "WARNING!  Theme file <" & themeFile & "> could not be relocated.  Initialization abandoned."
             End If
         
         'If the theme file doesn't exist in the base folder either, we're SOL.  Exit now.
         ' (In the future, we'll want to try and recover a failsafe copy from the .exe resource file.)
         ' TODO 7.0!
         Else
-            pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> wasn't found in alternate locations.  Initialization abandoned."
+            PDDebug.LogAction "WARNING!  Theme file <" & themeFile & "> wasn't found in alternate locations.  Initialization abandoned."
         End If
     
     End If
@@ -892,9 +889,9 @@ End Sub
 
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
     If msgIsNonErrorFeedback Then
-        pdDebug.LogAction "pdTheme reported: " & msgError
+        PDDebug.LogAction "pdTheme reported: " & msgError
     Else
-        pdDebug.LogAction "WARNING!  pdTheme error: " & msgError
+        PDDebug.LogAction "WARNING!  pdTheme error: " & msgError
     End If
 End Sub
 

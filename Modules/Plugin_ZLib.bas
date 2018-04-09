@@ -15,17 +15,16 @@ Attribute VB_Name = "Plugin_zLib"
 
 Option Explicit
 
-Private Const ZLIB_OK = 0
+Private Const ZLIB_OK As Long = 0
 
 'These constants were originally declared in zlib.h.  Note that zLib weirdly supports level 0, which just performs
 ' a bare memory copy with no compression.  We deliberately omit that possibility here.
-Private Const ZLIB_MIN_CLEVEL = 1
-Private Const ZLIB_MAX_CLEVEL = 9
+Private Const ZLIB_MIN_CLEVEL As Long = 1
+Private Const ZLIB_MAX_CLEVEL As Long = 9
 
 'This constant was originally declared (or rather, resolved) in deflate.c.
-Private Const ZLIB_DEFAULT_CLEVEL = 6
+Private Const ZLIB_DEFAULT_CLEVEL As Long = 6
 
-Private Declare Function compress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi" () As Long
@@ -34,7 +33,7 @@ Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 Private m_ZLibHandle As Long
 
 'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via the PluginManager module)
-Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
+Public Function InitializeZLib() As Boolean
     
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim zLibPath As String
@@ -43,8 +42,8 @@ Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
     InitializeZLib = (m_ZLibHandle <> 0)
     
     If (Not InitializeZLib) Then
-        pdDebug.LogAction "WARNING!  LoadLibrary failed to load zLib.  Last DLL error: " & Err.LastDllError
-        pdDebug.LogAction "(FYI, the attempted path was: " & zLibPath & ")"
+        PDDebug.LogAction "WARNING!  LoadLibrary failed to load zLib.  Last DLL error: " & Err.LastDllError
+        PDDebug.LogAction "(FYI, the attempted path was: " & zLibPath & ")"
     End If
         
 End Function

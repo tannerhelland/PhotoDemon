@@ -625,7 +625,7 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     Dim i As Long, j As Long
     Dim g As Long, newG As Long
-    Dim quickX As Long, quickY As Long
+    Dim quickX As Long, QuickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -658,15 +658,15 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                quickY = y + j
+                QuickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If quickY > finalY Then GoTo NextDitheredPixel
+                If QuickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
@@ -684,7 +684,7 @@ End Function
 'Given a byte array, reduce the number of available values to some number specified by the user (e.g. "2 shades" = monochrome,
 ' "4 shades" equals black, dark gray, light gray, white), with dithering.  (Currently dithering is limited to Floyd-Steinberg
 ' Floyd-Steinberg, but nothing prevents the use of other kernels).
-Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal numOfShades As Long = 4, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
+Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal numOfShades As Long = 4) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -735,7 +735,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     ReDim dErrors(initX To finalX, initY To finalY) As Single
     
     Dim i As Long, j As Long
-    Dim quickX As Long, quickY As Long
+    Dim quickX As Long, QuickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -774,15 +774,15 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                quickY = y + j
+                QuickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If quickY > finalY Then GoTo NextDitheredPixel
+                If QuickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j

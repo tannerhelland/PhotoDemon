@@ -139,7 +139,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     '
     'The important thing to note is that a *FALSE* return requires us to immediately exit the processor, as the user has
     ' chosen to cancel the current action.
-    If (Not CheckRasterizeRequirements(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction)) Then
+    If (Not CheckRasterizeRequirements(processID, raiseDialog, processParameters, createUndo)) Then
         SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
         Exit Sub
     End If
@@ -152,7 +152,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     '
     'Anyway, before moving deeper into the processor, check for actions that disallow selections, and prior to processing them,
     ' initiate a Remove Selection request.
-    RemoveSelectionAsNecessary processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+    RemoveSelectionAsNecessary processID, raiseDialog, processParameters, createUndo
     
     'If we made it all the way here, notify the macro recorder that something interesting has happened.
     ' (It may choose to store this action for later playback.)
@@ -924,7 +924,7 @@ End Sub
 
 'Certain processor actions (like rotating the image) require us to remove the active selection.  We could probably work around this
 ' in the future, but at present, we simply remove the selection before proceeding.
-Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing)
 
     If (Not raiseDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
     
@@ -985,7 +985,7 @@ End Sub
 ' allow the user to completely cancel the current action, which means the return of this function *must* be dealt with!
 '
 'Returns: TRUE if allowed to proceed, FALSE otherwise.  If FALSE is returned, you *must* halt the current operation.
-Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True) As Boolean
+Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing) As Boolean
     
     'Assume that the user is more likely to proceed than cancel, and we will deal with cancellation states as they arise.
     CheckRasterizeRequirements = True

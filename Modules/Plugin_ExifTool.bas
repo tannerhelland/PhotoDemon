@@ -1071,9 +1071,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     End If
     
     'If we are exporting a multipage TIFF object, add some per-page information now
-    If saveIsMultipageTIFF And (Not forciblyAnonymize) Then
-        AddMultipageData srcPDImage, cmdParams, originalMetadataParams
-    End If
+    If saveIsMultipageTIFF And (Not forciblyAnonymize) Then AddMultipageData srcPDImage, cmdParams
     
     'If we were asked to remove GPS data, do so now
     If forciblyAnonymize And srcFileAvailable Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
@@ -1124,7 +1122,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
 End Function
 
 'Current, only TIFFs support specialty multipage metadata
-Private Sub AddMultipageData(ByRef srcPDImage As pdImage, ByRef cmdParams As String, Optional ByVal originalMetadataParams As String = vbNullString)
+Private Sub AddMultipageData(ByRef srcPDImage As pdImage, ByRef cmdParams As String)
 
     Dim i As Long
     For i = 0 To srcPDImage.GetNumOfLayers - 1

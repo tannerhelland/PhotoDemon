@@ -531,10 +531,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub MsgBoxWarning(ByVal funcName As String, ByVal errMsg As String)
-    pdDebug.LogAction "WARNING!  dialog_MsgBox." & funcName & " reported: " & errMsg
-End Sub
-
 'Render the icon when requested
 Private Sub picIcon_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHeight As Long)
     GDI.FillRectToDC targetDC, 0, 0, ctlWidth, ctlHeight, g_Themer.GetGenericUIColor(UI_Background)

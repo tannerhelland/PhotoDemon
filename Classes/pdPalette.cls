@@ -40,9 +40,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Function ArrPtr Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-
 'Adobe swatch format requires custom color space enums
 Private Enum AdobeSwatchColorSpace
     

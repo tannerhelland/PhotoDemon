@@ -144,13 +144,9 @@ Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal srcColor As Long) A
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 
@@ -214,8 +210,6 @@ Private Const SWP_DRAWFRAME As Long = &H20
 Private Const SWP_NOCOPYBITS As Long = &H100
 Private Const WS_EX_NOACTIVATE As Long = &H8000000
 Private Const WS_EX_TOOLWINDOW As Long = &H80
-Private Const WS_EX_WINDOWEDGE As Long = &H100
-Private Const WS_EX_TOPMOST As Long = &H8
 
 Private m_TTActive As Boolean, m_TTOwner As Long, m_TTHwnd As Long
 Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long

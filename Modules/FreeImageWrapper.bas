@@ -234,13 +234,6 @@ End Type
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
-Private Type RECT
-   Left As Long
-   Top As Long
-   Right As Long
-   Bottom As Long
-End Type
-
 Private Type PictDesc
    cbSizeofStruct As Long
    picType As Long
@@ -257,14 +250,6 @@ Private Type Bitmap_API
    bmPlanes As Integer
    bmBitsPixel As Integer
    bmBits As Long
-End Type
-
-Private Type ICONINFO
-   fIcon As Long
-   xHotspot As Long
-   yHotspot As Long
-   hbmMask As Long
-   hbmColor As Long
 End Type
 
 Private Type BLENDFUNCTION
@@ -356,8 +341,6 @@ Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
     ByVal uObjectType As Long) As Long
 
 Private Const OBJ_BITMAP As Long = 7
-    
-Private Const COLORONCOLOR As Long = 3
 
 'MSIMG32
 Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
@@ -376,10 +359,6 @@ Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
 Private Const AC_SRC_OVER = &H0
 Private Const AC_SRC_ALPHA = &H1
 
-Private Const BLACKONWHITE As Long = 1
-Private Const WHITEONBLACK As Long = 2
-'Private Const COLORONCOLOR As Long = 3
-
 Public Enum STRETCH_MODE
    SM_BLACKONWHITE = 1
    SM_WHITEONBLACK = 2
@@ -391,25 +370,13 @@ End Enum
    Const SM_COLORONCOLOR = 3
 #End If
 
-Private Const SRCAND As Long = &H8800C6
 Private Const SRCCOPY As Long = &HCC0020
-Private Const SRCERASE As Long = &H440328
-Private Const SRCINVERT As Long = &H660046
-Private Const SRCPAINT As Long = &HEE0086
 
 Public Enum RASTER_OPERATOR
-   ROP_SRCAND = SRCAND
    ROP_SRCCOPY = SRCCOPY
-   ROP_SRCERASE = SRCERASE
-   ROP_SRCINVERT = SRCINVERT
-   ROP_SRCPAINT = SRCPAINT
 End Enum
 #If False Then
-   Const ROP_SRCAND = SRCAND
    Const ROP_SRCCOPY = SRCCOPY
-   Const ROP_SRCERASE = SRCERASE
-   Const ROP_SRCINVERT = SRCINVERT
-   Const ROP_SRCPAINT = SRCPAINT
 #End If
 
 Private Const DIB_RGB_COLORS As Long = 0
@@ -427,15 +394,6 @@ End Enum
    Const DM_MIRROR_VERTICAL = &H1
    Const DM_MIRROR_HORIZONTAL = &H2
    Const DM_MIRROR_BOTH = DM_MIRROR_VERTICAL Or DM_MIRROR_HORIZONTAL
-#End If
-
-Public Enum HISTOGRAM_ORIENTATION
-   HOR_TOP_DOWN = &H0
-   HOR_BOTTOM_UP = &H1
-End Enum
-#If False Then
-   Const HOR_TOP_DOWN = &H0
-   Const HOR_BOTTOM_UP = &H1
 #End If
 
 
@@ -638,45 +596,10 @@ Public Enum FREE_IMAGE_FORMAT
    FIF_JXR = 36
 End Enum
 #If False Then
-   Const FIF_UNKNOWN = -1
-   Const FIF_BMP = 0
-   Const FIF_ICO = 1
-   Const FIF_JPEG = 2
-   Const FIF_JNG = 3
-   Const FIF_KOALA = 4
-   Const FIF_LBM = 5
-   Const FIF_IFF = FIF_LBM
-   Const FIF_MNG = 6
-   Const FIF_PBM = 7
-   Const FIF_PBMRAW = 8
-   Const FIF_PCD = 9
-   Const FIF_PCX = 10
-   Const FIF_PGM = 11
-   Const FIF_PGMRAW = 12
-   Const FIF_PNG = 13
-   Const FIF_PPM = 14
-   Const FIF_PPMRAW = 15
-   Const FIF_RAS = 16
-   Const FIF_TARGA = 17
-   Const FIF_TIFF = 18
-   Const FIF_WBMP = 19
-   Const FIF_PSD = 20
-   Const FIF_CUT = 21
-   Const FIF_XBM = 22
-   Const FIF_XPM = 23
-   Const FIF_DDS = 24
-   Const FIF_GIF = 25
-   Const FIF_HDR = 26
-   Const FIF_FAXG3 = 27
-   Const FIF_SGI = 28
-   Const FIF_EXR = 29
-   Const FIF_J2K = 30
-   Const FIF_JP2 = 31
-   Const FIF_PFM = 32
-   Const FIF_PICT = 33
-   Const FIF_RAW = 34
-   Const FIF_WEBP = 35
-   Const FIF_JXR = 36
+   Private Const FIF_UNKNOWN = -1, FIF_BMP = 0, FIF_ICO = 1, FIF_JPEG = 2, FIF_JNG = 3, FIF_KOALA = 4, FIF_LBM = 5, FIF_IFF = FIF_LBM, FIF_MNG = 6, FIF_PBM = 7, FIF_PBMRAW = 8, FIF_PCD = 9
+   Private Const FIF_PCX = 10, FIF_PGM = 11, FIF_PGMRAW = 12, FIF_PNG = 13, FIF_PPM = 14, FIF_PPMRAW = 15, FIF_RAS = 16, FIF_TARGA = 17, FIF_TIFF = 18, FIF_WBMP = 19
+   Private Const FIF_PSD = 20, FIF_CUT = 21, FIF_XBM = 22, FIF_XPM = 23, FIF_DDS = 24, FIF_GIF = 25, FIF_HDR = 26, FIF_FAXG3 = 27, FIF_SGI = 28, FIF_EXR = 29
+   Private Const FIF_J2K = 30, FIF_JP2 = 31, FIF_PFM = 32, FIF_PICT = 33, FIF_RAW = 34, FIF_WEBP = 35, FIF_JXR = 36
 #End If
 
 Public Enum FREE_IMAGE_LOAD_OPTIONS
@@ -3529,65 +3452,6 @@ End Function
 ' Derived and hopefully useful functions
 '--------------------------------------------------------------------------------
 
-' Plugin and filename functions
-
-Public Function FreeImage_IsExtensionValidForFIF(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                 ByVal Extension As String, _
-                                        Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Boolean
-   
-   ' This function tests, whether a given filename extension is valid
-   ' for a certain image format (fif).
-   
-   FreeImage_IsExtensionValidForFIF = (InStr(1, _
-                                             FreeImage_GetFIFExtensionList(Format) & ",", _
-                                             Extension & ",", _
-                                             Compare) > 0)
-
-End Function
-
-Public Function FreeImage_IsFilenameValidForFIF(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                ByVal srcFilename As String, _
-                                       Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Boolean
-                                                
-Dim strExtension As String
-Dim i As Long
-
-   ' This function tests, whether a given complete filename is valid
-   ' for a certain image format (fif).
-
-   i = InStrRev(srcFilename, ".")
-   If (i > 0) Then
-      strExtension = Mid$(srcFilename, i + 1)
-      FreeImage_IsFilenameValidForFIF = (InStr(1, _
-                                               FreeImage_GetFIFExtensionList(Format) & ",", _
-                                               strExtension & ",", _
-                                               Compare) > 0)
-   End If
-   
-End Function
-
-Public Function FreeImage_GetPrimaryExtensionFromFIF(ByVal Format As FREE_IMAGE_FORMAT) As String
-
-Dim strExtensionList As String
-Dim i As Long
-
-   ' This function returns the primary (main or most commonly used?) extension
-   ' of a certain image format (fif). This is done by returning the first of
-   ' all possible extensions returned by FreeImage_GetFIFExtensionList(). That
-   ' assumes, that the plugin returns the extensions in ordered form. If not,
-   ' in most cases it is even enough, to receive any extension.
-   
-   ' This function is primarily used by the function 'SavePictureEx'.
-
-   strExtensionList = FreeImage_GetFIFExtensionList(Format)
-   i = InStr(strExtensionList, ",")
-   If (i > 0) Then
-      FreeImage_GetPrimaryExtensionFromFIF = Left$(strExtensionList, i - 1)
-   Else
-      FreeImage_GetPrimaryExtensionFromFIF = strExtensionList
-   End If
-
-End Function
 
 ' Bitmap resolution functions
 
@@ -3728,7 +3592,7 @@ Public Function FreeImage_GetPalette_ByTanner(ByVal fiHandle As Long, ByRef dstQ
     Exit Function
     
 GetPaletteFailure:
-    pdDebug.LogAction "WARNING!  FreeImage.FreeImage_GetPalette_ByTanner failed unexpectedly.", PDM_External_Lib
+    PDDebug.LogAction "WARNING!  FreeImage.FreeImage_GetPalette_ByTanner failed unexpectedly.", PDM_External_Lib
     FreeImage_GetPalette_ByTanner = False
     
 End Function
@@ -4420,204 +4284,6 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_PaintTransparent(ByVal hDC As Long, _
-                                           ByVal Bitmap As Long, _
-                                  Optional ByVal xDst As Long = 0, _
-                                  Optional ByVal yDst As Long = 0, _
-                                  Optional ByVal WidthDst As Long, _
-                                  Optional ByVal HeightDst As Long, _
-                                  Optional ByVal xSrc As Long = 0, _
-                                  Optional ByVal ySrc As Long = 0, _
-                                  Optional ByVal WidthSrc As Long, _
-                                  Optional ByVal HeightSrc As Long, _
-                                  Optional ByVal Alpha As Byte = 255) As Long
-                                  
-Dim lpPalette As Long
-Dim bIsTransparent As Boolean
-
-   ' This function paints a device independent bitmap to any device context and
-   ' thereby honors any transparency information associated with the bitmap.
-   ' Furthermore, through the 'Alpha' parameter, an overall transparency level
-   ' may be specified.
-   
-   ' For palletised images, any color set to be transparent in the transparency
-   ' table, will be transparent. For high color images, only 32-bit images may
-   ' have any transparency information associated in their alpha channel. Only
-   ' these may be painted with transparency by this function.
-   
-   ' Since this is a wrapper for the Windows GDI function AlphaBlend(), 31-bit
-   ' images, containing alpha (or per-pixel) transparency, must be 'premultiplied'
-   ' for alpha transparent regions to actually show transparent. See MSDN help
-   ' on the AlphaBlend() function.
-   
-   ' FreeImage also offers a function to premultiply 32-bit bitmaps with their alpha
-   ' channel, according to the needs of AlphaBlend(). Have a look at function
-   ' FreeImage_PreMultiplyWithAlpha().
-   
-   ' Overall transparency level may be specified for all bitmaps in all color
-   ' depths supported by FreeImage. If needed, bitmaps are transparently converted
-   ' to 32-bit and unloaded after the paint operation. This is also true for palletised
-   ' bitmaps.
-   
-   ' Parameters 'hDC' and 'Bitmap' seem to be very self-explanatory. All other parameters
-   ' are optional. The group of '*Dest*' parameters span a rectangle on the destination
-   ' device context, used as drawing area for the bitmap. If these are omitted, the
-   ' bitmap will be drawn starting at position 0,0 in the bitmap's actual size.
-   ' The group of '*Src*' parameters span a rectangle on the source bitmap, used as
-   ' cropping area for the paint operation. If both rectangles differ in size in any
-   ' direction, the part of the image actually painted is stretched for to fit into
-   ' the drawing area. If any of the parameters '*Width' or '*Height' are omitted,
-   ' the bitmap's actual size (width or height) will be used.
-   
-   ' The 'Alpha' parameter specifies the overall transparency. It takes values in the
-   ' range from 0 to 255. Using 0 will paint the bitmap fully transparent, 255 will
-   ' paint the image fully opaque. The 'Alpha' value controls, how the non per-pixel
-   ' portions of the image will be drawn.
-                                  
-   If ((hDC <> 0) And (Bitmap <> 0)) Then
-   
-      If (Not FreeImage_HasPixels(Bitmap)) Then
-         Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
-                        "Unable to paint a 'header-only' bitmap.")
-      End If
-   
-      ' get image width if not specified
-      If (WidthSrc = 0) Then
-         WidthSrc = FreeImage_GetWidth(Bitmap)
-      End If
-      If (WidthDst = 0) Then
-         WidthDst = WidthSrc
-      End If
-      
-      ' get image height if not specified
-      If (HeightSrc = 0) Then
-         HeightSrc = FreeImage_GetHeight(Bitmap)
-      End If
-      If (HeightDst = 0) Then
-         HeightDst = HeightSrc
-      End If
-      
-      lpPalette = FreeImage_GetPalette(Bitmap)
-      If (lpPalette) Then
-      
-         Dim lPaletteSize As Long
-         Dim alPalOrg(255) As Long
-         Dim alPalMod(255) As Long
-         Dim alPalMask(255) As Long
-         Dim abTT() As Byte
-         Dim i As Long
-         
-         lPaletteSize = FreeImage_GetColorsUsed(Bitmap) * 4
-         Call CopyMemory(alPalOrg(0), ByVal lpPalette, lPaletteSize)
-         Call CopyMemory(alPalMod(0), ByVal lpPalette, lPaletteSize)
-         abTT = FreeImage_GetTransparencyTableEx(Bitmap)
-         
-         If ((Alpha = 255) And _
-             (HeightDst >= HeightSrc) And (WidthDst >= WidthSrc)) Then
-            
-            ' create a mask palette and a modified version of the
-            ' original palette
-            For i = 0 To UBound(abTT)
-               If (abTT(i) = 0) Then
-                  alPalMask(i) = &HFFFFFFFF   ' white
-                  alPalMod(i) = &H0           ' black
-                  bIsTransparent = True
-               End If
-            Next i
-
-            If (Not bIsTransparent) Then
-               
-               ' if there is no transparency in the image, paint it with
-               ' a single SRCCOPY
-               Call StretchDIBits(hDC, _
-                                  xDst, yDst, WidthDst, HeightDst, _
-                                  xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(Bitmap), _
-                                  FreeImage_GetInfo(Bitmap), _
-                                  DIB_RGB_COLORS, SRCCOPY)
-            Else
-            
-               ' set mask palette and paint with SRCAND
-               Call CopyMemory(ByVal lpPalette, alPalMask(0), lPaletteSize)
-               Call StretchDIBits(hDC, _
-                                  xDst, yDst, WidthDst, HeightDst, _
-                                  xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(Bitmap), _
-                                  FreeImage_GetInfo(Bitmap), _
-                                  DIB_RGB_COLORS, SRCAND)
-               
-               ' set mask modified and paint with SRCPAINT
-               Call CopyMemory(ByVal lpPalette, alPalMod(0), lPaletteSize)
-               Call StretchDIBits(hDC, _
-                                  xDst, yDst, WidthDst, HeightDst, _
-                                  xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(Bitmap), _
-                                  FreeImage_GetInfo(Bitmap), _
-                                  DIB_RGB_COLORS, SRCPAINT)
-                                  
-               ' restore original palette
-               Call CopyMemory(ByVal lpPalette, alPalOrg(0), lPaletteSize)
-            End If
-            
-            ' we are done, do not paint with AlphaBlend() any more
-            Bitmap = 0
-         Else
-            
-            ' create a premultiplied palette
-            ' since we have no real per pixel transparency in a palletized
-            ' image, we only need to set all transparent colors to zero.
-            For i = 0 To UBound(abTT)
-               If (abTT(i) = 0) Then
-                  alPalMod(i) = 0
-               End If
-            Next i
-            
-            ' set premultiplied palette and convert to 32 bits
-            Call CopyMemory(ByVal lpPalette, alPalMod(0), lPaletteSize)
-            Bitmap = FreeImage_ConvertTo32Bits(Bitmap)
-            
-            ' restore original palette
-            Call CopyMemory(ByVal lpPalette, alPalOrg(0), lPaletteSize)
-         End If
-      End If
-
-      If (Bitmap) Then
-         Dim hMemDC As Long
-         Dim hBitmap As Long
-         Dim hBitmapOld As Long
-         Dim tBF As BLENDFUNCTION
-         Dim lBF As Long
-         
-         hMemDC = GDI.GetMemoryDC()
-         If (hMemDC) Then
-            hBitmap = FreeImage_GetBitmap(Bitmap, hMemDC)
-            hBitmapOld = SelectObject(hMemDC, hBitmap)
-            
-            With tBF
-               .BlendOp = AC_SRC_OVER
-               .SourceConstantAlpha = Alpha
-               If (FreeImage_GetBPP(Bitmap) = 32) Then
-                  .AlphaFormat = AC_SRC_ALPHA
-               End If
-            End With
-            Call CopyMemory(lBF, tBF, 4)
-            
-            Call AlphaBlend(hDC, xDst, yDst, WidthDst, HeightDst, _
-                            hMemDC, xSrc, ySrc, WidthSrc, HeightSrc, _
-                            lBF)
-                            
-            Call SelectObject(hMemDC, hBitmapOld)
-            Call DeleteObject(hBitmap)
-            GDI.FreeMemoryDC hMemDC
-            If (lpPalette) Then
-               Call FreeImage_Unload(Bitmap)
-            End If
-         End If
-      End If
-   End If
-
-End Function
-
 '--------------------------------------------------------------------------------
 ' Pixel access functions
 '--------------------------------------------------------------------------------
@@ -5123,10 +4789,10 @@ Dim strExtension As String
          If ((FreeImage_FIFSupportsWriting(Format)) And _
              (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
             
-            If (Not FreeImage_IsFilenameValidForFIF(Format, srcFilename)) Then
-               'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
-               'strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
-            End If
+            'If (Not FreeImage_IsFilenameValidForFIF(Format, srcFilename)) Then
+            '   'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
+            '   'strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
+            'End If
             
             ' check color depth
             If (colorDepth <> FICD_AUTO) Then
@@ -5197,73 +4863,6 @@ Dim strExtension As String
                         "from the filename specified.")
       End If
    End If
-
-End Function
-
-Public Function SavePictureEx(ByRef Picture As IPicture, _
-                              ByRef srcFilename As String, _
-                     Optional ByRef Format As FREE_IMAGE_FORMAT, _
-                     Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                     Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
-                     Optional ByRef Width As Variant, _
-                     Optional ByRef Height As Variant, _
-                     Optional ByRef InPercent As Boolean, _
-                     Optional ByRef Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC) As Boolean
-                     
-Dim hDIB As Long
-
-Const vbObjectOrWithBlockVariableNotSet As Long = 91
-Const vbInvalidPictureError As Long = 481
-
-   ' This function is an extended version of the VB method 'SavePicture'. As
-   ' the VB version it takes a Picture object and a filename parameter to
-   ' save the image and throws the same errors in most cases.
-   
-   ' This function now is only a thin wrapper for the FreeImage_SaveEx() wrapper
-   ' function (as compared to releases of this wrapper prior to version 1.8). So,
-   ' have a look at this function's discussion of the parameters.
-   
-   
-   If (Not Picture Is Nothing) Then
-      hDIB = FreeImage_CreateFromOlePicture(Picture)
-      If (hDIB) Then
-         SavePictureEx = FreeImage_SaveEx(hDIB, srcFilename, Format, Options, _
-                                          colorDepth, Width, Height, InPercent, _
-                                          FILTER_BICUBIC, True)
-      Else
-         Call Err.Raise(vbInvalidPictureError)
-      End If
-   Else
-      Call Err.Raise(vbObjectOrWithBlockVariableNotSet)
-   End If
-
-End Function
-
-Public Function SaveImageContainerEx(ByRef Container As Object, _
-                                     ByRef srcFilename As String, _
-                            Optional ByVal IncludeDrawings As Boolean, _
-                            Optional ByRef Format As FREE_IMAGE_FORMAT, _
-                            Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
-                            Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
-                            Optional ByRef Width As Variant, _
-                            Optional ByRef Height As Variant, _
-                            Optional ByRef InPercent As Boolean, _
-                            Optional ByRef Filter As FREE_IMAGE_FILTER = FILTER_BICUBIC) As Long
-                            
-   ' This function is an extended version of the VB method 'SavePicture'. As
-   ' the VB version it takes an image hosting control and a filename parameter to
-   ' save the image and throws the same errors in most cases.
-   
-   ' This function merges the functionality of both wrapper functions
-   ' 'SavePictureEx()' and 'FreeImage_CreateFromImageContainer()'. Basically this
-   ' function is identical to 'SavePictureEx' expect that is does not take a
-   ' IOlePicture (IPicture) object but a VB image hosting container control.
-   
-   ' Please, refer to each of this two function's inline documentation for a
-   ' more detailed description.
-                            
-   Call SavePictureEx(pGetIOlePictureFromContainer(Container, IncludeDrawings), _
-            srcFilename, Format, Options, colorDepth, Width, Height, InPercent, Filter)
 
 End Function
 
@@ -6479,8 +6078,8 @@ Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Mess
         g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = Trim$(strErrorMessage)
     End If
     
-    pdDebug.LogAction "FreeImage returned the following internal error:", PDM_External_Lib
-    pdDebug.LogAction vbTab & strErrorMessage, PDM_External_Lib
-    pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_External_Lib
+    PDDebug.LogAction "FreeImage returned the following internal error:", PDM_External_Lib
+    PDDebug.LogAction vbTab & strErrorMessage, PDM_External_Lib
+    PDDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_External_Lib
     
 End Sub

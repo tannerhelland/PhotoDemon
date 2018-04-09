@@ -252,7 +252,6 @@ Private Declare Function ScriptGetFontScriptTags Lib "usp10" (ByVal srcDC As Lon
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
 
 'Quick memory wiping
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
 'When checking font script tags, we only need to declare an array once, then simply clear it and reuse it.
@@ -399,7 +398,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                 End If
                 
             Else
-                pdDebug.LogAction "WARNING!  Couldn't retrieve supported script list for " & srcFontName
+                PDDebug.LogAction "WARNING!  Couldn't retrieve supported script list for " & srcFontName
             End If
             
             'Remember to free our temporary font and DC when we're done with them

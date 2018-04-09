@@ -33,11 +33,6 @@ End Enum
 
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As GDI_StretchBltMode) As Long
 
-'Constants required for creating a gamma curve from .1 to 10
-Private Const MAXGAMMA As Double = 1.8460498941512
-Private Const MIDGAMMA As Double = 0.68377223398334
-Private Const ROOT10 As Double = 3.16227766
-
 'Pad a DIB with blank space.  This will (obviously) resize the DIB as necessary.
 Public Function PadDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Boolean
 
@@ -980,15 +975,10 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     absMidtoneAmount = Abs(midtoneAmount)
     
     'From here, processing becomes more intensive.  Prep the progress bar as necessary.
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax 6
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax < 0) Then SetProgBarMax 6 Else SetProgBarMax modifyProgBarMax
+        SetProgBarVal 0
     End If
-    
-    If Not suppressMessages Then SetProgBarVal 0
     
     'Next we will create shadow, midtone, and highlight lookup tables.  These will simplify the process of identifying luminance regions
     ' in the base image.
@@ -1005,10 +995,10 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     'Before generating the tables, generate shadow and highlight cut-offs, using the values supplied by the user.
     Dim sCutoff As Long, hCutoff As Long
     sCutoff = shadowWidth
-    If sCutoff = 0 Then sCutoff = 1
+    If (sCutoff = 0) Then sCutoff = 1
     
     hCutoff = 255 - highlightWidth
-    If hCutoff = 255 Then hCutoff = 254
+    If (hCutoff = 255) Then hCutoff = 254
     
     'Next, automatically determine midtone cut-offs, using the supplied shadow/highlight values as our guide
     Dim mCutoffLow As Long, mCutoffHigh As Long, mRange As Long, mMidpoint As Long
@@ -1016,8 +1006,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     mCutoffHigh = hCutoff
     
     'If artificially low shadow/highlight ranges are used, shrink midtones accordingly
-    If mCutoffLow < 64 Then mCutoffLow = 64
-    If mCutoffHigh > 192 Then mCutoffHigh = 192
+    If (mCutoffLow < 64) Then mCutoffLow = 64
+    If (mCutoffHigh > 192) Then mCutoffHigh = 192
     mRange = mCutoffHigh - mCutoffLow
     mMidpoint = (mRange \ 2)
     
@@ -1028,14 +1018,14 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     For i = 0 To 255
     
         'Shadows use a power curve maximized at 0, and descending toward the cutoff point
-        If i < sCutoff Then
+        If (i < sCutoff) Then
             tmpCalc = i / sCutoff
             tmpCalc = tmpCalc * tmpCalc
             sLookup(i) = 1 - tmpCalc
         End If
         
         'Highlights use a power curve maximized at 255, and descending toward the cutoff point
-        If i > hCutoff Then
+        If (i > hCutoff) Then
             tmpCalc = (255 - i) / (255 - hCutoff)
             tmpCalc = tmpCalc * tmpCalc
             hLookup(i) = 1 - tmpCalc
@@ -1058,7 +1048,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     'First, if the shadow and highlight regions have different radius values, we need to make a backup copy of the current DIB.
     Dim backupDIB As pdDIB
     
-    If shadowRadius <> highlightRadius Then
+    If (shadowRadius <> highlightRadius) Then
         Set backupDIB = New pdDIB
         backupDIB.CreateFromExistingDIB srcDIB
     End If
@@ -1074,7 +1064,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
     'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required loop objects now.
     
-    If Not suppressMessages Then SetProgBarVal 2
+    If (Not suppressMessages) Then SetProgBarVal 2
     
     'Create local arrays and point them at the source DIB and blurred DIB
     Dim srcImageData() As Byte, blurImageData() As Byte
@@ -1103,9 +1093,10 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     Dim rBlur As Double, gBlur As Double, bBlur As Double
     Dim srcBlur As Long, grayBlur As Long
     Dim pxShadowCorrection As Double, pxHighlightCorrection As Double, pxMidtoneCorrection As Double
-        
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Start processing shadow pixels
-    If shadowAmount <> 0 Then
+    If (shadowAmount <> 0) Then
     
         For x = initX To finalX
             quickX = x * qvDepth
@@ -1118,21 +1109,21 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rBlur = blurImageData(quickX + 2, y)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
-            If grayBlur > 255 Then grayBlur = 255
+            If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the shadow range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
             If sLookup(grayBlur) > 0 Then
                 
                 'Invert the blur pixel values, and convert to the range [0, 1]
-                If shadowAmount > 0 Then
-                    rBlur = 1 - (rBlur / 255)
-                    gBlur = 1 - (gBlur / 255)
-                    bBlur = 1 - (bBlur / 255)
+                If (shadowAmount > 0) Then
+                    rBlur = 1# - (rBlur * ONE_DIV_255)
+                    gBlur = 1# - (gBlur * ONE_DIV_255)
+                    bBlur = 1# - (bBlur * ONE_DIV_255)
                 Else
-                    rBlur = (rBlur / 255)
-                    gBlur = (gBlur / 255)
-                    bBlur = (bBlur / 255)
+                    rBlur = (rBlur * ONE_DIV_255)
+                    gBlur = (gBlur * ONE_DIV_255)
+                    bBlur = (bBlur * ONE_DIV_255)
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
@@ -1140,15 +1131,15 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 gSrc = srcImageData(quickX + 1, y)
                 rSrc = srcImageData(quickX + 2, y)
                 
-                rSrc = rSrc / 255
-                gSrc = gSrc / 255
-                bSrc = bSrc / 255
+                rSrc = rSrc * ONE_DIV_255
+                gSrc = gSrc * ONE_DIV_255
+                bSrc = bSrc * ONE_DIV_255
                 
                 'Calculate a maximum strength adjustment value.
                 ' (This code is actually just the Overlay compositor formula.)
-                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
-                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
-                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                If (rSrc < 0.5) Then rBlur = 2# * rSrc * rBlur Else rBlur = 1# - 2# * (1# - rSrc) * (1# - rBlur)
+                If (gSrc < 0.5) Then gBlur = 2# * gSrc * gBlur Else gBlur = 1# - 2# * (1# - gSrc) * (1# - gBlur)
+                If (bSrc < 0.5) Then bBlur = 2# * bSrc * bBlur Else bBlur = 1# - 2# * (1# - bSrc) * (1# - bBlur)
                 
                 'Calculate a final shadow correction amount, which is a combination of...
                 ' 1) The user-supplied shadow correction amount
@@ -1156,9 +1147,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 pxShadowCorrection = absShadowAmount * sLookup(grayBlur)
                 
                 'Modify the maximum strength adjustment value by the user-supplied shadow correction amount
-                bDst = 255 * ((pxShadowCorrection * bBlur) + ((1 - pxShadowCorrection) * bSrc))
-                gDst = 255 * ((pxShadowCorrection * gBlur) + ((1 - pxShadowCorrection) * gSrc))
-                rDst = 255 * ((pxShadowCorrection * rBlur) + ((1 - pxShadowCorrection) * rSrc))
+                bDst = 255 * ((pxShadowCorrection * bBlur) + ((1# - pxShadowCorrection) * bSrc))
+                gDst = 255 * ((pxShadowCorrection * gBlur) + ((1# - pxShadowCorrection) * gSrc))
+                rDst = 255 * ((pxShadowCorrection * rBlur) + ((1# - pxShadowCorrection) * rSrc))
                 
                 'Save the modified values into the source image
                 srcImageData(quickX, y) = bDst
@@ -1220,21 +1211,21 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rBlur = blurImageData(quickX + 2, y)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
-            If grayBlur > 255 Then grayBlur = 255
+            If (grayBlur > 255) Then grayBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
-            If hLookup(grayBlur) > 0 Then
+            If (hLookup(grayBlur) > 0) Then
                 
                 'Invert the blur pixel values, and convert to the range [0, 1]
-                If highlightAmount > 0 Then
-                    rBlur = 1 - (rBlur / 255)
-                    gBlur = 1 - (gBlur / 255)
-                    bBlur = 1 - (bBlur / 255)
+                If (highlightAmount > 0) Then
+                    rBlur = 1# - (rBlur * ONE_DIV_255)
+                    gBlur = 1# - (gBlur * ONE_DIV_255)
+                    bBlur = 1# - (bBlur * ONE_DIV_255)
                 Else
-                    rBlur = (rBlur / 255)
-                    gBlur = (gBlur / 255)
-                    bBlur = (bBlur / 255)
+                    rBlur = (rBlur * ONE_DIV_255)
+                    gBlur = (gBlur * ONE_DIV_255)
+                    bBlur = (bBlur * ONE_DIV_255)
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
@@ -1242,15 +1233,15 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 gSrc = srcImageData(quickX + 1, y)
                 rSrc = srcImageData(quickX + 2, y)
                 
-                rSrc = rSrc / 255
-                gSrc = gSrc / 255
-                bSrc = bSrc / 255
+                rSrc = rSrc * ONE_DIV_255
+                gSrc = gSrc * ONE_DIV_255
+                bSrc = bSrc * ONE_DIV_255
                 
                 'Calculate a maximum strength adjustment value.
                 ' (This code is actually just the Overlay compositor formula.)
-                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
-                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
-                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                If (rSrc < 0.5) Then rBlur = 2# * rSrc * rBlur Else rBlur = 1# - 2# * (1# - rSrc) * (1# - rBlur)
+                If (gSrc < 0.5) Then gBlur = 2# * gSrc * gBlur Else gBlur = 1# - 2# * (1# - gSrc) * (1# - gBlur)
+                If (bSrc < 0.5) Then bBlur = 2# * bSrc * bBlur Else bBlur = 1# - 2# * (1# - bSrc) * (1# - bBlur)
                 
                 'Calculate a final highlight correction amount, which is a combination of...
                 ' 1) The user-supplied highlight correction amount
@@ -1258,9 +1249,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 pxHighlightCorrection = absHighlightAmount * hLookup(grayBlur)
                 
                 'Modify the maximum strength adjustment value by the user-supplied highlight correction amount
-                bDst = 255 * ((pxHighlightCorrection * bBlur) + ((1 - pxHighlightCorrection) * bSrc))
-                gDst = 255 * ((pxHighlightCorrection * gBlur) + ((1 - pxHighlightCorrection) * gSrc))
-                rDst = 255 * ((pxHighlightCorrection * rBlur) + ((1 - pxHighlightCorrection) * rSrc))
+                bDst = 255 * ((pxHighlightCorrection * bBlur) + ((1# - pxHighlightCorrection) * bSrc))
+                gDst = 255 * ((pxHighlightCorrection * gBlur) + ((1# - pxHighlightCorrection) * gSrc))
+                rDst = 255 * ((pxHighlightCorrection * rBlur) + ((1# - pxHighlightCorrection) * rSrc))
                 
                 'Save the modified values into the source image
                 srcImageData(quickX, y) = bDst
@@ -1307,22 +1298,22 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             rSrc = srcImageData(quickX + 2, y)
             
             srcBlur = (213 * rSrc + 715 * gSrc + 72 * bSrc) \ 1000
-            If srcBlur > 255 Then srcBlur = 255
+            If (srcBlur > 255) Then srcBlur = 255
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
-            If mLookup(srcBlur) > 0 Then
+            If (mLookup(srcBlur) > 0) Then
                 
                 'Convert the source pixel values to the range [0, 1]
-                bSrc = bSrc / 255
-                gSrc = gSrc / 255
-                rSrc = rSrc / 255
+                bSrc = bSrc * ONE_DIV_255
+                gSrc = gSrc * ONE_DIV_255
+                rSrc = rSrc * ONE_DIV_255
                 
                 'To cut down on the need for additional local variables, we're going to simply re-use the blur variable names here.
-                If midtoneAmount > 0 Then
-                    rBlur = 1 - rSrc
-                    gBlur = 1 - gSrc
-                    bBlur = 1 - bSrc
+                If (midtoneAmount > 0) Then
+                    rBlur = 1# - rSrc
+                    gBlur = 1# - gSrc
+                    bBlur = 1# - bSrc
                 Else
                     rBlur = rSrc
                     gBlur = gSrc
@@ -1331,9 +1322,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 
                 'Calculate a maximum strength adjustment value.
                 ' (This code is actually just the Overlay compositor formula.)
-                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
-                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
-                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                If (rSrc < 0.5) Then rBlur = 2# * rSrc * rBlur Else rBlur = 1# - 2# * (1# - rSrc) * (1# - rBlur)
+                If (gSrc < 0.5) Then gBlur = 2# * gSrc * gBlur Else gBlur = 1# - 2# * (1# - gSrc) * (1# - gBlur)
+                If (bSrc < 0.5) Then bBlur = 2# * bSrc * bBlur Else bBlur = 1# - 2# * (1# - bSrc) * (1# - bBlur)
                 
                 'Calculate a final midtone correction amount, which is a combination of...
                 ' 1) The user-supplied midtone correction amount
@@ -1341,9 +1332,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 pxMidtoneCorrection = absMidtoneAmount * mLookup(srcBlur)
                 
                 'Modify the maximum strength adjustment value by the user-supplied midtone correction amount
-                bDst = 255 * ((pxMidtoneCorrection * bBlur) + ((1 - pxMidtoneCorrection) * bSrc))
-                gDst = 255 * ((pxMidtoneCorrection * gBlur) + ((1 - pxMidtoneCorrection) * gSrc))
-                rDst = 255 * ((pxMidtoneCorrection * rBlur) + ((1 - pxMidtoneCorrection) * rSrc))
+                bDst = 255 * ((pxMidtoneCorrection * bBlur) + ((1# - pxMidtoneCorrection) * bSrc))
+                gDst = 255 * ((pxMidtoneCorrection * gBlur) + ((1# - pxMidtoneCorrection) * gSrc))
+                rDst = 255 * ((pxMidtoneCorrection * rBlur) + ((1# - pxMidtoneCorrection) * rSrc))
                 
                 'Save the modified values into the source image
                 srcImageData(quickX, y) = bDst
@@ -3034,10 +3025,8 @@ End Function
 ' 4) colorFactor: [0, 100]
 ' 5) colorPower: [0.01, 10]
 Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    Const maxKernelSize As Long = 256
+    
     Const colorsCount As Long = 256
-
     Dim spatialFunc() As Double, colorFunc() As Double
 
     'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can

@@ -41,13 +41,11 @@ Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As 
 
 ' ------------
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoW" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
@@ -73,7 +71,6 @@ Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFilename 
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
-Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal Image As Long, ByVal rfType As Long) As Long
 Private Declare Function GdipCreateBitmapFromHICON Lib "gdiplus" (ByVal mHicon As Long, ByRef mBitmap As Long) As Long
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
 Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal Bitmap As Long, ByRef RECT As RECT, ByVal Flags As ImageLockMode, ByVal PixelFormat As Long, ByRef LockedBitmapData As BitmapData) As Long
@@ -237,9 +234,6 @@ Private Const IconVersion As Long = &H30000
     
 Private Const DIB_RGB_COLORS As Long = 0&
 
-Private Const LR_LOADFROMFILE As Long = &H10
-Private Const IMAGE_ICON As Long = 1
-
 Private Const MIIM_ID As Long = &H2
 Private Const MIIM_DATA As Long = &H20
 Private Const MIIM_BITMAP As Long = &H80
@@ -254,17 +248,12 @@ Private Const MNS_CHECKORBMP As Long = &H4000000
 Private Const MNS_NOCHECK As Long = &H80000000
 Private Const HBMMENU_CALLBACK As Long = -1
 
-
 Private Const NULL_BRUSH As Long = 5
 Private Const COLOR_GRAYTEXT As Long = 17
 Private Const COLOR_APPWORKSPACE As Long = 12
 Private Const SM_CXMENUCHECK As Long = 71
-
-Private Const WM_DESTROY As Long = &H2
 Private Const WM_MEASUREITEM As Long = &H2C
 Private Const WM_DRAWITEM As Long = &H2B
-Private Const WM_MENUSELECT As Long = &H11F
-Private Const WM_ENTERIDLE As Long = &H121
 
 'Changed by Tanner: we don't need menu messages, so don't waste time and resources raising this event
 'Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
@@ -691,13 +680,13 @@ Friend Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Bool
         End If
         
     Else
-        pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
+        PDDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB failed; source DIB was null."
     End If
     
     Exit Function
     
 AddImageFromDIB_Error:
-    pdDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  clsMenuImage.AddImageFromDIB had error #" & Err.Number & ", " & Err.Description
     
 End Function
 
@@ -891,7 +880,7 @@ Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
             If (m_hWnd <> 0) Then StopSubclassing
             m_hWnd = hWnd
             If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
-            pdDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
+            PDDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
         Else
             m_hWnd = hWnd
             Init = True

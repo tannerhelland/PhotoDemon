@@ -226,11 +226,6 @@ Private Sub cboSource_Click()
     
 End Sub
 
-Private Sub RelayCurrentColorToFillEngine()
-    Dim cBrush As pd2DBrush
-    Drawing2D.QuickCreateSolidBrush cBrush, layerpanel_Colors.GetCurrentColor()
-End Sub
-
 Private Sub chkAntialiasing_Click()
     FillTool.SetFillAA CBool(chkAntialiasing.Value)
 End Sub

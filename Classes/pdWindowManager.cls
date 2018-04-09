@@ -52,36 +52,18 @@ Private Const WM_GETTEXT = &HD
 Private Const WM_GETTEXTLENGTH = &HE
 Private Const WM_SETTEXT = &HC
 
-'Constants for changing window style (including transparency)
-Private Const LWA_ALPHA As Long = &H2&
-Private Const WS_CHILD As Long = &H40000000
+'Constants for changing extended window style
 Private Const WS_EX_APPWINDOW As Long = &H40000
-Private Const WS_POPUP As Long = &H80000000
 Private Const WS_EX_LAYERED As Long = &H80000
 Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const GWL_EXSTYLE As Long = (-20)
 Private Const GWL_STYLE As Long = (-16)
-Private Const GWL_HWNDPARENT As Long = (-8)
-
-Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
-Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_NOMOVE As Long = &H2
 Private Const SWP_NOOWNERZORDER As Long = &H200
-Private Const SWP_NOREDRAW As Long = &H8
 Private Const SWP_NOSENDCHANGING As Long = &H400
-Private Const SWP_NOSIZE As Long = &H1
-Private Const SWP_HIDEWINDOW As Long = &H80
-Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOZORDER As Long = &H4
-Private Const SWP_DRAWFRAME As Long = &H20
-Private Const SWP_NOCOPYBITS As Long = &H100
-
-'Constants for window z-order
-Private Const HWND_NOTOPMOST As Long = -2
-Private Const HWND_TOPMOST As Long = -1
 Private Const HWND_TOP As Long = 0
-Private Const HWND_BOTTOM As Long = 1
 
 'Main window tracking
 Private m_MainWindowHWnd As Long
@@ -106,32 +88,23 @@ End Enum
     Private Const SW_HIDE = 0, SW_SHOWNORMAL = 1, SW_SHOWMINIMIZED = 2, SW_SHOWMAXIMIZED = 3, SW_SHOWNOACTIVATE = 4, SW_SHOW = 5, SW_MINIMIZE = 6, SW_SHOWMINNOACTIVE = 7, SW_SHOWNA = 8, SW_RESTORE = 9, SW_SHOWDEFAULT = 10, SW_FORCEMINIMIZE = 11
 #End If
 
-'API calls for window positioning and tracking
+Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal bEnable As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
-Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long) As Long
-Private Declare Function GetWindowTextLengthW Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As ShowWindowOptions) As Long
-
-'APIs for getting/setting Unicode window captions
-Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
-'APIs for changing window style
-Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByVal lpRect As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByVal ptrToPointList As Long, ByVal numPoints As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function SetActiveWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
 
 'Misc window APIs
@@ -304,18 +277,6 @@ Friend Function GetClientHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
     GetClientRect targetHWnd, tmpRect
     GetClientHeight = tmpRect.y2
-End Function
-
-Private Function GetWindowWidth(ByVal targetHWnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect targetHWnd, VarPtr(tmpRect)
-    GetWindowWidth = tmpRect.x2 - tmpRect.x1
-End Function
-
-Private Function GetWindowHeight(ByVal targetHWnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect targetHWnd, VarPtr(tmpRect)
-    GetWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
 Friend Function GetFocusAPI() As Long

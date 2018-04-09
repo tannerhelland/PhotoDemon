@@ -19,12 +19,9 @@ Attribute VB_Name = "Files"
 Option Explicit
 
 'API calls for retrieving detailed date time for a given file
-Private Const INVALID_HANDLE_VALUE As Long = -1
-Private Const MAX_PATH As Long = 260
 Private Const STARTF_USESHOWWINDOW = &H1
 Private Const SW_NORMAL As Long = 1
 Private Const SW_HIDE As Long = 0
-Private Const SYNCHRONIZE As Long = &H100000
 Private Const WAIT_INFINITE As Long = -1
 
 Private Type WIN32_STARTUP_INFO
@@ -58,7 +55,6 @@ End Type
 'Used to shell an external program, then wait until it completes
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByVal lpStartupInfo As Long, ByVal lpProcessInformation As Long) As Long
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessID As Long) As Long
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 
 'PD creates a lot of temp files.  To prevent hard drive thrashing, this module tracks created temp files,

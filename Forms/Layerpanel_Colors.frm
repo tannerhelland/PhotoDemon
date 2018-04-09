@@ -263,7 +263,7 @@ Private Sub clrHistory_HistoryItemMouseOver(ByVal histIndex As Long, ByVal histV
         hoverColor = Colors.ConvertSystemColor(CLng(histValue))
         
         'Construct hex and RGB string representations of the target color
-        Dim hexString As String, rgbString As String, indexString As String
+        Dim hexString As String, rgbString As String
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
         rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
         clrHistory.AssignTooltip hexString & vbCrLf & rgbString, , , True

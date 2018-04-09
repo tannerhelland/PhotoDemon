@@ -187,7 +187,7 @@ Public Function CloseAllImages() As Boolean
                 If pdImages(i).IsActive And pdImages(i).GetSaveState(pdSE_AnySave) Then
                     numImagesClosed = numImagesClosed + 1
                     Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
-                    CanvasManager.FullPDImageUnload i, True, False
+                    CanvasManager.FullPDImageUnload i, False
                 End If
             End If
         Next i
@@ -209,7 +209,7 @@ Public Function CloseAllImages() As Boolean
             'Attempt to unload the currently active image.
             ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
             '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
-            CanvasManager.FullPDImageUnload g_CurrentImage, True, False
+            CanvasManager.FullPDImageUnload g_CurrentImage, False
             
             'If the "unsaved changes" prompt canceled shut down for some reason, it will reset the
             ' g_ClosingAllImages variable.  Read that variable and use it to determine whether we
@@ -231,7 +231,7 @@ End Function
 ' (Note that this function simply wraps the imitation QueryUnload and Unload functions, below.)
 '
 'This function returns TRUE if the image was unloaded, FALSE if it was canceled.
-Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawScreen As Boolean = True, Optional ByVal displayMessages As Boolean = True) As Boolean
+Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal displayMessages As Boolean = True) As Boolean
 
     'Perform a query unload on the image.  This will raise required warnings (e.g. unsaved changes) per the user's preferences.
     If CanvasManager.QueryUnloadPDImage(imageID) Then

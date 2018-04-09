@@ -170,7 +170,7 @@ Friend Function GetString(ByRef paramName As String, Optional ByVal defaultRetur
 End Function
 
 'If you want to combine "DoesParamExist" and "GetString", use this function
-Friend Function GetStringEx(ByRef paramName As String, ByRef dstParamValue As String, Optional ByVal defaultReturn As String = vbNullString) As Boolean
+Friend Function GetStringEx(ByRef paramName As String, ByRef dstParamValue As String) As Boolean
     GetStringEx = GetParamValue(paramName, dstParamValue)
 End Function
 
@@ -235,8 +235,8 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
             
             'If tag end is less than tag start, it means there's an XML parsing problem
             Else
-                pdDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
-                pdDebug.LogAction m_ParamString.ToString()
+                PDDebug.LogAction "pdParamXML.GetParamValue failed.  Param string follows."
+                PDDebug.LogAction m_ParamString.ToString()
                 dstString = vbNullString
             End If
             
@@ -298,7 +298,7 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     
 AddParamFailed:
     AddParam = False
-    pdDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
+    PDDebug.LogAction "WARNING!  pdParamXML failed to add param named " & paramName
     
 End Function
 
@@ -335,7 +335,7 @@ Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     Exit Function
     
 MultiParamFailure:
-    pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
+    PDDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
     AddParamList = False
 
 End Function
@@ -363,12 +363,6 @@ Friend Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
         
     End If
     
-End Function
-
-'Given a string and a position, split it into two strings at that position
-Private Function SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
-    dstFirstHalf = Left$(srcString, splitPosition)
-    dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
 End Function
 
 'Given a string, replace any characters that are not allowed with underscores; this is used as a failsafe when adding

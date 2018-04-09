@@ -27,7 +27,8 @@ Option Explicit
 '****************************************************************************************
 'Note: these types are used in the callback function for EnumFontFamiliesEx; as such, I have to declare them as public.
 
-Private Const LF_FACESIZEW = 64
+Private Const LF_FACESIZEW As Long = 64, LF_FACESIZEA As Long = 32
+Private Const DEFAULT_CHARSET As Long = 1
 
 Public Type LOGFONTW
     lfHeight As Long
@@ -213,57 +214,65 @@ End Enum
     Private Const CS_BALTIC = 186, CS_RUSSIAN = 204, CS_THAI = 222, CS_EASTEUROPE = 238, CS_OEM = 255
 #End If
 
-'Font enumeration types
-Private Const LF_FACESIZEA = 32
-Private Const DEFAULT_CHARSET = 1
-
 'NOTE: several crucial types for this class are listed in the Public_Enums_And_Types module.
 
 'ntmFlags field flags
-Private Const NTM_REGULAR = &H40&
-Private Const NTM_BOLD = &H20&
-Private Const NTM_ITALIC = &H1&
+Private Const NTM_REGULAR As Long = &H40&
+Private Const NTM_BOLD As Long = &H20&
+Private Const NTM_ITALIC As Long = &H1&
 
 'tmPitchAndFamily flags
-Private Const TMPF_FIXED_PITCH = &H1
-Private Const TMPF_VECTOR = &H2
-Private Const TMPF_DEVICE = &H8
-Private Const TMPF_TRUETYPE = &H4
+Private Const TMPF_FIXED_PITCH As Long = &H1
+Private Const TMPF_VECTOR As Long = &H2
+Private Const TMPF_DEVICE As Long = &H8
+Private Const TMPF_TRUETYPE As Long = &H4
 
-Private Const ELF_VERSION = 0
-Private Const ELF_CULTURE_LATIN = 0
+Private Const ELF_VERSION As Long = 0
+Private Const ELF_CULTURE_LATIN As Long = 0
 
 'EnumFonts Masks
-Private Const RASTER_FONTTYPE = &H1
-Private Const DEVICE_FONTTYPE = &H2
-Private Const TRUETYPE_FONTTYPE = &H4
+Private Const RASTER_FONTTYPE As Long = &H1
+Private Const DEVICE_FONTTYPE As Long = &H2
+Private Const TRUETYPE_FONTTYPE As Long = &H4
 
 Private Declare Function EnumFontFamiliesEx Lib "gdi32" Alias "EnumFontFamiliesExW" (ByVal hDC As Long, ByRef lpLogFontW As LOGFONTW, ByVal lpEnumFontFamExProc As Long, ByRef lParam As Any, ByVal dwFlags As Long) As Long
 
 'GDI font weight (boldness)
-Private Const FW_DONTCARE As Long = 0
-Private Const FW_THIN As Long = 100
-Private Const FW_EXTRALIGHT As Long = 200
-Private Const FW_ULTRALIGHT As Long = 200
-Private Const FW_LIGHT As Long = 300
-Private Const FW_NORMAL As Long = 400
-Private Const FW_REGULAR As Long = 400
-Private Const FW_MEDIUM As Long = 500
-Private Const FW_SEMIBOLD As Long = 600
-Private Const FW_DEMIBOLD As Long = 600
-Private Const FW_BOLD As Long = 700
-Private Const FW_EXTRABOLD As Long = 800
-Private Const FW_ULTRABOLD As Long = 800
-Private Const FW_HEAVY As Long = 900
-Private Const FW_BLACK As Long = 900
+Public Enum GDI_FontWeight
+    fw_DontCare = 0
+    fw_Thin = 100
+    fw_Extralight = 200
+    fw_Ultralight = 200
+    fw_Light = 300
+    fw_Normal = 400
+    fw_Regular = 400
+    fw_Medium = 500
+    fw_SemiBold = 600
+    fw_DemiBold = 600
+    fw_Bold = 700
+    fw_ExtraBold = 800
+    fw_UltraBold = 800
+    fw_Heavy = 900
+    fw_Black = 900
+End Enum
+
+#If False Then
+    Private Const fw_DontCare = 0, fw_Thin = 100, fw_Extralight = 200, fw_Ultralight = 200, fw_Light = 300, fw_Normal = 400, fw_Regular = 400, fw_Medium = 500, fw_SemiBold = 600, fw_DemiBold = 600, fw_Bold = 700, fw_ExtraBold = 800, fw_UltraBold = 800, fw_Heavy = 900, fw_Black = 900
+#End If
 
 'GDI font quality
-Private Const DEFAULT_QUALITY As Long = 0
-Private Const DRAFT_QUALITY As Long = 1
-Private Const PROOF_QUALITY As Long = 2
-Private Const NONANTIALIASED_QUALITY As Long = 3
-Private Const ANTIALIASED_QUALITY As Long = 4
-Private Const CLEARTYPE_QUALITY As Byte = 5
+Public Enum GDI_FontQuality
+    fq_Default = 0
+    fq_Draft = 1
+    fq_Proof = 2
+    fq_NonAntialiased = 3
+    fq_Antialiased = 4
+    fq_ClearType = 5
+End Enum
+
+#If False Then
+    Private Const fq_Default = 0, fq_Draft = 1, fq_Proof = 2, fq_NonAntialiased = 3, fq_Antialiased = 4, fq_ClearType = 5
+#End If
 
 'GDI font creation and management
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByRef lpLogFont As LOGFONTW) As Long
@@ -271,10 +280,9 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'Various non-font-specific WAPI functions helpful for font assembly
-Private Const logPixelsX = 88
-Private Const LOGPIXELSY = 90
+Private Const logPixelsX As Long = 88
+Private Const LOGPIXELSY As Long = 90
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
 
 'Some system-specific font settings are cached at initialization time, and unchanged for the life of the program.
 ' (TODO: watch for relevant window messages on Win 8.1+ that may change these.)
@@ -537,7 +545,7 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     
     'Perform some basic checks to see if this font is usable
     Dim fontUsable As Boolean
-    fontUsable = (Len(thisFontFace) > 0)
+    fontUsable = (LenB(thisFontFace) > 0)
     
     'If this font face is identical to the previous font face, do not add it
     If fontUsable Then fontUsable = Strings.StringsNotEqual(thisFontFace, m_LastFontAdded, False)
@@ -622,16 +630,12 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
     
         'For Unicode compatibility, the font face must be copied directly, without internal VB translations
         Dim copyLength As Long
-        copyLength = Len(srcFontFace) * 2
-        If copyLength > LF_FACESIZEW Then copyLength = LF_FACESIZEW
+        copyLength = LenB(srcFontFace)
+        If (copyLength > LF_FACESIZEW) Then copyLength = LF_FACESIZEW
         CopyMemory ByVal VarPtr(.lfFaceName(0)), ByVal StrPtr(srcFontFace), copyLength
         
         'Bold is a unique style, because it must be translated to a corresponding weight measurement
-        If srcFontBold Then
-            .lfWeight = FW_BOLD
-        Else
-            .lfWeight = FW_NORMAL
-        End If
+        If srcFontBold Then .lfWeight = fw_Bold Else .lfWeight = fw_Normal
         
         'Other styles all use the same pattern: multiply the bool by -1 to obtain a matching byte-type style
         .lfItalic = -1 * srcFontItalic
@@ -690,7 +694,7 @@ End Function
 ' the glyph outline returned.  (They should, technically, since hinting affects font shape.)
 Public Sub FillLogFontW_Quality(ByRef dstLogFontW As LOGFONTW, ByVal fontQuality As GdiPlusTextRenderingHint)
 
-    Dim gdiFontQuality As Long
+    Dim gdiFontQuality As GDI_FontQuality
     
     'Per http://stackoverflow.com/questions/1203087/why-is-graphics-measurestring-returning-a-higher-than-expected-number?lq=1
     ' this function mirrors the .NET conversion from GDI+ text rendering hints to GDI font quality settings.  Mapping deliberately
@@ -698,22 +702,22 @@ Public Sub FillLogFontW_Quality(ByRef dstLogFontW As LOGFONTW, ByVal fontQuality
     Select Case fontQuality
     
         Case TextRenderingHintSystemDefault
-            gdiFontQuality = DEFAULT_QUALITY
+            gdiFontQuality = fq_Default
             
         Case TextRenderingHintSingleBitPerPixel
-            gdiFontQuality = DRAFT_QUALITY
+            gdiFontQuality = fq_Draft
         
         Case TextRenderingHintSingleBitPerPixelGridFit
-            gdiFontQuality = PROOF_QUALITY
+            gdiFontQuality = fq_Proof
         
         Case TextRenderingHintAntiAlias
-            gdiFontQuality = ANTIALIASED_QUALITY
+            gdiFontQuality = fq_Antialiased
         
         Case TextRenderingHintAntiAliasGridFit
-            gdiFontQuality = ANTIALIASED_QUALITY
+            gdiFontQuality = fq_Antialiased
         
         Case TextRenderingHintClearTypeGridFit
-            gdiFontQuality = CLEARTYPE_QUALITY
+            gdiFontQuality = fq_ClearType
         
         Case Else
             Debug.Print "Unknown font quality passed; please double-check requests to fillLogFontW_Quality"
