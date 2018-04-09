@@ -503,223 +503,223 @@ End Enum
 ' in a variety of ways.  Refer to https://msdn.microsoft.com/en-us/library/ms534416(v=vs.85).aspx for details.
 ' pd2D uses these sparingly; do not expect it to perform full metadata preservation.
 Public Enum GP_PropertyTag
-    GP_PT_Artist = &H13B
-    GP_PT_BitsPerSample = &H102
-    GP_PT_CellHeight = &H109
-    GP_PT_CellWidth = &H108
-    GP_PT_ChrominanceTable = &H5091
-    GP_PT_ColorMap = &H140
-    GP_PT_ColorTransferFunction = &H501A
-    GP_PT_Compression = &H103
-    GP_PT_Copyright = &H8298
-    GP_PT_DateTime = &H132
-    GP_PT_DocumentName = &H10D
-    GP_PT_DotRange = &H150
-    GP_PT_EquipMake = &H10F
-    GP_PT_EquipModel = &H110
-    GP_PT_ExifAperture = &H9202
-    GP_PT_ExifBrightness = &H9203
-    GP_PT_ExifCfaPattern = &HA302
-    GP_PT_ExifColorSpace = &HA001
-    GP_PT_ExifCompBPP = &H9102
-    GP_PT_ExifCompConfig = &H9101
-    GP_PT_ExifDTDigitized = &H9004
-    GP_PT_ExifDTDigSS = &H9292
-    GP_PT_ExifDTOrig = &H9003
-    GP_PT_ExifDTOrigSS = &H9291
-    GP_PT_ExifDTSubsec = &H9290
-    GP_PT_ExifExposureBias = &H9204
-    GP_PT_ExifExposureIndex = &HA215
-    GP_PT_ExifExposureProg = &H8822
-    GP_PT_ExifExposureTime = &H829A
-    GP_PT_ExifFileSource = &HA300
-    GP_PT_ExifFlash = &H9209
-    GP_PT_ExifFlashEnergy = &HA20B
-    GP_PT_ExifFNumber = &H829D
-    GP_PT_ExifFocalLength = &H920A
-    GP_PT_ExifFocalResUnit = &HA210
-    GP_PT_ExifFocalXRes = &HA20E
-    GP_PT_ExifFocalYRes = &HA20F
-    GP_PT_ExifFPXVer = &HA000
-    GP_PT_ExifIFD = &H8769
-    GP_PT_ExifInterop = &HA005
-    GP_PT_ExifISOSpeed = &H8827
-    GP_PT_ExifLightSource = &H9208
-    GP_PT_ExifMakerNote = &H927C
-    GP_PT_ExifMaxAperture = &H9205
-    GP_PT_ExifMeteringMode = &H9207
-    GP_PT_ExifOECF = &H8828
-    GP_PT_ExifPixXDim = &HA002
-    GP_PT_ExifPixYDim = &HA003
-    GP_PT_ExifRelatedWav = &HA004
-    GP_PT_ExifSceneType = &HA301
-    GP_PT_ExifSensingMethod = &HA217
-    GP_PT_ExifShutterSpeed = &H9201
-    GP_PT_ExifSpatialFR = &HA20C
-    GP_PT_ExifSpectralSense = &H8824
-    GP_PT_ExifSubjectDist = &H9206
-    GP_PT_ExifSubjectLoc = &HA214
-    GP_PT_ExifUserComment = &H9286
-    GP_PT_ExifVer = &H9000
-    GP_PT_ExtraSamples = &H152
-    GP_PT_FillOrder = &H10A
-    GP_PT_FrameDelay = &H5100
-    GP_PT_FreeByteCounts = &H121
-    GP_PT_FreeOffset = &H120
-    GP_PT_Gamma = &H301
-    GP_PT_GlobalPalette = &H5102
-    GP_PT_GpsAltitude = &H6
-    GP_PT_GpsAltitudeRef = &H5
-    GP_PT_GpsDestBear = &H18
-    GP_PT_GpsDestBearRef = &H17
-    GP_PT_GpsDestDist = &H1A
-    GP_PT_GpsDestDistRef = &H19
-    GP_PT_GpsDestLat = &H14
-    GP_PT_GpsDestLatRef = &H13
-    GP_PT_GpsDestLong = &H16
-    GP_PT_GpsDestLongRef = &H15
-    GP_PT_GpsGpsDop = &HB
-    GP_PT_GpsGpsMeasureMode = &HA
-    GP_PT_GpsGpsSatellites = &H8
-    GP_PT_GpsGpsStatus = &H9
-    GP_PT_GpsGpsTime = &H7
-    GP_PT_GpsIFD = &H8825
-    GP_PT_GpsImgDir = &H11
-    GP_PT_GpsImgDirRef = &H10
-    GP_PT_GpsLatitude = &H2
-    GP_PT_GpsLatitudeRef = &H1
-    GP_PT_GpsLongitude = &H4
-    GP_PT_GpsLongitudeRef = &H3
-    GP_PT_GpsMapDatum = &H12
-    GP_PT_GpsSpeed = &HD
-    GP_PT_GpsSpeedRef = &HC
-    GP_PT_GpsTrack = &HF
-    GP_PT_GpsTrackRef = &HE
-    GP_PT_GpsVer = &H0
-    GP_PT_GrayResponseCurve = &H123
-    GP_PT_GrayResponseUnit = &H122
-    GP_PT_GridSize = &H5011
-    GP_PT_HalftoneDegree = &H500C
-    GP_PT_HalftoneHints = &H141
-    GP_PT_HalftoneLPI = &H500A
-    GP_PT_HalftoneLPIUnit = &H500B
-    GP_PT_HalftoneMisc = &H500E
-    GP_PT_HalftoneScreen = &H500F
-    GP_PT_HalftoneShape = &H500D
-    GP_PT_HostComputer = &H13C
-    GP_PT_ICCProfile = &H8773
-    GP_PT_ICCProfileDescriptor = &H302
-    GP_PT_ImageDescription = &H10E
-    GP_PT_ImageHeight = &H101
-    GP_PT_ImageTitle = &H320
-    GP_PT_ImageWidth = &H100
-    GP_PT_IndexBackground = &H5103
-    GP_PT_IndexTransparent = &H5104
-    GP_PT_InkNames = &H14D
-    GP_PT_InkSet = &H14C
-    GP_PT_JPEGACTables = &H209
-    GP_PT_JPEGDCTables = &H208
-    GP_PT_JPEGInterFormat = &H201
-    GP_PT_JPEGInterLength = &H202
-    GP_PT_JPEGLosslessPredictors = &H205
-    GP_PT_JPEGPointTransforms = &H206
-    GP_PT_JPEGProc = &H200
-    GP_PT_JPEGQTables = &H207
-    GP_PT_JPEGQuality = &H5010
-    GP_PT_JPEGRestartInterval = &H203
-    GP_PT_LoopCount = &H5101
-    GP_PT_LuminanceTable = &H5090
-    GP_PT_MaxSampleValue = &H119
-    GP_PT_MinSampleValue = &H118
-    GP_PT_NewSubfileType = &HFE
-    GP_PT_NumberOfInks = &H14E
-    GP_PT_Orientation = &H112
-    GP_PT_PageName = &H11D
-    GP_PT_PageNumber = &H129
-    GP_PT_PaletteHistogram = &H5113
-    GP_PT_PhotometricInterp = &H106
-    GP_PT_PixelPerUnitX = &H5111
-    GP_PT_PixelPerUnitY = &H5112
-    GP_PT_PixelUnit = &H5110
-    GP_PT_PlanarConfig = &H11C
-    GP_PT_Predictor = &H13D
-    GP_PT_PrimaryChromaticities = &H13F
-    GP_PT_PrintFlags = &H5005
-    GP_PT_PrintFlagsBleedWidth = &H5008
-    GP_PT_PrintFlagsBleedWidthScale = &H5009
-    GP_PT_PrintFlagsCrop = &H5007
-    GP_PT_PrintFlagsVersion = &H5006
-    GP_PT_REFBlackWhite = &H214
-    GP_PT_ResolutionUnit = &H128
-    GP_PT_ResolutionXLengthUnit = &H5003
-    GP_PT_ResolutionXUnit = &H5001
-    GP_PT_ResolutionYLengthUnit = &H5004
-    GP_PT_ResolutionYUnit = &H5002
-    GP_PT_RowsPerStrip = &H116
-    GP_PT_SampleFormat = &H153
-    GP_PT_SamplesPerPixel = &H115
-    GP_PT_SMaxSampleValue = &H155
-    GP_PT_SMinSampleValue = &H154
-    GP_PT_SoftwareUsed = &H131
-    GP_PT_SRGBRenderingIntent = &H303
-    GP_PT_StripBytesCount = &H117
-    GP_PT_StripOffsets = &H111
-    GP_PT_SubfileType = &HFF
-    GP_PT_T4Option = &H124
-    GP_PT_T6Option = &H125
-    GP_PT_TargetPrinter = &H151
-    GP_PT_ThreshHolding = &H107
-    GP_PT_ThumbnailArtist = &H5034
-    GP_PT_ThumbnailBitsPerSample = &H5022
-    GP_PT_ThumbnailColorDepth = &H5015
-    GP_PT_ThumbnailCompressedSize = &H5019
-    GP_PT_ThumbnailCompression = &H5023
-    GP_PT_ThumbnailCopyRight = &H503B
-    GP_PT_ThumbnailData = &H501B
-    GP_PT_ThumbnailDateTime = &H5033
-    GP_PT_ThumbnailEquipMake = &H5026
-    GP_PT_ThumbnailEquipModel = &H5027
-    GP_PT_ThumbnailFormat = &H5012
-    GP_PT_ThumbnailHeight = &H5014
-    GP_PT_ThumbnailImageDescription = &H5025
-    GP_PT_ThumbnailImageHeight = &H5021
-    GP_PT_ThumbnailImageWidth = &H5020
-    GP_PT_ThumbnailOrientation = &H5029
-    GP_PT_ThumbnailPhotometricInterp = &H5024
-    GP_PT_ThumbnailPlanarConfig = &H502F
-    GP_PT_ThumbnailPlanes = &H5016
-    GP_PT_ThumbnailPrimaryChromaticities = &H5036
-    GP_PT_ThumbnailRawBytes = &H5017
-    GP_PT_ThumbnailRefBlackWhite = &H503A
-    GP_PT_ThumbnailResolutionUnit = &H5030
-    GP_PT_ThumbnailResolutionX = &H502D
-    GP_PT_ThumbnailResolutionY = &H502E
-    GP_PT_ThumbnailRowsPerStrip = &H502B
-    GP_PT_ThumbnailSamplesPerPixel = &H502A
-    GP_PT_ThumbnailSize = &H5018
-    GP_PT_ThumbnailSoftwareUsed = &H5032
-    GP_PT_ThumbnailStripBytesCount = &H502C
-    GP_PT_ThumbnailStripOffsets = &H5028
-    GP_PT_ThumbnailTransferFunction = &H5031
-    GP_PT_ThumbnailWhitePoint = &H5035
-    GP_PT_ThumbnailWidth = &H5013
-    GP_PT_ThumbnailYCbCrCoefficients = &H5037
-    GP_PT_ThumbnailYCbCrPositioning = &H5039
-    GP_PT_ThumbnailYCbCrSubsampling = &H5038
-    GP_PT_TileByteCounts = &H145
-    GP_PT_TileLength = &H143
-    GP_PT_TileOffset = &H144
-    GP_PT_TileWidth = &H142
-    GP_PT_TransferFunction = &H12D
-    GP_PT_TransferRange = &H156
-    GP_PT_WhitePoint = &H13E
-    GP_PT_XPosition = &H11E
-    GP_PT_XResolution = &H11A
-    GP_PT_YCbCrCoefficients = &H211
-    GP_PT_YCbCrPositioning = &H213
-    GP_PT_YCbCrSubsampling = &H212
-    GP_PT_YPosition = &H11F
-    GP_PT_YResolution = &H11B
+    GP_PT_Artist = &H13B&
+    GP_PT_BitsPerSample = &H102&
+    GP_PT_CellHeight = &H109&
+    GP_PT_CellWidth = &H108&
+    GP_PT_ChrominanceTable = &H5091&
+    GP_PT_ColorMap = &H140&
+    GP_PT_ColorTransferFunction = &H501A&
+    GP_PT_Compression = &H103&
+    GP_PT_Copyright = &H8298&
+    GP_PT_DateTime = &H132&
+    GP_PT_DocumentName = &H10D&
+    GP_PT_DotRange = &H150&
+    GP_PT_EquipMake = &H10F&
+    GP_PT_EquipModel = &H110&
+    GP_PT_ExifAperture = &H9202&
+    GP_PT_ExifBrightness = &H9203&
+    GP_PT_ExifCfaPattern = &HA302&
+    GP_PT_ExifColorSpace = &HA001&
+    GP_PT_ExifCompBPP = &H9102&
+    GP_PT_ExifCompConfig = &H9101&
+    GP_PT_ExifDTDigitized = &H9004&
+    GP_PT_ExifDTDigSS = &H9292&
+    GP_PT_ExifDTOrig = &H9003&
+    GP_PT_ExifDTOrigSS = &H9291&
+    GP_PT_ExifDTSubsec = &H9290&
+    GP_PT_ExifExposureBias = &H9204&
+    GP_PT_ExifExposureIndex = &HA215&
+    GP_PT_ExifExposureProg = &H8822&
+    GP_PT_ExifExposureTime = &H829A&
+    GP_PT_ExifFileSource = &HA300&
+    GP_PT_ExifFlash = &H9209&
+    GP_PT_ExifFlashEnergy = &HA20B&
+    GP_PT_ExifFNumber = &H829D&
+    GP_PT_ExifFocalLength = &H920A&
+    GP_PT_ExifFocalResUnit = &HA210&
+    GP_PT_ExifFocalXRes = &HA20E&
+    GP_PT_ExifFocalYRes = &HA20F&
+    GP_PT_ExifFPXVer = &HA000&
+    GP_PT_ExifIFD = &H8769&
+    GP_PT_ExifInterop = &HA005&
+    GP_PT_ExifISOSpeed = &H8827&
+    GP_PT_ExifLightSource = &H9208&
+    GP_PT_ExifMakerNote = &H927C&
+    GP_PT_ExifMaxAperture = &H9205&
+    GP_PT_ExifMeteringMode = &H9207&
+    GP_PT_ExifOECF = &H8828&
+    GP_PT_ExifPixXDim = &HA002&
+    GP_PT_ExifPixYDim = &HA003&
+    GP_PT_ExifRelatedWav = &HA004&
+    GP_PT_ExifSceneType = &HA301&
+    GP_PT_ExifSensingMethod = &HA217&
+    GP_PT_ExifShutterSpeed = &H9201&
+    GP_PT_ExifSpatialFR = &HA20C&
+    GP_PT_ExifSpectralSense = &H8824&
+    GP_PT_ExifSubjectDist = &H9206&
+    GP_PT_ExifSubjectLoc = &HA214&
+    GP_PT_ExifUserComment = &H9286&
+    GP_PT_ExifVer = &H9000&
+    GP_PT_ExtraSamples = &H152&
+    GP_PT_FillOrder = &H10A&
+    GP_PT_FrameDelay = &H5100&
+    GP_PT_FreeByteCounts = &H121&
+    GP_PT_FreeOffset = &H120&
+    GP_PT_Gamma = &H301&
+    GP_PT_GlobalPalette = &H5102&
+    GP_PT_GpsAltitude = &H6&
+    GP_PT_GpsAltitudeRef = &H5&
+    GP_PT_GpsDestBear = &H18&
+    GP_PT_GpsDestBearRef = &H17&
+    GP_PT_GpsDestDist = &H1A&
+    GP_PT_GpsDestDistRef = &H19&
+    GP_PT_GpsDestLat = &H14&
+    GP_PT_GpsDestLatRef = &H13&
+    GP_PT_GpsDestLong = &H16&
+    GP_PT_GpsDestLongRef = &H15&
+    GP_PT_GpsGpsDop = &HB&
+    GP_PT_GpsGpsMeasureMode = &HA&
+    GP_PT_GpsGpsSatellites = &H8&
+    GP_PT_GpsGpsStatus = &H9&
+    GP_PT_GpsGpsTime = &H7&
+    GP_PT_GpsIFD = &H8825&
+    GP_PT_GpsImgDir = &H11&
+    GP_PT_GpsImgDirRef = &H10&
+    GP_PT_GpsLatitude = &H2&
+    GP_PT_GpsLatitudeRef = &H1&
+    GP_PT_GpsLongitude = &H4&
+    GP_PT_GpsLongitudeRef = &H3&
+    GP_PT_GpsMapDatum = &H12&
+    GP_PT_GpsSpeed = &HD&
+    GP_PT_GpsSpeedRef = &HC&
+    GP_PT_GpsTrack = &HF&
+    GP_PT_GpsTrackRef = &HE&
+    GP_PT_GpsVer = &H0&
+    GP_PT_GrayResponseCurve = &H123&
+    GP_PT_GrayResponseUnit = &H122&
+    GP_PT_GridSize = &H5011&
+    GP_PT_HalftoneDegree = &H500C&
+    GP_PT_HalftoneHints = &H141&
+    GP_PT_HalftoneLPI = &H500A&
+    GP_PT_HalftoneLPIUnit = &H500B&
+    GP_PT_HalftoneMisc = &H500E&
+    GP_PT_HalftoneScreen = &H500F&
+    GP_PT_HalftoneShape = &H500D&
+    GP_PT_HostComputer = &H13C&
+    GP_PT_ICCProfile = &H8773&
+    GP_PT_ICCProfileDescriptor = &H302&
+    GP_PT_ImageDescription = &H10E&
+    GP_PT_ImageHeight = &H101&
+    GP_PT_ImageTitle = &H320&
+    GP_PT_ImageWidth = &H100&
+    GP_PT_IndexBackground = &H5103&
+    GP_PT_IndexTransparent = &H5104&
+    GP_PT_InkNames = &H14D&
+    GP_PT_InkSet = &H14C&
+    GP_PT_JPEGACTables = &H209&
+    GP_PT_JPEGDCTables = &H208&
+    GP_PT_JPEGInterFormat = &H201&
+    GP_PT_JPEGInterLength = &H202&
+    GP_PT_JPEGLosslessPredictors = &H205&
+    GP_PT_JPEGPointTransforms = &H206&
+    GP_PT_JPEGProc = &H200&
+    GP_PT_JPEGQTables = &H207&
+    GP_PT_JPEGQuality = &H5010&
+    GP_PT_JPEGRestartInterval = &H203&
+    GP_PT_LoopCount = &H5101&
+    GP_PT_LuminanceTable = &H5090&
+    GP_PT_MaxSampleValue = &H119&
+    GP_PT_MinSampleValue = &H118&
+    GP_PT_NewSubfileType = &HFE&
+    GP_PT_NumberOfInks = &H14E&
+    GP_PT_Orientation = &H112&
+    GP_PT_PageName = &H11D&
+    GP_PT_PageNumber = &H129&
+    GP_PT_PaletteHistogram = &H5113&
+    GP_PT_PhotometricInterp = &H106&
+    GP_PT_PixelPerUnitX = &H5111&
+    GP_PT_PixelPerUnitY = &H5112&
+    GP_PT_PixelUnit = &H5110&
+    GP_PT_PlanarConfig = &H11C&
+    GP_PT_Predictor = &H13D&
+    GP_PT_PrimaryChromaticities = &H13F&
+    GP_PT_PrintFlags = &H5005&
+    GP_PT_PrintFlagsBleedWidth = &H5008&
+    GP_PT_PrintFlagsBleedWidthScale = &H5009&
+    GP_PT_PrintFlagsCrop = &H5007&
+    GP_PT_PrintFlagsVersion = &H5006&
+    GP_PT_REFBlackWhite = &H214&
+    GP_PT_ResolutionUnit = &H128&
+    GP_PT_ResolutionXLengthUnit = &H5003&
+    GP_PT_ResolutionXUnit = &H5001&
+    GP_PT_ResolutionYLengthUnit = &H5004&
+    GP_PT_ResolutionYUnit = &H5002&
+    GP_PT_RowsPerStrip = &H116&
+    GP_PT_SampleFormat = &H153&
+    GP_PT_SamplesPerPixel = &H115&
+    GP_PT_SMaxSampleValue = &H155&
+    GP_PT_SMinSampleValue = &H154&
+    GP_PT_SoftwareUsed = &H131&
+    GP_PT_SRGBRenderingIntent = &H303&
+    GP_PT_StripBytesCount = &H117&
+    GP_PT_StripOffsets = &H111&
+    GP_PT_SubfileType = &HFF&
+    GP_PT_T4Option = &H124&
+    GP_PT_T6Option = &H125&
+    GP_PT_TargetPrinter = &H151&
+    GP_PT_ThreshHolding = &H107&
+    GP_PT_ThumbnailArtist = &H5034&
+    GP_PT_ThumbnailBitsPerSample = &H5022&
+    GP_PT_ThumbnailColorDepth = &H5015&
+    GP_PT_ThumbnailCompressedSize = &H5019&
+    GP_PT_ThumbnailCompression = &H5023&
+    GP_PT_ThumbnailCopyRight = &H503B&
+    GP_PT_ThumbnailData = &H501B&
+    GP_PT_ThumbnailDateTime = &H5033&
+    GP_PT_ThumbnailEquipMake = &H5026&
+    GP_PT_ThumbnailEquipModel = &H5027&
+    GP_PT_ThumbnailFormat = &H5012&
+    GP_PT_ThumbnailHeight = &H5014&
+    GP_PT_ThumbnailImageDescription = &H5025&
+    GP_PT_ThumbnailImageHeight = &H5021&
+    GP_PT_ThumbnailImageWidth = &H5020&
+    GP_PT_ThumbnailOrientation = &H5029&
+    GP_PT_ThumbnailPhotometricInterp = &H5024&
+    GP_PT_ThumbnailPlanarConfig = &H502F&
+    GP_PT_ThumbnailPlanes = &H5016&
+    GP_PT_ThumbnailPrimaryChromaticities = &H5036&
+    GP_PT_ThumbnailRawBytes = &H5017&
+    GP_PT_ThumbnailRefBlackWhite = &H503A&
+    GP_PT_ThumbnailResolutionUnit = &H5030&
+    GP_PT_ThumbnailResolutionX = &H502D&
+    GP_PT_ThumbnailResolutionY = &H502E&
+    GP_PT_ThumbnailRowsPerStrip = &H502B&
+    GP_PT_ThumbnailSamplesPerPixel = &H502A&
+    GP_PT_ThumbnailSize = &H5018&
+    GP_PT_ThumbnailSoftwareUsed = &H5032&
+    GP_PT_ThumbnailStripBytesCount = &H502C&
+    GP_PT_ThumbnailStripOffsets = &H5028&
+    GP_PT_ThumbnailTransferFunction = &H5031&
+    GP_PT_ThumbnailWhitePoint = &H5035&
+    GP_PT_ThumbnailWidth = &H5013&
+    GP_PT_ThumbnailYCbCrCoefficients = &H5037&
+    GP_PT_ThumbnailYCbCrPositioning = &H5039&
+    GP_PT_ThumbnailYCbCrSubsampling = &H5038&
+    GP_PT_TileByteCounts = &H145&
+    GP_PT_TileLength = &H143&
+    GP_PT_TileOffset = &H144&
+    GP_PT_TileWidth = &H142&
+    GP_PT_TransferFunction = &H12D&
+    GP_PT_TransferRange = &H156&
+    GP_PT_WhitePoint = &H13E&
+    GP_PT_XPosition = &H11E&
+    GP_PT_XResolution = &H11A&
+    GP_PT_YCbCrCoefficients = &H211&
+    GP_PT_YCbCrPositioning = &H213&
+    GP_PT_YCbCrSubsampling = &H212&
+    GP_PT_YPosition = &H11F&
+    GP_PT_YResolution = &H11B&
 End Enum
 
 #If False Then
@@ -1938,16 +1938,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetPropertyItemSize hImage, GP_PT_ICCProfile, profileSize
     
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
-    If (profileSize > 0) Then
-    
-        imgHasIccProfile = True
+    imgHasIccProfile = (profileSize > 0)
+    If imgHasIccProfile Then
     
         Dim iccProfileBuffer() As Byte
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
         GdipGetPropertyItem hImage, GP_PT_ICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
         dstDIB.ICCProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
-        
         Erase iccProfileBuffer
         
     End If
@@ -2114,15 +2112,15 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End If
         
     End If
-        
+    
     'Retrieve the image's alpha channel data (if any)
     Dim hasAlpha As Boolean
     hasAlpha = False
     
     Dim iPixelFormat As GP_PixelFormat
     GdipGetImagePixelFormat hImage, iPixelFormat
-    If (iPixelFormat And GP_PF_Alpha) <> 0 Then hasAlpha = True
-    If (iPixelFormat And GP_PF_PreMultAlpha) <> 0 Then hasAlpha = True
+    hasAlpha = ((iPixelFormat And GP_PF_Alpha) <> 0)
+    hasAlpha = ((iPixelFormat And GP_PF_PreMultAlpha) <> 0)
     
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
@@ -2201,7 +2199,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             GdipBitmapUnlockBits hImage, copyBitmapData
         
         Else
-        
+            
             'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
             ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
             If (isCMYK And imgHasIccProfile) Then
@@ -2232,13 +2230,40 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 GdipBitmapLockBits hImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppCMYK, copyBitmapData
                 GdipBitmapUnlockBits hImage, copyBitmapData
                 
-                'Apply the transformation using the dedicated CMYK transform handler
-                If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
-                    PDDebug.LogAction "Copying newly transformed sRGB data..."
-                    dstDIB.ICCProfile.MarkSuccessfulProfileApplication
-                                    
-                'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
-                Else
+                'We now need to apply the CMYK transform.  This is a multistep process that has been condensed here due to
+                ' its rarity in the actual processing chain.
+                Dim cmSuccessful As Boolean
+                cmSuccessful = False
+                
+                Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile
+                Set srcProfile = New pdLCMSProfile
+                Set dstProfile = New pdLCMSProfile
+                
+                If srcProfile.CreateFromPDDib(dstDIB) Then
+                    If dstProfile.CreateSRGBProfile() Then
+                        
+                        Dim cTransform As pdLCMSTransform
+                        Set cTransform = New pdLCMSTransform
+                        If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, TYPE_CMYK_8, TYPE_BGR_8, INTENT_PERCEPTUAL) Then
+                            
+                            Set srcProfile = Nothing: Set dstProfile = Nothing
+                        
+                            cmSuccessful = cTransform.ApplyTransformToArbitraryMemory(copyBitmapData.BD_Scan0, dstDIB.GetDIBScanline(0), copyBitmapData.BD_Stride, dstDIB.GetDIBStride, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth, False)
+                                
+                            If cmSuccessful Then
+                                PDDebug.LogAction "Copying newly transformed sRGB data..."
+                                dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                                dstDIB.SetInitialAlphaPremultiplicationState True
+                            End If
+                            
+                            Set cTransform = Nothing
+                            
+                        End If
+                    End If
+                End If
+                
+                'Check for potential failure states, and fall back to a naive CMYK transform as necessary.
+                If (Not cmSuccessful) Then
                     
                     PDDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
                     

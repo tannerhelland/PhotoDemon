@@ -1153,12 +1153,10 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then
                     LittleCMS.ApplyICCProfileToPDDIB targetDIB
                 Else
-                    ColorManagement.ApplyICCtoPDDib_WindowsCMS targetDIB
+                    PDDebug.LogAction "WARNING!  LittleCMS is missing, so color management has been disabled for this session."
                 End If
                 
-                Dim engineUsed As String
-                If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
-                PDDebug.LogAction "Note: color management of the imported image took " & VBHacks.GetTimeDiffNowAsString(startTime) & " using " & engineUsed
+                PDDebug.LogAction "Note: LittleCMS color-management of this image took " & VBHacks.GetTimeDiffNowAsString(startTime)
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
                 ApplyPostLoadICCHandling = True
