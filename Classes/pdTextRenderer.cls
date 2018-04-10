@@ -326,8 +326,8 @@ Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As L
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
 'Back color modes (not useful here except during debug mode)
-Private Const FONT_TRANSPARENT = &H1
-Private Const FONT_OPAQUE = &H2
+Private Const FONT_TRANSPARENT As Long = &H1
+Private Const FONT_OPAQUE As Long = &H2
 
 'Formatting constants for DrawText
 Private Const DT_TOP = &H0

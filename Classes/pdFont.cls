@@ -87,7 +87,7 @@ Private Const TA_UPDATECP As Long = 1
 Private Const TA_NOUPDATECP As Long = 0
 
 'Transparent font background
-Private Const FONT_TRANSPARENT As Long = &H3
+Private Const FONT_TRANSPARENT As Long = &H1
 
 'Formatting constants for DrawText
 Private Enum DT_Flags
