@@ -313,8 +313,11 @@ Public Property Let Value(ByVal newValue As Double)
                     RedrawBackBuffer
                 End If
             Else
-                If (LenB(Trim$(m_EditBox.Text)) > 0) Then
+                If (LenB(Trim$(m_EditBox.Text)) <> 0) Then
+                    On Error GoTo SpinStringInvalid
                     If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
+SpinStringInvalid:
+                    On Error GoTo 0
                 End If
             End If
             

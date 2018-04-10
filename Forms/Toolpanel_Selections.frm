@@ -26,6 +26,20 @@ Begin VB.Form toolpanel_Selections
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdSpinner spnOpacity 
+      Height          =   375
+      Index           =   0
+      Left            =   1440
+      TabIndex        =   40
+      Top             =   840
+      Width           =   1125
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      DefaultValue    =   50
+      Min             =   1
+      Max             =   100
+      Value           =   50
+   End
    Begin PhotoDemon.pdDropDown cboSelSmoothing 
       Height          =   735
       Left            =   2760
@@ -48,14 +62,15 @@ Begin VB.Form toolpanel_Selections
       Caption         =   "appearance"
       FontSizeCaption =   10
    End
-   Begin PhotoDemon.pdColorSelector csSelectionHighlight 
-      Height          =   375
-      Left            =   240
+   Begin PhotoDemon.pdColorSelector csSelection 
+      Height          =   330
+      Index           =   0
+      Left            =   225
       TabIndex        =   3
       Top             =   840
-      Width           =   2325
-      _ExtentX        =   4101
-      _ExtentY        =   661
+      Width           =   1140
+      _ExtentX        =   2011
+      _ExtentY        =   582
    End
    Begin PhotoDemon.pdSlider sltSelectionFeathering 
       CausesValidation=   0   'False
@@ -582,6 +597,30 @@ Begin VB.Form toolpanel_Selections
          FontSizeCaption =   10
       End
    End
+   Begin PhotoDemon.pdSpinner spnOpacity 
+      Height          =   375
+      Index           =   1
+      Left            =   1440
+      TabIndex        =   41
+      Top             =   840
+      Width           =   1125
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      DefaultValue    =   50
+      Min             =   1
+      Max             =   100
+      Value           =   50
+   End
+   Begin PhotoDemon.pdColorSelector csSelection 
+      Height          =   330
+      Index           =   1
+      Left            =   225
+      TabIndex        =   42
+      Top             =   840
+      Width           =   1140
+      _ExtentX        =   2011
+      _ExtentY        =   582
+   End
 End
 Attribute VB_Name = "toolpanel_Selections"
 Attribute VB_GlobalNameSpace = False
@@ -647,7 +686,10 @@ End Sub
 Private Sub cboSelRender_Click()
     
     'Show or hide the color selector, as appropriate
-    csSelectionHighlight.Visible = (cboSelRender.ListIndex = PDSR_Highlight)
+    csSelection(0).Visible = (cboSelRender.ListIndex = PDSR_Highlight)
+    spnOpacity(0).Visible = (cboSelRender.ListIndex = PDSR_Highlight)
+    csSelection(1).Visible = (cboSelRender.ListIndex = PDSR_Lightbox)
+    spnOpacity(1).Visible = (cboSelRender.ListIndex = PDSR_Lightbox)
     
     'Redraw the viewport
     Selections.NotifySelectionRenderChange pdsr_RenderMode, cboSelRender.ListIndex
@@ -673,11 +715,7 @@ End Sub
 Private Sub cboWandCompare_Click()
     
     'Limit the accuracy of the tolerance for certain comparison methods.
-    If (cboWandCompare.ListIndex > 1) Then
-        sltWandTolerance.SigDigits = 0
-    Else
-        sltWandTolerance.SigDigits = 1
-    End If
+    If (cboWandCompare.ListIndex > 1) Then sltWandTolerance.SigDigits = 0 Else sltWandTolerance.SigDigits = 1
     
     'If a selection is already active, change its type to match the current option, then redraw it
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
@@ -687,10 +725,14 @@ Private Sub cboWandCompare_Click()
     
 End Sub
 
-Private Sub csSelectionHighlight_ColorChanged()
+Private Sub csSelection_ColorChanged(Index As Integer)
     
-    'Redraw the viewport
-    Selections.NotifySelectionRenderChange pdsr_HighlightColor, csSelectionHighlight.Color
+    If (Index = 0) Then
+        Selections.NotifySelectionRenderChange pdsr_HighlightColor, csSelection(Index).Color
+    ElseIf (Index = 1) Then
+        Selections.NotifySelectionRenderChange pdsr_LightboxColor, csSelection(Index).Color
+    End If
+    
     If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
     
 End Sub
@@ -718,8 +760,15 @@ Private Sub Form_Load()
     cboSelRender.ListIndex = 2
     cboSelRender.SetAutomaticRedraws True
     
-    csSelectionHighlight.Color = RGB(255, 58, 72)
-    csSelectionHighlight.Visible = True
+    csSelection(0).Color = RGB(255, 58, 72)
+    csSelection(0).Visible = True
+    spnOpacity(0).Value = 50
+    spnOpacity(0).Visible = True
+    
+    csSelection(1).Color = 0
+    csSelection(1).Visible = False
+    spnOpacity(1).Value = 50
+    spnOpacity(1).Visible = False
     
     'Selection smoothing (currently none, antialiased, fully feathered)
     cboSelSmoothing.SetAutomaticRedraws False
@@ -727,8 +776,8 @@ Private Sub Form_Load()
     cboSelSmoothing.AddItem "none", 0
     cboSelSmoothing.AddItem "antialiased", 1
     cboSelSmoothing.AddItem "feathered", 2
-    cboSelSmoothing.ListIndex = 1
     cboSelSmoothing.SetAutomaticRedraws True
+    cboSelSmoothing.ListIndex = 1
     
     'Selection types (currently interior, exterior, border)
     Dim i As Long
@@ -789,7 +838,10 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     'Pull certain universal selection settings from PD's main preferences file
     If UserPrefs.IsReady Then
         cboSelRender.ListIndex = Selections.GetSelectionRenderMode()
-        csSelectionHighlight.Color = Selections.GetSelectionRenderColor()
+        csSelection(0).Color = Selections.GetSelectionColor_Highlight()
+        spnOpacity(0).Value = Selections.GetSelectionOpacity_Highlight()
+        csSelection(1).Color = Selections.GetSelectionColor_Lightbox()
+        spnOpacity(1).Value = Selections.GetSelectionOpacity_Lightbox()
     End If
     
 End Sub
@@ -857,6 +909,18 @@ Private Sub sltWandTolerance_Change()
     End If
 End Sub
 
+Private Sub spnOpacity_Change(Index As Integer)
+
+    If (Index = 0) Then
+        Selections.NotifySelectionRenderChange pdsr_HighlightOpacity, spnOpacity(Index).Value
+    ElseIf (Index = 1) Then
+        Selections.NotifySelectionRenderChange pdsr_LightboxOpacity, spnOpacity(Index).Value
+    End If
+    
+    If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    
+End Sub
+
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub tudSel_Change(Index As Integer)
     UpdateSelectionsValuesViaText
@@ -889,7 +953,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ' between two non-English languages at run-time.
     cboSelRender.AssignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
     cboSelSmoothing.AssignTooltip "This option controls how smoothly a selection blends with its surroundings."
-        
+    
     Dim i As Long
     For i = 0 To cboSelArea.Count - 1
         cboSelArea(i).AssignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."

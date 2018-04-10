@@ -2580,9 +2580,16 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
     ' renders the active selection's outline by treating the underlying selection data as a vector path, not a raster mask).
-    Dim renderType As PD_SelectionRender, renderColor As Long
-    renderType = Selections.GetSelectionRenderMode
-    renderColor = Selections.GetSelectionRenderColor
+    Dim renderType As PD_SelectionRender, renderColor As Long, renderOpacity As Long
+    renderType = Selections.GetSelectionRenderMode()
+    
+    If (renderType = PDSR_Highlight) Then
+        renderColor = Selections.GetSelectionColor_Highlight()
+        renderOpacity = Selections.GetSelectionOpacity_Highlight()
+    Else
+        renderColor = Selections.GetSelectionColor_Lightbox()
+        renderOpacity = Selections.GetSelectionOpacity_Lightbox()
+    End If
     
     'We use the RASTER OVERLAY FUNCTION if...
     ' 1) The user has requested "highlight" or "lightbox" rendering mode.
@@ -2612,21 +2619,21 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If useOutlineRenderingInstead Then
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     Else
-        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor
+        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor, renderOpacity
     End If
     
 End Sub
 
 'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
 ' using the HIGHLIGHT or LIGHTBOX selection styles.
-Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
+Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RectL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640, Optional ByVal renderOpacity As Single = 50!)
     
     'To improve performance, this function caches the current selection overlay image as a persistent DIB.  (This lets
     ' us cheat and directly AlphaBlend the cached result during intensive operations like paint strokes.)  If the associated
     ' viewport cached has changed, we obviously need to regenerate our overlay cache - but we also need to regenerate the
     ' cache if the current selection UI settings have changed (such as selection rendering color).
     Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
-    If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor), False)
+    If (Not overlayWasRegenerated) Then renderingSettingsChanged = Strings.StringsNotEqual(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor, renderOpacity), False)
     
     'If any preceding checks failed, generate a new UI DIB to match current settings.
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
@@ -2655,21 +2662,23 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         Dim tmpRGBA As RGBQuad, i As Long
         Dim newR As Long, newG As Long, newB As Long, newA As Single
         Dim defaultFillColor As Long
+        
+        'Extract RGB values from the passed color
+        newR = Colors.ExtractRed(renderColor)
+        newG = Colors.ExtractGreen(renderColor)
+        newB = Colors.ExtractBlue(renderColor)
+        
+        'Convert opacity to a [0, 1] scale, and because we're multiplying it by (color / 255), we can go a step
+        ' further and just pre-multiply it against (1 / 255)
+        Dim opacityMultiplier As Single
+        opacityMultiplier = renderOpacity * 0.01! * (1! / 255!)
             
         'The constructed lookup table varies by overlay type
         If (renderType = PDSR_Highlight) Then
             
-            'Extract RGB values from the passed color
-            newR = Colors.ExtractRed(renderColor)
-            newG = Colors.ExtractGreen(renderColor)
-            newB = Colors.ExtractBlue(renderColor)
-            
-            Const HIGHLIGHT_SELECTION_OPACITY As Single = 0.5
-            
-            'At present, overlay opacity is locked at 50%; as with most things, it would be nice to eventually expose this
-            ' to the user
+            'Build a lookup table of opacity-corrected values
             For i = 0 To 255
-                newA = (i / 255) * HIGHLIGHT_SELECTION_OPACITY
+                newA = CSng(i) * opacityMultiplier
                 With tmpRGBA
                     .Red = newR * newA
                     .Green = newG * newA
@@ -2683,7 +2692,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             ' before doing our actual per-pixel rendering.)  Note that we deliberately use premultiplied alpha,
             ' despite GDI+ operating on non-premultiplied alpha by default.
             If (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                newA = HIGHLIGHT_SELECTION_OPACITY
+                newA = (renderOpacity * 0.01)
                 defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
             Else
                 newA = 0#
@@ -2691,17 +2700,9 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             End If
         
         ElseIf (renderType = PDSR_Lightbox) Then
-        
-            'At present, lightbox mode is limited to black at 50% opacity; as noted above, I'd like to eventually expose this
-            ' to the user.
-            newR = 0
-            newG = 0
-            newB = 0
-            
-            Const LIGHTBOX_SELECTION_OPACITY As Single = 0.5
             
             For i = 0 To 255
-                newA = ((255 - i) / 255) * LIGHTBOX_SELECTION_OPACITY
+                newA = CSng(255 - i) * opacityMultiplier
                 With tmpRGBA
                     .Red = newR * newA
                     .Green = newG * newA
@@ -2716,7 +2717,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 newA = 0#
                 defaultFillColor = 0
             Else
-                newA = LIGHTBOX_SELECTION_OPACITY
+                newA = (renderOpacity * 0.01)
                 defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
             End If
             

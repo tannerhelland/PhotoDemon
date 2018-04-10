@@ -33,15 +33,18 @@ End Enum
 Public Enum PD_SelectionRenderSetting
     pdsr_RenderMode = 0
     pdsr_HighlightColor = 1
+    pdsr_HighlightOpacity = 2
+    pdsr_LightboxColor = 3
+    pdsr_LightboxOpacity = 4
 End Enum
 
 #If False Then
-    Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1
+    Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1, pdsr_HighlightOpacity = 2, pdsr_LightboxColor = 3, pdsr_LightboxOpacity = 4
 #End If
 
-'This module caches the current selection mode and/or color, and the viewport pipeline retrieves these cached values as necessary
-' during rendering.
-Private m_CurSelectionMode As PD_SelectionRender, m_CurSelectionColor As Long
+'This module caches a number of UI-related selection details
+Private m_CurSelectionMode As PD_SelectionRender, m_SelHighlightColor As Long, m_SelHighlightOpacity As Single
+Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
 
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
@@ -1305,12 +1308,12 @@ Public Sub InitializeSelectionRendering()
         'Rendering mode (marching ants, highlight, etc)
         m_CurSelectionMode = UserPrefs.GetPref_Long("Tools", "SelectionRenderMode", 0)
         
-        'Highlight mode color
+        'Highlight, lightbox mode render settings
         Dim tmpString As String
-        tmpString = UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48")
-        m_CurSelectionColor = Colors.GetRGBLongFromHex(tmpString)
-        
-        'TODO: lightbox color, opacity for various modes
+        m_SelHighlightColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48"))
+        m_SelHighlightOpacity = UserPrefs.GetPref_Float("Tools", "SelectionHighlightOpacity", 50!)
+        m_SelLightboxColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionLightboxColor", "#000000"))
+        m_SelLightboxOpacity = UserPrefs.GetPref_Float("Tools", "SelectionLightboxOpacity", 50!)
         
     End If
 
@@ -1328,11 +1331,23 @@ Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSe
             'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
             ' them correctly, even if selection tools have not been loaded this session.  (This can happen if the user runs
             ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str(m_CurSelectionMode))
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionRenderMode", Trim$(Str$(m_CurSelectionMode))
             
         Case pdsr_HighlightColor
-            m_CurSelectionColor = newValue
-            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_CurSelectionColor)
+            m_SelHighlightColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_SelHighlightColor)
+        
+        Case pdsr_HighlightOpacity
+            m_SelHighlightOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionHighlightOpacity", m_SelHighlightOpacity
+            
+        Case pdsr_LightboxColor
+            m_SelLightboxColor = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionLightboxColor", Colors.GetHexStringFromRGB(m_SelLightboxColor)
+        
+        Case pdsr_LightboxOpacity
+            m_SelLightboxOpacity = newValue
+            If UserPrefs.IsReady Then UserPrefs.WritePreference "Tools", "SelectionlightboxOpacity", m_SelLightboxOpacity
             
     End Select
     
@@ -1342,8 +1357,20 @@ Public Function GetSelectionRenderMode() As PD_SelectionRender
     GetSelectionRenderMode = m_CurSelectionMode
 End Function
 
-Public Function GetSelectionRenderColor() As Long
-    GetSelectionRenderColor = m_CurSelectionColor
+Public Function GetSelectionColor_Highlight() As Long
+    GetSelectionColor_Highlight = m_SelHighlightColor
+End Function
+
+Public Function GetSelectionOpacity_Highlight() As Single
+    GetSelectionOpacity_Highlight = m_SelHighlightOpacity
+End Function
+
+Public Function GetSelectionColor_Lightbox() As Long
+    GetSelectionColor_Lightbox = m_SelLightboxColor
+End Function
+
+Public Function GetSelectionOpacity_Lightbox() As Single
+    GetSelectionOpacity_Lightbox = m_SelLightboxOpacity
 End Function
 
 'Keypresses on a source canvas are passed here.  The caller doesn't need pass anything except relevant keycodes, and a reference
