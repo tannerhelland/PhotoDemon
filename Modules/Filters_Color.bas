@@ -289,15 +289,15 @@ Public Sub MenuInvertHue()
         Colors.ImpreciseRGBtoHSL r, g, b, h, s, l
         
         'Invert hue
-        h = 6# - (h + 1#) - 1#
+        h = 4# - h
         
         'Convert the newly calculated HSL values back to RGB
         Colors.ImpreciseHSLtoRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
-        imageData(quickVal, y) = b
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal + 2, y) = r
+        imageData(x, y) = b
+        imageData(x + 1, y) = g
+        imageData(x + 2, y) = r
         
     Next x
         If (y And progBarCheck) = 0 Then
