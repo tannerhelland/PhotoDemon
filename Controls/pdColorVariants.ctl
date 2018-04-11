@@ -453,7 +453,7 @@ Private Sub UpdateControlLayout()
         ucRight = bWidth - 2
         
         'How we actually create the regions varies depending on the current control orientation.
-        If m_ControlShape = CWS_Circular Then
+        If (m_ControlShape = CWS_Circular) Then
             CreateSubregions_Circular ucLeft, ucTop, ucBottom, ucRight
         Else
             CreateSubregions_Rectangular ucLeft, ucTop, ucBottom, ucRight
@@ -753,7 +753,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() And (bufferDC <> 0) Then
+    If pdMain.IsProgramRunning() Then
     
         Dim borderColor As Long
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)

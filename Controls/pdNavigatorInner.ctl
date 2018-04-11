@@ -290,7 +290,7 @@ Private Sub UpdateControlLayout()
     thumbHeight = bHeight - FixDPIFloat(THUMB_PADDING) * 2
     
     'Try to optimize re-creating the thumbnail, so we only do it when absolutely necessary
-    If m_ImageThumbnail Is Nothing Then Set m_ImageThumbnail = New pdDIB
+    If (m_ImageThumbnail Is Nothing) Then Set m_ImageThumbnail = New pdDIB
     If (m_ImageThumbnail.GetDIBWidth <> thumbWidth) Or (m_ImageThumbnail.GetDIBHeight <> thumbHeight) Then
         m_ImageThumbnail.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
     Else

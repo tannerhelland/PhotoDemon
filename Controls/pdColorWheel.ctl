@@ -821,7 +821,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     boxBorderColor = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, m_MouseInsideBox)
     colorPreviewBorder = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, False)
     
-    If pdMain.IsProgramRunning() And (bufferDC <> 0) And (m_HueRadiusInner > 0) Then
+    If pdMain.IsProgramRunning() And (m_HueRadiusInner > 0) Then
         
         'Paint the hue wheel (currently left-aligned)
         If (Not m_WheelBuffer Is Nothing) Then

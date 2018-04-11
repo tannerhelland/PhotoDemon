@@ -136,9 +136,9 @@ Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue 
         
         If pdMain.IsProgramRunning Then
         
-            Dim tmpRectF As RectF
             If (ptrToRectF <> 0) Then
-            
+                
+                Dim tmpRectF As RectF
                 CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
                 
                 'Note that this control *is* color-managed

@@ -197,7 +197,7 @@ Private m_WandImage As pdDIB, m_WandImageTimestamp As Currency
 ' is *not* boundary-checked against the size of the viewport.  Its coordinates may lay outside the overlay reference DIB,
 ' by design.)
 Private m_ViewportReference As pdDIB, m_ViewportRefRectF As RectF, m_ViewportRefReady As Boolean
-Private m_LastViewportRectF As RectF, m_LastImageRectF As RectF
+Private m_LastViewportRectF As RectF, m_LastImageRectF As RectF, m_LastRenderMode As PD_SelectionRender
 
 'To further improve viewport rendering performance when "highlight" and "lightbox" rendering modes are active, this class
 ' also caches such overlays inside a persistent DIB.  Because this DIB is inextricably tied to the current viewport,
@@ -2508,7 +2508,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_ViewportRefReady = False
         End If
         
-        'Finally, compare current and previous image rects
+        'Next, compare current and previous image rects
         If m_ViewportRefReady Then
             
             Dim curImgRectF As RectF
@@ -2520,6 +2520,9 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             End If
             
         End If
+        
+        'Next, compare previous and current rendering modes
+        If (m_LastRenderMode <> Selections.GetSelectionRenderMode()) Then m_ViewportRefReady = False
         
     End If
     
@@ -2582,6 +2585,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' renders the active selection's outline by treating the underlying selection data as a vector path, not a raster mask).
     Dim renderType As PD_SelectionRender, renderColor As Long, renderOpacity As Long
     renderType = Selections.GetSelectionRenderMode()
+    m_LastRenderMode = renderType
     
     If (renderType = PDSR_Highlight) Then
         renderColor = Selections.GetSelectionColor_Highlight()
@@ -3504,6 +3508,7 @@ Private Sub Class_Initialize()
     'Initialize the selection mask for this object and mark it as "not ready" (because no mask has been drawn yet)
     Set m_SelMask = New pdDIB
     m_IsMaskReady = False
+    m_LastRenderMode = -1
     
     'Note that a mask has never been created for this selection
     m_MaskHasBeenCreated = False
