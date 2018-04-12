@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.349</langversion>
+<langversion>6.7.350</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6606,7 +6606,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>reduce bleed</original>
+<original>dithering amount</original>
 <translation></translation>
 </phrase>
 
@@ -10516,21 +10516,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reduce color bleed</original>
-<translation>erminderen kleurbloeding</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>basisinstellingen</translation>
 </phrase>
@@ -10553,6 +10538,16 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>alpha cut-off</original>
 <translation>alpha doorsnede</translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10605,7 +10600,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15355,10 +15350,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2569</phrasecount>
+<phrasecount>2568</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
-<!-- These 2569 phrases contain approximately 12409 total words. -->
+<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 12406 total words. -->
 
 </pdData>

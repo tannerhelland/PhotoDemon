@@ -623,7 +623,7 @@ End Function
 
 'Given an arbitrary source palette, apply said palette to the target image.
 ' Dithering *is* used.  Colors are matched using a KD-tree.
-Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQuad, Optional ByVal ditherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal ditherStrength As Single = 1!, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
@@ -649,6 +649,10 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     
     Dim r As Long, g As Long, b As Long, i As Long, j As Long
     Dim newQuad As RGBQuad, tmpQuad As RGBQuad
+    
+    'Validate dither strength
+    If (ditherStrength < 0!) Then ditherStrength = 0!
+    If (ditherStrength > 1!) Then ditherStrength = 1!
     
     'Build A KD-tree for fast palette matching
     Dim kdTree As pdKDTree
@@ -706,7 +710,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             
             'Add dither to each component
             ditherAmt = Int(ditherTableI(Int(x \ 4) And ditherRows, y And ditherColumns)) - 63
-            If reduceBleed Then ditherAmt = ditherAmt * 0.33
+            ditherAmt = ditherAmt * ditherStrength
             
             r = r + ditherAmt
             If (r > 255) Then
@@ -830,11 +834,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             End With
             
             'Reduce color bleed, if specified
-            If reduceBleed Then
-                rError = rError * 0.33
-                gError = gError * 0.33
-                bError = bError * 0.33
-            End If
+            rError = rError * ditherStrength
+            gError = gError * ditherStrength
+            bError = bError * ditherStrength
             
             'Spread any remaining error to neighboring pixels, using the precalculated dither table as our guide
             For i = xLeft To xRight

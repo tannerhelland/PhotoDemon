@@ -24,22 +24,24 @@ Begin VB.Form FormGrayscale
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkReduceBleed 
-      Height          =   375
-      Left            =   6090
+   Begin PhotoDemon.pdSlider sldDitherAmount 
+      Height          =   735
+      Left            =   6000
       TabIndex        =   7
-      Top             =   4680
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-      Caption         =   "reduce bleed"
-      Value           =   0
+      Top             =   4080
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "dithering amount"
+      Max             =   100
+      Value           =   100
+      DefaultValue    =   100
    End
    Begin PhotoDemon.pdButtonStrip btsDecompose 
       Height          =   495
       Left            =   6120
       TabIndex        =   5
-      Top             =   2100
+      Top             =   1260
       Visible         =   0   'False
       Width           =   5655
       _ExtentX        =   9975
@@ -49,7 +51,7 @@ Begin VB.Form FormGrayscale
       Height          =   735
       Left            =   6000
       TabIndex        =   1
-      Top             =   3720
+      Top             =   3000
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
@@ -69,7 +71,7 @@ Begin VB.Form FormGrayscale
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2700
+      Top             =   2040
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   1270
@@ -93,7 +95,7 @@ Begin VB.Form FormGrayscale
       Height          =   735
       Left            =   6000
       TabIndex        =   4
-      Top             =   1200
+      Top             =   360
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
@@ -103,7 +105,7 @@ Begin VB.Form FormGrayscale
       Height          =   495
       Left            =   6120
       TabIndex        =   6
-      Top             =   2100
+      Top             =   1260
       Visible         =   0   'False
       Width           =   5655
       _ExtentX        =   9975
@@ -161,6 +163,7 @@ Private Sub btsDecompose_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cboDithering_Click()
+    UpdateVisibleControls
     UpdatePreview
 End Sub
 
@@ -174,11 +177,7 @@ Private Sub UpdateVisibleControls()
     btsDecompose.Visible = (cboMethod.ListIndex = GT_Decompose)
     btsChannel.Visible = (cboMethod.ListIndex = GT_Channel)
     cboDithering.Visible = (sltShades.Value <> 256)
-    chkReduceBleed.Visible = (sltShades.Value <> 256)
-End Sub
-
-Private Sub chkReduceBleed_Click()
-    UpdatePreview
+    sldDitherAmount.Visible = (sltShades.Value <> 256) And (cboDithering.ListIndex <> 0)
 End Sub
 
 'OK button
@@ -194,8 +193,8 @@ End Sub
 'Recommend ITU grayscale correction by default, and max shades without dithering
 Private Sub cmdBar_ResetClick()
     cboMethod.ListIndex = 1
+    cboDithering.ListIndex = 6
     sltShades.Value = 256
-    chkReduceBleed.Value = vbUnchecked
 End Sub
 
 'All different grayscale (black and white) routines are handled by this single function.  As of 16 Feb '14, grayscale operations
@@ -205,7 +204,7 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
 
     If (Not toPreview) Then Message "Converting image to black and white..."
     
-    Dim grayscaleMethod As PD_GrayscaleTechnique, numOfShades As Long, ditheringOptions As Long, reduceBleed As Boolean
+    Dim grayscaleMethod As PD_GrayscaleTechnique, numOfShades As Long, ditheringOptions As PD_DITHER_METHOD, ditherAmount As Single
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -217,9 +216,12 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
         grayscaleMethod = .GetLong("method", GT_ITU)
         numOfShades = .GetLong("shades", 256)
         ditheringOptions = .GetLong("dithering", 0)
-        reduceBleed = .GetBool("reducebleed", False)
+        ditherAmount = .GetDouble("ditheramount", 100!) * 0.01!
         
     End With
+    
+    If (ditherAmount < 0!) Then ditherAmount = 0!
+    If (ditherAmount > 1!) Then ditherAmount = 1!
     
     'Create a working copy of the relevant pixel data (with all selection transforms applied)
     Dim dstSA As SafeArray2D
@@ -262,13 +264,13 @@ Public Sub MasterGrayscaleFunction(ByVal effectParams As String, Optional ByVal 
         
         Select Case ditheringOptions
         
-            Case 0
+            Case PDDM_None
                 fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
             
             'If dithering is active, we can simply build a grayscale palette, then ask the central Palette engine to
             ' do the work for us.
             Case Else
-                fGrayscaleCustomDither numOfShades, ditheringOptions, reduceBleed, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
+                fGrayscaleCustomDither numOfShades, ditheringOptions, ditherAmount, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
             
         End Select
         
@@ -316,12 +318,12 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     conversionFactor = (255# / (numOfShades - 1))
     
     'Build a look-up table for our custom grayscale conversion results
-    Dim gLookUp(0 To 255) As Byte
+    Dim gLookup(0 To 255) As Byte
     
     For x = 0 To 255
         grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
         If (grayVal > 255) Then grayVal = 255
-        gLookUp(x) = CByte(grayVal)
+        gLookup(x) = CByte(grayVal)
     Next x
     
     'Build another look-up table for our initial grayscale index calculation
@@ -344,7 +346,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
         grayVal = grayLookUp(r + g + b)
         
         'Assign all color channels the new gray value
-        grayVal = gLookUp(grayVal)
+        grayVal = gLookup(grayVal)
         imageData(quickVal, y) = grayVal
         imageData(quickVal + 1, y) = grayVal
         imageData(quickVal + 2, y) = grayVal
@@ -366,7 +368,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
 End Function
 
 'Reduce to X # gray shades (dithered)
-Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByVal reduceBleed As Boolean, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMethod As Long, ByVal ditherAmount As Single, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     Dim srcPixels() As Byte, tmpSA As SafeArray2D
     dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
@@ -398,11 +400,11 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
     conversionFactor = (255# / (numOfShades - 1))
     
     'Build a look-up table for our custom grayscale conversion results
-    Dim gLookUp(0 To 255) As Long
+    Dim gLookup(0 To 255) As Long
     For x = 0 To 255
         newG = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
         If (newG > 255) Then newG = 255
-        gLookUp(x) = newG
+        gLookup(x) = newG
     Next x
     
     'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
@@ -456,7 +458,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             
             'Add dither
             ditherAmt = Int(ditherTableI(Int(x \ 4) And ditherRows, y And ditherColumns)) - 64
-            If reduceBleed Then ditherAmt = ditherAmt * 0.33
+            ditherAmt = ditherAmt * ditherAmount
             
             'Convert those to a luminance value and add the value of the error at this location
             newG = g + ditherAmt
@@ -469,7 +471,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             End If
             
             'Write the new luminance value out to the image array
-            newG = gLookUp(newG)
+            newG = gLookup(newG)
             srcPixels1D(x) = newG
             srcPixels1D(x + 1) = newG
             srcPixels1D(x + 2) = newG
@@ -526,7 +528,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             End If
             
             'Calculate the matching color
-            newG = gLookUp(newG)
+            newG = gLookup(newG)
             
             'Apply the closest discovered color to this pixel.
             srcPixels1D(x) = newG
@@ -537,7 +539,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             gError = g - newG
             
             'Reduce color bleed, if specified
-            If reduceBleed Then gError = gError * 0.33
+            gError = gError * ditherAmount
             
             'Spread any remaining error to neighboring pixels, using the precalculated dither table as our guide
             Dim i As Long, j As Long
@@ -991,7 +993,7 @@ Private Sub Form_Load()
     
     'Populate the dither combobox
     Palettes.PopulateDitheringDropdown cboDithering
-    cboDithering.ListIndex = 0
+    cboDithering.ListIndex = 6
     
     'Populate any other per-method controls
     btsDecompose.AddItem "minimum", 0
@@ -1017,6 +1019,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
+Private Sub sldDitherAmount_Change()
+    UpdatePreview
+End Sub
+
 Private Sub sltShades_Change()
     UpdateVisibleControls
     UpdatePreview
@@ -1038,7 +1044,7 @@ Private Function GetLocalParamString() As String
         .AddParam "method", cboMethod.ListIndex
         .AddParam "shades", sltShades.Value
         .AddParam "dithering", cboDithering.ListIndex
-        .AddParam "reducebleed", CBool(chkReduceBleed.Value)
+        .AddParam "ditheramount", sldDitherAmount.Value
         
         'All following parameters are relevant to only certain grayscale modes.
         .AddParam "decomposemode", btsDecompose.ListIndex

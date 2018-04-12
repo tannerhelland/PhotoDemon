@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.17</langversion>
+<langversion>1.0.18</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6600,7 +6600,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>reduce bleed</original>
+<original>dithering amount</original>
 <translation></translation>
 </phrase>
 
@@ -10510,21 +10510,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
-<original>palettes in this file</original>
-<translation>이 파일의 팔레트</translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation>팔레트 파일을 선택하십시오</translation>
-</phrase>
-
-<phrase>
-<original>reduce color bleed</original>
-<translation>색 번짐을 줄이십시오.</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>기본 설정</translation>
 </phrase>
@@ -10547,6 +10532,16 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <phrase>
 <original>alpha cut-off</original>
 <translation>알파 컷오프</translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation>이 파일의 팔레트</translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation>팔레트 파일을 선택하십시오</translation>
 </phrase>
 
 <phrase>
@@ -10599,7 +10594,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>경고! 팔레트 파일이 유효하지 않습니다.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15348,10 +15343,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2569</phrasecount>
+<phrasecount>2568</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
-<!-- These 2569 phrases contain approximately 12409 total words. -->
+<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 12406 total words. -->
 
 </pdData>

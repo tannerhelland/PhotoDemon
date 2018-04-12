@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.352</langversion>
+<langversion>6.7.353</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -6605,7 +6605,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>reduce bleed</original>
+<original>dithering amount</original>
 <translation></translation>
 </phrase>
 
@@ -10515,21 +10515,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reduce color bleed</original>
-<translation>reducir el sangrado de color</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>ajustes básicos</translation>
 </phrase>
@@ -10552,6 +10537,16 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>alpha cut-off</original>
 <translation>corte alfa</translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10604,7 +10599,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15353,10 +15348,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2569</phrasecount>
+<phrasecount>2568</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
-<!-- These 2569 phrases contain approximately 12409 total words. -->
+<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 12406 total words. -->
 
 </pdData>

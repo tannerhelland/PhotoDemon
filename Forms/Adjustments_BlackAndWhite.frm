@@ -23,16 +23,18 @@ Begin VB.Form FormMonochrome
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdCheckBox chkReduceBleed 
-      Height          =   375
-      Left            =   6120
+   Begin PhotoDemon.pdSlider sldDitheringAmount 
+      Height          =   855
+      Left            =   6000
       TabIndex        =   8
       Top             =   2400
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   661
-      Caption         =   "reduce bleed"
-      Value           =   0
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1508
+      Caption         =   "dithering amount"
+      Max             =   100
+      Value           =   100
+      DefaultValue    =   100
    End
    Begin PhotoDemon.pdDropDown cboDither 
       Height          =   855
@@ -48,7 +50,7 @@ Begin VB.Form FormMonochrome
       Height          =   1065
       Left            =   6000
       TabIndex        =   6
-      Top             =   4200
+      Top             =   4560
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   1879
@@ -94,7 +96,7 @@ Begin VB.Form FormMonochrome
       Index           =   0
       Left            =   6120
       TabIndex        =   1
-      Top             =   3360
+      Top             =   3720
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1085
@@ -105,7 +107,7 @@ Begin VB.Form FormMonochrome
       Index           =   1
       Left            =   9120
       TabIndex        =   2
-      Top             =   3360
+      Top             =   3720
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1085
@@ -124,7 +126,7 @@ Begin VB.Form FormMonochrome
       Height          =   285
       Index           =   1
       Left            =   6000
-      Top             =   3000
+      Top             =   3360
       Width           =   5955
       _ExtentX        =   10504
       _ExtentY        =   503
@@ -161,6 +163,7 @@ End Sub
 
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
+    sldDitheringAmount.Visible = (cboDither.ListIndex <> 0)
     UpdatePreview
 End Sub
 
@@ -170,10 +173,6 @@ Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
     sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
     cmdBar.MarkPreviewStatus True
-    UpdatePreview
-End Sub
-
-Private Sub chkReduceBleed_Click()
     UpdatePreview
 End Sub
 
@@ -195,7 +194,6 @@ Private Sub cmdBar_ResetClick()
     
     'Stucki dithering w/out bleed reduction
     cboDither.ListIndex = 6
-    chkReduceBleed.Value = vbUnchecked
     
     'Standard threshold value
     chkAutoThreshold.Value = vbUnchecked
@@ -209,7 +207,7 @@ Private Function GetFunctionParamString() As String
     With cParams
         .AddParam "threshold", sltThreshold.Value
         .AddParam "dither", cboDither.ListIndex
-        .AddParam "reducebleed", CBool(chkReduceBleed.Value)
+        .AddParam "ditheramount", sldDitheringAmount.Value
         .AddParam "color1", csMono(0).Color
         .AddParam "color2", csMono(1).Color
         .AddParam "removetransparency", (btsTransparency.ListIndex = 1)
@@ -330,16 +328,20 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Set cParams = New pdParamXML
     cParams.SetParamString monochromeParams
     
-    Dim cThreshold As Long, ditherMethod As Long, reduceBleed As Boolean
+    Dim cThreshold As Long, ditherMethod As Long, ditherAmount As Single
     Dim lowColor As Long, highColor As Long, removeTransparency As Boolean
     With cParams
         cThreshold = .GetLong("threshold", 127)
         ditherMethod = .GetLong("dither", 6)
-        reduceBleed = .GetBool("reducebleed", False)
+        ditherAmount = .GetDouble("ditheramount", 100!)
         lowColor = .GetLong("color1", vbBlack)
         highColor = .GetLong("color2", vbWhite)
         removeTransparency = .GetBool("removetransparency", False)
     End With
+    
+    ditherAmount = ditherAmount * 0.01
+    If (ditherAmount < 0!) Then ditherAmount = 0!
+    If (ditherAmount > 1!) Then ditherAmount = 1!
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
@@ -457,12 +459,8 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = Colors.GetHQLuminance(r, g, b)
-                If reduceBleed Then
-                    l = l + (CLng(ditherTable(x And 3, y And 3)) - 127) \ 3
-                Else
-                    l = l + (CLng(ditherTable(x And 3, y And 3)) - 127)
-                End If
-            
+                l = l + (CLng(ditherTable(x And 3, y And 3)) - 127) * ditherAmount
+                
                 'Check THAT value against the threshold, and set new values accordingly
                 If (l >= cThreshold) Then
                     imageData(xStride, y) = highB
@@ -503,11 +501,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = Colors.GetHQLuminance(r, g, b)
-                If reduceBleed Then
-                    l = l + (CLng(ditherTable(x And 7, y And 7)) - 127) \ 3
-                Else
-                    l = l + (CLng(ditherTable(x And 7, y And 7)) - 127)
-                End If
+                l = l + (CLng(ditherTable(x And 7, y And 7)) - 127) * ditherAmount
                 
                 'Check THAT value against the threshold, and set new values accordingly
                 If (l >= cThreshold) Then
@@ -619,7 +613,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             'If there is an error, spread it
             If (errorVal <> 0) Then
                 
-                If reduceBleed Then errorVal = errorVal \ 2
+                errorVal = errorVal * ditherAmount
                 
                 'Now, spread that error across the relevant pixels according to the dither table formula
                 For i = xLeft To xRight
@@ -668,6 +662,10 @@ NextDitheredPixel:     Next j
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied
 
+End Sub
+
+Private Sub sldDitheringAmount_Change()
+    UpdatePreview
 End Sub
 
 Private Sub sltThreshold_Change()

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3332</langversion>
+<langversion>6.8.3333</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6599,7 +6599,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>reduce bleed</original>
+<original>dithering amount</original>
 <translation></translation>
 </phrase>
 
@@ -10509,21 +10509,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reduce color bleed</original>
-<translation>Renk kanamasını azalt</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>Temel ayarlar</translation>
 </phrase>
@@ -10546,6 +10531,16 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <phrase>
 <original>alpha cut-off</original>
 <translation>alfa kesme</translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10598,7 +10593,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15342,10 +15337,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2569</phrasecount>
+<phrasecount>2568</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
-<!-- These 2569 phrases contain approximately 12409 total words. -->
+<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 12406 total words. -->
 
 </pdData>

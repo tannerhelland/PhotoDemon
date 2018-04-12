@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3332</langversion>
+<langversion>6.8.3333</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6600,7 +6600,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
-<original>reduce bleed</original>
+<original>dithering amount</original>
 <translation></translation>
 </phrase>
 
@@ -10510,21 +10510,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reduce color bleed</original>
-<translation>vähentää väri vuoto</translation>
-</phrase>
-
-<phrase>
 <original>basic settings</original>
 <translation>Perus asetukset</translation>
 </phrase>
@@ -10547,6 +10532,16 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <phrase>
 <original>alpha cut-off</original>
 <translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10599,7 +10594,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15349,10 +15344,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2569</phrasecount>
+<phrasecount>2568</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
-<!-- These 2569 phrases contain approximately 12409 total words. -->
+<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
+<!-- These 2568 phrases contain approximately 12406 total words. -->
 
 </pdData>
