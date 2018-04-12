@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3331</langversion>
+<langversion>6.8.3332</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1628,7 +1628,67 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>None</original>
+<translation>Žádný</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 4x4)</original>
+<translation>Objednáno (Bayer 4x4)</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 8x8)</original>
+<translation>Objednáno (Bayer 8x8)</translation>
+</phrase>
+
+<phrase>
+<original>Single neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Floyd-Steinberg</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Jarvis, Judice, and Ninke</original>
+<translation>Jarvis, Judice a Ninke</translation>
+</phrase>
+
+<phrase>
+<original>Stucki</original>
+<translation>Stucki</translation>
+</phrase>
+
+<phrase>
+<original>Burkes</original>
+<translation>Burkes</translation>
+</phrase>
+
+<phrase>
+<original>Sierra-3</original>
+<translation>Sierra-3</translation>
+</phrase>
+
+<phrase>
+<original>Two-Row Sierra</original>
+<translation>Dvouřádková Sierra</translation>
+</phrase>
+
+<phrase>
+<original>Sierra Lite</original>
+<translation>Sierra Lite</translation>
+</phrase>
+
+<phrase>
+<original>Atkinson / Classic Macintosh</original>
+<translation>Atkinson</translation>
+</phrase>
+
+<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -5084,11 +5144,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>None</original>
-<translation>Žádný</translation>
-</phrase>
-
-<phrase>
 <original>Invert</original>
 <translation>Obrátit Se</translation>
 </phrase>
@@ -6534,7 +6589,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Odstraňte alfa kanál</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 189 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6546,8 +6601,13 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 </phrase>
 
 <phrase>
-<original>dithering technique</original>
-<translation>Dithering technika</translation>
+<original>reduce bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dithering</original>
+<translation>Dithering</translation>
 </phrase>
 
 <phrase>
@@ -6571,61 +6631,6 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 </phrase>
 
 <phrase>
-<original>Ordered (Bayer 4x4)</original>
-<translation>Objednáno (Bayer 4x4)</translation>
-</phrase>
-
-<phrase>
-<original>Ordered (Bayer 8x8)</original>
-<translation>Objednáno (Bayer 8x8)</translation>
-</phrase>
-
-<phrase>
-<original>Single neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Floyd-Steinberg</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Jarvis, Judice, and Ninke</original>
-<translation>Jarvis, Judice a Ninke</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
-</phrase>
-
-<phrase>
-<original>Two-Row Sierra</original>
-<translation>Dvouřádková Sierra</translation>
-</phrase>
-
-<phrase>
-<original>Sierra Lite</original>
-<translation>Sierra Lite</translation>
-</phrase>
-
-<phrase>
-<original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson</translation>
-</phrase>
-
-<phrase>
 <original>do not modify</original>
 <translation>Neměňte</translation>
 </phrase>
@@ -6640,7 +6645,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Převedení obrázku na dvě barvy</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -6842,11 +6847,6 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
-<original>dithering options</original>
-<translation>Dithering možnosti</translation>
-</phrase>
-
-<phrase>
 <original>number of gray shades</original>
 <translation>Počet šedých odstínů</translation>
 </phrase>
@@ -6896,7 +6896,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>maximum</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -10521,11 +10521,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 </phrase>
 
 <phrase>
-<original>dithering</original>
-<translation>Dithering</translation>
-</phrase>
-
-<phrase>
 <original>reduce color bleed</original>
 <translation>Snižte blesk</translation>
 </phrase>
@@ -10605,7 +10600,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15353,10 +15348,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2570</phrasecount>
+<phrasecount>2569</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4683 phrases. -->
-<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
-<!-- These 2570 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4663 phrases. -->
+<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
+<!-- These 2569 phrases contain approximately 12409 total words. -->
 
 </pdData>

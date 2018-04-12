@@ -656,7 +656,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
     
     'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
-    Dim ditherTable() As Long
+    Dim ditherTableI() As Byte, ditherDivisor As Single
+    Dim xLeft As Long, xRight As Long, yDown As Long
+    
     Dim orderedDitherInUse As Boolean
     orderedDitherInUse = (ditherMethod = PDDM_Ordered_Bayer4x4) Or (ditherMethod = PDDM_Ordered_Bayer8x8)
     
@@ -667,127 +669,25 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
         ' threshold values on-the-fly.
         Dim ditherRows As Long, ditherColumns As Long
         
+        'First, prepare a dithering table
+        Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        
         If (ditherMethod = PDDM_Ordered_Bayer4x4) Then
-            
-            'First, prepare a Bayer dither table
             ditherRows = 3
             ditherColumns = 3
-            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
-            
-            ditherTable(0, 0) = 1
-            ditherTable(0, 1) = 9
-            ditherTable(0, 2) = 3
-            ditherTable(0, 3) = 11
-            
-            ditherTable(1, 0) = 13
-            ditherTable(1, 1) = 5
-            ditherTable(1, 2) = 15
-            ditherTable(1, 3) = 7
-            
-            ditherTable(2, 0) = 4
-            ditherTable(2, 1) = 12
-            ditherTable(2, 2) = 2
-            ditherTable(2, 3) = 10
-            
-            ditherTable(3, 0) = 16
-            ditherTable(3, 1) = 8
-            ditherTable(3, 2) = 14
-            ditherTable(3, 3) = 6
-    
-            'Convert the dither entries to absolute offsets (meaning half are positive, half are negative)
-            For x = 0 To 3
-            For y = 0 To 3
-                ditherTable(x, y) = ditherTable(x, y) * 2 - 16
-            Next y
-            Next x
-            
         ElseIf (ditherMethod = PDDM_Ordered_Bayer8x8) Then
-        
-            'First, prepare a Bayer dither table
             ditherRows = 7
             ditherColumns = 7
-            ReDim ditherTable(0 To ditherRows, 0 To ditherColumns) As Long
-            
-            ditherTable(0, 0) = 1
-            ditherTable(0, 1) = 49
-            ditherTable(0, 2) = 13
-            ditherTable(0, 3) = 61
-            ditherTable(0, 4) = 4
-            ditherTable(0, 5) = 52
-            ditherTable(0, 6) = 16
-            ditherTable(0, 7) = 64
-            
-            ditherTable(1, 0) = 33
-            ditherTable(1, 1) = 17
-            ditherTable(1, 2) = 45
-            ditherTable(1, 3) = 29
-            ditherTable(1, 4) = 36
-            ditherTable(1, 5) = 20
-            ditherTable(1, 6) = 48
-            ditherTable(1, 7) = 32
-            
-            ditherTable(2, 0) = 9
-            ditherTable(2, 1) = 57
-            ditherTable(2, 2) = 5
-            ditherTable(2, 3) = 53
-            ditherTable(2, 4) = 12
-            ditherTable(2, 5) = 60
-            ditherTable(2, 6) = 8
-            ditherTable(2, 7) = 56
-            
-            ditherTable(3, 0) = 41
-            ditherTable(3, 1) = 25
-            ditherTable(3, 2) = 37
-            ditherTable(3, 3) = 21
-            ditherTable(3, 4) = 44
-            ditherTable(3, 5) = 28
-            ditherTable(3, 6) = 40
-            ditherTable(3, 7) = 24
-            
-            ditherTable(4, 0) = 3
-            ditherTable(4, 1) = 51
-            ditherTable(4, 2) = 15
-            ditherTable(4, 3) = 63
-            ditherTable(4, 4) = 2
-            ditherTable(4, 5) = 50
-            ditherTable(4, 6) = 14
-            ditherTable(4, 7) = 62
-            
-            ditherTable(5, 0) = 35
-            ditherTable(5, 1) = 19
-            ditherTable(5, 2) = 47
-            ditherTable(5, 3) = 31
-            ditherTable(5, 4) = 34
-            ditherTable(5, 5) = 18
-            ditherTable(5, 6) = 46
-            ditherTable(5, 7) = 30
-    
-            ditherTable(6, 0) = 11
-            ditherTable(6, 1) = 59
-            ditherTable(6, 2) = 7
-            ditherTable(6, 3) = 55
-            ditherTable(6, 4) = 10
-            ditherTable(6, 5) = 58
-            ditherTable(6, 6) = 6
-            ditherTable(6, 7) = 54
-            
-            ditherTable(7, 0) = 43
-            ditherTable(7, 1) = 27
-            ditherTable(7, 2) = 39
-            ditherTable(7, 3) = 23
-            ditherTable(7, 4) = 42
-            ditherTable(7, 5) = 26
-            ditherTable(7, 6) = 38
-            ditherTable(7, 7) = 22
-            
-            'Convert the dither entries to [-32, 32] range
-            For x = 0 To 7
-            For y = 0 To 7
-                ditherTable(x, y) = ditherTable(x, y) - 32
-            Next y
-            Next x
-        
         End If
+        
+        'By default, ordered dither trees use a scale of [0, 255].  This works great for thresholding
+        ' against pure black/white, but for color data, it leads to extreme shifts.  Reduce the strength
+        ' of the table before continuing.
+        For x = 0 To ditherRows
+        For y = 0 To ditherColumns
+            ditherTableI(x, y) = ditherTableI(x, y) \ 2
+        Next y
+        Next x
         
         'Apply the finished dither table to the image
         Dim ditherAmt As Long
@@ -805,7 +705,7 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
             r = srcPixels1D(x + 2)
             
             'Add dither to each component
-            ditherAmt = ditherTable((x \ 4) And ditherRows, y And ditherColumns)
+            ditherAmt = Int(ditherTableI(Int(x \ 4) And ditherRows, y And ditherColumns)) - 63
             If reduceBleed Then ditherAmt = ditherAmt * 0.33
             
             r = r + ditherAmt
@@ -853,11 +753,8 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
     'All error-diffusion dither methods are handled similarly
     Else
         
-        Dim ditherTableI() As Byte
-        Dim xLeft As Long, xRight As Long, yDown As Long
         Dim rError As Long, gError As Long, bError As Long
         Dim errorMult As Single
-        Dim ditherDivisor As Single
         
         'Retrieve a hard-coded dithering table matching the requested dither type
         Palettes.GetDitherTable ditherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
@@ -1023,8 +920,124 @@ Public Function GetDitherTable(ByVal ditherType As PD_DITHER_METHOD, ByRef dstDi
     
     GetDitherTable = True
     
+    Dim x As Long, y As Long
+    
     Select Case ditherType
     
+        Case PDDM_Ordered_Bayer4x4
+        
+            ReDim dstDitherTable(0 To 3, 0 To 3) As Byte
+            
+            dstDitherTable(0, 0) = 0
+            dstDitherTable(0, 1) = 8
+            dstDitherTable(0, 2) = 2
+            dstDitherTable(0, 3) = 10
+            
+            dstDitherTable(1, 0) = 12
+            dstDitherTable(1, 1) = 4
+            dstDitherTable(1, 2) = 14
+            dstDitherTable(1, 3) = 6
+            
+            dstDitherTable(2, 0) = 3
+            dstDitherTable(2, 1) = 11
+            dstDitherTable(2, 2) = 1
+            dstDitherTable(2, 3) = 9
+            
+            dstDitherTable(3, 0) = 15
+            dstDitherTable(3, 1) = 7
+            dstDitherTable(3, 2) = 13
+            dstDitherTable(3, 3) = 5
+    
+            'Scale the table to [0, 255] range
+            For x = 0 To 3
+            For y = 0 To 3
+                dstDitherTable(x, y) = dstDitherTable(x, y) * 16
+            Next y
+            Next x
+        
+        Case PDDM_Ordered_Bayer8x8
+            
+            ReDim dstDitherTable(0 To 7, 0 To 7) As Byte
+            
+            dstDitherTable(0, 0) = 0
+            dstDitherTable(0, 1) = 48
+            dstDitherTable(0, 2) = 12
+            dstDitherTable(0, 3) = 60
+            dstDitherTable(0, 4) = 3
+            dstDitherTable(0, 5) = 51
+            dstDitherTable(0, 6) = 15
+            dstDitherTable(0, 7) = 63
+            
+            dstDitherTable(1, 0) = 32
+            dstDitherTable(1, 1) = 16
+            dstDitherTable(1, 2) = 44
+            dstDitherTable(1, 3) = 28
+            dstDitherTable(1, 4) = 35
+            dstDitherTable(1, 5) = 19
+            dstDitherTable(1, 6) = 47
+            dstDitherTable(1, 7) = 31
+            
+            dstDitherTable(2, 0) = 8
+            dstDitherTable(2, 1) = 56
+            dstDitherTable(2, 2) = 4
+            dstDitherTable(2, 3) = 52
+            dstDitherTable(2, 4) = 11
+            dstDitherTable(2, 5) = 59
+            dstDitherTable(2, 6) = 7
+            dstDitherTable(2, 7) = 55
+            
+            dstDitherTable(3, 0) = 40
+            dstDitherTable(3, 1) = 24
+            dstDitherTable(3, 2) = 36
+            dstDitherTable(3, 3) = 20
+            dstDitherTable(3, 4) = 43
+            dstDitherTable(3, 5) = 27
+            dstDitherTable(3, 6) = 39
+            dstDitherTable(3, 7) = 23
+            
+            dstDitherTable(4, 0) = 2
+            dstDitherTable(4, 1) = 50
+            dstDitherTable(4, 2) = 14
+            dstDitherTable(4, 3) = 62
+            dstDitherTable(4, 4) = 1
+            dstDitherTable(4, 5) = 49
+            dstDitherTable(4, 6) = 13
+            dstDitherTable(4, 7) = 61
+            
+            dstDitherTable(5, 0) = 34
+            dstDitherTable(5, 1) = 18
+            dstDitherTable(5, 2) = 46
+            dstDitherTable(5, 3) = 30
+            dstDitherTable(5, 4) = 33
+            dstDitherTable(5, 5) = 17
+            dstDitherTable(5, 6) = 45
+            dstDitherTable(5, 7) = 29
+    
+            dstDitherTable(6, 0) = 10
+            dstDitherTable(6, 1) = 58
+            dstDitherTable(6, 2) = 6
+            dstDitherTable(6, 3) = 54
+            dstDitherTable(6, 4) = 9
+            dstDitherTable(6, 5) = 57
+            dstDitherTable(6, 6) = 5
+            dstDitherTable(6, 7) = 53
+            
+            dstDitherTable(7, 0) = 42
+            dstDitherTable(7, 1) = 26
+            dstDitherTable(7, 2) = 38
+            dstDitherTable(7, 3) = 22
+            dstDitherTable(7, 4) = 41
+            dstDitherTable(7, 5) = 25
+            dstDitherTable(7, 6) = 37
+            dstDitherTable(7, 7) = 21
+            
+            'Scale the table to [0, 255] range
+            For x = 0 To 7
+            For y = 0 To 7
+                dstDitherTable(x, y) = dstDitherTable(x, y) * 4
+            Next y
+            Next x
+            
         Case PDDM_SingleNeighbor
         
             ReDim dstDitherTable(0 To 1, 0) As Byte
@@ -1428,3 +1441,22 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
     Message "Finished."
 
 End Function
+
+'Several PD functions share the same dither features (monochrome, grayscale, color palettes, etc)
+Public Sub PopulateDitheringDropdown(ByRef dstDropDown As pdDropDown)
+    dstDropDown.SetAutomaticRedraws False
+    dstDropDown.Clear
+    dstDropDown.AddItem "None", 0
+    dstDropDown.AddItem "Ordered (Bayer 4x4)", 1
+    dstDropDown.AddItem "Ordered (Bayer 8x8)", 2
+    dstDropDown.AddItem "Single neighbor", 3
+    dstDropDown.AddItem "Floyd-Steinberg", 4
+    dstDropDown.AddItem "Jarvis, Judice, and Ninke", 5
+    dstDropDown.AddItem "Stucki", 6
+    dstDropDown.AddItem "Burkes", 7
+    dstDropDown.AddItem "Sierra-3", 8
+    dstDropDown.AddItem "Two-Row Sierra", 9
+    dstDropDown.AddItem "Sierra Lite", 10
+    dstDropDown.AddItem "Atkinson / Classic Macintosh", 11
+    dstDropDown.SetAutomaticRedraws True
+End Sub

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.348</langversion>
+<langversion>6.7.349</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1628,7 +1628,67 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>None</original>
+<translation>Nessuna</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 4x4)</original>
+<translation>Ordinato (Bayer 4x4)</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 8x8)</original>
+<translation>Ordinato (Bayer 8x8)</translation>
+</phrase>
+
+<phrase>
+<original>Single neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Floyd-Steinberg</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Jarvis, Judice, and Ninke</original>
+<translation>Jarvis, Judice e Ninke</translation>
+</phrase>
+
+<phrase>
+<original>Stucki</original>
+<translation>Stucki</translation>
+</phrase>
+
+<phrase>
+<original>Burkes</original>
+<translation>Burkes</translation>
+</phrase>
+
+<phrase>
+<original>Sierra-3</original>
+<translation>Sierra-3</translation>
+</phrase>
+
+<phrase>
+<original>Two-Row Sierra</original>
+<translation>Sierra a due righe</translation>
+</phrase>
+
+<phrase>
+<original>Sierra Lite</original>
+<translation>Sierra Lite</translation>
+</phrase>
+
+<phrase>
+<original>Atkinson / Classic Macintosh</original>
+<translation>Atkinson/Macintosh Classico</translation>
+</phrase>
+
+<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -5087,11 +5147,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>None</original>
-<translation>Nessuna</translation>
-</phrase>
-
-<phrase>
 <original>Invert</original>
 <translation>Inverti</translation>
 </phrase>
@@ -6538,7 +6593,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 189 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6550,8 +6605,13 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>dithering technique</original>
-<translation>tecnica a retinatura</translation>
+<original>reduce bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dithering</original>
+<translation>dithering</translation>
 </phrase>
 
 <phrase>
@@ -6575,61 +6635,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>Ordered (Bayer 4x4)</original>
-<translation>Ordinato (Bayer 4x4)</translation>
-</phrase>
-
-<phrase>
-<original>Ordered (Bayer 8x8)</original>
-<translation>Ordinato (Bayer 8x8)</translation>
-</phrase>
-
-<phrase>
-<original>Single neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Floyd-Steinberg</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Jarvis, Judice, and Ninke</original>
-<translation>Jarvis, Judice e Ninke</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
-</phrase>
-
-<phrase>
-<original>Two-Row Sierra</original>
-<translation>Sierra a due righe</translation>
-</phrase>
-
-<phrase>
-<original>Sierra Lite</original>
-<translation>Sierra Lite</translation>
-</phrase>
-
-<phrase>
-<original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson/Macintosh Classico</translation>
-</phrase>
-
-<phrase>
 <original>do not modify</original>
 <translation>non modificare</translation>
 </phrase>
@@ -6644,7 +6649,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Conversione dell'immagine a due colori</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -6846,11 +6851,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
-<original>dithering options</original>
-<translation>opzioni di retinatura</translation>
-</phrase>
-
-<phrase>
 <original>number of gray shades</original>
 <translation>numero sfumature di grigio</translation>
 </phrase>
@@ -6900,7 +6900,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>massimo</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -10525,11 +10525,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>dithering</original>
-<translation>dithering</translation>
-</phrase>
-
-<phrase>
 <original>reduce color bleed</original>
 <translation>ridurre il margine di colore</translation>
 </phrase>
@@ -10609,7 +10604,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15357,10 +15352,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2570</phrasecount>
+<phrasecount>2569</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4683 phrases. -->
-<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
-<!-- These 2570 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4663 phrases. -->
+<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
+<!-- These 2569 phrases contain approximately 12409 total words. -->
 
 </pdData>

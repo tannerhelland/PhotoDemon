@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3331</langversion>
+<langversion>6.8.3332</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1622,7 +1622,67 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>None</original>
+<translation>Egyik sem</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 4x4)</original>
+<translation>Rendezett (Bayer 4x4)</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 8x8)</original>
+<translation>Rendezett (Bayer 8x8)</translation>
+</phrase>
+
+<phrase>
+<original>Single neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Floyd-Steinberg</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Jarvis, Judice, and Ninke</original>
+<translation>Jarvis, Judice és Ninke</translation>
+</phrase>
+
+<phrase>
+<original>Stucki</original>
+<translation>Stucki</translation>
+</phrase>
+
+<phrase>
+<original>Burkes</original>
+<translation>Burkes</translation>
+</phrase>
+
+<phrase>
+<original>Sierra-3</original>
+<translation>Sierra-3</translation>
+</phrase>
+
+<phrase>
+<original>Two-Row Sierra</original>
+<translation>Kétsoros Sierra</translation>
+</phrase>
+
+<phrase>
+<original>Sierra Lite</original>
+<translation>Sierra Lite</translation>
+</phrase>
+
+<phrase>
+<original>Atkinson / Classic Macintosh</original>
+<translation>Atkinson/Classic Macintosh</translation>
+</phrase>
+
+<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -5074,11 +5134,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>None</original>
-<translation>Egyik sem</translation>
-</phrase>
-
-<phrase>
 <original>Invert</original>
 <translation>Invert</translation>
 </phrase>
@@ -6522,7 +6577,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 189 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6534,8 +6589,13 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>dithering technique</original>
-<translation>szürkeárnyalás technika</translation>
+<original>reduce bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dithering</original>
+<translation>szürkeárnyalás</translation>
 </phrase>
 
 <phrase>
@@ -6559,61 +6619,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>Ordered (Bayer 4x4)</original>
-<translation>Rendezett (Bayer 4x4)</translation>
-</phrase>
-
-<phrase>
-<original>Ordered (Bayer 8x8)</original>
-<translation>Rendezett (Bayer 8x8)</translation>
-</phrase>
-
-<phrase>
-<original>Single neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Floyd-Steinberg</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Jarvis, Judice, and Ninke</original>
-<translation>Jarvis, Judice és Ninke</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>Burkes</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>Sierra-3</translation>
-</phrase>
-
-<phrase>
-<original>Two-Row Sierra</original>
-<translation>Kétsoros Sierra</translation>
-</phrase>
-
-<phrase>
-<original>Sierra Lite</original>
-<translation>Sierra Lite</translation>
-</phrase>
-
-<phrase>
-<original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson/Classic Macintosh</translation>
-</phrase>
-
-<phrase>
 <original>do not modify</original>
 <translation>nem módosítják</translation>
 </phrase>
@@ -6628,7 +6633,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Konvertálása képet a két szín</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -6830,11 +6835,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
-<original>dithering options</original>
-<translation>szürkeárnyalás lehetőségek</translation>
-</phrase>
-
-<phrase>
 <original>number of gray shades</original>
 <translation>számú szürke árnyalatok</translation>
 </phrase>
@@ -6884,7 +6884,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>maximális</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -10509,11 +10509,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
-<original>dithering</original>
-<translation>szürkeárnyalás</translation>
-</phrase>
-
-<phrase>
 <original>reduce color bleed</original>
 <translation>csökkenti színes tinták</translation>
 </phrase>
@@ -10593,7 +10588,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15337,10 +15332,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2570</phrasecount>
+<phrasecount>2569</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4683 phrases. -->
-<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
-<!-- These 2570 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4663 phrases. -->
+<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
+<!-- These 2569 phrases contain approximately 12409 total words. -->
 
 </pdData>

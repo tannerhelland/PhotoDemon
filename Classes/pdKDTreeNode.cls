@@ -211,11 +211,11 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
         curBestColor = m_Color
     End If
     
-    'Next, we want to determine which child node contains points "closer" or "further" from our
-    ' current best-match color.  (NOTE: in early builds, this was coded more cleanly, with local
+    'Next, we want to determine if any of our child nodes contain points "closer" or "further" from
+    ' our current best-match color.  (NOTE: in early builds, this was coded more cleanly, with local
     ' nearDirection and farDirection pdKDTreeNode objects being assigned to left or right children,
     ' accordingly - but this code is used inside tight per-pixel loops, so I've manually expanded
-    ' and in-lined a bunch of code to improve performance.)
+    ' and in-lined a bunch of code for improved performance.)
     
     'Note that we use our previously stored depth to determine which axis to use for comparisons.
     
@@ -237,11 +237,13 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             ' current best match, we need to search the right branch for possible targets as well.
             If (Not m_Right Is Nothing) Then
                 
-                'We know that the best value for this tree lay in the left branch, meaning the closest
-                ' value in the right branch would be the *smallest possible value* - meaning a color
-                ' with an r value as low as possible.  Because our KD-tree implementation uses
-                ' "greater-than-or-equal-to" for right branch determination, the lowest possible value in
-                ' the branch is an r-value equal to the target color's.
+                'We know that the best value for this tree currently lies in the left branch.  In order for
+                ' a value in the right branch to be closer than the current value, it would need to be the
+                ' *smallest possible value* in that tree - meaning a color with an r value as low as possible.
+                ' Because our KD-tree implementation uses "greater-than-or-equal-to" for right branch
+                ' determination, the lowest possible value in right branches is an r-value equal to the target
+                ' color's.  (We ignore green and blue because they could potentially be *equal* to the target
+                ' color, but we have no way of knowing that as this node only branches on red!)
                 m_testDistance = r - m_Red
             
                 'If the closest "theoretical" point in the right branch is closer than the current best match,
@@ -259,7 +261,7 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
                 ' possible way that the left node could contain a closer color (as it can't contain
                 ' *any* colors less than zero!)
                 If (r > 0) Then
-                    m_testDistance = r - 1 - m_Red
+                    m_testDistance = (r - 1) - m_Red
                     If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
                 End If
             End If
@@ -280,7 +282,7 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             If (Not m_Right Is Nothing) Then m_Right.NearestColor srcColor, curBestColor, curBestDistance
             If (Not m_Left Is Nothing) Then
                 If (g > 0) Then
-                    m_testDistance = g - 1 - m_Green
+                    m_testDistance = (g - 1) - m_Green
                     If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
                 End If
             End If
@@ -300,7 +302,7 @@ Friend Sub NearestColor(ByRef srcColor As RGBQuad, ByRef curBestColor As RGBQuad
             If (Not m_Right Is Nothing) Then m_Right.NearestColor srcColor, curBestColor, curBestDistance
             If (Not m_Left Is Nothing) Then
                 If (b > 0) Then
-                    m_testDistance = b - 1 - m_Blue
+                    m_testDistance = (b - 1) - m_Blue
                     If ((m_testDistance * m_testDistance) < curBestDistance) Then m_Left.NearestColor srcColor, curBestColor, curBestDistance
                 End If
             End If

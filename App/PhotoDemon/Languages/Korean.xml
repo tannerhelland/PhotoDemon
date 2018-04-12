@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.16</langversion>
+<langversion>1.0.17</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1627,7 +1627,67 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 36 phrases. 25 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>None</original>
+<translation>없음</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 4x4)</original>
+<translation>주문 됨 (바이엘 4x4)</translation>
+</phrase>
+
+<phrase>
+<original>Ordered (Bayer 8x8)</original>
+<translation>주문 됨 (바이엘 8x8)</translation>
+</phrase>
+
+<phrase>
+<original>Single neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Floyd-Steinberg</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Jarvis, Judice, and Ninke</original>
+<translation>자비스, 쥬디스, 닌케</translation>
+</phrase>
+
+<phrase>
+<original>Stucki</original>
+<translation>Stucki</translation>
+</phrase>
+
+<phrase>
+<original>Burkes</original>
+<translation>버크스</translation>
+</phrase>
+
+<phrase>
+<original>Sierra-3</original>
+<translation>시에라 - 3</translation>
+</phrase>
+
+<phrase>
+<original>Two-Row Sierra</original>
+<translation>2 열 시에라</translation>
+</phrase>
+
+<phrase>
+<original>Sierra Lite</original>
+<translation>시에라 라이트</translation>
+</phrase>
+
+<phrase>
+<original>Atkinson / Classic Macintosh</original>
+<translation>Atkinson</translation>
+</phrase>
+
+<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -5083,11 +5143,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>None</original>
-<translation>없음</translation>
-</phrase>
-
-<phrase>
 <original>Invert</original>
 <translation>거꾸로 하다</translation>
 </phrase>
@@ -6533,7 +6588,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 188 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 189 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6545,8 +6600,13 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>dithering technique</original>
-<translation>디더링 기술</translation>
+<original>reduce bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dithering</original>
+<translation>디더링</translation>
 </phrase>
 
 <phrase>
@@ -6570,61 +6630,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>Ordered (Bayer 4x4)</original>
-<translation>주문 됨 (바이엘 4x4)</translation>
-</phrase>
-
-<phrase>
-<original>Ordered (Bayer 8x8)</original>
-<translation>주문 됨 (바이엘 8x8)</translation>
-</phrase>
-
-<phrase>
-<original>Single neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Floyd-Steinberg</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Jarvis, Judice, and Ninke</original>
-<translation>자비스, 쥬디스, 닌케</translation>
-</phrase>
-
-<phrase>
-<original>Stucki</original>
-<translation>Stucki</translation>
-</phrase>
-
-<phrase>
-<original>Burkes</original>
-<translation>버크스</translation>
-</phrase>
-
-<phrase>
-<original>Sierra-3</original>
-<translation>시에라 - 3</translation>
-</phrase>
-
-<phrase>
-<original>Two-Row Sierra</original>
-<translation>2 열 시에라</translation>
-</phrase>
-
-<phrase>
-<original>Sierra Lite</original>
-<translation>시에라 라이트</translation>
-</phrase>
-
-<phrase>
-<original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson</translation>
-</phrase>
-
-<phrase>
 <original>do not modify</original>
 <translation>수정하지 마라.</translation>
 </phrase>
@@ -6639,7 +6644,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>이미지를 두 가지 색상으로 변환</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -6841,11 +6846,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
-<original>dithering options</original>
-<translation>디더링 옵션</translation>
-</phrase>
-
-<phrase>
 <original>number of gray shades</original>
 <translation>회색 음영의 수</translation>
 </phrase>
@@ -6895,7 +6895,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>최고</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -10520,11 +10520,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
-<original>dithering</original>
-<translation>디더링</translation>
-</phrase>
-
-<phrase>
 <original>reduce color bleed</original>
 <translation>색 번짐을 줄이십시오.</translation>
 </phrase>
@@ -10604,7 +10599,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>경고! 팔레트 파일이 유효하지 않습니다.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 18 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15353,10 +15348,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2570</phrasecount>
+<phrasecount>2569</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4683 phrases. -->
-<!-- 2113 are duplicates, so only 2570 unique phrases have been written to file. -->
-<!-- These 2570 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4663 phrases. -->
+<!-- 2094 are duplicates, so only 2569 unique phrases have been written to file. -->
+<!-- These 2569 phrases contain approximately 12409 total words. -->
 
 </pdData>

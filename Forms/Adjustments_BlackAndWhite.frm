@@ -23,21 +23,32 @@ Begin VB.Form FormMonochrome
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdListBox lstDither 
-      Height          =   1935
+   Begin PhotoDemon.pdCheckBox chkReduceBleed 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "reduce bleed"
+      Value           =   0
+   End
+   Begin PhotoDemon.pdDropDown cboDither 
+      Height          =   855
       Left            =   6000
       TabIndex        =   7
       Top             =   1440
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   3413
-      Caption         =   "dithering technique"
+      _ExtentY        =   1508
+      Caption         =   "dithering"
    End
    Begin PhotoDemon.pdButtonStrip btsTransparency 
       Height          =   1065
       Left            =   6000
       TabIndex        =   6
-      Top             =   4680
+      Top             =   4200
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   1879
@@ -83,7 +94,7 @@ Begin VB.Form FormMonochrome
       Index           =   0
       Left            =   6120
       TabIndex        =   1
-      Top             =   3960
+      Top             =   3360
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1085
@@ -94,7 +105,7 @@ Begin VB.Form FormMonochrome
       Index           =   1
       Left            =   9120
       TabIndex        =   2
-      Top             =   3960
+      Top             =   3360
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1085
@@ -113,7 +124,7 @@ Begin VB.Form FormMonochrome
       Height          =   285
       Index           =   1
       Left            =   6000
-      Top             =   3600
+      Top             =   3000
       Width           =   5955
       _ExtentX        =   10504
       _ExtentY        =   503
@@ -148,7 +159,7 @@ Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
     UpdatePreview
 End Sub
 
-Private Sub lstDither_Click()
+Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
     UpdatePreview
 End Sub
@@ -159,6 +170,10 @@ Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
     sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
+End Sub
+
+Private Sub chkReduceBleed_Click()
     UpdatePreview
 End Sub
 
@@ -174,9 +189,13 @@ End Sub
 'When resetting, set the color boxes to black and white, and the dithering combo box to 6 (Stucki)
 Private Sub cmdBar_ResetClick()
     
+    'Black and white
     csMono(0).Color = RGB(0, 0, 0)
     csMono(1).Color = RGB(255, 255, 255)
-    lstDither.ListIndex = 6     'Stucki dithering
+    
+    'Stucki dithering w/out bleed reduction
+    cboDither.ListIndex = 6
+    chkReduceBleed.Value = vbUnchecked
     
     'Standard threshold value
     chkAutoThreshold.Value = vbUnchecked
@@ -189,7 +208,8 @@ Private Function GetFunctionParamString() As String
     Set cParams = New pdParamXML
     With cParams
         .AddParam "threshold", sltThreshold.Value
-        .AddParam "dither", lstDither.ListIndex
+        .AddParam "dither", cboDither.ListIndex
+        .AddParam "reducebleed", CBool(chkReduceBleed.Value)
         .AddParam "color1", csMono(0).Color
         .AddParam "color2", csMono(1).Color
         .AddParam "removetransparency", (btsTransparency.ListIndex = 1)
@@ -206,22 +226,8 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the dither combobox
-    lstDither.SetAutomaticRedraws False
-    lstDither.Clear
-    lstDither.AddItem "None", 0
-    lstDither.AddItem "Ordered (Bayer 4x4)", 1
-    lstDither.AddItem "Ordered (Bayer 8x8)", 2
-    lstDither.AddItem "Single neighbor", 3
-    lstDither.AddItem "Floyd-Steinberg", 4
-    lstDither.AddItem "Jarvis, Judice, and Ninke", 5
-    lstDither.AddItem "Stucki", 6
-    lstDither.AddItem "Burkes", 7
-    lstDither.AddItem "Sierra-3", 8
-    lstDither.AddItem "Two-Row Sierra", 9
-    lstDither.AddItem "Sierra Lite", 10
-    lstDither.AddItem "Atkinson / Classic Macintosh", 11
-    lstDither.SetAutomaticRedraws True
-    lstDither.ListIndex = 6
+    Palettes.PopulateDitheringDropdown cboDither
+    cboDither.ListIndex = 6
     
     btsTransparency.AddItem "do not modify", 0
     btsTransparency.AddItem "remove from image", 1
@@ -324,10 +330,12 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Set cParams = New pdParamXML
     cParams.SetParamString monochromeParams
     
-    Dim cThreshold As Long, ditherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
+    Dim cThreshold As Long, ditherMethod As Long, reduceBleed As Boolean
+    Dim lowColor As Long, highColor As Long, removeTransparency As Boolean
     With cParams
         cThreshold = .GetLong("threshold", 127)
         ditherMethod = .GetLong("dither", 6)
+        reduceBleed = .GetBool("reducebleed", False)
         lowColor = .GetLong("color1", vbBlack)
         highColor = .GetLong("color2", vbWhite)
         removeTransparency = .GetBool("removetransparency", False)
@@ -359,12 +367,13 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim xStride As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If (Not toPreview) Then ProgressBars.SetProgBarMax finalX
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Low and high color values
@@ -394,230 +403,131 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
         'No dither, so just perform a quick and dirty threshold calculation
         Case 0
     
-            For x = initX To finalX
-                quickVal = x * qvDepth
             For y = initY To finalY
-        
+            For x = initX To finalX
+                
+                xStride = x * qvDepth
+                
                 'Get the source pixel color values
-                r = imageData(quickVal + 2, y)
-                g = imageData(quickVal + 1, y)
-                b = imageData(quickVal, y)
+                b = imageData(xStride, y)
+                g = imageData(xStride + 1, y)
+                r = imageData(xStride + 2, y)
                 
                 'Convert those to a luminance value
-                l = GetLuminance(r, g, b)
+                l = Colors.GetHQLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
-                If l >= cThreshold Then
-                    imageData(quickVal + 2, y) = highR
-                    imageData(quickVal + 1, y) = highG
-                    imageData(quickVal, y) = highB
+                If (l >= cThreshold) Then
+                    imageData(xStride, y) = highB
+                    imageData(xStride + 1, y) = highG
+                    imageData(xStride + 2, y) = highR
                 Else
-                    imageData(quickVal + 2, y) = lowR
-                    imageData(quickVal + 1, y) = lowG
-                    imageData(quickVal, y) = lowB
+                    imageData(xStride, y) = lowB
+                    imageData(xStride + 1, y) = lowG
+                    imageData(xStride + 2, y) = lowR
                 End If
                 
-            Next y
+            Next x
                 If (Not toPreview) Then
-                    If (x And progBarCheck) = 0 Then
+                    If (y And progBarCheck) = 0 Then
                         If Interface.UserPressedESC() Then Exit For
-                        SetProgBarVal x
+                        SetProgBarVal y
                     End If
                 End If
-            Next x
+            Next y
             
             
-        'Ordered dither (Bayer 4x4).  Unfortunately, this routine requires a unique set of code owing to its specialized
-        ' implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
+        'Ordered dither (Bayer 4x4).  Unfortunately, this routine requires a unique set of code owing to its
+        ' specialized implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
         Case 1
         
             'First, prepare a Bayer dither table
-            ReDim ditherTable(0 To 3, 0 To 3) As Byte
+            Palettes.GetDitherTable PDDM_Ordered_Bayer4x4, ditherTable, dDivisor, xLeft, xRight, yDown
             
-            ditherTable(0, 0) = 1
-            ditherTable(0, 1) = 9
-            ditherTable(0, 2) = 3
-            ditherTable(0, 3) = 11
-            
-            ditherTable(1, 0) = 13
-            ditherTable(1, 1) = 5
-            ditherTable(1, 2) = 15
-            ditherTable(1, 3) = 7
-            
-            ditherTable(2, 0) = 4
-            ditherTable(2, 1) = 12
-            ditherTable(2, 2) = 2
-            ditherTable(2, 3) = 10
-            
-            ditherTable(3, 0) = 16
-            ditherTable(3, 1) = 8
-            ditherTable(3, 2) = 14
-            ditherTable(3, 3) = 6
-    
-            'Convert the dither entries to 255-based values
-            For x = 0 To 3
-            For y = 0 To 3
-                ditherTable(x, y) = ditherTable(x, y) * 16 - 1
-            Next y
-            Next x
-            
-            cThreshold = cThreshold * 2
-
             'Now loop through the image, using the dither values as our threshold
-            For x = initX To finalX
-                quickVal = x * qvDepth
-                xModQuick = x And 3
             For y = initY To finalY
-        
+            For x = initX To finalX
+            
+                xStride = x * qvDepth
+                
                 'Get the source pixel color values
-                r = imageData(quickVal + 2, y)
-                g = imageData(quickVal + 1, y)
-                b = imageData(quickVal, y)
+                b = imageData(xStride, y)
+                g = imageData(xStride + 1, y)
+                r = imageData(xStride + 2, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = GetLuminance(r, g, b) + ditherTable(xModQuick, y And 3)
+                l = Colors.GetHQLuminance(r, g, b)
+                If reduceBleed Then
+                    l = l + (CLng(ditherTable(x And 3, y And 3)) - 127) \ 3
+                Else
+                    l = l + (CLng(ditherTable(x And 3, y And 3)) - 127)
+                End If
             
                 'Check THAT value against the threshold, and set new values accordingly
-                If l >= cThreshold Then
-                    imageData(quickVal + 2, y) = highR
-                    imageData(quickVal + 1, y) = highG
-                    imageData(quickVal, y) = highB
+                If (l >= cThreshold) Then
+                    imageData(xStride, y) = highB
+                    imageData(xStride + 1, y) = highG
+                    imageData(xStride + 2, y) = highR
                 Else
-                    imageData(quickVal + 2, y) = lowR
-                    imageData(quickVal + 1, y) = lowG
-                    imageData(quickVal, y) = lowB
+                    imageData(xStride, y) = lowB
+                    imageData(xStride + 1, y) = lowG
+                    imageData(xStride + 2, y) = lowR
                 End If
                 
-            Next y
+            Next x
                 If (Not toPreview) Then
-                    If (x And progBarCheck) = 0 Then
+                    If (y And progBarCheck) = 0 Then
                         If Interface.UserPressedESC() Then Exit For
-                        SetProgBarVal x
+                        SetProgBarVal y
                     End If
                 End If
-            Next x
+            Next y
 
         'Ordered dither (Bayer 8x8).  Unfortunately, this routine requires a unique set of code owing to its specialized
         ' implementation. Coefficients derived from http://en.wikipedia.org/wiki/Ordered_dithering
         Case 2
         
             'First, prepare a Bayer dither table
-            ReDim ditherTable(0 To 7, 0 To 7) As Byte
+            Palettes.GetDitherTable PDDM_Ordered_Bayer8x8, ditherTable, dDivisor, xLeft, xRight, yDown
             
-            ditherTable(0, 0) = 1
-            ditherTable(0, 1) = 49
-            ditherTable(0, 2) = 13
-            ditherTable(0, 3) = 61
-            ditherTable(0, 4) = 4
-            ditherTable(0, 5) = 52
-            ditherTable(0, 6) = 16
-            ditherTable(0, 7) = 64
-            
-            ditherTable(1, 0) = 33
-            ditherTable(1, 1) = 17
-            ditherTable(1, 2) = 45
-            ditherTable(1, 3) = 29
-            ditherTable(1, 4) = 36
-            ditherTable(1, 5) = 20
-            ditherTable(1, 6) = 48
-            ditherTable(1, 7) = 32
-            
-            ditherTable(2, 0) = 9
-            ditherTable(2, 1) = 57
-            ditherTable(2, 2) = 5
-            ditherTable(2, 3) = 53
-            ditherTable(2, 4) = 12
-            ditherTable(2, 5) = 60
-            ditherTable(2, 6) = 8
-            ditherTable(2, 7) = 56
-            
-            ditherTable(3, 0) = 41
-            ditherTable(3, 1) = 25
-            ditherTable(3, 2) = 37
-            ditherTable(3, 3) = 21
-            ditherTable(3, 4) = 44
-            ditherTable(3, 5) = 28
-            ditherTable(3, 6) = 40
-            ditherTable(3, 7) = 24
-            
-            ditherTable(4, 0) = 3
-            ditherTable(4, 1) = 51
-            ditherTable(4, 2) = 15
-            ditherTable(4, 3) = 63
-            ditherTable(4, 4) = 2
-            ditherTable(4, 5) = 50
-            ditherTable(4, 6) = 14
-            ditherTable(4, 7) = 62
-            
-            ditherTable(5, 0) = 35
-            ditherTable(5, 1) = 19
-            ditherTable(5, 2) = 47
-            ditherTable(5, 3) = 31
-            ditherTable(5, 4) = 34
-            ditherTable(5, 5) = 18
-            ditherTable(5, 6) = 46
-            ditherTable(5, 7) = 30
-    
-            ditherTable(6, 0) = 11
-            ditherTable(6, 1) = 59
-            ditherTable(6, 2) = 7
-            ditherTable(6, 3) = 55
-            ditherTable(6, 4) = 10
-            ditherTable(6, 5) = 58
-            ditherTable(6, 6) = 6
-            ditherTable(6, 7) = 54
-            
-            ditherTable(7, 0) = 43
-            ditherTable(7, 1) = 27
-            ditherTable(7, 2) = 39
-            ditherTable(7, 3) = 23
-            ditherTable(7, 4) = 42
-            ditherTable(7, 5) = 26
-            ditherTable(7, 6) = 38
-            ditherTable(7, 7) = 22
-            
-            'Convert the dither entries to 255-based values
-            For x = 0 To 7
-            For y = 0 To 7
-                ditherTable(x, y) = ditherTable(x, y) * 4 - 1
-            Next y
-            Next x
-
-            cThreshold = cThreshold * 2
-
             'Now loop through the image, using the dither values as our threshold
-            For x = initX To finalX
-                quickVal = x * qvDepth
-                xModQuick = x And 7
             For y = initY To finalY
-        
+            For x = initX To finalX
+                
+                xStride = x * qvDepth
+                
                 'Get the source pixel color values
-                r = imageData(quickVal + 2, y)
-                g = imageData(quickVal + 1, y)
-                b = imageData(quickVal, y)
+                b = imageData(xStride, y)
+                g = imageData(xStride + 1, y)
+                r = imageData(xStride + 2, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = GetLuminance(r, g, b) + ditherTable(xModQuick, y And 7)
-            
-                'Check THAT value against the threshold, and set new values accordingly
-                If l >= cThreshold Then
-                    imageData(quickVal + 2, y) = highR
-                    imageData(quickVal + 1, y) = highG
-                    imageData(quickVal, y) = highB
+                l = Colors.GetHQLuminance(r, g, b)
+                If reduceBleed Then
+                    l = l + (CLng(ditherTable(x And 7, y And 7)) - 127) \ 3
                 Else
-                    imageData(quickVal + 2, y) = lowR
-                    imageData(quickVal + 1, y) = lowG
-                    imageData(quickVal, y) = lowB
+                    l = l + (CLng(ditherTable(x And 7, y And 7)) - 127)
                 End If
                 
-            Next y
+                'Check THAT value against the threshold, and set new values accordingly
+                If (l >= cThreshold) Then
+                    imageData(xStride, y) = highB
+                    imageData(xStride + 1, y) = highG
+                    imageData(xStride + 2, y) = highR
+                Else
+                    imageData(xStride, y) = lowB
+                    imageData(xStride + 1, y) = lowG
+                    imageData(xStride + 2, y) = lowR
+                End If
+                
+            Next x
                 If (Not toPreview) Then
-                    If (x And progBarCheck) = 0 Then
+                    If (y And progBarCheck) = 0 Then
                         If Interface.UserPressedESC() Then Exit For
-                        SetProgBarVal x
+                        SetProgBarVal y
                     End If
                 End If
-            Next x
+            Next y
         
         'For all error-diffusion methods, precise dithering table coefficients are retrieved from the
         ' /Modules/Palettes.bas file.  (We do this because other functions also need to retrieve these tables,
@@ -690,7 +600,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             r = imageData(xQuick + 2, y)
             
             'Convert those to a luminance value and add the value of the error at this location
-            l = GetLuminance(r, g, b)
+            l = Colors.GetHQLuminance(r, g, b)
             newL = l + dErrors(x, y)
             
             'Check our modified luminance value against the threshold, and set new values accordingly
@@ -708,7 +618,9 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             
             'If there is an error, spread it
             If (errorVal <> 0) Then
-            
+                
+                If reduceBleed Then errorVal = errorVal \ 2
+                
                 'Now, spread that error across the relevant pixels according to the dither table formula
                 For i = xLeft To xRight
                 For j = 0 To yDown
