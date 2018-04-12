@@ -359,7 +359,7 @@ Private Sub UpdateControlLayout()
         
         'The list area is placed relative to the caption
         With m_InteractiveRect
-            .Left = FixDPI(8)
+            .Left = Interface.FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
             .Width = bWidth - .Left
             .Height = bHeight - .Top

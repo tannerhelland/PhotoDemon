@@ -791,14 +791,19 @@ Private Sub UpdateControlLayout()
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     
-    'Redraw any custom background images, followed by the whole slider
-    If ((m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Or (m_SliderStyle = HueSpectrum360)) Then
-        CreateGradientTrack
-    ElseIf (m_SliderStyle = CustomOwnerDrawn) Then
-        CreateOwnerDrawnTrack
-    End If
+    'Don't perform any actual rendering unless the slider control is about to be shown
+    If ucSupport.AmIVisible Then
     
-    RenderTrack
+        'Redraw any custom background images, followed by the whole slider
+        If ((m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Or (m_SliderStyle = HueSpectrum360)) Then
+            CreateGradientTrack
+        ElseIf (m_SliderStyle = CustomOwnerDrawn) Then
+            CreateOwnerDrawnTrack
+        End If
+        
+        RenderTrack
+    
+    End If
             
 End Sub
 
@@ -922,7 +927,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
-    If (Not skipScreenEntirely) Then RedrawBackBuffer refreshImmediately
+    If (Not skipScreenEntirely) And pdMain.IsProgramRunning() Then RedrawBackBuffer refreshImmediately
         
 End Sub
 

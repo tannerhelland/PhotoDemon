@@ -217,14 +217,14 @@ End Sub
 Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
 
     'Make sure the image region has been successfully created, or this is all for naught
-    If (g_OpenImageCount > 0) And (m_ImageRegion.Width <> 0) And (m_ImageRegion.Height <> 0) Then
+    If (g_OpenImageCount > 0) And (m_ImageRegion.Width <> 0!) And (m_ImageRegion.Height <> 0!) Then
     
         'Convert the (x, y) to the [0, 1] range
         Dim xRatio As Double, yRatio As Double
         xRatio = (x - m_ImageRegion.Left) / m_ImageRegion.Width
         yRatio = (y - m_ImageRegion.Top) / m_ImageRegion.Height
-        If xRatio < 0 Then xRatio = 0: If xRatio > 1 Then xRatio = 1
-        If yRatio < 0 Then yRatio = 0: If yRatio > 1 Then yRatio = 1
+        If (xRatio < 0#) Then xRatio = 0#: If (xRatio > 1#) Then xRatio = 1#
+        If (yRatio < 0#) Then yRatio = 0#: If (yRatio > 1#) Then yRatio = 1#
         
         'Next, convert those to the (min, max) scale of the current viewport scrollbars
         Dim hScrollRange As Double, vScrollRange As Double, newHScroll As Double, newVscroll As Double

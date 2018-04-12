@@ -293,7 +293,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Brush = .ReadProperty("curBrush", vbNullString)
+        m_curBrush = .ReadProperty("curBrush", vbNullString)
         Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
     End With

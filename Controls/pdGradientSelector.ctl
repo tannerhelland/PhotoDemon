@@ -287,7 +287,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
-        Gradient = .ReadProperty("curGradient", vbNullString)
+        m_curGradient = .ReadProperty("curGradient", vbNullString)
         FontSize = .ReadProperty("FontSize", 12)
     End With
 End Sub

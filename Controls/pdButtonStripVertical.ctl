@@ -186,9 +186,9 @@ Public Property Get FontBold() As Boolean
 End Property
 
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
-    If newBoldSetting <> m_FontBold Then
+    If (newBoldSetting <> m_FontBold) Then
         m_FontBold = newBoldSetting
-        UpdateControlLayout
+        If pdMain.IsProgramRunning() Then UpdateControlLayout
         PropertyChanged "FontBold"
     End If
 End Property
@@ -198,7 +198,7 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If newSize <> m_FontSize Then
+    If (newSize <> m_FontSize) Then
         m_FontSize = newSize
         UpdateControlLayout
         PropertyChanged "FontSize"
@@ -408,6 +408,7 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
@@ -623,10 +624,10 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
-        FontBold = .ReadProperty("FontBold", False)
-        FontSize = .ReadProperty("FontSize", 10)
+        m_FontBold = .ReadProperty("FontBold", False)
+        m_FontSize = .ReadProperty("FontSize", 10)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
-        ListIndex = .ReadProperty("ListIndex", 0)
+        m_ButtonIndex = .ReadProperty("ListIndex", 0)
     End With
 End Sub
 

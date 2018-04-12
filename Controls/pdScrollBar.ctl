@@ -857,15 +857,15 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
+    
     With PropBag
-        Min = .ReadProperty("Min", 0)
-        Max = .ReadProperty("Max", 10)
+        m_Min = .ReadProperty("Min", 0)
+        m_Max = .ReadProperty("Max", 10)
         Value = .ReadProperty("Value", 0)
         LargeChange = .ReadProperty("LargeChange", 1)
         SigDigits = .ReadProperty("SignificantDigits", 0)
-        OrientationHorizontal = .ReadProperty("OrientationHorizontal", False)
-        VisualStyle = .ReadProperty("VisualStyle", SBVS_Standard)
+        m_OrientationHorizontal = .ReadProperty("OrientationHorizontal", False)
+        m_VisualStyle = .ReadProperty("VisualStyle", SBVS_Standard)
     End With
 
 End Sub
@@ -1116,6 +1116,8 @@ End Sub
 ' between them, and the range between the control's max/min values.  Call this function to determine a size (BUT NOT A
 ' POSITION) for the thumb.
 Private Sub DetermineThumbSize()
+    
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     'Start by determining the maximum available size for the thumb
     Dim maxThumbSize As Single

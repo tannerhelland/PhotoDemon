@@ -121,7 +121,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawBackBuffer
+    If ucSupport.AmIVisible() Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 

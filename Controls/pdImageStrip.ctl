@@ -211,7 +211,7 @@ Public Property Let Alignment(ByVal newAlignment As AlignConstants)
         ucSupport.RequestNewSize prevConstrainingSize, prevConstrainingSize, True
     End If
     
-    If (m_Alignment <> newAlignment) Or (prevVerticalLayout <> m_VerticalLayout) Then
+    If ((m_Alignment <> newAlignment) Or (prevVerticalLayout <> m_VerticalLayout)) And pdMain.IsProgramRunning() Then
         m_Alignment = newAlignment
         UpdateControlLayout
         UpdateAgainstTabstripPreferences
@@ -245,7 +245,7 @@ End Property
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    RedrawBackBuffer
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer
 End Property
 
 'hWnds aren't exposed by default

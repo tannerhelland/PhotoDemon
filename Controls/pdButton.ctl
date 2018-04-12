@@ -229,7 +229,7 @@ End Property
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    RedrawBackBuffer
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer
 End Property
 
 Public Property Get FontSize() As Single
@@ -512,14 +512,14 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        BackColor = .ReadProperty("BackColor", vbWhite)
-        BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
+        m_BackColor = .ReadProperty("BackColor", vbWhite)
+        m_BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
         Caption = .ReadProperty("Caption", vbNullString)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         RenderMode = .ReadProperty("RenderMode", 0)
-        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
-        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
+        m_UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        m_UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
     End With
 End Sub
 

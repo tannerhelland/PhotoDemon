@@ -277,7 +277,7 @@ End Property
 'When the number of significant digits changes, we automatically update the text display to reflect the new amount
 Public Property Let SigDigits(ByVal newValue As Long)
     m_SigDigits = newValue
-    m_EditBox.Text = GetFormattedStringValue(m_Value)
+    If pdMain.IsProgramRunning() Then m_EditBox.Text = GetFormattedStringValue(m_Value)
     PropertyChanged "SigDigits"
 End Property
 
@@ -298,37 +298,40 @@ Public Property Let Value(ByVal newValue As Double)
         'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
         ' will momentarily solve any faulty bound/value relationships.)
         If pdMain.IsProgramRunning() Then
+            
             If (m_Value < m_Min) Then m_Value = m_Min
             If (m_Value > m_Max) Then m_Value = m_Max
-        End If
-                
-        'With the value guaranteed to be in-bounds, we can now mirror it to the text box
-        If (Not m_textBoxInitiated) Then
         
-            'Perform a final validity check
-            If (Not IsValid(False)) Then
-                m_EditBox.Text = GetFormattedStringValue(m_Value)
-                If m_ErrorState Then
-                    m_ErrorState = False
-                    RedrawBackBuffer
-                End If
-            Else
-                If (LenB(Trim$(m_EditBox.Text)) <> 0) Then
-                    On Error GoTo SpinStringInvalid
-                    If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
+            'With the value guaranteed to be in-bounds, we can now mirror it to the text box
+            If (Not m_textBoxInitiated) Then
+            
+                'Perform a final validity check
+                If (Not IsValid(False)) Then
+                    m_EditBox.Text = GetFormattedStringValue(m_Value)
+                    If m_ErrorState Then
+                        m_ErrorState = False
+                        RedrawBackBuffer
+                    End If
+                Else
+                    If (LenB(Trim$(m_EditBox.Text)) <> 0) Then
+                        On Error GoTo SpinStringInvalid
+                        If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
 SpinStringInvalid:
-                    On Error GoTo 0
+                        On Error GoTo 0
+                    End If
                 End If
+                
             End If
+        
+            'Raise the corresponding event.
+            RaiseEvent Change
             
         End If
-    
-        'Mark the value property as being changed, and raise the corresponding event.
+        
         PropertyChanged "Value"
-        RaiseEvent Change
         
     End If
-                
+    
 End Property
 
 Public Sub Reset()
@@ -571,6 +574,8 @@ End Sub
 
 Private Sub m_EditBox_Change()
     
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    
     If IsTextEntryValid() Then
         If m_ErrorState Then
             m_ErrorState = False
@@ -589,12 +594,15 @@ Private Sub m_EditBox_Change()
 End Sub
 
 Private Sub m_EditBox_GotFocusAPI()
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     m_FocusCount = m_FocusCount + 1
     EvaluateFocusCount
     RedrawBackBuffer
 End Sub
 
 Private Sub m_EditBox_LostFocusAPI()
+    
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
     
     m_FocusCount = m_FocusCount - 1
     EvaluateFocusCount
@@ -623,7 +631,7 @@ Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub m_EditBox_Resize()
-    If (Not m_InternalResizeState) Then UpdateControlLayout
+    If (Not m_InternalResizeState) And pdMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -687,9 +695,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         DefaultValue = .ReadProperty("DefaultValue", 0)
         FontSize = .ReadProperty("FontSize", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
-        Max = .ReadProperty("Max", 10)
-        Min = .ReadProperty("Min", 0)
-        Value = .ReadProperty("Value", 0)
+        m_Max = .ReadProperty("Max", 10)
+        m_Min = .ReadProperty("Min", 0)
+        Me.Value = .ReadProperty("Value", 0)
     End With
 End Sub
 

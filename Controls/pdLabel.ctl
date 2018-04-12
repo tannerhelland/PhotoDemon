@@ -363,15 +363,15 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Alignment = .ReadProperty("Alignment", vbLeftJustify)
-        BackColor = .ReadProperty("BackColor", vbWindowBackground)
+        m_BackColor = .ReadProperty("BackColor", vbWindowBackground)
         Caption = .ReadProperty("Caption", "caption")
         FontBold = .ReadProperty("FontBold", False)
         FontItalic = .ReadProperty("FontItalic", False)
         FontSize = .ReadProperty("FontSize", 10)
-        ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
-        Layout = .ReadProperty("Layout", AutoFitCaption)
-        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
-        UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
+        m_ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
+        m_Layout = .ReadProperty("Layout", AutoFitCaption)
+        m_UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        m_UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
     End With
 
 End Sub

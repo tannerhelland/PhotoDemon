@@ -163,7 +163,7 @@ End Property
 Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
     pdPreviewBox.AllowZoomPan = isAllowed
     PropertyChanged "DisableZoomPan"
-    UpdateControlLayout
+    If (pdMain.IsProgramRunning()) Then UpdateControlLayout
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -174,7 +174,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawBackBuffer
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 

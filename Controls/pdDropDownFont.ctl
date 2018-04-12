@@ -698,8 +698,8 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
-        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
+        m_BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
+        m_UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
         Caption = .ReadProperty("Caption", vbNullString)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)

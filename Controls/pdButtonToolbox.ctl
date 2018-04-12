@@ -596,10 +596,10 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         AutoToggle = .ReadProperty("AutoToggle", False)
-        BackColor = .ReadProperty("BackColor", vbWhite)
-        DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
+        m_BackColor = .ReadProperty("BackColor", vbWhite)
+        m_DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
         StickyToggle = .ReadProperty("StickyToggle", False)
-        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        m_UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
     End With
 End Sub
 

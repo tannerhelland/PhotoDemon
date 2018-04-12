@@ -250,7 +250,7 @@ Public Property Let Text(ByRef newString As String)
 End Property
 
 Private Sub m_EditBox_Change()
-    RaiseEvent Change
+    If (pdMain.IsProgramRunning()) Then RaiseEvent Change
 End Sub
 
 Private Sub m_EditBox_GotFocusAPI()
@@ -342,7 +342,9 @@ End Sub
 'When one of this control's components (either the underlying UC or the edit box) gets focus, call this function to update
 ' trackers and UI accordingly.
 Private Sub ComponentGotFocus()
-
+    
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    
     'If a component already had focus, ignore this step, as focus is just changing internally within the control
     If (Not m_ControlHasFocus) Then
         m_ControlHasFocus = True

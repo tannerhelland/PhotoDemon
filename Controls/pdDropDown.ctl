@@ -210,7 +210,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawBackBuffer
+    If (pdMain.IsProgramRunning()) Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 
@@ -371,7 +371,7 @@ End Sub
 ' or whether the update actually changed the ListIndex (which is the only thing this front-facing portion of the
 ' dropdown cares about).
 Private Sub listSupport_RedrawNeeded()
-    If ucSupport.AmIVisible Then RedrawBackBuffer True
+    If ucSupport.AmIVisible And pdMain.IsProgramRunning() Then RedrawBackBuffer True
 End Sub
 
 'If a subclassis active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the subclass
@@ -512,8 +512,8 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
-        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
+        m_BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
+        m_UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
         Caption = .ReadProperty("Caption", vbNullString)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
@@ -823,7 +823,7 @@ Private Sub UpdateControlLayout()
     desiredControlHeight = desiredControlHeight + listSupport.DefaultItemHeight + COMBO_PADDING_VERTICAL * 2
     
     'Apply the new height to this UC instance, as necessary
-    If ucSupport.GetControlHeight <> desiredControlHeight Then
+    If (ucSupport.GetControlHeight <> desiredControlHeight) Then
         ucSupport.RequestNewSize , desiredControlHeight, True
         Exit Sub
     End If
@@ -863,7 +863,7 @@ Private Sub UpdateControlLayout()
     listSupport.NotifyParentRectF m_ComboRect
     
     'With all size metrics handled, we can now paint the back buffer
-    RedrawBackBuffer True
+    If ucSupport.AmIVisible() Then RedrawBackBuffer True
             
 End Sub
 

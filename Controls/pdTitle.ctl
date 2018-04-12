@@ -170,7 +170,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawBackBuffer
+    If pdMain.IsProgramRunning() Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 
@@ -419,7 +419,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Draggable = .ReadProperty("Draggable", False)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
-        Value = .ReadProperty("Value", True)
+        m_TitleState = .ReadProperty("Value", True)
     End With
 End Sub
 

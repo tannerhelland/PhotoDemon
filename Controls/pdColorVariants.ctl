@@ -636,6 +636,8 @@ End Sub
 ' Call this function to auto-calculate them, but try to do it only when necessary, as there's a lot of math involved.
 Private Sub CalculateVariantColors()
     
+    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    
     'The primary color serves as the base color for all subsequent calculations.  Retrieve its RGB and HSV quads now.
     Dim rPrimary As Long, gPrimary As Long, bPrimary As Long, hPrimary As Double, sPrimary As Double, vPrimary As Double
     rPrimary = Colors.ExtractRed(m_ColorList(CV_Primary))
