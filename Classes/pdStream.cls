@@ -50,6 +50,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrToDestination As Long, ByVal ptrToSource As Long, ByVal memLength As Long)
+Private Declare Sub GetMem1 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstByte As Byte)
+Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstInteger As Integer)
+Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstLong As Long)
+Private Declare Sub GetMem8 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstCurrency As Currency)
 Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 Private Declare Function ntohl Lib "Ws2_32" (ByVal srcLong As Long) As Long
@@ -215,6 +219,10 @@ Friend Sub SetSizeExternally(ByVal newSize As Long)
     m_BufferSize = newSize
 End Sub
 
+Friend Function IsOpen() As Boolean
+    IsOpen = m_Open
+End Function
+
 'Start a new stream.  The stream type *must* be specified.  If this is a file stream, a valid filename *must* be provided.
 ' Read/write access does not need to be specified, but if you only need a read-only buffer, specifying as much will yield
 ' improved performance, particularly for file streams.
@@ -308,6 +316,49 @@ Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
     End If
     
 End Sub
+
+'When parsing certain filetypes, you sometimes have to look for things like null-terminated strings.
+' This can be a pain in the ass to do manually, so you can ask this class do it for you.  Optionally, you can
+' also ask it to move the current pointer to the first-found occurrence - BUT IMPORTANTLY, note that the
+' pointer *will not be moved* if the target byte isn't found.
+'
+'(BY DESIGN, this feature is not implemented in file-backed streams.  It's too damn slow, so you're better
+' off caching a chunk of the file and searching it manually.)
+'
+'RETURNS: value >= 0 where the byte was found; -1 if it was not found (or if your starting position is invalid)
+Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition As Long = -1, Optional ByVal movePtrToMatch As Boolean = True) As Long
+    
+    FindByte = -1
+    
+    If m_Open Then
+    
+        If (startPosition < 0) Then startPosition = Me.GetPosition()
+        If (startPosition < m_BufferSize) Then
+            
+            'Memory mode is a hell of a lot faster!
+            If (m_StreamMode = PD_SM_MemoryBacked) Then
+                
+                Do
+                    If (m_MemBuffer(startPosition) = targetByte) Then Exit Do
+                    startPosition = startPosition + 1
+                Loop While (startPosition < m_BufferSize)
+                
+                If (startPosition < m_BufferSize) Then
+                    FindByte = startPosition
+                    If movePtrToMatch Then m_Pointer = startPosition
+                End If
+            
+            'Do not use this in file-backed mode!  Manually cache a chunk of the file and perform the
+            ' search yourself!
+            ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+                
+            End If
+        
+        End If
+        
+    End If
+    
+End Function
 
 'Return a copy of the stream, starting from the current stream position (which you can/should move prior to reading,
 ' as relevant) and extending the supplied readLength amount of bytes.  If readLength is not supplied, a full copy of
@@ -430,9 +481,7 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
             ReadBytes_PointerOnly = VarPtr(m_MemBuffer(m_Pointer))
             
             'Calculate the length we need to move the current position marker
-            If (readLength < 0) Then
-                readLength = m_BufferSize - m_Pointer
-            End If
+            If (readLength < 0) Then readLength = m_BufferSize - m_Pointer
             
             'Move the pointer
             m_Pointer = m_Pointer + readLength
@@ -452,12 +501,25 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
     
 End Function
 
+'Retrieve a single byte from the source data.  There is no way to return success or failure from this function,
+' so you will need to manually validate things like stream position vs length when using this.
+Friend Function ReadByte() As Byte
+    If m_Open And (Me.GetPosition() + 1& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            GetMem1 VarPtr(m_MemBuffer(m_Pointer)), ReadByte
+            m_Pointer = m_Pointer + 1&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadByte), 1&
+        End If
+    End If
+End Function
+
 'Retrieve a 16-bit word from the source data.  There is no way to return success or failure from this function,
 ' so you will need to manually validate things like stream position vs length when using this.
 Friend Function ReadInt() As Integer
     If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict VarPtr(ReadInt), VarPtr(m_MemBuffer(m_Pointer)), 2&
+            GetMem2 VarPtr(m_MemBuffer(m_Pointer)), ReadInt
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt), 2&
@@ -497,7 +559,7 @@ End Function
 Friend Function ReadLong() As Long
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict VarPtr(ReadLong), VarPtr(m_MemBuffer(m_Pointer)), 4&
+            GetMem4 VarPtr(m_MemBuffer(m_Pointer)), ReadLong
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadLong), 4&
@@ -515,7 +577,7 @@ End Function
 Friend Function ReadFloat() As Single
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict VarPtr(ReadFloat), VarPtr(m_MemBuffer(m_Pointer)), 4&
+            GetMem4 VarPtr(m_MemBuffer(m_Pointer)), ByVal VarPtr(ReadFloat)
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadFloat), 4&
@@ -896,9 +958,9 @@ End Function
 
 Private Sub InternalStreamError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
     If (errNumber <> 0) Then
-        pdDebug.LogAction "WARNING!  pdStream error # " & errNumber & ": " & errMessage
+        PDDebug.LogAction "WARNING!  pdStream error # " & errNumber & ": " & errMessage
     Else
-        pdDebug.LogAction "WARNING!  Unspecified pdStream error: " & errMessage
+        PDDebug.LogAction "WARNING!  Unspecified pdStream error: " & errMessage
     End If
 End Sub
 

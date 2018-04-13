@@ -291,17 +291,18 @@ Public Type PD_UndoEntry
 End Type
 
 'PhotoDemon supports multiple image encoders and decoders.
-Public Enum PD_IMAGE_DECODER_ENGINE
-    PDIDE_FAILEDTOLOAD = -1
-    PDIDE_INTERNAL = 0
-    PDIDE_FREEIMAGE = 1
-    PDIDE_GDIPLUS = 2
-    PDIDE_VBLOADPICTURE = 3
-    PDIDE_SVGPARSER = 4
+Public Enum PD_ImageDecoder
+    id_Failure = -1
+    id_Internal = 0
+    id_FreeImage = 1
+    id_GDIPlus = 2
+    id_OLELoadPicture = 3
+    id_SVGParser = 4
+    id_PNGParser = 5
 End Enum
 
 #If False Then
-    Private Const PDIDE_INTERNAL = 0, PDIDE_FREEIMAGE = 1, PDIDE_GDIPLUS = 2, PDIDE_VBLOADPICTURE = 3, PDIDE_SVGPARSER = 4
+    Private Const id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_OLELoadPicture = 3, id_SVGParser = 4, id_PNGParser = 5
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.

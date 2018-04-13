@@ -15,7 +15,21 @@ Attribute VB_Name = "Plugin_zLib"
 
 Option Explicit
 
-Private Const ZLIB_OK As Long = 0
+Private Enum PD_ZLibReturn
+    Z_OK = 0
+    Z_STREAM_END = 1
+    Z_NEED_DICT = 2
+    Z_ERRNO = -1
+    Z_STREAM_ERROR = -2
+    Z_DATA_ERROR = -3
+    Z_MEM_ERROR = -4
+    Z_BUF_ERROR = -5
+    Z_VERSION_ERROR = -6
+End Enum
+
+#If False Then
+    Private Const Z_OK = 0, Z_STREAM_END = 1, Z_NEED_DICT = 2, Z_ERRNO = -1, Z_STREAM_ERROR = -2, Z_DATA_ERROR = -3, Z_MEM_ERROR = -4, Z_BUF_ERROR = -5, Z_VERSION_ERROR = -6
+#End If
 
 'These constants were originally declared in zlib.h.  Note that zLib weirdly supports level 0, which just performs
 ' a bare memory copy with no compression.  We deliberately omit that possibility here.
@@ -25,8 +39,9 @@ Private Const ZLIB_MAX_CLEVEL As Long = 9
 'This constant was originally declared (or rather, resolved) in deflate.c.
 Private Const ZLIB_DEFAULT_CLEVEL As Long = 6
 
-Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As Long
+Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As PD_ZLibReturn
+Private Declare Function uncompress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As PD_ZLibReturn
+Private Declare Function crc32 Lib "zlibwapi" (ByVal initValue As Long, ByVal ptrDstBuffer As Long, ByVal dstBufferLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 
 'A single zLib handle is maintained for the life of a PD instance; see InitializeZLib and ReleaseZLib, below.
@@ -96,7 +111,7 @@ Public Function ZlibCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData A
     End If
 
     'Compress the data using zLib
-    If (compress2(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel) = ZLIB_OK) Then
+    If (compress2(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel) = Z_OK) Then
         ZlibCompressArray = dstArraySizeInBytes
     Else
         ZlibCompressArray = 0
@@ -115,7 +130,7 @@ Public Function ZlibCompressNakedPointers(ByVal dstPointer As Long, ByRef dstLen
     ElseIf (compressionLevel > ZLIB_MAX_CLEVEL) Then
         compressionLevel = ZLIB_MAX_CLEVEL
     End If
-    ZlibCompressNakedPointers = (compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = ZLIB_OK)
+    ZlibCompressNakedPointers = (compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = Z_OK)
 End Function
 
 'Decompress some arbitrary source pointer + length into a destination array.  Pass the optional "dstArrayIsReady" as TRUE
@@ -133,7 +148,7 @@ Public Function ZlibDecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData
     End If
     
     'Perform decompression
-    ZlibDecompressArray = (uncompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
+    ZlibDecompressArray = (uncompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize) = Z_OK)
     
 End Function
 
@@ -144,7 +159,19 @@ End Function
 'RETURNS: TRUE on success, FALSE on failure.  The knownUncompressedSize parameter will be filled with the amount of data written
 '         to the destination buffer, in bytes (1-based).
 Public Function ZlibDecompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByRef knownUncompressedSize As Long, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long) As Boolean
-    ZlibDecompress_UnsafePtr = (uncompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize) = ZLIB_OK)
+    Dim zlReturn As PD_ZLibReturn
+    zlReturn = uncompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize)
+    If (zlReturn < 0) Then InternalError "ZlibDecompress_UnsafePtr", "unknown", zlReturn
+    ZlibDecompress_UnsafePtr = (zlReturn = Z_OK)
+End Function
+
+'If you don't know the size of the required decompression buffer in advance (shame on you), you can use this function
+' to attempt a partial decompression.  ZLib returns code (-5) Z_BUF_ERROR if there is not enough output space for the
+' full stream.  It's up to you to increase buffer size and try again.  (Similarly, this function does not log failures.)
+'RETURNS: zLib return code, unmodified.  The knownUncompressedSize parameter will be filled with the amount of data written
+'         to the destination buffer, in bytes (1-based).
+Public Function ZlibDecompress_UnsafePtrEx(ByVal ptrToDstBuffer As Long, ByRef knownUncompressedSize As Long, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long) As Long
+    ZlibDecompress_UnsafePtrEx = uncompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize)
 End Function
 
 'Determine the maximum possible size required by a compression operation.  The destination buffer should be at least
@@ -164,3 +191,14 @@ End Function
 Public Function ZLib_GetMaxCompressionLevel() As Long
     ZLib_GetMaxCompressionLevel = ZLIB_MAX_CLEVEL
 End Function
+
+'ZLib also provides checksum functionality
+Public Function ZLib_GetCRC32(ByVal ptrToData As Long, ByVal dataLength As Long, Optional ByVal startValue As Long = 0&) As Long
+    If (startValue = 0&) Then startValue = crc32(0&, 0&, 0&)
+    ZLib_GetCRC32 = crc32(startValue, ptrToData, dataLength)
+End Function
+
+'ZLib errors are automatically reported to PDDebug
+Private Sub InternalError(ByRef funcName As String, errDescription As String, Optional ByVal errValue As Long = 0)
+    PDDebug.LogAction "WARNING!  ZLib." & funcName & "() reported an error (" & CStr(errValue) & "): " & errDescription
+End Sub

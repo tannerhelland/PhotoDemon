@@ -85,7 +85,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Some behavior varies based on the image decoding engine used.  PD uses a fairly complex cascading system for image decoders;
     ' if one fails, we continue trying alternates until either the load succeeds, or all known decoders have been exhausted.
-    Dim decoderUsed As PD_IMAGE_DECODER_ENGINE: decoderUsed = PDIDE_FAILEDTOLOAD
+    Dim decoderUsed As PD_ImageDecoder: decoderUsed = id_Failure
     
     'Some image formats (like TIFF, animated GIF, icons) support the notion of "multiple pages".  PD can detect such images,
     ' and depending on user input, handle the file a few different ways.
@@ -241,7 +241,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' If we were forced to fall back to GDI+ as our loading engine, disable any remaining load-time FreeImage features
             '*************************************************************************************************************************************
             
-            If (decoderUsed <> PDIDE_FREEIMAGE) Then imageHasMultiplePages = False
+            If (decoderUsed <> id_FreeImage) Then imageHasMultiplePages = False
             
             '*************************************************************************************************************************************
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
@@ -270,16 +270,16 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         Select Case decoderUsed
             
-            Case PDIDE_INTERNAL
+            Case id_Internal
                 PDDebug.LogAction vbTab & "Load engine: Internal PhotoDemon decoder", , True
             
-            Case PDIDE_FREEIMAGE
+            Case id_FreeImage
                 PDDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
             
-            Case PDIDE_GDIPLUS
+            Case id_GDIPlus
                 PDDebug.LogAction vbTab & "Load engine: GDI+", , True
             
-            Case PDIDE_VBLOADPICTURE
+            Case id_OLELoadPicture
                 PDDebug.LogAction vbTab & "Load engine: OleLoadPicture", , True
             
         End Select
@@ -381,7 +381,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
-        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (decoderUsed <> PDIDE_INTERNAL) Then
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (decoderUsed <> id_Internal) Then
             
             'Some tools may have already stopped to load metadata
             If (Not targetImage.ImgMetadata.HasMetadata) Then
