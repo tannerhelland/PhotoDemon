@@ -384,20 +384,32 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
     'If the header didn't validate, don't decompress anything as the entire file is invalid
     If (Step3_Decompress < png_Failure) Then
     
-        'The header appears to be valid.  We now know enough to decompress the IDAT chunk.
-        
-        'The required size of the uncompressed IDAT chunk is simple: width * (BitsPerPixel \ 8, rounded up) * height + height.
-        ' Height is added once more to the total because each scanline has a 1-byte "filter" value prepended to it.
-        ' (That single-byte filter value is *not* multiplied by bit-depth, obviously.)
+        'The header appears to be valid.  We now need to calculate how much space is required for decompressing.
         Dim reqIDATSize As Long
         
-        'If individual pixels require byte-aligned sizes, this step is easy
-        If (m_Header.BitsPerPixel >= 8) Then
-            reqIDATSize = m_Header.Width * m_Header.Height * Int(m_Header.BitsPerPixel \ 8) + m_Header.Height
+        'Interlaced images treat each "interlace pass" as its own "scanline", at least as far as filtering is
+        ' concerned.  (I know, it's fucking confusing.)  Because of this, calculating a decompression buffer
+        ' size is non-trivial.
+        If m_Header.Interlaced Then
+            
+            reqIDATSize = 0
+            
+            'A separate function calculates how many pixels exist in each interlacing pass; we can then use
+            ' our standard "bit-depth" adjustment formula on each pass, and tally the results to find a
+            ' "net" required decompression buffer size.
+            Dim srcX As Long, srcY As Long
+            For i = 1 To 7
+                GetSizeInterlaced srcX, srcY, i
+                reqIDATSize = reqIDATSize + ((srcX * m_Header.BitsPerPixel + 7) \ 8) * srcY + srcY
+            Next i
         
-        'If individual pixels require less than one-byte, round each scanline up to the nearest byte boundary
+        'Non-interlaced images are much simpler!
         Else
-            reqIDATSize = Int((m_Header.Width * m_Header.BitsPerPixel + 7) \ 8) * m_Header.Height + m_Header.Height
+            
+            'To properly cover the case of bit-depths < 8 (e.g. 1, 2, 4), ensure that scanline width is always
+            ' rounded up to the nearest byte alignment.
+            reqIDATSize = ((m_Header.Width * m_Header.BitsPerPixel + 7) \ 8) * m_Header.Height + m_Header.Height
+            
         End If
         
         'Ask all relevant chunks to decompress themselves; note that chunks without compressed data will
@@ -414,6 +426,8 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
                     Step3_Decompress = png_Warning
                 End If
                 
+            Else
+                If (m_Chunks(i).GetType = "IDAT") Then Debug.Print "Successfully decompressed chunk; " & reqIDATSize
             End If
         Next i
         
@@ -424,6 +438,73 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
 InternalVBError:
     InternalError "Step3_Decompress", "internal VB error #" & Err.Number & ": " & Err.Description
     Step3_Decompress = png_Failure
+
+End Function
+
+'NOTE: this function only works if m_Header has been populated!  We need access to color-mode and bit-depth data
+' in order to calculate interlacing pixel counts.
+Private Function GetSizeInterlaced(ByRef dstX As Long, ByRef dstY As Long, ByVal intPass As Long)
+
+    'Per the spec, each interlacing pass encodes the following pixels from each 8x8 block in the image:
+    ' Offset: 0 1 2 3 4 5 6 7
+    '------------------------
+    '         1 6 4 6 2 6 4 6
+    '         7 7 7 7 7 7 7 7
+    '         5 6 5 6 5 6 5 6
+    '         7 7 7 7 7 7 7 7
+    '         3 6 4 6 3 6 4 6
+    '         7 7 7 7 7 7 7 7
+    '         5 6 5 6 5 6 5 6
+    '         7 7 7 7 7 7 7 7
+    
+    'To make things a little simpler, we can break down the problem into two parts:
+    ' 1) How many pixels \ 8 are in this line?  This uses a fixed calculation and is easy to generalize.
+    ' 2) How many pixels % 8 are in this line?  These trailing pixels are a bigger pain to deal with,
+    '    and while we could hardcode a table (based on x/y direction and interlacing pass), VB doesn't
+    '    make this easy - so let's just do a bit of math on each one.  This has the added bonus of being
+    '    much easier to visualize.
+    
+    'Also note that I'm deliberately explicit with my use of Int(), even though integer division is involved,
+    ' to clarify the process.
+    
+    Select Case intPass
+        
+        'First pass is easily generalized
+        Case 1
+            dstX = Int((m_Header.Width + 7) \ 8)
+            dstY = Int((m_Header.Height + 7) \ 8)
+        
+        'Second pass is a little weirder in the x-direction
+        Case 2
+            dstX = Int((m_Header.Width + 3) \ 8)
+            dstY = Int((m_Header.Height + 7) \ 8)
+        
+        'Third pass introduces twice as many pixels in each scanline
+        Case 3
+            dstX = Int((m_Header.Width + 7) \ 8) + Int((m_Header.Width + 3) \ 8)
+            dstY = Int((m_Header.Height + 3) \ 8)
+        
+        'Fourth pass introduces twice as many y-pixels in each 8x8 block
+        Case 4
+            dstX = Int((m_Header.Width + 5) \ 8) + Int((m_Header.Width + 1) \ 8)
+            dstY = Int((m_Header.Height + 7) \ 8) + Int((m_Header.Height + 3) \ 8)
+        
+        'Fifth pass once again doubles the pixels in each scanline
+        Case 5
+            dstX = Int((m_Header.Width + 7) \ 8) + Int((m_Header.Width + 5) \ 8) + Int((m_Header.Width + 3) \ 8) + Int((m_Header.Width + 1) \ 8)
+            dstY = Int((m_Header.Height + 5) \ 8) + Int((m_Header.Height + 1) \ 8)
+        
+        'Sixth pass now has 4 pixels in the x and y direction of each 8x8 block
+        Case 6
+            dstX = Int((m_Header.Width + 6) \ 8) + Int((m_Header.Width + 4) \ 8) + Int((m_Header.Width + 2) \ 8) + Int(m_Header.Width \ 8)
+            dstY = Int((m_Header.Height + 7) \ 8) + Int((m_Header.Height + 5) \ 8) + Int((m_Header.Height + 3) \ 8) + Int((m_Header.Height + 1) \ 8)
+        
+        'Seventh (and final) pass has full pixels in the x-direction, and 4 pixels per 8x8 block in the y-direction
+        Case 7
+            dstX = m_Header.Width
+            dstY = Int((m_Header.Height + 6) \ 8) + Int((m_Header.Height + 4) \ 8) + Int((m_Header.Height + 2) \ 8) + Int(m_Header.Height \ 8)
+    
+    End Select
 
 End Function
 
@@ -499,6 +580,7 @@ Private Function PopulateHeader() As PD_PNGResult
     ' we'll suspend further processing.
     m_Header.Width = tmpStream.ReadLong_BE()
     m_Header.Height = tmpStream.ReadLong_BE()
+    
     If (m_Header.Width <= 0) Or (m_Header.Height <= 0) Then
         m_Warnings.AddString "Invalid width or height value (" & CStr(m_Header.Width) & "x" & CStr(m_Header.Height) & ")"
         PopulateHeader = png_Failure
@@ -551,20 +633,20 @@ Private Function PopulateHeader() As PD_PNGResult
     End If
     
     'Compression and filter method only have one supported value, so we don't store them; we simply validate
-    Dim testByte As Byte
+    Dim tmpByte As Byte
     If (PopulateHeader < png_Failure) Then
         
         'Ensure compression = 0
-        testByte = m_Stream.ReadByte()
-        If (testByte <> 0) Then
-            m_Warnings.AddString "Invalid compression type in header: " & CStr(testByte)
+        tmpByte = tmpStream.ReadByte()
+        If (tmpByte <> 0) Then
+            m_Warnings.AddString "Invalid compression type in header: " & CStr(tmpByte)
             PopulateHeader = png_Failure
         End If
         
         'Ensure filter = 0
-        testByte = m_Stream.ReadByte()
-        If (testByte <> 0) Then
-            m_Warnings.AddString "Invalid filter type in header: " & CStr(testByte)
+        tmpByte = tmpStream.ReadByte()
+        If (tmpByte <> 0) Then
+            m_Warnings.AddString "Invalid filter type in header: " & CStr(tmpByte)
             PopulateHeader = png_Failure
         End If
         
@@ -573,11 +655,11 @@ Private Function PopulateHeader() As PD_PNGResult
     'Finally, check interlacing.  This is only allowed to be 0 (no interlacing) or 1 (interlaced).
     If (PopulateHeader < png_Failure) Then
     
-        testByte = m_Stream.ReadByte()
-        If (testByte < 2) Then
-            m_Header.Interlaced = (testByte = 1)
+        tmpByte = tmpStream.ReadByte()
+        If (tmpByte < 2) Then
+            m_Header.Interlaced = (tmpByte = 1)
         Else
-            m_Warnings.AddString "Invalid interlaced type in header: " & CStr(testByte)
+            m_Warnings.AddString "Invalid interlaced type in header: " & CStr(tmpByte)
             PopulateHeader = png_Failure
         End If
     

@@ -157,7 +157,7 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
             DecompressChunk = (initSize = inflateSize)
             If (Not DecompressChunk) Then warningStack.AddString "pdPNGChunk.DecompressChunk received mismatched sizes from zLib: " & initSize & ", " & inflateSize
         Else
-            warningStack.AddString "pdPNGChunk.DecompressChunk received a failure state from zLib; you'll need to query it for details."
+            warningStack.AddString "pdPNGChunk.DecompressChunk received a failure state from zLib; FYI sizes were init: " & initSize & ", " & inflateSize
         End If
         
         'If decompression worked, swap streams and update our internal size tracker
