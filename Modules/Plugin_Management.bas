@@ -42,15 +42,15 @@ End Enum
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.71"
+Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.93"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.9.0"
-Private Const EXPECTED_LZ4_VERSION As String = "10800"
+Private Const EXPECTED_LZ4_VERSION As String = "10801"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
-Private Const EXPECTED_ZSTD_VERSION As String = "10301"
+Private Const EXPECTED_ZSTD_VERSION As String = "10304"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
@@ -75,7 +75,7 @@ Public Function GetPluginPath() As String
     If (LenB(m_PluginPath) <> 0) Then
         GetPluginPath = m_PluginPath
     Else
-        pdDebug.LogAction "WARNING!  PluginManager.GetPluginPath() was called before the plugin manager was initialized!"
+        PDDebug.LogAction "WARNING!  PluginManager.GetPluginPath() was called before the plugin manager was initialized!"
     End If
 End Function
 
@@ -104,9 +104,9 @@ End Sub
 Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = True)
     
     If loadHighPriorityPlugins Then
-        pdDebug.LogAction "Initializing high-priority plugins..."
+        PDDebug.LogAction "Initializing high-priority plugins..."
     Else
-        pdDebug.LogAction "Initializing low-priority plugins..."
+        PDDebug.LogAction "Initializing low-priority plugins..."
     End If
     
     Dim startTime As Currency
@@ -139,7 +139,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             ' (This step is optional; plugins do not need to support it.)
             FinalizePluginInitialization i, m_PluginInitialized(i)
             
-            pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
+            PDDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
             
         End If
         
@@ -160,11 +160,11 @@ Public Sub ReportPluginLoadSuccess()
         If m_PluginInitialized(i) Then
             successfulPluginCount = successfulPluginCount + 1
         Else
-            pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+            PDDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
         End If
     Next i
     
-    pdDebug.LogAction CStr(successfulPluginCount) & "/" & CStr(CORE_PLUGIN_COUNT) & " plugins initialized successfully."
+    PDDebug.LogAction CStr(successfulPluginCount) & "/" & CStr(CORE_PLUGIN_COUNT) & " plugins initialized successfully."
     
 End Sub
 
@@ -527,7 +527,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
             ' to kill any stranded instances before starting new ones.
             If (Not Autosaves.PeekLastShutdownClean) Then
-                pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
+                PDDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 ExifTool.KillStrandedExifToolInstances
             End If
             
@@ -657,7 +657,7 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     'The plugin file is missing.  Let's see if we can find it.
     Else
     
-        pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
     
         Dim extraFiles As pdStringStack
         Set extraFiles = New pdStringStack
@@ -666,12 +666,12 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
         ' folders preserved.
         If Files.FileExists(UserPrefs.GetProgramPath() & pluginFilename) Then
             
-            pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
+            PDDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
             If cFile.FileCopyW(UserPrefs.GetProgramPath() & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
                 
-                pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
+                PDDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
                 cFile.FileDelete UserPrefs.GetProgramPath() & pluginFilename
@@ -695,13 +695,13 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case the program
             ' as a whole is pretty much doomed.  Exit now.
             Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
+                PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
                 DoesPluginFileExist = False
             End If
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
-            pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
             DoesPluginFileExist = False
         End If
     
@@ -719,31 +719,31 @@ Public Sub TerminateAllPlugins()
     'Plugins are released in the order of "how much do we use them", with the most-used plugins being saved for last.
     ' (There's not really a reason for this, except as a failsafe against asynchronous actions happening in the background.)
     Plugin_EZTwain.ReleaseEZTwain
-    pdDebug.LogAction "EZTwain released"
+    PDDebug.LogAction "EZTwain released"
     
     Plugin_FreeImage.ReleaseFreeImage
     g_ImageFormats.FreeImageEnabled = False
-    pdDebug.LogAction "FreeImage released"
+    PDDebug.LogAction "FreeImage released"
     
     LittleCMS.ReleaseLCMS
-    pdDebug.LogAction "LittleCMS released"
+    PDDebug.LogAction "LittleCMS released"
     
     If m_ZlibEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_ZLib
         m_ZlibEnabled = False
-        pdDebug.LogAction "zLib released"
+        PDDebug.LogAction "zLib released"
     End If
     
     If m_ZstdEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_Zstd
         m_ZstdEnabled = False
-        pdDebug.LogAction "zstd released"
+        PDDebug.LogAction "zstd released"
     End If
     
     If m_lz4Enabled Then
         Compression.ShutDownCompressionEngine PD_CE_Lz4
         m_lz4Enabled = False
-        pdDebug.LogAction "lz4 released"
+        PDDebug.LogAction "lz4 released"
     End If
     
 End Sub
