@@ -493,7 +493,7 @@ Friend Function Step4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResult
         
         'Ask the IDAT chunk to unfilter itself.  (As part of this step, we pass the x/y pixel counts we
         ' already computed as part of the interlacing step - if the image was interlaced.)
-        m_Chunks(idatIndex).UnfilterChunk m_Warnings, m_Header.Width, m_Header.Height, m_Header.Interlaced, m_XPixelCount, m_YPixelCount, m_XByteCount
+        m_Chunks(idatIndex).UnfilterChunk m_Warnings, m_Header, m_XPixelCount, m_YPixelCount, m_XByteCount
         
     End If
     
@@ -528,12 +528,16 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     hasPalette = (plteIndex >= 0)
     If hasPalette Then hasPalette = m_Chunks(plteIndex).GetPalette(srcColors, numColors, m_Warnings)
     
-    'If a tRNS chunk exists, retrieve its information, too.
+    'If a tRNS chunk exists, retrieve its information, too.  (Note that we only check for tRNS under certain
+    ' color type combinations; in particular, it is forbidden if the image contains a full alpha channel.)
     Dim hasTransparency As Boolean, trnsIndex As Long, trnsRed As Long, trnsGreen As Long, trnsBlue As Long
     trnsRed = -1: trnsGreen = -1: trnsBlue = -1
-    trnsIndex = Me.GetIndexOfChunk("tRNS")
-    hasTransparency = (trnsIndex >= 0)
-    If hasTransparency Then hasTransparency = m_Chunks(trnsIndex).GetTRNSData(srcColors, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
+    
+    If (m_Header.ColorType = png_Indexed) Or (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_Truecolor) Then
+        trnsIndex = Me.GetIndexOfChunk("tRNS")
+        hasTransparency = (trnsIndex >= 0)
+        If hasTransparency Then hasTransparency = m_Chunks(trnsIndex).GetTRNSData(srcColors, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
+    End If
     
     'Because the tRNS chunk may update the contents of the palette (because it can store a table of
     ' transparency values), only *now* can we notify the parent image of the original palette contents.

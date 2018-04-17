@@ -289,7 +289,7 @@ End Function
 ' (which contains things other than pixel data, like PNG filter indicators) into a raw stream of unadulterated pixel data.
 '
 'RETURNS: TRUE if unfiltering was successful.  FALSE is a critical error; you must suspend processing after receiving it.
-Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgIsInterlaced As Boolean, ByRef xPixelCount() As Long, ByRef yPixelCount() As Long, ByRef xByteCount() As Long) As Boolean
+Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByRef xPixelCount() As Long, ByRef yPixelCount() As Long, ByRef xByteCount() As Long) As Boolean
     
     UnfilterChunk = True
     
@@ -298,6 +298,33 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByVal imgWidt
         UnfilterChunk = True
         Exit Function
     End If
+    
+    'Because member access is slower in VB, transfer some values required in the inner-loop to standalone variables
+    Dim imgWidth As Long, imgHeight As Long, imgIsInterlaced As Boolean, imgColorType As PD_PNGColorType, imgBitDepth As Long
+    imgWidth = srcHeader.Width
+    imgHeight = srcHeader.Height
+    imgBitDepth = srcHeader.BitDepth
+    imgColorType = srcHeader.ColorType
+    imgIsInterlaced = srcHeader.Interlaced
+    
+    Dim xFinal As Long, yFinal As Long
+    xFinal = imgWidth - 1
+    yFinal = imgHeight - 1
+    
+    'Multi-channel images (or images with multi-byte channel values) require offsets during the path phase.
+    Dim pxOffset As Long
+    If (imgColorType = png_Greyscale) Then
+        pxOffset = imgBitDepth \ 8
+    ElseIf (imgColorType = png_GreyscaleAlpha) Then
+        pxOffset = (imgBitDepth * 2) \ 8
+    ElseIf (imgColorType = png_Truecolor) Then
+        pxOffset = (imgBitDepth * 3) \ 8
+    ElseIf (imgColorType = png_TruecolorAlpha) Then
+        pxOffset = (imgBitDepth * 4) \ 8
+    End If
+    If (pxOffset < 1) Then pxOffset = 1
+    
+    Debug.Print imgBitDepth, imgColorType, pxOffset
     
     'A note throughout this function: per the PNG spec:
     ' - "Unsigned arithmetic modulo 256 is used, so that both the inputs and outputs fit into bytes."
@@ -321,45 +348,65 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByVal imgWidt
         yBound = yPixelCount(0)
         xStride = xByteCount(0)
         
-        Dim x As Long, y As Long
-        For y = 0 To imgHeight - 1
+        Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
+        
+        Dim x As Long, y As Long, i As Long, yOffset As Long
+        For y = 0 To yFinal
+        
+            yOffset = y * xStride
             
             'Filtering changes based on the "filter byte" at this position
-            Select Case srcBytes(y * xStride)
+            Select Case srcBytes(yOffset)
                 
-                'Unfiltered bytes don't require additional processing
+                'Regardless of image properties, unfiltered bytes don't require additional processing
                 Case png_None
                 
                 '"Sub" filtering filters according to the previous pixel
                 Case png_Sub
-                    
-                    'TODO: this needs to be channel-aligned (e.g. red pixels are filtered against preceding red pixels,
-                    ' IIF the image is > 8-bpp - otherwise, it's only performed on individual bytes)
-                    
-                    'Ignore the first *two* pixels (because the first pixel is the filter type, and the second pixel
-                    ' has no pixel to the "left" of it).
-'                    For x = 2 To imgWidth
-'                        srcBytes(y * xStride + x) = (srcBytes(y * xStride + x) + srcBytes(y * xStride + x - 1)) Mod 256
-'                    Next x
                 
+                    yOffset = yOffset + 1
+                    For x = 0 To xStride - 2
+                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + prevValue) And 255
+                    Next x
+                    
                 '"Up" filtering filters according to the pixel above
                 Case png_Up
-                    
-                    'Ignore the first line (because there are no pixels "above" it)
-                    If (y > 0) Then
-                    
-                        'Ignore the first pixel (because the first pixel is the filter type)
-'                        For x = 1 To imgWidth
-'                            srcBytes(y * xStride + x) = (srcBytes(y * xStride + x) + srcBytes((y - 1) * xStride + x)) Mod 256
-'                        Next x
-                        
-                    End If
                 
+                    yOffset = yOffset + 1
+                    For x = 0 To xStride - 2
+                        If (y > 0) Then prevValue = srcBytes(yOffset + x - xStride) Else prevValue = 0
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + prevValue) And 255
+                    Next x
+                    
                 '"Average" filtering filters according to the average between the previous pixel and the pixel above
                 Case png_Average
                 
-                '"Paeth" uses it's own complicated formula
+                    yOffset = yOffset + 1
+                    For x = 0 To xStride - 2
+                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                        If (y > 0) Then prevValue2 = srcBytes(yOffset + x - xStride) Else prevValue2 = 0
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + ((prevValue + prevValue2) \ 2)) And 255
+                    Next x
+                
+                '"Paeth" uses an external formula
                 Case png_Paeth
+                    yOffset = yOffset + 1
+                    For x = 0 To xStride - 2
+                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                        If (y > 0) Then
+                            prevValue2 = srcBytes(yOffset + x - xStride)
+                            If (x >= pxOffset) Then prevValue3 = srcBytes(yOffset + x - xStride - pxOffset) Else prevValue3 = 0
+                        Else
+                            prevValue2 = 0
+                            prevValue3 = 0
+                        End If
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + PaethPredictor(prevValue, prevValue2, prevValue3)) And 255
+                    Next x
             
             End Select
             
@@ -367,6 +414,24 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByVal imgWidt
         
         m_Data.UnwrapArrayFromMemoryStream srcBytes
         
+    End If
+    
+End Function
+
+'Paeth filtering requires a whole stupid formula
+Private Function PaethPredictor(ByVal a As Long, ByVal b As Long, ByVal c As Long) As Long
+    
+    Dim p As Long, pa As Long, pb As Long, pc As Long
+    
+    p = a + b - c
+    pa = Abs(p - a)
+    pb = Abs(p - b)
+    pc = Abs(p - c)
+    
+    If (pa <= pb) And (pa <= pc) Then
+        PaethPredictor = a
+    Else
+        If (pb <= pc) Then PaethPredictor = b Else PaethPredictor = c
     End If
     
 End Function
@@ -384,13 +449,13 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
     'As usual, interlaced and non-interlaced present different challenges
     If srcHeader.Interlaced Then
     
-        'Interlaced images are a real pain in the ass; we'll deal with them later
+        'Interlaced images are a pain in the ass; we'll deal with them later
     
     Else
         
         'Prep all the required loop values
         Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
-        Dim x As Long, y As Long, i As Long, xStride As Long, xDIB As Long
+        Dim x As Long, y As Long, i As Long, xStride As Long, xDIB As Long, srcOffset As Long, dstOffset As Long
         imgWidth = srcHeader.Width
         imgHeight = srcHeader.Height
         xFinal = imgWidth - 1
@@ -398,132 +463,21 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
         xStride = xByteCount(0)
         
         'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a unique challenge
-        ' within VB, since we lack the bit-shift operators necessary to handle them elegantly.)
-        If (srcHeader.BitDepth < 8) Then
-            
-            Dim curByte As Byte
-            
-            'We'll use pdStream to generate a new, 8-bpp version of the image; then we can use our standard 8-bpp
-            ' decode functions on 1, 2, 4-bpp data.
-            Dim tmpStream As pdStream
-            Set tmpStream = New pdStream
-            tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
-            m_Data.SetPosition 0, FILE_BEGIN
-            
-            Dim numPixelsProcessed As Long
-            
-            Select Case srcHeader.BitDepth
-            
-                Case 1
-                
-                    Dim bitFlags() As Byte
-                    ReDim bitFlags(0 To 7) As Byte
-                    bitFlags(0) = 128
-                    bitFlags(1) = 64
-                    bitFlags(2) = 32
-                    bitFlags(3) = 16
-                    bitFlags(4) = 8
-                    bitFlags(5) = 4
-                    bitFlags(6) = 2
-                    bitFlags(7) = 1
-                    
-                    'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-                    For y = 0 To yFinal
-                    
-                        'Move past the filter byte
-                        tmpStream.WriteByte m_Data.ReadByte()
-                        numPixelsProcessed = 0
-                        
-                        'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                        For x = 0 To xStride - 2
-                        
-                            curByte = m_Data.ReadByte()
-                            
-                            'Parse each bit in turn
-                            For i = 0 To 7
-                                
-                                'Ignore empty bytes at the end of each scanline
-                                If (numPixelsProcessed <= xFinal) Then
-                                    If ((curByte And bitFlags(i)) = bitFlags(i)) Then tmpStream.WriteByte 1 Else tmpStream.WriteByte 0
-                                    numPixelsProcessed = numPixelsProcessed + 1
-                                End If
-                                
-                            Next i
-                        Next x
-                        
-                    Next y
-                    
-                Case 2
-                    
-                    Dim shiftTable() As Byte
-                    ReDim shiftTable(0 To 3) As Byte
-                    shiftTable(0) = 2 ^ 6
-                    shiftTable(1) = 2 ^ 4
-                    shiftTable(2) = 2 ^ 2
-                    shiftTable(3) = 1
-                    
-                    'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-                    For y = 0 To yFinal
-                    
-                        'Move past the filter byte (which has already been dealt with in a previous step)
-                        tmpStream.WriteByte m_Data.ReadByte()
-                        numPixelsProcessed = 0
-                        
-                        'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                        For x = 0 To xStride - 2
-                        
-                            curByte = m_Data.ReadByte()
-                            
-                            'Parse each two-bit pair in turn
-                            For i = 0 To 3
-                                
-                                'Ignore empty bytes at the end of each scanline
-                                If (numPixelsProcessed <= xFinal) Then
-                                    tmpStream.WriteByte (curByte \ shiftTable(i)) And &H3
-                                    numPixelsProcessed = numPixelsProcessed + 1
-                                End If
-                                
-                            Next i
-                        Next x
-                    Next y
-                    
-                Case 4
-                
-                    'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-                    For y = 0 To yFinal
-                    
-                        'Move past the filter byte (which has already been dealt with in a previous step)
-                        tmpStream.WriteByte m_Data.ReadByte()
-                        numPixelsProcessed = 0
-                        
-                        'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                        For x = 0 To xStride - 2
-                        
-                            curByte = m_Data.ReadByte()
-                            
-                            'Parse each two-bit pair in turn, while ignoring empty bytes at the end of each scanline
-                            tmpStream.WriteByte (curByte \ 16) And &HF
-                            numPixelsProcessed = numPixelsProcessed + 1
-                            
-                            If (numPixelsProcessed <= xFinal) Then
-                                tmpStream.WriteByte curByte And &HF
-                                numPixelsProcessed = numPixelsProcessed + 1
-                            End If
-                            
-                        Next x
-                    Next y
-            
-            End Select
-            
-            'Overwrite our original data stream with the new one, and reset xStride to match
-            Set m_Data = tmpStream
-            xStride = imgWidth + 1
-        
-        End If
+        ' within VB, since we lack the bit-shift operators necessary to handle them elegantly.)  Note that the upsampler
+        ' will reset our xStride value to match 8-bpp data it produces.
+        If (srcHeader.BitDepth < 8) Then UpsampleLowBitDepthData srcHeader, xStride
         
         'If the image is 8-bpp grayscale, we now want to construct an artifical palette.  (This lets us process it
         ' in an identical manner to indexed color images.)
         If (srcHeader.ColorType = png_Greyscale) Then ConstructGrayPalette srcHeader, srcPalette, srcPaletteSize, srcTrnsRed
+        
+        'Certain bit-depths require us to handle transparency manually (but note that 8-bpp grayscale has already
+        ' been covered by the ConstructGrayPalette() function, above!)
+        Dim trnsHandlingRequired As Boolean, trnsCheck As Long
+        trnsHandlingRequired = (srcHeader.ColorType = png_Truecolor) And (srcTrnsRed >= 0) And (srcTrnsGreen >= 0) And (srcTrnsGreen >= 0)
+        If trnsHandlingRequired Then
+            If (srcHeader.BitDepth = 8) Then trnsCheck = RGB(srcTrnsRed, srcTrnsGreen, srcTrnsBlue)
+        End If
         
         'We can now assign actual pixel bits!
         Dim dstBytes() As Byte, dstSA As SafeArray2D
@@ -533,15 +487,14 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
         Dim srcBytes() As Byte, srcSA As SafeArray1D
         m_Data.WrapArrayAroundMemoryStream srcBytes, srcSA, 0
         
-        Dim srcPtr As Long
-        srcPtr = m_Data.Peek_PointerOnly(0)
-        
         '16-bit-depths can be grayscale or truecolor, with or without an alpha channel
         If (srcHeader.BitDepth > 8) Then
         
         '8-bit (or less) images are handled universally, because we upsampled lower depths in a previous step
         Else
-        
+            
+            Dim r As Long, g As Long, b As Long, a As Long
+            
             Select Case srcHeader.ColorType
             
                 Case png_Greyscale, png_Indexed
@@ -549,22 +502,18 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
                     Dim curIndex As Long
                     
                     For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
                     For x = 0 To xFinal
                         
-                        curIndex = srcBytes(y * xStride + x + 1)
+                        curIndex = srcBytes(srcOffset + x)
                         
-                        'Failsafe check until testing is complete
-                        If (curIndex < srcPaletteSize) Then
-                            With srcPalette(curIndex)
-                                xDIB = x * 4
-                                dstBytes(xDIB, y) = .Blue
-                                dstBytes(xDIB + 1, y) = .Green
-                                dstBytes(xDIB + 2, y) = .Red
-                                dstBytes(xDIB + 3, y) = .Alpha
-                            End With
-                        Else
-                            Debug.Print "FAILED: " & curIndex
-                        End If
+                        With srcPalette(curIndex)
+                            xDIB = x * 4
+                            dstBytes(xDIB, y) = .Blue
+                            dstBytes(xDIB + 1, y) = .Green
+                            dstBytes(xDIB + 2, y) = .Red
+                            dstBytes(xDIB + 3, y) = .Alpha
+                        End With
                         
                     Next x
                     Next y
@@ -573,9 +522,60 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
                 
                 Case png_Truecolor
                 
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
+                        
+                        'Byte order has to be swapped to BGRA
+                        r = srcBytes(srcOffset + x * 3)
+                        g = srcBytes(srcOffset + x * 3 + 1)
+                        b = srcBytes(srcOffset + x * 3 + 2)
+                        xDIB = x * 4
+                        dstBytes(xDIB, y) = b
+                        dstBytes(xDIB + 1, y) = g
+                        dstBytes(xDIB + 2, y) = r
+                        If trnsHandlingRequired Then
+                            If (RGB(r, g, b) = trnsCheck) Then dstBytes(xDIB + 3, y) = 0
+                        End If
+                        
+                    Next x
+                    Next y
+                    
+                    ConstructImage = png_Success
+                
                 Case png_TruecolorAlpha
                 
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
+                        
+                        'Byte order has to be swapped to BGRA
+                        xDIB = x * 4
+                        dstBytes(xDIB, y) = srcBytes(srcOffset + x * 4 + 2)
+                        dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 4 + 1)
+                        dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 4)
+                        dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 4 + 3)
+                        
+                    Next x
+                    Next y
+                
                 Case png_GreyscaleAlpha
+                
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
+                        
+                        'Byte order has to be swapped to BGRA
+                        g = srcBytes(srcOffset + x * 2)
+                        a = srcBytes(srcOffset + x * 2 + 1)
+                        xDIB = x * 4
+                        dstBytes(xDIB, y) = g
+                        dstBytes(xDIB + 1, y) = g
+                        dstBytes(xDIB + 2, y) = g
+                        dstBytes(xDIB + 3, y) = a
+                        
+                    Next x
+                    Next y
                 
             End Select
         
@@ -587,6 +587,139 @@ Friend Function ConstructImage(ByRef dstDIB As pdDIB, ByRef srcHeader As PD_PNGH
     End If
 
 End Function
+
+'1, 2, and 4-bit-per-pixel data must be upsampled to be easily handled in VB.  We do this prior to constructing a
+' final image, as it allows us to use identical rendering code for 1/2/4/8-bpp indexed images.
+Private Sub UpsampleLowBitDepthData(ByRef srcHeader As PD_PNGHeader, ByRef xStride As Long)
+    
+    If (srcHeader.BitDepth >= 8) Then Exit Sub
+    
+    'Prep all the required loop values
+    Dim xFinal As Long, yFinal As Long
+    Dim x As Long, y As Long, i As Long
+    xFinal = srcHeader.Width - 1
+    yFinal = srcHeader.Height - 1
+        
+    Dim curByte As Byte
+    
+    'We'll use pdStream to generate a new, 8-bpp version of the image; then we can use our standard 8-bpp
+    ' decode functions on 1, 2, 4-bpp data.
+    Dim tmpStream As pdStream
+    Set tmpStream = New pdStream
+    tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
+    m_Data.SetPosition 0, FILE_BEGIN
+    
+    Dim numPixelsProcessed As Long
+    
+    Select Case srcHeader.BitDepth
+        
+        'There's not a performance-friendly way to mask flags in VB, so we just use a byte array for clarity
+        Case 1
+        
+            Dim bitFlags() As Byte
+            ReDim bitFlags(0 To 7) As Byte
+            bitFlags(0) = 128
+            bitFlags(1) = 64
+            bitFlags(2) = 32
+            bitFlags(3) = 16
+            bitFlags(4) = 8
+            bitFlags(5) = 4
+            bitFlags(6) = 2
+            bitFlags(7) = 1
+                    
+            'We want to focus on the bytes relevant to the current scanline only
+            For y = 0 To yFinal
+            
+                'Move past the filter byte
+                tmpStream.WriteByte m_Data.ReadByte()
+                numPixelsProcessed = 0
+                        
+                'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
+                For x = 0 To xStride - 2
+                
+                    curByte = m_Data.ReadByte()
+                    
+                    'Parse each bit in turn
+                    For i = 0 To 7
+                        
+                        'Ignore empty bytes at the end of each scanline
+                        If (numPixelsProcessed <= xFinal) Then
+                            If (bitFlags(i) = (curByte And bitFlags(i))) Then tmpStream.WriteByte 1 Else tmpStream.WriteByte 0
+                            numPixelsProcessed = numPixelsProcessed + 1
+                        End If
+                        
+                    Next i
+                Next x
+                
+            Next y
+                    
+        Case 2
+            
+            Dim shiftTable() As Byte
+            ReDim shiftTable(0 To 3) As Byte
+            shiftTable(0) = 2 ^ 6
+            shiftTable(1) = 2 ^ 4
+            shiftTable(2) = 2 ^ 2
+            shiftTable(3) = 1
+                    
+            'Unlike other methods, we want to extract the bytes relevant to the current scanline only
+            For y = 0 To yFinal
+            
+                'Move past the filter byte (which has already been dealt with in a previous step)
+                tmpStream.WriteByte m_Data.ReadByte()
+                numPixelsProcessed = 0
+                
+                'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
+                For x = 0 To xStride - 2
+                
+                    curByte = m_Data.ReadByte()
+                    
+                    'Parse each two-bit pair in turn
+                    For i = 0 To 3
+                        
+                        'Ignore empty bytes at the end of each scanline
+                        If (numPixelsProcessed <= xFinal) Then
+                            tmpStream.WriteByte (curByte \ shiftTable(i)) And &H3
+                            numPixelsProcessed = numPixelsProcessed + 1
+                        End If
+                        
+                    Next i
+                Next x
+            Next y
+            
+        Case 4
+        
+            'Unlike other methods, we want to extract the bytes relevant to the current scanline only
+            For y = 0 To yFinal
+            
+                'Move past the filter byte (which has already been dealt with in a previous step)
+                tmpStream.WriteByte m_Data.ReadByte()
+                numPixelsProcessed = 0
+                        
+                'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
+                For x = 0 To xStride - 2
+                
+                    curByte = m_Data.ReadByte()
+                    
+                    'Parse each two-bit pair in turn, while ignoring empty bytes at the end of each scanline
+                    tmpStream.WriteByte (curByte \ 16) And &HF
+                    numPixelsProcessed = numPixelsProcessed + 1
+                    
+                    If (numPixelsProcessed <= xFinal) Then
+                        tmpStream.WriteByte curByte And &HF
+                        numPixelsProcessed = numPixelsProcessed + 1
+                    End If
+                    
+                Next x
+            Next y
+    
+    End Select
+            
+    'Overwrite our original data stream with the new one, and reset xStride to match
+    Set m_Data = tmpStream
+    xStride = srcHeader.Width + 1
+    
+End Sub
 
 'To simplify rendering, PD treates grayscale data identically to palette data; we just generate a grayscale palette
 ' on-the-fly (one matching the current color depth), then render accordingly.
@@ -617,7 +750,7 @@ Private Sub ConstructGrayPalette(ByRef srcHeader As PD_PNGHeader, ByRef srcPalet
         Dim i As Long
         For i = 0 To tmpMax
         
-            tmpCalcInt = Int(CDbl(i / tmpMax) * 255#)
+            tmpCalcInt = Int(CDbl(i / tmpMax) * 255# + 0.5)
             
             With srcPalette(i)
                 .Red = tmpCalcInt
