@@ -1123,8 +1123,34 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         ' multiple IDAT chunks (if any) into a single IDAT instance.
         If (keepLoading < png_Failure) Then keepLoading = cPNG.Step3_Decompress(srcFile)
         
+        'All compressed data has now been decompressed.  Our next task is to "un-filter" the IDAT chunk,
+        ' which converts the pixel bytestream (which has been "filtered" into some other representation
+        ' format) into a raw stream of actual pixel data.
+        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step4_UnfilterIDAT(srcFile)
+        
+        'Next, convert the unfiltered IDAT into actual pixel data.
+        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step5_ConstructImage(srcFile, dstDIB, dstImage)
+        
         'If we've experienced one or more warnings during the load process, dump them out to the debug file.
         If (cPNG.Warnings_GetCount() > 0) Then cPNG.Warnings_DumpToDebugger
+        
+        'If the PNG loaded successfully (despite any warnings), suspend further processing
+        If (keepLoading <= png_Warning) Then
+        
+            LoadPNGOurselves = True
+            
+            dstDIB.SetAlphaPremultiplication True
+            
+            dstImage.SetOriginalFileFormat PDIF_PNG
+            
+            'TODO!
+            dstImage.SetOriginalColorDepth 32
+            dstImage.SetOriginalGrayscale False
+            dstImage.SetOriginalAlpha True
+            
+            dstImage.NotifyImageChanged UNDO_Everything
+            
+        End If
         
     'Failure states in the validation step are all treated as catastrophic (there's a good chance
     ' the file in question isn't even a PNG, and we're just testing it as a failsafe)

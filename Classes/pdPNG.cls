@@ -59,31 +59,19 @@ End Enum
     Private Const png_Success = 0, png_Warning = 256, png_Failure = 65536, png_FileNotPNG = 16777217
 #End If
 
-'Like any format, PNGs have some "magic number" values.
-Private Enum PD_PNGColorType
-    png_Greyscale = 0
-    png_Truecolor = 2
-    png_Indexed = 3
-    png_GrayscaleAlpha = 4
-    png_TruecolorAlpha = 6
-End Enum
-
-#If False Then
-    Private Const png_Greyscale = 0, png_Truecolor = 2, png_Indexed = 3, png_GrayscaleAlpha = 4, png_TruecolorAlpha = 6
-#End If
-
 'PNGs use a standard header, which we convert into this VB-friendly version.  Note that not all information
 ' from the IHDR chunk is stored here; entries like Compression and Filter only have one allowed value, so while
 ' we validate these at load-time, we don't go to the trouble of storing them internally.  Similarly, some of
 ' these values (like bits-per-pixel) are not formally stored in the original header - instead, we infer them.
-Private Type PD_PNGHeader
-    Width As Long
-    Height As Long
-    ColorType As PD_PNGColorType
-    Interlaced As Boolean
-    BitDepth As Byte
-    BitsPerPixel As Byte
-End Type
+' (NOTE: the header type is declared publicly in PD, so we can transfer it to child classes.)
+'Public Type PD_PNGHeader
+'    Width As Long
+'    Height As Long
+'    ColorType As PD_PNGColorType
+'    Interlaced As Boolean
+'    BitDepth As Byte
+'    BitsPerPixel As Byte
+'End Type
 
 Private m_Header As PD_PNGHeader
 
@@ -97,6 +85,13 @@ Private m_Stream As pdStream
 'At present, we require the caller to pass an identical source file path to every load function.
 ' (This is a cheap and easy way to ensure no funny business is afoot!)
 Private m_SourceFilename As String
+
+'In interlaced images, the number of pixels-per-reduced image is non-obvious.  We calculate these
+' line lengths as part of the decompression pass, and rather than re-calculate them on subsequent passes,
+' we simply cache the results and re-use them later.  (Note that there is no "y" byte count, because it
+' is the same as the pixel count.)
+Private m_XPixelCount() As Long, m_YPixelCount() As Long
+Private m_XByteCount() As Long
 
 'Chunk collection.  The size of the collection *may not match* the number of chunks actually loaded.
 ' (For performance reasons, the array is allocated using a power-of-2 strategy.)
@@ -394,17 +389,42 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
             
             reqIDATSize = 0
             
+            'Because it's complicated to calculate scanline pixel and byte counts, we store our calculations
+            ' in this step so that future steps can re-use them.
+            ReDim m_XPixelCount(0 To 6) As Long
+            ReDim m_YPixelCount(0 To 6) As Long
+            ReDim m_XByteCount(0 To 6) As Long
+            
             'A separate function calculates how many pixels exist in each interlacing pass; we can then use
             ' our standard "bit-depth" adjustment formula on each pass, and tally the results to find a
             ' "net" required decompression buffer size.
             Dim srcX As Long, srcY As Long
-            For i = 1 To 7
-                GetSizeInterlaced srcX, srcY, i
-                reqIDATSize = reqIDATSize + ((srcX * m_Header.BitsPerPixel + 7) \ 8) * srcY + srcY
+            For i = 0 To 6
+                
+                GetSizeInterlaced srcX, srcY, i + 1
+                m_XPixelCount(i) = srcX
+                m_YPixelCount(i) = srcY
+                m_XByteCount(i) = ((srcX * m_Header.BitsPerPixel + 7) \ 8) + 1
+                
+                'Per the spec, 0-byte passes (only possible on very small images!) do not get a filter type byte,
+                ' so we can skip such lines entirely.
+                If (m_XByteCount(i) = 1) Then
+                    m_XByteCount(i) = 0
+                Else
+                    reqIDATSize = reqIDATSize + ((srcX * m_Header.BitsPerPixel + 7) \ 8) * srcY + srcY
+                End If
+                
             Next i
         
         'Non-interlaced images are much simpler!
         Else
+            
+            ReDim m_XPixelCount(0) As Long
+            ReDim m_YPixelCount(0) As Long
+            ReDim m_XByteCount(0) As Long
+            m_XPixelCount(0) = m_Header.Width
+            m_YPixelCount(0) = m_Header.Height
+            m_XByteCount(0) = ((m_Header.Width * m_Header.BitsPerPixel + 7) \ 8) + 1
             
             'To properly cover the case of bit-depths < 8 (e.g. 1, 2, 4), ensure that scanline width is always
             ' rounded up to the nearest byte alignment.
@@ -440,6 +460,107 @@ InternalVBError:
     Step3_Decompress = png_Failure
 
 End Function
+
+'Once all relevant chunks have been decompressed, we next need to un-filter each scanline into its original,
+' unfiltered pixel representation.  This step operates only on bytes, which means it is completely independent
+' of color-depth or bit-depth.
+Friend Function Step4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResult
+
+    On Error GoTo InternalVBError
+    
+    Step4_UnfilterIDAT = png_Success
+    
+    'Failsafe check(s)
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step4_UnfilterIDAT", "filename has changed since original validation!"
+        Step4_UnfilterIDAT = png_Failure
+    End If
+    
+    If (Step4_UnfilterIDAT >= png_Failure) Then Exit Function
+    
+    'We are now ready to convert the raw IDAT stream into its original, "unfiltered pixels" state.
+    ' IMPORTANTLY, this step operates only on pure bytes - so 1-bpp pixel data will still be 1-bpp after this step.
+    ' All this step does is "translate" pixels from their current filtered state (which is a quirky PNG term
+    ' that roughly correlates to "frequency transform") to their original, unfiltered state.
+    
+    'Also note that filter type 0 is totally valid, which means "unfiltered", in which case we won't do shit
+    ' during this stage!
+    
+    'Make sure an IDAT chunk exists...
+    Dim idatIndex As Long
+    idatIndex = Me.GetIndexOfChunk("IDAT")
+    If (idatIndex >= 0) Then
+        
+        'Ask the IDAT chunk to unfilter itself.  (As part of this step, we pass the x/y pixel counts we
+        ' already computed as part of the interlacing step - if the image was interlaced.)
+        m_Chunks(idatIndex).UnfilterChunk m_Warnings, m_Header.Width, m_Header.Height, m_Header.Interlaced, m_XPixelCount, m_YPixelCount, m_XByteCount
+        
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "Step4_UnfilterIDAT", "internal VB error #" & Err.Number & ": " & Err.Description
+    Step4_UnfilterIDAT = png_Failure
+
+End Function
+
+'Once all relevant chunks have been decompressed, we next need to un-filter each scanline into its original,
+' unfiltered pixel representation.  This step operates only on bytes, which means it is completely independent
+' of color-depth or bit-depth.
+Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
+
+    On Error GoTo InternalVBError
+    
+    Step5_ConstructImage = png_Success
+    
+    'Failsafe check(s)
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step5_ConstructImage", "filename has changed since original validation!"
+        Step5_ConstructImage = png_Failure
+    End If
+    
+    If (Step5_ConstructImage >= png_Failure) Then Exit Function
+    
+    'If the image contains a palette (PLTE chunk), now's the time to grab it!
+    Dim hasPalette As Boolean, plteIndex As Long, srcColors() As RGBQuad, numColors As Long
+    plteIndex = Me.GetIndexOfChunk("PLTE")
+    hasPalette = (plteIndex >= 0)
+    If hasPalette Then hasPalette = m_Chunks(plteIndex).GetPalette(srcColors, numColors, m_Warnings)
+    
+    'If a tRNS chunk exists, retrieve its information, too.
+    Dim hasTransparency As Boolean, trnsIndex As Long, trnsRed As Long, trnsGreen As Long, trnsBlue As Long
+    trnsRed = -1: trnsGreen = -1: trnsBlue = -1
+    trnsIndex = Me.GetIndexOfChunk("tRNS")
+    hasTransparency = (trnsIndex >= 0)
+    If hasTransparency Then hasTransparency = m_Chunks(trnsIndex).GetTRNSData(srcColors, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
+    
+    'Because the tRNS chunk may update the contents of the palette (because it can store a table of
+    ' transparency values), only *now* can we notify the parent image of the original palette contents.
+    If hasPalette Then dstImage.SetOriginalPalette srcColors, numColors
+    
+    'We're close enough to final processing that we can finally construct the DIB at its target size.
+    ' (Note that - regardless of PNG color depth - we *always* create the DIB as 32-bpp RGBA.)
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    If dstDIB.CreateBlank(m_Header.Width, m_Header.Height, 32, vbWhite, 255) Then
+    
+        'Further processing is handled by the IDAT chunk itself
+        Step5_ConstructImage = m_Chunks(Me.GetIndexOfChunk("IDAT")).ConstructImage(dstDIB, m_Header, srcColors, numColors, trnsRed, trnsGreen, trnsBlue, m_XPixelCount, m_YPixelCount, m_XByteCount)
+    
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "Step5_ConstructImage", "internal VB error #" & Err.Number & ": " & Err.Description
+    Step5_ConstructImage = png_Failure
+End Function
+    
+'TODO!  We can now assemble the image's underlying pixel data.  Note that
+' the way we do this varies by color-mode and bit-depth.  If the image has an ICC profile, we want to leave data
+' in its original format in some circumstances (e.g. 16-bit-per-channel images must remain high-bit-depth prior
+' to ICC conversion), while in others (e.g. 1-bit images) there is no advantage to leaving pixels in their
+' original state.  (In fact, we *must* convert them to another color-depth in order to ICC-correct them.)
 
 'NOTE: this function only works if m_Header has been populated!  We need access to color-mode and bit-depth data
 ' in order to calculate interlacing pixel counts.
@@ -612,7 +733,7 @@ Private Function PopulateHeader() As PD_PNGResult
                 mismatchedDepth = (.BitDepth <> 8) And (.BitDepth <> 16)
             ElseIf (.ColorType = png_Indexed) Then
                 mismatchedDepth = (.BitDepth <> 1) And (.BitDepth <> 2) And (.BitDepth <> 4) And (.BitDepth <> 8)
-            ElseIf (.ColorType = png_GrayscaleAlpha) Then
+            ElseIf (.ColorType = png_GreyscaleAlpha) Then
                 mismatchedDepth = (.BitDepth <> 8) And (.BitDepth <> 16)
             ElseIf (.ColorType = png_TruecolorAlpha) Then
                 mismatchedDepth = (.BitDepth <> 8) And (.BitDepth <> 16)
@@ -685,7 +806,7 @@ Private Function PopulateHeader() As PD_PNGResult
                 .BitsPerPixel = .BitDepth
             
             'Greyscale + alpha is bit-depth * 2 (because there are two channels in the image)
-            ElseIf (.ColorType = png_GrayscaleAlpha) Then
+            ElseIf (.ColorType = png_GreyscaleAlpha) Then
                 .BitsPerPixel = .BitDepth * 2
             
             'Finally, truecolor + alpha is bit-depth * 4 (RGBA channels)

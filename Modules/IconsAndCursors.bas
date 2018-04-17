@@ -352,7 +352,7 @@ Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenu
     If (Not g_Resources Is Nothing) Then
         If g_Resources.AreResourcesAvailable Then
             Dim tmpDIB As pdDIB
-            If (desiredSize = 0) Then desiredSize = FixDPI(16)
+            If (desiredSize = 0) Then desiredSize = Interface.FixDPI(16)
             loadedInternally = g_Resources.LoadImageResource(srcResID, tmpDIB, desiredSize, desiredSize, desiredPadding, True)
             If loadedInternally Then targetMenuObject.AddImageFromDIB tmpDIB
         End If
@@ -360,7 +360,7 @@ Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenu
     
     'If that fails, use the legacy resource instead
     If (Not loadedInternally) Then
-        targetMenuObject.AddImageFromStream LoadResData(srcResID, "CUSTOM")
+        Debug.Print "WARNING!  IconsAndCursors.AddImageResourceToClsMenu failed on: " & srcResID
     End If
     
 End Sub

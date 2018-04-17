@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2018 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 07/February/18
-'Last update: continue expanding the available "Write" commands, to make it easier to write Adobe-format files
+'Last updated: 17/April/18
+'Last update: allow callers to wrap their own arrays around the stream, for faster processing in some scenarios
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -54,6 +54,7 @@ Private Declare Sub GetMem1 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstB
 Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstInteger As Integer)
 Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstLong As Long)
 Private Declare Sub GetMem8 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstCurrency As Currency)
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 Private Declare Function ntohl Lib "Ws2_32" (ByVal srcLong As Long) As Long
@@ -110,7 +111,7 @@ Private m_FileHandle As Long
 
 'Remove (n) bytes from the stream, starting at the front of the stream.  Any un-removed bytes will be shifted to
 ' the front of the stream, and the current pointer will be shifted accordingly.  (That said, if the current pointer
-' would be moved before the front of the stream, it will be forcibly set to 0.)
+' would be moved before the front of the stream, it will be forcibly reset to 0.)
 '
 'NOTE: at present, only memory-backed streams support this function
 Friend Sub DeleteFromStart(ByVal numBytesToDelete As Long)
@@ -219,9 +220,43 @@ Friend Sub SetSizeExternally(ByVal newSize As Long)
     m_BufferSize = newSize
 End Sub
 
+'If StartStream has been called, this will return TRUE.
 Friend Function IsOpen() As Boolean
     IsOpen = m_Open
 End Function
+
+'To UNSAFELY wrap an external byte array around our data, use this sub.  When you are done - and before the external
+' array goes out of scope - you MUST call UnwrapArray, below.  (Also, per the name, this only works on memory streams -
+' file streams will fail!)
+'
+'An optional startPosition index can be passed.  The array will be wrapped around the stream *starting at this position*.
+' (Note that its base index will still be 0.)  By default, the array's length is always set to the difference between the
+' start position and the full size of the stream.
+Friend Function WrapArrayAroundMemoryStream(ByRef srcArray() As Byte, ByRef srcSafeArray As SafeArray1D, Optional ByVal startPosition As Long = 0&) As Boolean
+    
+    WrapArrayAroundMemoryStream = False
+    
+    If m_Open And (m_StreamMode = PD_SM_MemoryBacked) Then
+        
+        With srcSafeArray
+            .cbElements = 1
+            .cDims = 1
+            .cLocks = 1
+            .lBound = 0
+            .cElements = Me.GetStreamSize() - startPosition
+            .pvData = VarPtr(m_MemBuffer(startPosition))
+        End With
+        
+        CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+        WrapArrayAroundMemoryStream = True
+        
+    End If
+    
+End Function
+
+Friend Sub UnwrapArrayFromMemoryStream(ByRef srcArray() As Byte)
+    PutMem4 VarPtrArray(srcArray), 0&
+End Sub
 
 'Start a new stream.  The stream type *must* be specified.  If this is a file stream, a valid filename *must* be provided.
 ' Read/write access does not need to be specified, but if you only need a read-only buffer, specifying as much will yield
@@ -752,6 +787,11 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
         WriteBytesFromPointer = 0
     End If
     
+End Function
+
+'Write a single byte to the stream.
+Friend Function WriteByte(ByVal srcByte As Byte) As Boolean
+    WriteByte = WriteBytesFromPointer(VarPtr(srcByte), 1)
 End Function
 
 'Write a single (pun?) 32-bit float to the stream

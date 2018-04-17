@@ -276,6 +276,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             Case id_FreeImage
                 PDDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
             
+            Case id_PNGParser
+                PDDebug.LogAction vbTab & "Load engine: Internal PNG parser", , True
+            
             Case id_GDIPlus
                 PDDebug.LogAction vbTab & "Load engine: GDI+", , True
             

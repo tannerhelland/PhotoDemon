@@ -720,3 +720,25 @@ Public Type PAINTSTRUCT
     fIncUpdate As Long
     rgbReserved(0 To 31) As Byte
 End Type
+
+'PNG handling requires special types
+Public Enum PD_PNGColorType
+    png_Greyscale = 0
+    png_Truecolor = 2
+    png_Indexed = 3
+    png_GreyscaleAlpha = 4
+    png_TruecolorAlpha = 6
+End Enum
+
+#If False Then
+    Private Const png_Greyscale = 0, png_Truecolor = 2, png_Indexed = 3, png_GreyscaleAlpha = 4, png_TruecolorAlpha = 6
+#End If
+
+Public Type PD_PNGHeader
+    Width As Long
+    Height As Long
+    ColorType As PD_PNGColorType
+    Interlaced As Boolean
+    BitDepth As Byte
+    BitsPerPixel As Byte
+End Type
