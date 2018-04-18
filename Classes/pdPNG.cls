@@ -573,6 +573,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         If m_Header.Interlaced Then
         
             'Interlaced images are a pain in the ass; we'll deal with them later
+            okToProceed = False
         
         Else
             
