@@ -670,8 +670,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
         If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
-        'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
-        ' we may be able to use ExifTool to manually retrieve the full profile data.
+        'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some
+        ' esoteric formats), we may be able to use ExifTool to manually retrieve the full profile data.
         If (Not ppMayBeNeeded) Then
             If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
                 ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
@@ -694,12 +694,15 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             
             Dim srcGamma As Double: srcGamma = 0
             
+            Dim iccHandled As Boolean
+            iccHandled = pdImages(parentImageID).GetActiveDIB.ICCProfile.HasProfileBeenApplied()
+            
             Dim cHRMHandled As Boolean, gAMAHandled As Boolean, sRGBHandled As Boolean
             cHRMHandled = False: gAMAHandled = False: sRGBHandled = False
                 
             'First, check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
             ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
-            If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) Then
+            If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) And (Not iccHandled) Then
             
                 PDDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
                 ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
@@ -713,7 +716,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
             ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
             ' implemented this feature in the first place!)
-            If (Not sRGBHandled) And DoesTagExistFullName("PNG:WhitePointX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", relevantTagIndex, vbBinaryCompare) Then
+            If (Not sRGBHandled) And (Not iccHandled) And DoesTagExistFullName("PNG:WhitePointX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", relevantTagIndex, vbBinaryCompare) Then
             
                 'Both tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
                 ' those next.  If either are found, ignore further processing.
@@ -802,7 +805,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
             ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
             ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
-            If (Not cHRMHandled) And (Not sRGBHandled) And DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then
+            If (Not cHRMHandled) And (Not sRGBHandled) And (Not iccHandled) And DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then
             
                 srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
                 
