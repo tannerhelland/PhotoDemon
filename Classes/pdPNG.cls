@@ -953,6 +953,52 @@ InternalVBError:
     Step5_ConstructImage = png_Failure
 End Function
 
+'Once image data has been fully constructed, the last thing we need to do is check for any esoteric chunks that affect
+' the final image presentation (like gamma or chromaticity conversions).  For 99% of images, this step won't do a thing.
+Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
+
+    On Error GoTo InternalVBError
+    
+    Step6_PostProcessing = png_Success
+    
+    'Failsafe check(s)
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step6_PostProcessing", "filename has changed since original validation!"
+        Step6_PostProcessing = png_Failure
+    End If
+    
+    'PNG presents a hierarchy of lighting and color adjustment chunks.  If present, they are to be dealt with
+    ' in this order (and once one is dealt with, subsequent ones should be ignored, to avoid double-corrections):
+    
+    '1) iCCP
+    '2) sRGB
+    '3) gAMA and cHRM (equal priority, and should be handled together if possible)
+    
+    'ICC profiles or sRGB flags, if present, are dealt with during a previous decoding step (for performance reasons).
+    ' As such, we don't need to deal with them here - and in fact, we can bail if they were handled previously,
+    ' as they take precedence over all other corrective functions.
+    If dstDIB.ICCProfile.HasProfileBeenApplied() Then
+        Step6_PostProcessing = png_Success
+        Exit Function
+    End If
+    
+    'Next, look for gAMA and cHRM chunks, if any
+    Dim gammaIndex As Long, chrmIndex As Long
+    gammaIndex = Me.GetIndexOfChunk("gAMA")
+    chrmIndex = Me.GetIndexOfChunk("cHRM")
+    
+    'TODO: actual handling
+    If (gammaIndex >= 0) Then
+    
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "Step6_PostProcessing", "internal VB error #" & Err.Number & ": " & Err.Description
+    Step6_PostProcessing = png_Failure
+End Function
+
 'LittleCMS is an integral part of the PNG load process.  If PNG images contain ICC profiles, we use LittleCMS
 ' to translate colors between spaces.  If PNG images do *not* contain ICC profiles, we can still use LittleCMS
 ' for much faster swizzling than VB6 alone can provide.  (As such, we still prep generic ICC profiles as part

@@ -1131,6 +1131,9 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         'Next, convert the unfiltered IDAT into actual pixel data.
         If (keepLoading < png_Failure) Then keepLoading = cPNG.Step5_ConstructImage(srcFile, dstDIB, dstImage)
         
+        'Finally, perform any weird post-processing due to non-standard gamma or chromaticity chunks
+        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step5_ConstructImage(srcFile, dstDIB, dstImage)
+        
         'If we've experienced one or more warnings during the load process, dump them out to the debug file.
         If (cPNG.Warnings_GetCount() > 0) Then cPNG.Warnings_DumpToDebugger
         
