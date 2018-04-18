@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.383</langversion>
+<langversion>7.2.429</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5945,7 +5945,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Show status bar</original>
-<translation></translation>
+<translation>Statusleiste zeigen</translation>
 </phrase>
 
 <phrase>
@@ -6608,7 +6608,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>dithering amount</original>
-<translation></translation>
+<translation>Dithering-Menge</translation>
 </phrase>
 
 <phrase>
@@ -13246,7 +13246,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>color selector</original>
-<translation>Farbauswahl</translation>
+<translation>Farbselektor</translation>
 </phrase>
 
 <!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->

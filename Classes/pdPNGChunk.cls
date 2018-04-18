@@ -483,6 +483,19 @@ Friend Function GetPalette(ByRef dstQuads() As RGBQuad, ByRef numOfColors As Lon
 
 End Function
 
+'gAMA chunks will return the pure, unadulterated gAMA contents - which is, per the spec,
+' "[a] four-byte unsigned integer, representing gamma times 100000."  We return the integer version to clarify
+' the handling of the case gamma = 1.0, which is the most common case, and the one that allows us to avoid
+' further processing.
+Friend Function GetGammaData(ByRef warningStack As pdStringStack) As Long
+    If (m_Type = "gAMA") Then
+        m_Data.SetPosition 0, FILE_BEGIN
+        GetGammaData = m_Data.ReadLong_BE()
+    Else
+        warningStack.AddString "WARNING!  You requested gamma data from a non-gAMA chunk; no value was returned."
+    End If
+End Function
+
 'If this chunk is a tRNS chunk, use this function to retrieve relevant transparency data.  Handling is automatic
 ' according to the header's color type.
 Friend Function GetTRNSData(ByRef dstPalette() As RGBQuad, ByRef dstTransRed As Long, ByRef dstTransGreen As Long, ByRef dstTransBlue As Long, ByRef srcHeader As PD_PNGHeader, ByRef warningStack As pdStringStack) As Boolean

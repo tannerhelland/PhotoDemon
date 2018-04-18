@@ -2960,7 +2960,7 @@ End Sub
 Public Function FastGammaDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double) As Long
     
     'Ensure gamma is valid; bad crashes will occur otherwise
-    If (newGamma <= 0#) Or (newGamma >= 100#) Then
+    If (newGamma <= 0#) Or (newGamma >= 10000#) Then
         PDDebug.LogAction "Invalid gamma requested in Filters_Layers.FastGammaDIB().  Gamma correction was *not* applied."
         FastGammaDIB = 0
         Exit Function

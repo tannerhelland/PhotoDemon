@@ -987,9 +987,24 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     gammaIndex = Me.GetIndexOfChunk("gAMA")
     chrmIndex = Me.GetIndexOfChunk("cHRM")
     
-    'TODO: actual handling
+    'Handle gamma; this allows us to produce the same results as Firefox, Chrome, Edge, Internet Explorer,
+    ' and (surprisingly) Windows Photo Viewer on Windows 10.  (For whatever reason, Safari does *not* handle
+    ' gAMA chunks; given that PD is Windows-only, I haven't provided a toggle to change this behavior,
+    ' at present.)
     If (gammaIndex >= 0) Then
-    
+        
+        Dim gammaInt As Long
+        gammaInt = m_Chunks(gammaIndex).GetGammaData(m_Warnings)
+        
+        Dim gammaFloat As Double
+        gammaFloat = CDbl(gammaInt) / 100000#
+        
+        'If the returned gamma value is valid, apply run-time gamma correction.
+        If (gammaFloat > 0#) Then
+            gammaFloat = (1# / gammaFloat)
+            Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
+        End If
+        
     End If
     
     Exit Function

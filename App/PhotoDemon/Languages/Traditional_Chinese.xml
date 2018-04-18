@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.20</langversion>
+<langversion>7.0.21</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -796,12 +796,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation></translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 23 phrases. 16 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -15283,12 +15278,24 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for MoveTool.bas-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2568</phrasecount>
+<phrasecount>2567</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
-<!-- These 2568 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4662 phrases. -->
+<!-- 2095 are duplicates, so only 2567 unique phrases have been written to file. -->
+<!-- These 2567 phrases contain approximately 12393 total words. -->
 
 </pdData>

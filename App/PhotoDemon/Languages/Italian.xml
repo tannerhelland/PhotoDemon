@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.350</langversion>
+<langversion>6.7.351</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -802,12 +802,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il file selezionato non è in formato PDI.  Caricamento abbandonato.</translation>
 </phrase>
 
-<phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI+ si rifiuta di caricare l'immagine.  Ritorno alla routine interna per ritentare</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 23 phrases. 16 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -15345,12 +15340,24 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for MoveTool.bas-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2568</phrasecount>
+<phrasecount>2567</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
-<!-- These 2568 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4662 phrases. -->
+<!-- 2095 are duplicates, so only 2567 unique phrases have been written to file. -->
+<!-- These 2567 phrases contain approximately 12393 total words. -->
 
 </pdData>
