@@ -689,35 +689,6 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
     End If
 End Function
 
-'BITMAP loading
-Public Function LoadVBImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
-    
-    On Error GoTo LoadVBImageFail
-    
-    'Create a temporary StdPicture object that will be used to load the image
-    Dim tmpPicture As StdPicture
-    Set tmpPicture = New StdPicture
-    Set tmpPicture = LoadPicture(imagePath)
-    
-    If ((tmpPicture.Width = 0) Or (tmpPicture.Height = 0)) Then
-        LoadVBImage = False
-        Exit Function
-    End If
-    
-    'Copy the image into the current pdImage object
-    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateFromPicture tmpPicture
-    
-    LoadVBImage = True
-    Exit Function
-    
-LoadVBImageFail:
-
-    LoadVBImage = False
-    Exit Function
-    
-End Function
-
 Public Function IsFileSVGCandidate(ByVal imagePath As String) As Boolean
     IsFileSVGCandidate = Strings.StringsEqual(Right$(imagePath, 3), "svg", True)
     
@@ -1029,24 +1000,6 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
                 dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
             End If
                 
-        End If
-        
-        'If GDI+ failed, run one last-ditch attempt using the classic OLE decoder.  (Note that we don't allow the OLE decoder to
-        ' touch WMF or EMF files, as malformed ones can cause a silent API failure, bringing down the entire program.)
-        If (Not CascadeLoadGenericImage) Then
-            
-            Dim srcFileExtension As String
-            srcFileExtension = UCase(Files.FileGetExtension(srcFile))
-            
-            If ((srcFileExtension <> "EMF") And (srcFileExtension <> "WMF")) Then
-                Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
-                
-                If LoadVBImage(srcFile, dstDIB) Then
-                    CascadeLoadGenericImage = True
-                    decoderUsed = id_OLELoadPicture
-                    EstimateMissingMetadata dstImage, srcFileExtension
-                End If
-            End If
         End If
         
     End If

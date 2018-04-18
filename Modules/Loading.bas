@@ -556,7 +556,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case "TMP"
             If g_ImageFormats.FreeImageEnabled Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
             If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
-            If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
         'PDTMP files are custom PD-format files saved ONLY during Undo/Redo or Autosaving.  As such, they have some weirdly specific
@@ -576,10 +575,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 
             'If FreeImage fails for some reason, offload the image to GDI+
             If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
-            
-            'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture - UNLESS the image is a WMF or EMF,
-            ' which can cause LoadPicture to experience a silent fail, thus bringing down the entire program.
-            If (Not loadSuccessful) And ((fileExtension <> "EMF") And (fileExtension <> "WMF")) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
                     
     End Select
     
