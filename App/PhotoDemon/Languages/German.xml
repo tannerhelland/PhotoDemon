@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.429</langversion>
+<langversion>7.2.430</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -802,12 +802,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
 </phrase>
 
-<phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI+ verweigert Laden des Bildes. Rückkehr zu internen Routinen und erneuter Versuch</translation>
-</phrase>
-
-<!-- ImageLoader.bas contains 23 phrases. 16 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -15347,12 +15342,24 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for MoveTool.bas-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2568</phrasecount>
+<phrasecount>2567</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4663 phrases. -->
-<!-- 2095 are duplicates, so only 2568 unique phrases have been written to file. -->
-<!-- These 2568 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4662 phrases. -->
+<!-- 2095 are duplicates, so only 2567 unique phrases have been written to file. -->
+<!-- These 2567 phrases contain approximately 12393 total words. -->
 
 </pdData>

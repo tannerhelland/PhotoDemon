@@ -968,6 +968,27 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         Step6_PostProcessing = png_Failure
     End If
     
+    'Look for DPI information
+    Dim physIndex As Long
+    physIndex = Me.GetIndexOfChunk("pHYs")
+    If (physIndex >= 0) Then
+        
+        Dim physWidth As Long, physHeight As Long, physUnit As Byte
+        m_Chunks(physIndex).BorrowData().SetPosition 0, FILE_BEGIN
+        physWidth = m_Chunks(physIndex).BorrowData().ReadLong_BE()
+        physHeight = m_Chunks(physIndex).BorrowData().ReadLong_BE()
+        physUnit = m_Chunks(physIndex).BorrowData().ReadByte()
+        
+        'The only supported unit in the spec is "1", for "meters"
+        If (physUnit = 1) Then
+            Dim dpiWidth As Double, dpiHeight As Double
+            dpiWidth = (CDbl(physWidth) / 100#) * 2.54
+            dpiHeight = (CDbl(physHeight) / 100#) * 2.54
+            If (Not dstImage Is Nothing) Then dstImage.SetDPI dpiWidth, dpiHeight, False
+        End If
+        
+    End If
+    
     'PNG presents a hierarchy of lighting and color adjustment chunks.  If present, they are to be dealt with
     ' in this order (and once one is dealt with, subsequent ones should be ignored, to avoid double-corrections):
     
