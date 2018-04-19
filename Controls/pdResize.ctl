@@ -102,6 +102,7 @@ Begin VB.UserControl pdResize
       DefaultValue    =   96
       Min             =   1
       Max             =   32767
+      SigDigits       =   2
       Value           =   1
       FontSize        =   11
    End
