@@ -1374,8 +1374,9 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                                 
                             End If
                         
+                        'Other returns are okay; we have fallback methods that deal with them successfully.
                         Else
-                            Debug.Print "WARNING!  DragDrop_ZippedFileList received " & fMedium.TYMED & " instead of an hGlobal or IStream; I can't handle that format."
+                            'Debug.Print "WARNING!  DragDrop_ZippedFileList received " & fMedium.TYMED & " instead of an hGlobal or IStream; I can't handle that format."
                         End If
                         
                         'Conditionally release the stream (whether we do this or the caller does this is decided by

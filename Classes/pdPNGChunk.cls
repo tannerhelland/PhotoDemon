@@ -308,6 +308,9 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         Exit Function
     End If
     
+    'Reset the data stream pointer to the start of the stream
+    m_Data.SetPosition 0, FILE_BEGIN
+    
     'Because member access is slower in VB, transfer some values required in the inner-loop to standalone variables
     Dim imgWidth As Long, imgHeight As Long, imgIsInterlaced As Boolean, imgColorType As PD_PNGColorType, imgBitDepth As Long
     imgWidth = srcHeader.Width
@@ -341,6 +344,97 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
     ' images into their own function (as they must be processed in a more time-consuming way).
     If imgIsInterlaced Then
     
+        'Interlaced PNGs are actually stored as 7 independent "IDAT streams", one for each interlace pass.
+        ' Each stream represents a "mini-PNG", a complete image comprised of scanlines unique to that pass.
+        ' As a consequence, in very small images, some of the streams will be empty if the interlacing offsets
+        ' produce no pixels that lie within image bounds.
+        
+        'Each interlace pass thus needs to be unfiltered independently, as if it were its own micro-image.
+        ' This means that each scanline in an interlace pass is unfiltered against *other bytes in that
+        ' interlace pass, only*.
+        
+        'To handle this cleanly, let's cheat.  Rather than writing complicated per-pass filtering code,
+        ' let's break up the original interlaced IDAT stream into seven indepedent *non-interlaced* ones.
+        ' We'll create the chunks on-the-fly, ask them to perform standard non-interlaced unfiltering,
+        ' after which we'll reassemble their unfiltered bits into a coherent,
+        ' "unfiltered-but-still-interlaced" stream.
+        
+        'Start by prepping a "fake" header; this will retain some data from the original PNG header
+        ' (like color-type and bit-depth, which haven't changed), but we'll modify things like width/height
+        ' on-the-fly to match each individual chunk.
+        Dim tmpHeader As PD_PNGHeader
+        tmpHeader = srcHeader
+        tmpHeader.Interlaced = False
+        
+        'Notice how this function (UnfilterChunk) accepts arrays for x/y pixel count and x byte count (stride)?
+        ' For interlaced images, these arrays contain unique data for each interlacing pass (0-6, 7 passes total).
+        ' We need to pass arrays like this to each of our "fake" IDAT chunks, one per pass, but like normal
+        ' non-interlaced images, the arrays we pass will need to be only 1 entry long.
+        Dim tmpChunk As pdPNGChunk
+        Dim fakeXPixelCount() As Long, fakeYPixelCount() As Long, fakeXByteCount() As Long
+        ReDim fakeXPixelCount(0) As Long
+        ReDim fakeYPixelCount(0) As Long
+        ReDim fakeXByteCount(0) As Long
+        
+        Dim passOffset As Long, sizeOfPass As Long, sizeOfPassCheck As Long
+        passOffset = 0
+        
+        'Process each interlacing pass in turn
+        Dim i As Long
+        For i = 0 To 6
+            
+            'We can entirely skip 0-length passes
+            If (xByteCount(i) > 0) Then
+            
+                'Figure out the total size of this pass, in bytes.
+                sizeOfPass = xByteCount(i) * yPixelCount(i)
+                
+                'Initialize the new chunk and prep its internal buffer to the required size
+                Set tmpChunk = New pdPNGChunk
+                tmpChunk.CreateChunk "IDAT", sizeOfPass
+                
+                'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
+                ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
+                ' will increment the internal pointer of the m_Data stream.)  As a failsafe, we'll also
+                ' double-check that the read size matches the size we requested - this ensures we never attempt
+                ' to read past the end of the stream.
+                sizeOfPassCheck = m_Data.ReadBytesToBarePointer(tmpChunk.BorrowData.Peek_PointerOnly(0), sizeOfPass)
+                If (sizeOfPassCheck = sizeOfPass) Then
+                    tmpChunk.BorrowData.SetSizeExternally sizeOfPass
+                Else
+                    tmpChunk.BorrowData.SetSizeExternally sizeOfPassCheck
+                    warningStack.AddString "WARNING!  pdPNGChunk.UnfilterChunk failed to read an interlacing pass correctly (" & sizeOfPass & ", " & sizeOfPassCheck & ")"
+                End If
+                
+                'With the temporary chunk assembled, we now need to update our "fake" PNG header to match this pass.
+                ' (Specifically, width and height need to be updated.)
+                tmpHeader.Width = xPixelCount(i)
+                tmpHeader.Height = yPixelCount(i)
+                
+                'Similarly, we need to prep fake x/y pixel counts and stride arrays.
+                fakeXPixelCount(0) = xPixelCount(i)
+                fakeYPixelCount(0) = yPixelCount(i)
+                fakeXByteCount(0) = xByteCount(i)
+                
+                'We now have everything we need to unfilter this pass.
+                tmpChunk.UnfilterChunk warningStack, tmpHeader, fakeXPixelCount, fakeYPixelCount, fakeXByteCount
+                
+                'With unfiltering complete, we can now extract the unfiltered bytes *back* into *our* data stream.
+                ' (Note that we copy them in-place over the original, unfiltered bytes - and to determine the
+                ' position to copy to, we use the current position, minus the size of this pass (because that's how
+                ' far the pointer was incremented on the previous .Read call).
+                tmpChunk.BorrowData.ReadBytesToBarePointer m_Data.Peek_PointerOnly(m_Data.GetPosition() - sizeOfPass), sizeOfPass
+                
+                'We are now done with this chunk.  We don't need to clear it, as we'll automatically free it when
+                ' we process the next chunk.
+                
+            End If
+        
+        Next i
+        
+        'We have successfully unfiltered all interlaced pixel data - but note that the data stream is still in
+        ' *interlaced* order (with pixels arranged in subgroups, according to interlace pass).
+    
     Else
     
         'To conserve memory, we're going to do an "in-place" unfiltering of the IDAT stream.  The most efficient way
@@ -357,7 +451,7 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         
         Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
         
-        Dim x As Long, y As Long, i As Long, yOffset As Long
+        Dim x As Long, y As Long, yOffset As Long
         For y = 0 To yFinal
         
             yOffset = y * xStride

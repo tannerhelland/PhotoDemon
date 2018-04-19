@@ -358,18 +358,13 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
     'If multiple IDAT chunks were condensed into a single chunk, update our net chunk count
     m_NumOfChunks = m_NumOfChunks - numIDATsRemoved
     
-    'Want to debug the new chunk list?  Here you go:
-    'For i = 0 To m_NumOfChunks - 1
-    '    Debug.Print i, m_Chunks(i).GetType, m_Chunks(i).GetDataSize
-    'Next i
-    
     'We now want to proceed with decompression, but because the PNG format is moronic, this step isn't
     ' as simple as asking each chunk to decompress itself.  zLib streams don't store the original,
     ' uncompressed size of their data stream.  You are expected to store that data on your own.  PNG files
     ' decided not to do that.  Instead, you have to manually infer each chunks decompressed size from
     ' data unique to that chunk.  (And for some chunks - like zTXT - your only option is to repeatedly
     ' attempt to decompress the chunk, with ever-larger buffers, until a full decompress works.
-    ' That's how shittily they've designed this.)
+    ' That's how shittily they've designed it.)
     
     'IDAT chunks are the most obnoxious to decompress, because their inflated (normal) size is a
     ' function of the image's dimensions plus its color depth.  This means we need to parse the PNG
@@ -382,9 +377,9 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
         'The header appears to be valid.  We now need to calculate how much space is required for decompressing.
         Dim reqIDATSize As Long
         
-        'Interlaced images treat each "interlace pass" as its own "scanline", at least as far as filtering is
-        ' concerned.  (I know, it's fucking confusing.)  Because of this, calculating a decompression buffer
-        ' size is non-trivial.
+        'Interlaced images treat each "interlace pass" as its own "mini-PNG", which means each non-empty scanline
+        ' in each mini-image gets its own filtering byte.  (I know, it's fucking confusing.)  Because of this,
+        ' calculating a decompression buffer size is non-trivial.
         If m_Header.Interlaced Then
             
             reqIDATSize = 0
@@ -408,7 +403,7 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
                 
                 'Per the spec, 0-byte passes (only possible on very small images!) do not get a filter type byte,
                 ' so we can skip such lines entirely.
-                If (m_XByteCount(i) = 1) Then
+                If (m_XByteCount(i) = 1) Or (srcY = 0) Then
                     m_XByteCount(i) = 0
                 Else
                     reqIDATSize = reqIDATSize + ((srcX * m_Header.BitsPerPixel + 7) \ 8) * srcY + srcY
@@ -570,7 +565,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     If okToProceed Then
     
         'As usual, interlaced and non-interlaced present different challenges
-        If m_Header.Interlaced Then
+        If m_Header.Interlaced And (m_Header.BitDepth > 8) Then
         
             'Interlaced images are a pain in the ass; we'll deal with them later
             okToProceed = False
@@ -580,7 +575,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a unique challenge
             ' within VB, since we lack the bit-shift operators necessary to handle them elegantly.)  Note that the upsampler
             ' will reset our xStride value to match 8-bpp data it produces.
-            If (m_Header.BitDepth < 8) Then UpsampleLowBitDepthData idatIndex
+            If (m_Header.BitDepth < 8) Then UpsampleLowBitDepthData
             
             'If the image is 8-bpp grayscale, we now want to construct an artifical palette.  (This lets us process it
             ' in an identical manner to indexed color images.)
@@ -1029,6 +1024,9 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         
     End If
     
+    'cHRM is still to-do, and ideally, we should merge its results with gAMA, above, and handle the entire
+    ' transform via LittleCMS (so we can make use of whitepoint values).
+    
     Exit Function
     
 InternalVBError:
@@ -1134,18 +1132,201 @@ End Sub
 
 '1, 2, and 4-bit-per-pixel data must be upsampled to be easily handled in VB.  We do this prior to constructing a
 ' final image, as it allows us to use identical rendering code for 1/2/4/8-bpp indexed images.
-Private Sub UpsampleLowBitDepthData(ByVal idatIndex As Long)
+' (NOTE: this function handles both interlaced and non-interlaced images just fine.)
+Private Sub UpsampleLowBitDepthData()
     
+    'We only need to upsample bit-depths less than 8-bpp
     If (m_Header.BitDepth >= 8) Then Exit Sub
     
-    'Prep all the required loop values
-    Dim xFinal As Long, yFinal As Long, xStride As Long
-    Dim x As Long, y As Long, i As Long
-    xFinal = m_Header.Width - 1
-    yFinal = m_Header.Height - 1
-    xStride = m_XByteCount(0)
+    Dim idatIndex As Long
+    idatIndex = Me.GetIndexOfChunk("IDAT")
         
-    Dim curByte As Byte
+    'For non-interlaced images, this sub is just a thin wrapper.  For interlaced images, however,
+    ' we first need to separate the original data stream into its component images (one for each
+    ' interlacing pass), up-sample each one separately, then reassemble the results into a normal,
+    ' un-interlaced stream that subsequent assembly functions can more easily use.
+    Dim xFinal As Long, yFinal As Long, xStride As Long
+    
+    'Anyway, the gist is that non-interlaced images are *way* easier to deal with.
+    If (Not m_Header.Interlaced) Then
+    
+        xFinal = m_Header.Width - 1
+        yFinal = m_Header.Height - 1
+        xStride = m_XByteCount(0)
+        m_XByteCount(0) = UpsampleIDATChunk(m_Chunks(idatIndex), xFinal, yFinal, xStride)
+    
+    'Interlaced handling follows...
+    Else
+    
+        'Interlaced handling is the same idea as non-interlaced handling - but instead of doing
+        ' one upsample for the entire IDAT chunk, we're instead going to break the chunk into
+        ' seven parts - one for each interlace pass - and upsample each one individually.
+        ' After all passes are upsampled, we'll merge their results into a new, non-interlaced
+        ' stream that subsequent functions can deal with like any normal PNG.
+        m_Chunks(idatIndex).BorrowData.SetPosition 0, FILE_BEGIN
+        
+        'Because we can't lean on normal image dimensions (and stride), we'll instead calculate
+        ' new dimensions and stride on-the-fly for each interlacing pass.
+        Dim tmpChunks() As pdPNGChunk
+        ReDim tmpChunks(0 To 6) As pdPNGChunk
+        
+        Dim sizeOfPass As Long, sizeOfPassCheck As Long
+        
+        'Per the name (Adam7), there are seven interlacing passes...
+        Dim i As Long
+        For i = 0 To 6
+            
+            'We can entirely skip 0-length passes.  (These only exist in tiny images, where the image
+            ' dimensions are so small that some interlacing passes comprise 0 pixels.)
+            If (m_XByteCount(i) > 0) Then
+            
+                'Figure out the total size of this pass, in bytes.
+                sizeOfPass = m_XByteCount(i) * m_YPixelCount(i)
+                
+                'Initialize the new chunk and prep its internal buffer to the required size
+                Set tmpChunks(i) = New pdPNGChunk
+                tmpChunks(i).CreateChunk "IDAT", sizeOfPass
+                
+                'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
+                ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
+                ' will increment the internal pointer of the m_Data stream.)  As a failsafe, we'll also
+                ' double-check that the read size matches the size we requested - this ensures we never attempt
+                ' to read past the end of the stream.
+                sizeOfPassCheck = m_Chunks(idatIndex).BorrowData.ReadBytesToBarePointer(tmpChunks(i).BorrowData.Peek_PointerOnly(0), sizeOfPass)
+                If (sizeOfPassCheck = sizeOfPass) Then
+                    tmpChunks(i).BorrowData.SetSizeExternally sizeOfPass
+                Else
+                    tmpChunks(i).BorrowData.SetSizeExternally sizeOfPassCheck
+                    m_Warnings.AddString "WARNING!  pdPNG.UpsampleLowBitDepthData failed to read an interlacing pass correctly (" & sizeOfPass & ", " & sizeOfPassCheck & ")"
+                End If
+                
+                'With the temporary chunk assembled, we now need to calculate loop parameters for it.
+                xFinal = m_XPixelCount(i) - 1
+                yFinal = m_YPixelCount(i) - 1
+                xStride = m_XByteCount(i)
+                
+                'Upsample the chunk!
+                m_XByteCount(i) = UpsampleIDATChunk(tmpChunks(i), xFinal, yFinal, xStride)
+                
+                'Leave the upsampled bytes in the temporary container; since we still need access to the
+                ' original IDAT stream (for the next interlacing pass), we don't want to overwrite
+                ' anything yet.
+                
+            End If
+        
+        Next i
+        
+        'We now have seven separate "fake" IDAT chunks, one for each interlacing pass.  Each has been upsampled
+        ' from its original bit-depth of 1/2/4-bpp to 8-bpp.  Before exiting, let's reassemble these into a
+        ' single, contiguous, non-interlaced IDAT chunk; we'll copy this result over our original IDAT chunk,
+        ' which will allow subsequent rendering functions to operate without consideration for interlacing.
+        Dim finalStream As pdStream
+        Set finalStream = New pdStream
+        
+        'Calculate a necessary final size for the stream.  This is easy for 8-bit images: 1-byte per pixel,
+        ' plus 1 extra byte per scanline for the silly PNG "filter" byte indicators (which we don't need,
+        ' as pixel data has already been unfiltered, but the render functions expect the bytes to be there).
+        Dim newIdatSize As Long
+        newIdatSize = (m_Header.Width + 1) * m_Header.Height
+        finalStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , newIdatSize
+        finalStream.SetSizeExternally newIdatSize
+        
+        'For performance reasons, wrap a standard array around the stream's contents.  (This is obviously
+        ' faster than writing individual bytes by moving around the stream pointer manually.)
+        Dim dstBytes() As Byte, dstSA As SafeArray1D
+        finalStream.WrapArrayAroundMemoryStream dstBytes, dstSA, 0
+        
+        'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
+        Dim srcBytes() As Byte, srcSA As SafeArray1D
+        
+        Dim x As Long, y As Long, j As Long
+        Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
+        Dim srcPxOffset As Long, newStride As Long
+        
+        'The destination image bounds and stride are constant for each pass (only the *source* ones
+        ' will change).
+        xFinal = m_Header.Width - 1
+        yFinal = m_Header.Height - 1
+        newStride = m_Header.Width + 1
+        
+        'Loop through each iteration, placing pixels as we go!
+        For i = 0 To 6
+            
+            'As before, we need to skip 0-length passes.
+            If (m_XByteCount(i) > 0) Then
+            
+                'Each interlacing pass requires different starting points and x/y offsets between scans
+                Select Case i
+                    Case 0
+                        startOffsetX = 0: startOffsetY = 0: xLineOffset = 8: yLineOffset = 8
+                    Case 1
+                        startOffsetX = 4: startOffsetY = 0: xLineOffset = 8: yLineOffset = 8
+                    Case 2
+                        startOffsetX = 0: startOffsetY = 4: xLineOffset = 4: yLineOffset = 8
+                    Case 3
+                        startOffsetX = 2: startOffsetY = 0: xLineOffset = 4: yLineOffset = 4
+                    Case 4
+                        startOffsetX = 0: startOffsetY = 2: xLineOffset = 2: yLineOffset = 4
+                    Case 5
+                        startOffsetX = 1: startOffsetY = 0: xLineOffset = 2: yLineOffset = 2
+                    Case 6
+                        startOffsetX = 0: startOffsetY = 1: xLineOffset = 1: yLineOffset = 2
+                End Select
+                
+                'For performance reasons, wrap a temporary array around this chunk's stream
+                tmpChunks(i).BorrowData.WrapArrayAroundMemoryStream srcBytes, srcSA, 0
+                srcPxOffset = 0
+                
+                'Place all pixels in this chunk
+                For y = startOffsetY To yFinal Step yLineOffset
+                    
+                    'On each y-line (including the first one), advance the pixel offset by 1 to account
+                    ' for the filter byte that prepends each PNG scanline.
+                    srcPxOffset = srcPxOffset + 1
+                    
+                For x = startOffsetX To xFinal Step xLineOffset
+                    dstBytes(1 + (y * newStride) + x) = srcBytes(srcPxOffset)
+                    srcPxOffset = srcPxOffset + 1
+                Next x
+                Next y
+                
+                'Unwrap the temporary source array and free the source chunk - it's no longer needed!
+                tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
+                Set tmpChunks(i) = Nothing
+                
+            End If
+        
+        Next i
+        
+        'Release our wrapper around the destination stream's bytes, and reset its internal pointer
+        finalStream.UnwrapArrayFromMemoryStream dstBytes
+        finalStream.SetPosition 0, FILE_BEGIN
+        
+        'Replace our original, interlaced IDAT stream with the new, non-interlaced one
+        m_Chunks(idatIndex).SubmitNewDataStream finalStream
+        
+        'With the final, un-interlaced data stream assembled, we can update the pixel counts and stride tracker
+        ' to match normal, un-interlaced data.
+        ReDim m_XPixelCount(0) As Long
+        m_XPixelCount(0) = m_Header.Width
+        
+        ReDim m_YPixelCount(0) As Long
+        m_YPixelCount(0) = m_Header.Height
+        
+        ReDim m_XByteCount(0) As Long
+        m_XByteCount(0) = m_Header.Width + 1
+        
+    End If
+    
+End Sub
+
+'Upsample the target IDAT chunk.  This function will return the *new* stride value for the chunk
+' (x/y dimensions obviously don't change, but stride *does* as a result of the upsampling).  Note also
+' that the target chunk will have a new data stream; the old one is IRRETRIEVABLY GONE - so if you want
+' to process it further, back it up before calling this!
+Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As Long, ByVal yFinal As Long, ByVal xStride As Long) As Long
+    
+    Dim x As Long, y As Long, i As Long, curByte As Byte
     
     'We'll use pdStream to generate a new, 8-bpp version of the image; then we can use our standard 8-bpp
     ' decode functions on 1, 2, 4-bpp data.
@@ -1154,7 +1335,7 @@ Private Sub UpsampleLowBitDepthData(ByVal idatIndex As Long)
     tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
     
     Dim srcStream As pdStream
-    Set srcStream = m_Chunks(idatIndex).BorrowData()
+    Set srcStream = srcChunk.BorrowData()
     srcStream.SetPosition 0, FILE_BEGIN
     
     Dim numPixelsProcessed As Long
@@ -1262,12 +1443,14 @@ Private Sub UpsampleLowBitDepthData(ByVal idatIndex As Long)
             Next y
     
     End Select
-            
-    'Overwrite the IDAT chunk's original data stream with the new one, and reset xStride to match
-    m_Chunks(idatIndex).SubmitNewDataStream tmpStream
-    m_XByteCount(0) = m_Header.Width + 1
     
-End Sub
+    'Overwrite the IDAT chunk's original data stream with the new one, and return the new xStride value.
+    ' (This is just the number of horizontal pixels in the image - xFinal + 1 - plus an extra 1 to account
+    ' for the prepended PNG filter value.)
+    srcChunk.SubmitNewDataStream tmpStream
+    UpsampleIDATChunk = xFinal + 2
+    
+End Function
 
 'To simplify rendering, PD treates grayscale data identically to palette data; we just generate a grayscale palette
 ' on-the-fly (one matching the current color depth), then render accordingly.
