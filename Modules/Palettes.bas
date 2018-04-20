@@ -827,9 +827,9 @@ Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPal
                 srcPixels1D(x + 2) = .Red
             
                 'Calculate new errors
-                rError = r - CLng(.Red)
-                gError = g - CLng(.Green)
-                bError = b - CLng(.Blue)
+                rError = newR - CLng(.Red)
+                gError = newG - CLng(.Green)
+                bError = newB - CLng(.Blue)
                 
             End With
             

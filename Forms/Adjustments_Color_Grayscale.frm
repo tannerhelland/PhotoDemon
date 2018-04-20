@@ -490,7 +490,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
     'All error-diffusion dither methods are handled similarly
     Else
         
-        Dim gError As Long
+        Dim gError As Long, finalG As Long
         Dim errorMult As Single
         
         'Retrieve a hard-coded dithering table matching the requested dither type
@@ -528,15 +528,15 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal ditherMe
             End If
             
             'Calculate the matching color
-            newG = gLookup(newG)
+            finalG = gLookup(newG)
             
             'Apply the closest discovered color to this pixel.
-            srcPixels1D(x) = newG
-            srcPixels1D(x + 1) = newG
-            srcPixels1D(x + 2) = newG
-        
+            srcPixels1D(x) = finalG
+            srcPixels1D(x + 1) = finalG
+            srcPixels1D(x + 2) = finalG
+            
             'Calculate new error
-            gError = g - newG
+            gError = newG - finalG
             
             'Reduce color bleed, if specified
             gError = gError * ditherAmount
