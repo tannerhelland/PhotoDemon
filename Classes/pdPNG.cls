@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 12/April/18
-'Last update: initial build
+'Last updated: 20/April/18
+'Last update: wrap up work on importer; all PNGs are now imported using this class!
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -24,17 +24,17 @@ Attribute VB_Exposed = False
 ' the official PNG reference library, so it must be well-constructed, right?  It wouldn't do something asinine
 ' like implementing error-handling via setjmp/longjmp, would it?  Oh wait - it would?  @#$#$^@#$#^*^!!)
 '
-'After wasting dozens of hours fighting these damn libraries, I am giving up and writing my own PNG parser.
-' PD needs fairly intricate access to PNG internals - during both reading and writing - and given the format's
-' current ubiquity for images < 24-bpp, it makes sense to handle this unique format manually.  Since we ship
-' zLib anyway due to legacy compression tasks, we may as well just use it for this, too, and forgo the
-' nightmare of trying to make legacy C-libraries work with VB6.
+'After wasting dozens of hours fighting 3rd-party libraries, I gave up and wrote my own PNG parser.
+' PhotoDemon needs fairly intricate access to PNG internals - during both reading and writing - and given
+' the format's current ubiquity for images < 24-bpp, it makes sense to handle PNGs manually.  Since we ship
+' zLib anyway due to legacy compression tasks, we have everything we need to do this, and it frees me from
+' the nightmare of trying to make legacy C-libraries work with VB6.
 '
-'At present, this class is designed around making it easy to test PNG parsing.  I'll revisit the API design
-' after getting everything to a "working" state.
+'At present, this class only supports PNG importing.  Exporting is a WIP.  I may revisit the API design after
+' finalizing export tasks.
 '
-'As of v7.2 nightly builds, this class is still under construction and it is *not* currently used as PD's
-' main PNG parser.  (That "honor", dubious as it is, still falls to FreeImage.)
+'As of v7.2 nightly builds, this class *is* used as PD's primary PNG importer.  If you encounter bugs,
+' please let me know so I can resolve them before 7.2 stable releases.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -118,7 +118,8 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
     End If
     
     'PNG files must have a certain minimum size (comprising a valid magic number - 8 bytes - and at least
-    ' three valid chunks (IHDR, IDAT, IEND); 8 + 12 * 3 = 44).
+    ' three valid chunks (IHDR, IDAT, IEND); 8 + 12 * 3 = 44).  An empty IDAT chunk would still mean a
+    ' broken image, but that's okay; this is just a minor failsafe.
     If (okToProceed < png_Failure) Then
         If (Files.FileLenW(srcFile) < 44) Then
             m_Warnings.AddString "File size is too small to contain valid PNG data"
@@ -148,9 +149,11 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
         
     End If
     
-    'Note an outright failure state in the debugger
+    'Note an outright failure state in the debugger, and importantly, don't write this to the debug log if we're
+    ' running as a compiled exe (as the PNG's failure is simply due to not being a PNG at all, and not due to
+    ' any internal problem in this class).
     If (okToProceed >= png_Failure) Then
-        InternalError "Step1_ValidatePNG", "file is not a valid PNG file"
+        InternalError "Step1_ValidatePNG", "file is not a valid PNG file", False
         If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
     
@@ -239,7 +242,7 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         
         If (embeddedCRC <> testCRC) Then
             Step2_PreLoadChunks = png_Warning
-            m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (" & Hex$(embeddedCRC) & " expected, " & Hex$(testCRC) & " found)"
+            m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (0x" & Hex$(embeddedCRC) & " expected, 0x" & Hex$(testCRC) & " found)"
         End If
         
         'For debug purposes, it can be helpful to see what's inside a file - this will tell you about
@@ -598,7 +601,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         
         'Prep all the required loop values
         Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
-        Dim x As Long, y As Long, i As Long, xDIB As Long, srcOffset As Long, dstOffset As Long
+        Dim x As Long, y As Long, xDIB As Long, srcOffset As Long
         imgWidth = m_Header.Width
         imgHeight = m_Header.Height
         xFinal = imgWidth - 1
@@ -988,7 +991,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     
     '1) iCCP
     '2) sRGB
-    '3) gAMA and cHRM (equal priority, and should be handled together if possible)
+    '3) gAMA and/or cHRM (equal priority, and should be handled together if possible)
     
     'ICC profiles or sRGB flags, if present, are dealt with during a previous decoding step (for performance reasons).
     ' As such, we don't need to deal with them here - and in fact, we can bail if they were handled previously,
@@ -998,15 +1001,27 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         Exit Function
     End If
     
+    'As of 7.2, PD assumes sRGB for untagged files, so the sRGB chunk doesn't mean anything special to us.
+    ' If it exists, however, it will keep us from manually adjusting gamma and chromaticity to match.
+    ' (Gamma in particular is important, as sRGB doesn't use a standard exponent curve, so you can't use a
+    ' gAMA chunk to replicate it correctly.)
+    If (Me.GetIndexOfChunk("sRGB") >= 0) Then
+        Step6_PostProcessing = png_Success
+        Exit Function
+    End If
+    
     'Next, look for gAMA and cHRM chunks, if any
     Dim gammaIndex As Long, chrmIndex As Long
     gammaIndex = Me.GetIndexOfChunk("gAMA")
     chrmIndex = Me.GetIndexOfChunk("cHRM")
     
+    Dim gammaOK As Boolean, chrmOK As Boolean
+    
     'Handle gamma; this allows us to produce the same results as Firefox, Chrome, Edge, Internet Explorer,
     ' and (surprisingly) Windows Photo Viewer on Windows 10.  (For whatever reason, Safari does *not* handle
     ' gAMA chunks; given that PD is Windows-only, I haven't provided a toggle to change this behavior,
-    ' at present.)
+    ' at present.)  Note that photo editing software may handle gamma differently - I have *not* tested them
+    ' thoroughly, and if they don't manage gamma correctly, I may need to revisit this design entirely.
     If (gammaIndex >= 0) Then
         
         Dim gammaInt As Long
@@ -1016,15 +1031,14 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         gammaFloat = CDbl(gammaInt) / 100000#
         
         'If the returned gamma value is valid, apply run-time gamma correction.
-        If (gammaFloat > 0#) Then
-            gammaFloat = (1# / gammaFloat)
-            Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
-        End If
+        gammaOK = (gammaFloat > 0#)
+        If gammaOK Then gammaFloat = (1# / gammaFloat)
         
     End If
     
     'cHRM is still to-do, and ideally, we should merge its results with gAMA, above, and handle the entire
     ' transform via LittleCMS (so we can make use of whitepoint values).
+    If gammaOK Then Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
     
     Exit Function
     
@@ -1048,7 +1062,7 @@ Private Sub DeInterlaceNonPaletteData()
     ' (one for each interlacing pass), then reassemble them into a normal, de-interlaced stream
     ' that subsequent assembly functions can use without modification.  (This is not the most efficient
     ' way to handle interlaced images, but it saves us a *ton* of code.)
-    Dim xFinal As Long, yFinal As Long, xStride As Long
+    Dim xFinal As Long, yFinal As Long
     
     'Grab a reference to the primary, interlaced IDAT stream
     m_Chunks(idatIndex).BorrowData.SetPosition 0, FILE_BEGIN
@@ -1069,12 +1083,12 @@ Private Sub DeInterlaceNonPaletteData()
     ' n-bytes per pixel, plus 1 extra byte per scanline for the silly PNG "filter" byte indicators
     ' (which we don't need, as pixel data has already been unfiltered, but the render functions
     ' expect the bytes to be there).
-    Dim bytesPerPixel As Long, bppLoop As Long
-    bytesPerPixel = (m_Header.BitsPerPixel \ 8)
-    bppLoop = bytesPerPixel - 1
+    Dim BytesPerPixel As Long, bppLoop As Long
+    BytesPerPixel = (m_Header.BitsPerPixel \ 8)
+    bppLoop = BytesPerPixel - 1
     
     Dim newIdatSize As Long
-    newIdatSize = (m_Header.Width * m_Header.Height * bytesPerPixel) + m_Header.Height
+    newIdatSize = (m_Header.Width * m_Header.Height * BytesPerPixel) + m_Header.Height
     finalStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , newIdatSize
     finalStream.SetSizeExternally newIdatSize
     
@@ -1095,7 +1109,7 @@ Private Sub DeInterlaceNonPaletteData()
     ' will change).
     xFinal = m_Header.Width - 1
     yFinal = m_Header.Height - 1
-    newStride = (m_Header.Width * bytesPerPixel) + 1
+    newStride = (m_Header.Width * BytesPerPixel) + 1
         
     'Loop through each iteration, placing pixels as we go!
     Dim i As Long
@@ -1136,7 +1150,7 @@ Private Sub DeInterlaceNonPaletteData()
                 
             For x = startOffsetX To xFinal Step xLineOffset
                 For j = 0 To bppLoop
-                    dstBytes(1 + (y * newStride) + (x * bytesPerPixel) + j) = srcBytes(srcPxOffset)
+                    dstBytes(1 + (y * newStride) + (x * BytesPerPixel) + j) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
                 Next j
             Next x
@@ -1166,7 +1180,7 @@ Private Sub DeInterlaceNonPaletteData()
     m_YPixelCount(0) = m_Header.Height
     
     ReDim m_XByteCount(0) As Long
-    m_XByteCount(0) = (m_Header.Width * bytesPerPixel) + 1
+    m_XByteCount(0) = (m_Header.Width * BytesPerPixel) + 1
     
 End Sub
 
@@ -1330,7 +1344,7 @@ Private Sub UpsampleLowBitDepthData()
         'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
         Dim srcBytes() As Byte, srcSA As SafeArray1D
         
-        Dim x As Long, y As Long, j As Long
+        Dim x As Long, y As Long
         Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
         Dim srcPxOffset As Long, newStride As Long
         
@@ -1926,9 +1940,9 @@ Private Function PopulateHeader() As PD_PNGResult
 
 End Function
 
-Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
-        PDDebug.LogAction "pdPNG." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+        If writeDebugLog Then PDDebug.LogAction "pdPNG." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
     Else
         Debug.Print "pdPNG." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
     End If

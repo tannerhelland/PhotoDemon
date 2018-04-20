@@ -65,6 +65,7 @@ Begin VB.UserControl pdCanvas
       Width           =   990
       _ExtentX        =   1746
       _ExtentY        =   1746
+      Alignment       =   0
    End
    Begin PhotoDemon.pdStatusBar StatusBar 
       Height          =   345
@@ -523,6 +524,10 @@ End Function
 
 Public Function GetStatusBarHeight() As Long
     GetStatusBarHeight = StatusBar.GetHeight
+End Function
+
+Public Function ProgBar_GetVisibility() As Boolean
+    ProgBar_GetVisibility = mainProgBar.Visible
 End Function
 
 Public Sub ProgBar_SetVisibility(ByVal newVisibility As Boolean)

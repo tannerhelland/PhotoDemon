@@ -15,13 +15,14 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
 'Copyright 2018-2018 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 12/April/18
-'Last update: initial build
+'Last updated: 20/April/18
+'Last update: finalize work on importing
 '
-'pdPNG leans on this class to handle the actual storage (and deciphering) of individual PNG chunks.
-' This simplifies the decode process because we only deal with the chunks that matter to PNG, and it
-' gives us an convenient way to concatenate IDAT chunks post-load.  (PNG allows image data to be split
-' over multiple IDAT chunks.)
+'pdPNG leans on this class to handle the actual storage (and deciphering) of certain PNG chunks.
+' This simplifies the decode process because we only deal with the chunks that matter to PD,
+' and it gives us an convenient way to do things like concatenate IDAT chunks post-load.
+' (PNG allows image data to be split over multiple IDAT chunks, which is perhaps useful for
+' streaming over a network connection, but is pointless for loading files from a local drive.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -450,6 +451,7 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         xStride = xByteCount(0)
         
         Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
+        Dim p As Long, pa As Long, pb As Long, pc As Long
         
         Dim x As Long, y As Long, yOffset As Long
         For y = 0 To yFinal
@@ -495,6 +497,7 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                 
                 '"Paeth" uses an external formula
                 Case png_Paeth
+                
                     yOffset = yOffset + 1
                     For x = 0 To xStride - 2
                         If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
@@ -506,7 +509,22 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                             prevValue3 = 0
                         End If
                         curValue = srcBytes(yOffset + x)
-                        srcBytes(yOffset + x) = (curValue + PaethPredictor(prevValue, prevValue2, prevValue3)) And 255
+                        
+                        'The Paeth predictor was previously used as a separate function, but inlining it
+                        ' provides a slight performance boost.  (Also, the function itself is simple - it just
+                        ' tries to find the previous pixel with the smallest variance from the current one.)
+                        p = (prevValue + prevValue2 - prevValue3)
+                        pa = Abs(p - prevValue)
+                        pb = Abs(p - prevValue2)
+                        pc = Abs(p - prevValue3)
+                        If (pa <= pb) Then
+                            If (pa <= pc) Then p = prevValue Else p = prevValue3
+                        Else
+                            If (pb <= pc) Then p = prevValue2 Else p = prevValue3
+                        End If
+                        
+                        srcBytes(yOffset + x) = (curValue + p) And 255
+                        
                     Next x
             
             End Select
@@ -515,24 +533,6 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         
         m_Data.UnwrapArrayFromMemoryStream srcBytes
         
-    End If
-    
-End Function
-
-'Paeth filtering requires a whole stupid formula
-Private Function PaethPredictor(ByVal a As Long, ByVal b As Long, ByVal c As Long) As Long
-    
-    Dim p As Long, pa As Long, pb As Long, pc As Long
-    
-    p = a + b - c
-    pa = Abs(p - a)
-    pb = Abs(p - b)
-    pc = Abs(p - c)
-    
-    If (pa <= pb) And (pa <= pc) Then
-        PaethPredictor = a
-    Else
-        If (pb <= pc) Then PaethPredictor = b Else PaethPredictor = c
     End If
     
 End Function

@@ -106,6 +106,10 @@ Public Function FindBestProgBarValue() As Long
     
 End Function
 
+Public Function IsProgressBarVisible() As Boolean
+    IsProgressBarVisible = FormMain.MainCanvas(0).ProgBar_GetVisibility()
+End Function
+
 'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
 Public Sub ReleaseProgressBar()
     

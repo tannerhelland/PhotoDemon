@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 09/March/16
-'Last update: migrate various functions out of the high-level "Loading" module and into this new, format-specific module
+'Last updated: 20/April/18
+'Last update: add a compile-time constant that controls PD's internal PNG loader; it is now active by default!
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
@@ -18,8 +18,10 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
-'DEBUG ONLY!  When this is enabled, PD will attempt to load PNGs using its own internal decoder.
-Private Const PARSE_PNG_MANUALLY As Boolean = True
+'As of v7.2, PD ships with its own custom-built PNG parser.  This offers a number of performance and feature enhancements
+' relative to the 3rd-party libraries we've used in the past.  I know of no reason why it would need to be disabled,
+' but if you want to fall back to FreeImage and GDI+, you can set this to FALSE.
+Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL
 
@@ -947,7 +949,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     End If
     
     'PD's internal PNG parser is just experimental at present!
-    If (Not CascadeLoadGenericImage) And PARSE_PNG_MANUALLY Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB)
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB, True)
     If CascadeLoadGenericImage Then
         decoderUsed = id_PNGParser
         dstImage.SetOriginalFileFormat PDIF_PNG
@@ -1049,7 +1051,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
     
 End Function
 
-Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal displayMessages As Boolean = False) As Boolean
     
     'Until the class is 100% debugged, we always return failure (which will prompt FreeImage to handle
     ' the rest of the load process for us).

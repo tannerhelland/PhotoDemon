@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.430</langversion>
+<langversion>7.2.453</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -830,7 +830,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Undo</original>
-<translation>Rückgängig machen</translation>
+<translation>Rückgängigmachen</translation>
 </phrase>
 
 <phrase>
@@ -4835,7 +4835,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>&Undo</original>
-<translation>&Rückgängig machen</translation>
+<translation>&Rückgängigmachen</translation>
 </phrase>
 
 <phrase>
@@ -13273,7 +13273,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>undo</original>
-<translation>Rückgängig machen</translation>
+<translation>Rückgängigmachen</translation>
 </phrase>
 
 <phrase>
@@ -13303,7 +13303,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation>Rückgängig-machen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder Layer vorgenommene destruktive Änderungen um.</translation>
+<translation>Rückgängigmachen-/Wiederherstellen-Tools: Kehren Sie an einem Bild oder Layer vorgenommene destruktive Änderungen um.</translation>
 </phrase>
 
 <phrase>
@@ -14349,7 +14349,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>This page also allows you to delete unused language files.  Note that there is no Undo when deleting language files, so please be careful!</original>
-<translation>Diese Seite erlaubt Ihnen auch, nicht verwendete Sprachdateien zu lö- schen. Beachten Sie, dass das Lö- schen von Sprachdateien nicht rückgängig gemacht werden kann, seien Sie also vorsichtig!</translation>
+<translation>Diese Seite erlaubt Ihnen auch, ungenutzte Sprachdateien zu löschen. Beachten Sie, dass sich die Löschung von Sprachdateien nicht rückgängig machen lässt, also bitte vorsichtig sein!</translation>
 </phrase>
 
 <phrase>
@@ -14690,7 +14690,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>Daten für 'Rückgängig machen/Wiederherstellen' auf folgendem Level komprimieren</translation>
+<translation>Rückgängigmachen-/Wiederherstellen-Daten auf folgendem Level komprimieren</translation>
 </phrase>
 
 <phrase>
@@ -14725,7 +14725,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>undo/redo</original>
-<translation>Rückgängig machen/Wiederherstellen</translation>
+<translation>Rückgängigmachen/Wiederherstellen</translation>
 </phrase>
 
 <phrase>
@@ -14959,7 +14959,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Niedrige Kompressionseinstellungen erfordern mehr Speicherplatz, Rückgängig-machen-/Wiederherstellen-Operationen sind aber schneller. Hohe Kompressionseinstellungen erfordern weniger Speicherplatz, Rückgängig-machen-/Wiederherstellen-Operationen werden aber langsamer sein. Rückgängig-machen-Daten werden beim Schließen von Bildern gelöscht, so wirkt sich diese Einstellung nur auf den Speicherplatz aus, während BIlder aktiv bearbeitet werden.</translation>
+<translation>Niedrige Kompressionseinstellungen erfordern mehr Speicherplatz, Rückgängigmachen-/Wiederherstellen-Operationen sind aber schneller. Hohe Kompressionseinstellungen erfordern weniger Speicherplatz, Rückgängigmachen-/Wiederherstellen-Operationen werden aber langsamer sein. Rückgängigmachen-Daten werden beim Schließen von Bildern gelöscht, so wirkt sich diese Einstellung nur auf den Speicherplatz aus, während BIlder aktiv bearbeitet werden.</translation>
 </phrase>
 
 <phrase>
