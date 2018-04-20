@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3334</langversion>
+<langversion>6.8.3335</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1527,6 +1527,37 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>Poista kerros</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Lisää kerros</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Vaihto-näppäin: säilyttää tasojen kuvasuhde</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Tavoite kerros: %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(ei mitään)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- BEGIN text for NavKey.bas -->
 
@@ -3558,6 +3589,18 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- BEGIN text for pdProfiler.cls -->
 
 <!-- pdProfiler.cls contains 0 phrases. -->
@@ -3830,11 +3873,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Vaihto-näppäin: säilyttää tasojen kuvasuhde</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Kirjoita teksti tähän)</translation>
 </phrase>
@@ -3854,7 +3892,7 @@ Please enter a numeric value.</original>
 <translation>Keskittää kuvan sisällä näyttöikkunan</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4286,21 +4324,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
-<original>Delete layer</original>
-<translation>Poista kerros</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Lisää kerros</translation>
-</phrase>
-
-<phrase>
 <original>Rearrange layers</original>
 <translation>järjestäminen uudelleen kerrokset</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14734,11 +14762,6 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(ei mitään)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>tallentaminen mieltymykset</translation>
 </phrase>
@@ -15145,7 +15168,7 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <translation>Tämä uusi väliaikainen kansio sijainti ei tule voimaan ennen kuin käynnistät ohjelman.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15325,29 +15348,6 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Tavoite kerros: %1</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
-<!-- BEGIN text for pdPNG.cls -->
-
-<!-- pdPNG.cls contains 0 phrases. -->
-
-<!-- END text for pdPNG.cls-->
-
-<!-- BEGIN text for pdPNGChunk.cls -->
-
-<!-- pdPNGChunk.cls contains 0 phrases. -->
-
-<!-- END text for pdPNGChunk.cls-->
 
 <!-- Automatic text extraction complete. -->
 

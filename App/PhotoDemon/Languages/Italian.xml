@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.351</langversion>
+<langversion>6.7.352</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1531,6 +1531,37 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>Elimina il livello</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Aggiungi un nuovo livello</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Tasto maiusc: mantiene le proporzioni del livello</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Livello di destinazione: %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(nessuno)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- BEGIN text for NavKey.bas -->
 
@@ -3563,6 +3594,18 @@ Per favore inserisci un valore numerico.</translation>
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- BEGIN text for pdProfiler.cls -->
 
 <!-- pdProfiler.cls contains 0 phrases. -->
@@ -3835,11 +3878,6 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Tasto maiusc: mantiene le proporzioni del livello</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(inserisci il testo qui)</translation>
 </phrase>
@@ -3859,7 +3897,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Centra l'immagine all'interno del viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4291,21 +4329,11 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
-<original>Delete layer</original>
-<translation>Elimina il livello</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Aggiungi un nuovo livello</translation>
-</phrase>
-
-<phrase>
 <original>Rearrange layers</original>
 <translation>Riorganizza i livelli</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14738,11 +14766,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(nessuno)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Preferenze di salvataggio</translation>
 </phrase>
@@ -15148,7 +15171,7 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <translation>Questa nuova posizione della cartella temporanea non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15328,29 +15351,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Livello di destinazione: %1</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
-<!-- BEGIN text for pdPNG.cls -->
-
-<!-- pdPNG.cls contains 0 phrases. -->
-
-<!-- END text for pdPNG.cls-->
-
-<!-- BEGIN text for pdPNGChunk.cls -->
-
-<!-- pdPNGChunk.cls contains 0 phrases. -->
-
-<!-- END text for pdPNGChunk.cls-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3334</langversion>
+<langversion>6.8.3335</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1531,6 +1531,37 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>Padam lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Tambah lapisan baru</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Shift utama: mengekalkan nisbah aspek lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Lapisan Sasaran: %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(Tiada)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- BEGIN text for NavKey.bas -->
 
@@ -3564,6 +3595,18 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- BEGIN text for pdProfiler.cls -->
 
 <!-- pdProfiler.cls contains 0 phrases. -->
@@ -3836,11 +3879,6 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift utama: mengekalkan nisbah aspek lapisan</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Masukkan teks di sini)</translation>
 </phrase>
@@ -3860,7 +3898,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Ketengahkan imej dalam viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4292,21 +4330,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
-<original>Delete layer</original>
-<translation>Padam lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Tambah lapisan baru</translation>
-</phrase>
-
-<phrase>
 <original>Rearrange layers</original>
 <translation>Susun semula lapisan</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14740,11 +14768,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(Tiada)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>menyimpan pilihan</translation>
 </phrase>
@@ -15151,7 +15174,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15331,29 +15354,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Lapisan Sasaran: %1</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
-<!-- BEGIN text for pdPNG.cls -->
-
-<!-- pdPNG.cls contains 0 phrases. -->
-
-<!-- END text for pdPNG.cls-->
-
-<!-- BEGIN text for pdPNGChunk.cls -->
-
-<!-- pdPNGChunk.cls contains 0 phrases. -->
-
-<!-- END text for pdPNGChunk.cls-->
 
 <!-- Automatic text extraction complete. -->
 

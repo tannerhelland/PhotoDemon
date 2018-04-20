@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.147</langversion>
+<langversion>1.0.148</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1531,6 +1531,37 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>Избриши слој</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Додај нов слој</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Shift копчето: запазување сооднос слој аспект</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Целна слој: %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(Нема)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
 
 <!-- BEGIN text for NavKey.bas -->
 
@@ -3564,6 +3595,18 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for pdPNG.cls -->
+
+<!-- pdPNG.cls contains 0 phrases. -->
+
+<!-- END text for pdPNG.cls-->
+
+<!-- BEGIN text for pdPNGChunk.cls -->
+
+<!-- pdPNGChunk.cls contains 0 phrases. -->
+
+<!-- END text for pdPNGChunk.cls-->
+
 <!-- BEGIN text for pdProfiler.cls -->
 
 <!-- pdProfiler.cls contains 0 phrases. -->
@@ -3836,11 +3879,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift копчето: запазување сооднос слој аспект</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Внесете го текстот тука)</translation>
 </phrase>
@@ -3860,7 +3898,7 @@ Please enter a numeric value.</original>
 <translation>Центарот на сликата во гледиштето</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -4292,21 +4330,11 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
 <phrase>
-<original>Delete layer</original>
-<translation>Избриши слој</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Додај нов слој</translation>
-</phrase>
-
-<phrase>
 <original>Rearrange layers</original>
 <translation>Преуредување слоеви</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -14740,11 +14768,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>(none)</original>
-<translation>(Нема)</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>заштеда на параметри</translation>
 </phrase>
@@ -15151,7 +15174,7 @@ If сеуште изберете да го исклучите ажурирања
 <translation>Оваа нова локација привремена папка нема да се случи се додека не рестартирам програмата.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 45 were duplicates of existing phrases, so only 132 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15331,29 +15354,6 @@ If сеуште изберете да го исклучите ажурирања
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Целна слој: %1</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
-<!-- BEGIN text for pdPNG.cls -->
-
-<!-- pdPNG.cls contains 0 phrases. -->
-
-<!-- END text for pdPNG.cls-->
-
-<!-- BEGIN text for pdPNGChunk.cls -->
-
-<!-- pdPNGChunk.cls contains 0 phrases. -->
-
-<!-- END text for pdPNGChunk.cls-->
 
 <!-- Automatic text extraction complete. -->
 
