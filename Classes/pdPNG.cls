@@ -564,378 +564,373 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     ' place our decoded data into.
     If okToProceed Then
     
-        'As usual, interlaced and non-interlaced present different challenges
-        If m_Header.Interlaced And (m_Header.BitDepth > 8) Then
+            
+        'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a
+        ' unique challenge within VB, since we lack the bit-shift operators necessary to handle them
+        ' elegantly.)  Note that the upsampler will reset our xStride value to match 8-bpp data
+        ' it produces.  (Note that we also pass the special case of 8-bpp *interlaced* data to this
+        ' function; that's because the function performs de-interlacing of the 8-bpp data produced
+        ' by the upsampler, and it spares us a bit of code to reuse that functionality for 8-bpp
+        ' interlaced images.
+        If (m_Header.BitDepth < 8) Or ((m_Header.BitsPerPixel = 8) And m_Header.Interlaced) Then UpsampleLowBitDepthData
         
-            'Interlaced images are a pain in the ass; we'll deal with them later
-            okToProceed = False
+        '8-bpp interlaced images have now been handled correctly.  Interlaced images at higher
+        ' bit-depths (16, 24, 32, 48, 64) need to be dealt with using a separate function.
+        If ((m_Header.BitsPerPixel > 8) And m_Header.Interlaced) Then DeInterlaceNonPaletteData
         
-        Else
+        'If the image is 8-bpp grayscale, we now want to construct an artifical palette.  (This lets us process it
+        ' in an identical manner to indexed color images.)
+        If (m_Header.ColorType = png_Greyscale) Then ConstructGrayPalette srcColors, numColors, trnsRed
+        
+        'Certain bit-depths require us to handle transparency manually (but note that 8-bpp grayscale has already
+        ' been covered by the ConstructGrayPalette() function, above!)
+        Dim trnsHandlingRequired As Boolean, trnsCheck As Long
+        trnsHandlingRequired = (m_Header.ColorType = png_Truecolor) And (trnsRed >= 0) And (trnsGreen >= 0) And (trnsBlue >= 0)
+        If trnsHandlingRequired And (m_Header.BitDepth = 8) Then trnsCheck = RGB(trnsRed, trnsGreen, trnsBlue)
+        
+        'We can now assign actual pixel bits!
+        Dim dstBytes() As Byte, dstSA As SafeArray2D
+        dstDIB.WrapArrayAroundDIB dstBytes, dstSA
+        
+        'To improve performance, we use unsafe direct access to the chunk's contents
+        Dim srcBytes() As Byte, srcSA As SafeArray1D
+        m_Chunks(idatIndex).BorrowData.WrapArrayAroundMemoryStream srcBytes, srcSA, 0
+        
+        'Prep all the required loop values
+        Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
+        Dim x As Long, y As Long, i As Long, xDIB As Long, srcOffset As Long, dstOffset As Long
+        imgWidth = m_Header.Width
+        imgHeight = m_Header.Height
+        xFinal = imgWidth - 1
+        yFinal = imgHeight - 1
+        
+        Dim xStride As Long
+        xStride = m_XByteCount(0)
+        
+        Dim r As Long, g As Long, b As Long, a As Long, palIndex As Long
             
-            'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a
-            ' unique challenge within VB, since we lack the bit-shift operators necessary to handle them
-            ' elegantly.)  Note that the upsampler will reset our xStride value to match 8-bpp data
-            ' it produces.  (Note that we also pass the special case of 8-bpp *interlaced* data to this
-            ' function; that's because the function performs de-interlacing of the 8-bpp data produced
-            ' by the upsampler, and it spares us a bit of code to reuse that functionality for 8-bpp
-            ' interlaced images.
-            If (m_Header.BitDepth < 8) Or ((m_Header.BitDepth = 8) And m_Header.Interlaced) Then UpsampleLowBitDepthData
-            
-            'If the image is 8-bpp grayscale, we now want to construct an artifical palette.  (This lets us process it
-            ' in an identical manner to indexed color images.)
-            If (m_Header.ColorType = png_Greyscale) Then ConstructGrayPalette srcColors, numColors, trnsRed
-            
-            'Certain bit-depths require us to handle transparency manually (but note that 8-bpp grayscale has already
-            ' been covered by the ConstructGrayPalette() function, above!)
-            Dim trnsHandlingRequired As Boolean, trnsCheck As Long
-            trnsHandlingRequired = (m_Header.ColorType = png_Truecolor) And (trnsRed >= 0) And (trnsGreen >= 0) And (trnsBlue >= 0)
-            If trnsHandlingRequired And (m_Header.BitDepth = 8) Then trnsCheck = RGB(trnsRed, trnsGreen, trnsBlue)
-            
-            'We can now assign actual pixel bits!
-            Dim dstBytes() As Byte, dstSA As SafeArray2D
-            dstDIB.WrapArrayAroundDIB dstBytes, dstSA
-            
-            'To improve performance, we use unsafe direct access to the chunk's contents
-            Dim srcBytes() As Byte, srcSA As SafeArray1D
-            m_Chunks(idatIndex).BorrowData.WrapArrayAroundMemoryStream srcBytes, srcSA, 0
-            
-            'Prep all the required loop values
-            Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
-            Dim x As Long, y As Long, i As Long, xDIB As Long, srcOffset As Long, dstOffset As Long
-            imgWidth = m_Header.Width
-            imgHeight = m_Header.Height
-            xFinal = imgWidth - 1
-            yFinal = imgHeight - 1
-            
-            Dim xStride As Long
-            xStride = m_XByteCount(0)
-            
-            Dim r As Long, g As Long, b As Long, a As Long, palIndex As Long
+        Select Case m_Header.ColorType
+        
+            Case png_Greyscale
                 
-            Select Case m_Header.ColorType
-            
-                Case png_Greyscale
+                Dim normalCopy As Boolean: normalCopy = True
+                
+                'Grayscale present a unique challenge if an ICC profile is present.  ICC profiles operate on
+                ' specific color spaces, so a grayscale image must have a grayscale profile attached, and that
+                ' grayscale profile must be used on grayscale data.  This means that once we convert the data
+                ' to 32-bpp RGBA, the color profile *cannot physically be used* on the resulting image - so we
+                ' need to perform the ICC correction on the *original* grayscale data.
+                If (hIccTransform <> 0) Then
                     
-                    Dim normalCopy As Boolean: normalCopy = True
+                    'We now have two possibilities:
+                    ' 1) The image is color-managed, but doesn't use a tRNS chunk for wacky transparency.
+                    '    This is fine and easy to handle.
+                    ' 2) The is color-managed, *and* it uses a tRNS chunk.  This is a rare possibility,
+                    '    but it creates some real headaches, as we need to maintain a copy of the original
+                    '    IDAT stream - because ICC-converted data may have changed the color identified by
+                    '    the tRNS chunk as "transparent".
+                    '
+                    'Case (1) comes first.  Note that it just performs an in-place transform; we still use
+                    ' the normal greyscale conversion code afterward.
+                    If (trnsRed < 0) Then
                     
-                    'Grayscale present a unique challenge if an ICC profile is present.  ICC profiles operate on
-                    ' specific color spaces, so a grayscale image must have a grayscale profile attached, and that
-                    ' grayscale profile must be used on grayscale data.  This means that once we convert the data
-                    ' to 32-bpp RGBA, the color profile *cannot physically be used* on the resulting image - so we
-                    ' need to perform the ICC correction on the *original* grayscale data.
-                    If (hIccTransform <> 0) Then
-                        
-                        'We now have two possibilities:
-                        ' 1) The image is color-managed, but doesn't use a tRNS chunk for wacky transparency.
-                        '    This is fine and easy to handle.
-                        ' 2) The is color-managed, *and* it uses a tRNS chunk.  This is a rare possibility,
-                        '    but it creates some real headaches, as we need to maintain a copy of the original
-                        '    IDAT stream - because ICC-converted data may have changed the color identified by
-                        '    the tRNS chunk as "transparent".
-                        '
-                        'Case (1) comes first.  Note that it just performs an in-place transform; we still use
-                        ' the normal greyscale conversion code afterward.
-                        If (trnsRed < 0) Then
-                        
-                            For y = 0 To yFinal
-                                srcOffset = y * xStride + 1
-                                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
-                            Next y
-                            normalCopy = True
-                        
-                        'This is horrible case (2).  Let's do a first pass through the image, marking alpha data,
-                        ' after which we'll perform the ICC transform to the source data, then do a second pass
-                        ' to assign RGB bytes.
-                        Else
-                            
-                            'Assign alpha bytes, if any
-                            For y = 0 To yFinal
-                                srcOffset = y * xStride + 1
-                            For x = 0 To xFinal
-                                If (m_Header.BitDepth = 8) Then
-                                    g = srcBytes(srcOffset + x)
-                                    If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
-                                Else
-                                    g = srcBytes(srcOffset + x * 2 + 1)
-                                    g = g * 256 + srcBytes(srcOffset + x * 2)
-                                    If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
-                                End If
-                            Next x
-                            Next y
-                            
-                            'Perform ICC correction on the original source bytes
-                            For y = 0 To yFinal
-                                srcOffset = y * xStride + 1
-                                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
-                            Next y
-                            
-                            'Copy ICC-transformed grey bytes into the final RGBA container
-                            For y = 0 To yFinal
-                                srcOffset = y * xStride + 1
-                            For x = 0 To xFinal
-                                If (m_Header.BitDepth = 8) Then
-                                    g = srcBytes(srcOffset + x)
-                                Else
-                                    g = srcBytes(srcOffset + x * 2 + 1)
-                                    g = g * 256 + srcBytes(srcOffset + x * 2)
-                                    g = g \ 256
-                                End If
-                                dstBytes(x * 4, y) = g
-                                dstBytes(x * 4 + 1, y) = g
-                                dstBytes(x * 4 + 2, y) = g
-                            Next x
-                            Next y
-                            
-                            normalCopy = False
-                        
-                        End If
-                    
-                    End If
-                    
-                    If normalCopy Then
-                    
-                        'With any ICC handling successfully covered, we can now proceed with normal loading.
-                        For y = 0 To yFinal
-                        
-                            srcOffset = y * xStride + 1
-                            
-                            'For performance reasons, separate out 8- and 16-bit handling
-                            If (m_Header.BitDepth <= 8) Then
-                                For x = 0 To xFinal
-                                    palIndex = srcBytes(srcOffset + x)
-                                    xDIB = x * 4
-                                    With srcColors(palIndex)
-                                        dstBytes(xDIB, y) = .Blue
-                                        dstBytes(xDIB + 1, y) = .Green
-                                        dstBytes(xDIB + 2, y) = .Red
-                                        dstBytes(xDIB + 3, y) = .Alpha
-                                    End With
-                                Next x
-                            Else
-                                For x = 0 To xFinal
-                                    g = srcBytes(srcOffset + x * 2)
-                                    g = g * 256 + srcBytes(srcOffset + x * 2 + 1)
-                                    xDIB = x * 4
-                                    If (g = trnsRed) Then dstBytes(xDIB + 3, y) = 0
-                                    g = g \ 256
-                                    dstBytes(x * 4, y) = g
-                                    dstBytes(x * 4 + 1, y) = g
-                                    dstBytes(x * 4 + 2, y) = g
-                                Next x
-                            End If
-                            
-                        Next y
-                        
-                    End If
-                    
-                    okToProceed = True
-                    
-                Case png_GreyscaleAlpha
-                    
-                    'If an ICC profile is active, apply it in-place to the source data
-                    If (hIccTransform <> 0) Then
                         For y = 0 To yFinal
                             srcOffset = y * xStride + 1
                             LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
                         Next y
-                    End If
+                        normalCopy = True
                     
-                    'Copy ICC-transformed grey bytes into the final RGBA container
-                    For y = 0 To yFinal
-                        srcOffset = y * xStride + 1
-                    For x = 0 To xFinal
-                        If (m_Header.BitDepth = 8) Then
-                            g = srcBytes(srcOffset + x * 2)
-                            a = srcBytes(srcOffset + x * 2 + 1)
-                        Else
-                            g = srcBytes(srcOffset + x * 4)
-                            g = g * 256 + srcBytes(srcOffset + x * 4 + 1)
-                            g = g \ 256
-                            a = srcBytes(srcOffset + x * 4 + 2)
-                            a = a * 256 + srcBytes(srcOffset + x * 4 + 3)
-                            a = a \ 256
-                        End If
-                        dstBytes(x * 4, y) = g
-                        dstBytes(x * 4 + 1, y) = g
-                        dstBytes(x * 4 + 2, y) = g
-                        dstBytes(x * 4 + 3, y) = a
-                    Next x
-                    Next y
-                
-                    okToProceed = True
-                    
-                Case png_Indexed
-                    
-                    For y = 0 To yFinal
-                        srcOffset = y * xStride + 1
-                    For x = 0 To xFinal
-                        
-                        palIndex = srcBytes(srcOffset + x)
-                        xDIB = x * 4
-                        
-                        With srcColors(palIndex)
-                            dstBytes(xDIB, y) = .Blue
-                            dstBytes(xDIB + 1, y) = .Green
-                            dstBytes(xDIB + 2, y) = .Red
-                            dstBytes(xDIB + 3, y) = .Alpha
-                        End With
-                        
-                    Next x
-                    Next y
-                    
-                    'With the indexed image successfully constructed as a full 32-bit RGBA image, we now need to handle
-                    ' the ICC profile (if any).  We only do this if the image contained an embedded profile; otherwise,
-                    ' the pixel data is already good to go.
-                    If (hIccTransform <> 0) Then
-                        For y = 0 To yFinal
-                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
-                        Next y
-                    End If
-                    
-                    okToProceed = True
-                
-                Case png_Truecolor
-                    
-                    'If LittleCMS is available, use it for faster byte swizzling
-                    If (hIccTransform <> 0) Then
-                        
-                        For y = 0 To yFinal
-                        
-                            srcOffset = y * xStride + 1
-                            
-                            'Use LittleCMS to perform swizzling for us
-                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
-                            
-                            'If a tRNS chunk specified a transparent color, we need to find and detect transparent colors -
-                            ' but importantly, we need to scan the *original* bytes, not the transformed ones (as the
-                            ' color may have changed!)
-                            If trnsHandlingRequired Then
-                                
-                                If (m_Header.BitDepth = 8) Then
-                                    For x = 0 To xFinal
-                                        r = srcBytes(srcOffset + x * 3)
-                                        g = srcBytes(srcOffset + x * 3 + 1)
-                                        b = srcBytes(srcOffset + x * 3 + 2)
-                                        If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
-                                    Next x
-                                Else
-                                    Dim newR As Long, newG As Long, newB As Long
-                                    For x = 0 To xFinal
-                                        newR = srcBytes(srcOffset + x * 6)
-                                        newR = (newR * 256) + srcBytes(srcOffset + x * 6 + 1)
-                                        newG = srcBytes(srcOffset + x * 6 + 2)
-                                        newG = (newG * 256) + srcBytes(srcOffset + x * 6 + 3)
-                                        newB = srcBytes(srcOffset + x * 6 + 4)
-                                        newB = (newB * 256) + srcBytes(srcOffset + x * 6 + 5)
-                                        If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
-                                    Next x
-                                End If
-                                
-                            '/End tRNS handling
-                            End If
-                        
-                        Next y
-                        
-                        'Because color-management has been handled, we need to mark the destination DIB accordingly.
-                        ' (Note that we only do this if the color profile was embedded in the source image; if the
-                        ' image was untagged, we leave it as such.)
-                        If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
-                        
-                    'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
+                    'This is horrible case (2).  Let's do a first pass through the image, marking alpha data,
+                    ' after which we'll perform the ICC transform to the source data, then do a second pass
+                    ' to assign RGB bytes.
                     Else
-                    
+                        
+                        'Assign alpha bytes, if any
                         For y = 0 To yFinal
                             srcOffset = y * xStride + 1
                         For x = 0 To xFinal
-                            
-                            'Byte order has to be swapped to BGRA
                             If (m_Header.BitDepth = 8) Then
-                                r = srcBytes(srcOffset + x * 3)
-                                g = srcBytes(srcOffset + x * 3 + 1)
-                                b = srcBytes(srcOffset + x * 3 + 2)
-                                If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
+                                g = srcBytes(srcOffset + x)
+                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
                             Else
-                                r = srcBytes(srcOffset + x * 6)
-                                r = r * 256 + srcBytes(srcOffset + x * 6 + 1)
-                                g = srcBytes(srcOffset + x * 6 + 2)
-                                g = g * 256 + srcBytes(srcOffset + x * 6 + 3)
-                                b = srcBytes(srcOffset + x * 6 + 4)
-                                b = b * 256 + srcBytes(srcOffset + x * 6 + 5)
-                                If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
+                                g = srcBytes(srcOffset + x * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + x * 2)
+                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
                             End If
-                            
-                            xDIB = x * 4
-                            dstBytes(xDIB, y) = b \ 256
-                            dstBytes(xDIB + 1, y) = g \ 256
-                            dstBytes(xDIB + 2, y) = r \ 256
-                            
                         Next x
                         Next y
                         
-                    End If
-                    
-                    okToProceed = True
-                
-                Case png_TruecolorAlpha
-                
-                    'If LittleCMS is available, use it for faster byte swizzling
-                    If (hIccTransform <> 0) Then
-                        
+                        'Perform ICC correction on the original source bytes
                         For y = 0 To yFinal
-                        
                             srcOffset = y * xStride + 1
-                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
+                        Next y
+                        
+                        'Copy ICC-transformed grey bytes into the final RGBA container
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
+                        For x = 0 To xFinal
+                            If (m_Header.BitDepth = 8) Then
+                                g = srcBytes(srcOffset + x)
+                            Else
+                                g = srcBytes(srcOffset + x * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + x * 2)
+                                g = g \ 256
+                            End If
+                            dstBytes(x * 4, y) = g
+                            dstBytes(x * 4 + 1, y) = g
+                            dstBytes(x * 4 + 2, y) = g
+                        Next x
+                        Next y
+                        
+                        normalCopy = False
+                    
+                    End If
+                
+                End If
+                
+                If normalCopy Then
+                
+                    'With any ICC handling successfully covered, we can now proceed with normal loading.
+                    For y = 0 To yFinal
+                    
+                        srcOffset = y * xStride + 1
+                        
+                        'For performance reasons, separate out 8- and 16-bit handling
+                        If (m_Header.BitDepth <= 8) Then
+                            For x = 0 To xFinal
+                                palIndex = srcBytes(srcOffset + x)
+                                xDIB = x * 4
+                                With srcColors(palIndex)
+                                    dstBytes(xDIB, y) = .Blue
+                                    dstBytes(xDIB + 1, y) = .Green
+                                    dstBytes(xDIB + 2, y) = .Red
+                                    dstBytes(xDIB + 3, y) = .Alpha
+                                End With
+                            Next x
+                        Else
+                            For x = 0 To xFinal
+                                g = srcBytes(srcOffset + x * 2)
+                                g = g * 256 + srcBytes(srcOffset + x * 2 + 1)
+                                xDIB = x * 4
+                                If (g = trnsRed) Then dstBytes(xDIB + 3, y) = 0
+                                g = g \ 256
+                                dstBytes(x * 4, y) = g
+                                dstBytes(x * 4 + 1, y) = g
+                                dstBytes(x * 4 + 2, y) = g
+                            Next x
+                        End If
+                        
+                    Next y
+                    
+                End If
+                
+                okToProceed = True
+                
+            Case png_GreyscaleAlpha
+                
+                'If an ICC profile is active, apply it in-place to the source data
+                If (hIccTransform <> 0) Then
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
+                    Next y
+                End If
+                
+                'Copy ICC-transformed grey bytes into the final RGBA container
+                For y = 0 To yFinal
+                    srcOffset = y * xStride + 1
+                For x = 0 To xFinal
+                    If (m_Header.BitDepth = 8) Then
+                        g = srcBytes(srcOffset + x * 2)
+                        a = srcBytes(srcOffset + x * 2 + 1)
+                    Else
+                        g = srcBytes(srcOffset + x * 4)
+                        g = g * 256 + srcBytes(srcOffset + x * 4 + 1)
+                        g = g \ 256
+                        a = srcBytes(srcOffset + x * 4 + 2)
+                        a = a * 256 + srcBytes(srcOffset + x * 4 + 3)
+                        a = a \ 256
+                    End If
+                    dstBytes(x * 4, y) = g
+                    dstBytes(x * 4 + 1, y) = g
+                    dstBytes(x * 4 + 2, y) = g
+                    dstBytes(x * 4 + 3, y) = a
+                Next x
+                Next y
+            
+                okToProceed = True
+                
+            Case png_Indexed
+                
+                For y = 0 To yFinal
+                    srcOffset = y * xStride + 1
+                For x = 0 To xFinal
+                    
+                    palIndex = srcBytes(srcOffset + x)
+                    xDIB = x * 4
+                    
+                    With srcColors(palIndex)
+                        dstBytes(xDIB, y) = .Blue
+                        dstBytes(xDIB + 1, y) = .Green
+                        dstBytes(xDIB + 2, y) = .Red
+                        dstBytes(xDIB + 3, y) = .Alpha
+                    End With
+                    
+                Next x
+                Next y
+                
+                'With the indexed image successfully constructed as a full 32-bit RGBA image, we now need to handle
+                ' the ICC profile (if any).  We only do this if the image contained an embedded profile; otherwise,
+                ' the pixel data is already good to go.
+                If (hIccTransform <> 0) Then
+                    For y = 0 To yFinal
+                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                    Next y
+                End If
+                
+                okToProceed = True
+            
+            Case png_Truecolor
+                
+                'If LittleCMS is available, use it for faster byte swizzling
+                If (hIccTransform <> 0) Then
+                    
+                    For y = 0 To yFinal
+                    
+                        srcOffset = y * xStride + 1
+                        
+                        'Use LittleCMS to perform swizzling for us
+                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                        
+                        'If a tRNS chunk specified a transparent color, we need to find and detect transparent colors -
+                        ' but importantly, we need to scan the *original* bytes, not the transformed ones (as the
+                        ' color may have changed!)
+                        If trnsHandlingRequired Then
                             
-                            'On 16-bit data, we have to do some housekeeping to compensate for a LittleCMS bug.
-                            ' LittleCMS normally swaps endianness just fine - *except* for alpha channels, as they
-                            ' are generally copied over as-is.  When reducing 16-bit to 8-bit data, this results in
-                            ' the least-significant bit being copied over (which we obviously don't want).  As such,
-                            ' we need to manually track back through the original data and copy over MSBs.
-                            If (m_Header.BitDepth = 16) Then
+                            If (m_Header.BitDepth = 8) Then
                                 For x = 0 To xFinal
-                                    dstBytes(x * 4 + 3, y) = srcBytes(srcOffset + x * 8 + 6)
+                                    r = srcBytes(srcOffset + x * 3)
+                                    g = srcBytes(srcOffset + x * 3 + 1)
+                                    b = srcBytes(srcOffset + x * 3 + 2)
+                                    If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
+                                Next x
+                            Else
+                                Dim newR As Long, newG As Long, newB As Long
+                                For x = 0 To xFinal
+                                    newR = srcBytes(srcOffset + x * 6)
+                                    newR = (newR * 256) + srcBytes(srcOffset + x * 6 + 1)
+                                    newG = srcBytes(srcOffset + x * 6 + 2)
+                                    newG = (newG * 256) + srcBytes(srcOffset + x * 6 + 3)
+                                    newB = srcBytes(srcOffset + x * 6 + 4)
+                                    newB = (newB * 256) + srcBytes(srcOffset + x * 6 + 5)
+                                    If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
                                 Next x
                             End If
                             
-                        Next y
-                        
-                        'Because color-management has been handled, we need to mark the destination DIB accordingly.
-                        ' (Note that we only do this if the color profile was embedded in the source image; if the
-                        ' image was untagged, we leave it as such.)
-                        If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
-                        
-                    'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
-                    Else
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
-                        For x = 0 To xFinal
-                            
-                            xDIB = x * 4
-                            If (m_Header.BitDepth = 8) Then
-                                dstBytes(xDIB, y) = srcBytes(srcOffset + x * 4 + 2)
-                                dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 4 + 1)
-                                dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 4)
-                                dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 4 + 3)
-                            Else
-                                dstBytes(xDIB, y) = srcBytes(srcOffset + x * 8 + 4)
-                                dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 8 + 2)
-                                dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 8)
-                                dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 8 + 6)
-                            End If
-                            
-                        Next x
-                        Next y
-                    End If
+                        '/End tRNS handling
+                        End If
                     
-                    okToProceed = True
+                    Next y
+                    
+                    'Because color-management has been handled, we need to mark the destination DIB accordingly.
+                    ' (Note that we only do this if the color profile was embedded in the source image; if the
+                    ' image was untagged, we leave it as such.)
+                    If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    
+                'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
+                Else
                 
-            End Select
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
+                        
+                        'Byte order has to be swapped to BGRA
+                        If (m_Header.BitDepth = 8) Then
+                            r = srcBytes(srcOffset + x * 3)
+                            g = srcBytes(srcOffset + x * 3 + 1)
+                            b = srcBytes(srcOffset + x * 3 + 2)
+                            If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
+                        Else
+                            r = srcBytes(srcOffset + x * 6)
+                            r = r * 256 + srcBytes(srcOffset + x * 6 + 1)
+                            g = srcBytes(srcOffset + x * 6 + 2)
+                            g = g * 256 + srcBytes(srcOffset + x * 6 + 3)
+                            b = srcBytes(srcOffset + x * 6 + 4)
+                            b = b * 256 + srcBytes(srcOffset + x * 6 + 5)
+                            If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
+                        End If
+                        
+                        xDIB = x * 4
+                        dstBytes(xDIB, y) = b \ 256
+                        dstBytes(xDIB + 1, y) = g \ 256
+                        dstBytes(xDIB + 2, y) = r \ 256
+                        
+                    Next x
+                    Next y
+                    
+                End If
+                
+                okToProceed = True
             
-            'Release all unsafe array wrappers
-            dstDIB.UnwrapArrayFromDIB dstBytes
-            m_Chunks(idatIndex).BorrowData.UnwrapArrayFromMemoryStream srcBytes
+            Case png_TruecolorAlpha
             
-        End If
+                'If LittleCMS is available, use it for faster byte swizzling
+                If (hIccTransform <> 0) Then
+                    
+                    For y = 0 To yFinal
+                    
+                        srcOffset = y * xStride + 1
+                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                        
+                        'On 16-bit data, we have to do some housekeeping to compensate for a LittleCMS bug.
+                        ' LittleCMS normally swaps endianness just fine - *except* for alpha channels, as they
+                        ' are generally copied over as-is.  When reducing 16-bit to 8-bit data, this results in
+                        ' the least-significant bit being copied over (which we obviously don't want).  As such,
+                        ' we need to manually track back through the original data and copy over MSBs.
+                        If (m_Header.BitDepth = 16) Then
+                            For x = 0 To xFinal
+                                dstBytes(x * 4 + 3, y) = srcBytes(srcOffset + x * 8 + 6)
+                            Next x
+                        End If
+                        
+                    Next y
+                    
+                    'Because color-management has been handled, we need to mark the destination DIB accordingly.
+                    ' (Note that we only do this if the color profile was embedded in the source image; if the
+                    ' image was untagged, we leave it as such.)
+                    If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    
+                'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
+                Else
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
+                        
+                        xDIB = x * 4
+                        If (m_Header.BitDepth = 8) Then
+                            dstBytes(xDIB, y) = srcBytes(srcOffset + x * 4 + 2)
+                            dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 4 + 1)
+                            dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 4)
+                            dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 4 + 3)
+                        Else
+                            dstBytes(xDIB, y) = srcBytes(srcOffset + x * 8 + 4)
+                            dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 8 + 2)
+                            dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 8)
+                            dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 8 + 6)
+                        End If
+                        
+                    Next x
+                    Next y
+                End If
+                
+                okToProceed = True
+            
+        End Select
+        
+        'Release all unsafe array wrappers
+        dstDIB.UnwrapArrayFromDIB dstBytes
+        m_Chunks(idatIndex).BorrowData.UnwrapArrayFromMemoryStream srcBytes
         
         If okToProceed Then Step5_ConstructImage = png_Success Else Step5_ConstructImage = png_Failure
     
@@ -1037,6 +1032,143 @@ InternalVBError:
     InternalError "Step6_PostProcessing", "internal VB error #" & Err.Number & ": " & Err.Description
     Step6_PostProcessing = png_Failure
 End Function
+
+'For non-paletted images (e.g. 16-bpp or more), call this function to convert an interlaced IDAT stream
+' to a de-interlaced one.  (8-bpp are handled separately, using a function optimized specifically for them.)
+Private Sub DeInterlaceNonPaletteData()
+
+    'This function only handles deinterlacing for bit-depths higher than 8-bpp
+    If (m_Header.BitsPerPixel < 8) Or (Not m_Header.Interlaced) Then Exit Sub
+    
+    Dim idatIndex As Long
+    idatIndex = Me.GetIndexOfChunk("IDAT")
+    If (idatIndex < 0) Then Exit Sub
+    
+    'The goal of this function is to separate the original data stream into its component images
+    ' (one for each interlacing pass), then reassemble them into a normal, de-interlaced stream
+    ' that subsequent assembly functions can use without modification.  (This is not the most efficient
+    ' way to handle interlaced images, but it saves us a *ton* of code.)
+    Dim xFinal As Long, yFinal As Long, xStride As Long
+    
+    'Grab a reference to the primary, interlaced IDAT stream
+    m_Chunks(idatIndex).BorrowData.SetPosition 0, FILE_BEGIN
+    
+    'Because we can't lean on normal image dimensions (and stride), we'll instead calculate
+    ' new dimensions and stride on-the-fly for each interlacing pass.
+    Dim tmpChunks() As pdPNGChunk
+    SeparateInterlacedIDATs tmpChunks, False
+        
+    'We now have seven separate "fake" IDAT chunks, one for each interlacing pass.  Next we must
+    ' reassemble these into a single, contiguous, non-interlaced IDAT chunk; we'll copy this result
+    ' over our original IDAT chunk, which will allow subsequent rendering functions to operate
+    ' without consideration for interlacing.
+    Dim finalStream As pdStream
+    Set finalStream = New pdStream
+    
+    'Calculate a necessary final size for the stream.  This varies by bit-depth, obviously:
+    ' n-bytes per pixel, plus 1 extra byte per scanline for the silly PNG "filter" byte indicators
+    ' (which we don't need, as pixel data has already been unfiltered, but the render functions
+    ' expect the bytes to be there).
+    Dim bytesPerPixel As Long, bppLoop As Long
+    bytesPerPixel = (m_Header.BitsPerPixel \ 8)
+    bppLoop = bytesPerPixel - 1
+    
+    Dim newIdatSize As Long
+    newIdatSize = (m_Header.Width * m_Header.Height * bytesPerPixel) + m_Header.Height
+    finalStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , newIdatSize
+    finalStream.SetSizeExternally newIdatSize
+    
+    'For performance reasons, wrap a standard array around the final stream's contents.  (This is
+    ' much faster than writing individual bytes by moving around the stream pointer manually,
+    ' and using the safe WriteByte functions.)
+    Dim dstBytes() As Byte, dstSA As SafeArray1D
+    finalStream.WrapArrayAroundMemoryStream dstBytes, dstSA, 0
+    
+    'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
+    Dim srcBytes() As Byte, srcSA As SafeArray1D
+    
+    Dim x As Long, y As Long, j As Long
+    Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
+    Dim srcPxOffset As Long, newStride As Long
+    
+    'The destination image bounds and stride are constant for each pass (only the *source* ones
+    ' will change).
+    xFinal = m_Header.Width - 1
+    yFinal = m_Header.Height - 1
+    newStride = (m_Header.Width * bytesPerPixel) + 1
+        
+    'Loop through each iteration, placing pixels as we go!
+    Dim i As Long
+    For i = 0 To 6
+        
+        'Tiny images can have 0-length passes, if an interlacing pass doesn't contain any pixels
+        ' any pixels that lie inside image bounds.
+        If (m_XByteCount(i) > 0) Then
+        
+            'Each interlacing pass requires different starting points and x/y offsets between scans
+            Select Case i
+                Case 0
+                    startOffsetX = 0: startOffsetY = 0: xLineOffset = 8: yLineOffset = 8
+                Case 1
+                    startOffsetX = 4: startOffsetY = 0: xLineOffset = 8: yLineOffset = 8
+                Case 2
+                    startOffsetX = 0: startOffsetY = 4: xLineOffset = 4: yLineOffset = 8
+                Case 3
+                    startOffsetX = 2: startOffsetY = 0: xLineOffset = 4: yLineOffset = 4
+                Case 4
+                    startOffsetX = 0: startOffsetY = 2: xLineOffset = 2: yLineOffset = 4
+                Case 5
+                    startOffsetX = 1: startOffsetY = 0: xLineOffset = 2: yLineOffset = 2
+                Case 6
+                    startOffsetX = 0: startOffsetY = 1: xLineOffset = 1: yLineOffset = 2
+            End Select
+            
+            'For performance reasons, wrap a temporary array around this chunk's stream
+            tmpChunks(i).BorrowData.WrapArrayAroundMemoryStream srcBytes, srcSA, 0
+            srcPxOffset = 0
+            
+            'Place all pixels in this chunk
+            For y = startOffsetY To yFinal Step yLineOffset
+                
+                'On each y-line (including the first one), advance the pixel offset by 1 to account
+                ' for the filter byte that prepends each PNG scanline.
+                srcPxOffset = srcPxOffset + 1
+                
+            For x = startOffsetX To xFinal Step xLineOffset
+                For j = 0 To bppLoop
+                    dstBytes(1 + (y * newStride) + (x * bytesPerPixel) + j) = srcBytes(srcPxOffset)
+                    srcPxOffset = srcPxOffset + 1
+                Next j
+            Next x
+            Next y
+            
+            'Unwrap the temporary source array and free the source chunk - it's no longer needed!
+            tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
+            Set tmpChunks(i) = Nothing
+            
+        End If
+    
+    Next i
+    
+    'Release our wrapper around the destination stream's bytes, and reset its internal pointer
+    finalStream.UnwrapArrayFromMemoryStream dstBytes
+    finalStream.SetPosition 0, FILE_BEGIN
+    
+    'Replace our original, interlaced IDAT stream with the new, non-interlaced one
+    m_Chunks(idatIndex).SubmitNewDataStream finalStream
+    
+    'With the final, un-interlaced data stream assembled, we can update the pixel counts and stride tracker
+    ' to match normal, un-interlaced data.
+    ReDim m_XPixelCount(0) As Long
+    m_XPixelCount(0) = m_Header.Width
+    
+    ReDim m_YPixelCount(0) As Long
+    m_YPixelCount(0) = m_Header.Height
+    
+    ReDim m_XByteCount(0) As Long
+    m_XByteCount(0) = (m_Header.Width * bytesPerPixel) + 1
+    
+End Sub
 
 'LittleCMS is an integral part of the PNG load process.  If PNG images contain ICC profiles, we use LittleCMS
 ' to translate colors between spaces.  If PNG images do *not* contain ICC profiles, we can still use LittleCMS
@@ -1140,11 +1272,12 @@ End Sub
 Private Sub UpsampleLowBitDepthData()
     
     'We only need to upsample bit-depths less than 8-bpp
-    If (m_Header.BitDepth > 8) Or ((m_Header.BitDepth = 8) And (Not m_Header.Interlaced)) Then Exit Sub
+    If (m_Header.BitsPerPixel > 8) Or ((m_Header.BitsPerPixel = 8) And (Not m_Header.Interlaced)) Then Exit Sub
     
     Dim idatIndex As Long
     idatIndex = Me.GetIndexOfChunk("IDAT")
-        
+    If (idatIndex < 0) Then Exit Sub
+    
     'For non-interlaced images, this sub is just a thin wrapper.  For interlaced images, however,
     ' we first need to separate the original data stream into its component images (one for each
     ' interlacing pass), up-sample each one separately, then reassemble the results into a normal,
@@ -1172,54 +1305,7 @@ Private Sub UpsampleLowBitDepthData()
         'Because we can't lean on normal image dimensions (and stride), we'll instead calculate
         ' new dimensions and stride on-the-fly for each interlacing pass.
         Dim tmpChunks() As pdPNGChunk
-        ReDim tmpChunks(0 To 6) As pdPNGChunk
-        
-        Dim sizeOfPass As Long, sizeOfPassCheck As Long
-        
-        'Per the name (Adam7), there are seven interlacing passes...
-        Dim i As Long
-        For i = 0 To 6
-            
-            'We can entirely skip 0-length passes.  (These only exist in tiny images, where the image
-            ' dimensions are so small that some interlacing passes comprise 0 pixels.)
-            If (m_XByteCount(i) > 0) Then
-            
-                'Figure out the total size of this pass, in bytes.
-                sizeOfPass = m_XByteCount(i) * m_YPixelCount(i)
-                
-                'Initialize the new chunk and prep its internal buffer to the required size
-                Set tmpChunks(i) = New pdPNGChunk
-                tmpChunks(i).CreateChunk "IDAT", sizeOfPass
-                
-                'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
-                ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
-                ' will increment the internal pointer of the m_Data stream.)  As a failsafe, we'll also
-                ' double-check that the read size matches the size we requested - this ensures we never attempt
-                ' to read past the end of the stream.
-                sizeOfPassCheck = m_Chunks(idatIndex).BorrowData.ReadBytesToBarePointer(tmpChunks(i).BorrowData.Peek_PointerOnly(0), sizeOfPass)
-                If (sizeOfPassCheck = sizeOfPass) Then
-                    tmpChunks(i).BorrowData.SetSizeExternally sizeOfPass
-                Else
-                    tmpChunks(i).BorrowData.SetSizeExternally sizeOfPassCheck
-                    m_Warnings.AddString "WARNING!  pdPNG.UpsampleLowBitDepthData failed to read an interlacing pass correctly (" & sizeOfPass & ", " & sizeOfPassCheck & ")"
-                End If
-                
-                'With the temporary chunk assembled, we now need to calculate loop parameters for it.
-                xFinal = m_XPixelCount(i) - 1
-                yFinal = m_YPixelCount(i) - 1
-                xStride = m_XByteCount(i)
-                
-                'If this image is > 8-bpp, upsample the chunk!  (We pass 8-bpp data to this function so we
-                ' can take advantage of its 8-bpp deinterlacing.)
-                If (m_Header.BitDepth < 8) Then m_XByteCount(i) = UpsampleIDATChunk(tmpChunks(i), xFinal, yFinal, xStride)
-                
-                'Leave the upsampled bytes in the temporary container; since we still need access to the
-                ' original IDAT stream (for the next interlacing pass), we don't want to overwrite
-                ' anything yet.
-                
-            End If
-        
-        Next i
+        SeparateInterlacedIDATs tmpChunks, (m_Header.BitDepth < 8)
         
         'We now have seven separate "fake" IDAT chunks, one for each interlacing pass.  Each has been upsampled
         ' from its original bit-depth of 1/2/4-bpp to 8-bpp.  Before exiting, let's reassemble these into a
@@ -1255,6 +1341,7 @@ Private Sub UpsampleLowBitDepthData()
         newStride = m_Header.Width + 1
         
         'Loop through each iteration, placing pixels as we go!
+        Dim i As Long
         For i = 0 To 6
             
             'As before, we need to skip 0-length passes.
@@ -1323,6 +1410,72 @@ Private Sub UpsampleLowBitDepthData()
         
     End If
     
+End Sub
+
+'Interlaced images are a giant PITA.  To reuse as much code as possible, it's easiest to break them down into
+' seven separate IDAT streams (one for each interlaced image), which we can then use with standard functions.
+' If you call this function, that's exactly what happens: the current IDAT chunk will be converted to seven
+' standalone IDAT chunks.  Importantly, this function will *not* free the original IDAT - that's up to you.
+' To keep memory usage down, however, I strongly recommend freeing it, as it's completely redundant once these
+' new chunks exist.
+'
+'As part of the separation process, you can optionally request to up-sample each chunk; PD does this to
+' 1/2/4-bit data to make it *much* easier to work with during a subsequent de-interlacing pass.
+Private Sub SeparateInterlacedIDATs(ByRef dstChunks() As pdPNGChunk, Optional ByVal alsoUpSampleBits As Boolean = True)
+    
+    Dim idatIndex As Long
+    idatIndex = Me.GetIndexOfChunk("IDAT")
+    If (idatIndex < 0) Then Exit Sub
+    
+    ReDim dstChunks(0 To 6) As pdPNGChunk
+    Dim sizeOfPass As Long, sizeOfPassCheck As Long
+    Dim xFinal As Long, yFinal As Long, xStride As Long
+        
+    'Per the name (Adam7), there are seven interlacing passes...
+    Dim i As Long
+    For i = 0 To 6
+        
+        'We can entirely skip 0-length passes.  (These only exist in tiny images, where the image
+        ' dimensions are so small that some interlacing passes comprise 0 pixels.)
+        If (m_XByteCount(i) > 0) Then
+        
+            'Figure out the total size of this pass, in bytes.
+            sizeOfPass = m_XByteCount(i) * m_YPixelCount(i)
+            
+            'Initialize the new chunk and prep its internal buffer to the required size
+            Set dstChunks(i) = New pdPNGChunk
+            dstChunks(i).CreateChunk "IDAT", sizeOfPass
+            
+            'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
+            ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
+            ' will increment the internal pointer of the m_Data stream.)  As a failsafe, we'll also
+            ' double-check that the read size matches the size we requested - this ensures we never attempt
+            ' to read past the end of the stream.
+            sizeOfPassCheck = m_Chunks(idatIndex).BorrowData.ReadBytesToBarePointer(dstChunks(i).BorrowData.Peek_PointerOnly(0), sizeOfPass)
+            If (sizeOfPassCheck = sizeOfPass) Then
+                dstChunks(i).BorrowData.SetSizeExternally sizeOfPass
+            Else
+                dstChunks(i).BorrowData.SetSizeExternally sizeOfPassCheck
+                m_Warnings.AddString "WARNING!  pdPNG.UpsampleLowBitDepthData failed to read an interlacing pass correctly (" & sizeOfPass & ", " & sizeOfPassCheck & ")"
+            End If
+            
+            'With the temporary chunk assembled, we now need to calculate loop parameters for it.
+            xFinal = m_XPixelCount(i) - 1
+            yFinal = m_YPixelCount(i) - 1
+            xStride = m_XByteCount(i)
+            
+            'If this image is > 8-bpp, upsample the chunk!  (We pass 8-bpp data to this function so we
+            ' can take advantage of its 8-bpp deinterlacing.)
+            If (m_Header.BitDepth < 8) And alsoUpSampleBits Then m_XByteCount(i) = UpsampleIDATChunk(dstChunks(i), xFinal, yFinal, xStride)
+            
+            'Leave the upsampled bytes in the temporary container; since we still need access to the
+            ' original IDAT stream (for the next interlacing pass), we don't want to overwrite
+            ' anything yet.
+            
+        End If
+    
+    Next i
+        
 End Sub
 
 'Upsample the target IDAT chunk.  This function will return the *new* stride value for the chunk
