@@ -572,10 +572,14 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         
         Else
             
-            'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a unique challenge
-            ' within VB, since we lack the bit-shift operators necessary to handle them elegantly.)  Note that the upsampler
-            ' will reset our xStride value to match 8-bpp data it produces.
-            If (m_Header.BitDepth < 8) Then UpsampleLowBitDepthData
+            'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a
+            ' unique challenge within VB, since we lack the bit-shift operators necessary to handle them
+            ' elegantly.)  Note that the upsampler will reset our xStride value to match 8-bpp data
+            ' it produces.  (Note that we also pass the special case of 8-bpp *interlaced* data to this
+            ' function; that's because the function performs de-interlacing of the 8-bpp data produced
+            ' by the upsampler, and it spares us a bit of code to reuse that functionality for 8-bpp
+            ' interlaced images.
+            If (m_Header.BitDepth < 8) Or ((m_Header.BitDepth = 8) And m_Header.Interlaced) Then UpsampleLowBitDepthData
             
             'If the image is 8-bpp grayscale, we now want to construct an artifical palette.  (This lets us process it
             ' in an identical manner to indexed color images.)
@@ -1136,7 +1140,7 @@ End Sub
 Private Sub UpsampleLowBitDepthData()
     
     'We only need to upsample bit-depths less than 8-bpp
-    If (m_Header.BitDepth >= 8) Then Exit Sub
+    If (m_Header.BitDepth > 8) Or ((m_Header.BitDepth = 8) And (Not m_Header.Interlaced)) Then Exit Sub
     
     Dim idatIndex As Long
     idatIndex = Me.GetIndexOfChunk("IDAT")
@@ -1205,8 +1209,9 @@ Private Sub UpsampleLowBitDepthData()
                 yFinal = m_YPixelCount(i) - 1
                 xStride = m_XByteCount(i)
                 
-                'Upsample the chunk!
-                m_XByteCount(i) = UpsampleIDATChunk(tmpChunks(i), xFinal, yFinal, xStride)
+                'If this image is > 8-bpp, upsample the chunk!  (We pass 8-bpp data to this function so we
+                ' can take advantage of its 8-bpp deinterlacing.)
+                If (m_Header.BitDepth < 8) Then m_XByteCount(i) = UpsampleIDATChunk(tmpChunks(i), xFinal, yFinal, xStride)
                 
                 'Leave the upsampled bytes in the temporary container; since we still need access to the
                 ' original IDAT stream (for the next interlacing pass), we don't want to overwrite
