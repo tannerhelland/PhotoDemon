@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 20/April/18
-'Last update: wrap up work on importer; all PNGs are now imported using this class!
+'Last updated: 23/April/18
+'Last update: handle cHRM chunks (with the final corrections applied via LittleCMS)
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -1036,9 +1036,66 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         
     End If
     
-    'cHRM is still to-do, and ideally, we should merge its results with gAMA, above, and handle the entire
-    ' transform via LittleCMS (so we can make use of whitepoint values).
-    If gammaOK Then Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
+    If (chrmIndex >= 0) Then
+        
+        Dim chrmData() As Long
+        If m_Chunks(chrmIndex).GetChromaticityData(chrmData, m_Warnings) Then
+            
+            'Convert the chromaticity values to floating-point
+            Dim wpValues() As Double, rgbValues() As Double
+            ReDim wpValues(0 To 3) As Double
+            ReDim rgbValues(0 To 9) As Double
+            wpValues(0) = CDbl(chrmData(0)) / 100000#
+            wpValues(1) = CDbl(chrmData(1)) / 100000#
+            wpValues(2) = 1#
+            
+            rgbValues(0) = CDbl(chrmData(2)) / 100000#
+            rgbValues(1) = CDbl(chrmData(3)) / 100000#
+            rgbValues(2) = 1#
+            rgbValues(3) = CDbl(chrmData(4)) / 100000#
+            rgbValues(4) = CDbl(chrmData(5)) / 100000#
+            rgbValues(5) = 1#
+            rgbValues(6) = CDbl(chrmData(6)) / 100000#
+            rgbValues(7) = CDbl(chrmData(7)) / 100000#
+            rgbValues(8) = 1#
+            
+            If (Not gammaOK) Then gammaFloat = 1#
+            
+            Dim hProfile As Long
+            hProfile = LittleCMS.LCMS_LoadCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
+            
+            'We can only apply the profile if it passed internal LCMS validation
+            chrmOK = (hProfile <> 0)
+            If chrmOK Then
+                
+                Dim hDstProfile As Long
+                hDstProfile = LittleCMS.LCMS_LoadStockSRGBProfile()
+                
+                'Apply the profile in-place to the current RGB data
+                Dim hTransform As Long
+                hTransform = LittleCMS.LCMS_CreateInPlaceTransformForDIB(hProfile, hDstProfile, dstDIB, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA)
+                If (hTransform <> 0) Then
+                    LittleCMS.LCMS_ApplyTransformToDIB dstDIB, hTransform
+                    LittleCMS.LCMS_DeleteTransform hTransform
+                End If
+                
+                'Free the LCMS profile before exiting
+                LittleCMS.LCMS_CloseProfileHandle hProfile
+                LittleCMS.LCMS_CloseProfileHandle hDstProfile
+                
+                'Mark both chrm and gamma as *not* OK, so that subsequent checks don't process them
+                chrmOK = False
+                gammaOK = False
+                
+            End If
+            
+        End If
+        
+    End If
+    
+    'If the cHRM chunk doesn't exist (or is invalid), but a gAMA chunk exists (and is valid), apply basic
+    ' gamma correction before exiting.
+    If gammaOK And (Not chrmOK) Then Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
     
     Exit Function
     

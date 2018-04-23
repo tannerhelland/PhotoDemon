@@ -3,8 +3,8 @@ Attribute VB_Name = "LittleCMS"
 'LittleCMS Interface
 'Copyright 2016-2018 by Tanner Helland
 'Created: 21/April/16
-'Last updated: 09/June/16
-'Last update: continued feature expansion
+'Last updated: 23/April/18
+'Last update: new external function for creating custom RGB profiles on-the-fly (used with cHRM data from PNGs)
 '
 'Module for handling all LittleCMS interfacing.  This module is pointless without the accompanying
 ' LittleCMS plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "lcms2.dll".
@@ -645,6 +645,25 @@ Public Function LCMS_LoadProfileFromFile(ByVal profilePath As String) As Long
     If Files.FileExists(profilePath) Then
         If Files.FileLoadAsByteArray(profilePath, tmpProfileArray) Then LCMS_LoadProfileFromFile = cmsOpenProfileFromMem(VarPtr(tmpProfileArray(0)), UBound(tmpProfileArray) + 1)
     End If
+    
+End Function
+
+'Create a custom RGB profile on-the-fly, using the specified white point and primaries.  No validation is
+' performed on input values (except for the minimal validation applied automatically by LittleCMS), so please
+' ensure that values are correct *before* calling this function.
+Public Function LCMS_LoadCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, Optional ByVal gammaCorrectFactor As Double = 1#) As Long
+
+    'Use the supplied gamma value to generate LCMS-specific tone curves
+    Dim rgbToneCurves() As Long
+    ReDim rgbToneCurves(0 To 2) As Long
+    rgbToneCurves(0) = LCMS_GetBasicToneCurve(gammaCorrectFactor)
+    rgbToneCurves(1) = rgbToneCurves(0)
+    rgbToneCurves(2) = rgbToneCurves(0)
+    
+    LCMS_LoadCustomRGBProfile = cmsCreateRGBProfile(ptrToWhitePointxyY, ptrTo3xyYPrimaries, VarPtr(rgbToneCurves(0)))
+    
+    'The intermediate tone curve *must* be freed now, as it's never directly exposed to the caller
+    LCMS_FreeToneCurve rgbToneCurves(0)
     
 End Function
 

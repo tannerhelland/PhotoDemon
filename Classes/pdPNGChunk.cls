@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
 'Copyright 2018-2018 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 20/April/18
-'Last update: finalize work on importing
+'Last updated: 23/April/18
+'Last update: new helper function for cHRM chunks
 '
 'pdPNG leans on this class to handle the actual storage (and deciphering) of certain PNG chunks.
 ' This simplifies the decode process because we only deal with the chunks that matter to PD,
@@ -588,6 +588,32 @@ Friend Function GetGammaData(ByRef warningStack As pdStringStack) As Long
     Else
         warningStack.AddString "WARNING!  You requested gamma data from a non-gAMA chunk; no value was returned."
     End If
+End Function
+
+'cHRM chunks return the pure, unadulterated cHRM contents - which are, per the spec,
+' "the 1931 CIE x,y chromaticities of the red, green, and blue display primaries used in the image,
+' and the referenced white point.  Each value is encoded as a four-byte PNG unsigned integer,
+' representing the x or y value times 100000."
+'
+'The passed array will be redimmed [0, 7], and filled with chromaticity data in the following order:
+' White point x/y, Red x/y, Green x/y, Blue x/y
+Friend Function GetChromaticityData(ByRef dstData() As Long, ByRef warningStack As pdStringStack) As Boolean
+    
+    GetChromaticityData = (m_Type = "cHRM")
+    If GetChromaticityData Then
+        
+        m_Data.SetPosition 0, FILE_BEGIN
+        ReDim dstData(0 To 7) As Long
+        
+        Dim i As Long
+        For i = 0 To 7
+            dstData(i) = m_Data.ReadLong_BE()
+        Next i
+        
+    Else
+        warningStack.AddString "WARNING!  You requested chromaticity data from a non-cHRM chunk; no value was returned."
+    End If
+    
 End Function
 
 'If this chunk is a tRNS chunk, use this function to retrieve relevant transparency data.  Handling is automatic
