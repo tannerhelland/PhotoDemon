@@ -396,9 +396,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                     'Because metadata already finished processing, retrieve any specific metadata-related entries
                     ' that may be useful to initial display of the image, like image resolution
                     Dim xResolution As Double, yResolution As Double
-                    If targetImage.ImgMetadata.GetResolution(xResolution, yResolution) Then
-                        targetImage.SetDPI xResolution, yResolution
-                    End If
+                    If targetImage.ImgMetadata.GetResolution(xResolution, yResolution) Then targetImage.SetDPI xResolution, yResolution
                     
                 Else
                     PDDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."

@@ -18,9 +18,9 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
-'As of v7.2, PD ships with its own custom-built PNG parser.  This offers a number of performance and feature enhancements
-' relative to the 3rd-party libraries we've used in the past.  I know of no reason why it would need to be disabled,
-' but if you want to fall back to FreeImage and GDI+, you can set this to FALSE.
+'As of v7.2, PD includes its own custom-built PNG parser.  This offers a number of performance and feature enhancements
+' relative to the 3rd-party libraries.  I know of no reason why it would need to be disabled, but if you want to fall
+' back to the old FreeImage and GDI+ interface, you can set this to FALSE.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL
@@ -936,7 +936,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     CascadeLoadGenericImage = False
     
     'Before jumping out to a 3rd-party library, check for any image formats that we must decode using internal plugins.
-        
+    
     'SVG support is just experimental at present!
     CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
     If CascadeLoadGenericImage Then
@@ -948,18 +948,18 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         dstImage.SetOriginalAlpha True
     End If
     
-    'PD's internal PNG parser is just experimental at present!
+    'PD's internal PNG parser is preferred for all PNG images.  For backwards compatibility reasons, it does *not* rely
+    ' on the .png extension.  (Instead, it will manually verify the PNG signature, then work from there.)
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB, True)
     If CascadeLoadGenericImage Then
         decoderUsed = id_PNGParser
         dstImage.SetOriginalFileFormat PDIF_PNG
     End If
     
-    'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
-    ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
+    'If our various internal engines passed on the image, move to FreeImage.  Note that FreeImage may raise additional dialogs
+    ' (e.g. for HDR/RAW images), so it does not return a binary pass/fail.  (If the function fails due to user cancellation,
+    ' we will suppress subsequent error message boxes.)
     freeImage_Return = PD_FAILURE_GENERIC
-    
-    'If FreeImage is available, we first use it to try and load the image.
     If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then
     
         'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
@@ -978,10 +978,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
             dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
             dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
-            
-            If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then
-                dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
-            End If
+            If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
             
         End If
         
@@ -1101,7 +1098,9 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
             
             dstImage.SetOriginalFileFormat PDIF_PNG
             
-            'TODO!
+            'Pull useful information from the PNG decoder before exiting
+            If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
+            
             dstImage.SetOriginalColorDepth 32
             dstImage.SetOriginalGrayscale False
             dstImage.SetOriginalAlpha True

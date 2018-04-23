@@ -577,6 +577,44 @@ Friend Function GetPalette(ByRef dstQuads() As RGBQuad, ByRef numOfColors As Lon
 
 End Function
 
+'bKGD chunks return the pure, unadulterated bKGD contents.  Note that the length of the return varies based
+' on the parent image's color type.  From the spec: "For colour type 3 (indexed-colour), the value is the
+' palette index of the colour to be used as background.  For colour types 0 and 4 (greyscale, greyscale with alpha),
+' the value is the grey level to be used as background in the range 0 to (2^bitdepth)-1. For colour types 2 and 6
+' (truecolour, truecolour with alpha), the values are the colour to be used as background, given as RGB samples in
+' the range 0 to (2^bitdepth)-1. In each case, for consistency, two bytes per sample are used regardless of the image
+' bit depth. If the image bit depth is less than 16, the least significant bits are used and the others are 0.
+'
+'At present, RGB background colors in 48/64-bpp images are returned as a concatenated 24-bpp RGB Long.  (This may need
+' to be revisited if internal 48/64-bpp tracking is ever expanded.)
+Friend Function GetBackgroundColor(ByVal parentIsHighBitDepth As Boolean, ByRef warningStack As pdStringStack) As Long
+    
+    m_Data.SetPosition 0, FILE_BEGIN
+    
+    '1-byte chunks are palette indices
+    If (m_Size = 1) Then
+        GetBackgroundColor = m_Data.ReadByte()
+    
+    '2-byte chunks are grayscale
+    ElseIf (m_Size = 2) Then
+    
+        Dim l As Long
+        l = m_Data.ReadIntUnsigned_BE()
+        If parentIsHighBitDepth Then GetBackgroundColor = RGB(l \ 256, l \ 256, l \ 256) Else GetBackgroundColor = RGB(l, l, l)
+        
+    'The only remaining option is 6-byte RGB data.  Extract the bytes individually, then scale as necessary.
+    Else
+    
+        Dim r As Long, g As Long, b As Long
+        r = m_Data.ReadIntUnsigned_BE()
+        g = m_Data.ReadIntUnsigned_BE()
+        b = m_Data.ReadIntUnsigned_BE()
+        If parentIsHighBitDepth Then GetBackgroundColor = RGB(r \ 256, g \ 256, b \ 256) Else GetBackgroundColor = RGB(r, g, b)
+        
+    End If
+    
+End Function
+
 'gAMA chunks will return the pure, unadulterated gAMA contents - which is, per the spec,
 ' "[a] four-byte unsigned integer, representing gamma times 100000."  We return the integer version to clarify
 ' the handling of the case gamma = 1.0, which is the most common case, and the one that allows us to avoid

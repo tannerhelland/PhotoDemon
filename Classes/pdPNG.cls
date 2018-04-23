@@ -1827,6 +1827,11 @@ Friend Function GetIndexOfChunk(ByRef chunkType As String, Optional ByVal startI
     
 End Function
 
+'Returns TRUE if the requested chunk (case-sensitive!) appears in the file
+Friend Function HasChunk(ByVal chunkName As String) As Boolean
+    HasChunk = (GetIndexOfChunk(chunkName) >= 0)
+End Function
+
 'Want data on warnings?  Use these helper functions.
 Friend Function Warnings_GetCount() As Long
     Warnings_GetCount = m_Warnings.GetNumOfStrings()
@@ -1844,6 +1849,34 @@ Friend Sub Warnings_DumpToDebugger()
         Next i
     End If
 End Sub
+
+'Some wrapper functions are provided to help deal with complicated child chunks.
+
+'Return the image's background color.  Various color types are handled automatically, and converted to 24-bpp RGB for you.
+' RETURNS: -1 if no chunk exists; otherwise, a valid 24-bpp RGB triple is returned.
+Friend Function GetBackgroundColor() As Long
+
+    If Me.HasChunk("bKGD") Then
+        
+        GetBackgroundColor = m_Chunks(Me.GetIndexOfChunk("bKGD")).GetBackgroundColor((m_Header.BitDepth > 8), m_Warnings)
+        
+        'If this image is a paletted image, the background color is a palette index; convert it to an actual RGB triple
+        If (m_Header.ColorType = png_Indexed) Then
+            
+            Dim palColors() As RGBQuad, numColors As Long
+            If m_Chunks(Me.GetIndexOfChunk("PLTE")).GetPalette(palColors, numColors, m_Warnings) Then
+                GetBackgroundColor = RGB(palColors(GetBackgroundColor).Red, palColors(GetBackgroundColor).Green, palColors(GetBackgroundColor).Blue)
+            End If
+            
+        End If
+    
+    Else
+        GetBackgroundColor = -1
+    End If
+    
+    Debug.Print Colors.ExtractRed(GetBackgroundColor), Colors.ExtractGreen(GetBackgroundColor), Colors.ExtractBlue(GetBackgroundColor)
+    
+End Function
 
 'After all chunks have been loaded and parsed, you can call this function to convert the embedded IHDR chunk
 ' into a VB-friendly "png header" type.  Bad header values (e.g. width/height = 0) will return failure; you need
