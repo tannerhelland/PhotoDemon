@@ -47,22 +47,24 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     '*** AND NOW, AN IMPORTANT MESSAGE ABOUT DOEVENTS ***
     
-    'Normally, PD avoids DoEvents for all the obvious reasons.  This function is a stark exception to that rule.  Why?
+    'Normally, PD avoids DoEvents for all the obvious reasons.  This function is a stark exception to that rule.
+    ' Why?
     
-    'While this function stays busy loading the image in question, the ExifTool plugin runs asynchronously, parsing image metadata
-    ' and forwarding the results to a ShellPipe instance on PD's primary form.  By using DoEvents throughout this function, we periodically
-    ' yield control to that ShellPipe instance, which allows it to clear stdout so ExifTool can continue pushing metadata through.
-    ' (If we don't do this, ExifTool will freeze when stdout fills its buffer, which is not just possible but *probable*, given how much
-    ' metadata the average JPEG contains.)
+    'While this function stays busy loading the image in question, the ExifTool plugin runs asynchronously,
+    ' parsing image metadata and forwarding the results to a pdAsyncPipe instance on PD's primary form.
+    ' By using DoEvents throughout this function, we periodically yield control to that pdAsyncPipe instance,
+    ' which allows it to clear stdout so ExifTool can continue pushing metadata through.  (If we don't do this,
+    ' ExifTool will freeze when stdout fills its buffer, which is not just possible but *probable*, given how
+    ' much metadata the average JPEG contains.)
     
-    'That said, please note that a LOT of precautions have been taken to make sure DoEvents doesn't cause reentry and other issues.
-    ' Do *not* mimic this behavior in your own code unless you understand the repercussions involved!
+    'That said, please note that a LOT of precautions have been taken to make sure DoEvents doesn't cause reentry
+    ' and other issues.  Do *not* mimic this behavior in your own code unless you understand the repercussions!
     
     '*** END MESSAGE ***
     
-    'If debug mode is active, image loading is a place where many things can go wrong - bad files, corrupt formats, heavy RAM usage,
-    ' incompatible color formats, and about a bazillion other problems.  As such, this function dumps a *lot* of information to
-    ' the debug log, to help narrow down problems.
+    'Image loading is a place where many things can go wrong - bad files, corrupt formats, heavy RAM usage,
+    ' incompatible color formats, and about a bazillion other problems.  As such, this function dumps a *lot* of
+    ' information to the debug log.
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     PDDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
@@ -212,7 +214,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Run a few failsafe checks to confirm that the image data was loaded successfully
     '*************************************************************************************************************************************
     
-    If loadSuccessful And (targetDIB.GetDIBWidth > 0) And (targetDIB.GetDIBHeight > 0) And (Not (targetImage Is Nothing)) Then
+    If loadSuccessful And (targetDIB.GetDIBWidth > 0) And (targetDIB.GetDIBHeight > 0) And (Not targetImage Is Nothing) Then
         
         PDDebug.LogAction "Debug note: image load appeared to be successful.  Summary forthcoming."
         
@@ -222,14 +224,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         If (internalFormatID <> PDIF_PDI) Then
             
-            'While inside this section of the load process, you'll notice a consistent trend regarding DOEVENTS.  If you haven't already,
-            ' now is a good time to scroll up to the top of this function to read the IMPORTANT NOTE!
-            
-            '*************************************************************************************************************************************
-            ' If the image contains an embedded ICC profile, apply it now
-            '*************************************************************************************************************************************
-            
-            If ImageImporter.ApplyPostLoadICCHandling(targetDIB) Then VBHacks.DoEventsTimersOnly
+            'While inside this section of the load process, you'll notice a consistent trend regarding DOEVENTS.
+            ' If you haven't already, this is a good time to scroll to the top of this function and read the IMPORTANT NOTE!
             
             '*************************************************************************************************************************************
             ' If the incoming image is 24bpp, convert it to 32bpp.  (PD assumes an available alpha channel for all layers.)
@@ -292,7 +288,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
-        PDDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
+        PDDebug.LogAction vbTab & "ICC profile embedded: " & (LenB(targetImage.GetColorProfile_Original) <> 0), , True
         PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
         PDDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
         PDDebug.LogAction "~ End of image summary ~", , True
@@ -500,7 +496,7 @@ End Function
 'That said, FreeImage/GDI+ are still used intelligently, so this function should reflect PD's full capacity for image format support.
 '
 'The function will return TRUE if successful; detailed load information is not available past that.
-Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal processColorProfiles As Boolean = True, Optional ByVal suppressDebugData As Boolean = False) As Boolean
+Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal suppressDebugData As Boolean = False) As Boolean
     
     Dim loadSuccessful As Boolean: loadSuccessful = False
     
@@ -553,7 +549,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
             If g_ImageFormats.FreeImageEnabled Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
-            If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
+            If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
         'PDTMP files are custom PD-format files saved ONLY during Undo/Redo or Autosaving.  As such, they have some weirdly specific
@@ -572,7 +568,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             End If
                 
             'If FreeImage fails for some reason, offload the image to GDI+
-            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
+            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
                     
     End Select
     
@@ -613,9 +609,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Exit Function
         
     End If
-    
-    'If the image contained an embedded ICC profile, apply it now.
-    If processColorProfiles Then ImageImporter.ApplyPostLoadICCHandling targetDIB
     
     'Restore the main interface
     If applyUIChanges Then Processor.MarkProgramBusyState False, True

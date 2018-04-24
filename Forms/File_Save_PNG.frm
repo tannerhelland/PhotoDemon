@@ -459,7 +459,7 @@ End Function
 
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
-    For i = picCategory.lBound To picCategory.UBound
+    For i = picCategory.lBound To picCategory.ubound
         picCategory(i).Visible = (btsMasterType.ListIndex = i)
     Next i
 End Sub
@@ -607,7 +607,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
     ' is allowed open at a time.
     Dim i As Long
-    For i = picContainer.lBound To picContainer.UBound
+    For i = picContainer.lBound To picContainer.ubound
         picContainer(i).SetLeft 0
     Next i
     
@@ -707,7 +707,7 @@ Private Sub cmdUpdateLossyPreview_Click()
                 End If
                 
             Else
-                pdDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
+                PDDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
             End If
             
             Files.FileDeleteIfExists tmpFilename
@@ -936,7 +936,7 @@ Private Sub UpdateStandardTitlebars()
     
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
+    For i = ttlStandard.lBound To ttlStandard.ubound
         ttlStandard(i).Value = (i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
@@ -959,7 +959,7 @@ Private Sub UpdateStandardPanelVisibility()
     yPadding = FixDPI(8)
     
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
+    For i = ttlStandard.lBound To ttlStandard.ubound
     
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding

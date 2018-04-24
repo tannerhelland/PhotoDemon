@@ -1597,7 +1597,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
         'Use PD's central load function to load a copy of the requested image
         Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
         Dim loadSuccessful As Boolean: loadSuccessful = False
-        If (LenB(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB, False, False, True)
+        If (LenB(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB, False, False)
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then

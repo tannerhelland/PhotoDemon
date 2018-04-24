@@ -245,14 +245,6 @@ Private m_DIBChangedSinceLastHash() As Boolean
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
 Private m_PlgPoints() As PointFloat
 
-'Layers can be tagged with ICC profiles.  These profiles do not need to match the current image's working profile.  Before making
-' color management decisions, make *certain* to note whether this layer is just tagged with a given profile, or whether it was
-' destructively converted to its current profile.
-'
-'An index of -1 means that the layer has no color profile attached, and it was never hard-converted to a given profile either.
-Private m_ICCProfileIndex As Long
-Private m_ColorManagementState As LAYER_COLOR_MANAGEMENT
-
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' it must call this function afterward.
 '
@@ -793,22 +785,6 @@ Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal
     
 End Sub
 
-Friend Function GetColorProfileIndex() As Long
-    GetColorProfileIndex = m_ICCProfileIndex
-End Function
-
-Friend Sub SetColorProfileIndex(ByVal newIndex As Long)
-    m_ICCProfileIndex = GetColorProfileIndex
-End Sub
-
-Friend Function GetColorManagementState() As LAYER_COLOR_MANAGEMENT
-    GetColorManagementState = m_ColorManagementState
-End Function
-
-Friend Sub SetColorManagementState(ByVal newState As LAYER_COLOR_MANAGEMENT)
-    m_ColorManagementState = newState
-End Sub
-
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
 Friend Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
@@ -1297,10 +1273,6 @@ Private Sub Class_Initialize()
     'Prep a default set of parallelogram corner points, in case the user decides to activate non-destructive transforms
     ReDim m_PlgPoints(0 To 3) As PointFloat
     
-    'Set default color management settings
-    m_ICCProfileIndex = -1
-    m_ColorManagementState = LCM_NoManagement
-    
 End Sub
 
 Private Sub Class_Terminate()
@@ -1364,10 +1336,6 @@ Friend Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.WriteTag "ShearY", .l_ShearY
         xmlEngine.WriteTag "AlphaMode", .l_AlphaMode
     End With
-    
-    'Next, write out any relevant color management settings
-    xmlEngine.WriteTag "LayerColorManagement", m_ColorManagementState
-    If (m_ColorManagementState <> LCM_NoManagement) And (m_ICCProfileIndex <> -1) Then xmlEngine.WriteTag "LayerColorProfileID", ColorManagement.GetUniqueProfileDescriptor_ByIndex(m_ICCProfileIndex)
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
     ' in the future.
@@ -1460,12 +1428,6 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             'Note that all internal layer caches are no longer valid
             Me.NotifyOfDestructiveChanges
             
-        End If
-        
-        'Load color management settings, if any
-        m_ColorManagementState = xmlEngine.GetUniqueTag_Long("LayerColorManagement", LCM_NoManagement)
-        If (m_ColorManagementState <> LCM_NoManagement) Then
-            m_ICCProfileIndex = ColorManagement.GetCachedProfileIndex_ByUniqueStringID(xmlEngine.GetUniqueTag_String("LayerColorProfileID", vbNullString))
         End If
         
         CreateNewLayerFromXML = True
@@ -1599,11 +1561,6 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
         .l_AlphaMode = LA_NORMAL
     End With
     
-    'Reset any color management settings.
-    ' (TODO 7.0: pull default settings from user preferences)
-    m_ColorManagementState = LCM_NoManagement
-    m_ICCProfileIndex = -1
-    
     'Reset any vector-specific data
     With myVectorData
         .vd_Width = 0#
@@ -1658,10 +1615,6 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_ShearY = srcLayer.GetLayerShearY
         .l_AlphaMode = srcLayer.GetLayerAlphaMode
     End With
-    
-    'Copy color management settings, if any
-    m_ColorManagementState = srcLayer.GetColorManagementState
-    m_ICCProfileIndex = srcLayer.GetColorProfileIndex
     
     'Copy the source layer's DIB, if one exists.
     If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcLayer.layerDIB
@@ -2179,11 +2132,6 @@ Friend Sub ResetLayerParameters()
         .l_ShearY = 0#
         .l_AlphaMode = LA_NORMAL
     End With
-    
-    'Reset color management settings
-    ' (TODO 7.2: pull these from user preferences)
-    m_ColorManagementState = LCM_NoManagement
-    m_ICCProfileIndex = -1
     
     'Assign default vector layer values
     With myVectorData

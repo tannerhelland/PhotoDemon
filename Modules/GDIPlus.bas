@@ -1893,7 +1893,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As GP_Result
@@ -1930,7 +1930,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     isMetafile = (imgFormatFIF = PDIF_EMF) Or (imgFormatFIF = PDIF_WMF)
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
-    Dim profileSize As Long, imgHasIccProfile As Boolean
+    Dim profileSize As Long, imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile, colorProfileHash As String
     
     'NOTE! the passed profileSize value must always be zeroed before using GdipGetPropertyItemSize, because the function will not update
     ' the variable's value if no tag is found.  Seems like an asinine oversight, but oh well.
@@ -1945,8 +1945,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
         GdipGetPropertyItem hImage, GP_PT_ICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
-        dstDIB.ICCProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
+        'Create a temporary profile, and add it to PD's central color management cache
+        Set embeddedProfile = New pdICCProfile
+        embeddedProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
         Erase iccProfileBuffer
+        
+        colorProfileHash = ColorManagement.AddProfileToCache(embeddedProfile)
+        If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original colorProfileHash
         
     End If
     
@@ -1999,15 +2004,17 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
     End If
     
-    'Metafiles can contain brushes and other objects stored at extremely high DPIs.  Limit these to 300 dpi to prevent OOM errors later on.
+    'Metafiles can contain brushes and other objects stored at extremely high DPIs.
+    ' Limit these to 300 dpi to prevent OOM errors later on.
     If isMetafile Then GdipSetMetafileDownLevelRasterizationLimit hImage, 300
     
     'Retrieve the image's size
-    ' RANDOM FACT! GdipGetImageDimension works fine on bitmaps.  On metafiles, it returns bizarre values that may be astronomically large.
-    '  My assumption is that these image dimensions are not necessarily returned in pixels (though pixels are the default for bitmaps),
-    '  or perhaps they are meant to be adjusted by DPI.
-    ' Anyway, the old floating-point width/height as now stored in the -F suffixed variables, while the original values now store
-    '  Long-type copies of the image dimensions.  (Also, these copies are good for both bitmaps and metafiles.)
+    ' RANDOM FACT! GdipGetImageDimension works fine on bitmaps.  On metafiles, it returns bizarre values
+    ' that can be astronomically large.  My assumption is that these image dimensions are not necessarily
+    ' returned in pixels (though pixels are the default for bitmaps), or perhaps they are meant to be
+    ' adjusted at run-time by system DPI.  Regardless, the old floating-point width/height as now stored
+    ' in the -F suffixed variables, while the original values now store Long-type copies of the image's
+    ' initial dimensions.  (Also, these copies are good for both bitmaps and metafiles.)
     Dim imgWidth As Long, imgHeight As Long
     GdipGetImageWidth hImage, imgWidth
     GdipGetImageHeight hImage, imgHeight
@@ -2128,8 +2135,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Check for CMYK images
     Dim isCMYK As Boolean
-    isCMYK = ((iPixelFormat And GP_PF_32bppCMYK) <> 0)
+    isCMYK = ((iPixelFormat And GP_PF_32bppCMYK) = GP_PF_32bppCMYK)
+    If isCMYK Then PDDebug.LogAction "CMYK image found."
     
+    Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, cTransform As pdLCMSTransform
     Dim copyBitmapData As GP_BitmapData
     Dim tmpRect As RectL
     Dim hGraphics As Long
@@ -2235,24 +2244,22 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 Dim cmSuccessful As Boolean
                 cmSuccessful = False
                 
-                Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile
                 Set srcProfile = New pdLCMSProfile
                 Set dstProfile = New pdLCMSProfile
                 
-                If srcProfile.CreateFromPDDib(dstDIB) Then
+                If srcProfile.CreateFromPDICCObject(embeddedProfile) Then
                     If dstProfile.CreateSRGBProfile() Then
                         
-                        Dim cTransform As pdLCMSTransform
                         Set cTransform = New pdLCMSTransform
                         If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, TYPE_CMYK_8, TYPE_BGR_8, INTENT_PERCEPTUAL) Then
                             
                             Set srcProfile = Nothing: Set dstProfile = Nothing
-                        
                             cmSuccessful = cTransform.ApplyTransformToArbitraryMemory(copyBitmapData.BD_Scan0, dstDIB.GetDIBScanline(0), copyBitmapData.BD_Stride, dstDIB.GetDIBStride, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth, False)
                                 
                             If cmSuccessful Then
                                 PDDebug.LogAction "Copying newly transformed sRGB data..."
-                                dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                                dstDIB.SetColorManagementState cms_ProfileConverted
+                                dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
                                 dstDIB.SetInitialAlphaPremultiplicationState True
                             End If
                             
@@ -2299,9 +2306,48 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     dstDIB.SetOriginalColorDepth imgColorDepth
     dstDIB.SetInitialAlphaPremultiplicationState True
     
-    'Release any remaining GDI+ handles and exit
+    'Release any remaining GDI+ handles
     GdipDisposeImage hImage
     GDIPlusLoadPicture = True
+    
+    'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
+    ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
+    If (Not isCMYK) And imgHasIccProfile Then
+        
+        PDDebug.LogAction "Applying color management to GDI+ image..."
+        
+        Set srcProfile = New pdLCMSProfile
+        Set dstProfile = New pdLCMSProfile
+        
+        If srcProfile.CreateFromPDICCObject(embeddedProfile) Then
+            If dstProfile.CreateSRGBProfile() Then
+                
+                Dim srcFormat As LCMS_PIXEL_FORMAT
+                If (dstDIB.GetDIBColorDepth = 24) Then srcFormat = TYPE_BGR_8 Else srcFormat = TYPE_BGRA_8
+                
+                Set cTransform = New pdLCMSTransform
+                If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
+                    
+                    Set srcProfile = Nothing: Set dstProfile = Nothing
+                    If dstDIB.GetAlphaPremultiplication Then dstDIB.SetAlphaPremultiplication False
+                    cmSuccessful = cTransform.ApplyTransformToPDDib(dstDIB)
+                    
+                    If cmSuccessful Then
+                        PDDebug.LogAction "Copying newly transformed sRGB data..."
+                        dstDIB.SetColorManagementState cms_ProfileConverted
+                        dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                        dstDIB.SetAlphaPremultiplication True
+                    End If
+                    
+                    Set cTransform = Nothing
+                    
+                Else
+                    PDDebug.LogAction "WARNING!  Image could not be color-managed; color space mismatch is a likely explanation."
+                End If
+            End If
+        End If
+                
+    End If
     
 End Function
 

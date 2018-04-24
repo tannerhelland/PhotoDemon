@@ -37,16 +37,16 @@ Friend Function CreateFromPointer(ByVal ptrToICCProfile As Long, ByVal iccProfil
     CreateFromPointer = (m_ProfileHandle <> 0)
 End Function
 
-Friend Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
+Friend Function CreateFromPDICCObject(ByRef srcProfile As pdICCProfile) As Boolean
     
-    CreateFromPDDib = False
+    CreateFromPDICCObject = True
     
-    If (m_ProfileHandle <> 0) Then ReleaseProfile
-    
-    If (Not (srcDIB Is Nothing)) Then
-        If srcDIB.ICCProfile.HasICCData Then
-            CreateFromPDDib = Me.CreateFromPointer(srcDIB.ICCProfile.GetICCDataPointer, srcDIB.ICCProfile.GetICCDataSize)
-        End If
+    'Apply a few failsafe checks before attempting to create a profile
+    If (srcProfile Is Nothing) Then CreateFromPDICCObject = False
+    If CreateFromPDICCObject Then CreateFromPDICCObject = srcProfile.HasICCData
+    If CreateFromPDICCObject Then
+        If (m_ProfileHandle <> 0) Then ReleaseProfile
+        CreateFromPDICCObject = Me.CreateFromPointer(srcProfile.GetICCDataPointer, srcProfile.GetICCDataSize)
     End If
     
 End Function
@@ -55,6 +55,12 @@ Friend Function CreateGenericGrayscaleProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
     CreateGenericGrayscaleProfile = (m_ProfileHandle <> 0)
+End Function
+
+Friend Function CreateCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, Optional ByVal gammaCorrectFactor As Double = 1#) As Boolean
+    If (m_ProfileHandle <> 0) Then ReleaseProfile
+    m_ProfileHandle = LittleCMS.LCMS_LoadCustomRGBProfile(ptrToWhitePointxyY, ptrTo3xyYPrimaries, gammaCorrectFactor)
+    CreateCustomRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateLinearRGBProfile() As Boolean
@@ -85,6 +91,14 @@ End Function
 
 Friend Function GetHandle() As Long
     GetHandle = m_ProfileHandle
+End Function
+
+'Retrieve the raw ICC profile bytes; return value is the length of the profile, in bytes.
+Friend Function GetRawProfileBytes(ByRef dstBytes() As Byte) As Long
+    If (m_ProfileHandle <> 0) Then
+        LittleCMS.LCMS_SaveProfileToArray m_ProfileHandle, dstBytes
+        GetRawProfileBytes = UBound(dstBytes) + 1
+    End If
 End Function
 
 Friend Function GetRenderingIntent() As LCMS_RENDERING_INTENT

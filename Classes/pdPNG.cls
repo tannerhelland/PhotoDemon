@@ -64,15 +64,6 @@ End Enum
 ' we validate these at load-time, we don't go to the trouble of storing them internally.  Similarly, some of
 ' these values (like bits-per-pixel) are not formally stored in the original header - instead, we infer them.
 ' (NOTE: the header type is declared publicly in PD, so we can transfer it to child classes.)
-'Public Type PD_PNGHeader
-'    Width As Long
-'    Height As Long
-'    ColorType As PD_PNGColorType
-'    Interlaced As Boolean
-'    BitDepth As Byte
-'    BitsPerPixel As Byte
-'End Type
-
 Private m_Header As PD_PNGHeader
 
 'If warnings are encountered during processing, we push their messages onto a string stack.  (We may
@@ -99,8 +90,45 @@ Private Const INIT_NUM_OF_CHUNKS As Long = 8
 Private m_NumOfChunks As Long
 Private m_Chunks() As pdPNGChunk
 
+'Simplified wrapper to load a PNG automatically.
+Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False) As PD_PNGResult
+    
+    'Try to validate the source file
+    Dim keepLoading As PD_PNGResult
+    keepLoading = Me.Step1_ValidatePNG(srcFile, True)
+    
+    'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
+    ' will cause us to abandon the attempt entirely.)
+    If (keepLoading < png_Failure) Then
+    
+        'Parse the original file into chunks.  (Once this is done, we no longer need to maintain an
+        ' in-memory copy of the original PNG data.)
+        keepLoading = Me.Step2_PreLoadChunks(srcFile)
+        
+        'If all chunks were loaded successfully and minimal validation passed (e.g. a minimal amount of
+        ' required chunks are present), go ahead and decompress all relevant chunks, including merging
+        ' multiple IDAT chunks (if any) into a single IDAT instance.
+        If (keepLoading < png_Failure) Then keepLoading = Me.Step3_Decompress(srcFile)
+        
+        'All compressed data has now been decompressed.  Our next task is to "un-filter" the IDAT chunk,
+        ' which converts the pixel bytestream (which has been "filtered" into some other representation
+        ' format) into a raw stream of actual pixel data.
+        If (keepLoading < png_Failure) Then keepLoading = Me.Step4_UnfilterIDAT(srcFile)
+        
+        'Next, convert the unfiltered IDAT into actual pixel data.
+        If (keepLoading < png_Failure) Then keepLoading = Me.Step5_ConstructImage(srcFile, dstDIB, dstImage)
+        
+        'Finally, perform any weird post-processing due to non-standard gamma or chromaticity chunks
+        If (keepLoading < png_Failure) Then keepLoading = Me.Step6_PostProcessing(srcFile, dstDIB, dstImage)
+        
+    End If
+    
+    LoadPNG_Simple = keepLoading
+    
+End Function
+
 'The first step toward loading a PNG is validating it.  Do this first, before attempting anything else.
-Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean) As PD_PNGResult
+Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PNGResult
     
     On Error GoTo InternalVBError
     
@@ -549,12 +577,29 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     If hasPalette Then dstImage.SetOriginalPalette srcColors, numColors
     
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
-    ' transform is generated either way, as LittleCMS can be used for fast swizzling.)
-    Dim hSrcProfile As Long, hDstProfile As Long, hIccTransform As Long, srcImgProfileGood As Boolean
-    PrepICCData hSrcProfile, hDstProfile, hIccTransform, srcImgProfileGood
+    ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
+    Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, dstTransform As pdLCMSTransform, srcImgProfileGood As Boolean
+    PrepICCData srcProfile, dstProfile, dstTransform, srcImgProfileGood
     If srcImgProfileGood Then
-        dstDIB.ICCProfile.LoadICCFromPtr m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0)
-        dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+    
+        'Add a copy of the profile to PD's central cache, and associate the target image with that profile
+        Dim tmpProfile As pdICCProfile
+        Set tmpProfile = New pdICCProfile
+        If tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0)) Then
+        
+            Dim profHash As String
+            profHash = ColorManagement.AddProfileToCache(tmpProfile, True, False, False)
+            dstImage.SetColorProfile_Original profHash
+            
+            'IMPORTANT NOTE: at preset, the destination DIB - by the time we're done with it - will have been
+            ' hard-converted to sRGB, so we don't want to associate the destination DIB with it's source profile.
+            ' Instead, note that it is currently sRGB.
+            profHash = ColorManagement.GetSRGBProfileHash()
+            dstDIB.SetColorProfileHash profHash
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+        End If
+        
     End If
     
     'We're close enough to final processing that we can finally construct the DIB at its target size.
@@ -566,8 +611,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     'Ensure that all our previous steps completed successfully, and that we have a valid destination image to
     ' place our decoded data into.
     If okToProceed Then
-    
-            
+        
         'To simplify our code, we now want to upsample any color-depths below 8-bpp.  (They present a
         ' unique challenge within VB, since we lack the bit-shift operators necessary to handle them
         ' elegantly.)  Note that the upsampler will reset our xStride value to match 8-bpp data
@@ -623,7 +667,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 ' grayscale profile must be used on grayscale data.  This means that once we convert the data
                 ' to 32-bpp RGBA, the color profile *cannot physically be used* on the resulting image - so we
                 ' need to perform the ICC correction on the *original* grayscale data.
-                If (hIccTransform <> 0) Then
+                If (Not dstTransform Is Nothing) Then
                     
                     'We now have two possibilities:
                     ' 1) The image is color-managed, but doesn't use a tRNS chunk for wacky transparency.
@@ -639,9 +683,10 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     
                         For y = 0 To yFinal
                             srcOffset = y * xStride + 1
-                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
+                            dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
                         Next y
                         normalCopy = True
+                        If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
                     'This is horrible case (2).  Let's do a first pass through the image, marking alpha data,
                     ' after which we'll perform the ICC transform to the source data, then do a second pass
@@ -666,7 +711,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         'Perform ICC correction on the original source bytes
                         For y = 0 To yFinal
                             srcOffset = y * xStride + 1
-                            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
+                            dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
                         Next y
                         
                         'Copy ICC-transformed grey bytes into the final RGBA container
@@ -687,7 +732,8 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         Next y
                         
                         normalCopy = False
-                    
+                        If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
+                        
                     End If
                 
                 End If
@@ -733,11 +779,12 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             Case png_GreyscaleAlpha
                 
                 'If an ICC profile is active, apply it in-place to the source data
-                If (hIccTransform <> 0) Then
+                If (Not dstTransform Is Nothing) Then
                     For y = 0 To yFinal
                         srcOffset = y * xStride + 1
-                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth, hIccTransform
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
                     Next y
+                    If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
                 'Copy ICC-transformed grey bytes into the final RGBA container
@@ -786,10 +833,11 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 'With the indexed image successfully constructed as a full 32-bit RGBA image, we now need to handle
                 ' the ICC profile (if any).  We only do this if the image contained an embedded profile; otherwise,
                 ' the pixel data is already good to go.
-                If (hIccTransform <> 0) Then
+                If (Not dstTransform Is Nothing) Then
                     For y = 0 To yFinal
-                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                        dstTransform.ApplyTransformToScanline VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth
                     Next y
+                    If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
                 okToProceed = True
@@ -797,14 +845,14 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             Case png_Truecolor
                 
                 'If LittleCMS is available, use it for faster byte swizzling
-                If (hIccTransform <> 0) Then
+                If (Not dstTransform Is Nothing) Then
                     
                     For y = 0 To yFinal
                     
                         srcOffset = y * xStride + 1
                         
                         'Use LittleCMS to perform swizzling for us
-                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
                         
                         'If a tRNS chunk specified a transparent color, we need to find and detect transparent colors -
                         ' but importantly, we need to scan the *original* bytes, not the transformed ones (as the
@@ -839,7 +887,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
                     ' image was untagged, we leave it as such.)
-                    If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
                 'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
                 Else
@@ -879,12 +927,12 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             Case png_TruecolorAlpha
             
                 'If LittleCMS is available, use it for faster byte swizzling
-                If (hIccTransform <> 0) Then
+                If (Not dstTransform Is Nothing) Then
                     
                     For y = 0 To yFinal
                     
                         srcOffset = y * xStride + 1
-                        LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth, hIccTransform
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
                         
                         'On 16-bit data, we have to do some housekeeping to compensate for a LittleCMS bug.
                         ' LittleCMS normally swaps endianness just fine - *except* for alpha channels, as they
@@ -902,7 +950,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
                     ' image was untagged, we leave it as such.)
-                    If srcImgProfileGood Then dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
                 'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
                 Else
@@ -940,9 +988,9 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     End If
     
     'If we constructed any ICC profile or transform handles, make sure to free them before exiting
-    If (hSrcProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle hSrcProfile
-    If (hDstProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle hDstProfile
-    If (hIccTransform <> 0) Then LittleCMS.LCMS_DeleteTransform hIccTransform
+    Set srcProfile = Nothing
+    Set dstProfile = Nothing
+    Set dstTransform = Nothing
     
     Exit Function
     
@@ -996,7 +1044,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     'ICC profiles or sRGB flags, if present, are dealt with during a previous decoding step (for performance reasons).
     ' As such, we don't need to deal with them here - and in fact, we can bail if they were handled previously,
     ' as they take precedence over all other corrective functions.
-    If dstDIB.ICCProfile.HasProfileBeenApplied() Then
+    If (dstDIB.GetColorManagementState <> cms_NoManagement) Then
         Step6_PostProcessing = png_Success
         Exit Function
     End If
@@ -1061,33 +1109,47 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
             
             If (Not gammaOK) Then gammaFloat = 1#
             
-            Dim hProfile As Long
-            hProfile = LittleCMS.LCMS_LoadCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
-            
+            Dim srcProfile As pdLCMSProfile
+            Set srcProfile = New pdLCMSProfile
+        
             'We can only apply the profile if it passed internal LCMS validation
-            chrmOK = (hProfile <> 0)
+            chrmOK = srcProfile.CreateCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
             If chrmOK Then
                 
-                Dim hDstProfile As Long
-                hDstProfile = LittleCMS.LCMS_LoadStockSRGBProfile()
+                Dim dstProfile As pdLCMSProfile
+                Set dstProfile = New pdLCMSProfile
+                dstProfile.CreateSRGBProfile
                 
                 'Apply the profile in-place to the current RGB data
-                Dim hTransform As Long
-                hTransform = LittleCMS.LCMS_CreateInPlaceTransformForDIB(hProfile, hDstProfile, dstDIB, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA)
-                If (hTransform <> 0) Then
-                    LittleCMS.LCMS_ApplyTransformToDIB dstDIB, hTransform
-                    LittleCMS.LCMS_DeleteTransform hTransform
+                Dim dstTransform As pdLCMSTransform
+                Set dstTransform = New pdLCMSTransform
+                If dstTransform.CreateInPlaceTransformForDIB(dstDIB, srcProfile, dstProfile, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA) Then
+                    
+                    dstTransform.ApplyTransformToPDDib dstDIB
+                    Set dstTransform = Nothing
+                    
+                    'If the transform was successful, let's embed this ICC profile into the destination image.
+                    ' This ensures reasonable persistence for the data described by the original cHRM chunk.
+                    Dim profHash As String
+                    profHash = ColorManagement.AddLCMSProfileToCache(srcProfile, True)
+                    dstDIB.SetColorProfileHash profHash
+                    dstDIB.SetColorManagementState cms_ProfileConverted
+                    
+                    dstImage.SetColorProfile_Original profHash
+                    
                 End If
                 
-                'Free the LCMS profile before exiting
-                LittleCMS.LCMS_CloseProfileHandle hProfile
-                LittleCMS.LCMS_CloseProfileHandle hDstProfile
+                'Free the destination LCMS profile before exiting
+                Set dstProfile = Nothing
                 
                 'Mark both chrm and gamma as *not* OK, so that subsequent checks don't process them
                 chrmOK = False
                 gammaOK = False
                 
             End If
+            
+            'Free the source profile handle, if any
+            Set srcProfile = Nothing
             
         End If
         
@@ -1245,7 +1307,9 @@ End Sub
 ' to translate colors between spaces.  If PNG images do *not* contain ICC profiles, we can still use LittleCMS
 ' for much faster swizzling than VB6 alone can provide.  (As such, we still prep generic ICC profiles as part
 ' of the preparation stage.)
-Private Sub PrepICCData(ByRef hSrcProfile As Long, ByRef hDstProfile As Long, ByRef hIccTransform As Long, ByRef srcImgProfileGood As Boolean)
+Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, ByRef dstTransform As pdLCMSTransform, ByRef srcImgProfileGood As Boolean)
+    
+    Set srcProfile = New pdLCMSProfile
     
     'In most (?) cases, we want to use LittleCMS to color-manage incoming PNG data.  There are exceptions, however;
     ' indexed images without embedded profiles don't require management, for example.  As such, we can skip specialized
@@ -1255,19 +1319,23 @@ Private Sub PrepICCData(ByRef hSrcProfile As Long, ByRef hDstProfile As Long, By
     Dim iccIndex As Long
     iccIndex = Me.GetIndexOfChunk("iCCP")
     If (iccIndex > 0) Then
-        hSrcProfile = LittleCMS.LCMS_LoadProfileFromMemory(m_Chunks(iccIndex).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndex).BorrowData().GetStreamSize())
-        srcImgProfileGood = (hSrcProfile <> 0)
-        If (Not srcImgProfileGood) Then m_Warnings.AddString "WARNING!  ICC profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied!"
+        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndex).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndex).BorrowData().GetStreamSize())
+        
+        'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
+        ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
+        If (Not srcImgProfileGood) Then
+            m_Warnings.AddString "WARNING!  ICC profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied!"
+            srcProfile.CreateSRGBProfile
+        End If
+        
     End If
     
-    'If the image does not contain color profile data, or if the embedded profile is invalid, use a standard sRGB profile
-    If (hSrcProfile = 0) Then hSrcProfile = LittleCMS.LCMS_LoadStockSRGBProfile()
-    
     'At present, sRGB destination profiles are hard-coded; this is a work in progress for future releases
+    Set dstProfile = New pdLCMSProfile
     If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_GreyscaleAlpha) Then
-        hDstProfile = LittleCMS.LCMS_LoadStockGrayProfile()
+        dstProfile.CreateGenericGrayscaleProfile
     Else
-        hDstProfile = LittleCMS.LCMS_LoadStockSRGBProfile()
+        dstProfile.CreateSRGBProfile
     End If
     
     'Because LittleCMS supports fast swizzling (while VB6 does not), we use LittleCMS to accelerate certain types
@@ -1330,9 +1398,13 @@ Private Sub PrepICCData(ByRef hSrcProfile As Long, ByRef hDstProfile As Long, By
             
     End Select
     
+    'If an ICC transform is relevant, create it now
     If (srcLcmsFormat <> 0) And (dstLcmsFormat <> 0) And iccRequired Then
-        hIccTransform = LittleCMS.LCMS_CreateTwoProfileTransform(hSrcProfile, hDstProfile, srcLcmsFormat, dstLcmsFormat, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA)
-        If (hIccTransform = 0) Then m_Warnings.AddString "WARNING!  pdPNG.Step5_ConstructImage failed to create a valid ICC transform.  Color management disabled for this image."
+        Set dstTransform = New pdLCMSTransform
+        If (Not dstTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcLcmsFormat, dstLcmsFormat, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA)) Then
+            m_Warnings.AddString "WARNING!  pdPNG.Step5_ConstructImage failed to create a valid ICC transform.  Color management disabled for this image."
+            Set dstTransform = Nothing
+        End If
     End If
 
 End Sub
@@ -1874,8 +1946,23 @@ Friend Function GetBackgroundColor() As Long
         GetBackgroundColor = -1
     End If
     
-    Debug.Print Colors.ExtractRed(GetBackgroundColor), Colors.ExtractGreen(GetBackgroundColor), Colors.ExtractBlue(GetBackgroundColor)
-    
+End Function
+
+'Request a copy of this PNG's header; returns a blank header if no PNG is loaded
+Friend Sub GetHeader(ByRef dstHeader As PD_PNGHeader)
+    dstHeader = m_Header
+End Sub
+
+Friend Function GetBytesPerPixel() As Long
+    GetBytesPerPixel = m_Header.BitsPerPixel
+End Function
+
+Friend Function GetColorType() As PD_PNGColorType
+    GetColorType = m_Header.ColorType
+End Function
+
+Friend Function HasAlpha() As Boolean
+    HasAlpha = (m_Header.ColorType = png_GreyscaleAlpha) Or (m_Header.ColorType = png_TruecolorAlpha) Or (Me.GetIndexOfChunk("tRNS") >= 0)
 End Function
 
 'After all chunks have been loaded and parsed, you can call this function to convert the embedded IHDR chunk

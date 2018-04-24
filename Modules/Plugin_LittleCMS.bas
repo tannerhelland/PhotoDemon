@@ -718,9 +718,8 @@ End Function
 
 Public Function LCMS_SaveProfileToArray(ByVal hProfile As Long, ByRef dstArray() As Byte) As Boolean
     
-    Dim profSize As Long
-    
     'Passing a null pointer will fill the "profile size" parameter with the required destination size
+    Dim profSize As Long
     If (cmsSaveProfileToMem(hProfile, 0, profSize) <> 0) Then
         ReDim dstArray(0 To profSize - 1) As Byte
         LCMS_SaveProfileToArray = (cmsSaveProfileToMem(hProfile, VarPtr(dstArray(0)), profSize) <> 0)
@@ -821,20 +820,20 @@ Public Sub LCMS_TransformArbitraryMemory(ByVal srcPointer As Long, ByVal dstPoin
     cmsDoTransform hTransform, srcPointer, dstPointer, WidthInPixels
 End Sub
 
-'Given a target DIB with a valid .ICCProfile object, apply said profile to said DIB.
+'Given a target DIB and a valid pdICCProfile object, apply said profile to said DIB.
 ' (NOTE!  If the source image is 32-bpp, with premultiplied alpha, you need to unpremultiply alpha prior to
 '         calling this function; otherwise, the end result will be invalid.)
-Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
+Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB, ByRef srcIccProfile As pdICCProfile) As Boolean
     
     ApplyICCProfileToPDDIB = False
     
-    If (targetDIB Is Nothing) Then
-        PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
+    If (targetDIB Is Nothing) Or (srcIccProfile Is Nothing) Then
+        PDDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null image or profile."
         Exit Function
     End If
     
     'Before doing anything else, make sure we actually have an ICC profile to apply!
-    If (Not targetDIB.ICCProfile.HasICCData) Then
+    If (Not srcIccProfile.HasICCData) Then
         Message "ICC transform requested, but no data found.  Abandoning attempt."
         Exit Function
     End If
@@ -848,7 +847,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
     Set srcProfile = New pdLCMSProfile
     Set dstProfile = New pdLCMSProfile
     
-    If srcProfile.CreateFromPDDib(targetDIB) Then
+    If srcProfile.CreateFromPDICCObject(srcIccProfile) Then
         
         If dstProfile.CreateSRGBProfile() Then
             
@@ -875,7 +874,9 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
                 
                 If cTransform.ApplyTransformToPDDib(targetDIB) Then
                     PDDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
-                    targetDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    targetDIB.SetColorManagementState cms_ProfileConverted
+                    'TODO: assign the target DIB the hash of the color profile?  We currently leave this to
+                    ' the caller, which is possibly a better idea...
                     ApplyICCProfileToPDDIB = True
                 End If
                 

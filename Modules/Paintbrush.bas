@@ -404,7 +404,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
                 'testImgPath = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\brush_test_500.png"
                 '
                 'If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
-                'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False, False
+                'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False
                 'SetBrushSize m_SrcPenDIB.GetDIBWidth
                 
                 'Want to the GDI+ renderer (instead of GDI)?  Uncomment these two lines, then visit the
@@ -422,7 +422,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
         
-        pdDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
     

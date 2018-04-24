@@ -233,13 +233,30 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Retrieve any attached ICC profiles
     '****************************************************************************
     
-    If FreeImage_HasICCProfile(fi_hDIB) Then FI_LoadICCProfile fi_hDIB, dstDIB
+    'If FreeImage detects a color profile in the image, we want to do several things:
+    ' 1) Retrieve the ICC data into a pdICCprofile object
+    ' 2) Add the ICC data to our central ICC profile cache for this session.
+    ' 3) As of v7.0, we also want to perform a hard-convert to sRGB, and flag the target DIB
+    '    accordingly.  (In the future, we may just tag the DIB against it's existing space.)
+    Dim srcColorProfile As pdICCProfile, colorProfileHash As String
+    If FreeImage_HasICCProfile(fi_hDIB) Then
+        If FI_LoadICCProfile(fi_hDIB, srcColorProfile) Then
+            
+            'Add the retrieved profile to PD's central cache, and tag the destination image (if any)
+            ' to note that this profile is it's original color space.
+            colorProfileHash = ColorManagement.AddProfileToCache(srcColorProfile)
+            If (Not targetImage Is Nothing) Then targetImage.SetColorProfile_Original colorProfileHash
+            
+        End If
+    End If
     
     
     '****************************************************************************
     ' If the image has a palette, retrieve it
     '****************************************************************************
     
+    'As of 7.0, we cache 8-bit palettes inside their destination image; this palette can be
+    ' exported (via File > Export) or re-used by certain tools.
     If (Not targetImage Is Nothing) And (fi_BPP <= 8) And (fi_DataType = FIT_BITMAP) Then
         Dim srcPalette() As RGBQuad, numOfColors As Long
         If Outside_FreeImageV3.FreeImage_GetPalette_ByTanner(fi_hDIB, srcPalette, numOfColors) Then
@@ -272,9 +289,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Retrieve alpha transparency presence, if any
     '****************************************************************************
     
-    If (Not targetImage Is Nothing) Then
-        targetImage.SetOriginalAlpha FreeImage_IsTransparent(fi_hDIB)
-    End If
+    If (Not targetImage Is Nothing) Then targetImage.SetOriginalAlpha FreeImage_IsTransparent(fi_hDIB)
     
     
     '****************************************************************************
@@ -287,6 +302,10 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     '(Also, I know it seems weird, but the target function needs to run some heuristics on the incoming data to see if it
     ' came from the Windows clipboard.  If it did, we have to apply some special post-processing to the image data,
     ' to compensate for GDI's propensity to strip alpha data.)
+    
+    'Note that the result of this transformation *will* be hard-converted to sRGB, if the source image has
+    ' a color profile associated with it.  (If it does *not* have an attached profile, the destination DIB
+    ' will be marked as "untagged".)
     Dim specialClipboardHandlingRequired As Boolean
     
     FI_LoadImage_V5 = FI_GetFIObjectIntoDIB(fi_hDIB, fi_multi_hDIB, fileFIF, fi_DataType, specialClipboardHandlingRequired, srcFilename, dstDIB, pageToLoad, showMessages, targetImage, suppressDebugData)
@@ -346,7 +365,7 @@ End Function
 
 'Given a valid handle to a FreeImage object (and/or multipage object, as relevant), get the FreeImage object
 ' into a pdDIB object.  While this sounds simple, it really isn't, primarily because we have to deal with so
-' many possible color depths, alpha-channel'encodings, ICC profile behaviors, etc.
+' many possible color depths, alpha-channel encodings, ICC profile behaviors, etc.
 '
 'RETURNS: PD_SUCCESS if successful; some other code if the load fails.  Review debug messages for additional info.
 Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDIB As Long, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_DataType As FREE_IMAGE_TYPE, ByRef specialClipboardHandlingRequired As Boolean, ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByRef multiDibIsDetached As Boolean = False) As PD_OPERATION_OUTCOME
@@ -354,11 +373,11 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     On Error GoTo FiObject_Error
     
     '****************************************************************************
-    ' If the image is in an unacceptable bit-depth, start by converting it to a standard 24 or 32bpp image.
+    ' If the image is in an unsupported format, convert it to standard 24 or 32-bpp RGBA
     '****************************************************************************
     
     'As much as possible, we prefer to convert bit-depth using the existing FreeImage handle as the source, and the target
-    ' pdDIB object as the destination.  This lets us skip a redundant allocation for a destination FreeImage handle.
+    ' pdDIB object as the destination.  This lets us skip a redundant allocation for a temporary FreeImage handle.
     ' If the image has successfully been moved into the target pdDIB object, this *must* be set to TRUE.  (Otherwise, a
     ' failsafe check at the end of this function will perform an auto-copy.)
     Dim dstDIBFinished As Boolean: dstDIBFinished = False
@@ -371,6 +390,13 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     
     'Intermediate FreeImage objects may also be required during the transform process
     Dim new_hDIB As Long
+    
+    'Before proceeding, cache any ICC profiles.  (The original FreeImage handle may be freed as part of
+    ' moving image data between color spaces, and we don't want to accidentally lose its color profile.)
+    Dim srcIccProfile As pdICCProfile, profileOK As Boolean
+    If (fi_hDIB <> 0) Then
+        If FreeImage_HasICCProfile(fi_hDIB) Then profileOK = FI_LoadICCProfile(fi_hDIB, srcIccProfile)
+    End If
     
     
     '****************************************************************************
@@ -388,15 +414,15 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         ' (it's impossible to construct a "correct" copy since CMYK is device-specific), but we'll of course try
         ' to load it anyway.
         Dim cmykConversionSuccessful As Boolean: cmykConversionSuccessful = False
+        If FreeImage_HasICCProfile(fi_hDIB) Then cmykConversionSuccessful = ConvertCMYKFiDIBToRGB(fi_hDIB, dstDIB)
         
-        If dstDIB.ICCProfile.HasICCData Then
-            cmykConversionSuccessful = ConvertCMYKFiDIBToRGB(fi_hDIB, dstDIB)
-            If cmykConversionSuccessful Then FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
+        'If the ICC transform worked, free the FreeImage handle and note that the destination image is ready to go!
+        If cmykConversionSuccessful Then
+            FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
             dstDIBFinished = True
-        End If
         
         'If CMYK conversion failed, re-load the image and use FreeImage to apply a generic CMYK -> RGB transform.
-        If (Not cmykConversionSuccessful) Then
+        Else
             FI_DebugMsg "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion...", suppressDebugData
             FI_Unload fi_hDIB, fi_multi_hDIB
             fi_hDIB = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
@@ -426,7 +452,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         Dim hdrICCSuccess As Boolean: hdrICCSuccess = False
         
         'If an ICC profile exists, attempt to use it
-        If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
+        If FreeImage_HasICCProfile(fi_hDIB) Then
             
             FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically...", suppressDebugData
             hdrICCSuccess = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB)
@@ -434,11 +460,16 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             'Some esoteric color-depths may require us to use a temporary FreeImage handle instead of copying
             ' the color-managed result directly into a pdDIB object.
             If hdrICCSuccess Then
+                
+                dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                dstDIB.SetColorManagementState cms_ProfileConverted
+                
                 If (Not dstDIBFinished) And (new_hDIB <> 0) Then
                     FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                     fi_hDIB = new_hDIB
                     new_hDIB = 0
                 End If
+                
             Else
                 FI_DebugMsg "ICC transformation unsuccessful; dropping back to tone-mapping...", suppressDebugData
             End If
@@ -496,7 +527,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         
         'If the image is grayscale, and it has an ICC profile, we need to apply that prior to continuing.
         ' (Grayscale images have grayscale ICC profiles which the default ICC profile handler can't address.)
-        If (fi_BPP = 8) And (FreeImage_HasICCProfile(fi_hDIB)) Then
+        If (fi_BPP = 8) And FreeImage_HasICCProfile(fi_hDIB) Then
             
             'In the future, 8-bpp RGB/A conversion could be handled here.
             ' (Note that you need to up-sample the source image prior to conversion, however, as LittleCMS doesn't work with palettes.)
@@ -541,24 +572,27 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     ' If the image has an ICC profile but we haven't yet applied it, do so now.
     '****************************************************************************
     
-    If (Not dstDIBFinished) And (dstDIB.ICCProfile.HasICCData) And (Not dstDIB.ICCProfile.HasProfileBeenApplied) Then
+    If (Not dstDIBFinished) And (dstDIB.GetColorManagementState = cms_NoManagement) And profileOK Then
         
-        FI_DebugMsg "Applying final color management operation...", suppressDebugData
+        If (Not srcIccProfile Is Nothing) Then
         
-        new_hDIB = 0
-        If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB) Then
-            If (Not dstDIBFinished) And (new_hDIB <> 0) Then
-                FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
-                fi_hDIB = new_hDIB
-                new_hDIB = 0
+            FI_DebugMsg "Applying final color management operation...", suppressDebugData
+            
+            new_hDIB = 0
+            If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB, srcIccProfile) Then
+                If (Not dstDIBFinished) And (new_hDIB <> 0) Then
+                    FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
+                    fi_hDIB = new_hDIB
+                    new_hDIB = 0
+                End If
             End If
+            
         End If
         
     End If
     
     'Between attempted conversions, we reset the BPP tracker (as it may have changed)
     If (fi_hDIB <> 0) Then fi_BPP = FreeImage_GetBPP(fi_hDIB)
-    
     
     
     '****************************************************************************
@@ -727,8 +761,13 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
             FI_LoadBackgroundColor fi_hDIB, dstDIB
             dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
             
-            'Retrieve a matching ICC profile, if any
-            If FreeImage_HasICCProfile(fi_hDIB) Then FI_LoadICCProfile fi_hDIB, dstDIB
+            'Retrieve a matching ICC profile, if any, and add it to the central cache
+            Dim tmpProfile As pdICCProfile, profHash As String
+            If FreeImage_HasICCProfile(fi_hDIB) Then
+                FI_LoadICCProfile fi_hDIB, tmpProfile
+                profHash = ColorManagement.AddProfileToCache(tmpProfile)
+                dstDIB.SetColorProfileHash profHash
+            End If
             
             'Copy/transform the FreeImage object into a guaranteed 24- or 32-bpp destination DIB
             specialClipboardHandlingRequired = False
@@ -855,12 +894,16 @@ Private Function FI_DetermineImportFlags(ByVal srcFilename As String, ByVal file
     
 End Function
 
-Private Function FI_LoadICCProfile(ByVal fi_Bitmap As Long, ByRef dstDIB As pdDIB) As Boolean
+Private Function FI_LoadICCProfile(ByVal fi_Bitmap As Long, ByRef dstProfile As pdICCProfile) As Boolean
     
     If (FreeImage_GetICCProfileSize(fi_Bitmap) > 0) Then
+        
+        If (dstProfile Is Nothing) Then Set dstProfile = New pdICCProfile
+        
         Dim fiProfileHeader As FIICCPROFILE
         fiProfileHeader = FreeImage_GetICCProfile(fi_Bitmap)
-        FI_LoadICCProfile = dstDIB.ICCProfile.LoadICCFromPtr(fiProfileHeader.Size, fiProfileHeader.Data)
+        FI_LoadICCProfile = dstProfile.LoadICCFromPtr(fiProfileHeader.Size, fiProfileHeader.Data)
+        
     Else
         FI_DebugMsg "WARNING!  ICC profile size is invalid (<=0)."
     End If
@@ -937,6 +980,7 @@ End Function
 '
 'On success, any unloaded handles will be forcibly reset to zero.
 Private Sub FI_Unload(ByRef srcFIHandle As Long, Optional ByRef srcFIMultipageHandle As Long = 0, Optional ByVal leaveMultiHandleOpen As Boolean = False, Optional ByRef fiDibIsDetached As Boolean = False)
+    
     If ((srcFIMultipageHandle = 0) Or fiDibIsDetached) Then
         If (srcFIHandle <> 0) Then FreeImage_UnloadEx srcFIHandle
         srcFIHandle = 0
@@ -1011,13 +1055,13 @@ isMultiImage_Error:
 
 End Function
 
-'Given a source FreeImage handle, and a destination pdDIB that contains a valid ICC profile, create a new, ICC-corrected version of the
-' image and place it inside the destination DIB if at all possible.  The byref parameter pdDIBIsDestination will be set to TRUE if this
-' approach succeeds; if it is set to FALSE, you must use the fallbackFIHandle, instead, which will point to a newly allocated
-' FreeImage object.
+'Given a source FreeImage handle with an attached ICC profile, create a new, ICC-corrected version of the
+' image and place it inside the destination DIB if at all possible.  The byref parameter pdDIBIsDestination
+' will be set to TRUE if this approach succeeds; if it is set to FALSE, you must use the fallbackFIHandle,
+' instead, which will point to a newly allocated FreeImage object.
 '
 'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.  The caller must do this manually.
-Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstDIB As pdDIB, ByRef pdDIBIsDestination As Boolean, ByRef fallbackFIHandle As Long) As Boolean
+Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstDIB As pdDIB, ByRef pdDIBIsDestination As Boolean, ByRef fallbackFIHandle As Long, Optional ByRef useThisProfile As pdICCProfile = Nothing) As Boolean
     
     GenerateICCCorrectedFIDIB = False
     pdDIBIsDestination = False
@@ -1092,6 +1136,15 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
         dstDIB.CreateBlank FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), 32, 0, 255
     End If
     
+    'Extract the embedded ICC profile into a pdICCProfile object
+    Dim tmpProfile As pdICCProfile
+    If (useThisProfile Is Nothing) Then
+        Set tmpProfile = New pdICCProfile
+        FI_LoadICCProfile srcFIHandle, tmpProfile
+    Else
+        Set tmpProfile = useThisProfile
+    End If
+    
     'We now want to use LittleCMS to perform an immediate ICC correction.
     
     'Start by creating two LCMS profile handles:
@@ -1101,7 +1154,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
     Set srcProfile = New pdLCMSProfile
     Set dstProfile = New pdLCMSProfile
     
-    If srcProfile.CreateFromPDDib(dstDIB) Then
+    If srcProfile.CreateFromPDICCObject(tmpProfile) Then
         
         Dim specialGrayscaleRequired As Boolean: specialGrayscaleRequired = False
         
@@ -1281,7 +1334,8 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
                     If transformSuccess Then
                     
                         FI_DebugMsg "Color-space transformation successful."
-                        dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                        dstDIB.SetColorManagementState cms_ProfileConverted
+                        dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
                         GenerateICCCorrectedFIDIB = True
                         
                         'We now need to clarify for the caller where the ICC-transformed data sits.  8-bpp grayscale *without* alpha
@@ -1538,17 +1592,22 @@ Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstD
 
 End Function
 
-'Given a source FreeImage handle in CMYK format, and a destination pdDIB that contains a valid ICC profile, create a new, ICC-corrected
-' version of the image, in RGB format, and stored inside the destination pdDIB.
+'Given a source FreeImage handle in CMYK format, and a destination pdDIB that contains a valid ICC profile,
+' create a new, ICC-corrected version of the image, in RGB format, and stored inside the destination pdDIB.
 '
-'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.  The caller must free it manually.
+'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.
+' The caller must free it manually.
 Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB As pdDIB) As Boolean
     
-    'As a failsafe, confirm that the incoming image is CMYK format
-    If (FreeImage_GetColorType(srcFIHandle) = FIC_CMYK) Then
+    'As a failsafe, confirm that the incoming image is CMYK format *and* that it has an ICC profile
+    If (FreeImage_GetColorType(srcFIHandle) = FIC_CMYK) And FreeImage_HasICCProfile(srcFIHandle) Then
     
         'Prep the source DIB
         If dstDIB.CreateBlank(FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), 32, 0, 255) Then
+            
+            'Extract the ICC profile into a pICCProfile object
+            Dim tmpProfile As pdICCProfile
+            FI_LoadICCProfile srcFIHandle, tmpProfile
             
             'We now want to use LittleCMS to perform an immediate ICC correction.
             
@@ -1559,9 +1618,9 @@ Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB A
             Set srcProfile = New pdLCMSProfile
             Set dstProfile = New pdLCMSProfile
             
-            If srcProfile.CreateFromPDDib(dstDIB) Then
+            If srcProfile.CreateFromPDICCObject(tmpProfile) Then
                 
-                If dstProfile.CreateSRGBProfile Then
+                If dstProfile.CreateSRGBProfile() Then
                     
                     'DISCLAIMER! Until rendering intent has a dedicated preference, PD defaults to perceptual render intent.
                     ' This provides better results on most images, it correctly preserves gamut, and it is the standard
@@ -1576,12 +1635,7 @@ Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB A
                     'Now, we need to create a transform between the two bit-depths.  This involves mapping the FreeImage bit-depth constants
                     ' to compatible LCMS ones.
                     Dim srcPixelFormat As LCMS_PIXEL_FORMAT, dstPixelFormat As LCMS_PIXEL_FORMAT
-                    If (FreeImage_GetBPP(srcFIHandle) = 64) Then
-                        srcPixelFormat = TYPE_CMYK_16
-                    Else
-                        srcPixelFormat = TYPE_CMYK_8
-                    End If
-                    
+                    If (FreeImage_GetBPP(srcFIHandle) = 64) Then srcPixelFormat = TYPE_CMYK_16 Else srcPixelFormat = TYPE_CMYK_8
                     dstPixelFormat = TYPE_BGRA_8
                     
                     'Create a transform that uses the target DIB as both the source and destination
@@ -1597,7 +1651,8 @@ Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB A
                         
                         If cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBStride, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True) Then
                             FI_DebugMsg "ICC profile transformation successful.  New FreeImage handle now lives in the current RGB working space."
-                            dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                            dstDIB.SetColorManagementState cms_ProfileConverted
+                            dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
                             dstDIB.SetInitialAlphaPremultiplicationState True
                             ConvertCMYKFiDIBToRGB = True
                         End If

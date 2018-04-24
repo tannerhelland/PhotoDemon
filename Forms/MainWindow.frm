@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin PhotoDemon.pdCanvas MainCanvas 
       Height          =   5055
@@ -36,14 +36,14 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -137,8 +137,12 @@ Begin VB.Form FormMain
          Caption         =   "Export"
          Index           =   12
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "ICC profile..."
             Index           =   0
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   1
          End
       End
       Begin VB.Menu MnuFile 
@@ -3469,9 +3473,13 @@ End Sub
 Private Sub MnuFileExport_Click(Index As Integer)
 
     Select Case Index
-    
-        'Export palette
+        
+        'Export ICC profile
         Case 0
+            Process "Export ICC profile", True
+        
+        'Export palette
+        Case 1
             Process "Export palette", True
     
     End Select

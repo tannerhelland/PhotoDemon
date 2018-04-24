@@ -486,7 +486,7 @@ Private Sub cmdExport_Click()
                 Dim cCount As Long, testPalette() As RGBQuad, testPixels() As Byte
                 
                 'Load the source image to a temporary DIB (so we can query various image attributes)
-                If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False, False, True) Then
+                If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False, True) Then
                     
                     Dim useImagePalette As Boolean: useImagePalette = False
                     
@@ -562,7 +562,7 @@ Private Sub cmdExport_Click()
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         
                         Else
-                            pdDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
+                            PDDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
                             tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
                             cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         End If
@@ -954,7 +954,7 @@ Private Sub UpdatePreview()
             End If
             picPreview.BackColor = newColor
             
-            If Loading.QuickLoadImageToDIB(m_Resources(m_LastResourceIndex).ResFileLocation, m_PreviewDIBOriginal, False, False, , True) Then
+            If Loading.QuickLoadImageToDIB(m_Resources(m_LastResourceIndex).ResFileLocation, m_PreviewDIBOriginal, False, False, True) Then
             
                 'If coloration is supported, apply it now
                 If m_Resources(m_LastResourceIndex).ResSupportsColoration Then

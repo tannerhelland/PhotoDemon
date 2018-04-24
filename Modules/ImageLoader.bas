@@ -677,18 +677,14 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
-    Dim verifyGDISuccess As Boolean
-    verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstDIB)
-    If verifyGDISuccess Then
-        If (Not dstDIB Is Nothing) Then
-            LoadGDIPlusImage = ((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
-        Else
-            LoadGDIPlusImage = False
-        End If
-    Else
-        LoadGDIPlusImage = False
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+    
+    LoadGDIPlusImage = False
+    
+    If GDI_Plus.GDIPlusLoadPicture(imagePath, dstDIB, dstImage) Then
+        If (Not dstDIB Is Nothing) Then LoadGDIPlusImage = ((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
     End If
+    
 End Function
 
 Public Function IsFileSVGCandidate(ByVal imagePath As String) As Boolean
@@ -990,7 +986,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If g_ImageFormats.GDIPlusEnabled Then
             
             PDDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-            CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB)
+            CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB, dstImage)
             
             If CascadeLoadGenericImage Then
                 decoderUsed = id_GDIPlus
@@ -1050,67 +1046,31 @@ End Function
 
 Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal displayMessages As Boolean = False) As Boolean
     
-    'Until the class is 100% debugged, we always return failure (which will prompt FreeImage to handle
-    ' the rest of the load process for us).
     LoadPNGOurselves = False
     
-    'pdPNG will handle all the dirty work for us
+    'pdPNG handles all the dirty work for us
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
+    LoadPNGOurselves = (cPNG.LoadPNG_Simple(srcFile, dstImage, dstDIB, False) <= png_Warning)
     
-    'Try to validate the source file
-    Dim keepLoading As PD_PNGResult
-    keepLoading = cPNG.Step1_ValidatePNG(srcFile, True)
+    If LoadPNGOurselves Then
     
-    'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
-    ' will cause us to abandon the attempt entirely.)
-    If (keepLoading < png_Failure) Then
-    
-        'Parse the original file into chunks.  (Once this is done, we no longer need to maintain an
-        ' in-memory copy of the original PNG data.)
-        keepLoading = cPNG.Step2_PreLoadChunks(srcFile)
-        
-        'If all chunks were loaded successfully and minimal validation passed (e.g. a minimal amount of
-        ' required chunks are present), go ahead and decompress all relevant chunks, including merging
-        ' multiple IDAT chunks (if any) into a single IDAT instance.
-        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step3_Decompress(srcFile)
-        
-        'All compressed data has now been decompressed.  Our next task is to "un-filter" the IDAT chunk,
-        ' which converts the pixel bytestream (which has been "filtered" into some other representation
-        ' format) into a raw stream of actual pixel data.
-        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step4_UnfilterIDAT(srcFile)
-        
-        'Next, convert the unfiltered IDAT into actual pixel data.
-        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step5_ConstructImage(srcFile, dstDIB, dstImage)
-        
-        'Finally, perform any weird post-processing due to non-standard gamma or chromaticity chunks
-        If (keepLoading < png_Failure) Then keepLoading = cPNG.Step6_PostProcessing(srcFile, dstDIB, dstImage)
-        
         'If we've experienced one or more warnings during the load process, dump them out to the debug file.
         If (cPNG.Warnings_GetCount() > 0) Then cPNG.Warnings_DumpToDebugger
         
-        'If the PNG loaded successfully (despite any warnings), suspend further processing
-        If (keepLoading <= png_Warning) Then
+        'Relay any useful state information to the destination image object; this information may be useful
+        ' if/when the user saves the image.
+        dstImage.SetOriginalFileFormat PDIF_PNG
+        dstImage.NotifyImageChanged UNDO_Everything
         
-            LoadPNGOurselves = True
-            
-            dstDIB.SetAlphaPremultiplication True
-            
-            dstImage.SetOriginalFileFormat PDIF_PNG
-            
-            'Pull useful information from the PNG decoder before exiting
-            If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
-            
-            dstImage.SetOriginalColorDepth 32
-            dstImage.SetOriginalGrayscale False
-            dstImage.SetOriginalAlpha True
-            
-            dstImage.NotifyImageChanged UNDO_Everything
-            
-        End If
+        dstImage.SetOriginalColorDepth cPNG.GetBytesPerPixel()
+        dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
+        dstImage.SetOriginalAlpha cPNG.hasAlpha()
+        If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
         
-    'Failure states in the validation step are all treated as catastrophic (there's a good chance
-    ' the file in question isn't even a PNG, and we're just testing it as a failsafe)
+        'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
+        dstDIB.SetAlphaPremultiplication True
+        
     End If
 
 End Function
@@ -1150,52 +1110,6 @@ Private Sub EstimateMissingMetadata(ByRef dstImage As pdImage, ByRef srcFileExte
     End Select
     
 End Sub
-
-'See the Loading.LoadFileAsNewImage() function for where and when to apply this sub.
-' IMPORTANT NOTE: some ICC profiles are applied to the image very early in the load process (e.g. CMYK, which requires a special pipeline).
-'                 For such images, this function is meaningless.
-'
-'Returns: TRUE if changes were made to the target DIB
-Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRef targetImage As pdImage = Nothing) As Boolean
-    
-    ApplyPostLoadICCHandling = False
-    
-    If targetDIB.ICCProfile.HasICCData Then
-        If (Not targetDIB.ICCProfile.HasProfileBeenApplied) Then
-        
-            Dim colorManagementNeeded As Boolean
-            If (targetImage Is Nothing) Then
-                colorManagementNeeded = True
-            Else
-                colorManagementNeeded = (Not targetImage.ImgStorage.DoesKeyExist("Tone-mapping"))
-            End If
-        
-            If colorManagementNeeded Then
-                
-                If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication False
-                
-                'During debug mode, color-management performance is an item of interest
-                Dim startTime As Currency
-                VBHacks.GetHighResTime startTime
-                
-                'LittleCMS is our preferred color management engine.  Use it whenever possible.
-                If PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS) Then
-                    LittleCMS.ApplyICCProfileToPDDIB targetDIB
-                Else
-                    PDDebug.LogAction "WARNING!  LittleCMS is missing, so color management has been disabled for this session."
-                End If
-                
-                PDDebug.LogAction "Note: LittleCMS color-management of this image took " & VBHacks.GetTimeDiffNowAsString(startTime)
-                
-                If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
-                ApplyPostLoadICCHandling = True
-                
-            End If
-            
-        End If
-    End If
-    
-End Function
 
 'Most portions of PD operate exclusively in 32-bpp mode.  (This greatly simplifies the compositing pipeline.)
 'Returns: TRUE if changes were made to the target DIB

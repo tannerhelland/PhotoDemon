@@ -76,12 +76,13 @@ Public Enum PD_UI_Group
     PDUI_Selections = 12
     PDUI_SelectionTransforms = 13
     PDUI_LayerTools = 14
+    PDUI_ICCProfile = 15
 End Enum
 
 #If False Then
     Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
     Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
-    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14
+    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15
 #End If
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
@@ -370,6 +371,9 @@ Private Sub SyncUI_CurrentImageSettings()
         SetUIGroupState PDUI_GPSMetadata, False
     End If
     
+    'If the image has an embedded ICC profile, expose the File > Export > ICC profile menu
+    SetUIGroupState PDUI_ICCProfile, (LenB(pdImages(g_CurrentImage).GetColorProfile_Original()) <> 0)
+    
     'Display the image's path in the title bar.
     If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(pdImages(g_CurrentImage))
@@ -458,6 +462,7 @@ Private Sub SetUIMode_NoImages()
     SetUIGroupState PDUI_LayerTools, False
     SetUIGroupState PDUI_Undo, False
     SetUIGroupState PDUI_Redo, False
+    SetUIGroupState PDUI_ICCProfile, False
     
     'Disable various layer-related toolbox options as well
     If (g_CurrentTool = NAV_MOVE) Then
@@ -853,6 +858,10 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'Free the tool engine
             Tools.SetToolBusyState False
+            
+        'Images with embedded color profiles support extra features
+        Case PDUI_ICCProfile
+            FormMain.MnuFileExport(0).Enabled = newState
             
     End Select
     
@@ -1937,7 +1946,7 @@ Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.CreateBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
-    
+        
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
         notifyFont.SetFontFace Fonts.GetUIFontName()

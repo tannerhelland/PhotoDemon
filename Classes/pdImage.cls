@@ -86,6 +86,14 @@ Public UndoManager As pdUndo
 'Various viewport actions are now handled through a separate pdViewport class
 Public ImgViewport As pdViewport
 
+'As of 7.2, pdImage objects now associate with two different color profiles.
+' 1) an "original" profile; this points to image's ICC profile, if any, when it was first loaded/created.
+' 2) a "working space" profile; this points to the working space that all layers *must* be converted to
+'    prior to merging / blending / compositing / etc.
+'Why two profiles?  Because the original profile can always be exported via File > Export, even if the
+' current sessions's color management settings result in things like hard conversions to sRGB.
+Private m_colorProfileOriginal As String, m_colorProfileWorkingSpace As String
+
 'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
 ' use the m_DPI value, which will return the average resolution of the two.
 Private m_XResolution As Double, m_YResolution As Double
@@ -142,13 +150,6 @@ Private imgCompositor As pdCompositor
 ' compositeBuffer pdDIB).  To avoid recompositing the image unless absolutely necessary, new trackers were required.
 Private m_CompositeCacheClean As Boolean
 
-'As of v7.0, PD's color management engine now supports a "preserve embedded profile" type of policy.  This means that
-' individual images may operate in different working spaces, even during the same session.  The current working space
-' of this image is stored here; you must access it via matching Get/Set functions.
-'
-'If the working space index is -1, the image has no working space.  Assume sRGB.
-Private m_WorkingSpaceIndex As Long
-
 'As a convenience to outside functions, the image class grabs a high-resolution timer value every time it receives an
 ' "image data has changed" notification.  Outside functions can track this value via the wrapper functions, and use it
 ' to determine if the underlying image may have changed since they last operated on it.  (PD uses this to accelerate
@@ -166,6 +167,22 @@ Private m_IsThumbClean As Boolean
 ' so try to avoid that if at all possible!
 Private Const IMAGE_THUMB_SIZE As Long = 256
 Private m_ImageThumbnail As pdDIB, m_CurrentImageThumbSize As Long
+
+Friend Function GetColorProfile_Original() As String
+    GetColorProfile_Original = m_colorProfileOriginal
+End Function
+
+Friend Sub SetColorProfile_Original(ByRef srcHash As String)
+    m_colorProfileOriginal = srcHash
+End Sub
+
+Friend Function GetColorProfile_WorkingSpace() As String
+    GetColorProfile_WorkingSpace = m_colorProfileWorkingSpace
+End Function
+
+Friend Sub SetColorProfile_WorkingSpace(ByRef srcHash As String)
+    m_colorProfileWorkingSpace = srcHash
+End Sub
 
 Friend Function GetCurrentFileFormat() As PD_IMAGE_FORMAT
     GetCurrentFileFormat = m_currentFileFormat
@@ -953,17 +970,6 @@ Friend Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As 
         
 End Sub
 
-'Working space index related to color management.  It is the index of this image's current working spcae profile, as it is
-' found in the ColorManagement module's ICC profile cache.  (Accessing by index is way faster than doing large byte array
-' comparisons, which is why we do it this way.)
-Friend Function GetWorkingSpaceIndex() As Long
-    GetWorkingSpaceIndex = m_WorkingSpaceIndex
-End Function
-
-Friend Sub SetWorkingSpaceIndex(ByVal newIndex As Long)
-    m_WorkingSpaceIndex = newIndex
-End Sub
-
 'Update the internal thumbnail.  Only call this function if the current thumbnail has been marked as DIRTY;
 ' otherwise, just use the existing thumbnail as-is.
 Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
@@ -1241,9 +1247,6 @@ Private Sub Class_Initialize()
 
     'Initialize this image's compositor
     Set imgCompositor = New pdCompositor
-    
-    'Initialize any color management trackers
-    m_WorkingSpaceIndex = -1
     
     'Initialize the image thumbnail and note that it is not clean, which will force a regeneration when the thumbnail
     ' is next requested.

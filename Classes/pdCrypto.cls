@@ -114,9 +114,9 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLen
     If (LenB(srcString) <> 0) Then
     
         Dim i As Long
-            
+        
         'Perform a quick hash of the input string
-        If QuickHash(PDCA_SHA_256, StrPtr(srcString), Len(srcString) * 2) Then
+        If QuickHash(PDCA_SHA_256, StrPtr(srcString), LenB(srcString)) Then
         
             'Retrieve the hashed data
             Dim hashBytes() As Byte, hashLength As Long
@@ -142,6 +142,38 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLen
     
     Else
         QuickHashString = vbNullString
+    End If
+    
+End Function
+
+'Same as QuickHashString(), above, but operates on arbitrary binary data.  The first (n) chars of the result are
+' returned as a hex string.
+Friend Function QuickHash_AsString(ByVal ptrData As Long, ByVal dataLen As Long, Optional ByVal strLength As Long = 16, Optional ByVal cryptoMethod As PD_CRYPT_ALGOS = PDCA_SHA_256) As String
+    
+    'Perform a quick hash of the input string
+    If QuickHash(cryptoMethod, ptrData, dataLen) Then
+        
+        'Retrieve the hashed data
+        Dim hashBytes() As Byte, hashLength As Long
+        If RetrieveHashedData(hashBytes, hashLength) Then
+        
+            'Translate the first (strLength) bytes into a human-readable string, then return it.
+            ' (Thank you to vbForums user "dilettante" for this translation technique.)
+            QuickHash_AsString = String$(strLength, "0")
+            
+            Dim i As Long
+            For i = 0 To (strLength \ 2) - 1
+                If (hashBytes(i) < &H10) Then
+                    Mid$(QuickHash_AsString, i * 2 + 2, 1) = Hex$(hashBytes(i))
+                Else
+                    Mid$(QuickHash_AsString, i * 2 + 1, 2) = Hex$(hashBytes(i))
+                End If
+            Next i
+            
+            QuickHash_AsString = LCase$(QuickHash_AsString)
+            
+        End If
+        
     End If
     
 End Function
@@ -203,12 +235,8 @@ Friend Function RetrieveHashedData(ByRef dstBytes() As Byte, ByRef dataLength As
             End If
             
             'Retrieve the hashed data
-            If (CryptGetHashParam(m_HashHandle, PDHP_HASHVAL, VarPtr(dstBytes(LBound(dstBytes))), dataLength, 0&) <> 0) Then
-                RetrieveHashedData = True
-            Else
-                InternalCryptError "RetrieveHashedData", "Couldn't retrieve hashed data"
-                RetrieveHashedData = False
-            End If
+            RetrieveHashedData = (CryptGetHashParam(m_HashHandle, PDHP_HASHVAL, VarPtr(dstBytes(LBound(dstBytes))), dataLength, 0&) <> 0)
+            If (Not RetrieveHashedData) Then InternalCryptError "RetrieveHashedData", "Couldn't retrieve hashed data"
             
         Else
             InternalCryptError "RetrieveHashedData", "Couldn't retrieve hash size"

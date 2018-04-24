@@ -52,6 +52,13 @@ Private m_ICCData() As Byte
 ' was created from an arbitrary pointer.
 Private m_ICCFilename As String
 
+'Clone another pdICCProfile instance
+Friend Function CopyProfile(ByRef srcProfile As pdICCProfile) As Boolean
+    CopyProfile = (Not srcProfile Is Nothing)
+    If CopyProfile Then CopyProfile = srcProfile.HasICCData()
+    If CopyProfile Then CopyProfile = Me.LoadICCFromPtr(srcProfile.GetICCDataSize(), srcProfile.GetICCDataPointer())
+End Function
+
 'Retrieve the source render intent from the contained ICC profile
 Friend Function GetSourceRenderIntent() As Long
 
@@ -120,13 +127,18 @@ Friend Function LoadICCFromFile(ByVal profilePath As String) As Boolean
     
     LoadICCFromFile = False
     
-    If Files.FileExists(profilePath) Then
-        LoadICCFromFile = Files.FileLoadAsByteArray(profilePath, m_ICCData)
-    End If
-    
+    If Files.FileExists(profilePath) Then LoadICCFromFile = Files.FileLoadAsByteArray(profilePath, m_ICCData)
     m_ICCDataExists = LoadICCFromFile
     If m_ICCDataExists Then m_ICCFilename = profilePath Else m_ICCFilename = vbNullString
     
+End Function
+
+Friend Function LoadICCFromLCMSProfile(ByRef srcProfile As pdLCMSProfile) As Boolean
+    If (Not srcProfile Is Nothing) Then
+        m_ICCFilename = vbNullString
+        If srcProfile.HasProfile Then m_ICCDataExists = (srcProfile.GetRawProfileBytes(m_ICCData) <> 0)
+        LoadICCFromLCMSProfile = m_ICCDataExists
+    End If
 End Function
 
 Friend Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean

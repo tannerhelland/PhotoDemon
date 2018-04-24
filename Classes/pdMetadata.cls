@@ -668,12 +668,11 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
         If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
-        'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some
-        ' esoteric formats), we may be able to use ExifTool to manually retrieve the full profile data.
+        'If this file contains an ICC profile, but our various load engines were unable to retrieve it
+        ' (as is possible with some esoteric formats), we may be able to use ExifTool to manually retrieve
+        ' the full profile data.
         If (Not ppMayBeNeeded) Then
-            If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
-                ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
-            End If
+            If (LenB(pdImages(parentImageID).GetColorProfile_Original) = 0) Then ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
         End If
         
     End If
@@ -696,11 +695,12 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         End If
         
         'NON-FORMAT-SPECIFIC tags:
-        If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) Then
+        If (LenB(pdImages(parentImageID).GetColorProfile_Original) = 0) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And (Not pdImages(parentImageID).ImgStorage.DoesKeyExist("Tone-mapping")) Then
             
-            'ExifTool pulled an ICC profile from this image file, but FreeImage did not.  This may be an esoteric format or one with
-            ' broken formatting.  Let's see if we can still apply the ICC profile post-load.  (This may not possible if the profile is
-            ' tied to something like CMYK, and we have already converted it to RGB - but we can still try.)
+            'ExifTool pulled an ICC profile from this image file, but our original image load function
+            ' did not.  This may be an esoteric format or one with broken formatting.  Let's see if we
+            ' can still apply the ICC profile post-load.  (This may not possible if the profile is tied
+            ' to something like CMYK, and we have already converted it to RGB - but we can still try.)
             
             'Ask ExifTool to extract the ICC profile to a standalone temp file
             If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
@@ -721,17 +721,27 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 Dim iccBytes() As Byte
                 If Files.FileLoadAsByteArray(srcFilename, iccBytes) Then
                     
-                    'Load the ICC bytes into the target DIB
-                    If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
+                    'Load the ICC bytes into a pdICCProfile object
+                    Dim tmpProfile As pdICCProfile
+                    Set tmpProfile = New pdICCProfile
+                    If tmpProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
                         
                         PDDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
+                        If ColorManagement.ConvertDIBToSRGB(pdImages(parentImageID).GetActiveDIB, tmpProfile) Then
                         
-                        'Apply ICC conversion now
-                        ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
+                            'The conversion worked!  Add this profile to our central cache, and flag the parent image accordingly
+                            Dim profHash As String
+                            profHash = ColorManagement.AddProfileToCache(tmpProfile)
+                            pdImages(parentImageID).SetColorProfile_Original profHash
+                            pdImages(parentImageID).GetActiveDIB.SetColorManagementState cms_ProfileConverted
+                            pdImages(parentImageID).GetActiveDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                            
+                            'If the image is active, redraw the display to reflect the new colors
+                            If (parentImageID = g_CurrentImage) Then
+                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
+                                Interface.NotifyImageChanged parentImageID
+                            End If
                         
-                        If (parentImageID = g_CurrentImage) Then
-                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
-                            Interface.NotifyImageChanged parentImageID
                         End If
                         
                         ApplyMetadataPostProcessing = True

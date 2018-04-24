@@ -148,9 +148,10 @@ Private m_OriginalTransparentColor As Long
 'If this DIB was loaded from file, its original file format will be set here.  (By default, this value will be -1).
 Private m_OriginalFIF As PD_IMAGE_FORMAT
 
-'DIBs may require ICC profile handling.  All ICC Profile interactions are handled through a publicly available ICCProfile class,
-' on a per-DIB basis.
-Public ICCProfile As pdICCProfile
+'If this DIB has been tagged and/or hard-converted to a specific color profile, the profile's hash will
+' be set, and the association will also be marked.  (Any used color profiles are stored in a central
+' per-session cache, which spares us from needing to duplicate them all over the program.)
+Private m_ColorProfileState As PD_ColorManagementState, m_ColorProfileHash As String
 
 'DIBs created from loaded image files contain resolution data.  This data isn't important on a per-DIB basis, but the parent
 ' pdImage object will copy the resolution data from its first-loaded child DIB (if it has a resolution)
@@ -183,6 +184,23 @@ End Function
 
 Friend Sub SetInitialAlphaPremultiplicationState(ByVal newState As Boolean)
     m_IsAlphaPremultiplied = newState
+End Sub
+
+'Get/set color management data
+Friend Function GetColorManagementState() As PD_ColorManagementState
+    GetColorManagementState = m_ColorProfileState
+End Function
+
+Friend Sub SetColorManagementState(ByVal newState As PD_ColorManagementState)
+    m_ColorProfileState = newState
+End Sub
+
+Friend Function GetColorProfileHash() As String
+    GetColorProfileHash = m_ColorProfileHash
+End Function
+
+Friend Sub SetColorProfileHash(ByRef newHash As String)
+    m_ColorProfileHash = newHash
 End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
@@ -1060,19 +1078,15 @@ Private Sub Class_Initialize()
     m_dibWidth = 0
     m_dibHeight = 0
     
-    'Initialize the ICC profile manager
-    Set ICCProfile = New pdICCProfile
+    'Reset color management data
+    m_ColorProfileState = cms_NoManagement
+    m_ColorProfileHash = vbNullString
     
 End Sub
 
 'TERMINATE class
 Private Sub Class_Terminate()
-    
-    EraseDIB True
-    
-    'Release the ICC profile manager
-    Set ICCProfile = Nothing
-    
+    Me.EraseDIB True
 End Sub
 
 'Draw this DIB to a picture box. The image will be automatically centered and sized to fit.
