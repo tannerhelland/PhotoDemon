@@ -48,6 +48,7 @@ Private m_PreferencesPath As String
 Private m_TempPath As String
 Private m_IconPath As String
 
+Private m_ColorProfilePath As String
 Private m_UserLanguagePath As String
 Private m_SelectionPath As String
 Private m_PalettePath As String
@@ -149,12 +150,21 @@ Public Function GetDebugPath() As String
     GetDebugPath = m_DebugPath
 End Function
 
+Public Function GetColorProfilePath() As String
+    GetColorProfilePath = m_ColorProfilePath
+End Function
+
+Public Sub SetColorProfilePath(ByRef newPath As String)
+    m_ColorProfilePath = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "ColorProfiles", m_ColorProfilePath
+End Sub
+
 Public Function GetPalettePath() As String
     GetPalettePath = m_PalettePath
 End Function
 
-Public Sub SetPalettePath(ByRef newPalettePath As String)
-    m_PalettePath = Files.PathAddBackslash(Files.FileGetPath(newPalettePath))
+Public Sub SetPalettePath(ByRef newPath As String)
+    m_PalettePath = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "Palettes", m_PalettePath
 End Sub
 
@@ -379,6 +389,9 @@ Public Function InitializePaths() As Boolean
     PDDebug.LogAction "PD data folder points at " & m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
+    m_ColorProfilePath = m_DataPath & "ColorProfiles\"
+    If (Not Files.PathExists(m_ColorProfilePath)) Then Files.PathCreate m_ColorProfilePath
+    
     m_DebugPath = m_DataPath & "Debug\"
     If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
     
@@ -483,6 +496,7 @@ Public Sub LoadUserSettings()
         End If
             
         'Pull all other stored paths
+        m_ColorProfilePath = GetPref_String("Paths", "ColorProfiles", m_ColorProfilePath)
         m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
         m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
         m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)

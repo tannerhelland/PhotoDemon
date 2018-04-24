@@ -1282,8 +1282,8 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         End If
         Process_FileMenu = True
     
-    ElseIf Strings.StringsEqual(processID, "Export ICC profile", True) Then
-        'TODO!
+    ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
+        ColorManagement.SaveImageProfileToFile pdImages(g_CurrentImage), raiseDialog, processParameters
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export palette", True) Then

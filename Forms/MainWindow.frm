@@ -137,7 +137,7 @@ Begin VB.Form FormMain
          Caption         =   "Export"
          Index           =   12
          Begin VB.Menu MnuFileExport 
-            Caption         =   "ICC profile..."
+            Caption         =   "Color profile..."
             Index           =   0
          End
          Begin VB.Menu MnuFileExport 
@@ -3476,7 +3476,7 @@ Private Sub MnuFileExport_Click(Index As Integer)
         
         'Export ICC profile
         Case 0
-            Process "Export ICC profile", True
+            Process "Export color profile", True
         
         'Export palette
         Case 1

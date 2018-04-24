@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.352</langversion>
+<langversion>6.7.353</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -161,7 +161,27 @@
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
-<!-- ColorManagement_ICM.bas contains 0 phrases. -->
+<phrase>
+<original>ICC Profile</original>
+<translation>ICC profiel</translation>
+</phrase>
+
+<phrase>
+<original>New color profile</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export color profile</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Profile exported successfully.</original>
+<translation></translation>
+</phrase>
+
+<!-- ColorManagement_ICM.bas contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for ColorManagement_ICM.bas-->
 
@@ -3162,11 +3182,6 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>ICC Profile</original>
-<translation>ICC profiel</translation>
-</phrase>
-
-<phrase>
 <original>XMP (Apple)</original>
 <translation>XMP (Apple)</translation>
 </phrase>
@@ -3446,7 +3461,7 @@ Geef een numerieke waarde.</translation>
 <translation>Metagegevens mogelijk niet ingesloten (maar bewaarde afbeelding succesvol weggeschreven)</translation>
 </phrase>
 
-<!-- pdMetadata.cls contains 123 phrases. 62 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -4823,6 +4838,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>Export</original>
 <translation>Export</translation>
+</phrase>
+
+<phrase>
+<original>Color profile</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6617,7 +6637,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 189 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15357,10 +15377,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2567</phrasecount>
+<phrasecount>2571</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4662 phrases. -->
-<!-- 2095 are duplicates, so only 2567 unique phrases have been written to file. -->
-<!-- These 2567 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4672 phrases. -->
+<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
+<!-- These 2571 phrases contain approximately 12404 total words. -->
 
 </pdData>

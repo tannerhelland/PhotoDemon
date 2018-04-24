@@ -3,27 +3,22 @@ Attribute VB_Name = "ColorManagement"
 'PhotoDemon ICC Profile Support Module
 'Copyright 2013-2018 by Tanner Helland
 'Created: 05/November/13
-'Last updated: 05/September/14
-'Last update: tie the multiprofile transform quality to the new Color Management Performance preference
+'Last updated: 24/April/18
+'Last update: new helper function for exporting color profiles to file
 '
 'ICC profiles can be embedded in certain image file formats.  These profiles can be used to convert an image into
 ' a precisely defined reference space, while taking into account any pecularities of the device that captured the
 ' image (typically a camera).  From that reference space, we can then convert the image into any other
 ' device-specific color space (typically a monitor or printer).
 '
-'ICC profile handling is broken into three parts: extracting the profile from an image, using the extracted profile to
-' convert an image into a reference space (currently sRGB only), and then activating color management for any
-' user-facing DCs using the color profiles specified by the user.  The extraction step is currently handled via
-' FreeImage or GDI+, while the application step is handled by Windows.  In the future I may look at adding ExifTool as
-' a possible mechanism for extracting the profile, as it provides better support for esoteric formats than FreeImage.
+'ICC profile handling is broken into three parts: extracting the profile from an image, using the extracted profile
+' to convert an image into a reference "working space" (currently sRGB), and then activating color management for any
+' user-facing DCs using the color profiles specified by the user.
 '
-'This class does not perform the extraction of ICC Profile data from images.  That is handled by the pdICCProfile
-' class, which operates on a per-image basis.  This module simply supplies a number of generic ICC-related functions.
-'
-'This module would not be possible without this excellent test code from pro VB coder LaVolpe:
-' http://www.vbforums.com/showthread.php?666143-RESOLVED-ICC-%28Color-Profiles%29
-' Note that LaVolpe's code contains a number of errors, so if you're looking to build your own ICC implementation,
-' I suggest basing it off my work instead.
+'This class interacts heavily with pdICCProfile (a class for managing ICC profile data), and the LittleCMS plugin,
+' which handles the bulk of PD's color management requirements.  (Past versions of this module used the built-in
+' Windows color management module, known as "ICM" or "WCS" depending on the version, but I have since dropped all
+' support for the Windows CMM as it's largely garbage.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -380,7 +375,7 @@ Public Function GetProfile_ByHash(ByRef srcHash As String) As pdICCProfile
     Dim i As Long
     For i = 0 To m_NumOfCachedProfiles - 1
         If (m_ProfileCache(i).profileHash = srcHash) Then
-            GetProfile_ByHash = m_ProfileCache(i).FullProfile
+            Set GetProfile_ByHash = m_ProfileCache(i).FullProfile
             Exit Function
         End If
     Next i
@@ -839,7 +834,80 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
 
 End Sub
 
-'Save a given pdImage's color profile to file.
-Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal showSaveDialog As Boolean, Optional ByRef dstFilename As String = vbNullString) As Boolean
+'Save a given pdImage's associated color profile to a standalone ICC file.
+Public Function SaveImageProfileToFile(ByRef srcImage As pdImage, Optional ByVal raiseDialog As Boolean, Optional ByRef exportParams As String = vbNullString) As Boolean
+    
+    'Failsafe checks
+    If (srcImage Is Nothing) Then Exit Function
+    If (LenB(srcImage.GetColorProfile_Original) = 0) Then Exit Function
+    
+    Dim dstFilename As String, cParams As pdParamXML
+    
+    If raiseDialog Then
+    
+        'Disable user input until the dialog closes
+        Interface.DisableUserInput
+        
+        'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+        Dim initialSaveFolder As String
+        initialSaveFolder = UserPrefs.GetColorProfilePath()
+        
+        'Build a common dialog filter list
+        Dim cdFilter As pdString, cdFilterExtensions As pdString
+        Set cdFilter = New pdString
+        Set cdFilterExtensions = New pdString
+        
+        cdFilter.Append g_Language.TranslateMessage("ICC Profile") & " (.icc, .icm)|*.icc,*.icm"
+        cdFilterExtensions.Append "icc"
+        
+        Dim cdIndex As Long
+        cdIndex = 1
+        
+        'Suggest a file name.  At present, we just reuse the current image's name.
+        dstFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+        If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("New color profile")
+        dstFilename = initialSaveFolder & dstFilename
+        
+        Dim cdTitle As String
+        cdTitle = g_Language.TranslateMessage("Export color profile")
+        
+        'Prep a common dialog interface
+        Dim saveDialog As pdOpenSaveDialog
+        Set saveDialog = New pdOpenSaveDialog
+        
+        If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetColorProfilePath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+        
+            'Update preferences
+            UserPrefs.SetColorProfilePath Files.FileGetPath(dstFilename)
+            
+            'Call this function again - with raiseDialog set to *false* - to initiate the actual save.
+            Set cParams = New pdParamXML
+            cParams.AddParam "export-filename", dstFilename
+            Process "Export color profile", False, cParams.GetParamString()
+            
+        End If
+    
+    'If we aren't showing a dialog, we can just dump the associated image's profile to the target file
+    Else
+        
+        Set cParams = New pdParamXML
+        cParams.SetParamString exportParams
+        dstFilename = cParams.GetString("export-filename")
+        
+        If (LenB(dstFilename) <> 0) Then
+        
+            'Pull the associated color profile into a byte array
+            Dim srcProfile As pdICCProfile
+            Set srcProfile = ColorManagement.GetProfile_ByHash(srcImage.GetColorProfile_Original)
+            
+            If (Not srcProfile Is Nothing) Then
+                Dim profBytes() As Byte, profLen As Long
+                srcProfile.GetProfileBytes profBytes, profLen
+                If Files.FileCreateFromByteArray(profBytes, dstFilename, True) Then Message "Profile exported successfully."
+            End If
+        
+        End If
+    
+    End If
 
 End Function

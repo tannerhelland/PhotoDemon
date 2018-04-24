@@ -155,6 +155,8 @@ Public Sub InitializeMenus()
     AddMenuItem "Save &as...", "file_saveas", 0, 10, , "file_saveas"
     AddMenuItem "Revert", "file_revert", 0, 11
     AddMenuItem "Export", "file_export", 0, 12
+        AddMenuItem "Color profile...", "file_export_colorprofile", 0, 12, 0
+        AddMenuItem "Palette...", "file_export_palette", 0, 12, 1
     AddMenuItem "-", "-", 0, 13
     AddMenuItem "&Batch operations", "file_batch", 0, 14
         AddMenuItem "Process...", "file_batch_process", 0, 14, 0, "file_batch"

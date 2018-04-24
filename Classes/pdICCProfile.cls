@@ -112,6 +112,15 @@ Friend Function GetOriginalICCPath() As String
     GetOriginalICCPath = m_ICCFilename
 End Function
 
+Friend Function GetProfileBytes(ByRef dstBytes() As Byte, ByRef dstLength As Long) As Boolean
+    GetProfileBytes = Me.HasICCData()
+    If GetProfileBytes Then
+        dstLength = UBound(m_ICCData) + 1
+        ReDim dstBytes(0 To UBound(m_ICCData)) As Byte
+        CopyMemory ByVal VarPtr(dstBytes(0)), ByVal VarPtr(m_ICCData(0)), dstLength
+    End If
+End Function
+
 Friend Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
     
     ReDim m_ICCData(0 To profileSize - 1) As Byte
