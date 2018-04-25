@@ -475,7 +475,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     alphaCutoff = cParams.GetLong("alphacutoff", 64)
     
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     If (Not toPreview) Then
         SetProgBarMax workingDIB.GetDIBHeight * 2
@@ -584,7 +584,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
     End If
     
-    EffectPrep.FinalizeImageData toPreview, pdFxPreview
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -620,7 +620,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     ditherAmount = cParams.GetDouble("ditheramount", 100#) / 100#
     
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, pdFxPreview
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     
     If (Not toPreview) Then
         SetProgBarMax workingDIB.GetDIBHeight
@@ -645,7 +645,7 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
         
     End If
     
-    EffectPrep.FinalizeImageData toPreview, pdFxPreview
+    EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
 

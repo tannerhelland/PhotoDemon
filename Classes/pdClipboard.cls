@@ -143,12 +143,6 @@ End Enum
 
 'Helper function for dealing with file lists
 Private Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileW" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpStrW As Long, ByVal sizeOfStringBuffer As Long) As Long
-
-Private Type POINTAPI
-    x As Long
-    y As Long
-End Type
-
 Private Const MAX_PATH_UNICODE As Long = 1024
 
 'If the caller activates delayed rendering, we need to subclass a window and listen for messages

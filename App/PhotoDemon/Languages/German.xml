@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.455</langversion>
+<langversion>7.2.488</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -168,17 +168,17 @@
 
 <phrase>
 <original>New color profile</original>
-<translation></translation>
+<translation>Neues Farbprofil</translation>
 </phrase>
 
 <phrase>
 <original>Export color profile</original>
-<translation></translation>
+<translation>Farbprofil exportieren</translation>
 </phrase>
 
 <phrase>
 <original>Profile exported successfully.</original>
-<translation></translation>
+<translation>Profil erfolgreich exportiert.</translation>
 </phrase>
 
 <!-- ColorManagement_ICM.bas contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -4843,7 +4843,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Color profile</original>
-<translation></translation>
+<translation>Farbprofil</translation>
 </phrase>
 
 <phrase>

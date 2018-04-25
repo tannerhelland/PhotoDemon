@@ -575,7 +575,7 @@ Friend Function CreateBrush() As Boolean
             
         'Gradient fill
         Case P2_BM_Gradient
-            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity * 0.01, m_BrushBackend)
+            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity * 0.01)
             
         'Texture fill (TODO)
         Case P2_BM_Texture

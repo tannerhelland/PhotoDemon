@@ -95,7 +95,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
     
     'Try to validate the source file
     Dim keepLoading As PD_PNGResult
-    keepLoading = Me.Step1_ValidatePNG(srcFile, True)
+    keepLoading = Me.Step1_ValidatePNG(srcFile, checkExtension)
     
     'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
     ' will cause us to abandon the attempt entirely.)
@@ -1084,6 +1084,9 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         
     End If
     
+    'Ideally, gamma chunks should be accompanied by chromaticity data, to help us know the expected
+    ' viewing conditions of the image.  If chromaticity *doesn't* exist, we'll just apply a bare
+    ' gamma correction to the raw PNG pixel data.
     If (chrmIndex >= 0) Then
         
         Dim chrmData() As Long
@@ -1109,10 +1112,12 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
             
             If (Not gammaOK) Then gammaFloat = 1#
             
+            'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
+            ' With this, we can use our normal color-management pipeline to color-correct this DIB.
             Dim srcProfile As pdLCMSProfile
             Set srcProfile = New pdLCMSProfile
         
-            'We can only apply the profile if it passed internal LCMS validation
+            'Make sure the chromaticity data passes internal LCMS validation
             chrmOK = srcProfile.CreateCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
             If chrmOK Then
                 
@@ -1155,8 +1160,8 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
         
     End If
     
-    'If the cHRM chunk doesn't exist (or is invalid), but a gAMA chunk exists (and is valid), apply basic
-    ' gamma correction before exiting.
+    'If the cHRM chunk doesn't exist (or is invalid), but a gAMA chunk exists (and is valid),
+    ' apply basic gamma correction before exiting.
     If gammaOK And (Not chrmOK) Then Filters_Layers.FastGammaDIB dstDIB, 2.2 / gammaFloat
     
     Exit Function

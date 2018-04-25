@@ -589,7 +589,7 @@ End Function
 'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with this class via pd2DBrush,
 ' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
 ' correct backend-specific function!
-Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#, Optional ByVal brushBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Long
+Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#) As Long
     
     'Make sure a gradient has been created
     If (m_NumOfPoints <= 0) Then

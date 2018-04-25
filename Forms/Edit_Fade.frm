@@ -135,7 +135,7 @@ Private Sub Form_Load()
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
-        pdDebug.LogAction "WARNING! Fade data could not be retrieved; something went horribly wrong!  Crash imminent!"
+        PDDebug.LogAction "WARNING! Fade data could not be retrieved; something went horribly wrong!  Crash imminent!"
         
     End If
     
@@ -184,13 +184,13 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
         
         'Retrieve the preview box portion of the previous layer image
         EffectPrep.ResetPreviewIDs
-        PreviewNonStandardImage tmpSafeArray, m_prevLayerDIB, pdFxPreview, True
+        PreviewNonStandardImage tmpSafeArray, m_prevLayerDIB, dstPic, True
         If (m_prevLayerDIBCopy Is Nothing) Then Set m_prevLayerDIBCopy = New pdDIB
         m_prevLayerDIBCopy.CreateFromExistingDIB workingDIB
         
         'Retrieve the preview box portion of the current layer image
         EffectPrep.ResetPreviewIDs
-        PreviewNonStandardImage tmpSafeArray, m_curLayerDIB, pdFxPreview, True
+        PreviewNonStandardImage tmpSafeArray, m_curLayerDIB, dstPic, True
         If (m_curLayerDIBCopy Is Nothing) Then Set m_curLayerDIBCopy = New pdDIB
         m_curLayerDIBCopy.CreateFromExistingDIB workingDIB
         
@@ -209,7 +209,7 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
     'If this is a preview, draw the composited image to the picture box and exit.
     If toPreview Then
         workingDIB.CreateFromExistingDIB m_prevLayerDIBCopy
-        FinalizeNonstandardPreview pdFxPreview, True
+        FinalizeNonstandardPreview dstPic, True
         
     'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else

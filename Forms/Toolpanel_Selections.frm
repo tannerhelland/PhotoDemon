@@ -86,6 +86,85 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
+      Index           =   5
+      Left            =   5340
+      TabIndex        =   13
+      Top             =   0
+      Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdDropDown cboWandCompare 
+         Height          =   375
+         Left            =   3300
+         TabIndex        =   14
+         Top             =   825
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButtonStrip btsWandArea 
+         Height          =   1185
+         Left            =   120
+         TabIndex        =   15
+         Top             =   30
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   2090
+         Caption         =   "area"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdSlider sltWandTolerance 
+         CausesValidation=   0   'False
+         Height          =   675
+         Left            =   3240
+         TabIndex        =   16
+         Top             =   30
+         Width           =   2550
+         _ExtentX        =   4498
+         _ExtentY        =   1191
+         Caption         =   "tolerance"
+         FontSizeCaption =   10
+         Max             =   255
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.pdButtonStrip btsWandMerge 
+         Height          =   1185
+         Left            =   6120
+         TabIndex        =   17
+         Top             =   30
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   2090
+         Caption         =   "sampling area"
+         FontSizeCaption =   10
+      End
+   End
+   Begin PhotoDemon.pdSpinner spnOpacity 
+      Height          =   375
+      Index           =   1
+      Left            =   1440
+      TabIndex        =   41
+      Top             =   840
+      Width           =   1125
+      _ExtentX        =   1931
+      _ExtentY        =   661
+      DefaultValue    =   50
+      Min             =   1
+      Max             =   100
+      Value           =   50
+   End
+   Begin PhotoDemon.pdColorSelector csSelection 
+      Height          =   330
+      Index           =   1
+      Left            =   225
+      TabIndex        =   42
+      Top             =   840
+      Width           =   1140
+      _ExtentX        =   2011
+      _ExtentY        =   582
+   End
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
+      Height          =   1470
       Index           =   0
       Left            =   5340
       TabIndex        =   5
@@ -541,85 +620,6 @@ Begin VB.Form toolpanel_Selections
          Max             =   1
          SigDigits       =   2
       End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
-      Height          =   1470
-      Index           =   5
-      Left            =   5340
-      TabIndex        =   13
-      Top             =   0
-      Width           =   9975
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboWandCompare 
-         Height          =   375
-         Left            =   3300
-         TabIndex        =   14
-         Top             =   855
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButtonStrip btsWandArea 
-         Height          =   1185
-         Left            =   120
-         TabIndex        =   15
-         Top             =   45
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   2090
-         Caption         =   "area"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSlider sltWandTolerance 
-         CausesValidation=   0   'False
-         Height          =   675
-         Left            =   3240
-         TabIndex        =   16
-         Top             =   60
-         Width           =   2550
-         _ExtentX        =   4498
-         _ExtentY        =   1191
-         Caption         =   "tolerance"
-         FontSizeCaption =   10
-         Max             =   255
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.pdButtonStrip btsWandMerge 
-         Height          =   1185
-         Left            =   6120
-         TabIndex        =   17
-         Top             =   45
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   2090
-         Caption         =   "sampling area"
-         FontSizeCaption =   10
-      End
-   End
-   Begin PhotoDemon.pdSpinner spnOpacity 
-      Height          =   375
-      Index           =   1
-      Left            =   1440
-      TabIndex        =   41
-      Top             =   840
-      Width           =   1125
-      _ExtentX        =   1931
-      _ExtentY        =   661
-      DefaultValue    =   50
-      Min             =   1
-      Max             =   100
-      Value           =   50
-   End
-   Begin PhotoDemon.pdColorSelector csSelection 
-      Height          =   330
-      Index           =   1
-      Left            =   225
-      TabIndex        =   42
-      Top             =   840
-      Width           =   1140
-      _ExtentX        =   2011
-      _ExtentY        =   582
    End
 End
 Attribute VB_Name = "toolpanel_Selections"

@@ -1309,7 +1309,6 @@ Public Sub InitializeSelectionRendering()
         m_CurSelectionMode = UserPrefs.GetPref_Long("Tools", "SelectionRenderMode", 0)
         
         'Highlight, lightbox mode render settings
-        Dim tmpString As String
         m_SelHighlightColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48"))
         m_SelHighlightOpacity = UserPrefs.GetPref_Float("Tools", "SelectionHighlightOpacity", 50!)
         m_SelLightboxColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Tools", "SelectionLightboxColor", "#000000"))

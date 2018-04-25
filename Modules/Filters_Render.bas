@@ -131,7 +131,7 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal y
+                SetProgBarVal modifyProgBarOffset + y
             End If
         End If
     Next y

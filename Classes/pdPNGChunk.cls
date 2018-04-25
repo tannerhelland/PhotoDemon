@@ -589,28 +589,33 @@ End Function
 ' to be revisited if internal 48/64-bpp tracking is ever expanded.)
 Friend Function GetBackgroundColor(ByVal parentIsHighBitDepth As Boolean, ByRef warningStack As pdStringStack) As Long
     
-    m_Data.SetPosition 0, FILE_BEGIN
-    
-    '1-byte chunks are palette indices
-    If (m_Size = 1) Then
-        GetBackgroundColor = m_Data.ReadByte()
-    
-    '2-byte chunks are grayscale
-    ElseIf (m_Size = 2) Then
-    
-        Dim l As Long
-        l = m_Data.ReadIntUnsigned_BE()
-        If parentIsHighBitDepth Then GetBackgroundColor = RGB(l \ 256, l \ 256, l \ 256) Else GetBackgroundColor = RGB(l, l, l)
+    If (m_Type = "bKGD") Then
         
-    'The only remaining option is 6-byte RGB data.  Extract the bytes individually, then scale as necessary.
+        m_Data.SetPosition 0, FILE_BEGIN
+        
+        '1-byte chunks are palette indices
+        If (m_Size = 1) Then
+            GetBackgroundColor = m_Data.ReadByte()
+        
+        '2-byte chunks are grayscale
+        ElseIf (m_Size = 2) Then
+        
+            Dim l As Long
+            l = m_Data.ReadIntUnsigned_BE()
+            If parentIsHighBitDepth Then GetBackgroundColor = RGB(l \ 256, l \ 256, l \ 256) Else GetBackgroundColor = RGB(l, l, l)
+            
+        'The only remaining option is 6-byte RGB data.  Extract the bytes individually, then scale as necessary.
+        Else
+        
+            Dim r As Long, g As Long, b As Long
+            r = m_Data.ReadIntUnsigned_BE()
+            g = m_Data.ReadIntUnsigned_BE()
+            b = m_Data.ReadIntUnsigned_BE()
+            If parentIsHighBitDepth Then GetBackgroundColor = RGB(r \ 256, g \ 256, b \ 256) Else GetBackgroundColor = RGB(r, g, b)
+            
+        End If
     Else
-    
-        Dim r As Long, g As Long, b As Long
-        r = m_Data.ReadIntUnsigned_BE()
-        g = m_Data.ReadIntUnsigned_BE()
-        b = m_Data.ReadIntUnsigned_BE()
-        If parentIsHighBitDepth Then GetBackgroundColor = RGB(r \ 256, g \ 256, b \ 256) Else GetBackgroundColor = RGB(r, g, b)
-        
+        warningStack.AddString "WARNING!  You called pdPNGChunk.GetBackgroundColor on a non-bKGD chunk."
     End If
     
 End Function

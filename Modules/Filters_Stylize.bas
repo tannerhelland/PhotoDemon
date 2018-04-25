@@ -90,7 +90,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim clampX As Long, clampY As Long
     Dim target As Long, newTarget As Long, fTarget As Double
     Dim dx As Double, dy As Double
-    Dim tmpRadius As Double, F2 As Double, F3 As Double
+    Dim tmpRadius As Double, f2 As Double, F3 As Double
     Dim overlapCheck As Long
     
     'Because dots can overlap (see details in the inner loop comments), we will occasionally need to check neighboring grid
@@ -210,7 +210,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
-            F2 = 1# - BasicAA(tmpRadius - 1#, tmpRadius, densityLookup(target))
+            f2 = 1# - BasicAA(tmpRadius - 1#, tmpRadius, densityLookup(target))
             
             'If this dot's calculated radius density is greater than a grid block's half-width, this "dot" extends outside
             ' its underlying grid block.  This means it overlaps a neighboring grid, which may have a *different* maximum
@@ -255,8 +255,8 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     F3 = 1# - BasicAA(tmpRadius, tmpRadius + 1#, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)
-                    If (F3 < F2) Then
-                        F2 = F3
+                    If (F3 < f2) Then
+                        f2 = F3
                         target = newTarget
                     End If
                 
@@ -267,7 +267,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Convert the final calculated intensity back to byte range, and set the corresponding color in the
             ' destination array.
-            dstImageData(quickVal + curChannel, y) = Int(255# * F2)
+            dstImageData(quickVal + curChannel, y) = Int(255# * f2)
             
         Next y
             If Not suppressMessages Then
@@ -396,7 +396,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
         If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal y
+                SetProgBarVal modifyProgBarOffset + y
             End If
         End If
     Next y
@@ -463,7 +463,7 @@ Public Function ApplyAntiqueEffect(ByRef dstDIB As pdDIB, ByVal colorStrength As
             If (Not suppressMessages) Then
                 If (y And progBarCheck) = 0 Then
                     If Interface.UserPressedESC() Then Exit For
-                    SetProgBarVal finalY + y
+                    SetProgBarVal modifyProgBarOffset + finalY + y
                 End If
             End If
         Next y

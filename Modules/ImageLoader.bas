@@ -946,7 +946,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     'PD's internal PNG parser is preferred for all PNG images.  For backwards compatibility reasons, it does *not* rely
     ' on the .png extension.  (Instead, it will manually verify the PNG signature, then work from there.)
-    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB, True)
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB)
     If CascadeLoadGenericImage Then
         decoderUsed = id_PNGParser
         dstImage.SetOriginalFileFormat PDIF_PNG
@@ -1044,7 +1044,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
     
 End Function
 
-Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal displayMessages As Boolean = False) As Boolean
+Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
     
     LoadPNGOurselves = False
     
@@ -1065,7 +1065,7 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         
         dstImage.SetOriginalColorDepth cPNG.GetBytesPerPixel()
         dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
-        dstImage.SetOriginalAlpha cPNG.hasAlpha()
+        dstImage.SetOriginalAlpha cPNG.HasAlpha()
         If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
         
         'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
@@ -1074,42 +1074,6 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
     End If
 
 End Function
-
-'If a horribly broken image can't be loaded until we drop back to ancient OLE interfaces, we'll need to estimate
-' or infer certain metadata bits (like original color-depth).  This method is only useful if FreeImage or GDI+
-' was *not* used to load an image.
-Private Sub EstimateMissingMetadata(ByRef dstImage As pdImage, ByRef srcFileExtension As String)
-    
-    Select Case srcFileExtension
-                
-        Case "GIF"
-            dstImage.SetOriginalFileFormat PDIF_GIF
-            dstImage.SetOriginalColorDepth 8
-            
-        Case "ICO"
-            dstImage.SetOriginalFileFormat FIF_ICO
-        
-        Case "JIF", "JFIF", "JPG", "JPEG", "JPE"
-            dstImage.SetOriginalFileFormat PDIF_JPEG
-            dstImage.SetOriginalColorDepth 24
-            
-        Case "PNG"
-            dstImage.SetOriginalFileFormat PDIF_PNG
-        
-        Case "TIF", "TIFF"
-            dstImage.SetOriginalFileFormat PDIF_TIFF
-        
-        Case "PDI", "TMP", "PDTMP", "TMPDIB", "PDTMPDIB"
-            dstImage.SetOriginalFileFormat PDIF_JPEG
-            dstImage.SetOriginalColorDepth 32
-        
-        'Treat anything else as a BMP file
-        Case Else
-            dstImage.SetOriginalFileFormat PDIF_BMP
-            
-    End Select
-    
-End Sub
 
 'Most portions of PD operate exclusively in 32-bpp mode.  (This greatly simplifies the compositing pipeline.)
 'Returns: TRUE if changes were made to the target DIB

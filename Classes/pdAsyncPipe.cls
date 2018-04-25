@@ -54,9 +54,6 @@ Private Const NORMAL_PRIORITY_CLASS As Long = &H20&
 Private Const STARTF_USESHOWWINDOW As Long = &H1&
 Private Const STARTF_USESTDHANDLES As Long = &H100&
 Private Const SW_HIDE As Long = 0&
-Private Const STD_INPUT_HANDLE As Long = -10&
-Private Const STD_OUTPUT_HANDLE As Long = -11&
-Private Const STD_ERROR_HANDLE As Long = -12&
 Private Const ERROR_BROKEN_PIPE As Long = 109&
 
 Private Type STARTUPINFO

@@ -393,7 +393,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     'Calculating color variables (including luminance)
     Dim r As Long, g As Long, b As Long
     Dim l As Long, newL As Long
-    Dim xModQuick As Long
+    
     Dim ditherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Single

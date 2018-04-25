@@ -38,7 +38,6 @@ Private Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, B
 
 'Retrieves the filename of the color management file associated with a given DC
 Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileW" (ByVal hDC As Long, ByRef lpcbName As Long, ByVal ptrToBuffer As Long) As Long
-Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileW" (ByVal hDC As Long, ByVal ptrToFilename As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Const MONITOR_DEFAULTTONEAREST As Long = &H2
 
