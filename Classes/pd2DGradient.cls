@@ -276,6 +276,7 @@ Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
     
     If (Not m_GradientIsDefault) Then
         
+        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdParamXML
         With m_Serializer
             .Reset 1#
             
@@ -309,6 +310,7 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
         
         m_GradientIsDefault = False
         
+        If (m_Serializer Is Nothing) Then Set m_Serializer = New pdParamXML
         With m_Serializer
             .SetParamString srcString
             
@@ -698,7 +700,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
             Case Else
             
                 'Reset our graphics path reference
-                m_Path.ResetPath
+                If (m_Path Is Nothing) Then Set m_Path = New pd2DPath Else m_Path.ResetPath
                 
                 'Some paths require a modified rect (e.g. square vs rectangle, circle vs ellipse), so construct a few additional
                 ' measurements in advance.
@@ -888,12 +890,6 @@ Private Function GetBlendedColors(ByVal firstColor As Byte, ByVal secondColor As
 End Function
 
 Private Sub Class_Initialize()
-    
-    'Prep a string serializer (for storing/loading gradients externally)
-    Set m_Serializer = New pdParamXML
-    
-    'Prep a path (for constructing non-linear gradients)
-    Set m_Path = New pd2DPath
     
     'Assume sorting has not taken place
     m_IsSorted = False

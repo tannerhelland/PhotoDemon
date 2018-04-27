@@ -316,19 +316,19 @@ Friend Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Varian
             GetBrushProperty = m_Pattern2Opacity
             
         Case P2_BrushGradientAllSettings
-            GetBrushProperty = m_Gradient.GetGradientAsString()
+            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientAsString()
             
         Case P2_BrushGradientShape
-            GetBrushProperty = m_Gradient.GetGradientShape()
+            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientShape()
             
         Case P2_BrushGradientAngle
-            GetBrushProperty = m_Gradient.GetGradientAngle()
+            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientAngle()
             
         Case P2_BrushGradientWrapMode
-            GetBrushProperty = m_Gradient.GetGradientWrapMode()
+            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientWrapMode()
             
         Case P2_BrushGradientNodes
-            GetBrushProperty = m_Gradient.GetGradientNodes()
+            If (Not m_Gradient Is Nothing) Then GetBrushProperty = m_Gradient.GetGradientNodes()
             
         Case P2_BrushTextureWrapMode
             GetBrushProperty = m_TextureWrapMode
@@ -435,19 +435,29 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_BRUSH_SETTINGS)
                         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
                         
                     Case P2_BrushGradientAllSettings
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
+                        If (Not m_Gradient Is Nothing) Then
+                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
+                        End If
                     
                     Case P2_BrushGradientShape
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
+                        If (Not m_Gradient Is Nothing) Then
+                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
+                        End If
                         
                     Case P2_BrushGradientAngle
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
+                        If (Not m_Gradient Is Nothing) Then
+                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
+                        End If
                         
                     Case P2_BrushGradientWrapMode
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
+                        If (Not m_Gradient Is Nothing) Then
+                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
+                        End If
                         
                     Case P2_BrushGradientNodes
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
+                        If (Not m_Gradient Is Nothing) Then
+                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
+                        End If
                     
                     Case P2_BrushTextureWrapMode
                         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
@@ -484,7 +494,9 @@ Friend Function GetBrushPropertiesAsXML() As String
         .AddParam "BrushPatternColor2Opacity", m_Pattern2Opacity, True
         
         'All other gradient parameters derive from this master string, so we do not need to set them individually
-        .AddParam "BrushGradientString", m_Gradient.GetGradientAsString(), True
+        If (Not m_Gradient Is Nothing) Then
+            .AddParam "BrushGradientString", m_Gradient.GetGradientAsString(), True
+        End If
         
         'Textures themselves are not stored.  A solution to this is TBD, but I'm honestly not thrilled about the notion of
         ' serializing an entire texture (which may be enormous) to Base-64.  Texture brushes may just be an exception to
@@ -517,7 +529,10 @@ Friend Sub SetBrushPropertiesFromXML(ByRef srcString As String)
             m_Pattern2Opacity = .GetDouble("BrushPatternColor2Opacity", 100#)
             
             'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
-            If .DoesParamExist("BrushGradientString") Then m_Gradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
+            If .DoesParamExist("BrushGradientString") Then
+                If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+                m_Gradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
+            End If
             
             'Texture brush *properties* are retrieved, but at present, the texture itself cannot be serialized.
             m_TextureWrapMode = .GetLong("BrushTextureWrapMode", P2_WM_Tile)
@@ -575,6 +590,7 @@ Friend Function CreateBrush() As Boolean
             
         'Gradient fill
         Case P2_BM_Gradient
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
             m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity * 0.01)
             
         'Texture fill (TODO)
@@ -642,8 +658,7 @@ Private Sub Class_Initialize()
     
     Me.ResetAllProperties
     
-    'Prep a default gradient handler and gradient-related properties
-    Set m_Gradient = New pd2DGradient
+    'Prep a default boundary rect
     With m_BoundaryRect
         .Left = 0!
         .Top = 0!
