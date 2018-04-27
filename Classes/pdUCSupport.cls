@@ -161,9 +161,10 @@ Private m_CustomCaptionRectActive As Boolean, m_CustomCaptionRect As RECT
 ' weird ways (e.g. in the middle of other paint operations).  If they require custom painting, this will be set to TRUE.
 Private m_CustomCaptionPaintingActive As Boolean
 
-'Some controls want to take advantage of all the nice things this class offers, without managing a persistent back buffer.  (For example,
-' every pixel of pdCanvas is covered by child controls, so it's extremely wasteful to manage a full backbuffer that would never be used!)
-' This value is set to FALSE by default.
+'Some controls want to take advantage of all the nice things this class offers, without managing a persistent back buffer.
+' (For example, every pixel of pdCanvas is covered by child controls, so it's wasteful to manage a full backbuffer that
+' will never be painted to!)
+'This value is set to FALSE by default.
 Private m_NoBackBufferMode As Boolean
 
 'This support class also manages tooltips.  Note that translations are handled automatically; the original English tooltips
@@ -994,7 +995,7 @@ End Function
 ' (IMPORTANT NOTE: per Windows rules, a parentHwnd is required.  We can't request the parent hWnd at creation time,
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
-Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
+Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
     
     If pdMain.IsProgramRunning() Then
     

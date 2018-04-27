@@ -527,14 +527,14 @@ Private Function VerifyXMLHeader(ByRef fileContents As String) As Boolean
 End Function
 
 'Given an XML string, apply basic indentation
-Private Sub ApplyIndentation(ByRef srcString As String)
+Private Sub ApplyIndentation(ByRef dstString As String)
 
     Dim numOfTabs As Long
     numOfTabs = 0
     
     'Start by splitting up the XML array into individual lines
     Dim xmlArray() As String
-    xmlArray = Split(m_xmlContents, vbCrLf)
+    xmlArray = Split(m_xmlContents, vbCrLf, -1, vbBinaryCompare)
     
     'Next, loop through each line, and apply TAB characters to the start of each line as necessary
     Dim curTag As String, tagPosition As Long
@@ -546,7 +546,7 @@ Private Sub ApplyIndentation(ByRef srcString As String)
     
         'See if this line contains any tags
         tagPosition = InStr(1, xmlArray(i), "<", vbBinaryCompare)
-        If tagPosition > 0 Then
+        If (tagPosition > 0) Then
         
             'This line contains a tag.  Retrieve the tag's name.
             curTag = Mid$(xmlArray(i), tagPosition + 1, InStr(tagPosition, xmlArray(i), ">", vbBinaryCompare) - tagPosition - 1)
@@ -557,15 +557,11 @@ Private Sub ApplyIndentation(ByRef srcString As String)
         End If
     
         'Apply any accumulated tabs to the start of this line
-        If (numOfTabs > 0) Then
-            For j = 1 To numOfTabs
-                xmlArray(i) = vbTab & xmlArray(i)
-            Next j
-        End If
+        If (numOfTabs > 0) Then xmlArray(i) = String$(numOfTabs, vbTab) & xmlArray(i)
         
         'Increment or decrement the current tab count based on the presence of an opening tag but no closing tag
-        If Not (InStr(1, curTag, "/", vbBinaryCompare) > 0) And (InStr(1, xmlArray(i), "<", vbBinaryCompare) > 0) Then
-            If Not (InStr(1, xmlArray(i), "</", vbBinaryCompare) > 0) And Not (InStr(1, xmlArray(i), "<!--", vbBinaryCompare) > 0) Then numOfTabs = numOfTabs + 1
+        If (InStr(1, curTag, "/", vbBinaryCompare) = 0) And (InStr(1, xmlArray(i), "<", vbBinaryCompare) > 0) Then
+            If (InStr(1, xmlArray(i), "</", vbBinaryCompare) = 0) And (InStr(1, xmlArray(i), "<!--", vbBinaryCompare) = 0) And (InStr(1, xmlArray(i), "<?", vbBinaryCompare) = 0) Then numOfTabs = numOfTabs + 1
         End If
         
     Next i
@@ -580,23 +576,14 @@ Private Sub ApplyIndentation(ByRef srcString As String)
     If (i > 0) Then ReDim Preserve xmlArray(0 To i + 1) As String
     
     'Once all tabs have been inserted, reassemble the original string
-    srcString = Join$(xmlArray, vbCrLf)
+    dstString = Join$(xmlArray, vbCrLf)
 
 End Sub
 
 'Return the current XML contents as one enormous string.  By default, the output will have tabs added to it to make the output "pretty".
 ' This behavior can be avoided by setting the suppressIndentation param to TRUE.
 Friend Function ReturnCurrentXMLString(Optional ByVal suppressIndentation As Boolean = False) As String
-
-    If suppressIndentation Then
-        ReturnCurrentXMLString = m_xmlContents
-    Else
-        Dim tmpXMLCopy As String
-        tmpXMLCopy = m_xmlContents
-        ApplyIndentation tmpXMLCopy
-        ReturnCurrentXMLString = tmpXMLCopy
-    End If
-
+    If suppressIndentation Then ReturnCurrentXMLString = m_xmlContents Else ApplyIndentation ReturnCurrentXMLString
 End Function
 
 'Return a pointer to the current XML string.  All the usual caveats of pointers in VB apply, obviously.
@@ -620,9 +607,7 @@ Friend Function WriteXMLToFile(ByRef dstFile As String, Optional ByVal suppressI
     
         'Make the XML contents pretty by providing some basic indentation
         Dim fileContents As String
-        fileContents = m_xmlContents
-        
-        If (Not suppressIndentation) Then ApplyIndentation fileContents
+        If suppressIndentation Then fileContents = m_xmlContents Else ApplyIndentation fileContents
         
         'If the file contains an old-style windows-1252 encoding declaration, replace it with UTF-8
         If (InStr(1, fileContents, "windows-1252", vbBinaryCompare) <> 0) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
@@ -637,7 +622,7 @@ Friend Function WriteXMLToFile(ByRef dstFile As String, Optional ByVal suppressI
     Exit Function
     
 CouldNotWriteXML:
-    pdDebug.LogAction "WARNING! A request to pdXML.WriteXMLToFile failed for unknown reasons (#" & Err.Number & ", " & Err.Description & ") on file (" & dstFile & ")."
+    PDDebug.LogAction "WARNING! A request to pdXML.WriteXMLToFile failed for unknown reasons (#" & Err.Number & ", " & Err.Description & ") on file (" & dstFile & ")."
     WriteXMLToFile = False
 
 End Function

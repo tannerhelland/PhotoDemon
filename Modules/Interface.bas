@@ -1288,15 +1288,12 @@ ControlIsNotPD:
         
     Next
     
-    'Report timing results here:
-    PDDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption;
     ' everything else is handled internally.
     If g_Language.TranslationActive And dstForm.Enabled Then g_Language.ApplyTranslations dstForm
     
-    'After sending out a bazillion window messages, it can be helpful to yield while everything catches up
-    DoEvents
+    'Report timing results here:
+    PDDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 

@@ -472,7 +472,7 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    txtSeed.AssignTooltip newTooltip, newTooltipTitle, newTooltipIcon
-    cmdRandomize.AssignTooltip newTooltip, newTooltipTitle, newTooltipIcon
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+    txtSeed.AssignTooltip newTooltip, newTooltipTitle
+    cmdRandomize.AssignTooltip newTooltip, newTooltipTitle
 End Sub

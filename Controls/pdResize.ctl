@@ -1101,7 +1101,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Add the "lock aspect ratio" button
         If pdMain.IsProgramRunning() Then
             Dim buttonImageSize As Long
-            buttonImageSize = FixDPI(32)
+            buttonImageSize = Interface.FixDPI(32)
             cmdAspectRatio.AssignImage "generic_unlock", , buttonImageSize, buttonImageSize
             cmdAspectRatio.AssignImage_Pressed "generic_lock", , buttonImageSize, buttonImageSize
         End If

@@ -175,7 +175,7 @@ End Sub
 Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False, Optional ByVal useNeutralBackground As Boolean = False, Optional ByVal drawBorderAroundImage As Boolean = False, Optional ByVal drawBorderAroundControl As Boolean = True)
     
     If (srcDIB Is Nothing) Then
-        pdDebug.LogAction "WARNING!  pdPictureBox.CopyDIB received a null DIB; copy abandoned."
+        PDDebug.LogAction "WARNING!  pdPictureBox.CopyDIB received a null DIB; copy abandoned."
         Exit Sub
     End If
     
@@ -335,6 +335,6 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, raiseTipsImmediately
 End Sub

@@ -73,7 +73,7 @@ Friend Function LoadInitialResourceCollection() As Boolean
         Dim srcResFile As String
         srcResFile = "Core_Icons.pdrc"
         loadSuccess = LoadResourceFile(UserPrefs.GetThemePath & srcResFile)
-            
+        
         'If the theme file doesn't exist, attempt to recover it.  (This may be necessary if the user used a dumb program
         ' like WinZip to unzip their PD download.)
         If (Not loadSuccess) Then
@@ -376,6 +376,8 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     
                 End If
                 
+            Else
+                RaiseResourceError "Couldn't load image resource: " & imgResName & "; pdPackager failed to retrieve node data."
             End If
             
         End If
@@ -386,9 +388,9 @@ End Function
 
 Private Sub RaiseResourceError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
     If msgIsNonErrorFeedback Then
-        pdDebug.LogAction "pdResources reported: " & msgError
+        PDDebug.LogAction "pdResources reported: " & msgError
     Else
-        pdDebug.LogAction "WARNING!  pdResources error: " & msgError
+        PDDebug.LogAction "WARNING!  pdResources error: " & msgError
     End If
 End Sub
 

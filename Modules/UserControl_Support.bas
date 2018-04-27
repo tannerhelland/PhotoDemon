@@ -161,18 +161,6 @@ Private m_HooksCreated As Long, m_HooksDestroyed As Long
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
 ' are unloaded.
 
-'Tooltips can request icons, but as of 7.0, this behavior is unused.  (As such, these are not currently implemented.)
-Public Enum TT_ICON_TYPE
-    TTI_NONE = 0
-    TTI_INFO = 1
-    TTI_WARNING = 2
-    TTI_ERROR = 3
-End Enum
-
-#If False Then
-    Private Const TTI_NONE = 0, TTI_INFO = 1, TTI_WARNING = 2, TTI_ERROR = 3
-#End If
-
 'To optimize tooltip positioning, we determine the tooltip edge closest to the mouse hover position (with the assumption that
 ' the user's eyes will be pointed at or near the cursor, so the closer a tooltip is to that, the better - without obscuring
 ' the control underneath, obviously)

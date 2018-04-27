@@ -97,7 +97,6 @@ Private Type ButtonEntry
     btToolTipText As String         'This control supports per-button tooltips.  This behavior can be overridden by not supplying an index to the
                                     ' AssignTooltip function.
     btToolTipTitle As String        'See above comments for btToolTipText
-    btToolTipIcon As TT_ICON_TYPE   'See above comments for btToolTipText
 End Type
 
 Private m_Buttons() As ButtonEntry
@@ -1050,7 +1049,7 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal toolTipIndex As Long = -1)
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal toolTipIndex As Long = -1)
     
     'If toolTipIndex = -1, all buttons receive the same tooltip
     If toolTipIndex = -1 Then
@@ -1060,7 +1059,6 @@ Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTi
             With m_Buttons(i)
                 .btToolTipText = newTooltip
                 .btToolTipTitle = newTooltipTitle
-                .btToolTipIcon = newTooltipIcon
             End With
         Next i
         
@@ -1076,7 +1074,6 @@ Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTi
             With m_Buttons(toolTipIndex)
                 .btToolTipText = newTooltip
                 .btToolTipTitle = newTooltipTitle
-                .btToolTipIcon = newTooltipIcon
             End With
             
         End If
@@ -1093,7 +1090,7 @@ Private Sub SynchronizeToolTipToIndex(Optional ByVal srcIndex As Long = 0)
     If (srcIndex >= LBound(m_Buttons)) And (srcIndex <= UBound(m_Buttons)) And (srcIndex <> m_LastToolTipIndex) Then
     
         'Manually sync the tooltip now
-        ucSupport.AssignTooltip Me.ContainerHwnd, m_Buttons(srcIndex).btToolTipText, m_Buttons(srcIndex).btToolTipTitle, m_Buttons(srcIndex).btToolTipIcon
+        ucSupport.AssignTooltip Me.ContainerHwnd, m_Buttons(srcIndex).btToolTipText, m_Buttons(srcIndex).btToolTipTitle
         
         'Update the cached last index value
         m_LastToolTipIndex = srcIndex

@@ -818,46 +818,46 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     Select Case activeIndex
         
         Case CV_Primary
-            Me.AssignTooltip toolString, "Current color", , True
+            Me.AssignTooltip toolString, "Current color", True
         
         Case CV_HueUp
-            Me.AssignTooltip toolString, "Rotate hue clockwise", , True
+            Me.AssignTooltip toolString, "Rotate hue clockwise", True
                 
         Case CV_SaturationUp
-            Me.AssignTooltip toolString, "Increase saturation", , True
+            Me.AssignTooltip toolString, "Increase saturation", True
             
         Case CV_ValueUp
-            Me.AssignTooltip toolString, "Increase luminance", , True
+            Me.AssignTooltip toolString, "Increase luminance", True
             
         Case CV_RedUp
-            Me.AssignTooltip toolString, "Increase red", , True
+            Me.AssignTooltip toolString, "Increase red", True
             
         Case CV_GreenUp
-            Me.AssignTooltip toolString, "Increase green", , True
+            Me.AssignTooltip toolString, "Increase green", True
             
         Case CV_BlueUp
-            Me.AssignTooltip toolString, "Increase blue", , True
+            Me.AssignTooltip toolString, "Increase blue", True
             
         Case CV_ValueDown
-            Me.AssignTooltip toolString, "Decrease luminance", , True
+            Me.AssignTooltip toolString, "Decrease luminance", True
             
         Case CV_SaturationDown
-            Me.AssignTooltip toolString, "Decrease saturation", , True
+            Me.AssignTooltip toolString, "Decrease saturation", True
             
         Case CV_HueDown
-            Me.AssignTooltip toolString, "Rotate hue counterclockwise", , True
+            Me.AssignTooltip toolString, "Rotate hue counterclockwise", True
             
         Case CV_BlueDown
-            Me.AssignTooltip toolString, "Decrease blue", , True
+            Me.AssignTooltip toolString, "Decrease blue", True
             
         Case CV_GreenDown
-            Me.AssignTooltip toolString, "Decrease green", , True
+            Me.AssignTooltip toolString, "Decrease green", True
             
         Case CV_RedDown
-            Me.AssignTooltip toolString, "Decrease red", , True
+            Me.AssignTooltip toolString, "Decrease red", True
         
         Case Else
-            Me.AssignTooltip vbNullString, , , False
+            Me.AssignTooltip vbNullString, , False
                 
     End Select
     
@@ -882,6 +882,6 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, raiseTipsImmediately
 End Sub

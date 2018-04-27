@@ -203,7 +203,7 @@ Public Function SetPDPalette(ByRef srcPalette As pdPalette) As Boolean
         SetPDPalette = True
             
     Else
-        pdDebug.LogAction "WARNING!  pdPaletteUI.SetPDPalette was passed a null palette!"
+        PDDebug.LogAction "WARNING!  pdPaletteUI.SetPDPalette was passed a null palette!"
     End If
     
 End Function
@@ -402,7 +402,7 @@ End Sub
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_PaletteItemHovered = -1
-    Me.AssignTooltip vbNullString, , , False
+    Me.AssignTooltip vbNullString, , False
     RedrawBackBuffer
 End Sub
 
@@ -416,7 +416,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT
-        Me.AssignTooltip vbNullString, , , False
+        Me.AssignTooltip vbNullString, , False
     End If
     
     If (oldHoverCheck <> m_PaletteItemHovered) Then
@@ -439,7 +439,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
             rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", tmpPal.ColorValue.Red, tmpPal.ColorValue.Green, tmpPal.ColorValue.Blue)
             indexString = g_Language.TranslateMessage("index %1", m_PaletteItemHovered)
-            Me.AssignTooltip hexString & vbCrLf & rgbString & vbCrLf & indexString, tmpPal.ColorName, , True
+            Me.AssignTooltip hexString & vbCrLf & rgbString & vbCrLf & indexString, tmpPal.ColorName, True
             
         End If
         
@@ -723,6 +723,6 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, raiseTipsImmediately
 End Sub
