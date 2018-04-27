@@ -812,6 +812,11 @@ Private Sub NewToolSelected()
 
                     End If
                     
+                    'Release any locked properties (e.g. locked aspect ratio)
+                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Position
+                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Size
+                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_AspectRatio
+                    
                 End If
                 
             End If

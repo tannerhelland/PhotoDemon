@@ -42,7 +42,8 @@ End Enum
     Private Const pdsr_RenderMode = 0, pdsr_HighlightColor = 1, pdsr_HighlightOpacity = 2, pdsr_LightboxColor = 3, pdsr_LightboxOpacity = 4
 #End If
 
-'This module caches a number of UI-related selection details
+'This module caches a number of UI-related selection details.  We cache these here because these
+' are tied to program preferences (and not to specific selection instances).
 Private m_CurSelectionMode As PD_SelectionRender, m_SelHighlightColor As Long, m_SelHighlightOpacity As Single
 Private m_SelLightboxColor As Long, m_SelLightboxOpacity As Single
 
@@ -366,8 +367,9 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         
         'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
         ' To access their indicies properly, we must calculate an offset.
-        Dim subpanelOffset As Long
-        subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(srcImageID)) * 4
+        Dim subpanelOffset As Long, subpanelCtlOffset As Long
+        subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(srcImageID))
+        subpanelCtlOffset = subpanelOffset * 2
         
         If Tools.IsSelectionToolActive Then
         
@@ -381,19 +383,28 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
                     
                     'Rectangular and elliptical selections display left, top, width and height
                     Case ss_Rectangle, ss_Circle
+                        
                         tmpRectF = pdImages(srcImageID).MainSelection.GetCornersLockedRect()
-                        toolpanel_Selections.tudSel(subpanelOffset + 0).Value = tmpRectF.Left
-                        toolpanel_Selections.tudSel(subpanelOffset + 1).Value = tmpRectF.Top
-                        toolpanel_Selections.tudSel(subpanelOffset + 2).Value = tmpRectF.Width
-                        toolpanel_Selections.tudSel(subpanelOffset + 3).Value = tmpRectF.Height
+                        If (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 0) Then
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
+                        ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 1) Then
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
+                        Else
+                            'TODO!
+                        End If
+                        
+                        'Also make sure the "lock" icon matches the current lock state
+                        toolpanel_Selections.cmdLock(subpanelOffset).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(toolpanel_Selections.cboSize(0).ListIndex)
                         
                     'Line selections display x1, y1, x2, y2
                     Case ss_Line
                         tmpRectFRB = pdImages(srcImageID).MainSelection.GetCornersUnlockedRect()
-                        toolpanel_Selections.tudSel(subpanelOffset + 0).Value = tmpRectFRB.Left
-                        toolpanel_Selections.tudSel(subpanelOffset + 1).Value = tmpRectFRB.Top
-                        toolpanel_Selections.tudSel(subpanelOffset + 2).Value = tmpRectFRB.Right
-                        toolpanel_Selections.tudSel(subpanelOffset + 3).Value = tmpRectFRB.Bottom
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
+                        toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
             
                 End Select
                 

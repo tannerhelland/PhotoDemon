@@ -105,6 +105,16 @@ End Enum
     Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_LineWidth = 5, sp_SmoothStroke = 6, sp_PolygonCurvature = 7, sp_WandTolerance = 8, sp_WandSearchMode = 9, sp_WandSampleMerged = 10, sp_WandCompareMethod = 11
 #End If
 
+Public Enum PD_SelectionLockable
+    pdsl_Position = 0
+    pdsl_Size = 1
+    pdsl_AspectRatio = 2
+End Enum
+
+#If False Then
+    Private Const pdsl_Position = 0, pdsl_Size = 1, pdsl_AspectRatio = 2
+#End If
+
 'The coordinates of the current selection (if rectangular)
 Private m_CornersUnlocked As RECTF_RB
 
@@ -117,6 +127,9 @@ Private m_Bounds As RectF
 
 'Is this selection "locked in"?
 Private m_IsLocked As Boolean
+
+'Some selection attributes can be independently locked (e.g. aspect ratio).
+Private m_PositionLocked As Boolean, m_SizeLocked As Boolean, m_AspectLocked As Boolean
 
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
 Private m_MoveXDist As Single, m_MoveYDist As Single
@@ -791,6 +804,37 @@ Friend Sub SetPolygonClosedState(ByVal newState As Boolean)
     m_PolygonClosed = newState
     m_ViewportRefReady = False
 End Sub
+
+'Some properties can be independently locked (e.g. size).  When locked, these properties cannot be changed by UI inputs.
+Friend Sub LockProperty(ByVal selProperty As PD_SelectionLockable)
+    If (selProperty = pdsl_Position) Then
+        m_PositionLocked = True
+    ElseIf (selProperty = pdsl_Size) Then
+        m_SizeLocked = True
+    ElseIf (selProperty = pdsl_AspectRatio) Then
+        m_AspectLocked = True
+    End If
+End Sub
+
+Friend Sub UnlockProperty(ByVal selProperty As PD_SelectionLockable)
+    If (selProperty = pdsl_Position) Then
+        m_PositionLocked = False
+    ElseIf (selProperty = pdsl_Size) Then
+        m_SizeLocked = False
+    ElseIf (selProperty = pdsl_AspectRatio) Then
+        m_AspectLocked = False
+    End If
+End Sub
+
+Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable) As Boolean
+    If (selProperty = pdsl_Position) Then
+        GetPropertyLockedState = m_PositionLocked
+    ElseIf (selProperty = pdsl_Size) Then
+        GetPropertyLockedState = m_SizeLocked
+    ElseIf (selProperty = pdsl_AspectRatio) Then
+        GetPropertyLockedState = m_AspectLocked
+    End If
+End Function
 
 'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
 ' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
@@ -1623,22 +1667,44 @@ Friend Sub UpdateViaTextBox()
 
     'Ignore text box update requests until the selection is locked in
     If (Not Me.IsLockedIn) Then Exit Sub
-
+    
+    If m_RejectRefreshRequests Then Exit Sub
     m_RejectRefreshRequests = True
     
-    Dim subpanelOffset As Long
-    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage)) * 4
+    Dim subpanelOffset As Long, subpanelCtlOffset As Long
+    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage))
+    subpanelCtlOffset = subpanelOffset * 2
     
     'Check all text box entries for validity, then update the corresponding selection values.
     Select Case m_SelectionShape
     
-        'Rectangles, ellipses, and lines all support movement via text box
-        Case ss_Rectangle, ss_Circle, ss_Line
+        'Rectangles are currently getting experimental support for new features!
+        Case ss_Rectangle, ss_Circle
             m_IsMaskReady = False
-            If toolpanel_Selections.tudSel(subpanelOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelOffset + 0)
-            If toolpanel_Selections.tudSel(subpanelOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelOffset + 1)
-            If toolpanel_Selections.tudSel(subpanelOffset + 2).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelOffset + 2)
-            If toolpanel_Selections.tudSel(subpanelOffset + 3).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelOffset + 3)
+            
+            'Modify position
+            If (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 0) Then
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+                
+            'Modify size
+            ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 1) Then
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+            
+            'Modify aspect ratio
+            Else
+                'TODO!
+            End If
+            
+        
+        'Lines support endpoint movement via text box
+        Case ss_Line
+            m_IsMaskReady = False
+            If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+            If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+            If toolpanel_Selections.tudSel(subpanelCtlOffset + 2).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 2)
+            If toolpanel_Selections.tudSel(subpanelCtlOffset + 3).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 3)
             
         'I haven't decided if other selection types will support movement via text box...
         Case Else
@@ -1648,7 +1714,7 @@ Friend Sub UpdateViaTextBox()
     'For some selection types, we need to update more than just the m_CornersLocked.Left/Top/Width/Height values.
     Select Case m_SelectionShape
     
-        'Adjust the x1, y1, x2, y2 values to match the retrieved text box values
+        'Adjust the x1, y1, x2, y2 values to match any changes made via text box values
         Case ss_Rectangle, ss_Circle
             m_CornersUnlocked.Left = m_CornersLocked.Left
             m_CornersUnlocked.Top = m_CornersLocked.Top
