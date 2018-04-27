@@ -26,11 +26,28 @@ Option Explicit
 'These constants were originally declared in zstd.h
 Private Const ZSTD_MIN_CLEVEL As Long = 1
 Private Const ZSTD_DEFAULT_CLEVEL As Long = 3
-Private Const ZSTD_MAX_CLEVEL As Long = 22
+
+'Zstd supports higher compression levels (e.g. >= 20), but these "ultra-mode" compression levels require
+' additional memory during both compression *and* decompression.  This limits its usefulness in a project
+' like ours, where we attempt to run even on extremely old, memory-limited PCs.  As such, I've artificially
+' limited the maximum level to 19 for our usage.
+Private Const ZSTD_MAX_CLEVEL As Long = 19
 
 Private Declare Function ZSTD_versionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long
+
+'Basic compress/decompress functions.  Note that these create their own contexts on every call;
+' for reduced memory churn, it's preferable to reuse one compression and decompression context per-session.
 Private Declare Function ZSTD_compress Lib "libzstd" Alias "_ZSTD_compress@20" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long, ByVal cCompressionLevel As Long) As Long
 Private Declare Function ZSTD_decompress Lib "libzstd" Alias "_ZSTD_decompress@16" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long) As Long
+
+Private m_CompressionContext As Long, m_DecompressionContext As Long
+Private Declare Function ZSTD_createCCtx Lib "libzstd" Alias "_ZSTD_createCCtx@0" () As Long
+Private Declare Function ZSTD_freeCCtx Lib "libzstd" Alias "_ZSTD_freeCCtx@4" (ByVal srcCCtx As Long) As Long
+Private Declare Function ZSTD_compressCCtx Lib "libzstd" Alias "_ZSTD_compressCCtx@24" (ByVal srcCCtx As Long, ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long, ByVal cCompressionLevel As Long) As Long
+
+Private Declare Function ZSTD_createDCtx Lib "libzstd" Alias "_ZSTD_createDCtx@0" () As Long
+Private Declare Function ZSTD_freeDCtx Lib "libzstd" Alias "_ZSTD_freeDCtx@4" (ByVal srcDCtx As Long) As Long
+Private Declare Function ZSTD_decompressDCtx Lib "libzstd" Alias "_ZSTD_decompressDCtx@20" (ByVal srcDCtx As Long, ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long) As Long
 
 'These functions are not as self-explanatory as the ones above:
 Private Declare Function ZSTD_maxCLevel Lib "libzstd" Alias "_ZSTD_maxCLevel@0" () As Long  'Maximum compression level available
@@ -62,20 +79,37 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
     'If we initialized the library successfully, cache some zstd-specific data
     If InitializeZStd Then
         m_ZstdCompressLevelMax = ZSTD_maxCLevel()
-        pdDebug.LogAction "zstd is ready.  Max compression level supported: " & CStr(m_ZstdCompressLevelMax)
+        If (m_ZstdCompressLevelMax > ZSTD_MAX_CLEVEL) Then m_ZstdCompressLevelMax = ZSTD_MAX_CLEVEL
+        m_CompressionContext = ZSTD_createCCtx()
+        m_DecompressionContext = ZSTD_createDCtx()
+        PDDebug.LogAction "zstd is ready.  Max compression level supported: " & CStr(m_ZstdCompressLevelMax)
     Else
-        pdDebug.LogAction "WARNING!  LoadLibrary failed to load zstd.  Last DLL error: " & Err.LastDllError
-        pdDebug.LogAction "(FYI, the attempted path was: " & zstdPath & ")"
+        PDDebug.LogAction "WARNING!  LoadLibrary failed to load zstd.  Last DLL error: " & Err.LastDllError
+        PDDebug.LogAction "(FYI, the attempted path was: " & zstdPath & ")"
     End If
     
 End Function
 
 'When PD closes, make sure to release our open zstd handle
 Public Sub ReleaseZstd()
+
     If (m_ZstdHandle <> 0) Then
+        
         VBHacks.FreeLib m_ZstdHandle
         m_ZstdHandle = 0
+        
+        If (m_CompressionContext <> 0) Then
+            ZSTD_freeCCtx m_CompressionContext
+            m_CompressionContext = 0
+        End If
+        
+        If (m_DecompressionContext <> 0) Then
+            ZSTD_freeDCtx m_DecompressionContext
+            m_DecompressionContext = 0
+        End If
+        
     End If
+    
 End Sub
 
 Public Function GetZstdVersion() As Long
@@ -118,9 +152,13 @@ Public Function ZstdCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData A
         ReDim dstArray(0 To dstArraySizeInBytes - 1) As Byte
     End If
     
-    'Perform the compression
+    'Perform the compression, and attempt to reuse a compression context if one is available
     Dim finalSize As Long
-    finalSize = ZSTD_compress(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel)
+    If (m_CompressionContext <> 0) Then
+        finalSize = ZSTD_compressCCtx(m_CompressionContext, VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel)
+    Else
+        finalSize = ZSTD_compress(VarPtr(dstArray(0)), dstArraySizeInBytes, ptrToSrcData, srcDataSize, compressionLevel)
+    End If
     
     'Check for error returns
     If (ZSTD_isError(finalSize) <> 0) Then
@@ -144,7 +182,11 @@ Public Function ZstdCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSiz
     
     'Perform the compression
     Dim finalSize As Long
-    finalSize = ZSTD_compress(dstPointer, dstSizeInBytes, srcPointer, srcSizeInBytes, compressionLevel)
+    If (m_CompressionContext <> 0) Then
+        finalSize = ZSTD_compressCCtx(m_CompressionContext, dstPointer, dstSizeInBytes, srcPointer, srcSizeInBytes, compressionLevel)
+    Else
+        finalSize = ZSTD_compress(dstPointer, dstSizeInBytes, srcPointer, srcSizeInBytes, compressionLevel)
+    End If
     
     'Check for error returns
     ZstdCompressNakedPointers = (ZSTD_isError(finalSize) = 0)
@@ -171,13 +213,17 @@ Public Function ZstdDecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData
         ReDim dstArray(0 To knownUncompressedSize - 1) As Byte
     End If
     
-    'Perform decompression
+    'Perform decompression, and attempt to reuse a decompression context if one is available
     Dim finalSize As Long
-    finalSize = ZSTD_decompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize)
+    If (m_DecompressionContext <> 0) Then
+        finalSize = ZSTD_decompressDCtx(m_DecompressionContext, VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize)
+    Else
+        finalSize = ZSTD_decompress(VarPtr(dstArray(0)), knownUncompressedSize, ptrToSrcData, srcDataSize)
+    End If
     
     'Check for error returns
     If (ZSTD_isError(finalSize) <> 0) Then
-        pdDebug.LogAction "ZSTD_Decompress failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        PDDebug.LogAction "ZSTD_Decompress failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "ZSTD_decompress failed", finalSize
         finalSize = 0
     End If
@@ -190,11 +236,15 @@ Public Function ZstdDecompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal kno
     
     'Perform decompression
     Dim finalSize As Long
-    finalSize = ZSTD_decompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize)
+    If (m_DecompressionContext <> 0) Then
+        finalSize = ZSTD_decompressDCtx(m_DecompressionContext, ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize)
+    Else
+        finalSize = ZSTD_decompress(ptrToDstBuffer, knownUncompressedSize, ptrToSrcData, srcDataSize)
+    End If
     
     'Check for error returns
     If (ZSTD_isError(finalSize) <> 0) Then
-        pdDebug.LogAction "ZSTD_Decompress failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        PDDebug.LogAction "ZSTD_Decompress failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "ZSTD_decompress failed", finalSize
         finalSize = 0
     End If
@@ -227,9 +277,9 @@ Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturn
         Dim errDescription As String
         errDescription = Strings.StringFromCharPtr(ptrChar, False, 255)
 
-        pdDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_External_Lib
+        PDDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_External_Lib
     Else
-        pdDebug.LogAction "zstd experienced an error: " & errString, PDM_External_Lib
+        PDDebug.LogAction "zstd experienced an error: " & errString, PDM_External_Lib
     End If
     
 End Sub
