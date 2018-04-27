@@ -453,10 +453,22 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
             
             'Vertical rulers require a specialized font object.  Create it just once, then cache the result.
             If (m_VerticalFont Is Nothing) Then
+                
                 Set m_VerticalFont = New pdFont
-                m_VerticalFont.SetFontFace "@" & tmpFont.GetFontFace()
+                
+                'Attempt to create a vertically optimized version of the UI font.  (The @ prefix is a
+                ' weird Windows way to define this - see https://msdn.microsoft.com/en-us/library/cc194859.aspx)
+                ' Note that XP specifically is unlikely to have a vertically optimized version, which is
+                ' okay - the ruler will still render correctly, but kerning and hinting won't be as nice.
+                If m_VerticalFont.DoesFontExist("@" & tmpFont.GetFontFace()) Then
+                    m_VerticalFont.SetFontFace "@" & tmpFont.GetFontFace()
+                Else
+                    m_VerticalFont.SetFontFace tmpFont.GetFontFace()
+                End If
+                
                 m_VerticalFont.SetFontSize 8!
                 If (Not m_VerticalFont.CreateFontObject(900)) Then PDDebug.LogAction "WARNING!  Vertical font failed!"
+                
             End If
             
             'We now need to figure out what scale to use for our rendering.  PD typically renders ruler
@@ -797,6 +809,6 @@ End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon, raiseTipsImmediately
+Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, raiseTipsImmediately
 End Sub
