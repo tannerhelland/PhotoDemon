@@ -34,6 +34,7 @@ Chiahong Hong (https://github.com/ChiahongHong)
 Chrfb of deviantart.com for the original version of PhotoDemon's icon ('Ecqlipse 2,' CC-BY-NC-SA-3.0) (http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546)
 Cody Robertson
 Dana Seaman (http://www.cyberactivex.com/) 
+DarkAlchy
 Davor Šikic
 Dilettante (http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
 Dirk Hartmann (http://www.taichi-zentrum-heidelberg.de)

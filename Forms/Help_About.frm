@@ -257,6 +257,7 @@ Private Sub Form_Load()
     GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
+    GenerateContributor "DarkAlchy"
     GenerateContributor "Davor Sikic"
     GenerateContributor "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control"
     GenerateContributor "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de"
