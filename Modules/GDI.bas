@@ -167,29 +167,31 @@ End Sub
 
 'Basic wrappers for rect-filling and rect-tracing via GDI
 Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long, ByVal crColor As Long)
-
-    'Create a brush with the specified color
-    Dim tmpBrush As Long
-    tmpBrush = CreateSolidBrush(crColor)
     
-    'Select the brush into the target DC
-    Dim oldObject As Long
-    oldObject = SelectObject(targetDC, tmpBrush)
+    'Failsafe checks
+    If (targetDC <> 0) Then
     
-    'Fill the rect
-    Dim tmpRect As RectL
-    With tmpRect
-        .Left = x1
-        .Top = y1
-        .Right = x1 + rectWidth + 1
-        .Bottom = y1 + rectHeight + 1
-    End With
-    
-    FillRect targetDC, VarPtr(tmpRect), tmpBrush
-    
-    'Remove the brush and delete it
-    SelectObject targetDC, oldObject
-    DeleteObject tmpBrush
+        'Create a brush with the specified color
+        Dim tmpBrush As Long
+        tmpBrush = CreateSolidBrush(crColor)
+        
+        If (tmpBrush <> 0) Then
+        
+            'Fill the rect
+            Dim tmpRect As RectL
+            With tmpRect
+                .Left = x1
+                .Top = y1
+                .Right = x1 + rectWidth + 1
+                .Bottom = y1 + rectHeight + 1
+            End With
+            
+            FillRect targetDC, VarPtr(tmpRect), tmpBrush
+            If (DeleteObject(tmpBrush) = 0) Then PDDebug.LogAction "WARNING!  GDI.FillRectToDC failed to free the brush it allocated."
+            
+        End If
+        
+    End If
 
 End Sub
 
