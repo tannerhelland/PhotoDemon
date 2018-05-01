@@ -288,7 +288,7 @@ Friend Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
         VBHacks.StartSubclassing m_hWnd, Me
                     
         'If enter, leave, and hover events are desired, immediately start mouse tracking
-        m_MouseTrackingActive = RequestMouseTrackingForHwnd
+        m_MouseTrackingActive = RequestMouseTrackingForHwnd()
         AddInputTracker = m_MouseTrackingActive
         
     End If
@@ -398,14 +398,14 @@ Private Sub ResetClassCursor()
     SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some controls
 End Sub
 
-'Populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent API.  (This is done frequently, as Windows
-' automatically deactivates mouse tracking after raising a mouse-related event.)
-Private Function RequestMouseTrackingForHwnd()
-
+'Populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent API.  (This is done frequently,
+' as Windows automatically deactivates mouse tracking after raising a mouse-related event.)
+Private Function RequestMouseTrackingForHwnd() As Boolean
+    
     Dim eventTracker As TRACKMOUSEEVENT_STRUCT
     
     With eventTracker
-        .cbSize = Len(eventTracker)
+        .cbSize = LenB(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
         .hWndTrack = m_hWnd
         .dwHoverTime = &HFFFFFFFF       'Use the system default hover time (400 ms, I believe)
@@ -803,8 +803,7 @@ Private Function HandleMouseMove(ByVal uiMsg As Long, ByVal wParam As Long, ByVa
     ' do so now, and raise a MouseEnter event to match.
     If (Not m_MouseTrackingActive) Then
         
-        m_MouseTrackingActive = True
-        RequestMouseTrackingForHwnd
+        m_MouseTrackingActive = RequestMouseTrackingForHwnd()
         
         'Reset the class cursor and re-apply any custom cursor now.
         ApplyCursor True

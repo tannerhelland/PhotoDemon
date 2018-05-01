@@ -1330,9 +1330,18 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
         ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
         If (Not srcImgProfileGood) Then
             m_Warnings.AddString "WARNING!  ICC profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied!"
-            srcProfile.CreateSRGBProfile
+            iccIndex = -1
         End If
         
+    End If
+    
+    'ICC processing failed.  Create a generic source profile.
+    If (iccIndex <= 0) Then
+        If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_GreyscaleAlpha) Then
+            srcProfile.CreateGenericGrayscaleProfile
+        Else
+            srcProfile.CreateSRGBProfile
+        End If
     End If
     
     'At present, sRGB destination profiles are hard-coded; this is a work in progress for future releases
