@@ -758,6 +758,11 @@ Friend Function DoesFontExist(ByVal fontNameToCheck As String, Optional ByRef fo
     'See if the font object has the same name.  Windows will automatically substitute a new font if the requested one can't be found.
     DoesFontExist = Strings.StringsEqual(fontNameToCheck, tmpFont.Name, True)
     
+    'Special check for vertical fonts
+    If (Not DoesFontExist) And (InStr(1, fontNameToCheck, "@", vbBinaryCompare) <> 0) Then
+        DoesFontExist = Strings.StringsEqual(Right$(fontNameToCheck, Len(fontNameToCheck) - 1), tmpFont.Name, True)
+    End If
+    
     'Not sure if helpful, but return the replacement font name and nearest supported size
     fontSubstitute = tmpFont.Name
     nearestFontSize = tmpFont.Size

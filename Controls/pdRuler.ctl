@@ -387,18 +387,12 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         
             Select Case m_RulerUnit
             
-                Case mu_Centimeters
-                    .Left = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Left, curImgDPI)
-                    .Top = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Top, curImgDPI)
-                    .Width = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Width, curImgDPI)
-                    .Height = Units.ConvertPixelToOtherUnit(mu_Centimeters, m_imgCoordRectF.Height, curImgDPI)
+                Case mu_Inches, mu_Centimeters, mu_Millimeters
+                    .Left = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Left, curImgDPI)
+                    .Top = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Top, curImgDPI)
+                    .Width = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Width, curImgDPI)
+                    .Height = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Height, curImgDPI)
                     
-                Case mu_Inches
-                    .Left = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Left, curImgDPI)
-                    .Top = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Top, curImgDPI)
-                    .Width = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Width, curImgDPI)
-                    .Height = Units.ConvertPixelToOtherUnit(mu_Inches, m_imgCoordRectF.Height, curImgDPI)
-                
                 'Pixels are the only remaining supported unit; just use the image coordinates as-is!
                 Case Else
                     .Left = m_imgCoordRectF.Left
@@ -460,7 +454,10 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
                 ' weird Windows way to define this - see https://msdn.microsoft.com/en-us/library/cc194859.aspx)
                 ' Note that XP specifically is unlikely to have a vertically optimized version, which is
                 ' okay - the ruler will still render correctly, but kerning and hinting won't be as nice.
-                If m_VerticalFont.DoesFontExist("@" & tmpFont.GetFontFace()) Then
+                ' (Also note: Windows doesn't ship with a standalone vertical-oriented version of Segoe UI;
+                ' instead, it should give us a copy of @Malgun Gothic, which is the Korean OS UI default,
+                ' and it contains a vertically optimized version of Segoe UI "under the hood".
+                If OS.IsVistaOrLater Then
                     m_VerticalFont.SetFontFace "@" & tmpFont.GetFontFace()
                 Else
                     m_VerticalFont.SetFontFace tmpFont.GetFontFace()
@@ -776,14 +773,8 @@ Private Function GetConvertedValue(ByVal srcValue As Double) As Long
     'If a unit other than pixels is active, we need to transform this coordinate to pixels prior to rendering
     If (m_RulerUnit = mu_Pixels) Then
         GetConvertedValue = Int(srcValue)
-    ElseIf (m_RulerUnit = mu_Centimeters) Then
-        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(mu_Centimeters, srcValue, m_LastDPI))
-    ElseIf (m_RulerUnit = mu_Inches) Then
-        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(mu_Inches, srcValue, m_LastDPI))
-    
-    'Failsafe check only; this should never trigger
     Else
-        GetConvertedValue = Int(srcValue)
+        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(m_RulerUnit, srcValue, m_LastDPI) + 0.5)
     End If
 
 End Function
