@@ -386,6 +386,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             If (Not targetImage.ImgMetadata.HasMetadata) Then
             
                 If ExifTool.IsMetadataFinished Then
+                
                     PDDebug.LogAction "Metadata retrieved successfully."
                     targetImage.ImgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, targetImage.imageID
                     

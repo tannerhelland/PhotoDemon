@@ -652,14 +652,22 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     Dim relevantTagIndex As Long
         
     'At present, the only post-processing supplied by this function is limited to:
-    ' 2) Precise palette color count of 8-bpp non-PNG images (because FreeImage always
+    ' 1) DPI information (as a failsafe, because FreeImage doesn't have a way to report that
+    '    "this image lacks DPI information"; instead, it always reports 72 DPI.  ExifTool
+    '    will give us a more precise report, and it will can resolve conflicting entries.)
+    ' 1) Precise palette color count of 8-bpp non-PNG images (because FreeImage always
     '    assumes palettes have 256 colors, which is both stupid and obnoxious).
-    ' 3) Multipage TIFFs that may have per-page information stored (like page names)
-    ' 4) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can).  This is
+    ' 2) Multipage TIFFs that may have per-page information stored (like page names)
+    ' 3) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can).  This is
     '    limited to esoteric ICC+format combinations like GIF.
+    
     
     'Because of this, we only need to proceed if the image meets some very specific criteria.
     If ppMayBeNeeded Then
+        
+        'Knock DPI out first
+        Dim xResolution As Double, yResolution As Double
+        If Me.GetResolution(xResolution, yResolution) Then pdImages(parentImageID).SetDPI xResolution, yResolution
         
         'Check for 8-bpp, non-PNG images.  (PD's internal PNG decoder handles palettes correctly, but images coming from
         ' FreeImage or GDI+ may not.)
