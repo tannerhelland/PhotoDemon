@@ -647,20 +647,13 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As PD_MeasurementUnit, ByVal ne
             If (m_initWidth <> 0) Then tudWidth.DefaultValue = m_initWidth Else tudWidth.DefaultValue = g_Displays.GetDesktopWidth
             If (m_initHeight <> 0) Then tudHeight.DefaultValue = m_initHeight Else tudHeight.DefaultValue = g_Displays.GetDesktopHeight
             
-        Case mu_Inches
+        Case mu_Inches, mu_Centimeters, mu_Millimeters
             tudWidth.SigDigits = 2
             tudWidth.Min = 0.01
-            tudWidth.Max = 320#
-            If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(mu_Inches, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(mu_Inches, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
-            If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(mu_Inches, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(mu_Inches, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
-        
-        Case mu_Centimeters
-            tudWidth.SigDigits = 2
-            tudWidth.Min = 0.01
-            tudWidth.Max = 320#
-            If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(mu_Centimeters, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(mu_Centimeters, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
-            If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(mu_Centimeters, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(mu_Centimeters, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
-        
+            If (newUnit = mu_Millimeters) Then tudWidth.Max = 320000# Else tudWidth.Max = 32000#
+            If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
+            If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
+            
     End Select
     
     'As the height and width boxes will always match, simply mirror the tudBox limits
@@ -808,11 +801,8 @@ Private Sub PopulateDropdowns()
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels")
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches")
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" centimeters")
-        If Not m_PercentDisabled Then
-            cmbWidthUnit.ListIndex = mu_Pixels
-        Else
-            cmbWidthUnit.ListIndex = mu_Pixels - 1
-        End If
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" millimeters")
+        If (Not m_PercentDisabled) Then cmbWidthUnit.ListIndex = mu_Pixels Else cmbWidthUnit.ListIndex = mu_Pixels - 1
     End If
     
     'Rather than manually populate the height unit box, just copy whatever entries we've set for the width box

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3336</langversion>
+<langversion>6.8.3337</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4557,6 +4557,11 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>képpont/hüvelyk (DPI)</translation>
 </phrase>
@@ -4576,7 +4581,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>pontos mérete változik a kép</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4708,6 +4713,11 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>kép átméretezése</translation>
 </phrase>
@@ -4737,7 +4747,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>A képméret módosítása egység bal oldalán jelenik meg ez a keretes</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13770,16 +13780,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>helyzet (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>méret (W, H)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>vonalvastagság</translation>
 </phrase>
@@ -13832,6 +13832,16 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <phrase>
 <original>border</original>
 <translation>határ</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>helyzet (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>méret (W, H)</translation>
 </phrase>
 
 <phrase>
@@ -13899,7 +13909,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Ez a beállítás milyen kritériumok varázspálca használja annak meghatározására, hogy egy pixel hozzá kell adni az aktuális választás.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15354,10 +15364,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

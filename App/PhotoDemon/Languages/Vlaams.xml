@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.353</langversion>
+<langversion>6.7.354</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4571,6 +4571,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>pixels / inch (PPI)</translation>
 </phrase>
@@ -4590,7 +4595,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>exacte grootte is afhankelijk van de afbeelding</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4722,6 +4727,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Herschalen afbeelding</translation>
 </phrase>
@@ -4751,7 +4761,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13788,16 +13798,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>positie (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>grootte (w, h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>lijndikte</translation>
 </phrase>
@@ -13850,6 +13850,16 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <phrase>
 <original>border</original>
 <translation>grens</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>positie (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>grootte (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -13917,7 +13927,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15377,10 +15387,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

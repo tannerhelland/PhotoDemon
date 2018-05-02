@@ -27,8 +27,8 @@ Begin VB.UserControl pdStatusBar
       Left            =   3630
       TabIndex        =   0
       Top             =   15
-      Width           =   660
-      _ExtentX        =   1164
+      Width           =   690
+      _ExtentX        =   1217
       _ExtentY        =   635
       UseCustomBackgroundColor=   -1  'True
       FontSize        =   9
@@ -344,9 +344,9 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
                 iHeight = ConvertPixelToOtherUnit(mu_Inches, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format$(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
             
-            Case mu_Centimeters
-                iWidth = ConvertPixelToOtherUnit(mu_Centimeters, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-                iHeight = ConvertPixelToOtherUnit(mu_Centimeters, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
+            Case mu_Centimeters, mu_Millimeters
+                iWidth = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+                iHeight = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format$(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
             
         End Select
@@ -383,6 +383,7 @@ Public Function PopulateSizeUnits()
     cmbSizeUnit.AddItem "px", 0
     cmbSizeUnit.AddItem "in", 1
     cmbSizeUnit.AddItem "cm", 2
+    cmbSizeUnit.AddItem "mm", 3
     cmbSizeUnit.ListIndex = 0
 End Function
 

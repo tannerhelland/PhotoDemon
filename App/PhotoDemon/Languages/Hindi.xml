@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.56</langversion>
+<langversion>1.0.57</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4567,6 +4567,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>पिक्सल</translation>
 </phrase>
@@ -4586,7 +4591,7 @@ or the File > Open and File > Import menus.</original>
 <translation>सटीक आकार छवि के अनुसार भिन्न होगा</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4718,6 +4723,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>छवि का आकार बदलना</translation>
 </phrase>
@@ -4747,7 +4757,7 @@ or the File > Open and File > Import menus.</original>
 <translation>इस बॉक्स के बाईं ओर प्रदर्शित छवि आकार इकाई बदलें</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13784,16 +13794,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>स्थिति (एक्स, वाई)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>आकार (डब्ल्यू, एच)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>रेखा की चौड़ाई</translation>
 </phrase>
@@ -13846,6 +13846,16 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>border</original>
 <translation>सीमा</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>स्थिति (एक्स, वाई)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>आकार (डब्ल्यू, एच)</translation>
 </phrase>
 
 <phrase>
@@ -13913,7 +13923,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>यह विकल्प नियंत्रित करता है कि कौन सी मापदंड जादू की छड़ी का उपयोग करता है, यह निर्धारित करने के लिए कि क्या वर्तमान चयन में एक पिक्सेल जोड़ा जाना चाहिए।</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15372,10 +15382,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

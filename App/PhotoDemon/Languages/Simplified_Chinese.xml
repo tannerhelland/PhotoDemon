@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3432</langversion>
+<langversion>7.0.3433</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4562,6 +4562,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>像素/英寸（PPI）</translation>
 </phrase>
@@ -4581,7 +4586,7 @@ or the File > Open and File > Import menus.</original>
 <translation>精确大小会因图像而异</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4713,6 +4718,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>调整图像大小</translation>
 </phrase>
@@ -4742,7 +4752,7 @@ or the File > Open and File > Import menus.</original>
 <translation>将图像大小单位显示为左边框的值</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13775,16 +13785,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>位置(x,y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>大小(w,h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>线宽</translation>
 </phrase>
@@ -13837,6 +13837,16 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>border</original>
 <translation>边界</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>位置(x,y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>大小(w,h)</translation>
 </phrase>
 
 <phrase>
@@ -13904,7 +13914,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15360,10 +15370,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

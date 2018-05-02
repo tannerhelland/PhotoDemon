@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3336</langversion>
+<langversion>6.8.3337</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4568,6 +4568,11 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>piksela</translation>
 </phrase>
@@ -4587,7 +4592,7 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <translation>Točna veličina varira ovisno o slici</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4719,6 +4724,11 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Promijenite veličinu slike</translation>
 </phrase>
@@ -4748,7 +4758,7 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <translation>Promijenite jedinicu veličine slike koja se prikazuje lijevo od ovog okvira</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13784,16 +13794,6 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>Položaj (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>Veličina (w, h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>Širine linije</translation>
 </phrase>
@@ -13846,6 +13846,16 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <phrase>
 <original>border</original>
 <translation>granica</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>Položaj (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Veličina (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -13913,7 +13923,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Ova opcija kontrolira koje kriterije čarobni štapić koristi kako bi utvrdio treba li dodati pikselu trenutnom odabiru.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15373,10 +15383,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

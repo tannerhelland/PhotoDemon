@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.353</langversion>
+<langversion>6.7.354</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -4570,6 +4570,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>pixel/pollice (PPI)</translation>
 </phrase>
@@ -4589,7 +4594,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>l'esatta dimensione varierà tramite l'immagine</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4721,6 +4726,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Ridimensiona l'immagine</translation>
 </phrase>
@@ -4750,7 +4760,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Modifica l'unità delle dimensioni nell'immagine visualizzata a sinistra di questo riquadro.</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13786,16 +13796,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>posizione (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>dimensioni (w, h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>larghezza della linea</translation>
 </phrase>
@@ -13848,6 +13848,16 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <phrase>
 <original>border</original>
 <translation>confine</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>posizione (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>dimensioni (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -13915,7 +13925,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15374,10 +15384,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

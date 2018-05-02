@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3336</langversion>
+<langversion>6.8.3337</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4565,6 +4565,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>kuvapistettä/tuuma (DPI)</translation>
 </phrase>
@@ -4584,7 +4589,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <translation>tarkka koko vaihtelee kuvan</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4716,6 +4721,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Muuta kuvan kokoa</translation>
 </phrase>
@@ -4745,7 +4755,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <translation>Muuta kuvakoko laitteen vasemmalla puolella näkyy tämän laatikon</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13782,16 +13792,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>asema (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>koko (w, h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>viivan leveys</translation>
 </phrase>
@@ -13844,6 +13844,16 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <phrase>
 <original>border</original>
 <translation>reunus</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>asema (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>koko (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -13911,7 +13921,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Tämä vaihtoehto tarkastuksia, jotka kriteerit taikasauvaa käyttää sen määrittämiseksi, onko pikseli olisi lisättävä nykyiseen valintaan.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15371,10 +15381,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

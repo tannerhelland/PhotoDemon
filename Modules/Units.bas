@@ -24,10 +24,11 @@ Public Enum PD_MeasurementUnit
     mu_Pixels = 1
     mu_Inches = 2
     mu_Centimeters = 3
+    mu_Millimeters = 4
 End Enum
 
 #If False Then
-    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3
+    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4
 #End If
 
 Public Enum PD_ResolutionUnit
@@ -48,7 +49,7 @@ Public Function ConvertPixelToOtherUnit(ByVal curUnit As PD_MeasurementUnit, ByV
     Select Case curUnit
     
         Case mu_Percent
-            If (initPixelValue <> 0) Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
+            If (initPixelValue <> 0) Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100#
             
         Case mu_Pixels
             ConvertPixelToOtherUnit = srcPixelValue
@@ -58,6 +59,9 @@ Public Function ConvertPixelToOtherUnit(ByVal curUnit As PD_MeasurementUnit, ByV
         
         Case mu_Centimeters
             If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
+            
+        Case mu_Millimeters
+            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution) * 10#
     
     End Select
 
@@ -73,22 +77,21 @@ Public Function ConvertOtherUnitToPixels(ByVal curUnit As PD_MeasurementUnit, By
     'The translation function used depends on the currently selected unit
     Select Case curUnit
     
-        'Percent
         Case mu_Percent
-            ConvertOtherUnitToPixels = CDbl(srcUnitValue / 100) * initPixelValue
-            
-        'Pixels
+            ConvertOtherUnitToPixels = CDbl(srcUnitValue / 100#) * initPixelValue
+        
         Case mu_Pixels
             ConvertOtherUnitToPixels = srcUnitValue
         
-        'Inches
         Case mu_Inches
-            ConvertOtherUnitToPixels = srcUnitValue * srcUnitResolution
+            ConvertOtherUnitToPixels = Int(srcUnitValue * srcUnitResolution + 0.5)
         
-        'CM
         Case mu_Centimeters
-            ConvertOtherUnitToPixels = GetInchesFromCM(srcUnitValue) * srcUnitResolution
+            ConvertOtherUnitToPixels = Int(GetInchesFromCM(srcUnitValue) * srcUnitResolution + 0.5)
             
+        Case mu_Millimeters
+            ConvertOtherUnitToPixels = Int(GetInchesFromCM(srcUnitValue / 10#) * srcUnitResolution + 0.5)
+        
     End Select
     
 End Function

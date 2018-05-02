@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3336</langversion>
+<langversion>6.8.3337</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4565,6 +4565,11 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>piksel/inç (DPI)</translation>
 </phrase>
@@ -4584,7 +4589,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <translation>Resme göre değişir tam boyutunu</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4716,6 +4721,11 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>görüntüyü yeniden boyutlandırmak</translation>
 </phrase>
@@ -4745,7 +4755,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <translation>Bu kutunun solunda görüntülenen resim boyutu birimini değiştirmek</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13780,16 +13790,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>pozisyonlar (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>Boyut (g, h)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>hat genişliği</translation>
 </phrase>
@@ -13842,6 +13842,16 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>border</original>
 <translation>sınır</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>pozisyonlar (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Boyut (g, h)</translation>
 </phrase>
 
 <phrase>
@@ -13909,7 +13919,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Sihirli değnek kullanan kriter Bu seçenek denetimleri piksel geçerli seçime ilave gerekip gerekmediğini belirlemek için.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15364,10 +15374,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>

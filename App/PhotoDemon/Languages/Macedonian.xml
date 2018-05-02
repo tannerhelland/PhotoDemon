@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.149</langversion>
+<langversion>1.0.150</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4571,6 +4571,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>пиксели/инч (dpi)</translation>
 </phrase>
@@ -4590,7 +4595,7 @@ or the File > Open and File > Import menus.</original>
 <translation>точната големина ќе се разликува од сликата</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4722,6 +4727,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Менување на големината на сликата</translation>
 </phrase>
@@ -4751,7 +4761,7 @@ or the File > Open and File > Import menus.</original>
 <translation>Единица промена на големината на сликата на екранот од лево на ова поле</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13788,16 +13798,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>позиција (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>Големина (Ш, ж)</translation>
-</phrase>
-
-<phrase>
 <original>line width</original>
 <translation>широчина на линија</translation>
 </phrase>
@@ -13850,6 +13850,16 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>border</original>
 <translation>граница</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>позиција (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Големина (Ш, ж)</translation>
 </phrase>
 
 <phrase>
@@ -13917,7 +13927,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Оваа опција определува кои критериуми магично стапче користи за да се утврди дали една точка треба да се додаде во тековната селекција.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 52 phrases. 24 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15377,10 +15387,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2571</phrasecount>
+<phrasecount>2573</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4672 phrases. -->
-<!-- 2101 are duplicates, so only 2571 unique phrases have been written to file. -->
-<!-- These 2571 phrases contain approximately 12404 total words. -->
+<!-- As of this build, PhotoDemon contains 4674 phrases. -->
+<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
+<!-- These 2573 phrases contain approximately 12406 total words. -->
 
 </pdData>
