@@ -109,6 +109,11 @@ Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean, m_MouseOverResetButton As Boolean
 Private m_MouseDownResetButton As Boolean, m_MouseUpResetButton As Boolean
 
+'99+% of spinner instances show a "reset" button to make life easier for the user, but in some instances,
+' a reset button doesn't make sense (e.g. selection width/height - what would default values even be??)
+' In these rare instances, the reset button can be forcibly hidden.
+Private m_ShowResetButton As Boolean
+
 'To mimic standard scroll bar behavior on the spin buttons, we repeat scroll events when the buttons are clicked
 ' and held.
 Private WithEvents m_UpButtonTimer As pdTimer
@@ -267,6 +272,16 @@ Public Property Let Min(ByVal newValue As Double)
     
     PropertyChanged "Min"
     
+End Property
+
+Public Property Get ShowResetButton() As Boolean
+    ShowResetButton = m_ShowResetButton
+End Property
+
+Public Property Let ShowResetButton(ByVal newState As Boolean)
+    m_ShowResetButton = newState
+    If pdMain.IsProgramRunning() Then UpdateControlLayout
+    PropertyChanged "ShowResetButton"
 End Property
 
 'Significant digits determines whether the control allows float values or int values (and with how much precision)
@@ -688,6 +703,7 @@ Private Sub UserControl_InitProperties()
     Min = 0
     Max = 10
     SigDigits = 0
+    ShowResetButton = True
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -698,11 +714,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         m_Max = .ReadProperty("Max", 10)
         m_Min = .ReadProperty("Min", 0)
         Me.Value = .ReadProperty("Value", 0)
+        m_ShowResetButton = .ReadProperty("ShowResetButton", True)
     End With
 End Sub
 
 Private Sub UserControl_Show()
-    If ((Not (m_EditBox Is Nothing)) And pdMain.IsProgramRunning()) Then CreateEditBox
+    If ((Not m_EditBox Is Nothing) And pdMain.IsProgramRunning()) Then CreateEditBox
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -713,6 +730,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "SigDigits", Me.SigDigits, 0
         .WriteProperty "Value", Me.Value, 0
         .WriteProperty "FontSize", Me.FontSize, 10
+        .WriteProperty "ShowResetButton", m_ShowResetButton, True
     End With
 End Sub
 
@@ -775,17 +793,23 @@ Private Sub UpdatePositionRects()
     bWidth = ucSupport.GetControlWidth
     bHeight = ucSupport.GetControlHeight
     
-    'The reset button is fixed-width and right-aligned, so position it first
+    'The reset button is fixed-width and right-aligned, so position it first.  (Note that in rare circumstances,
+    ' the reset button may be forcibly hidden via the matching property.)
     With m_ResetRect
-        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING
-        .Width = .Height
-        .Left = (bWidth - 1) - .Width
         .Top = EDITBOX_BORDER_PADDING - 1
+        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING
+        If m_ShowResetButton Then
+            .Width = .Height
+            .Left = (bWidth - 1) - .Width
+        Else
+            .Width = 0
+            .Left = (bWidth - 1)
+        End If
     End With
     
     'Because the up/down buttons are also fixed-width, position them next.
     Dim buttonWidth As Long, buttonHeight As Long, buttonTop As Long, buttonLeft As Long
-    buttonWidth = FixDPI(18)
+    buttonWidth = Interface.FixDPI(18)
     buttonLeft = m_ResetRect.Left - buttonWidth
     buttonTop = EDITBOX_BORDER_PADDING - 1
     buttonHeight = ((bHeight - 1) - (buttonTop * 2)) \ 2
@@ -1022,20 +1046,24 @@ Private Sub RedrawBackBuffer()
         m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
         
         'Finally, calculate coordinate positions for the reset button arcs.  (These are drawn dynamically.)
-        Dim resetCenterX As Single, resetCenterY As Single, resetArcRadius As Single
-        With m_ResetRect
-            resetCenterX = .Left + (.Width / 2)
-            resetCenterY = .Top + (.Height / 2)
-            resetArcRadius = (.Width / 2) - 3.5!
-        End With
+        If m_ShowResetButton Then
         
-        cSurface.SetSurfacePixelOffset P2_PO_Half
-        Drawing2D.QuickCreateSolidPen cPen, 1!, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
-        
-        'New single-arrow design (which matches "reset" icons in the rest of PD):
-        cPen.SetPenStartCap P2_LC_Round
-        cPen.SetPenEndCap P2_LC_ArrowAnchor
-        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, 148, -305
+            Dim resetCenterX As Single, resetCenterY As Single, resetArcRadius As Single
+            With m_ResetRect
+                resetCenterX = .Left + (.Width / 2)
+                resetCenterY = .Top + (.Height / 2)
+                resetArcRadius = (.Width / 2) - 3.5!
+            End With
+            
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            Drawing2D.QuickCreateSolidPen cPen, 1!, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
+            
+            'New single-arrow design (which matches "reset" icons in the rest of PD):
+            cPen.SetPenStartCap P2_LC_Round
+            cPen.SetPenEndCap P2_LC_ArrowAnchor
+            m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, 148, -305
+            
+        End If
         
         'Old double-arrow design:
         'Dim resetAngleStart As Single
