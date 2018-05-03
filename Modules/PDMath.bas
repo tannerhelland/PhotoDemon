@@ -119,93 +119,29 @@ Public Function Frac(ByVal srcValue As Double) As Double
     Frac = srcValue - Int(srcValue)
 End Function
 
-'Convert a decimal to a near-identical fraction using vector math.
-' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
-' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub ConvertToFraction(ByVal v As Double, ByRef w As Double, ByRef n As Double, ByRef d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal accuracy As Double = 100#)
+'Fast and easy technique for converting an arbitrary floating-point value to a fraction.  Developed with thanks to
+' multiple authors at: https://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions
+Public Sub ConvertToFraction(ByVal srcValue As Double, ByRef dstNumerator As Long, ByRef dstDenominator As Long, Optional ByVal epsilon As Double = 0.001)
 
-    Const MAX_TERMS As Long = 50          'Limit to prevent infinite loop
-    Const MIN_DIVISOR As Double = 1E-16      'Limit to prevent divide by zero
-    Const MAX_ERROR As Double = 1E-50        'How close is enough
-    Dim f As Double                         'Fraction being converted
-    Dim a As Double     'Current term in continued fraction
-    Dim n1 As Double    'Numerator, denominator of last approx
-    Dim d1 As Double
-    Dim n2 As Double    'Numerator, denominator of previous approx
-    Dim d2 As Double
-    Dim i As Integer
-    Dim t As Double
-    Dim maxDenom As Double
-    Dim bIsNegative As Boolean
+    dstNumerator = 1
+    dstDenominator = 1
     
-    If maxDenomDigits = 0 Or maxDenomDigits > 17 Then maxDenomDigits = 17
-    maxDenom = 10 ^ maxDenomDigits
-    If accuracy > 100# Or accuracy < 1# Then accuracy = 100
-    accuracy = accuracy / 100#
+    Dim fracTest As Double
+    fracTest = 1#
     
-    bIsNegative = (v < 0)
-    w = Abs(Fix(v))
-    'V = Abs(V) - W << subtracting doubles can change the decimal portion by adding more numeral at end
-    'TANNER'S NOTE: the original version of this included +1 to the string length, which gave me consistent errors.  So I removed it.
-    v = CDbl(Mid$(CStr(Abs(v)), Len(CStr(w))))
+    Do While (Abs(fracTest - srcValue) > epsilon)
     
-    ' check for no decimal or zero
-    If v = 0 Then GoTo RtnResult
-    
-    f = v                       'Initialize fraction being converted
-    
-    n1 = 1                      'Initialize fractions with 1/0, 0/1
-    d1 = 0
-    n2 = 0
-    d2 = 1
-
-    On Error GoTo RtnResult
-    For i = 0 To MAX_TERMS
-        a = Fix(f)              'Get next term
-        f = f - a               'Get new divisor
-        n = n1 * a + n2         'Calculate new fraction
-        d = d1 * a + d2
-        n2 = n1                 'Save last two fractions
-        d2 = d1
-        n1 = n
-        d1 = d
-                                'Quit if dividing by zero
-        If f < MIN_DIVISOR Then Exit For
-
-                                'Quit if close enough
-        t = n / d               ' A=zero indicates exact match or extremely close
-        a = Abs(v - t)          ' Difference btwn actual V and calculated T
-        If a < MAX_ERROR Then Exit For
-                                'Quit if max denominator digits encountered
-        If d > maxDenom Then Exit For
-                                ' Quit if preferred accuracy accomplished
-        If n Then
-            If t > v Then t = v / t Else t = t / v
-            If t >= accuracy And Abs(t) < 1 Then Exit For
-        End If
-        f = 1# / f               'Take reciprocal
-    Next i
-
-RtnResult:
-    If Err Or d > maxDenom Then
-        ' in above case, use the previous best N & D
-        If d2 = 0 Then
-            n = n1
-            d = d1
+        If (fracTest < srcValue) Then
+            dstNumerator = dstNumerator + 1
         Else
-            d = d2
-            n = n2
+            dstDenominator = dstDenominator + 1
+            dstNumerator = Int(srcValue * dstDenominator + 0.5)
         End If
-    End If
+        
+        fracTest = CDbl(dstNumerator) / CDbl(dstDenominator)
+        
+    Loop
     
-    ' correct for negative values
-    If bIsNegative Then
-        If w Then w = -w Else n = -n
-    End If
-    
-    'TANNER'S NOTE: the original function included some simple code here to generate a user-friendly string of the result.
-    ' PhotoDemon does this itself (so translations can be applied) so I have removed that section of code.
-
 End Sub
 
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
@@ -514,12 +450,12 @@ Public Function Min2Int(ByVal l1 As Long, ByVal l2 As Long) As Long
     If (l1 < l2) Then Min2Int = l1 Else Min2Int = l2
 End Function
 
-Public Function Max2Float_Single(ByVal f1 As Single, ByVal F2 As Single) As Single
-    If (f1 > F2) Then Max2Float_Single = f1 Else Max2Float_Single = F2
+Public Function Max2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
+    If (f1 > f2) Then Max2Float_Single = f1 Else Max2Float_Single = f2
 End Function
 
-Public Function Min2Float_Single(ByVal f1 As Single, ByVal F2 As Single) As Single
-    If (f1 < F2) Then Min2Float_Single = f1 Else Min2Float_Single = F2
+Public Function Min2Float_Single(ByVal f1 As Single, ByVal f2 As Single) As Single
+    If (f1 < f2) Then Min2Float_Single = f1 Else Min2Float_Single = f2
 End Function
 
 'Return the maximum of three floating point values.  (PD commonly uses this for colors, hence the RGB notation.)

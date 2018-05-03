@@ -913,8 +913,6 @@ End Sub
 Private Sub UpdateAspectRatio()
 
     If (Not pdMain.IsProgramRunning()) Then Exit Sub
-
-    Dim wholeNumber As Double, numerator As Double, denominator As Double
     
     If tudWidth.IsValid(False) And tudHeight.IsValid(False) Then
     
@@ -924,12 +922,11 @@ Private Sub UpdateAspectRatio()
         imgHeightPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
         
         'Convert the floating-point aspect ratio to a fraction
-        If (imgHeightPixels > 0) Then
-            ConvertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, numerator, denominator, 4, 99.9
-        End If
+        Dim numerator As Long, denominator As Long
+        If (imgHeightPixels > 0) Then PDMath.ConvertToFraction imgWidthPixels / imgHeightPixels, numerator, denominator
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-        If (CLng(denominator) = 5) Then
+        If (denominator = 5) Then
             numerator = numerator * 2
             denominator = denominator * 2
         End If
