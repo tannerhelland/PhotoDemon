@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.57</langversion>
+<langversion>1.0.58</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -13859,6 +13859,11 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>छवि कैनवास पर चयन को प्रस्तुत करने के तरीके को बदलने के लिए क्लिक करें। चयन सामग्री पर इसका कोई असर नहीं है - संपादन के समय वे केवल वैसे ही दिखाई देते हैं।</translation>
 </phrase>
@@ -13923,7 +13928,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>यह विकल्प नियंत्रित करता है कि कौन सी मापदंड जादू की छड़ी का उपयोग करता है, यह निर्धारित करने के लिए कि क्या वर्तमान चयन में एक पिक्सेल जोड़ा जाना चाहिए।</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15382,10 +15387,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2573</phrasecount>
+<phrasecount>2574</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4674 phrases. -->
-<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
-<!-- These 2573 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4679 phrases. -->
+<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
+<!-- These 2574 phrases contain approximately 12431 total words. -->
 
 </pdData>

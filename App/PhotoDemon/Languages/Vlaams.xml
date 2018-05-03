@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.354</langversion>
+<langversion>6.7.355</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13863,6 +13863,11 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Klik hier om de wijze te veranderen waarop keuzes worden gemaakt op het canvas. Dit heeft geen invloed op de selectieinhoud - alleen de manier waarop ze worden weergegeven tijdens het bewerken.</translation>
 </phrase>
@@ -13927,7 +13932,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15387,10 +15392,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2573</phrasecount>
+<phrasecount>2574</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4674 phrases. -->
-<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
-<!-- These 2573 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4679 phrases. -->
+<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
+<!-- These 2574 phrases contain approximately 12431 total words. -->
 
 </pdData>

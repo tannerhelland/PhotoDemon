@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.296</langversion>
+<langversion>6.6.297</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -13869,6 +13869,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
 </phrase>
@@ -13933,7 +13938,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 56 phrases. 27 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15393,10 +15398,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2573</phrasecount>
+<phrasecount>2574</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4674 phrases. -->
-<!-- 2101 are duplicates, so only 2573 unique phrases have been written to file. -->
-<!-- These 2573 phrases contain approximately 12406 total words. -->
+<!-- As of this build, PhotoDemon contains 4679 phrases. -->
+<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
+<!-- These 2574 phrases contain approximately 12431 total words. -->
 
 </pdData>

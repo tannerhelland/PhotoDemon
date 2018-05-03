@@ -813,8 +813,8 @@ Private Sub NewToolSelected()
                     End If
                     
                     'Release any locked properties (e.g. locked aspect ratio)
-                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Position
-                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Size
+                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Width
+                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Height
                     pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_AspectRatio
                     
                 End If
@@ -965,15 +965,23 @@ Public Sub ResetToolButtonStates()
         toolbar_Options.NotifyChildPanelHWnd m_Panels(m_ActiveToolPanel).PanelHWnd
     End If
         
-    'If a selection tool is active, we will also need activate a specific subpanel
+    'If a selection tool is active, we also need activate a specific subpanel.  (All selection tools share the same
+    ' parent window, but they only activate subportions of it based on tool features.)
     Dim activeSelectionSubpanel As Long
     If Tools.IsSelectionToolActive Then
     
-        activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool
+        activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool()
         
         For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
             toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = (i = activeSelectionSubpanel)
         Next i
+        
+        'When switching tools, we also unlock all locked selection attributes.
+        If Selections.SelectionsAllowed(False) Then
+            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Width
+            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Height
+            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_AspectRatio
+        End If
         
     End If
     

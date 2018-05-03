@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2018 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 09/August/17
-'Last update: tons of bug-fixes and performance improvements; still more work to do (as always), but this class is slowly stabilizing
+'Last updated: 03/May/18
+'Last update: add support for locking width, height, aspect-ratio
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -106,13 +106,13 @@ End Enum
 #End If
 
 Public Enum PD_SelectionLockable
-    pdsl_Position = 0
-    pdsl_Size = 1
+    pdsl_Width = 0
+    pdsl_Height = 1
     pdsl_AspectRatio = 2
 End Enum
 
 #If False Then
-    Private Const pdsl_Position = 0, pdsl_Size = 1, pdsl_AspectRatio = 2
+    Private Const pdsl_Width = 0, pdsl_Height = 1, pdsl_AspectRatio = 2
 #End If
 
 'The coordinates of the current selection (if rectangular)
@@ -128,8 +128,10 @@ Private m_Bounds As RectF
 'Is this selection "locked in"?
 Private m_IsLocked As Boolean
 
-'Some selection attributes can be independently locked (e.g. aspect ratio).
-Private m_PositionLocked As Boolean, m_SizeLocked As Boolean, m_AspectLocked As Boolean
+'Some selection attributes can be independently locked (e.g. aspect ratio).  Note also that the
+' "m_LockedAspectRatio" value is only valid WHEN the aspect ratio is locked.
+Private m_IsWidthLocked As Boolean, m_IsHeightLocked As Boolean, m_IsAspectLocked As Boolean
+Private m_LockedWidth As Long, m_LockedHeight As Long, m_LockedAspectRatio As Double
 
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
 Private m_MoveXDist As Single, m_MoveYDist As Single
@@ -806,33 +808,44 @@ Friend Sub SetPolygonClosedState(ByVal newState As Boolean)
 End Sub
 
 'Some properties can be independently locked (e.g. size).  When locked, these properties cannot be changed by UI inputs.
-Friend Sub LockProperty(ByVal selProperty As PD_SelectionLockable)
-    If (selProperty = pdsl_Position) Then
-        m_PositionLocked = True
-    ElseIf (selProperty = pdsl_Size) Then
-        m_SizeLocked = True
+Friend Sub LockProperty(ByVal selProperty As PD_SelectionLockable, ByVal lockedValue As Variant)
+
+    If (selProperty = pdsl_Width) Then
+        m_IsWidthLocked = True
+        m_LockedWidth = lockedValue
+        m_IsHeightLocked = False
+        m_IsAspectLocked = False
+    ElseIf (selProperty = pdsl_Height) Then
+        m_IsHeightLocked = True
+        m_LockedHeight = lockedValue
+        m_IsWidthLocked = False
+        m_IsAspectLocked = False
     ElseIf (selProperty = pdsl_AspectRatio) Then
-        m_AspectLocked = True
+        m_IsAspectLocked = True
+        m_LockedAspectRatio = lockedValue
+        m_IsWidthLocked = False
+        m_IsHeightLocked = False
     End If
+    
 End Sub
 
 Friend Sub UnlockProperty(ByVal selProperty As PD_SelectionLockable)
-    If (selProperty = pdsl_Position) Then
-        m_PositionLocked = False
-    ElseIf (selProperty = pdsl_Size) Then
-        m_SizeLocked = False
+    If (selProperty = pdsl_Width) Then
+        m_IsWidthLocked = False
+    ElseIf (selProperty = pdsl_Height) Then
+        m_IsHeightLocked = False
     ElseIf (selProperty = pdsl_AspectRatio) Then
-        m_AspectLocked = False
+        m_IsAspectLocked = False
     End If
 End Sub
 
 Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable) As Boolean
-    If (selProperty = pdsl_Position) Then
-        GetPropertyLockedState = m_PositionLocked
-    ElseIf (selProperty = pdsl_Size) Then
-        GetPropertyLockedState = m_SizeLocked
+    If (selProperty = pdsl_Width) Then
+        GetPropertyLockedState = m_IsWidthLocked
+    ElseIf (selProperty = pdsl_Height) Then
+        GetPropertyLockedState = m_IsHeightLocked
     ElseIf (selProperty = pdsl_AspectRatio) Then
-        GetPropertyLockedState = m_AspectLocked
+        GetPropertyLockedState = m_IsAspectLocked
     End If
 End Function
 
@@ -901,24 +914,24 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Top = m_CornersLocked.Top + m_CornersLocked.Height
-                    .Right = x
-                    .Bottom = y
+                    If (Not m_IsWidthLocked) Then .Right = x Else .Right = m_CornersLocked.Left + m_CornersLocked.Width
+                    If (Not m_IsHeightLocked) Then .Bottom = y Else .Bottom = m_CornersLocked.Top
                 End With
             
             Case poi_CornerSE
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Top = m_CornersLocked.Top
-                    .Right = x
-                    .Bottom = y
+                    If (Not m_IsWidthLocked) Then .Right = x Else .Right = m_CornersLocked.Left + m_CornersLocked.Width
+                    If (Not m_IsHeightLocked) Then .Bottom = y Else .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
             
             Case poi_CornerSW
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top
-                    .Right = x
-                    .Bottom = y
+                    If (Not m_IsWidthLocked) Then .Right = x Else .Right = m_CornersLocked.Left
+                    If (Not m_IsHeightLocked) Then .Bottom = y Else .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
             
             Case poi_EdgeN
@@ -926,13 +939,13 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Left = m_CornersLocked.Left
                     .Right = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top + m_CornersLocked.Height
-                    .Bottom = y
+                    If (Not m_IsHeightLocked) Then .Bottom = y Else .Bottom = m_CornersLocked.Top
                 End With
             
             Case poi_EdgeE
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
-                    .Right = x
+                    If (Not m_IsWidthLocked) Then .Right = x Else .Right = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top
                     .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
@@ -942,13 +955,13 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Left = m_CornersLocked.Left
                     .Right = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top
-                    .Bottom = y
+                    If (Not m_IsHeightLocked) Then .Bottom = y Else .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
             
             Case poi_EdgeW
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left + m_CornersLocked.Width
-                    .Right = x
+                    If (Not m_IsWidthLocked) Then .Right = x Else .Right = m_CornersLocked.Left
                     .Top = m_CornersLocked.Top
                     .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
@@ -1067,14 +1080,23 @@ Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
     'Set the second set of point to match the first set
     Select Case m_SelectionShape
         
-        Case ss_Rectangle, ss_Circle, ss_Line
+        Case ss_Rectangle, ss_Circle
             
+            With m_CornersUnlocked
+                If m_IsWidthLocked Then .Right = x + m_LockedWidth Else .Right = x
+                If m_IsHeightLocked Then .Bottom = y + m_LockedHeight Else .Bottom = y
+            End With
+            
+            'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
+            m_IsTransformable = True
+        
+        Case ss_Line
+        
             With m_CornersUnlocked
                 .Right = x
                 .Bottom = y
             End With
             
-            'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
             m_IsTransformable = True
         
         'Polygon selections require us to initialize a whole bunch of polygon tracking variables
@@ -1154,21 +1176,52 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     
                     'Corners
                     Case poi_CornerNW, poi_CornerNE, poi_CornerSE, poi_CornerSW
-                        m_CornersUnlocked.Right = x
-                        m_CornersUnlocked.Bottom = y
-                    
+                        
+                        'Locked aspect ratio requires a more detailed approach
+                        If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                            m_CornersUnlocked.Right = x
+                            If (m_CurrentPOI = poi_CornerNW) Or (m_CurrentPOI = poi_CornerSE) Then
+                                m_CornersUnlocked.Bottom = m_CornersUnlocked.Top + (m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                            ElseIf (m_CurrentPOI = poi_CornerNE) Or (m_CurrentPOI = poi_CornerSW) Then
+                                m_CornersUnlocked.Bottom = m_CornersUnlocked.Top - (m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                            End If
+                        Else
+                            If (Not m_IsWidthLocked) Then m_CornersUnlocked.Right = x
+                            If (Not m_IsHeightLocked) Then m_CornersUnlocked.Bottom = y
+                        End If
+                        
                     'Edges
                     Case poi_EdgeN
-                        m_CornersUnlocked.Bottom = y
+                        If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                            m_CornersUnlocked.Bottom = y
+                            m_CornersUnlocked.Right = m_CornersUnlocked.Left - (m_CornersUnlocked.Bottom - m_CornersUnlocked.Top) * m_LockedAspectRatio
+                        Else
+                            If (Not m_IsHeightLocked) Then m_CornersUnlocked.Bottom = y
+                        End If
                         
                     Case poi_EdgeE
-                        m_CornersUnlocked.Right = x
+                        If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                            m_CornersUnlocked.Right = x
+                            m_CornersUnlocked.Bottom = m_CornersUnlocked.Top + (m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                        Else
+                            If (Not m_IsWidthLocked) Then m_CornersUnlocked.Right = x
+                        End If
                         
                     Case poi_EdgeS
-                        m_CornersUnlocked.Bottom = y
+                        If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                            m_CornersUnlocked.Bottom = y
+                            m_CornersUnlocked.Right = m_CornersUnlocked.Left + (m_CornersUnlocked.Bottom - m_CornersUnlocked.Top) * m_LockedAspectRatio
+                        Else
+                            If (Not m_IsHeightLocked) Then m_CornersUnlocked.Bottom = y
+                        End If
                         
                     Case poi_EdgeW
-                        m_CornersUnlocked.Right = x
+                        If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                            m_CornersUnlocked.Right = x
+                            m_CornersUnlocked.Bottom = m_CornersUnlocked.Top - (m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                        Else
+                            If (Not m_IsWidthLocked) Then m_CornersUnlocked.Right = x
+                        End If
                         
                     'Interior
                     Case poi_Interior
@@ -1275,8 +1328,21 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
         
         Select Case m_SelectionShape
         
-            'Rectangle, ellipse, and line selections are easy - just copy the passed (x, y) values into (x2, y2)
-            Case ss_Rectangle, ss_Circle, ss_Line
+            'Rectangle and ellipse selections may have locked aspect ratios
+            Case ss_Rectangle, ss_Circle
+                If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                    m_CornersUnlocked.Right = x
+                    If (y > m_CornersUnlocked.Top) Then
+                        m_CornersUnlocked.Bottom = m_CornersUnlocked.Top + Abs(m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                    Else
+                        m_CornersUnlocked.Bottom = m_CornersUnlocked.Top - Abs(m_CornersUnlocked.Right - m_CornersUnlocked.Left) * (1# / m_LockedAspectRatio)
+                    End If
+                Else
+                    If m_IsWidthLocked Then m_CornersUnlocked.Right = (m_CornersLocked.Left + m_CornersLocked.Width) Else m_CornersUnlocked.Right = x
+                    If m_IsHeightLocked Then m_CornersUnlocked.Bottom = (m_CornersLocked.Top + m_CornersLocked.Height) Else m_CornersUnlocked.Bottom = y
+                End If
+                
+            Case ss_Line
                 m_CornersUnlocked.Right = x
                 m_CornersUnlocked.Bottom = y
                 
@@ -1436,7 +1502,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                     End If
                     
                 End With
-            
+                
             'Polygon selections require us to search all polygon points in order to construct a bounding rect.
             Case ss_Polygon
             
@@ -1663,7 +1729,7 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
 End Sub
 
 'Update this selection using the values in the main form's selection text boxes
-Friend Sub UpdateViaTextBox()
+Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
 
     'Ignore text box update requests until the selection is locked in
     If (Not Me.IsLockedIn) Then Exit Sub
@@ -1689,12 +1755,64 @@ Friend Sub UpdateViaTextBox()
                 
             'Modify size
             ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 1) Then
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
-                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+            
+                'If aspect ratio is locked, we must cater to it during changes
+                If m_IsAspectLocked And (m_LockedAspectRatio > 0) Then
+                    
+                    'User is changing width
+                    If ((indexOfSrcControl And 1) = 0) Then
+                        If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then
+                            m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+                            m_CornersLocked.Height = m_CornersLocked.Width * (1# / m_LockedAspectRatio)
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1) = m_CornersLocked.Height
+                        End If
+                        
+                    'User is changing height
+                    Else
+                        If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then
+                            m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+                            m_CornersLocked.Width = m_CornersLocked.Height * m_LockedAspectRatio
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0) = m_CornersLocked.Width
+                        End If
+                    End If
+                
+                'If aspect ratio is *not* locked, freely modify either value, and cache any locked values so they
+                ' can be used elsewhere.
+                Else
+                    If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+                    If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+                    If m_IsWidthLocked Then m_LockedWidth = m_CornersLocked.Width
+                    If m_IsHeightLocked Then m_LockedHeight = m_CornersLocked.Height
+                End If
             
             'Modify aspect ratio
-            Else
-                'TODO!
+            ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 2) Then
+                
+                'Because aspect ratio calculations involve division, ensure validity before continuing
+                Dim aspW As Double, aspH As Double, aspFinal As Double
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 0).IsValid(False) Then aspW = toolpanel_Selections.tudSel(subpanelCtlOffset + 0)
+                If toolpanel_Selections.tudSel(subpanelCtlOffset + 1).IsValid(False) Then aspH = toolpanel_Selections.tudSel(subpanelCtlOffset + 1)
+                If (aspW > 0!) And (aspH > 0!) Then
+                    
+                    'We preferentially change the width of the selection to match the new aspect ratio if...
+                    ' 1) The first aspect ratio parameter is changing (e.g. the 4 in 4:3)
+                    ' 2) The selection's width is *not* locked
+                    ' 3) The selection's height *is* locked
+                    '
+                    'Otherwise, we change height preferentially.
+                    If (((indexOfSrcControl And 1) = 0) And (Not m_IsWidthLocked)) Or m_IsHeightLocked Then
+                        aspFinal = aspW / aspH
+                        m_CornersLocked.Width = m_CornersLocked.Height * aspFinal
+                    Else
+                        aspFinal = aspH / aspW
+                        m_CornersLocked.Height = m_CornersLocked.Width * aspFinal
+                    End If
+                    
+                    'Calculate aspect ratio and cache it; we need it in a variety of places
+                    If (m_CornersLocked.Width <> 0!) And (m_CornersLocked.Height <> 0!) Then m_LockedAspectRatio = m_CornersLocked.Width / m_CornersLocked.Height
+                    
+                End If
+                
             End If
             
         

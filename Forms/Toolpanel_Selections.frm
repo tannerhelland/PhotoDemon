@@ -117,9 +117,22 @@ Begin VB.Form toolpanel_Selections
       Width           =   9975
       _ExtentX        =   0
       _ExtentY        =   0
+      Begin PhotoDemon.pdLabel lblColon 
+         Height          =   375
+         Index           =   0
+         Left            =   3960
+         Top             =   855
+         Visible         =   0   'False
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ":"
+         FontSize        =   12
+      End
       Begin PhotoDemon.pdButtonToolbox cmdLock 
          Height          =   360
-         Index           =   0
+         Index           =   1
          Left            =   5520
          TabIndex        =   34
          Top             =   855
@@ -175,23 +188,25 @@ Begin VB.Form toolpanel_Selections
          Left            =   2865
          TabIndex        =   7
          Top             =   870
-         Width           =   1320
+         Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   1
-         Left            =   4200
+         Left            =   4440
          TabIndex        =   8
          Top             =   870
-         Width           =   1320
+         Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSlider sltCornerRounding 
          CausesValidation=   0   'False
@@ -206,6 +221,18 @@ Begin VB.Form toolpanel_Selections
          FontSizeCaption =   10
          Max             =   100
          SigDigits       =   1
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLock 
+         Height          =   360
+         Index           =   0
+         Left            =   3960
+         TabIndex        =   40
+         Top             =   855
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   635
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
       End
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
@@ -245,23 +272,11 @@ Begin VB.Form toolpanel_Selections
          Value           =   1
          DefaultValue    =   1
       End
-      Begin PhotoDemon.pdButtonToolbox cmdLock 
-         Height          =   360
-         Index           =   1
-         Left            =   5520
-         TabIndex        =   39
-         Top             =   855
-         Width           =   375
-         _ExtentX        =   661
-         _ExtentY        =   635
-         DontHighlightDownState=   -1  'True
-         StickyToggle    =   -1  'True
-      End
       Begin PhotoDemon.pdDropDown cboSize 
          Height          =   735
          Index           =   1
          Left            =   2760
-         TabIndex        =   40
+         TabIndex        =   39
          Top             =   30
          Width           =   3135
          _ExtentX        =   6376
@@ -269,29 +284,68 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "dimensions"
          FontSizeCaption =   10
       End
+      Begin PhotoDemon.pdButtonToolbox cmdLock 
+         Height          =   360
+         Index           =   3
+         Left            =   5520
+         TabIndex        =   41
+         Top             =   855
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   635
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
+      End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   2
          Left            =   2865
-         TabIndex        =   41
+         TabIndex        =   42
          Top             =   870
-         Width           =   1320
+         Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   3
-         Left            =   4200
-         TabIndex        =   42
+         Left            =   4440
+         TabIndex        =   43
          Top             =   870
-         Width           =   1320
+         Width           =   1080
          _ExtentX        =   2328
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLock 
+         Height          =   360
+         Index           =   2
+         Left            =   3960
+         TabIndex        =   44
+         Top             =   855
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   635
+         DontHighlightDownState=   -1  'True
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblColon 
+         Height          =   375
+         Index           =   1
+         Left            =   3960
+         Top             =   855
+         Visible         =   0   'False
+         Width           =   375
+         _ExtentX        =   661
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ":"
+         FontSize        =   12
       End
    End
    Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
@@ -342,6 +396,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -354,6 +409,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -366,6 +422,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -378,6 +435,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   714
          Min             =   -30000
          Max             =   30000
+         ShowResetButton =   0   'False
       End
       Begin PhotoDemon.pdSlider sltSelectionLineWidth 
          CausesValidation=   0   'False
@@ -587,9 +645,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection Tool Panel
 'Copyright 2013-2018 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 06/June/17
-'Last update: allow selection property changes even if the current tool and shape don't match; however, these are
-'             now processed somewhat differently.  (See individual UI element events for details.)
+'Last updated: 03/May/18
+'Last update: rework UI to support locking width/height/aspect-ratio for certain selection types
 '
 'This form includes all user-editable settings for PD's various selection tools.
 '
@@ -686,13 +743,55 @@ Private Sub cboWandCompare_Click()
 End Sub
 
 Private Sub cmdLock_Click(Index As Integer)
+    
+    'Ignore lock actions unless a selection is active, *and* the current selection tool matches the currently
+    ' active selection.
     If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-        If cmdLock(Index).Value Then
-            pdImages(g_CurrentImage).MainSelection.LockProperty cboSize(Index).ListIndex
+        
+        Dim lockedValue As Variant
+        
+        'Because of the way the cmdLock buttons are structured (with *two* instances per button, one for the
+        ' rectangular selection tool and another for the elliptical selection tool), we have to perform some
+        ' manual remapping of indices based on the active tool and the active selection attribute
+        ' (position/size/aspect ratio).
+        Dim relevantIndex As PD_SelectionLockable
+        If (g_CurrentTool = SELECT_RECT) Then
+            If (cboSize(0).ListIndex = 1) Then
+                relevantIndex = Index
+                lockedValue = tudSel(Index).Value
+            Else
+                relevantIndex = pdsl_AspectRatio
+                If (tudSel(1).Value <> 0) Then lockedValue = tudSel(0).Value / tudSel(1).Value
+            End If
         Else
-            pdImages(g_CurrentImage).MainSelection.UnlockProperty cboSize(Index).ListIndex
+            If (cboSize(1).ListIndex = 1) Then
+                relevantIndex = Index - 2
+                lockedValue = tudSel(Index).Value
+            Else
+                relevantIndex = pdsl_AspectRatio
+                If (tudSel(3).Value <> 0) Then lockedValue = tudSel(2).Value / tudSel(3).Value
+            End If
         End If
+        
+        'In the case of aspect ratio vs width/height locks, we don't see both controls at the same time so we
+        ' don't have to manually synchronize any UI elements.  Width and height changes are different, however,
+        ' because locking one necessarily unlocks the other.
+        If cmdLock(Index).Value Then
+            If (relevantIndex = pdsl_Width) Then
+                cmdLock(Index + 1).Value = False
+            ElseIf (relevantIndex = pdsl_Height) Then
+                cmdLock(Index - 1).Value = False
+            End If
+        End If
+        
+        If cmdLock(Index).Value Then
+            pdImages(g_CurrentImage).MainSelection.LockProperty relevantIndex, lockedValue
+        Else
+            pdImages(g_CurrentImage).MainSelection.UnlockProperty relevantIndex
+        End If
+        
     End If
+    
 End Sub
 
 Private Sub csSelection_ColorChanged(Index As Integer)
@@ -765,14 +864,9 @@ Private Sub Form_Load()
         cboSize(i).SetAutomaticRedraws False
         cboSize(i).AddItem "position (x, y)", 0
         cboSize(i).AddItem "size (w, h)", 1
-        'cboSize(i).AddItem "aspect ratio", 2       'Temporarily hide aspect ratio while we get everything else in place
+        cboSize(i).AddItem "aspect ratio", 2
         cboSize(i).ListIndex = 0
         cboSize(i).SetAutomaticRedraws True
-    Next i
-    
-    'Temporary fix while I get everything working:
-    For i = 0 To cmdLock.Count - 1
-        cmdLock(i).Visible = False
     Next i
     
     'Magic wand options
@@ -911,15 +1005,15 @@ End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub tudSel_Change(Index As Integer)
-    UpdateSelectionsValuesViaText
+    UpdateSelectionsValuesViaText Index
 End Sub
 
 'All text boxes wrap this function.  Note that text box changes are not relayed unless the current selection shape
 ' matches the current selection tool.
-Private Sub UpdateSelectionsValuesViaText()
+Private Sub UpdateSelectionsValuesViaText(ByVal Index As Integer)
     If SelectionsAllowed(True) Then
         If (Not pdImages(g_CurrentImage).MainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-            pdImages(g_CurrentImage).MainSelection.UpdateViaTextBox
+            pdImages(g_CurrentImage).MainSelection.UpdateViaTextBox Index
             ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         End If
     End If
@@ -940,6 +1034,7 @@ Public Sub UpdateAgainstCurrentTheme()
     For i = 0 To cmdLock.Count - 1
         cmdLock(i).AssignImage "generic_unlock", , buttonImageSize, buttonImageSize
         cmdLock(i).AssignImage_Pressed "generic_lock", , buttonImageSize, buttonImageSize
+        cmdLock(i).AssignTooltip "Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)"
     Next i
     
     'Redrawing the form according to current theme and translation settings.

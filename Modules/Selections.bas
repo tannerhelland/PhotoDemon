@@ -3,8 +3,8 @@ Attribute VB_Name = "Selections"
 'Selection Interface
 'Copyright 2013-2018 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 03/March/17
-'Last update: large-scale overhaul to match new 7.0 features and changes in pdSelection.
+'Last updated: 03/May/18
+'Last update: minor changes to facilitate new "lock width/height/aspect-ratio" support
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -379,24 +379,73 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
                 Dim tmpRectF As RectF, tmpRectFRB As RECTF_RB
                 
                 'Different types of selections will display size and position differently
-                Select Case pdImages(srcImageID).MainSelection.GetSelectionShape
+                Select Case pdImages(srcImageID).MainSelection.GetSelectionShape()
                     
-                    'Rectangular and elliptical selections display left, top, width and height
+                    'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
                     Case ss_Rectangle, ss_Circle
                         
+                        Dim sizeIndex As Long
+                        sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
+                        
+                        'Coordinates are allowed to be <= 0, but size and aspect ratio are not
+                        Dim allowedMin As Long
+                        If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
+                        If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
+                        End If
+                        
                         tmpRectF = pdImages(srcImageID).MainSelection.GetCornersLockedRect()
-                        If (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 0) Then
+                        If (sizeIndex = 0) Then
                             toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
                             toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
-                        ElseIf (toolpanel_Selections.cboSize(subpanelOffset).ListIndex = 1) Then
+                        ElseIf (sizeIndex = 1) Then
                             toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
                             toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
+                        ElseIf (sizeIndex = 2) Then
+                            
+                            'Failsafe DBZ check
+                            If (tmpRectF.Height > 0) Then
+                            
+                                Dim fracNumerator As Long, fracDenominator As Long
+                                PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
+                                
+                                'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                                If (fracDenominator = 5) Then
+                                    fracNumerator = fracNumerator * 2
+                                    fracDenominator = fracDenominator * 2
+                                End If
+                                
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
+                                
+                            End If
+                            
+                        End If
+                        
+                        '"Lock" button visibility is a little complicated - basically, we only want to make it visible
+                        ' for width, height, and aspect ratio options.
+                        If (sizeIndex = 0) Then
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
+                            toolpanel_Selections.lblColon(subpanelOffset).Visible = False
+                        ElseIf (sizeIndex = 1) Then
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                            toolpanel_Selections.lblColon(subpanelOffset).Visible = False
                         Else
-                            'TODO!
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                            toolpanel_Selections.lblColon(subpanelOffset).Visible = True
                         End If
                         
                         'Also make sure the "lock" icon matches the current lock state
-                        toolpanel_Selections.cmdLock(subpanelOffset).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(toolpanel_Selections.cboSize(0).ListIndex)
+                        If (sizeIndex = 1) Then
+                            toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
+                            toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
+                        ElseIf (sizeIndex = 2) Then
+                            toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
+                        End If
                         
                     'Line selections display x1, y1, x2, y2
                     Case ss_Line
@@ -462,6 +511,12 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
         If Tools.IsSelectionToolActive Then
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
                 If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+            Next i
+            For i = 0 To toolpanel_Selections.cmdLock.Count - 1
+                toolpanel_Selections.cmdLock(i).Visible = False
+            Next i
+            For i = 0 To toolpanel_Selections.lblColon.Count - 1
+                toolpanel_Selections.lblColon(i).Visible = False
             Next i
         End If
         
@@ -1233,7 +1288,6 @@ Public Function GetSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage
             GetSelectionSubPanelFromSelectionShape = 5
         
         Case Else
-            'Debug.Print "WARNING!  Selections.getSelectionSubPanelFromSelectionShape() was called, despite a selection not being active!"
             GetSelectionSubPanelFromSelectionShape = -1
     
     End Select
