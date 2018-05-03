@@ -843,7 +843,7 @@ End Sub
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = False
     m_MouseEvents.SetCursor_System IDC_DEFAULT
-    HideTooltip
+    HideTooltip False
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 

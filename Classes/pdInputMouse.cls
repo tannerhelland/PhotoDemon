@@ -72,11 +72,11 @@ Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift 
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
-Private Const WM_MOUSEHWHEEL As Long = &H20E
-Private Const WM_MOUSEWHEEL As Long = &H20A
-Private Const WM_MOUSEHOVER As Long = &H2A1
-Private Const WM_MOUSELEAVE As Long = &H2A3
-Private Const WM_MOUSEMOVE As Long = &H200
+Private Const WM_MOUSEHWHEEL As Long = &H20E&
+Private Const WM_MOUSEWHEEL As Long = &H20A&
+Private Const WM_MOUSEHOVER As Long = &H2A1&
+Private Const WM_MOUSELEAVE As Long = &H2A3&
+Private Const WM_MOUSEMOVE As Long = &H200&
 
 Private Const WM_SETCURSOR As Long = &H20
 
