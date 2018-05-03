@@ -875,8 +875,8 @@ End Function
 ' handle errors differently.
 Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber As Long = 0)
     If (errNumber <> 0) Then
-        pdDebug.LogAction "WARNING!  VB error in Strings module (#" & Err.Number & "): " & Err.Description & " || " & errComment
+        PDDebug.LogAction "WARNING!  VB error in Strings module (#" & Err.Number & "): " & Err.Description & " || " & errComment
     Else
-        pdDebug.LogAction "WARNING!  Strings module internal error: " & errComment
+        PDDebug.LogAction "WARNING!  Strings module internal error: " & errComment
     End If
 End Sub

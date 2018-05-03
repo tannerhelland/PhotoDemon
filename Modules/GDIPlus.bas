@@ -1090,6 +1090,8 @@ Private Declare Function GdipGetCompositingMode Lib "gdiplus" (ByVal hGraphics A
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RectF, ByRef dstUnit As GP_Unit) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Single, ByRef dstHeight As Single) As GP_Result
+Private Declare Function GdipGetImageDecoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
+Private Declare Function GdipGetImageDecodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
@@ -2121,13 +2123,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Retrieve the image's alpha channel data (if any)
-    Dim hasAlpha As Boolean
-    hasAlpha = False
+    Dim HasAlpha As Boolean
+    HasAlpha = False
     
     Dim iPixelFormat As GP_PixelFormat
     GdipGetImagePixelFormat hImage, iPixelFormat
-    hasAlpha = ((iPixelFormat And GP_PF_Alpha) <> 0)
-    hasAlpha = ((iPixelFormat And GP_PF_PreMultAlpha) <> 0)
+    HasAlpha = ((iPixelFormat And GP_PF_Alpha) <> 0)
+    HasAlpha = ((iPixelFormat And GP_PF_PreMultAlpha) <> 0)
     
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
@@ -2179,7 +2181,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
         'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
         ' 32bpp (including CMYK) images require a bit of extra work.
-        If hasAlpha Then
+        If HasAlpha Then
             
             'Make sure the image is in 32bpp premultiplied ARGB format
             If (iPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage
@@ -3270,6 +3272,9 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
         m_AttributesMatrix(2, 2) = 1#
         m_AttributesMatrix(3, 3) = 1#
         m_AttributesMatrix(4, 4) = 1#
+        
+        'Want to list all available decoders?  Do so here.
+        'DEBUG_ListGdipDecoders
         
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long, strGDIPName As String
@@ -4737,6 +4742,41 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
     End If
 
 End Function
+
+'Debug only: list the decoders available on this system.  Users may have additional decoders installed, besides those
+' offered by default (JPEG, PNG, etc).
+Public Sub DEBUG_ListGdipDecoders()
+
+    Dim numDecoders As Long, sizeEncodersBytes As Long
+    If (GdipGetImageDecodersSize(numDecoders, sizeEncodersBytes) = GP_OK) Then
+    
+        'For reasons I don't fully understand, the sizeEncodersBytes value is often significantly larger
+        ' than the size you'd expect given the number of codecs.  As such, declare our array safely.
+        Dim tmpExampleDec As GP_ImageCodecInfo
+        
+        Dim safeNumEncoders As Long
+        safeNumEncoders = (sizeEncodersBytes \ LenB(tmpExampleDec)) + 1
+        
+        Dim encList() As GP_ImageCodecInfo
+        ReDim encList(0 To safeNumEncoders - 1) As GP_ImageCodecInfo
+        
+        If (GdipGetImageDecoders(numDecoders, sizeEncodersBytes, VarPtr(encList(0))) = GP_OK) Then
+            
+            Debug.Print "Found " & CStr(numDecoders) & " GDI+ decoders on this PC.  The list includes:"
+            Dim i As Long
+            For i = 0 To numDecoders - 1
+                Debug.Print vbTab & CStr(i + 1) & ": " & Strings.StringFromCharPtr(encList(i).IC_CodecName, True)
+            Next i
+        
+        Else
+            Debug.Print "WARNING: GDI+ failed to retrieve decoder list; has the library been initialized correctly?"
+        End If
+    
+    Else
+        Debug.Print "WARNING: GDI+ returned no valid decoders; has the library been initialized correctly?"
+    End If
+    
+End Sub
 
 Public Function GDIPlus_ImageUnlockBits(ByVal hImage As Long, ByRef srcCopyData As GP_BitmapData) As Boolean
     Dim tmpReturn As GP_Result
