@@ -108,8 +108,8 @@ Private Type TRACKMOUSEEVENT_STRUCT
     dwHoverTime As Long
 End Type
 
-Private Const TME_HOVER As Long = &H1
-Private Const TME_LEAVE As Long = &H2
+Private Const TME_HOVER As Long = &H1&
+Private Const TME_LEAVE As Long = &H2&
 
 Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 
@@ -408,7 +408,7 @@ Private Function RequestMouseTrackingForHwnd() As Boolean
         .cbSize = LenB(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
         .hWndTrack = m_hWnd
-        .dwHoverTime = &HFFFFFFFF       'Use the system default hover time (400 ms, I believe)
+        .dwHoverTime = &HFFFFFFFF        'Use the system default hover time (400 ms, I believe)
     End With
     
     'TrackMouseEvent returns non-zero values for success
