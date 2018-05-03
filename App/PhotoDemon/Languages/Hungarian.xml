@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3338</langversion>
+<langversion>6.8.3339</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4562,6 +4562,16 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>képpont/hüvelyk (DPI)</translation>
 </phrase>
@@ -4581,7 +4591,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>pontos mérete változik a kép</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4718,6 +4728,16 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>kép átméretezése</translation>
 </phrase>
@@ -4747,7 +4767,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>A képméret módosítása egység bal oldalán jelenik meg ez a keretes</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -15369,10 +15389,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2574</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4679 phrases. -->
-<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
-<!-- These 2574 phrases contain approximately 12431 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12435 total words. -->
 
 </pdData>

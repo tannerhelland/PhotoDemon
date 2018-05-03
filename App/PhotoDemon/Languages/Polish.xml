@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.33</langversion>
+<langversion>7.0.34</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4560,6 +4560,16 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>pikseli/cal (DPI)</translation>
 </phrase>
@@ -4579,7 +4589,7 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 <translation>dokładny rozmiar będzie się różnić w zależności od obrazu</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4716,6 +4726,16 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Zmiana rozmiaru obrazu</translation>
 </phrase>
@@ -4745,7 +4765,7 @@ lub Plik > Otwórz i Plik> Importuj.</translation>
 <translation>Zmień jednostkę wielkości obrazu wyświetlaną po lewej stronie tego pola</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -15368,10 +15388,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2574</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4679 phrases. -->
-<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
-<!-- These 2574 phrases contain approximately 12431 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12435 total words. -->
 
 </pdData>

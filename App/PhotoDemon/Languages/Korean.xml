@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.23</langversion>
+<langversion>1.0.24</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4571,6 +4571,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>픽셀</translation>
 </phrase>
@@ -4590,7 +4600,7 @@ or the File > Open and File > Import menus.</original>
 <translation>정확한 크기는 이미지에 따라 다릅니다.</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4727,6 +4737,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>이미지 크기 조정</translation>
 </phrase>
@@ -4756,7 +4776,7 @@ or the File > Open and File > Import menus.</original>
 <translation>이미지 크기 단위를이 상자 왼쪽에 표시되도록 변경하십시오.</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -15385,10 +15405,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2574</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4679 phrases. -->
-<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
-<!-- These 2574 phrases contain approximately 12431 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12435 total words. -->
 
 </pdData>

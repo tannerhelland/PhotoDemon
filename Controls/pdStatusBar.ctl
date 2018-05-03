@@ -330,24 +330,29 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
         
-        Dim iWidth As Double, iHeight As Double
+        Dim unitWidth As Double, unitHeight As Double
         Dim sizeString As String
         
-        'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
+        'Convert pixel measurements to the current unit
+        If (m_UnitOfMeasurement <> mu_Pixels) Then
+            unitWidth = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+            unitHeight = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
+        End If
+        
+        'Different measurements support different significant digits in the size readout
         Select Case m_UnitOfMeasurement
             
             Case mu_Pixels
                 sizeString = srcImage.Width & " x " & srcImage.Height
                 
             Case mu_Inches
-                iWidth = ConvertPixelToOtherUnit(mu_Inches, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-                iHeight = ConvertPixelToOtherUnit(mu_Inches, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
-                sizeString = Format$(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
+                sizeString = Format$(unitWidth, "0.0##") & " x " & Format(unitHeight, "0.0##")
             
             Case mu_Centimeters, mu_Millimeters
-                iWidth = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-                iHeight = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
-                sizeString = Format$(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
+                sizeString = Format$(unitWidth, "0.0#") & " x " & Format(unitHeight, "0.0#")
+                
+            Case mu_Points, mu_Picas
+                sizeString = Format$(unitWidth, "0.0") & " x " & Format(unitHeight, "0.0")
             
         End Select
         
@@ -384,6 +389,8 @@ Public Function PopulateSizeUnits()
     cmbSizeUnit.AddItem "in", 1
     cmbSizeUnit.AddItem "cm", 2
     cmbSizeUnit.AddItem "mm", 3
+    cmbSizeUnit.AddItem "pt", 4
+    cmbSizeUnit.AddItem "pc", 5
     cmbSizeUnit.ListIndex = 0
 End Function
 
@@ -705,7 +712,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         If pdMain.IsProgramRunning() Then
             
             Dim buttonIconSize As Long
-            buttonIconSize = FixDPI(16)
+            buttonIconSize = Interface.FixDPI(16)
             
             cmdZoomFit.AssignImage "zoom_fit", , buttonIconSize, buttonIconSize
             cmdZoomIn.AssignImage "zoom_in", , buttonIconSize, buttonIconSize

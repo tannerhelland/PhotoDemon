@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.151</langversion>
+<langversion>1.0.152</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4576,6 +4576,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>пиксели/инч (dpi)</translation>
 </phrase>
@@ -4595,7 +4605,7 @@ or the File > Open and File > Import menus.</original>
 <translation>точната големина ќе се разликува од сликата</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4732,6 +4742,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>Менување на големината на сликата</translation>
 </phrase>
@@ -4761,7 +4781,7 @@ or the File > Open and File > Import menus.</original>
 <translation>Единица промена на големината на сликата на екранот од лево на ова поле</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -15392,10 +15412,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2574</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4679 phrases. -->
-<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
-<!-- These 2574 phrases contain approximately 12431 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12435 total words. -->
 
 </pdData>

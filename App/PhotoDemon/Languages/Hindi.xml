@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.58</langversion>
+<langversion>1.0.59</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4572,6 +4572,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>पिक्सल</translation>
 </phrase>
@@ -4591,7 +4601,7 @@ or the File > Open and File > Import menus.</original>
 <translation>सटीक आकार छवि के अनुसार भिन्न होगा</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4728,6 +4738,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Resize image</original>
 <translation>छवि का आकार बदलना</translation>
 </phrase>
@@ -4757,7 +4777,7 @@ or the File > Open and File > Import menus.</original>
 <translation>इस बॉक्स के बाईं ओर प्रदर्शित छवि आकार इकाई बदलें</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -15387,10 +15407,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2574</phrasecount>
+<phrasecount>2578</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4679 phrases. -->
-<!-- 2105 are duplicates, so only 2574 unique phrases have been written to file. -->
-<!-- These 2574 phrases contain approximately 12431 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 12435 total words. -->
 
 </pdData>

@@ -202,8 +202,8 @@ Attribute VB_Exposed = False
 'Image Resize User Control
 'Copyright 2001-2018 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
-'Last updated: 24/May/16
-'Last update: implement .Reset functionality for the spinner controls
+'Last updated: 03/May/18
+'Last update: add esoteric unit support (mm, pt, pc)
 '
 'Many tools in PD relate to resizing: image size, canvas size, (soon) layer size, content-aware rescaling,
 ' perhaps a more advanced autocrop tool, plus dedicated resize options in the batch converter...
@@ -394,9 +394,9 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPCM selected, convert the resolution now
             If (m_previousUnitOfResolution = ru_PPCM) Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = GetCMFromInches(tudResolution)
+                    tudResolution = Units.GetCMFromInches(tudResolution)
                 Else
-                    tudResolution = GetCMFromInches(m_initDPI)
+                    tudResolution = Units.GetCMFromInches(m_initDPI)
                 End If
             End If
             
@@ -408,7 +408,7 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPI selected, convert the resolution now
             If (m_previousUnitOfResolution = ru_PPI) Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = GetInchesFromCM(tudResolution)
+                    tudResolution = Units.GetInchesFromCM(tudResolution)
                 Else
                     tudResolution = m_initDPI
                 End If
@@ -647,10 +647,10 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As PD_MeasurementUnit, ByVal ne
             If (m_initWidth <> 0) Then tudWidth.DefaultValue = m_initWidth Else tudWidth.DefaultValue = g_Displays.GetDesktopWidth
             If (m_initHeight <> 0) Then tudHeight.DefaultValue = m_initHeight Else tudHeight.DefaultValue = g_Displays.GetDesktopHeight
             
-        Case mu_Inches, mu_Centimeters, mu_Millimeters
+        Case Else
             tudWidth.SigDigits = 2
             tudWidth.Min = 0.01
-            If (newUnit = mu_Millimeters) Then tudWidth.Max = 320000# Else tudWidth.Max = 32000#
+            If (newUnit = mu_Millimeters) Or (newUnit = mu_Points) Or (newUnit = mu_Picas) Then tudWidth.Max = 320000# Else tudWidth.Max = 32000#
             If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
             If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(newUnit, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
             
@@ -797,11 +797,13 @@ Private Sub PopulateDropdowns()
     cmbWidthUnit.Clear
     
     If pdMain.IsProgramRunning() Then
-        If Not m_PercentDisabled Then cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels")
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches")
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" centimeters")
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" millimeters")
+        If Not m_PercentDisabled Then cmbWidthUnit.AddItem g_Language.TranslateMessage("percent"), 0
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("pixels")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("inches")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("centimeters")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("millimeters")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("points")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage("picas")
         If (Not m_PercentDisabled) Then cmbWidthUnit.ListIndex = mu_Pixels Else cmbWidthUnit.ListIndex = mu_Pixels - 1
     End If
     
@@ -819,8 +821,8 @@ Private Sub PopulateDropdowns()
     cmbResolution.Clear
     
     If pdMain.IsProgramRunning() Then
-        cmbResolution.AddItem g_Language.TranslateMessage(" pixels / inch (PPI)"), 0
-        cmbResolution.AddItem g_Language.TranslateMessage(" pixels / centimeter (PPCM)"), 1
+        cmbResolution.AddItem g_Language.TranslateMessage("pixels / inch (PPI)"), 0
+        cmbResolution.AddItem g_Language.TranslateMessage("pixels / centimeter (PPCM)"), 1
         cmbResolution.ListIndex = ru_PPI
     End If
     
@@ -839,10 +841,9 @@ Private Sub SyncDimensions(ByVal useWidthAsSource As Boolean)
     Dim preserveAspectRatio As Boolean
     preserveAspectRatio = cmdAspectRatio.Value
     
-    'Because the resize dialog now allows use of units other than pixels (e.g. "percent"), we always provide a width/height pixel
-    ' equivalent, in case subsequent conversion functions needs it.
+    'Because the resize dialog provides units other than pixels (e.g. "percent"), we always provide
+    ' a width/height pixel equivalent, in case subsequent conversion functions needs it.
     Dim imgWidthPixels As Double, imgHeightPixels As Double
-    
     imgWidthPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
     imgHeightPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
     

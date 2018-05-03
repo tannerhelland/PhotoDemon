@@ -25,10 +25,12 @@ Public Enum PD_MeasurementUnit
     mu_Inches = 2
     mu_Centimeters = 3
     mu_Millimeters = 4
+    mu_Points = 5
+    mu_Picas = 6
 End Enum
 
 #If False Then
-    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4
+    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4, mu_Points = 5, mu_Picas = 6
 #End If
 
 Public Enum PD_ResolutionUnit
@@ -55,13 +57,19 @@ Public Function ConvertPixelToOtherUnit(ByVal curUnit As PD_MeasurementUnit, ByV
             ConvertPixelToOtherUnit = srcPixelValue
             
         Case mu_Inches
-            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
+            If (srcPixelResolution <> 0#) Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
         
         Case mu_Centimeters
-            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
+            If (srcPixelResolution <> 0#) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
             
         Case mu_Millimeters
-            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution) * 10#
+            If (srcPixelResolution <> 0#) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution) * 10#
+            
+        Case mu_Points
+            If (srcPixelResolution <> 0#) Then ConvertPixelToOtherUnit = (srcPixelValue / srcPixelResolution) * 72#
+        
+        Case mu_Picas
+            If (srcPixelResolution <> 0#) Then ConvertPixelToOtherUnit = (srcPixelValue / srcPixelResolution) * 6#
     
     End Select
 
@@ -91,6 +99,12 @@ Public Function ConvertOtherUnitToPixels(ByVal curUnit As PD_MeasurementUnit, By
             
         Case mu_Millimeters
             ConvertOtherUnitToPixels = Int(GetInchesFromCM(srcUnitValue / 10#) * srcUnitResolution + 0.5)
+            
+        Case mu_Points
+            ConvertOtherUnitToPixels = Int((srcUnitValue / 72#) * srcUnitResolution + 0.5)
+        
+        Case mu_Picas
+            ConvertOtherUnitToPixels = Int((srcUnitValue / 6#) * srcUnitResolution + 0.5)
         
     End Select
     
