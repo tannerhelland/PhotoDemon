@@ -89,7 +89,7 @@ Begin VB.Form dialog_ExportGIF
          _ExtentX        =   7858
          _ExtentY        =   661
          Caption         =   "restrict palette size"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   975
@@ -398,7 +398,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     btsColorModel.ListIndex = 0
-    chkColorCount.Value = vbUnchecked
+    chkColorCount.Value = False
     sldColorCount.Value = 256
     clsBackground.Color = vbWhite
     btsAlpha.ListIndex = 0
@@ -452,7 +452,7 @@ Private Function GetExportParamString() As String
     
     Dim colorCount As Long
     If (btsColorModel.ListIndex <> 0) Then
-        If CBool(chkColorCount) And sldColorCount.IsValid Then colorCount = sldColorCount.Value Else colorCount = 256
+        If chkColorCount.Value And sldColorCount.IsValid Then colorCount = sldColorCount.Value Else colorCount = 256
     Else
         colorCount = 256
     End If
@@ -494,7 +494,7 @@ Private Sub UpdatePreviewSource()
         If (btsColorModel.ListIndex = 0) Then
             paletteCount = 256
         Else
-            If CBool(chkColorCount.Value) And sldColorCount.IsValid Then paletteCount = sldColorCount.Value Else paletteCount = 256
+            If chkColorCount.Value And sldColorCount.IsValid Then paletteCount = sldColorCount.Value Else paletteCount = 256
         End If
         
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
@@ -542,7 +542,7 @@ Private Sub sldAlphaCutoff_Change()
 End Sub
 
 Private Sub sldColorCount_Change()
-    If Not CBool(chkColorCount) Then chkColorCount.Value = vbChecked
+    If (Not chkColorCount.Value) Then chkColorCount.Value = True
     UpdatePreviewSource
     UpdatePreview
 End Sub

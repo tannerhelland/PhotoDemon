@@ -690,7 +690,7 @@ Begin VB.Form FormOptions
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "forcibly extract binary-type tags as Base64 (slow)"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
@@ -711,7 +711,7 @@ Begin VB.Form FormOptions
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "extract unknown tags"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
@@ -1082,17 +1082,17 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Loading preferences
     
         'START/END automatically tone-map HDR images
-            UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", CBool(chkToneMapping)
+            UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
             
         'START metadata behavior at load-time
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", CBool(chkMetadataDuplicates.Value)
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", CBool(chkMetadataJPEG.Value)
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", CBool(chkMetadataBinary.Value)
-            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", CBool(chkMetadataUnknown.Value)
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", chkMetadataDuplicates.Value
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", chkMetadataJPEG.Value
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", chkMetadataBinary.Value
+            UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", chkMetadataUnknown.Value
         'END metadata behavior at load-time
         
         'START/END EXIF auto-rotation
-            UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", CBool(chkLoadingOrientation)
+            UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", chkLoadingOrientation.Value
         
     
     'END Loading preferences
@@ -1104,7 +1104,7 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Saving preferences
     
         'START prompt on unsaved images
-            g_ConfirmClosingUnsaved = CBool(chkConfirmUnsaved.Value)
+            g_ConfirmClosingUnsaved = chkConfirmUnsaved.Value
             UserPrefs.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
@@ -1115,7 +1115,7 @@ Private Sub cmdBarMini_OKClick()
         'END prompt on unsaved images
         
         'START/END metadata-related options
-            UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", CBool(chkMetadataListPD.Value)
+            UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
         
         'START/END Save behavior (overwrite or copy)
             UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
@@ -1164,7 +1164,7 @@ Private Sub cmdBarMini_OKClick()
                 ColorManagement.SetDisplayColorManagementPreference DCM_CustomProfile
             End If
             
-            ColorManagement.SetDisplayBPC CBool(chkColorManagement(0).Value)
+            ColorManagement.SetDisplayBPC chkColorManagement(0).Value
             ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
             
             'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
@@ -1187,7 +1187,7 @@ Private Sub cmdBarMini_OKClick()
             UserPrefs.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
             
         'START/END update notifications
-            UserPrefs.SetPref_Boolean "Updates", "Update Notifications", CBool(chkUpdates(0).Value)
+            UserPrefs.SetPref_Boolean "Updates", "Update Notifications", chkUpdates(0).Value
     
     'END Update preferences
     
@@ -1412,26 +1412,25 @@ Private Sub LoadAllPreferences()
     'START Loading preferences
     
         'START tone-mapping HDR images at load time
-            If UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then chkToneMapping.Value = vbChecked Else chkToneMapping.Value = vbUnchecked
-            
+            chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
             chkToneMapping.Enabled = g_ImageFormats.FreeImageEnabled
             If (Not g_ImageFormats.FreeImageEnabled) Then chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
             chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
         'END tone-mapping HDR images at load time
         
         'START metadata behavior at load-time
-            If UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then chkMetadataDuplicates.Value = vbChecked Else chkMetadataDuplicates.Value = vbUnchecked
+            chkMetadataDuplicates.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True)
             chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
-            If UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then chkMetadataJPEG.Value = vbChecked Else chkMetadataJPEG.Value = vbUnchecked
+            chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
             chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
-            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then chkMetadataUnknown.Value = vbChecked Else chkMetadataUnknown.Value = vbUnchecked
+            chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
             chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
-            If UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then chkMetadataBinary.Value = vbChecked Else chkMetadataBinary.Value = vbUnchecked
+            chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
             chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
         'END metadata behavior at load-time
         
         'START auto-rotate according to EXIF data
-            If UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True) Then chkLoadingOrientation.Value = vbChecked Else chkLoadingOrientation.Value = vbUnchecked
+            chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
             chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
         'END auto-rotate according to EXIF data
         
@@ -1443,7 +1442,7 @@ Private Sub LoadAllPreferences()
     'START Saving preferences
     
         'START/END prompt about unsaved images
-            If g_ConfirmClosingUnsaved Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
+            chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
             chkConfirmUnsaved.AssignTooltip "By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes."
             
         'START suggested save as format
@@ -1465,7 +1464,7 @@ Private Sub LoadAllPreferences()
         'END overwrite vs copy when saving
                
         'START/END embed PD as the last-used program
-            If UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True) Then chkMetadataListPD.Value = vbChecked Else chkMetadataListPD.Value = vbUnchecked
+            chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
             chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
         
     'END Saving preferences
@@ -1512,7 +1511,7 @@ Private Sub LoadAllPreferences()
             
         'Set the various buttons and dropdown according to the user's current display profile preference
         optColorManagement(ColorManagement.GetDisplayColorManagementPreference()).Value = True
-        If ColorManagement.GetDisplayBPC() Then chkColorManagement(0).Value = vbChecked Else chkColorManagement(0).Value = vbUnchecked
+        chkColorManagement(0).Value = ColorManagement.GetDisplayBPC()
         Interface.PopulateRenderingIntentDropDown cboDisplayRenderIntent, ColorManagement.GetDisplayRenderingIntentPref()
         
         'Load a list of all available monitors
@@ -1618,7 +1617,7 @@ Private Sub LoadAllPreferences()
         'END update track
         
         'START notify when updates are ready for patching
-            If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
+            chkUpdates(0).Value = UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True)
             chkUpdates(0).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
         'END notify when updates are ready for patching
         

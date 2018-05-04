@@ -493,10 +493,10 @@ Private Sub UpdatePreview()
         cmdBar.MarkPreviewStatus False
 
         'If normalization has been requested, apply it before updating the preview
-        tudDivisor.Enabled = Not CBool(chkNormalize)
-        tudOffset.Enabled = Not CBool(chkNormalize)
+        tudDivisor.Enabled = Not chkNormalize.Value
+        tudOffset.Enabled = Not chkNormalize.Value
         
-        If CBool(chkNormalize) Then
+        If chkNormalize.Value Then
         
             'Sum up the total of all filter boxes
             Dim filterSum As Double

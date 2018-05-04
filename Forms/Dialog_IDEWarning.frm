@@ -167,7 +167,7 @@ Public Sub ShowDialog()
 End Sub
 
 Private Sub CmdOK_Click()
-    If CBool(chkRepeat.Value) Then UserPrefs.SetPref_Boolean "Core", "Display IDE Warning", False
+    If chkRepeat.Value Then UserPrefs.SetPref_Boolean "Core", "Display IDE Warning", False
     Me.Hide
 End Sub
 

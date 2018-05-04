@@ -141,7 +141,7 @@ Private Sub chkDirection_Click(Index As Integer)
     If (Index = 0) Then otherIndex = 1 Else otherIndex = 0
 
     If (Not chkDirection(Index)) Then
-        If (Not chkDirection(otherIndex)) Then chkDirection(otherIndex).Value = vbChecked
+        If (Not chkDirection(otherIndex)) Then chkDirection(otherIndex).Value = True
     End If
     
     ignoreStateChanges = False
@@ -597,8 +597,8 @@ Private Sub ChangeCheckboxActivation(ByVal toEnable As Boolean)
     'Activate both directions, then disable the checkboxes
     Else
     
-        If Not CBool(chkDirection(0).Value) Then chkDirection(0).Value = vbChecked
-        If Not CBool(chkDirection(1).Value) Then chkDirection(1).Value = vbChecked
+        If Not chkDirection(0).Value Then chkDirection(0).Value = True
+        If Not chkDirection(1).Value Then chkDirection(1).Value = True
         
         chkDirection(0).Enabled = False
         chkDirection(1).Enabled = False
@@ -610,9 +610,9 @@ End Sub
 'Convert the directionality checkboxes to PD's internal edge detection definitions
 Private Function GetDirectionality() As PD_EDGE_DETECTION_DIRECTION
 
-    If CBool(chkDirection(0).Value) And Not CBool(chkDirection(1).Value) Then
+    If chkDirection(0).Value And Not chkDirection(1).Value Then
         GetDirectionality = PD_EDGE_DIR_HORIZONTAL
-    ElseIf CBool(chkDirection(1).Value) And Not CBool(chkDirection(0).Value) Then
+    ElseIf chkDirection(1).Value And Not chkDirection(0).Value Then
         GetDirectionality = PD_EDGE_DIR_VERTICAL
     Else
         GetDirectionality = PD_EDGE_DIR_ALL

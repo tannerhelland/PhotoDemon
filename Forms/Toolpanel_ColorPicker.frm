@@ -356,7 +356,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     If (Not m_NoColorAvailable) Then
     
         'Grab a color from the correct source.
-        If CBool(chkSampleMerged.Value) And (pdImages(g_CurrentImage).GetNumOfLayers > 1) Then
+        If chkSampleMerged.Value And (pdImages(g_CurrentImage).GetNumOfLayers > 1) Then
             
             'Before proceeding, ensure the mouse pointer lies within the image.
             If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > pdImages(g_CurrentImage).Width) Or (m_ImgY > pdImages(g_CurrentImage).Height) Then

@@ -983,7 +983,7 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-shape", CBool(chkShape.Value), "shape-strictness", sltShapeStrictness.Value, "confirm-size", CBool(chkSize.Value), "size-strictness", sltSizeStrictness.Value, "preview-highlight", CBool(chkHighlight.Value))
+    GetLocalParamString = BuildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-shape", chkShape.Value, "shape-strictness", sltShapeStrictness.Value, "confirm-size", chkSize.Value, "size-strictness", sltSizeStrictness.Value, "preview-highlight", chkHighlight.Value)
 End Function
 
 Private Sub sltColor_Change()

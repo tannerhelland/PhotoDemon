@@ -33,7 +33,7 @@ Begin VB.Form FormThemeEditor
       _ExtentX        =   6376
       _ExtentY        =   661
       Caption         =   "sort before saving"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdCheckBox chkCustomMenuColor 
       Height          =   375
@@ -44,7 +44,7 @@ Begin VB.Form FormThemeEditor
       _ExtentX        =   9340
       _ExtentY        =   661
       Caption         =   "use custom menu color"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdLabel lblExport 
       Height          =   375
@@ -674,7 +674,7 @@ Private Sub SaveWorkingFile()
         Next i
         
         'If requested, sort the resources prior to writing them
-        If CBool(chkSort.Value) Then
+        If chkSort.Value Then
         
             Dim tmpSort As PD_Resource
             Dim j As Long
@@ -873,19 +873,19 @@ Private Sub SyncResourceAgainstCurrentUI()
             .ResourceName = txtResourceName.Text
             .ResType = btsResourceType.ListIndex
             .ResFileLocation = txtResourceLocation.Text
-            If (.ResType = PDRT_Image) Then .ResSupportsColoration = CBool(chkColoration.Value)
+            If (.ResType = PDRT_Image) Then .ResSupportsColoration = chkColoration.Value
             If .ResSupportsColoration Then
                 .ResColorLight = csLight.Color
                 .ResColorDark = csDark.Color
             End If
-            If (.ResType = PDRT_Image) Then .ResCustomMenuColor = CBool(chkCustomMenuColor.Value)
+            If (.ResType = PDRT_Image) Then .ResCustomMenuColor = chkCustomMenuColor.Value
             If .ResCustomMenuColor Then .ResColorMenu = csMenu.Color
             
-            .UseHighSpeedCompression = CBool(chkCompressHS.Value)
+            .UseHighSpeedCompression = chkCompressHS.Value
             
             'To delete a resource, you have to click the delete button, save the resource file,
             ' then exit and re-enter the dialog.  (Sorry; deletion is not really meant to be used often.)
-            .MarkedForDeletion = CBool(chkDelete.Value)
+            .MarkedForDeletion = chkDelete.Value
             
         End With
     
@@ -906,21 +906,21 @@ Private Sub SyncUIAgainstCurrentResource()
             btsResourceType.ListIndex = .ResType
             txtResourceLocation.Text = .ResFileLocation
             If .ResSupportsColoration Then
-                chkColoration.Value = vbChecked
+                chkColoration.Value = True
                 csLight.Color = .ResColorLight
                 csDark.Color = .ResColorDark
             Else
-                chkColoration.Value = vbUnchecked
+                chkColoration.Value = False
             End If
             If .ResCustomMenuColor Then
-                chkCustomMenuColor.Value = vbChecked
+                chkCustomMenuColor.Value = True
                 csMenu.Color = .ResColorMenu
             Else
-                chkCustomMenuColor.Value = vbUnchecked
+                chkCustomMenuColor.Value = False
             End If
             
-            If .UseHighSpeedCompression Then chkCompressHS.Value = vbChecked Else chkCompressHS.Value = vbUnchecked
-            If .MarkedForDeletion Then chkDelete.Value = vbChecked Else chkDelete.Value = vbUnchecked
+            chkCompressHS.Value = .UseHighSpeedCompression
+            chkDelete.Value = .MarkedForDeletion
             
             m_SuspendUpdates = False
             

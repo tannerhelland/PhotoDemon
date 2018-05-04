@@ -234,7 +234,7 @@ End Sub
 'To match GIMP's behavior (which is actually well-designed in this case), disable the output combo box
 Private Sub chkMonochrome_Click()
     
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         
         chkLuminance.Enabled = False
         btsChannel.Enabled = False
@@ -284,8 +284,8 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     With cParams
     
         'Start by grabbing the two simple parameters from the list
-        isMonochrome = .GetBool("monochrome", CBool(chkMonochrome))
-        preserveLuminance = .GetBool("preserveluminance", CBool(chkLuminance))
+        isMonochrome = .GetBool("monochrome", chkMonochrome.Value)
+        preserveLuminance = .GetBool("preserveluminance", chkLuminance.Value)
         
         'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
@@ -507,7 +507,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     
     'Sync the on-screen controls with whatever slider values are relevant
     m_forbidUpdate = True
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         btsChannel.Enabled = False
         sltRed.Value = m_curSliderValues(GrayOutput, RedInput)
         sltGreen.Value = m_curSliderValues(GrayOutput, GreenInput)
@@ -575,8 +575,8 @@ Private Sub cmdBar_ResetClick()
     sltGreen.Value = 0
     sltBlue.Value = 0
     sltConstant.Value = 0
-    chkMonochrome.Value = vbUnchecked
-    chkLuminance.Value = vbChecked
+    chkMonochrome.Value = False
+    chkLuminance.Value = True
     
 End Sub
 
@@ -607,7 +607,7 @@ Private Sub Form_Load()
     
     'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
     ' (due to no Click event being fired).  Forcibly check this state in advance.
-    chkLuminance.Enabled = Not CBool(chkMonochrome)
+    chkLuminance.Enabled = Not chkMonochrome.Value
     
     'Display the previewed effect in the neighboring window
     cmdBar.MarkPreviewStatus True
@@ -627,7 +627,7 @@ Private Sub sltBlue_Change()
 End Sub
 
 Private Sub sltBlue_ResetClick()
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         sltBlue.Value = 7
     Else
         If (btsChannel.ListIndex = BlueOutput) Then sltBlue.Value = 100 Else sltBlue.Value = 0
@@ -649,7 +649,7 @@ Private Sub sltGreen_Change()
 End Sub
 
 Private Sub sltGreen_ResetClick()
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         sltGreen.Value = 72
     Else
         If (btsChannel.ListIndex = GreenOutput) Then sltGreen.Value = 100 Else sltGreen.Value = 0
@@ -664,7 +664,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub sltRed_ResetClick()
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         sltRed.Value = 21
     Else
         If (btsChannel.ListIndex = RedOutput) Then sltRed.Value = 100 Else sltRed.Value = 0
@@ -675,7 +675,7 @@ End Sub
 Private Sub UpdateStoredValues()
 
     'Store values according to the current combo box or monochrome setting
-    If CBool(chkMonochrome) Then
+    If chkMonochrome.Value Then
         m_curSliderValues(GrayOutput, RedInput) = sltRed.Value
         m_curSliderValues(GrayOutput, GreenInput) = sltGreen.Value
         m_curSliderValues(GrayOutput, BlueInput) = sltBlue.Value
@@ -699,8 +699,8 @@ Private Function GetLocalParamString() As String
     With cParams
     
         'Start by adding the two simple parameters to the list
-        cParams.AddParam "monochrome", CBool(chkMonochrome)
-        cParams.AddParam "preserveluminance", CBool(chkLuminance)
+        cParams.AddParam "monochrome", chkMonochrome.Value
+        cParams.AddParam "preserveluminance", chkLuminance.Value
         
         'Next, we have a 4x4 "grid" of values that needs to be added: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the named enums

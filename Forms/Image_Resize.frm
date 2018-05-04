@@ -171,7 +171,7 @@ End Property
 Private Sub SwitchResampleOption()
     
     'Technical names
-    If CBool(chkNames) Then
+    If chkNames.Value Then
     
         'Show a descriptive label
         lblResample.Caption = g_Language.TranslateMessage("resampling algorithm:")
@@ -320,7 +320,7 @@ Private Sub cmdBar_ResetClick()
     'Use friendly resample names by default
     cboResampleTechnical.ListIndex = 0
     cboResampleFriendly.ListIndex = 0
-    chkNames.Value = vbUnchecked
+    chkNames.Value = False
     
     'Stretch to new aspect ratio by default
     cmbFit.ListIndex = 0
@@ -721,7 +721,7 @@ Private Function GetLocalParamString() As String
     'Retrieve the resample type selected by the user, which will vary depending on whether they used
     ' "technical" names or "friendly" ones.
     Dim resampleAlgorithm As PD_RESAMPLE_ADVANCED
-    If CBool(chkNames) Then
+    If chkNames.Value Then
         resampleAlgorithm = m_resampleTypes(rsTechnical, cboResampleTechnical.ListIndex).ResampleID
     Else
         resampleAlgorithm = m_resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ResampleID

@@ -144,7 +144,7 @@ Private Sub cboBrushSetting_Click(Index As Integer)
 End Sub
 
 Private Sub chkAntialiasing_Click()
-    If (chkAntialiasing.Value = vbChecked) Then
+    If chkAntialiasing.Value Then
         Paintbrush.SetBrushAntialiasing P2_AA_HighQuality
     Else
         Paintbrush.SetBrushAntialiasing P2_AA_None
@@ -211,7 +211,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If CBool(chkAntialiasing.Value) Then Paintbrush.SetBrushAntialiasing P2_AA_HighQuality Else Paintbrush.SetBrushAntialiasing P2_AA_None
+    If chkAntialiasing.Value Then Paintbrush.SetBrushAntialiasing P2_AA_HighQuality Else Paintbrush.SetBrushAntialiasing P2_AA_None
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -220,5 +220,5 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
-    If (Paintbrush.GetBrushAntialiasing = P2_AA_HighQuality) Then chkAntialiasing.Value = vbChecked Else chkAntialiasing.Value = vbUnchecked
+    chkAntialiasing.Value = (Paintbrush.GetBrushAntialiasing = P2_AA_HighQuality)
 End Sub

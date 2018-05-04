@@ -1205,7 +1205,7 @@ Private Sub lstPhrases_Click()
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
         lblTranslatedPhrase.ForeColor = RGB(208, 52, 52)
     
-        If CBool(chkGoogleTranslate) Then
+        If chkGoogleTranslate.Value Then
             txtTranslation = g_Language.TranslateMessage("waiting for Google Translate...")
             
             'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before

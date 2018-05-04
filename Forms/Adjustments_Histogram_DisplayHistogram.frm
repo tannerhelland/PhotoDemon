@@ -456,7 +456,7 @@ Public Sub DrawHistogram()
     
     Dim i As Long
     For i = 0 To 2
-        If CBool(chkChannel(i)) Then
+        If chkChannel(i).Value Then
             If channelMax(i) > hMax Then
                 hMax = channelMax(i)
                 hMaxLog = channelMaxLog(i)
@@ -472,7 +472,7 @@ Public Sub DrawHistogram()
     For hType = 0 To 3
     
         'Only draw this histogram channel if the user has requested it
-        If CBool(chkChannel(hType)) Then
+        If chkChannel(hType).Value Then
         
             'The type of histogram we're drawing will determine the color of the histogram
             'line - we'll make it match what we're drawing (red/green/blue/black)
@@ -498,16 +498,16 @@ Public Sub DrawHistogram()
             End If
     
             'Now we'll draw the histogram.  The drawing code will change based on the "smooth lines" setting on the histogram dialog.
-            If CBool(chkSmooth) Then
+            If chkSmooth.Value Then
             
                 'Drawing a cubic spline line is complex enough to warrant its own subroutine.  Check there for details.
-                DrawCubicSplineHistogram hType, tHeight, CBool(chkFillCurve)
+                DrawCubicSplineHistogram hType, tHeight, chkFillCurve.Value
                 
             Else
                     
                 'For the first point there is no last 'x' or 'y', so we'll just make it the same as the first value in the histogram.
                 LastX = 0
-                If CBool(chkLog) Then
+                If chkLog.Value Then
                     LastY = tHeight - (hDataLog(hType, 0) / hMaxLog) * tHeight
                 Else
                     LastY = tHeight - (hData(hType, 0) / hMax) * tHeight
@@ -526,7 +526,7 @@ Public Sub DrawHistogram()
                     If xCalc > 255 Then xCalc = 255
                     
                     'Use logarithmic values if requested by the user
-                    If CBool(chkLog) Then
+                    If chkLog.Value Then
                         y = tHeight - (hDataLog(hType, xCalc) / hMaxLog) * tHeight
                     Else
                         y = tHeight - (hData(hType, xCalc) / hMax) * tHeight
@@ -536,7 +536,7 @@ Public Sub DrawHistogram()
                     picH.Line (LastX, LastY + 2)-(x, y + 2)
                         
                     'If "fill curve" is selected, fill the area beneath this point.  (Note that luminance curve is never filled!)
-                    If hType < 3 And CBool(chkFillCurve) Then GDIPlusDrawLineToDC picH.hDC, x, y + 2, x, picH.ScaleHeight, picH.ForeColor, 64, 1, False
+                    If hType < 3 And chkFillCurve.Value Then GDIPlusDrawLineToDC picH.hDC, x, y + 2, x, picH.ScaleHeight, picH.ForeColor, 64, 1, False
                         
                     'Update the LastX/Y values
                     LastX = x
@@ -559,7 +559,7 @@ Public Sub DrawHistogram()
     lblTotalPixels.Caption = strTotalPixels & (pdImages(g_CurrentImage).Width * pdImages(g_CurrentImage).Height)
     
     'Maximum value; if a color channel is enabled, use that
-    If CBool(chkChannel(0)) Or CBool(chkChannel(1)) Or CBool(chkChannel(2)) Then
+    If chkChannel(0).Value Or chkChannel(1).Value Or chkChannel(2).Value Then
         
         'Reset hMax, which may have been changed if the luminance histogram was rendered
         hMax = channelMax(maxChannel)
@@ -594,7 +594,7 @@ Private Sub Form_Load()
     histogramGenerated = False
     
     'On XP, GDI+'s line function is hideously slow.  Disable filled curves by default.
-    If (Not OS.IsVistaOrLater) Then chkFillCurve.Value = vbUnchecked Else chkFillCurve.Value = vbChecked
+    chkFillCurve.Value = OS.IsVistaOrLater
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
@@ -722,7 +722,7 @@ Private Sub DrawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     
     'Now, populate the iX and iY arrays with the histogram values for the specified channel (0-3, corresponds to hType above)
     Dim renderInLogMode As Boolean
-    renderInLogMode = CBool(chkLog)
+    renderInLogMode = chkLog.Value
     
     Dim i As Long
     For i = 1 To nPoints

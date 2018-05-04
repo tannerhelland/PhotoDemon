@@ -250,8 +250,8 @@ Private Sub cmdBar_OKClick()
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.AddParam "JXRQuality", Abs(sltQuality)
-    cParams.AddParam "JXRProgressive", CBool(chkProgressive)
+    cParams.AddParam "JXRQuality", Abs(sltQuality.Value)
+    cParams.AddParam "JXRProgressive", chkProgressive.Value
     
     m_FormatParamString = cParams.GetParamString
     

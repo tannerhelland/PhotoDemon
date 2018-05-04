@@ -221,11 +221,11 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     Me.Caption = dialogTitleText
     
     'The caller can specify whether "remember my choice" is checked by default
-    If defaultRemember Then chkRemember.Value = vbChecked Else chkRemember.Value = vbUnchecked
+    chkRemember.Value = defaultRemember
     
     'Prep button icons at load-time
     Dim buttonIconSize As Long
-    buttonIconSize = FixDPI(32)
+    buttonIconSize = Interface.FixDPI(32)
     If (LenB(resNameYesImg) <> 0) Then cmdAnswer(0).AssignImage resNameYesImg, , buttonIconSize, buttonIconSize
     If (LenB(resNameNoImg) <> 0) Then cmdAnswer(1).AssignImage resNameNoImg, , buttonIconSize, buttonIconSize
     If (LenB(resNameCancelImg) <> 0) Then cmdAnswer(2).AssignImage resNameCancelImg, , buttonIconSize, buttonIconSize
@@ -256,7 +256,7 @@ Private Sub cmdAnswer_Click(Index As Integer)
     End Select
     
     'Note the user's preference for remembering this decision
-    rememberMyChoice = CBool(chkRemember.Value)
+    rememberMyChoice = chkRemember.Value
     
     'Notify the central interface manager of this result
     Interface.NotifyShowDialogResult userAnswer, True

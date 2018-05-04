@@ -201,7 +201,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
-    chkSwapXY.Value = vbUnchecked
+    chkSwapXY.Value = False
     cboEdges.ListIndex = EDGE_ERASE
 End Sub
 
@@ -256,7 +256,7 @@ Private Function GetLocalParamString() As String
     
     With cParams
         .AddParam "method", cboConvert.ListIndex
-        .AddParam "swapxy", CBool(chkSwapXY.Value)
+        .AddParam "swapxy", chkSwapXY.Value
         .AddParam "radius", sltRadius.Value
         .AddParam "edges", cboEdges.ListIndex
         .AddParam "bilinear", (btsRender.ListIndex = 1)

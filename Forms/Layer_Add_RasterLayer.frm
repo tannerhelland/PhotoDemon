@@ -230,7 +230,7 @@ Private Function GetLocalParamString() As String
         .AddParam "layersubtype", newLayerType
         .AddParam "layercolor", csBackground.Color
         .AddParam "layerposition", cboPosition.ListIndex
-        .AddParam "activatelayer", CBool(chkAutoSelectLayer)
+        .AddParam "activatelayer", chkAutoSelectLayer.Value
         .AddParam "layername", txtLayerName
     End With
     

@@ -52,7 +52,7 @@ Begin VB.Form dialog_ToneMapping
       _ExtentX        =   11748
       _ExtentY        =   582
       Caption         =   "in the future, automatically apply these settings"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdButtonStrip btsMethod 
       Height          =   960
@@ -362,7 +362,7 @@ End Property
 'If the user wants us to auto-set these parameters in the future, without raising the dialog, this property will be
 ' set to TRUE.
 Public Property Get RememberSettings() As Boolean
-    RememberSettings = CBool(chkRemember.Value)
+    RememberSettings = chkRemember.Value
 End Property
 
 'This dialog will be given access to the FreeImage handle of the image being imported.  This is crucial because only FreeImage
@@ -447,7 +447,7 @@ Private Sub UpdatePreview()
     
     'Tone mapping failed; abandon the preview attempt
     Else
-        pdDebug.LogAction "Can't preview tone-mapping; unspecified error returned by master tone-map function."
+        PDDebug.LogAction "Can't preview tone-mapping; unspecified error returned by master tone-map function."
     End If
     
     'Re-enable the form
@@ -485,11 +485,11 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
-    chkRemember.Value = vbUnchecked
+    chkRemember.Value = False
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
-    chkRemember.Value = vbUnchecked
+    chkRemember.Value = False
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -507,7 +507,7 @@ Private Sub cmdBar_ResetClick()
     sltGamma(2) = 2.2
     sltExposure(1) = 2#
     sltWhitepoint = 11.2
-    chkRemember.Value = vbUnchecked
+    chkRemember.Value = False
     cmdBar.MarkPreviewStatus True
     
     UpdatePreview

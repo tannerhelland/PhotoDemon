@@ -208,7 +208,7 @@ Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPrev
         rVal = .GetLong("red", 0)
         gVal = .GetLong("green", 0)
         bVal = .GetLong("blue", 0)
-        preserveLuminance = .GetBool("preserveluminance", CBool(chkLuminance.Value))
+        preserveLuminance = .GetBool("preserveluminance", chkLuminance.Value)
     End With
     
     Dim rModifier As Long, gModifier As Long, bModifier As Long
@@ -355,7 +355,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    chkLuminance.Value = vbChecked
+    chkLuminance.Value = False
 End Sub
 
 Private Sub Form_Load()
@@ -399,7 +399,7 @@ Private Function GetLocalParamString() As String
         .AddParam "red", sltRed.Value
         .AddParam "green", sltGreen.Value
         .AddParam "blue", sltBlue.Value
-        .AddParam "preserveluminance", CBool(chkLuminance.Value)
+        .AddParam "preserveluminance", chkLuminance.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

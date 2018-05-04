@@ -273,7 +273,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "xsize", sltX.Value
         .AddParam "ysize", sltY.Value
-        .AddParam "wrap", CBool(chkWrap.Value)
+        .AddParam "wrap", chkWrap.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

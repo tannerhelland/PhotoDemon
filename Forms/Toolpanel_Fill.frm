@@ -227,7 +227,7 @@ Private Sub cboSource_Click()
 End Sub
 
 Private Sub chkAntialiasing_Click()
-    FillTool.SetFillAA CBool(chkAntialiasing.Value)
+    FillTool.SetFillAA chkAntialiasing.Value
 End Sub
 
 Private Sub sldFillTolerance_Change()
@@ -273,7 +273,7 @@ End Sub
 
 'If you want to set all paintbrush settings at once, use this function
 Public Sub SyncAllFillSettingsToUI()
-    FillTool.SetFillAA CBool(chkAntialiasing.Value)
+    FillTool.SetFillAA chkAntialiasing.Value
     FillTool.SetFillAlphaMode cboFillAlphaMode.ListIndex
     FillTool.SetFillBlendMode cboFillBlendMode.ListIndex
     FillTool.SetFillBrush bsFillStyle.Brush

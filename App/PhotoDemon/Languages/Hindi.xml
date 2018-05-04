@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.59</langversion>
+<langversion>1.0.60</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14664,6 +14664,11 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 </phrase>
 
 <phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>प्रदर्शन प्रतिपादन इरादे</translation>
 </phrase>
@@ -15077,6 +15082,11 @@ VBCRL क्या आप वाकई जारी रखना चाहते
 </phrase>
 
 <phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>प्रत्येक सत्र</translation>
 </phrase>
@@ -15224,7 +15234,7 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation>यह नया अस्थायी फ़ोल्डर स्थान प्रभावी नहीं होगा जब तक कि आप प्रोग्राम को पुनरारंभ न करें।</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15407,10 +15417,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12435 total words. -->
+<!-- As of this build, PhotoDemon contains 4687 phrases. -->
+<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 12467 total words. -->
 
 </pdData>

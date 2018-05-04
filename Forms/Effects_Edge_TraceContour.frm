@@ -226,8 +226,8 @@ Private Function GetLocalParamString() As String
     
     With cParams
         .AddParam "thickness", sltThickness.Value
-        .AddParam "blackbackground", CBool(chkBlackBackground.Value)
-        .AddParam "smoothing", CBool(chkSmoothing.Value)
+        .AddParam "blackbackground", chkBlackBackground.Value
+        .AddParam "smoothing", chkSmoothing.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

@@ -263,7 +263,7 @@ Private Function GetLocalParamString() As String
     With cParams
         .AddParam "angle", sltAngle.Value
         .AddParam "distance", sltDistance.Value
-        .AddParam "symmetrical", CBool(chkSymmetry.Value)
+        .AddParam "symmetrical", chkSymmetry.Value
         .AddParam "style", btsStyle.ListIndex
     End With
     

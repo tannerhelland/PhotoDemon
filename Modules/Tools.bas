@@ -673,7 +673,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
-                    .chkHinting.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
+                    .chkHinting.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextHinting)
                     .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
                     .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
                     .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
@@ -681,13 +681,13 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
                     .cboWordWrap.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_WordWrap)
-                    .chkFillText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FillActive), vbChecked, vbUnchecked)
+                    .chkFillText.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FillActive)
                     .bsText.Brush = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FillBrush)
-                    .chkOutlineText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_OutlineActive), vbChecked, vbUnchecked)
+                    .chkOutlineText.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_OutlineActive)
                     .psText.Pen = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_OutlinePen)
-                    .chkBackground.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackgroundActive), vbChecked, vbUnchecked)
+                    .chkBackground.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackgroundActive)
                     .bsTextBackground.Brush = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackgroundBrush)
-                    .chkBackgroundBorder.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackBorderActive), vbChecked, vbUnchecked)
+                    .chkBackgroundBorder.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackBorderActive)
                     .psTextBackground.Pen = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackBorderPen)
                     .tudMargin(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginLeft)
                     .tudMargin(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginRight)
@@ -796,7 +796,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
                     .SetTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
-                    .SetTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
+                    .SetTextLayerProperty ptp_TextHinting, toolpanel_FancyText.chkHinting.Value
                     .SetTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
                     .SetTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
                     .SetTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
@@ -804,13 +804,13 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
                     .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
                     .SetTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
-                    .SetTextLayerProperty ptp_FillActive, CBool(toolpanel_FancyText.chkFillText.Value)
+                    .SetTextLayerProperty ptp_FillActive, toolpanel_FancyText.chkFillText.Value
                     .SetTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
-                    .SetTextLayerProperty ptp_OutlineActive, CBool(toolpanel_FancyText.chkOutlineText.Value)
+                    .SetTextLayerProperty ptp_OutlineActive, toolpanel_FancyText.chkOutlineText.Value
                     .SetTextLayerProperty ptp_OutlinePen, toolpanel_FancyText.psText.Pen
-                    .SetTextLayerProperty ptp_BackgroundActive, CBool(toolpanel_FancyText.chkBackground.Value)
+                    .SetTextLayerProperty ptp_BackgroundActive, toolpanel_FancyText.chkBackground.Value
                     .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
-                    .SetTextLayerProperty ptp_BackBorderActive, CBool(toolpanel_FancyText.chkBackgroundBorder.Value)
+                    .SetTextLayerProperty ptp_BackBorderActive, toolpanel_FancyText.chkBackgroundBorder.Value
                     .SetTextLayerProperty ptp_BackBorderPen, toolpanel_FancyText.psTextBackground.Pen
                     .SetTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
                     .SetTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value

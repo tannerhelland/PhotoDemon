@@ -235,7 +235,7 @@ Begin VB.Form toolpanel_FancyText
                _ExtentX        =   6376
                _ExtentY        =   582
                Caption         =   "hinting"
-               Value           =   0
+               Value           =   0   'False
             End
             Begin PhotoDemon.pdDropDown cboTextRenderingHint 
                Height          =   375
@@ -501,7 +501,7 @@ Begin VB.Form toolpanel_FancyText
                _ExtentX        =   4445
                _ExtentY        =   582
                Caption         =   "fill background"
-               Value           =   0
+               Value           =   0   'False
             End
             Begin PhotoDemon.pdLabel lblText 
                Height          =   720
@@ -538,7 +538,7 @@ Begin VB.Form toolpanel_FancyText
                _ExtentX        =   4445
                _ExtentY        =   582
                Caption         =   "background border"
-               Value           =   0
+               Value           =   0   'False
             End
          End
          Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
@@ -612,7 +612,7 @@ Begin VB.Form toolpanel_FancyText
                _ExtentX        =   5741
                _ExtentY        =   582
                Caption         =   "outline text"
-               Value           =   0
+               Value           =   0   'False
             End
          End
       End
@@ -1187,7 +1187,7 @@ Private Sub chkBackground_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundActive, CBool(chkBackground.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundActive, chkBackground.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -1199,11 +1199,11 @@ End Sub
 
 Private Sub chkBackground_GotFocusAPI()
     If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, chkBackground.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
+    Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, chkBackground.Value
 End Sub
 
 Private Sub chkBackgroundBorder_Click()
@@ -1215,7 +1215,7 @@ Private Sub chkBackgroundBorder_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderActive, chkBackgroundBorder.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -1227,11 +1227,11 @@ End Sub
 
 Private Sub chkBackgroundBorder_GotFocusAPI()
     If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, chkBackgroundBorder.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, chkBackgroundBorder.Value
 End Sub
 
 Private Sub chkFillText_Click()
@@ -1243,7 +1243,7 @@ Private Sub chkFillText_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillActive, CBool(chkFillText.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillActive, chkFillText.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -1271,7 +1271,7 @@ Private Sub chkHinting_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextHinting, CBool(chkHinting.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextHinting, chkHinting.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -1283,11 +1283,11 @@ End Sub
 
 Private Sub chkHinting_GotFocusAPI()
     If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_TextHinting, chkHinting.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
+    Processor.FlagFinalNDFXState_Text ptp_TextHinting, chkHinting.Value
 End Sub
 
 Private Sub chkOutlineText_Click()
@@ -1299,7 +1299,7 @@ Private Sub chkOutlineText_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlineActive, CBool(chkOutlineText.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlineActive, chkOutlineText.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -1324,7 +1324,7 @@ Private Sub Form_Load()
     Tools.SetToolBusyState True
     
     'Generate a list of fonts
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'This tool is separated into two panels: text entry, and text settings
         btsMain.AddItem "text", 0

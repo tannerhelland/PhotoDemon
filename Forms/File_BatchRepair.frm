@@ -176,7 +176,7 @@ Begin VB.Form FormBatchRepair
       _ExtentX        =   13996
       _ExtentY        =   661
       Caption         =   "overwrite matching filenames in the destination folder"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdCheckBox chkRepairs 
       Height          =   375
@@ -188,7 +188,7 @@ Begin VB.Form FormBatchRepair
       _ExtentX        =   13996
       _ExtentY        =   661
       Caption         =   "after a successful recovery, erase the original (unrepaired) file"
-      Value           =   0
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "FormBatchRepair"
@@ -258,19 +258,19 @@ Private Sub cmdBar_OKClick()
     
     'For improved performance, copy all user options into local variables
     Dim identifyImageFiles As Boolean
-    identifyImageFiles = (chkRepairs(0).Value = vbChecked)
+    identifyImageFiles = chkRepairs(0).Value
     
     Dim identifyVideoFiles As Boolean
-    identifyVideoFiles = (chkRepairs(1).Value = vbChecked)
+    identifyVideoFiles = chkRepairs(1).Value
     
     Dim eraseDestinationMatches As Boolean
-    eraseDestinationMatches = (chkRepairs(2).Value = vbChecked)
+    eraseDestinationMatches = chkRepairs(2).Value
     
     Dim eraseOriginal As Boolean
-    eraseOriginal = (chkRepairs(3).Value = vbChecked)
+    eraseOriginal = chkRepairs(3).Value
     
     'cFSO returns TRUE if at least one file is found; this is good enough for us to attempt repairs
-    If cFSO.RetrieveAllFiles(txtSrcFolder.Text, listOfFiles, CBool(chkRecurseFolders.Value), False) Then
+    If cFSO.RetrieveAllFiles(txtSrcFolder.Text, listOfFiles, chkRecurseFolders.Value, False) Then
             
         m_OkayToProceed = True
         

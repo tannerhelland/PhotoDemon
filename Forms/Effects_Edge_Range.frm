@@ -343,7 +343,7 @@ Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub chkSynchronize_Click()
-    If CBool(chkSynchronize.Value) Then sltRadius(1).Value = sltRadius(0).Value
+    If chkSynchronize.Value Then sltRadius(1).Value = sltRadius(0).Value
 End Sub
 
 'OK button
@@ -385,7 +385,7 @@ End Sub
 
 Private Sub sltRadius_Change(Index As Integer)
     
-    If CBool(chkSynchronize.Value) Then
+    If chkSynchronize.Value Then
         If sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value Then sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
     End If
     

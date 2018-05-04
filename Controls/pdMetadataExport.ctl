@@ -95,7 +95,7 @@ Begin VB.UserControl pdMetadataExport
       _ExtentX        =   8705
       _ExtentY        =   661
       Caption         =   "embed thumbnail image"
-      Value           =   0
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "pdMetadataExport"
@@ -231,15 +231,8 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 Private Sub chkMetadata_Click()
-
-    If CBool(chkMetadata.Value) Then
-        chkAnonymize.Enabled = True
-        chkThumbnail.Enabled = True
-    Else
-        chkAnonymize.Enabled = False
-        chkThumbnail.Enabled = False
-    End If
-
+    chkAnonymize.Enabled = chkMetadata.Value
+    chkThumbnail.Enabled = chkMetadata.Value
 End Sub
 
 Private Sub hplReviewMetadata_Click()
@@ -271,7 +264,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDME_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDMetadataExport", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -281,7 +274,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Terminate()
@@ -319,9 +312,9 @@ Public Function GetMetadataSettings() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    cParams.AddParam "MetadataExportAllowed", CBool(chkMetadata.Value)
-    cParams.AddParam "MetadataAnonymize", CBool(chkAnonymize.Value)
-    If IsThumbnailSupported() Then cParams.AddParam "MetadataEmbedThumbnail", CBool(chkThumbnail.Value) Else cParams.AddParam "MetadataEmbedThumbnail", False
+    cParams.AddParam "MetadataExportAllowed", chkMetadata.Value
+    cParams.AddParam "MetadataAnonymize", chkAnonymize.Value
+    If IsThumbnailSupported() Then cParams.AddParam "MetadataEmbedThumbnail", chkThumbnail.Value Else cParams.AddParam "MetadataEmbedThumbnail", False
     
     'Whenever a new metadata string is generated, we also generate a new temp filename for use with this image.
     ' This file may or may not created (it's required when setting thumbnails, for example), but by setting it at the
@@ -348,16 +341,16 @@ Public Sub SetMetadataSettings(ByRef srcXML As String, Optional ByVal srcIsPrese
     Set cParams = New pdParamXML
     cParams.SetParamString srcXML
     
-    If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
-    If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
-    If cParams.GetBool("MetadataEmbedThumbnail", False) Then chkThumbnail.Value = vbChecked Else chkThumbnail.Value = vbUnchecked
+    chkMetadata.Value = cParams.GetBool("MetadataExportAllowed", True)
+    chkAnonymize.Value = cParams.GetBool("MetadataAnonymize", False)
+    chkThumbnail.Value = cParams.GetBool("MetadataEmbedThumbnail", False)
     
 End Sub
 
 Public Sub Reset()
-    chkMetadata.Value = vbChecked
-    chkAnonymize.Value = vbUnchecked
-    chkThumbnail.Value = vbUnchecked
+    chkMetadata.Value = True
+    chkAnonymize.Value = False
+    chkThumbnail.Value = False
 End Sub
 
 Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PD_IMAGE_FORMAT)
@@ -450,7 +443,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             lblInfo(i).UpdateAgainstCurrentTheme
         Next i
         
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If
     

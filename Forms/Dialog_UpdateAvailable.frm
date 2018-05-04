@@ -45,7 +45,7 @@ Begin VB.Form FormUpdateNotify
       _ExtentX        =   15901
       _ExtentY        =   582
       Caption         =   "in the future, do not notify me of updates"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdHyperlink lblReleaseAnnouncement 
       Height          =   270
@@ -106,7 +106,7 @@ Option Explicit
 Private Sub cmdUpdate_Click(Index As Integer)
     
     'Regardless of the user's choice, we always update their notification preference
-    UserPrefs.SetPref_Boolean "Updates", "Update Notifications", Not CBool(chkNotify.Value)
+    UserPrefs.SetPref_Boolean "Updates", "Update Notifications", Not chkNotify.Value
     
     Select Case Index
     
@@ -136,16 +136,12 @@ End Sub
 Private Sub Form_Load()
     
     'Load the "notify of updates" preference
-    If UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True) Then
-        chkNotify.Value = vbUnchecked
-    Else
-        chkNotify.Value = vbChecked
-    End If
-        
+    chkNotify.Value = Not UserPrefs.GetPref_Boolean("Updates", "Update Notifications", True)
+    
     'Set the release announcement URL
     Dim raURL As String
     raURL = Updates.GetReleaseAnnouncementURL
-    If (Len(raURL) <> 0) Then
+    If (LenB(raURL) <> 0) Then
         lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Updates.GetUpdateVersion_Friendly)
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL

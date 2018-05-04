@@ -516,7 +516,7 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then
         
         'Separable kernels require a totally different function
-        If CBool(chkSeparable) Then
+        If chkSeparable.Value Then
             BilateralSmoothingSeparable GetLocalParamString(), True, pdFxPreview
         Else
             BilateralSmoothing GetLocalParamString(), True, pdFxPreview
@@ -542,7 +542,7 @@ Private Function GetLocalParamString() As String
         .AddParam "spatialpower", sltSpatialPower.Value
         .AddParam "colorfactor", sltColorFactor.Value
         .AddParam "colorpower", sltColorPower.Value
-        .AddParam "separable", CBool(chkSeparable)
+        .AddParam "separable", chkSeparable.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

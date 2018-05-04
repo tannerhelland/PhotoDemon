@@ -339,7 +339,7 @@ Private Function GetFunctionParamString() As String
         .AddParam "brightness", sltBright.Value
         .AddParam "contrast", sltContrast.Value
         .AddParam "uselegacy", (btsModel.ListIndex = 1)
-        .AddParam "samplecontrast", CBool(chkSample.Value)
+        .AddParam "samplecontrast", chkSample.Value
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function

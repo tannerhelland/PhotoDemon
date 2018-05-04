@@ -75,7 +75,7 @@ Begin VB.Form dialog_UnsavedChanges
       _ExtentX        =   9049
       _ExtentY        =   582
       Caption         =   "Repeat this action for all unsaved images (X in total)"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   3495
@@ -301,7 +301,7 @@ End Sub
 
 'Before this dialog closes, this routine is called to update the user's preference for applying this action to all unsaved images
 Private Sub UpdateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult)
-    g_DealWithAllUnsavedImages = (chkRepeat.Visible And CBool(chkRepeat.Value))
+    g_DealWithAllUnsavedImages = (chkRepeat.Visible And chkRepeat.Value)
     If g_DealWithAllUnsavedImages Then g_HowToDealWithAllUnsavedImages = actionToApply
 End Sub
 

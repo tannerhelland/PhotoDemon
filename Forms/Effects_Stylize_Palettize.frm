@@ -812,7 +812,7 @@ Private Function GetToolParamString() As String
         End Select
         
         .AddParam "palettesize", sldPalette.Value
-        .AddParam "preservewhiteblack", CBool(chkPreserveWB.Value)
+        .AddParam "preservewhiteblack", chkPreserveWB.Value
         .AddParam "backgroundcolor", clsBackground.Color
         
         Select Case btsAlpha.ListIndex

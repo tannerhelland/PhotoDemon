@@ -71,7 +71,7 @@ Public Event LostFocusAPI()
 Private m_FitFailure As Boolean
 
 'Current control value
-Private m_Value As CheckBoxConstants
+Private m_Value As Boolean
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
@@ -195,12 +195,12 @@ End Sub
 
 'State is toggled on each click.  For backwards compatibility reasons, we use VB's built-in checkbox constants, although this control
 ' really only supports true/false states.
-Public Property Get Value() As CheckBoxConstants
+Public Property Get Value() As Boolean
 Attribute Value.VB_UserMemId = 0
     Value = m_Value
 End Property
 
-Public Property Let Value(ByVal newValue As CheckBoxConstants)
+Public Property Let Value(ByVal newValue As Boolean)
     If (m_Value <> newValue) Then
         m_Value = newValue
         RedrawBackBuffer
@@ -221,7 +221,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     If (Me.Enabled And (vkCode = VK_SPACE)) Then
         markEventHandled = True
-        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
+        Me.Value = (Not m_Value)
     End If
     
 End Sub
@@ -242,9 +242,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    If Me.Enabled And IsMouseOverClickArea(x, y) Then
-        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
-    End If
+    If Me.Enabled And IsMouseOverClickArea(x, y) Then Me.Value = (Not m_Value)
 End Sub
 
 'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
@@ -257,17 +255,13 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
-    If m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y) Then
+    If (m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y)) Then
         m_MouseInsideClickableRect = IsMouseOverClickArea(x, y)
         RedrawBackBuffer
     End If
     
-    If m_MouseInsideClickableRect Then
-        ucSupport.RequestCursor IDC_HAND
-    Else
-        ucSupport.RequestCursor IDC_DEFAULT
-    End If
-
+    If m_MouseInsideClickableRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -295,7 +289,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCHECKBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCheckBox", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
              
 End Sub
 
@@ -303,31 +297,31 @@ End Sub
 Private Sub UserControl_InitProperties()
     Caption = "caption"
     FontSize = 10
-    Value = vbChecked
+    Value = True
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
         FontSize = .ReadProperty("FontSize", 10)
-        m_Value = .ReadProperty("Value", vbChecked)
+        m_Value = .ReadProperty("Value", True)
     End With
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If Not PDMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, "caption"
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
-        .WriteProperty "Value", Value, vbChecked
+        .WriteProperty "Value", Value, True
     End With
 End Sub
 
@@ -385,7 +379,7 @@ Private Sub UpdateControlLayout()
     
     'Pass the available space to the support class; it needs this information to auto-fit the caption
     Dim captionLeft As Long
-    captionLeft = (m_CheckboxRect.Left + m_CheckboxRect.Width) + FixDPI(hBoxCaptionPadding)
+    captionLeft = (m_CheckboxRect.Left + m_CheckboxRect.Width) + Interface.FixDPI(hBoxCaptionPadding)
     ucSupport.SetCaptionCustomPosition captionLeft, 0, bWidth - captionLeft, bHeight
     
     'While here, calculate a caption rect, taking into account the auto-sized caption text (which may be using a different font size)
@@ -429,7 +423,7 @@ Private Sub RedrawBackBuffer()
     chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     txtColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus)
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Fill the checkbox area
         With m_CheckboxRect
@@ -438,21 +432,21 @@ Private Sub RedrawBackBuffer()
         
         'If the check box button is checked, draw a checkmark inside the border.  The checkmark is defined by three points,
         ' defined in LTR order
-        If CBool(m_Value) Then
+        If m_Value Then
             Dim pt1 As PointFloat, pt2 As PointFloat, pt3 As PointFloat
-            pt1.x = m_CheckboxRect.Left + FixDPIFloat(3)
+            pt1.x = m_CheckboxRect.Left + Interface.FixDPIFloat(3)
             pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
-            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - FixDPIFloat(1.25)
-            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - FixDPIFloat(3)
-            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - FixDPIFloat(2)
-            pt3.y = m_CheckboxRect.Top + FixDPIFloat(3)
+            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - Interface.FixDPIFloat(1.25)
+            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - Interface.FixDPIFloat(3)
+            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - Interface.FixDPIFloat(2)
+            pt3.y = m_CheckboxRect.Top + Interface.FixDPIFloat(3)
             GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt1.x, pt1.y, pt2.x, pt2.y, chkColor, 255, FixDPI(2), True, GP_LC_Round, True
             GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt2.x, pt2.y, pt3.x, pt3.y, chkColor, 255, FixDPI(2), True, GP_LC_Round, True
         End If
         
         'Draw the checkbox border.  (Note that it has variable width, contingent on MouseOver status.)
         Dim borderWidth As Single
-        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3 Else borderWidth = 1
+        If m_MouseInsideClickableRect Or ucSupport.DoIHaveFocus Then borderWidth = 3! Else borderWidth = 1!
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , borderWidth, , GP_LJ_Miter
         
     End If
@@ -485,8 +479,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

@@ -101,7 +101,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, By
 
     'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
     ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
-    If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
+    If toolpanel_MoveSize.chkAutoActivateLayer.Value Then
         
         Dim layerUnderMouse As Long
         layerUnderMouse = Layers.GetLayerUnderMouse(imgX, imgY, True)
@@ -136,7 +136,7 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
     
         'If the "auto-activate layer beneath mouse" option is active, report the current layer name in the message bar;
         ' this is helpful for letting the user know which layer will be affected by an action in the current position.
-        If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
+        If toolpanel_MoveSize.chkAutoActivateLayer.Value Then
         
             Dim layerUnderMouse As Long
             layerUnderMouse = Layers.GetLayerUnderMouse(imgX, imgY, True)

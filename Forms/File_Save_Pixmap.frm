@@ -252,7 +252,7 @@ Private Sub cmdBar_OKClick()
     
     cParams.AddParam "PNMColorModel", pnmColorModel
     cParams.AddParam "PNMColorDepth", pnmColorDepth
-    cParams.AddParam "PNMChangeExtensionToMatch", CBool(chkFileExtension.Value)
+    cParams.AddParam "PNMChangeExtensionToMatch", chkFileExtension.Value
     cParams.AddParam "PNMUseASCII", (btsFormat.ListIndex = 1)
     cParams.AddParam "PNMBackgroundColor", clsBackground.Color
     
@@ -275,7 +275,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     clsBackground.Color = vbWhite
     btsColorModel.ListIndex = 0
-    chkFileExtension.Value = vbChecked
+    chkFileExtension.Value = True
     btsDepth.ListIndex = 0
     btsFormat.ListIndex = 0
 End Sub

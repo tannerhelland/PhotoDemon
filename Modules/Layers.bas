@@ -1132,7 +1132,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
             If Layers.GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
                 'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
-                If (Not CBool(toolpanel_MoveSize.chkIgnoreTransparent)) Then
+                If (Not toolpanel_MoveSize.chkIgnoreTransparent.Value) Then
                     GetLayerUnderMouse = i
                     Exit Function
                 Else

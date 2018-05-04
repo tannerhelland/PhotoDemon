@@ -157,7 +157,7 @@ Private m_UserChange As Boolean
 
 Private Sub chkUnison_Click()
     
-    If CBool(chkUnison) Then
+    If chkUnison.Value Then
         Dim newGamma As Double
         newGamma = CDblCustom(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
     
@@ -179,7 +179,7 @@ End Sub
 
 'When randomizing, do not check the "unison" box
 Private Sub cmdBar_RandomizeClick()
-    chkUnison.Value = vbUnchecked
+    chkUnison.Value = False
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -399,7 +399,7 @@ Private Sub sltGamma_Change(Index As Integer)
     If m_UserChange And cmdBar.PreviewsAllowed Then
         m_UserChange = False
         
-        If CBool(chkUnison) Then
+        If chkUnison.Value Then
             Select Case Index
                 Case 0
                     sltGamma(1).Value = sltGamma(0).Value

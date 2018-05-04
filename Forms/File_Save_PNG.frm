@@ -176,7 +176,7 @@ Begin VB.Form dialog_ExportPNG
             _ExtentX        =   11456
             _ExtentY        =   661
             Caption         =   "write interlaced PNG"
-            Value           =   0
+            Value           =   0   'False
          End
          Begin PhotoDemon.pdSlider sldCompression 
             Height          =   735
@@ -213,7 +213,7 @@ Begin VB.Form dialog_ExportPNG
             _ExtentX        =   8705
             _ExtentY        =   661
             Caption         =   "embed background color (bKGD chunk)"
-            Value           =   0
+            Value           =   0   'False
          End
          Begin PhotoDemon.pdLabel lblHint 
             Height          =   255
@@ -459,7 +459,7 @@ End Function
 
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
-    For i = picCategory.lBound To picCategory.ubound
+    For i = picCategory.lBound To picCategory.UBound
         picCategory(i).Visible = (btsMasterType.ListIndex = i)
     Next i
 End Sub
@@ -473,7 +473,7 @@ Private Sub chkEmbedBackground_Click()
 End Sub
 
 Private Sub UpdateBkgdColorVisibility()
-    clsBackground.Visible = CBool(chkEmbedBackground.Value)
+    clsBackground.Visible = chkEmbedBackground.Value
 End Sub
 
 Private Sub chkOptimizeDither_Click()
@@ -487,7 +487,7 @@ End Sub
 Private Sub EnableLossyOptimizationOptions()
     
     Dim enabledState As Boolean
-    enabledState = CBool(chkOptimizeLossy.Value)
+    enabledState = chkOptimizeLossy.Value
     
     chkOptimizeDither.Enabled = enabledState
     sltTargetQuality.Enabled = enabledState
@@ -560,26 +560,26 @@ Private Sub cmdBar_ResetClick()
     
     'General panel settings
     sldCompression.Value = sldCompression.NotchValueCustom
-    chkInterlace.Value = vbUnchecked
+    chkInterlace.Value = False
     
     If (Not m_SrcImage Is Nothing) Then
         If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
             clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
-            chkEmbedBackground.Value = vbChecked
+            chkEmbedBackground.Value = True
         Else
             clsBackground.Color = vbWhite
-            chkEmbedBackground.Value = vbUnchecked
+            chkEmbedBackground.Value = False
         End If
     Else
         clsBackground.Color = vbWhite
-        chkEmbedBackground.Value = vbUnchecked
+        chkEmbedBackground.Value = False
     End If
     
     'Web-optimized settings
-    chkOptimizeLossy.Value = vbChecked
+    chkOptimizeLossy.Value = True
     sltTargetQuality.Value = sltTargetQuality.NotchValueCustom
     sltLossyPerformance.Value = sltLossyPerformance.NotchValueCustom
-    chkOptimizeDither.Value = vbChecked
+    chkOptimizeDither.Value = True
     sltLosslessPerformance.Value = sltLosslessPerformance.NotchValueCustom
     
     'Metadata settings
@@ -607,7 +607,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
     ' is allowed open at a time.
     Dim i As Long
-    For i = picContainer.lBound To picContainer.ubound
+    For i = picContainer.lBound To picContainer.UBound
         picContainer(i).SetLeft 0
     Next i
     
@@ -641,7 +641,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     If (Not m_SrcImage Is Nothing) Then
         If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
             clsBackground.Color = m_SrcImage.ImgStorage.GetEntry_Long("pngBackgroundColor")
-            chkEmbedBackground.Value = vbChecked
+            chkEmbedBackground.Value = True
         End If
     End If
     
@@ -695,7 +695,7 @@ Private Sub cmdUpdateLossyPreview_Click()
             oldFileSize = Files.FileLenW(tmpFilename)
             
             'Next, request optimization from pngquant
-            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, CBool(chkOptimizeDither.Value), False) Then
+            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, chkOptimizeDither.Value, False) Then
                 
                 Dim newFileSize As Long
                 newFileSize = Files.FileLenW(tmpFilename)
@@ -742,9 +742,9 @@ Private Function GetExportParamString() As String
     
         'Start with the standard PNG settings, which are consistent across all standard PNG types
         If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
-        cParams.AddParam "PNGInterlacing", CBool(chkInterlace.Value)
+        cParams.AddParam "PNGInterlacing", chkInterlace.Value
         cParams.AddParam "PNGBackgroundColor", clsBackground.Color
-        cParams.AddParam "PNGCreateBkgdChunk", CBool(chkEmbedBackground.Value)
+        cParams.AddParam "PNGCreateBkgdChunk", chkEmbedBackground.Value
         cParams.AddParam "PNGStandardOptimization", btsStandardOptimize.ListIndex
         
         'Next come all the messy color-depth possibilities
@@ -753,13 +753,13 @@ Private Function GetExportParamString() As String
     'Remember: web-optimized parameters must not use any UI elements not visible from the web-optimization panel!
     Else
     
-        cParams.AddParam "PNGOptimizeLossy", CBool(chkOptimizeLossy.Value)
+        cParams.AddParam "PNGOptimizeLossy", chkOptimizeLossy.Value
         cParams.AddParam "PNGOptimizeLossyQuality", sltTargetQuality.Value
         
         'pngquant accepts this value on a 1-11 scale, with 1 being slowest and 11 being fastest.  We show the user a
         ' [0, 10] scale where [10] is slowest (like the other settings on the form); reset to the proper range now.
         cParams.AddParam "PNGOptimizeLossyPerformance", 11 - sltLossyPerformance.Value
-        cParams.AddParam "PNGOptimizeLossyDithering", CBool(chkOptimizeDither.Value)
+        cParams.AddParam "PNGOptimizeLossyDithering", chkOptimizeDither.Value
         
         cParams.AddParam "PNGOptimizeLosslessPerformance", sltLosslessPerformance.Value
         
@@ -936,7 +936,7 @@ Private Sub UpdateStandardTitlebars()
     
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.ubound
+    For i = ttlStandard.lBound To ttlStandard.UBound
         ttlStandard(i).Value = (i = m_ActiveTitleBar)
         picContainer(i).Visible = ttlStandard(i).Value
     Next i
@@ -959,7 +959,7 @@ Private Sub UpdateStandardPanelVisibility()
     yPadding = FixDPI(8)
     
     Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.ubound
+    For i = ttlStandard.lBound To ttlStandard.UBound
     
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding

@@ -80,7 +80,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   10398
       _ExtentY        =   582
       Caption         =   "automatically calculate threshold"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -162,7 +162,7 @@ Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cboDither_Click()
-    If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
+    If chkAutoThreshold.Value Then sltThreshold.Value = CalculateOptimalThreshold()
     sldDitheringAmount.Visible = (cboDither.ListIndex <> 0)
     UpdatePreview
 End Sub
@@ -170,8 +170,8 @@ End Sub
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
 Private Sub chkAutoThreshold_Click()
     cmdBar.MarkPreviewStatus False
-    If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
-    sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
+    If chkAutoThreshold.Value Then sltThreshold.Value = CalculateOptimalThreshold()
+    sltThreshold.Enabled = Not chkAutoThreshold.Value
     cmdBar.MarkPreviewStatus True
     UpdatePreview
 End Sub
@@ -196,7 +196,7 @@ Private Sub cmdBar_ResetClick()
     cboDither.ListIndex = 6
     
     'Standard threshold value
-    chkAutoThreshold.Value = vbUnchecked
+    chkAutoThreshold.Value = False
     sltThreshold.Reset
     
 End Sub

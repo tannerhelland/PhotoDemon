@@ -274,7 +274,7 @@ Private Function GetLocalParamString() As String
     
     With cParams
         .AddParam "radius", sltRadius.Value
-        .AddParam "symmetry", CBool(chkSymmetry.Value)
+        .AddParam "symmetry", chkSymmetry.Value
         .AddParam "bilinear", (btsRender.ListIndex = 1)
     End With
     

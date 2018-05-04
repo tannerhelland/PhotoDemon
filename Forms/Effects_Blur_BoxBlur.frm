@@ -108,7 +108,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub chkUnison_Click()
-    If CBool(chkUnison) Then syncScrollBars True
+    If chkUnison.Value Then syncScrollBars True
 End Sub
 
 'Convolve an image using a box blur.  An accumulation approach is used to maximize speed.
@@ -198,12 +198,12 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Sub sltHeight_Change()
-    If CBool(chkUnison) Then syncScrollBars False
+    If chkUnison.Value Then syncScrollBars False
     UpdatePreview
 End Sub
 
 Private Sub sltWidth_Change()
-    If CBool(chkUnison) Then syncScrollBars True
+    If chkUnison.Value Then syncScrollBars True
     UpdatePreview
 End Sub
 

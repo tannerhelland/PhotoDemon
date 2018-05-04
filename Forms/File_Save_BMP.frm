@@ -34,7 +34,7 @@ Begin VB.Form dialog_ExportBMP
       _ExtentX        =   7858
       _ExtentY        =   661
       Caption         =   "restrict palette size"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdColorSelector clsBackground 
       Height          =   975
@@ -109,7 +109,7 @@ Begin VB.Form dialog_ExportBMP
       _ExtentX        =   7435
       _ExtentY        =   661
       Caption         =   "use RLE compression"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdButtonStrip btsDepthGrayscale 
       Height          =   1095
@@ -130,7 +130,7 @@ Begin VB.Form dialog_ExportBMP
       _ExtentX        =   15478
       _ExtentY        =   661
       Caption         =   "premultiply alpha"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdCheckBox chkFlipRows 
       Height          =   375
@@ -141,7 +141,7 @@ Begin VB.Form dialog_ExportBMP
       _ExtentX        =   15478
       _ExtentY        =   661
       Caption         =   "flip row order (top-down)"
-      Value           =   0
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -161,7 +161,7 @@ Begin VB.Form dialog_ExportBMP
       _ExtentX        =   15478
       _ExtentY        =   661
       Caption         =   "use legacy 15-bit encoding (X1-R5-G5-B5)"
-      Value           =   0
+      Value           =   0   'False
    End
 End
 Attribute VB_Name = "dialog_ExportBMP"
@@ -470,11 +470,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    chkPremultiplyAlpha.Value = vbUnchecked
-    chk16555.Value = vbUnchecked
-    chkColorCount.Value = vbUnchecked
-    chkRLE = vbUnchecked
-    chkFlipRows.Value = vbUnchecked
+    chkPremultiplyAlpha.Value = False
+    chk16555.Value = False
+    chkColorCount.Value = False
+    chkRLE = False
+    chkFlipRows.Value = False
     sldColorCount.Value = 256
     btsDepthGrayscale.ListIndex = 0
     btsDepthRGB.ListIndex = 1
@@ -505,7 +505,7 @@ Private Function GetExportParamString() As String
         Case 1
             outputDepth = "32"
             cParams.AddParam "BMPUseXRGB", False
-            cParams.AddParam "BMPPremultiplyAlpha", CBool(chkPremultiplyAlpha.Value)
+            cParams.AddParam "BMPPremultiplyAlpha", chkPremultiplyAlpha.Value
         
         'RGB
         Case 2
@@ -552,12 +552,12 @@ Private Function GetExportParamString() As String
     End Select
     
     cParams.AddParam "BMPColorDepth", outputDepth
-    cParams.AddParam "BMPRLECompression", CBool(chkRLE.Value)
+    cParams.AddParam "BMPRLECompression", chkRLE.Value
     cParams.AddParam "BMPForceGrayscale", (btsColorModel.ListIndex = 3)
-    cParams.AddParam "BMP16bpp555", CBool(chk16555.Value)
-    If CBool(chkColorCount.Value) And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value Else cParams.AddParam "BMPIndexedColorCount", 256
+    cParams.AddParam "BMP16bpp555", chk16555.Value
+    If chkColorCount.Value And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value Else cParams.AddParam "BMPIndexedColorCount", 256
     cParams.AddParam "BMPBackgroundColor", clsBackground.Color
-    cParams.AddParam "BMPFlipRowOrder", CBool(chkFlipRows.Value)
+    cParams.AddParam "BMPFlipRowOrder", chkFlipRows.Value
     
     GetExportParamString = cParams.GetParamString
     
@@ -615,10 +615,10 @@ Private Sub UpdatePreviewSource()
         End If
         
         Dim BMP16bpp555 As Boolean
-        BMP16bpp555 = CBool(chk16555.Value)
+        BMP16bpp555 = chk16555.Value
         
         Dim BMPIndexedColorCount As Long
-        If CBool(chkColorCount.Value) And (Not forceGrayscale) Then
+        If chkColorCount.Value And (Not forceGrayscale) Then
             If sldColorCount.IsValid Then BMPIndexedColorCount = sldColorCount.Value Else BMPIndexedColorCount = 256
         Else
             BMPIndexedColorCount = 256
@@ -653,7 +653,7 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Sub sldColorCount_Change()
-    If Not CBool(chkColorCount.Value) Then chkColorCount.Value = vbChecked
+    If (Not chkColorCount.Value) Then chkColorCount.Value = True
     UpdatePreviewSource
     UpdatePreview
 End Sub

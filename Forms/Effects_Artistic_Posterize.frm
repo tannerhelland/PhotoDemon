@@ -144,8 +144,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    chkDither.Value = vbUnchecked
-    chkSmartColors.Value = vbUnchecked
+    chkDither.Value = False
+    chkSmartColors.Value = False
 End Sub
 
 Private Sub Form_Load()
@@ -611,8 +611,8 @@ Private Function GetLocalParamString() As String
         .AddParam "red", sltRed.Value
         .AddParam "green", sltGreen.Value
         .AddParam "blue", sltBlue.Value
-        .AddParam "matchcolors", CBool(chkSmartColors.Value)
-        .AddParam "dither", CBool(chkDither.Value)
+        .AddParam "matchcolors", chkSmartColors.Value
+        .AddParam "dither", chkDither.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

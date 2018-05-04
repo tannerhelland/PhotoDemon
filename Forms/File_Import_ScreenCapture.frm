@@ -222,10 +222,10 @@ Private Sub cmdBarMini_OKClick()
     
     With cParams
         .AddParam "wholescreen", (btsSource.ListIndex = 0)
-        .AddParam "minimizefirst", CBool(chkMinimize)
+        .AddParam "minimizefirst", chkMinimize.Value
         If (btsSource.ListIndex <> 0) Then
             .AddParam "targethwnd", IIf(lstWindows.ListIndex >= 0, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&)
-            .AddParam "chrome", CBool(chkChrome)
+            .AddParam "chrome", chkChrome.Value
             .AddParam "targetwindowname", IIf(lstWindows.ListIndex >= 0, lstWindows.List(lstWindows.ListIndex), g_Language.TranslateMessage("Screen capture"))
         End If
     End With

@@ -622,7 +622,7 @@ Private Function GetLocalParamString(Optional ByVal isPreview As Boolean = True)
         
         'Randomizing is a bit weird; we only do it if the user has enabled it, *and* if it's a preview.
         ' (This allows the actual effect to match the last preview the user saw.)
-        If (CBool(chkRandomize.Value) And isPreview) Then m_Randomize.SetSeed_AutomaticAndRandom
+        If (chkRandomize.Value And isPreview) Then m_Randomize.SetSeed_AutomaticAndRandom
         .AddParam "seed", m_Randomize.GetSeed
         
         .AddParam "color", clrBase.Color

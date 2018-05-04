@@ -209,7 +209,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   7699
          _ExtentY        =   582
          Caption         =   "add a prefix to each filename:"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkRenameSuffix 
          Height          =   330
@@ -220,7 +220,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   7990
          _ExtentY        =   582
          Caption         =   "add a suffix to each filename:"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkRenameRemove 
          Height          =   330
@@ -231,7 +231,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   16272
          _ExtentY        =   582
          Caption         =   "remove the following text (if found) from each filename:"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkRenameCase 
          Height          =   330
@@ -242,7 +242,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   16166
          _ExtentY        =   582
          Caption         =   "force each filename, including extension, to the following case:"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdRadioButton optCase 
          Height          =   330
@@ -264,7 +264,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   14049
          _ExtentY        =   582
          Caption         =   "replace spaces in filenames with underscores"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
          Height          =   330
@@ -275,7 +275,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   6853
          _ExtentY        =   582
          Caption         =   "use case-sensitive matching"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdLabel lblDstFilename 
          Height          =   285
@@ -467,7 +467,7 @@ Begin VB.Form FormBatchWizard
             _ExtentX        =   16828
             _ExtentY        =   529
             Caption         =   "apply other actions from a saved macro file"
-            Value           =   0
+            Value           =   0   'False
          End
          Begin PhotoDemon.pdCheckBox chkActions 
             Height          =   300
@@ -479,7 +479,7 @@ Begin VB.Form FormBatchWizard
             _ExtentX        =   17674
             _ExtentY        =   582
             Caption         =   "resize images"
-            Value           =   0
+            Value           =   0   'False
          End
          Begin PhotoDemon.pdCheckBox chkActions 
             Height          =   300
@@ -491,7 +491,7 @@ Begin VB.Form FormBatchWizard
             _ExtentX        =   17674
             _ExtentY        =   582
             Caption         =   "fix exposure and lighting problems"
-            Value           =   0
+            Value           =   0   'False
          End
          Begin PhotoDemon.pdResize ucResize 
             Height          =   1650
@@ -533,7 +533,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   5741
          _ExtentY        =   661
          Caption         =   "include subfolders"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdListBox lstFiles 
          Height          =   3405
@@ -691,7 +691,7 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   5530
          _ExtentY        =   661
          Caption         =   "include subfolders"
-         Value           =   0
+         Value           =   0   'False
       End
    End
 End
@@ -775,7 +775,7 @@ Private Sub chkEnablePreview_Click()
     picPreview.Picture = LoadPicture(vbNullString)
         
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
-    If CBool(chkEnablePreview) Then
+    If chkEnablePreview.Value Then
         If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex), True
         
     'If the user is disabling previews, clear the picture box and display a notice
@@ -880,7 +880,7 @@ Private Sub cmdAddFolders_Click()
     If (LenB(folderPath) <> 0) Then
         
         Dim listOfFiles As pdStringStack
-        If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, CBool(chkAddSubfoldersToo.Value), False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
+        If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, chkAddSubfoldersToo.Value, False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
                 
             lstFiles.SetAutomaticRedraws False
             
@@ -1116,12 +1116,12 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
             If (btsPhotoOps.ListIndex = 1) Then
             
                 'If the user wants to resize the image, make sure the width and height values are valid
-                If CBool(chkActions(1)) Then
+                If chkActions(1).Value Then
                     If Not ucResize.IsValid(True) Then Exit Sub
                 End If
                 
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
-                If CBool(chkActions(2)) And (Strings.StringsEqual(txtMacro.Text, g_Language.TranslateMessage("no macro selected")) Or (LenB(txtMacro.Text) = 0)) Then
+                If chkActions(2).Value And (Strings.StringsEqual(txtMacro.Text, g_Language.TranslateMessage("no macro selected")) Or (LenB(txtMacro.Text) = 0)) Then
                     PDMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation Or vbOKOnly, "No macro file selected"
                     txtMacro.SelectAll
                     Exit Sub
@@ -1374,7 +1374,7 @@ Private Sub cmdRemoveFolder_Click()
         'We now want to iterate through the list, removing items as we go.  Note that the removal criteria varies depending on whether
         ' the user wants subfolders removed as well.
         Dim removeSubfolders As Boolean
-        removeSubfolders = CBool(chkRemoveSubfolders.Value)
+        removeSubfolders = chkRemoveSubfolders.Value
         
         Dim testPath As String, removeFile As Boolean
         
@@ -1449,7 +1449,7 @@ Private Sub cmdSelectMacro_Click()
         txtMacro.Text = sFile
         
         'Also, select the macro option button by default
-        chkActions(2).Value = vbChecked
+        chkActions(2).Value = True
         
     End If
 
@@ -1484,7 +1484,7 @@ Private Sub Form_Load()
         UpdatePhotoOpVisibility
             
         'Resize fit types
-        If pdMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+        If PDMain.IsProgramRunning() Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
         cmbResizeFit.Clear
         cmbResizeFit.AddItem "stretching to fit", 0
         cmbResizeFit.AddItem "fit inclusively", 1
@@ -1498,7 +1498,7 @@ Private Sub Form_Load()
             
         'By default, select "apply no photo editing actions"
         For i = 0 To chkActions.Count - 1
-            chkActions(i).Value = vbUnchecked
+            chkActions(i).Value = False
         Next i
                 
     'Populate all file-format-related combo boxes, tooltips, and options
@@ -1592,7 +1592,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String, Optional ByVal forceUpda
     lblCurrentFile.Caption = srcImagePath
     
     'Only redraw the preview if it doesn't match the last image we previewed
-    If (CBool(chkEnablePreview) And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True) Or forceUpdate)) Then
+    If (chkEnablePreview.Value And (Strings.StringsNotEqual(m_CurImagePreview, srcImagePath, True) Or forceUpdate)) Then
     
         'Use PD's central load function to load a copy of the requested image
         Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
@@ -1635,7 +1635,7 @@ Private Sub UpdateBatchListCount()
 End Sub
 
 Private Sub optCase_Click(Index As Integer)
-    chkRenameCase.Value = vbChecked
+    chkRenameCase.Value = True
 End Sub
 
 'When the user presses "Start Conversion", this routine is triggered.
@@ -1718,10 +1718,10 @@ Private Sub PrepareForBatchConversion()
                 If (btsPhotoOps.ListIndex = 1) Then
                 
                     'If the user has requested automatic lighting fixes, apply it now
-                    If CBool(chkActions(0)) Then Process "Auto correct lighting", , , UNDO_Layer
+                    If chkActions(0).Value Then Process "Auto correct lighting", , , UNDO_Layer
                     
                     'If the user has requested an image resize, apply it now
-                    If CBool(chkActions(1)) Then
+                    If chkActions(1).Value Then
                         
                         Dim resizeParams As pdParamXML
                         Set resizeParams = New pdParamXML
@@ -1741,7 +1741,7 @@ Private Sub PrepareForBatchConversion()
                     End If
                     
                     'If the user has requested a macro, play it now
-                    If CBool(chkActions(2)) Then Macros.PlayMacroFromFile txtMacro
+                    If chkActions(2).Value Then Macros.PlayMacroFromFile txtMacro
                     
                 End If
                 
@@ -1750,19 +1750,19 @@ Private Sub PrepareForBatchConversion()
                 
                 'Build a full file path using the options the user specified
                 If (cmbOutputOptions.ListIndex = 0) Then
-                    If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
-                    If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
+                    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+                    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
                 Else
                     tmpFilename = curBatchFile + 1
-                    If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
-                    If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
+                    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+                    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
                 End If
                 
                 'If requested, remove any specified text from the filename
-                If CBool(chkRenameRemove) And (Len(txtRenameRemove) <> 0) Then
+                If chkRenameRemove.Value And (LenB(txtRenameRemove) <> 0) Then
                 
                     'Use case-sensitive or case-insensitive matching as requested
-                    If CBool(chkRenameCaseSensitive) Then
+                    If chkRenameCaseSensitive.Value Then
                         If InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) Then
                             tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
                         End If
@@ -1775,20 +1775,20 @@ Private Sub PrepareForBatchConversion()
                 End If
                 
                 'Replace spaces with underscores if requested
-                If CBool(chkRenameSpaces) Then
+                If chkRenameSpaces.Value Then
                     If (InStr(1, tmpFilename, " ") <> 0) Then tmpFilename = Replace$(tmpFilename, " ", "_")
                 End If
                 
                 'Change the full filename's case if requested
-                If CBool(chkRenameCase) Then
-                    If optCase(0) Then tmpFilename = LCase$(tmpFilename) Else tmpFilename = UCase$(tmpFilename)
+                If chkRenameCase.Value Then
+                    If optCase(0).Value Then tmpFilename = LCase$(tmpFilename) Else tmpFilename = UCase$(tmpFilename)
                 End If
                 
                 'Attach a proper image format file extension and save format ID number based off the user's
                 ' requested output format
                 
                 'Possibility 1: use original file format
-                If optFormat(0) Then
+                If optFormat(0).Value Then
                     
                     'See if this image's file format is supported by the export engine
                     If (g_ImageFormats.GetIndexOfOutputPDIF(pdImages(g_CurrentImage).GetCurrentFileFormat) = -1) Then
@@ -1812,8 +1812,8 @@ Private Sub PrepareForBatchConversion()
                 End If
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well
-                If CBool(chkRenameCase) Then
-                    If optCase(0) Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
+                If chkRenameCase.Value Then
+                    If optCase(0).Value Then tmpFileExtension = LCase$(tmpFileExtension) Else tmpFileExtension = UCase$(tmpFileExtension)
                 End If
                 
                 'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3339</langversion>
+<langversion>6.8.3340</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14668,6 +14668,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use black point compensation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>дисплей цветопередачи</translation>
 </phrase>
@@ -15082,6 +15087,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>каждая сессия</translation>
 </phrase>
@@ -15229,7 +15239,7 @@ If вы все еще отключить обновления, не забудь
 <translation>Это новое местоположение временной папки не вступят в силу только после перезапуска программы.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 177 phrases. 46 were duplicates of existing phrases, so only 131 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 179 phrases. 46 were duplicates of existing phrases, so only 133 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15412,10 +15422,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2580</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2107 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 12435 total words. -->
+<!-- As of this build, PhotoDemon contains 4687 phrases. -->
+<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
+<!-- These 2580 phrases contain approximately 12467 total words. -->
 
 </pdData>

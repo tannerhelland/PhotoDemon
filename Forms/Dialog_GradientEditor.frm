@@ -236,7 +236,7 @@ Begin VB.Form dialog_GradientEditor
          _ExtentX        =   11880
          _ExtentY        =   582
          Caption         =   "automatically distribute nodes evenly"
-         Value           =   0
+         Value           =   0   'False
       End
       Begin VB.PictureBox picInteract 
          Appearance      =   0  'Flat
@@ -632,7 +632,7 @@ Private Sub cmdBar_ResetClick()
     
     Me.csColorAuto(0).Color = vbBlack
     
-    chkDistributeEvenly.Value = vbUnchecked
+    chkDistributeEvenly.Value = False
     
     m_SuspendUI = False
     
@@ -686,7 +686,7 @@ Private Sub Form_Load()
     btsEdit.AddItem "automatic", 1
     btsEdit_Click 0
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         Drawing2D.QuickCreatePainter m_Painter
         
@@ -780,7 +780,7 @@ End Sub
 Private Sub UpdateGradientObjects()
     
     'If the "evenly distribute nodes" option is checked, assign positions automatically.
-    If CBool(chkDistributeEvenly.Value) Then
+    If chkDistributeEvenly.Value Then
         
         'Start by sorting nodes from least-to-greatest.  This has the unintended side-effect of changing the active node, unfortunately,
         ' so we must also reset the active node (if any).
@@ -924,7 +924,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'The left mouse button is down.  Assign the new position to the active node.
         If (m_CurPoint >= 0) Then
-            If CBool(chkDistributeEvenly.Value) Then chkDistributeEvenly.Value = vbUnchecked
+            If chkDistributeEvenly.Value Then chkDistributeEvenly.Value = False
             m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(x)
         End If
         
@@ -1021,7 +1021,7 @@ End Function
 'When a new active node is selected (or its parameters somehow changed), call this sub to synchronize all UI elements to that node's properties.
 Private Sub SyncUIToActiveNode()
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Disable automatic UI synchronization
         m_SuspendUI = True
@@ -1062,7 +1062,7 @@ End Sub
 'Draw all interactive nodes
 Private Sub DrawGradientNodes()
 
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Each node is basically comprised of three parts:
         ' 1) An upward arrowhead pointing at the gradient's precise position

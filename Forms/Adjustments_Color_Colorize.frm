@@ -226,7 +226,7 @@ Private Function GetLocalParamString() As String
     
     With cParams
         .AddParam "hue", sltHue.Value
-        .AddParam "preservesaturation", CBool(chkSaturation.Value)
+        .AddParam "preservesaturation", chkSaturation.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
