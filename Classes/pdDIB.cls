@@ -94,15 +94,6 @@ Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, B
 Private Const STRETCHBLT_COLORONCOLOR As Long = 3
 Private Const STRETCHBLT_HALFTONE As Long = 4
 
-'SafeArray API functions
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-Private Declare Sub ZeroMemory Lib "kernel32" Alias "RtlZeroMemory" (ByVal dstPointer As Long, ByVal Length As Long)
-
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
-Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-
 'DIB API functions
 ' (Note that these are currently declared in EffectPrep as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
@@ -1856,7 +1847,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     Else
         
         Dim tmpRectF As RectF
-        CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+        CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
         PDMath.GetIntClampedRectF tmpRectF
         initX = tmpRectF.Left
         initY = tmpRectF.Top

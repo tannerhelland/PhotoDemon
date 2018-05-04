@@ -60,8 +60,6 @@ Private Const INITIAL_REGION_STACK_HEIGHT As Long = 256
 'The current region ID.  The first region is marked as "1", and each subsequent region is assigned in ascending order.
 Private m_CurrentRegion As Long
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'Initiate red-eye detection.  This step simply aliases the target arrays supplied by the user, one each for region
 ' tracking and region detection, while also prepping some internal structs.
 Friend Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight As Long, ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean

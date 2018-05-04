@@ -178,12 +178,6 @@ Option Explicit
 
 Private Const ERROR_SUCCESS As Long = 0
 
-'KERNEL32
-Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
-    ByRef Destination As Any, _
-    ByRef Source As Any, _
-    ByVal Length As Long)
-
 'OLEAUT32
 Public Type Guid
   Data1 As Long
@@ -5739,11 +5733,11 @@ End Function
 '--------------------------------------------------------------------------------
 
 'Edited by Tanner: the old function was wasteful; this is simpler
-Private Function pGetStringFromPointerA(ByRef Ptr As Long) As String
-    pGetStringFromPointerA = Strings.StringFromCharPtr(Ptr, False)
+Private Function pGetStringFromPointerA(ByRef ptr As Long) As String
+    pGetStringFromPointerA = Strings.StringFromCharPtr(ptr, False)
 End Function
 
-Private Function pDeref(ByVal Ptr As Long) As Long
+Private Function pDeref(ByVal ptr As Long) As Long
 
    ' This function dereferences a pointer and returns the
    ' contents as it's return value.
@@ -5751,7 +5745,7 @@ Private Function pDeref(ByVal Ptr As Long) As Long
    ' in C/C++ this would be:
    ' return *(ptr);
    
-   Call CopyMemory(pDeref, ByVal Ptr, 4)
+   Call CopyMemory(pDeref, ByVal ptr, 4)
 
 End Function
 

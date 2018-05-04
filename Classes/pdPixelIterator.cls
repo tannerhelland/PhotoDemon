@@ -45,8 +45,6 @@ Option Explicit
 
 Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
 'Current (x, y) position of the iterator.  Call InitializeIterator() to reset these to (0, 0).
 Private m_X As Long, m_Y As Long

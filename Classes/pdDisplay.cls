@@ -28,8 +28,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'The monitor's handle (hMonitor)
 Private m_hMonitor As Long
 
@@ -210,7 +208,7 @@ Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     
     'If no EDID could be found, mark the failure state and exit.
     If warningEDIDMissing Then
-        pdDebug.LogAction "WARNING: Monitor EDID could not be retrieved; physical dimensions unknown for this session."
+        PDDebug.LogAction "WARNING: Monitor EDID could not be retrieved; physical dimensions unknown for this session."
         m_hasEDID = False
         Exit Sub
     End If
@@ -225,7 +223,7 @@ Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     
     'EDIDs should never be shorter than 128 bytes.  Newer versions of the spec allow *longer* than 128, but 128 is
     ' the minimum.
-    If (EDIDLength < 128) Then pdDebug.LogAction "WARNING!  This monitor's EDID is less than 128 bytes.  This shouldn't be possible - investigate??"
+    If (EDIDLength < 128) Then PDDebug.LogAction "WARNING!  This monitor's EDID is less than 128 bytes.  This shouldn't be possible - investigate??"
     
     'With the EDID successfully retrieved, attempt to parse it for useful values.
     

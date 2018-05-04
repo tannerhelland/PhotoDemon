@@ -138,9 +138,6 @@ Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
 
@@ -670,7 +667,7 @@ Private Sub Class_Initialize()
         ' Segoe and Tahoma aren't available on the target machine.
         .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
         
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             m_origFontFace = Fonts.GetUIFontName()
         Else
             m_origFontFace = "Tahoma"

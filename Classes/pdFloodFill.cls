@@ -106,11 +106,6 @@ Private m_InitPoint As POINTAPI
 'Flood fills always return a 32-bpp DIB that describes the flood fill results.  This DIB is painted via pd2D.
 Private m_Painter As pd2DPainter, m_Brush As pd2DBrush
 
-'Fast memory ops
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
-
 'Get/set functions for all relevant flood fill parameters
 Friend Function GetAntialiasingMode() As Boolean
     GetAntialiasingMode = m_AntialiasingMode
@@ -270,7 +265,7 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
 
     Dim y As Long
     For y = 0 To m_BoundsY
-        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), copySize
+        CopyMemoryStrict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), copySize
     Next y
     
     'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines

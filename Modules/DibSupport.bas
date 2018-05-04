@@ -17,10 +17,6 @@ Attribute VB_Name = "DIBs"
 
 Option Explicit
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
-
 'Does a given DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 '
 'As a convenience, if you want to confirm that an image has a fully opaque alpha channel (all alpha = 255),
@@ -766,7 +762,7 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
             Else
             
                 Dim tmpRectF As RectF
-                CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+                CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
                 PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
                 initY = tmpRectF.Top
@@ -837,7 +833,7 @@ Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTranspare
             Else
             
                 Dim tmpRectF As RectF
-                CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+                CopyMemoryStrict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
                 PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
                 initY = tmpRectF.Top
@@ -1026,7 +1022,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
                 tmpQuad.Blue = targetB * aFloat
                 tmpQuad.Green = targetG * aFloat
                 tmpQuad.Red = targetR * aFloat
-                GetMem4 VarPtr(tmpQuad), VarPtr(lTable(x))
+                GetMem4 VarPtr(tmpQuad), ByVal VarPtr(lTable(x))
             Next x
             
             'We're now going to do something kinda weird.  Since VB lacks bit-shift operators (ugh),
@@ -1282,7 +1278,7 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByVal colorCount A
         ReDim lTable(0 To colorCount - 1) As Long
             
         For x = 0 To colorCount - 1
-            GetMem4 VarPtr(srcPalette(x)), VarPtr(lTable(x))
+            GetMem4 VarPtr(srcPalette(x)), ByVal VarPtr(lTable(x))
         Next x
         
         'To improve performance, we'll point a Long-type array at each individual line in turn (rather than

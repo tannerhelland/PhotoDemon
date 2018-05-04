@@ -60,7 +60,6 @@ End Type
 Private Declare Function CreatePalette Lib "gdi32" (ByVal lpLogPalette As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetNearestPaletteIndex Lib "gdi32" (ByVal hPalette As Long, ByVal crColor As Long) As Long
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
 'When interacting with a pdPalette class instance, additional options are available.  In particular,
 ' pdPalette-based palettes support the following per-color features:

@@ -38,8 +38,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'Current seed.  Both float and int versions are stored, as different PRNGs need different inputs
 Private m_Seed_Float As Double, m_Seed_Int As Long
 

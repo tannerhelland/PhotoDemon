@@ -251,9 +251,6 @@ End Type
 Private Declare Function ScriptGetFontScriptTags Lib "usp10" (ByVal srcDC As Long, ByVal ptrToScriptCache As Long, ByVal ptrToScriptAnalysis As Long, ByVal cMaxTags As Long, ByVal ptrToScriptTagsArray As Long, ByVal ptrToNumOfTags As Long) As Long
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
 
-'Quick memory wiping
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-
 'When checking font script tags, we only need to declare an array once, then simply clear it and reuse it.
 Private m_ScriptCachesAreReady As Boolean
 Private m_ScriptTags() As Long

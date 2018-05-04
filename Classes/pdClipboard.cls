@@ -73,9 +73,6 @@ Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Const GMEM_MOVEABLE As Long = &H2
 
-'Basic memory copying:
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
-
 'Current ID and name values currently on the clipboard.  Update these values via UpdateClipboardLists().
 Private m_ClipboardIDs() As Long
 Private m_ClipboardNames() As String
@@ -844,7 +841,7 @@ Friend Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         m_DelayedRenderingActive = True
         
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
-        If ((Not m_OwnerSubclassed) And pdMain.IsProgramRunning() And (m_OwnerHWnd <> 0)) Then
+        If ((Not m_OwnerSubclassed) And PDMain.IsProgramRunning() And (m_OwnerHWnd <> 0)) Then
             m_OwnerSubclassed = VBHacks.StartSubclassing(m_OwnerHWnd, Me)
         End If
         

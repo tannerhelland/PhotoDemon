@@ -40,7 +40,6 @@ Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As Long, ByVal 
 Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As Long
 
 ' ------------
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
@@ -200,7 +199,7 @@ End Type
 
 Private Type MemoDIB
     hDIB As Long
-    Ptr As Long
+    ptr As Long
 End Type
 
 Private Enum ImageLockMode
@@ -490,7 +489,7 @@ Private Function CreateNewDib() As Long
         'Create a temporary memory DC, because CreateDIBSection requires a DC for palette matching
         Dim tmpDC As Long
         tmpDC = GetDC(0&)
-        .hDIB = CreateDIBSection(tmpDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
+        .hDIB = CreateDIBSection(tmpDC, tBITMAPINFO, DIB_RGB_COLORS, .ptr, 0&, 0&)
         ReleaseDC 0&, tmpDC
         
         If .hDIB <> 0 Then
@@ -528,7 +527,7 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
     
     If (Index < 0) Or (Index >= m_NumOfDIBs) Then Exit Sub
 
-    If (GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppPARGB, ByVal mDIB(Index).Ptr, hImage) = 0) Then
+    If (GdipCreateBitmapFromScan0(m_lWidth, m_lHeight, m_lWidth * 4&, PixelFormat32bppPARGB, ByVal mDIB(Index).ptr, hImage) = 0) Then
 
         If (GdipCreateFromHDC(DestHdc, hGraphics) = 0) Then
             
@@ -731,7 +730,7 @@ End Function
 Private Function pvAddImagen_Tanner(ByRef srcDIB As pdDIB) As Boolean
     
     If (m_NumOfDIBs > UBound(mDIB)) Then ReDim Preserve mDIB(0 To m_NumOfDIBs * 2 - 1)
-    srcDIB.TransferDIBOwnership mDIB(m_NumOfDIBs).hDIB, mDIB(m_NumOfDIBs).Ptr
+    srcDIB.TransferDIBOwnership mDIB(m_NumOfDIBs).hDIB, mDIB(m_NumOfDIBs).ptr
     
     m_NumOfDIBs = m_NumOfDIBs + 1
     pvAddImagen_Tanner = True
@@ -869,7 +868,7 @@ End Function
 
 Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And pdMain.IsProgramRunning()) Then
+    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And PDMain.IsProgramRunning()) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
@@ -891,7 +890,7 @@ Friend Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
 End Function
 
 Private Function SetSubclassing() As Boolean
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         m_SubclassActive = VBHacks.StartSubclassing(m_hWnd, Me)
         SetSubclassing = m_SubclassActive
     Else

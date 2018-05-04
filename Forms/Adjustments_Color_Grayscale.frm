@@ -147,8 +147,6 @@ End Enum
     Private Const GT_Fast = 0, GT_ITU = 1, GT_Desaturate = 2, GT_Decompose = 3, GT_Channel = 4
 #End If
 
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
-
 'Preview the current grayscale conversion technique
 Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then MasterGrayscaleFunction GetLocalParamString(), True, pdFxPreview

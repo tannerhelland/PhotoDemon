@@ -55,8 +55,6 @@ Private m_Pixels() As Byte, m_ResWidth As Long, m_ResHeight As Long
 'Similarly, a persistent load buffer is also used when copying raw bytes out of individual resource blocks
 Private m_Buffer() As Byte
 
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 'Called early in PD's startup, this function checks to see if we've already extracted PD's resource file to a
 ' separate working folder.  If we have, grab the data from there instead of from the .exe.  (This is helpful
 ' during debugging.)

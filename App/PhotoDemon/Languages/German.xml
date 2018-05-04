@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.491</langversion>
+<langversion>7.2.524</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1480,7 +1480,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgenommene Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufnehmen müssen.
 
-(Hinweis: Beliebige alte Makrodateien werden immer noch in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
+(Hinweis: Beliebige alte Makrodateien werden trotzdem in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
 </phrase>
 
 <phrase>
@@ -3459,7 +3459,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Metadaten können möglicherweise nicht eingebettet worden sein (gespeichertes Bild aber dennoch erfolgreich geschrieben).</translation>
+<translation>Metadaten können möglicherweise nicht eingebettet worden sein (gespeichertes Bild aber trotzdem erfolgreich geschrieben).</translation>
 </phrase>
 
 <!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
@@ -4533,7 +4533,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Seitenverhältnis beibehalten (manchmal Einschränkungsproportionen benannt). Verwenden Sie diese Option, um die Größe eines Bildes zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
+<translation>Seitenverhältnis beibehalten (mitunter Einschränkungsproportionen genannt). Verwenden Sie diese Option, um die Größe eines Bildes zu ändern, während die Breite und Höhe in Sync gehalten werden.</translation>
 </phrase>
 
 <phrase>
@@ -4563,7 +4563,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>inches</original>
-<translation>Inches (Zoll)</translation>
+<translation>Inch</translation>
 </phrase>
 
 <phrase>
@@ -4573,17 +4573,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>millimeters</original>
-<translation></translation>
+<translation>Millimeter</translation>
 </phrase>
 
 <phrase>
 <original>points</original>
-<translation></translation>
+<translation>Point</translation>
 </phrase>
 
 <phrase>
 <original>picas</original>
-<translation></translation>
+<translation>Pica</translation>
 </phrase>
 
 <phrase>
@@ -4739,12 +4739,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>mm</original>
-<translation></translation>
+<translation>mm</translation>
 </phrase>
 
 <phrase>
 <original>pt</original>
-<translation></translation>
+<translation>pt</translation>
 </phrase>
 
 <phrase>
@@ -11364,7 +11364,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
-<translation>Willkommen zum Batch-Assistenten von PhotoDemon. Dieses Tool kann verwendet werden, um multiple Bilder auf einmal zu bearbeiten - der als "Batch-Prozess" bezeichnet wird.</translation>
+<translation>Willkommen zum Batch-Assistenten von PhotoDemon. Dieses Tool kann verwendet werden, um multiple Bilder gleichzeitig zu bearbeiten - in einem so genannten "Batch-Prozess".</translation>
 </phrase>
 
 <phrase>
@@ -11424,7 +11424,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie wählen, Bilder in einem neuen Format zu speichern, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Bei- spiel, Bilder mit Transparenz sollten in einem Format gespeichert wer- den, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Bei- spiel, Bilder mit Transparenz sollten in einem Format gespeichert wer- den, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -11469,7 +11469,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie "Abbrechen" wählen, werden alle verarbeiteten Bilder dennoch im Ausgabeordner vorhanden sein, sodass Sie diese manuell entfernen müssen.</translation>
+<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie abbrechen möchten, werden alle verarbeiteten Bilder trotzdem im Ausgabeordner vorhanden sein, sodass Sie diese manuell entfernen müssen.</translation>
 </phrase>
 
 <phrase>
@@ -11674,11 +11674,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 You will need to download this file using your Internet browser, then manually load it into %2.
 
 I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-<translation>Leider verhindert %1, dass %2 dieses Bild direkt herunterlädt. (Direkte Downloads werden von schlecht eingestellten Servern gelegentlich als unzulässiges 'Hotlinking' missverstanden.)
+<translation>Leider verhindert %1, dass %2 dieses Bild direkt herunterlädt. (Direkte Downloads werden mitunter durch falsch konfigurierte Server irrtümlich als 'Hotlinking' interpretiert.)
 
 Sie werden diese Datei unter Verwendung Ihres Internet-Browsers herunterladen müssen, dann laden Sie es manuell in %2.
 
-Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklicherweise gibt es überhaupt nichts, was %2 gegen kleinlich eingestellte Server tun kann. :(</translation>
+Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglücklicherweise gibt es nichts, was %2 gegen unzulängliche Serverkonfigurationen tun kann. :(</translation>
 </phrase>
 
 <phrase>
@@ -13883,7 +13883,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation></translation>
+<translation>Diesen Wert sperren. (Es kann jeweils nur ein Wert gesperrt sein. Wenn Sie einen neuen Wert sperren, werden zuvor gesperrte Werte freigegeben.)</translation>
 </phrase>
 
 <phrase>
@@ -15062,7 +15062,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Um benutzerdefinierte Farbprofile bei einer pro Monitorbasis einzurichten, verwenden Sie bitte diese Einstellung.</translation>
+<translation>Um benutzerdefinierte Farbprofile bei einer Grundlage pro Monitor zu konfigurieren, verwenden Sie bitte diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -15145,7 +15145,7 @@ Wollen Sie wirklich fortfahren?</translation>
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
 <translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
-Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
+Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>

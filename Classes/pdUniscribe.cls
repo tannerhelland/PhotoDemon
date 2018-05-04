@@ -64,9 +64,6 @@ Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars
 Private Declare Function ScriptItemizeOpenType Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal cMaxItems As Long, ByVal ptrToScriptControl As Long, ByVal ptrToScriptState As Long, ByVal ptrToPItems As Long, ByVal ptrToPScriptTags As Long, ByRef pcItems As Long) As Long
 Private Declare Function ScriptShapeOpenType Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrToSApas As Long, ByVal otTagScript As Long, ByVal otTagLang As Long, ByVal ptrToRcRangeChars As Long, ByVal ptrToRpRangeProperties As Long, ByVal numOfOTRanges As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToOutputCharProps As Long, ByVal ptrToPWOutGlyphs As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
 
-'Sometime we have to get clever about cramming data into integers
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstInteger As Integer)
-
 'For relevant type declarations, look in the Uniscribe_API_Decs module.
 
 'ScriptItemize allows you to specify a language ID you want to use for itemizing.  We default to the current user setting.

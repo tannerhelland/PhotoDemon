@@ -54,10 +54,6 @@ Private Const INITIAL_STACK_HEIGHT As Long = 4096
 ' These descriptors are populated in Class_Initialize().
 Private m_XDirs() As Long, m_YDirs() As Long
 
-'Fast memory ops
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
-
 Private Declare Function GdipGetRegionScansCount Lib "gdiplus" (ByVal hRegion As Long, ByRef dstRectCount As Long, ByVal optTransformMatrix As Long) As GP_Result
 Private Declare Function GdipGetRegionScansI Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrToRectLArray As Long, ByRef dstNumOfRects As Long, ByVal optTransformMatrix As Long) As GP_Result
 Private m_RectLCache() As RectL, m_SizeOfRectCache As Long
@@ -487,7 +483,7 @@ Friend Sub MakeArrayEdgeSafe(ByRef srcArray() As Byte, ByRef dstArray() As Byte,
     ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
     Dim y As Long
     For y = 0 To srcYBound
-        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
+        CopyMemoryStrict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
     Next y
     
     'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.

@@ -95,7 +95,6 @@ Private Const IID_IShellItemArray As String = "{B63EA76D-1F85-456F-A19C-48159EFA
 
 Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As Long, ByVal lpiid As Long) As Long
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByVal pClsID As Long) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
 Private Enum InterfaceMethodOffsets                 ' helper for me during design
     ifUnknown_QueryInterface = 0                    ' pass 2 params

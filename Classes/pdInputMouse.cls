@@ -167,7 +167,6 @@ End Enum
 
 Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As PD_MouseResolution) As Long
 Private Declare Function GetMessageTime Lib "user32" () As Long
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 'Weird legacy desktop issues require us to transform points passed to/from GetMouseMovePointsEx, relative to the current monitor system
@@ -276,7 +275,7 @@ Private m_StillUseDefWindowProc As Boolean
 'Note that this function will return TRUE if input tracking was initiated successfully.
 Friend Function AddInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
     
-    If (pdMain.IsProgramRunning() And (targetHWnd <> 0)) Then
+    If (PDMain.IsProgramRunning() And (targetHWnd <> 0)) Then
     
         'Cache relevant parameters at module-level.  These affect the way the subclasser responds to various window messages.
         m_hWnd = targetHWnd

@@ -135,7 +135,6 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
 
 'If the clipboard is currently open, this module will cache certain values.  External functions (like the image load routines) can query these
 ' for additional information on how to handle the image.  Clipboard images have a ton of caveats that normal images do not; hence these trackers.

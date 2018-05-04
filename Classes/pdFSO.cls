@@ -165,7 +165,6 @@ End Type
 
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CopyFileW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal bFailIfExists As Long) As Long
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 Private Declare Function CreateDirectoryW Lib "kernel32" (ByVal lpPathName As Long, ByVal ptrToSecurityAttributes As Long) As Long
 Private Declare Function CreateFileMapping Lib "kernel32" Alias "CreateFileMappingW" (ByVal hFile As Long, ByVal lpFileMappingAttributes As Long, ByVal flProtect As Long, ByVal dwMaximumSizeHigh As Long, ByVal dwMaximumSizeLow As Long, ByVal ptrToNameString As Long) As Long
 Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
@@ -723,8 +722,8 @@ Friend Function FileGetTimeAsCurrency(ByRef srcFile As String, Optional ByVal ty
             
             'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
             ' comparison functions, but for now, you have to deal with times being returned as currency.
-            CopyMemory_Strict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
-            CopyMemory_Strict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
+            CopyMemoryStrict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
+            CopyMemoryStrict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
         
         End If
         
@@ -793,7 +792,7 @@ Friend Function FileGetVersion(ByVal srcFile As String, ByRef verMajor As Long, 
                 
                 'Copy the raw bytes into a usable struct
                 Dim finalFileInfo As VS_FIXEDFILEINFO
-                CopyMemory_Strict VarPtr(finalFileInfo), ptrDstBuffer, LenB(finalFileInfo)
+                CopyMemoryStrict VarPtr(finalFileInfo), ptrDstBuffer, LenB(finalFileInfo)
                 
                 'Return file or product version number, depending on the optional getProductVersionInstead parameter.
                 With finalFileInfo
@@ -1549,7 +1548,7 @@ Friend Function PathCompact(ByRef srcString As String, ByVal newMaxLength As Lon
     
     copyLength = Len(srcString)
     If (copyLength > MAX_PATH) Then copyLength = MAX_PATH
-    CopyMemory_Strict StrPtr(tmpStringSrc), StrPtr(srcString), copyLength * 2
+    CopyMemoryStrict StrPtr(tmpStringSrc), StrPtr(srcString), copyLength * 2
     
     'Now, prep an output buffer of size MAX_PATH
     Dim tmpStringDst As String

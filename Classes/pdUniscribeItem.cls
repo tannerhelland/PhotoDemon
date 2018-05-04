@@ -131,10 +131,6 @@ Private m_GlyphSoftBreakCache() As Boolean
 Private m_GlyphWhitespaceCache() As Boolean
 Private m_GlyphZeroWidthCache() As Boolean
 
-'ByRef + CopyMemory is confusing, especially when trading bare pointers (as I am prone to doing), so I prefer to use a ByVal-only
-' version of RtlMoveMemory, and forcibly supply pointers to avoid the risk of messing things up.
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
 'Because VB doesn't allow a class to expose public UDTs (without a typelib, anyway), all custom structs use get/set functions.

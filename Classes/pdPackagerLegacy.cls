@@ -193,8 +193,6 @@ Private Type PDP_NODE
     
 End Type
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-
 'zLib compression and checksum validation
 Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
@@ -781,19 +779,19 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
         If m_File.FileConvertHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
 
-            'Write out the file data using good ol' CopyMemory!
+            'Write out the file data using good ol' CopyMemoryStrict!
             Dim mmapOffset As Long, netDirectorySize As Long
             mmapOffset = LenB(m_FileHeader)
             netDirectorySize = UBound(rawDirectoryBuffer) + 1
 
-            CopyMemory mmapPtr, VarPtr(m_FileHeader), mmapOffset
-            CopyMemory mmapPtr + mmapOffset, VarPtr(rawDirectoryBuffer(0)), netDirectorySize
+            CopyMemoryStrict mmapPtr, VarPtr(m_FileHeader), mmapOffset
+            CopyMemoryStrict mmapPtr + mmapOffset, VarPtr(rawDirectoryBuffer(0)), netDirectorySize
             
             'If the data buffer did not receive a second compression pass, we can write it out from its current location as-is
             If secondPassDataCompression Then
-                CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+                CopyMemoryStrict mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
             Else
-                CopyMemory mmapPtr + mmapOffset + netDirectorySize, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSize
+                CopyMemoryStrict mmapPtr + mmapOffset + netDirectorySize, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSize
             End If
 
             'Release the mapped view and allow the system to write the file at its leisure
@@ -833,7 +831,7 @@ End Function
 
 'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that
 ' potentially supports compression should use this function to transfer data between arrays, even when compression is not in use.
-' (This function abstracts away all the messy CopyMemory bits, keeping the rest of the class clean.)
+' (This function abstracts away all the messy CopyMemoryStrict bits, keeping the rest of the class clean.)
 '
 'If compression *is* in use, this function will use zLib to compress the array accordingly, and it will fill the passed dstSize Long
 ' with the size (1-based) of the compressed array.  Explicit size values are required for both source and destination arrays, which
@@ -876,7 +874,7 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         
             dstSize = srcSize
             ReDim dstArray(0 To dstSize - 1) As Byte
-            CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
+            CopyMemoryStrict VarPtr(dstArray(0)), srcPointer, srcSize
             CopyPtrToArray = False
         
         End If
@@ -885,7 +883,7 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
     
         dstSize = srcSize
         ReDim dstArray(0 To dstSize - 1) As Byte
-        CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
+        CopyMemoryStrict VarPtr(dstArray(0)), srcPointer, srcSize
         CopyPtrToArray = False
     
     End If
@@ -1008,7 +1006,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
             m_numOfNodes = m_FileHeader.NodeCount
             ReDim m_NodeDirectory(0 To m_numOfNodes - 1) As PDP_NODE
-            CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
+            CopyMemoryStrict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
             
             'Now, retrieve the data chunk, and apply the same decompression test that we did for the directory chunk.
             Set m_DataBuffer = New pdStream
@@ -1222,7 +1220,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
     Dim filenameArray() As Byte
     ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
-    CopyMemory VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
+    CopyMemoryStrict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
     
     'Start searching the node array for matches
     Dim retBytes() As Byte
@@ -1464,7 +1462,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
-                        CopyMemory StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
+                        CopyMemoryStrict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
                         Debug.Print "First: " & strFilename
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
@@ -1852,7 +1850,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
-        CopyMemory dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+        CopyMemoryStrict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
     End If
     
     'Retrieve the stored checksum value for this node (if any).

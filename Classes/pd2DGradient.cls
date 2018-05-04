@@ -58,7 +58,6 @@ Private m_Serializer As pdParamXML
 Private Type tmpLong
     lngResult As Long
 End Type
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'When this class is instantiated, we create a default gradient object.  If this object has never been modified,
 ' however, we flag it to avoid things like serializing the default gradient values upon request.

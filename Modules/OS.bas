@@ -287,7 +287,6 @@ Private Type OS_VersionInfoEx
 End Type
 
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
-Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
@@ -304,11 +303,7 @@ Private Declare Function ProcessNext Lib "kernel32" Alias "Process32NextW" (ByVa
 Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 
-Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWordDst As Long, ByVal newValue As Long) As Long
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
-
-Private Declare Function SysAllocString Lib "oleaut32" (ByVal Ptr As Long) As Long
+Private Declare Function SysAllocString Lib "oleaut32" (ByVal ptr As Long) As Long
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, ByRef pClsID As OS_Guid) As Long
 Private Declare Function CoCreateGuid Lib "ole32" (ByRef pGuid As OS_Guid) As Long
 Private Declare Function CoCreateInstance Lib "ole32" (ByRef rClsID As OS_Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByRef rIID As OS_Guid, ByRef ppv As Any) As Long
@@ -550,7 +545,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
         For i = ParamsCount - 1 To 0 Step -1
           PutMem2 hGlobalOffset, ASM_PUSH_IMM32
           hGlobalOffset = hGlobalOffset + 1
-          GetMem4 t + i * 4, hGlobalOffset
+          GetMem4 t + i * 4, ByVal hGlobalOffset
           hGlobalOffset = hGlobalOffset + 4
         Next
       
@@ -563,8 +558,8 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     
     PutMem2 hGlobalOffset, ASM_CALL_REL32
     hGlobalOffset = hGlobalOffset + 1
-    GetMem4 pInterface, VarPtr(t)
-    GetMem4 t + Member * 4, VarPtr(t)
+    GetMem4 pInterface, ByVal VarPtr(t)
+    GetMem4 t + Member * 4, ByVal VarPtr(t)
     PutMem4 hGlobalOffset, t - hGlobalOffset - 4
     hGlobalOffset = hGlobalOffset + 4
       

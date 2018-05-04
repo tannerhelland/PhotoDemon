@@ -37,8 +37,6 @@ Private m_Strings() As String
 Private m_NumOfStrings As Long
 Private Const INIT_STACK_SIZE = 16
 
-Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWordSrc As Long, ByVal pDWordDst As Long) As Long
-
 'Because recursion is painfully slow in VB, our QuickSort implementation uses a stack instead.
 Private Type QSStack
     sLB As Long
@@ -217,8 +215,8 @@ End Sub
 Friend Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     Dim tmpStrPtr As Long
     tmpStrPtr = StrPtr(m_Strings(strIndex1))
-    GetMem4 VarPtr(m_Strings(strIndex2)), VarPtr(m_Strings(strIndex1))
-    GetMem4 VarPtr(tmpStrPtr), VarPtr(m_Strings(strIndex2))
+    GetMem4 VarPtr(m_Strings(strIndex2)), ByVal VarPtr(m_Strings(strIndex1))
+    GetMem4 VarPtr(tmpStrPtr), ByVal VarPtr(m_Strings(strIndex2))
 End Sub
 
 'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings

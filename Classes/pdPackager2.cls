@@ -223,8 +223,6 @@ Private Type PDP_NODE
     
 End Type
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-
 'When writing new pdPackage files, these variables hold the package's contents as they are being assembled.  When loading a pdPackage file,
 ' these structs will be filled after the file header is successfully verified.
 Private m_FileHeader As PDP_HEADER
@@ -867,18 +865,18 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             
             If useMemMapMode Then
     
-                'Write out the file data using good ol' CopyMemory_Strict!
+                'Write out the file data using good ol' CopyMemoryStrict!
                 
                 mmapOffset = LenB(m_FileHeader)
                 
                 'File header...
-                CopyMemory_Strict mmapPtr, VarPtr(m_FileHeader), mmapOffset
+                CopyMemoryStrict mmapPtr, VarPtr(m_FileHeader), mmapOffset
                 
                 'Data buffer...
-                CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
+                CopyMemoryStrict mmapPtr + mmapOffset, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
                 
                 'Directory at the end...
-                CopyMemory_Strict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                CopyMemoryStrict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
                 
                 'Release the mapped view and allow the system to write the file at its leisure
                 m_File.ReleaseMMHandle mmapHandle, mmapPtr
@@ -924,7 +922,7 @@ End Function
 
 'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that
 ' potentially supports compression should use this function to transfer data between arrays, even when compression is not in use.
-' (This function abstracts away all the messy CopyMemory_Strict bits, keeping the rest of the class clean.)
+' (This function abstracts away all the messy CopyMemoryStrict bits, keeping the rest of the class clean.)
 '
 'If compression *is* in use, this function will use the requested engine to compress the array accordingly, and it will fill the passed
 ' dstSize Long with the size (1-based) of the compressed array.  Explicit size values are required for both source and destination arrays,
@@ -1107,7 +1105,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             If (newNodeCount > m_numOfNodes) Then ReDim m_NodeDirectory(0 To newNodeCount - 1) As PDP_NODE
             m_numOfNodes = newNodeCount
-            CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+            CopyMemoryStrict VarPtr(m_NodeDirectory(0)), VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
             
             'If memory is tight, you might choose to free the raw directory buffer here (as it's no longer needed).  In PD,
             ' we skip this step as we may reuse the compression buffer for future read/write operations.
@@ -1196,7 +1194,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
     
     'Attempt to load a file header.  If the source memory is invalid, this may potentially be gibberish, but we won't know until we try!
     If (srcLength > LenB(m_FileHeader)) Then
-        CopyMemory_Strict VarPtr(m_FileHeader), srcPointer, LenB(m_FileHeader)
+        CopyMemoryStrict VarPtr(m_FileHeader), srcPointer, LenB(m_FileHeader)
     Else
         InternalErrorMsg "Bad memory length specified (smaller than pdPackage header).  Abandoning load."
         GoTo StopPackageMemoryRead
@@ -1241,14 +1239,14 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
         
             'If no compression was applied, read the bytes directly into our buffer
             If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
-                CopyMemory_Strict VarPtr(rawBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
+                CopyMemoryStrict VarPtr(rawBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
                 
             'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
             Else
                 
                 'Regardless of compression method, pull the raw bytes from file
                 ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
-                CopyMemory_Strict VarPtr(tmpCompressionBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
+                CopyMemoryStrict VarPtr(tmpCompressionBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
                 
                 Dim decompressionResult As Boolean: decompressionResult = False
                 
@@ -1313,7 +1311,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
         'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
         m_numOfNodes = m_FileHeader.NodeCount
         ReDim m_NodeDirectory(0 To m_numOfNodes - 1) As PDP_NODE
-        CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+        CopyMemoryStrict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
         
         'Free the raw directory buffer
         Erase rawBuffer
@@ -1332,7 +1330,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
             'For a memory-backed stream, immediately load the full data chunk into memory.
             m_DataBuffer.StartStream PD_SM_MemoryBacked, m_StreamAccess
             m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
-            CopyMemory_Strict m_DataBuffer.Peek_PointerOnly(0), srcPointer + m_FileHeader.DataChunkPosition, m_FileHeader.DataChunkSizeOriginal
+            CopyMemoryStrict m_DataBuffer.Peek_PointerOnly(0), srcPointer + m_FileHeader.DataChunkPosition, m_FileHeader.DataChunkSizeOriginal
             
             'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
             m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
@@ -1431,7 +1429,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
     Dim filenameArray() As Byte
     ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
-    CopyMemory_Strict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
+    CopyMemoryStrict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
     
     'Start searching the node array for matches
     Dim retBytes() As Byte
@@ -1553,7 +1551,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         End If
         
         'Make sure the destination path was successfully constructed, including any relative path data
-        If (Len(fullDestinationPath) > 0) Then
+        If (LenB(fullDestinationPath) > 0) Then
         
             'Retrieve this node's contents
             If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
@@ -1652,7 +1650,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
-                        CopyMemory_Strict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
+                        CopyMemoryStrict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
                         
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
@@ -1700,7 +1698,7 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'Make sure the destination path was successfully constructed, including any relative path data.
                         ' (If constructing the relative path failed, the destination path string will have been erased.)
-                        If (Len(fullDestinationPath) <> 0) Then
+                        If (LenB(fullDestinationPath) <> 0) Then
                         
                             'Retrieve this node's contents
                             If GetNodeDataByIndex(i, False, retBytes()) Then
@@ -2103,7 +2101,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         'As with compressed mode, a switch is required depending on the stream backing mode
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+            CopyMemoryStrict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             m_DataBuffer.ReadBytesToBarePointer dstPointer, dataPackedSize
         End If

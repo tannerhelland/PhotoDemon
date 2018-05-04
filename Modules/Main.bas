@@ -1,4 +1,4 @@
-Attribute VB_Name = "pdMain"
+Attribute VB_Name = "PDMain"
 '***************************************************************************
 'PhotoDemon Startup Module
 'Copyright 2014-2018 by Tanner Helland

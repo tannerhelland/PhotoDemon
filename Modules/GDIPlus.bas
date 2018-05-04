@@ -1198,7 +1198,7 @@ Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Lo
 
 'Non-GDI+ helper functions:
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal ptrToGuidString As Long, ByVal ptrToByteArray As Long) As Long
-Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
+Private Declare Function CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByVal ptrToDstStream As Long) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal srcIStream As Long, ByRef dstHGlobal As Long) As Long
@@ -1211,7 +1211,6 @@ Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal 
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Long) As Long
 Private Declare Function StringFromCLSID Lib "ole32" (ByVal ptrToGuid As Long, ByRef ptrToDstString As Long) As Long
 Private Declare Function SysAllocString Lib "oleaut32" (ByVal srcWCharPtr As Long) As Long
 Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcAnsiPtr As Long, ByVal srcLength As Long) As String
@@ -3440,7 +3439,7 @@ End Function
 'Given a long-type pARGB value returned from GDI+, retrieve just the opacity value on the scale [0, 100]
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQuad
-    CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
+    CopyMemoryStrict VarPtr(srcQuad), VarPtr(pARGB), 4&
     GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
 End Function
 
@@ -3449,7 +3448,7 @@ End Function
 Public Function GetColorFromPARGB(ByVal pARGB As Long, Optional ByVal removePremultiplication As Boolean = False) As Long
     
     Dim srcQuad As RGBQuad
-    CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
+    CopyMemoryStrict VarPtr(srcQuad), VarPtr(pARGB), 4&
     
     If removePremultiplication Then
     
@@ -4343,7 +4342,7 @@ Public Function GDIPlus_ImageCreateFromArray(ByRef srcArray() As Byte, Optional 
         Dim tmpLockMem As Long
         tmpLockMem = GlobalLock(tmpHMem)
         If (tmpLockMem <> 0) Then
-            CopyMemory_Strict tmpLockMem, VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1
+            CopyMemoryStrict tmpLockMem, VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1
             GlobalUnlock tmpHMem
             CreateStreamOnHGlobal tmpHMem, 1&, VarPtr(tmpStream)
         End If
@@ -4425,7 +4424,7 @@ Public Function GDIPlus_ImageGetFileFormatGUID(ByVal hImage As Long) As String
             strLength = lstrlenW(imgStringPointer)
             If (strLength <> 0) Then
                 GDIPlus_ImageGetFileFormatGUID = String$(strLength, 48)
-                CopyMemory_Strict StrPtr(GDIPlus_ImageGetFileFormatGUID), imgStringPointer, strLength * 2
+                CopyMemoryStrict StrPtr(GDIPlus_ImageGetFileFormatGUID), imgStringPointer, strLength * 2
             End If
         Else
             InternalGDIPlusError "Failed to convert clsID to string", "GDIPlus_ImageGetFileFormatGUID failed"
@@ -4590,7 +4589,7 @@ Public Function GDIPlus_ImageSaveToArray(ByVal hImage As Long, ByRef dstArray() 
                     lockedMem = GlobalLock(tmpHMem)
                     If (lockedMem <> 0) Then
                         ReDim dstArray(0 To hMemSize - 1) As Byte
-                        CopyMemory_Strict VarPtr(dstArray(0)), lockedMem, hMemSize
+                        CopyMemoryStrict VarPtr(dstArray(0)), lockedMem, hMemSize
                         GlobalUnlock lockedMem
                         GDIPlus_ImageSaveToArray = True
                     End If
@@ -4723,12 +4722,12 @@ Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormat
                     For i = 0 To numOfEncoders - 1
                     
                         'Extract this codec
-                        CopyMemory_Strict VarPtr(tmpCodec), VarPtr(encoderBuffer(0)) + LenB(tmpCodec) * i, LenB(tmpCodec)
+                        CopyMemoryStrict VarPtr(tmpCodec), VarPtr(encoderBuffer(0)) + LenB(tmpCodec) * i, LenB(tmpCodec)
                         
                         'Compare mimetypes
                         If Strings.StringsEqual(Strings.StringFromCharPtr(tmpCodec.IC_MimeType, True), srcMimetype, True) Then
                             GetEncoderGUIDForPd2dFormat = True
-                            CopyMemory_Strict ptrToDstGuid, VarPtr(tmpCodec.IC_ClassID(0)), 16&
+                            CopyMemoryStrict ptrToDstGuid, VarPtr(tmpCodec.IC_ClassID(0)), 16&
                             Exit For
                         End If
                         

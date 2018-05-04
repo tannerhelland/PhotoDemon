@@ -98,8 +98,6 @@ End Enum
 'Note that not all compression engines are available on all systems.  Some rely on 3rd-party DLLs; others require Win 8 or later.
 Private Const NUM_OF_COMPRESSION_ENGINES = 9
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-
 'All of these functions require Windows 8 or later!
 Private Declare Function CloseCompressor Lib "cabinet" (ByVal hCompressor As Long) As Long
 Private Declare Function CloseDecompressor Lib "cabinet" (ByVal hDecompressor As Long) As Long
@@ -274,7 +272,7 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     'If compression failed, perform a direct source-to-dst copy
     If (Not CompressPtrToPtr) Then
         If (compressionEngine <> PD_CE_NoCompression) Then InternalErrorMsg "CompressPtrToPtr failed on compression engine " & compressionEngine
-        CopyMemory_Strict constDstPtr, constSrcPtr, constSrcSizeInBytes
+        CopyMemoryStrict constDstPtr, constSrcPtr, constSrcSizeInBytes
         dstSizeInBytes = constSrcSizeInBytes
         CompressPtrToPtr = (compressionEngine = PD_CE_NoCompression)
     End If
@@ -351,7 +349,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     'If compression failed, perform a direct source-to-dst copy
     If (Not DecompressPtrToPtr) Then
         If (compressionEngine <> PD_CE_NoCompression) Then InternalErrorMsg "DecompressPtrToPtr failed on compression engine " & compressionEngine
-        CopyMemory_Strict constDstPtr, constSrcPtr, constSrcSizeInBytes
+        CopyMemoryStrict constDstPtr, constSrcPtr, constSrcSizeInBytes
         DecompressPtrToPtr = (compressionEngine = PD_CE_NoCompression)
     End If
 

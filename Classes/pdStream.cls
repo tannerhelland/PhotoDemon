@@ -49,12 +49,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrToDestination As Long, ByVal ptrToSource As Long, ByVal memLength As Long)
-Private Declare Sub GetMem1 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstByte As Byte)
-Private Declare Sub GetMem2 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstInteger As Integer)
-Private Declare Sub GetMem4 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstLong As Long)
-Private Declare Sub GetMem8 Lib "msvbvm60" (ByVal srcPointer As Long, ByRef dstCurrency As Currency)
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
 Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 Private Declare Function ntohl Lib "Ws2_32" (ByVal srcLong As Long) As Long
@@ -130,10 +124,10 @@ Friend Sub DeleteFromStart(ByVal numBytesToDelete As Long)
             'Note that we allocate an extra byte, "just in case"
             Dim tmpBuffer() As Byte
             ReDim tmpBuffer(0 To m_BufferSize - numBytesToDelete) As Byte
-            CopyMemory_Strict VarPtr(tmpBuffer(0)), VarPtr(m_MemBuffer(numBytesToDelete)), m_BufferSize - numBytesToDelete
+            CopyMemoryStrict VarPtr(tmpBuffer(0)), VarPtr(m_MemBuffer(numBytesToDelete)), m_BufferSize - numBytesToDelete
             
             'Now, copy the same memory into place over the buffer itself
-            CopyMemory_Strict VarPtr(m_MemBuffer(0)), VarPtr(tmpBuffer(0)), m_BufferSize - numBytesToDelete
+            CopyMemoryStrict VarPtr(m_MemBuffer(0)), VarPtr(tmpBuffer(0)), m_BufferSize - numBytesToDelete
             Erase tmpBuffer
             
             'Shift the pointer accordingly
@@ -475,7 +469,7 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
         
         'Copy the relevant amount of bytes into position
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict dstPointer, VarPtr(m_MemBuffer(m_Pointer)), readLength
+            CopyMemoryStrict dstPointer, VarPtr(m_MemBuffer(m_Pointer)), readLength
             
             'In memory mode, we must manually move the pointer to match the new position
             m_Pointer = m_Pointer + readLength
@@ -575,7 +569,7 @@ End Function
 Friend Function ReadIntUnsigned() As Long
     If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Then
-            CopyMemory_Strict VarPtr(ReadIntUnsigned) + 2&, VarPtr(m_MemBuffer(m_Pointer)), 2&
+            CopyMemoryStrict VarPtr(ReadIntUnsigned) + 2&, VarPtr(m_MemBuffer(m_Pointer)), 2&
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt) + 2&, 2&
@@ -624,7 +618,7 @@ End Function
 Friend Function ReadFloat_BE() As Single
     Dim tmpLong As Long
     tmpLong = ntohl(Me.ReadLong())
-    CopyMemory_Strict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
+    CopyMemoryStrict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
 End Function
 
 'Read a series of one-byte values from the stream, and treat the chars as if they are individual ASCII codes.
@@ -750,7 +744,7 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
             If ((m_Pointer + dataLength) > UBound(m_MemBuffer)) Then EnsureBufferSpaceAvailable dataLength
             
             'Copy the data into place
-            CopyMemory_Strict VarPtr(m_MemBuffer(m_Pointer)), dataPointer, dataLength
+            CopyMemoryStrict VarPtr(m_MemBuffer(m_Pointer)), dataPointer, dataLength
     
             'Increment the buffer pointer to reflect its new position post-write
             m_Pointer = m_Pointer + dataLength
@@ -802,7 +796,7 @@ End Function
 'Write a single 32-bit float to the stream, *after* converting it to big-endian format
 Friend Function WriteFloat_BE(ByVal srcSingle As Single) As Boolean
     Dim tmpLong As Long
-    CopyMemory_Strict VarPtr(tmpLong), VarPtr(srcSingle), 4
+    CopyMemoryStrict VarPtr(tmpLong), VarPtr(srcSingle), 4
     WriteFloat_BE = Me.WriteLong_BE(tmpLong)
 End Function
 
@@ -819,14 +813,14 @@ End Function
 'Unsigned int writes; pass a Long, per PD convention.
 Friend Function WriteIntU(ByVal srcInt As Long) As Boolean
     Dim tmpInteger As Integer
-    CopyMemory_Strict VarPtr(tmpInteger), VarPtr(srcInt) + 2, 2
+    CopyMemoryStrict VarPtr(tmpInteger), VarPtr(srcInt) + 2, 2
     WriteIntU = WriteBytesFromPointer(VarPtr(tmpInteger), 2)
 End Function
 
 'Big-endian unsigned int writes
 Friend Function WriteIntU_BE(ByVal srcInt As Long) As Boolean
     Dim tmpInteger As Integer
-    CopyMemory_Strict VarPtr(tmpInteger), VarPtr(srcInt), 2
+    CopyMemoryStrict VarPtr(tmpInteger), VarPtr(srcInt), 2
     tmpInteger = htons(tmpInteger)
     WriteIntU_BE = WriteBytesFromPointer(VarPtr(tmpInteger), 2)
 End Function
