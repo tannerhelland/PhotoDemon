@@ -939,11 +939,16 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         ' are generally copied over as-is.  When reducing 16-bit to 8-bit data, this results in
                         ' the least-significant bit being copied over (which we obviously don't want).  As such,
                         ' we need to manually track back through the original data and copy over MSBs.
-                        If (m_Header.BitDepth = 16) Then
-                            For x = 0 To xFinal
-                                dstBytes(x * 4 + 3, y) = srcBytes(srcOffset + x * 8 + 6)
-                            Next x
-                        End If
+                        '
+                        'NOTE!  I submitted this issue to Marti (https://github.com/mm2/Little-CMS/issues/159,
+                        ' https://github.com/mm2/Little-CMS/issues/162) and with his help, I've manually patched
+                        ' up PD's lcms2.dll.  Manual correction is no longer required - yay!
+                        '
+                        'If (m_Header.BitDepth = 16) Then
+                        '    For x = 0 To xFinal
+                        '        dstBytes(x * 4 + 3, y) = srcBytes(srcOffset + x * 8 + 6)
+                        '    Next x
+                        'End If
                         
                     Next y
                     
