@@ -109,7 +109,7 @@ End Sub
 
 Public Function GenerateDebugLogs() As Boolean
     If (m_GenerateDebugLogs = dbg_Auto) Then
-        GenerateDebugLogs = ((PD_BUILD_QUALITY <> PD_PRODUCTION) Or m_EmergencyDebug) And pdMain.IsProgramRunning()
+        GenerateDebugLogs = ((PD_BUILD_QUALITY <> PD_PRODUCTION) Or m_EmergencyDebug) And PDMain.IsProgramRunning()
     ElseIf (m_GenerateDebugLogs = dbg_False) Then
         GenerateDebugLogs = False
     Else
@@ -549,166 +549,171 @@ Private Sub CreateNewPreferencesFile()
     If g_IsFirstRun Then Files.FileDeleteIfExists m_PresetPath & "Program_WindowLocations.xml"
     
     'Reset our XML engine
-    m_XMLEngine.PrepareNewXML "User Preferences"
-    m_XMLEngine.WriteBlankLine
-    
-    'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
-    m_XMLEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "BatchProcess", vbNullString, True
-        m_XMLEngine.WriteTag "InputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "ListFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "OutputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
-    m_XMLEngine.CloseTag "BatchProcess"
-    m_XMLEngine.WriteBlankLine
-    
-    'Write out the "color management" block of preferences:
-    m_XMLEngine.WriteTag "ColorManagement", vbNullString, True
-        m_XMLEngine.WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
-        m_XMLEngine.WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
-    m_XMLEngine.CloseTag "ColorManagement"
-    m_XMLEngine.WriteBlankLine
-    
-    'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
-    ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
-    m_XMLEngine.WriteTag "Core", vbNullString, True
-        m_XMLEngine.WriteTag "DisplayIDEWarning", "True"
-        m_XMLEngine.WriteTag "GenerateDebugLogs", "0"     'Default to "automatic" debug log behavior
-        m_XMLEngine.WriteTag "HasGitHubAccount", vbNullString
-        m_XMLEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
-        m_XMLEngine.WriteTag "LastPreferencesPage", "0"
-        m_XMLEngine.WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
-        m_XMLEngine.WriteTag "LastWindowState", "0"
-        m_XMLEngine.WriteTag "LastWindowLeft", "1"
-        m_XMLEngine.WriteTag "LastWindowTop", "1"
-        m_XMLEngine.WriteTag "LastWindowWidth", "1"
-        m_XMLEngine.WriteTag "LastWindowHeight", "1"
-        m_XMLEngine.WriteTag "SessionsSinceLastCrash", "-1"
-    m_XMLEngine.CloseTag "Core"
-    m_XMLEngine.WriteBlankLine
-    
-    'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
-    ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
-    m_XMLEngine.WriteTag "Dialogs", vbNullString, True
-    m_XMLEngine.CloseTag "Dialogs"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Interface", vbNullString, True
-        m_XMLEngine.WriteTag "MRUCaptionLength", "0"
-        m_XMLEngine.WriteTag "RecentFilesLimit", "10"
-        m_XMLEngine.WriteTag "WindowCaptionLength", "0"
-    m_XMLEngine.CloseTag "Interface"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Language", vbNullString, True
-        m_XMLEngine.WriteTag "CurrentLanguageFile", vbNullString
-    m_XMLEngine.CloseTag "Language"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Loading", vbNullString, True
-        m_XMLEngine.WriteTag "ExifAutoRotate", "True"
-        m_XMLEngine.WriteTag "MetadataEstimateJPEG", "True"
-        m_XMLEngine.WriteTag "MetadataExtractBinary", "False"
-        m_XMLEngine.WriteTag "MetadataExtractUnknown", "False"
-        m_XMLEngine.WriteTag "MetadataHideDuplicates", "True"
-        m_XMLEngine.WriteTag "ToneMappingPrompt", "True"
-    m_XMLEngine.CloseTag "Loading"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Paths", vbNullString, True
-        m_XMLEngine.WriteTag "Macro", m_MacroPath
-        m_XMLEngine.WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "Palettes", m_DataPath & "Palettes\"
-        m_XMLEngine.WriteTag "SaveImage", OS.SpecialFolder(CSIDL_MYPICTURES)
-        m_XMLEngine.WriteTag "Selections", m_SelectionPath
-        m_XMLEngine.WriteTag "TempFiles", OS.SystemTempPath()
-    m_XMLEngine.CloseTag "Paths"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Performance", vbNullString, True
-        m_XMLEngine.WriteTag "InterfaceDecorationPerformance", "1"
-        m_XMLEngine.WriteTag "ThumbnailPerformance", "1"
-        m_XMLEngine.WriteTag "ViewportRenderPerformance", "1"
-        m_XMLEngine.WriteTag "UndoCompression", "1"
-    m_XMLEngine.CloseTag "Performance"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Plugins", vbNullString, True
-        m_XMLEngine.WriteTag "ForceExifToolDisable", "False"
-        m_XMLEngine.WriteTag "ForceEZTwainDisable", "False"
-        m_XMLEngine.WriteTag "ForceFreeImageDisable", "False"
-        m_XMLEngine.WriteTag "ForceLittleCMSDisable", "False"
-        m_XMLEngine.WriteTag "ForceOptiPNGDisable", "False"
-        m_XMLEngine.WriteTag "ForcePngQuantDisable", "False"
-        m_XMLEngine.WriteTag "ForceZLibDisable", "False"
-        m_XMLEngine.WriteTag "LastPluginPreferencesPage", "0"
-    m_XMLEngine.CloseTag "Plugins"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Saving", vbNullString, True
-        m_XMLEngine.WriteTag "ConfirmClosingUnsaved", "True"
-        m_XMLEngine.WriteTag "OverwriteOrCopy", "0"
-        m_XMLEngine.WriteTag "SuggestedFormat", "0"
-        m_XMLEngine.WriteTag "MetadataListPD", "True"
-    m_XMLEngine.CloseTag "Saving"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Themes", vbNullString, True
-        m_XMLEngine.WriteTag "CurrentTheme", "Dark"
-        m_XMLEngine.WriteTag "CurrentAccent", "Blue"
-        m_XMLEngine.WriteTag "HasSeenThemeDialog", "False"
-        m_XMLEngine.WriteTag "MonochromeIcons", "False"
-    m_XMLEngine.CloseTag "Themes"
-    m_XMLEngine.WriteBlankLine
-    
-    'Toolbox settings are automatically filled-in by the Toolboxes module
-    m_XMLEngine.WriteTag "Toolbox", vbNullString, True
-    m_XMLEngine.CloseTag "Toolbox"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Tools", vbNullString, True
-        m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
-        m_XMLEngine.WriteTag "SelectionRenderMode", "0"
-        m_XMLEngine.WriteTag "SelectionHighlightColor", "#FF3A48"
-        m_XMLEngine.WriteTag "HighResMouseInput", "True"
-    m_XMLEngine.CloseTag "Tools"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Transparency", vbNullString, True
-        m_XMLEngine.WriteTag "AlphaCheckMode", "0"
-        m_XMLEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
-        m_XMLEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
-        m_XMLEngine.WriteTag "AlphaCheckSize", "1"
-    m_XMLEngine.CloseTag "Transparency"
-    m_XMLEngine.WriteBlankLine
-    
-    m_XMLEngine.WriteTag "Updates", vbNullString, True
-        m_XMLEngine.WriteTag "LastUpdateCheck", vbNullString
-        m_XMLEngine.WriteTag "UpdateFrequency", PDUF_WEEKLY
+    With m_XMLEngine
         
-        'The current update track is set according to the hard-coded build ID of this .exe instance.
-        Select Case PD_BUILD_QUALITY
+        .PrepareNewXML "User Preferences"
+        .WriteBlankLine
+    
+        'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
+        .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+        .WriteBlankLine
+    
+        .WriteTag "BatchProcess", vbNullString, True
+            .WriteTag "InputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
+            .WriteTag "ListFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
+            .WriteTag "OutputFolder", OS.SpecialFolder(CSIDL_MYPICTURES)
+        .CloseTag "BatchProcess"
+        .WriteBlankLine
+    
+        'Write out the "color management" block of preferences:
+        .WriteTag "ColorManagement", vbNullString, True
+            .WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
+            .WriteTag "DisplayBPC", "True"
+            .WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
+        .CloseTag "ColorManagement"
+        .WriteBlankLine
         
-            'Technically, I would like to default to nightly updates for alpha versions.  However, I sometimes refer
-            ' casual users to the nightly builds to address specific bugs they've experienced.  They likely don't
-            ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
-            ' can always opt for a faster update frequency.
-            Case PD_PRE_ALPHA, PD_ALPHA
-                m_XMLEngine.WriteTag "UpdateTrack", PDUT_BETA
-                
-            Case PD_BETA
-                m_XMLEngine.WriteTag "UpdateTrack", PDUT_BETA
-                
-            Case PD_PRODUCTION
-                m_XMLEngine.WriteTag "UpdateTrack", PDUT_STABLE
+        'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
+        ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
+        .WriteTag "Core", vbNullString, True
+            .WriteTag "DisplayIDEWarning", "True"
+            .WriteTag "GenerateDebugLogs", "0"     'Default to "automatic" debug log behavior
+            .WriteTag "HasGitHubAccount", vbNullString
+            .WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
+            .WriteTag "LastPreferencesPage", "0"
+            .WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
+            .WriteTag "LastWindowState", "0"
+            .WriteTag "LastWindowLeft", "1"
+            .WriteTag "LastWindowTop", "1"
+            .WriteTag "LastWindowWidth", "1"
+            .WriteTag "LastWindowHeight", "1"
+            .WriteTag "SessionsSinceLastCrash", "-1"
+        .CloseTag "Core"
+        .WriteBlankLine
         
-        End Select
+        'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
+        ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
+        .WriteTag "Dialogs", vbNullString, True
+        .CloseTag "Dialogs"
+        .WriteBlankLine
         
-        m_XMLEngine.WriteTag "UpdateNotifications", True
+        .WriteTag "Interface", vbNullString, True
+            .WriteTag "MRUCaptionLength", "0"
+            .WriteTag "RecentFilesLimit", "10"
+            .WriteTag "WindowCaptionLength", "0"
+        .CloseTag "Interface"
+        .WriteBlankLine
         
-    m_XMLEngine.CloseTag "Updates"
-    m_XMLEngine.WriteBlankLine
+        .WriteTag "Language", vbNullString, True
+            .WriteTag "CurrentLanguageFile", vbNullString
+        .CloseTag "Language"
+        .WriteBlankLine
+        
+        .WriteTag "Loading", vbNullString, True
+            .WriteTag "ExifAutoRotate", "True"
+            .WriteTag "MetadataEstimateJPEG", "True"
+            .WriteTag "MetadataExtractBinary", "False"
+            .WriteTag "MetadataExtractUnknown", "False"
+            .WriteTag "MetadataHideDuplicates", "True"
+            .WriteTag "ToneMappingPrompt", "True"
+        .CloseTag "Loading"
+        .WriteBlankLine
+        
+        .WriteTag "Paths", vbNullString, True
+            .WriteTag "Macro", m_MacroPath
+            .WriteTag "OpenImage", OS.SpecialFolder(CSIDL_MYPICTURES)
+            .WriteTag "Palettes", m_DataPath & "Palettes\"
+            .WriteTag "SaveImage", OS.SpecialFolder(CSIDL_MYPICTURES)
+            .WriteTag "Selections", m_SelectionPath
+            .WriteTag "TempFiles", OS.SystemTempPath()
+        .CloseTag "Paths"
+        .WriteBlankLine
+        
+        .WriteTag "Performance", vbNullString, True
+            .WriteTag "InterfaceDecorationPerformance", "1"
+            .WriteTag "ThumbnailPerformance", "1"
+            .WriteTag "ViewportRenderPerformance", "1"
+            .WriteTag "UndoCompression", "1"
+        .CloseTag "Performance"
+        .WriteBlankLine
+        
+        .WriteTag "Plugins", vbNullString, True
+            .WriteTag "ForceExifToolDisable", "False"
+            .WriteTag "ForceEZTwainDisable", "False"
+            .WriteTag "ForceFreeImageDisable", "False"
+            .WriteTag "ForceLittleCMSDisable", "False"
+            .WriteTag "ForceOptiPNGDisable", "False"
+            .WriteTag "ForcePngQuantDisable", "False"
+            .WriteTag "ForceZLibDisable", "False"
+            .WriteTag "LastPluginPreferencesPage", "0"
+        .CloseTag "Plugins"
+        .WriteBlankLine
+        
+        .WriteTag "Saving", vbNullString, True
+            .WriteTag "ConfirmClosingUnsaved", "True"
+            .WriteTag "OverwriteOrCopy", "0"
+            .WriteTag "SuggestedFormat", "0"
+            .WriteTag "MetadataListPD", "True"
+        .CloseTag "Saving"
+        .WriteBlankLine
+        
+        .WriteTag "Themes", vbNullString, True
+            .WriteTag "CurrentTheme", "Dark"
+            .WriteTag "CurrentAccent", "Blue"
+            .WriteTag "HasSeenThemeDialog", "False"
+            .WriteTag "MonochromeIcons", "False"
+        .CloseTag "Themes"
+        .WriteBlankLine
+        
+        'Toolbox settings are automatically filled-in by the Toolboxes module
+        .WriteTag "Toolbox", vbNullString, True
+        .CloseTag "Toolbox"
+        .WriteBlankLine
+        
+        .WriteTag "Tools", vbNullString, True
+            .WriteTag "ClearSelectionAfterCrop", "True"
+            .WriteTag "SelectionRenderMode", "0"
+            .WriteTag "SelectionHighlightColor", "#FF3A48"
+            .WriteTag "HighResMouseInput", "True"
+        .CloseTag "Tools"
+        .WriteBlankLine
+        
+        .WriteTag "Transparency", vbNullString, True
+            .WriteTag "AlphaCheckMode", "0"
+            .WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
+            .WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
+            .WriteTag "AlphaCheckSize", "1"
+        .CloseTag "Transparency"
+        .WriteBlankLine
+        
+        .WriteTag "Updates", vbNullString, True
+            .WriteTag "LastUpdateCheck", vbNullString
+            .WriteTag "UpdateFrequency", PDUF_WEEKLY
+            
+            'The current update track is set according to the hard-coded build ID of this .exe instance.
+            Select Case PD_BUILD_QUALITY
+            
+                'Technically, I would like to default to nightly updates for alpha versions.  However, I sometimes refer
+                ' casual users to the nightly builds to address specific bugs they've experienced.  They likely don't
+                ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
+                ' can always opt for a faster update frequency.
+                Case PD_PRE_ALPHA, PD_ALPHA
+                    .WriteTag "UpdateTrack", PDUT_BETA
+                    
+                Case PD_BETA
+                    .WriteTag "UpdateTrack", PDUT_BETA
+                    
+                Case PD_PRODUCTION
+                    .WriteTag "UpdateTrack", PDUT_STABLE
+            
+            End Select
+            
+            .WriteTag "UpdateNotifications", True
+            
+        .CloseTag "Updates"
+        .WriteBlankLine
+        
+    End With
     
     'With all tags successfully written, forcibly write the result out to file (so we have a "clean" file copy that
     ' mirrors our current settings, just like a normal session).

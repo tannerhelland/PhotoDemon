@@ -232,7 +232,7 @@ End Sub
 Private Sub UpdateOtherButtons()
 
     'If the option button is set to TRUE, turn off all other option buttons on a form
-    If m_Value Then
+    If m_Value And PDMain.IsProgramRunning() Then
 
         'Enumerate through each control on the form; if it's another option button whose value is TRUE, set it to FALSE
         Dim eControl As Object
@@ -339,7 +339,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRADIOBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDRadioButton", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
                 
 End Sub
 
@@ -364,7 +364,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then If Not pdMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If Not PDMain.IsProgramRunning() Then If Not PDMain.IsProgramRunning() Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -466,7 +466,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Populate colors from the master theme object
         Dim radioColorBorder As Long, radioColorFill As Long, txtColor As Long
@@ -528,8 +528,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

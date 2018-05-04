@@ -61,9 +61,9 @@ End Enum
 ' and Windows doesn't return a valid profile, we will automatically switch to unmanaged mode.)
 Private m_DisplayCMMPolicy As DISPLAY_COLOR_MANAGEMENT
 
-'Current display render intent.  As of 7.0, the user can change this from Perceptual (although it's really not
-' recommended unless soft-proofing is active).
-Private m_DisplayRenderIntent As LCMS_RENDERING_INTENT
+'Current display render intent and BPC.  As of 7.0, the user can change these settings (although it doesn't make a
+' lot of sense to do so, unless you're trying to do a poor-man's soft-proofing).
+Private m_DisplayRenderIntent As LCMS_RENDERING_INTENT, m_DisplayBPC As Boolean
 
 'When a pdImage object is created, we note the image's current color-management state.  Because the user can change
 ' the default PD color-management approach mid-session, different pdImage objects may be managed using different
@@ -150,6 +150,14 @@ Private m_PreAlphaManagementRequired As Boolean
 'To improve cache access, we generate unique hashes for each loaded profile.
 Private m_Hasher As pdCrypto
 
+Public Function GetDisplayBPC() As Boolean
+    GetDisplayBPC = UserPrefs.GetPref_Boolean("ColorManagement", "DisplayBPC", True)
+End Function
+
+Public Sub SetDisplayBPC(ByVal newValue As Boolean)
+    UserPrefs.SetPref_Boolean "ColorManagement", "DisplayBPC", newValue
+End Sub
+
 Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMENT
     GetDisplayColorManagementPreference = UserPrefs.GetPref_Long("ColorManagement", "DisplayCMMode", DCM_NoManagement)
     
@@ -226,8 +234,9 @@ Public Sub CacheDisplayCMMData()
     'Next, load one or more display profiles based on the user's current color management settings.
     ' (In some cases, we'll retrieve profile paths from Windows itself, while in others, we'll retrieve them
     '  from internal PD settings the user has configured.)
-    m_DisplayCMMPolicy = GetDisplayColorManagementPreference()
-    m_DisplayRenderIntent = GetDisplayRenderingIntentPref()
+    m_DisplayCMMPolicy = ColorManagement.GetDisplayColorManagementPreference()
+    m_DisplayRenderIntent = ColorManagement.GetDisplayRenderingIntentPref()
+    m_DisplayBPC = ColorManagement.GetDisplayBPC()
     m_SystemProfileIndex = m_sRGBIndex
     
     'Start with the case where the user just wants us to use the default Windows system ICC profile.
@@ -740,7 +749,7 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
     dstColor = srcColor
     
     'Note that this function does nothing if the display is not currently color managed
-    If (m_DisplayCMMPolicy <> DCM_NoManagement) And pdMain.IsProgramRunning() Then
+    If (m_DisplayCMMPolicy <> DCM_NoManagement) And PDMain.IsProgramRunning() Then
         
         ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, Nothing
         
@@ -811,12 +820,15 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
             use32bppPath = (srcDIB.GetDIBColorDepth = 32)
         End If
         
+        Dim trnsFlags As LCMS_TRANSFORM_FLAGS
+        If m_DisplayBPC Then trnsFlags = cmsFLAGS_BLACKPOINTCOMPENSATION
+        
         'Verify the 32-bpp conversion handle
         If use32bppPath Then
         
             If (.ThisWSToDisplayTransform32 = 0) Or (.IndexOfDisplayTransform <> m_CurrentDisplayIndex) Then
                 If (.ThisWSToDisplayTransform32 <> 0) Then LittleCMS.LCMS_DeleteTransform .ThisWSToDisplayTransform32
-                .ThisWSToDisplayTransform32 = LittleCMS.LCMS_CreateTwoProfileTransform(.LcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).LcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
+                .ThisWSToDisplayTransform32 = LittleCMS.LCMS_CreateTwoProfileTransform(.LcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).LcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, trnsFlags Or cmsFLAGS_COPY_ALPHA)
                 .IndexOfDisplayTransform = m_CurrentDisplayIndex
             End If
         
@@ -824,7 +836,7 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
         Else
             If (.ThisWSToDisplayTransform24 = 0) Or (.IndexOfDisplayTransform <> m_CurrentDisplayIndex) Then
                 If (.ThisWSToDisplayTransform24 <> 0) Then LittleCMS.LCMS_DeleteTransform .ThisWSToDisplayTransform24
-                .ThisWSToDisplayTransform24 = LittleCMS.LCMS_CreateTwoProfileTransform(.LcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).LcmsProfileHandle, TYPE_BGR_8, TYPE_BGR_8, m_DisplayRenderIntent, 0&)
+                .ThisWSToDisplayTransform24 = LittleCMS.LCMS_CreateTwoProfileTransform(.LcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).LcmsProfileHandle, TYPE_BGR_8, TYPE_BGR_8, m_DisplayRenderIntent, trnsFlags)
                 .IndexOfDisplayTransform = m_CurrentDisplayIndex
             End If
         End If

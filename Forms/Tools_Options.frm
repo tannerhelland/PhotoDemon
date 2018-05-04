@@ -405,6 +405,17 @@ Begin VB.Form FormOptions
       Width           =   8295
       _ExtentX        =   14631
       _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
+         Index           =   0
+         Left            =   240
+         TabIndex        =   45
+         Top             =   4080
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   556
+         Caption         =   "use black point compensation"
+      End
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
          Left            =   180
@@ -1153,6 +1164,7 @@ Private Sub cmdBarMini_OKClick()
                 ColorManagement.SetDisplayColorManagementPreference DCM_CustomProfile
             End If
             
+            ColorManagement.SetDisplayBPC CBool(chkColorManagement(0).Value)
             ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
             
             'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
@@ -1500,13 +1512,14 @@ Private Sub LoadAllPreferences()
             
         'Set the various buttons and dropdown according to the user's current display profile preference
         optColorManagement(ColorManagement.GetDisplayColorManagementPreference()).Value = True
+        If ColorManagement.GetDisplayBPC() Then chkColorManagement(0).Value = vbChecked Else chkColorManagement(0).Value = vbUnchecked
         Interface.PopulateRenderingIntentDropDown cboDisplayRenderIntent, ColorManagement.GetDisplayRenderingIntentPref()
         
         'Load a list of all available monitors
         cboMonitors.Clear
         
-        Dim PrimaryMonitor As String, secondaryMonitor As String
-        PrimaryMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
+        Dim mainMonitor As String, secondaryMonitor As String
+        mainMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
         secondaryMonitor = g_Language.TranslateMessage("Secondary monitor") & ": "
         
         Dim primaryIndex As Long, monitorEntry As String
@@ -1519,7 +1532,7 @@ Private Sub LoadAllPreferences()
                 
                 'Explicitly label the primary monitor
                 If g_Displays.Displays(i).IsPrimary Then
-                    monitorEntry = PrimaryMonitor
+                    monitorEntry = mainMonitor
                     primaryIndex = i
                 Else
                     monitorEntry = secondaryMonitor
@@ -1557,6 +1570,7 @@ Private Sub LoadAllPreferences()
         cmdColorProfilePath.AssignTooltip "Click this button to bring up a ""browse for color profile"" dialog."
         
         cboDisplayRenderIntent.AssignTooltip "If you do not know what this setting controls, set it to ""Perceptual"".  Perceptual rendering intent is the best choice for most users."
+        chkColorManagement(0).AssignTooltip "BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON."
         
     'END Color and Transparency preferences
     
@@ -1709,7 +1723,7 @@ Private Sub Form_Load()
     Dim i As Long
     
     'Populate all controls with the corresponding values from the preferences file
-    If pdMain.IsProgramRunning() Then LoadAllPreferences
+    If PDMain.IsProgramRunning() Then LoadAllPreferences
     
     'Prep the category button strip
     With btsvCategory
