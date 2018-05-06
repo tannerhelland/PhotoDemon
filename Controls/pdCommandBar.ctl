@@ -1145,7 +1145,7 @@ Private Function LoadPreset(Optional ByVal srcPresetName As String = "last-used 
                         'Check boxes use a long (technically a boolean, as PD's custom check box doesn't support a gray state, but for
                         ' backward compatibility with VB check box constants, we cast to a Long)
                         Case "pdCheckBox"
-                            eControl.Value = CLng(controlValue)
+                            eControl.Value = CBool(controlValue)
                         
                         'Option buttons use booleans
                         Case "pdRadioButton"

@@ -256,11 +256,8 @@ Private Function ReadXMLSettings() As Boolean
                 'Our custom controls all have a .Value property
                 Case "pdSlider", "pdSpinner"
                     eControl.Value = CDblCustom(controlValue)
-                    
-                Case "pdCheckBox"
-                    eControl.Value = CLng(controlValue)
                 
-                Case "pdRadioButton", "pdTitle", "pdButtonToolbox"
+                Case "pdCheckBox", "pdRadioButton", "pdTitle", "pdButtonToolbox"
                     eControl.Value = CBool(controlValue)
                     
                 'Lists need to be checked to make sure we have enough entries to propery assign this value
