@@ -338,7 +338,7 @@ Friend Function Run(ByVal childCmdLine As String, Optional ByVal childCmdLinePar
         m_ChildProcessActive = True
         
         'Start listening for return data
-        If pdMain.IsProgramRunning Then m_Async.StartTimer
+        If PDMain.IsProgramRunning Then m_Async.StartTimer
         
         Run = True
         
@@ -447,8 +447,8 @@ Private Function ReadSpecificPipe(ByRef srcPipeHandle As Long, ByRef dstBuffer A
             
         'Pipe peek failed
         Else
-            InternalError "PeekNamedPipe (inside .ReadData()) failed with API error #" & failState
             failState = Err.LastDllError
+            InternalError "PeekNamedPipe (inside .ReadData()) failed with API error #" & failState
             ReadSpecificPipe = -2
             
         'End pipe peek
