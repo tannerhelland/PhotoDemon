@@ -21,61 +21,56 @@ Attribute VB_Name = "EffectPrep"
 Option Explicit
 
 'Any time a tool dialog is in use, the image to be operated on will be stored IN THIS LAYER.
-'- In preview mode, workingDIB will contain a small, preview-size version of the image.
-'- In non-preview mode, workingDIB will contain a copy of the full image.  We do not allow various effects and tools to operate
-'   on the original image data, in case they cancel a function mid-way (we must be able to restore the original image).
-'- If a selection is active, workingDIB will contain the selected part of the image, converted to 32bpp mode as necessary
-'   (e.g. if feathering or antialiasing is enabled on the selection).
+'- In preview mode, workingDIB contains a small, preview-size version of the image.
+'- In non-preview mode, workingDIB contains a full-sized copy of the active layer.  PhotoDemon doesn't allow effects
+'   and tools to operate on original image data; this is why a user can cancel functions mid-process.
+'- If a selection is active, workingDIB contains only the selected portion of the image; unselected regions will be
+'   auto-masked with transparency, so individual functions don't need to concern themselves with those details.
 Public workingDIB As pdDIB
 
-'When the workingDIB is first created, we store a backup of it in this DIB.  This backup is used to rebuild the full image
-' while accounting for any selected areas; we merge the selected areas onto this original copy, then copy the composited result
-' back onto the image.  This is easier than attempting to merge the area onto the main DIB while doing all our extra
-' selection processing.
+'When a workingDIB instance is first created, we store a local backup of it.  The backup is used to rebuild the
+' full image while accounting for selected regions; we can simply merge selected pixels onto the original copy,
+' then copy the composited result back onto the image.  This is easier (anb faster) than attempting to merge the
+' area onto the main DIB while doing extra selection processing.
 Private workingDIBBackup As pdDIB
 
-'prepImageData is the function all PhotoDemon tools call when they need a copy of the image to operate on.  That function fills a
-' variable of this type (FilterInfo) with everything a filter or effect could possibly want to know about the current DIB.
-' Note that filters are free to ignore this data, but it is ALWAYS populated and made available.
+'EffectPrep.PrepImageData() is what PhotoDemon adjustments and effects call to request a copy of the current image.
+' That function fills a variable of this type (FilterInfo) with everything the effect could possibly want to know
+' about the active DIB.
 Public Type FilterInfo
     
-    'Coordinates of the top-left location the filter is supposed to operate on
+    'Lowest coordinate the filter is allowed to *write*.  At present, this is (almost?) always (0, 0).
     Left As Long
     Top As Long
     
-    'Note that Right and Bottom could be inferred from Left + Width and Top + Height, but we
-    ' explicitly state them to minimize effort on the calling routine's part
+    'Highest coordinate the filter is allowed to *write*.  Changes past this position will be ignored.
     Right As Long
     Bottom As Long
     
-    'Dimensions of the area the filter is supposed to operate on.  (Relevant if a selection is active.)
+    'Dimensions of the allowable *write* rectangle.  Provided for convenience, only - this value will
+    ' always match the Left/Top/Right/Bottom coordinates provided above.
     Width As Long
     Height As Long
     
-    'The lowest coordinate the filter is allowed to check.  This is almost always the top-left of the image (0, 0).
+    'Lowest coordinate the filter is allowed to *read*.  At present, this is always (0, 0).
     minX As Long
     minY As Long
     
-    'The highest coordinate the filter is allowed to check.  This is almost always (width, height).
+    'Highest coordinate the filter is allowed to *read*.  At present, this is always (width, height).
     maxX As Long
     maxY As Long
     
-    'The colorDepth of the current DIB, specified as BITS per pixel; this will always be 24 or 32
+    'The colorDepth of the current DIB, specified as BITS per pixel; at present, this is always 32.
     colorDepth As Long
     
-    'BytesPerPixel is simply colorDepth / 8.  It is provided for convenience.
+    'BytesPerPixel is simply colorDepth / 8.  It is provided for convenience, to help callers calculate stride.
     BytesPerPixel As Long
     
-    'Filters shouldn't have to worry about where the DIB is physically located, but when it comes
-    ' time to set the image databack in place, knowing the layer's location on the primary image
-    ' may be useful (as when previewing, for example)
-    dibX As Long
-    dibY As Long
-    
-    'When in preview mode, the on-screen image will typically be represented at a smaller-than-actual size.
-    ' If an effect or filter operates on a radius (e.g. "blur radius 20"), that radius value has to be shrunk
-    ' when working on the preview - otherwise, the preview effect will look much stronger than it actually is!
-    ' This value can be multiplied by a radius or other value but ONLY WHEN PREVIEW MODE IS ACTIVE.
+    'When in preview mode, the on-screen image is typically shrunk to some smaller-than-actual size.  If an
+    ' effect or filter operates on a radius (e.g. "blur radius 20"), the previewed radius value must be shrunk
+    ' - otherwise, the preview effect will look much stronger than it actually is!  This value is the ratio
+    ' between the original image size and it's current size; it can be multiplied by a radius or other value but
+    ' ONLY WHEN PREVIEW MODE IS ACTIVE.  Ignore it during non-preview events.
     previewModifier As Double
     
 End Type
@@ -83,21 +78,21 @@ End Type
 'Calling functions can use this variable to access all FilterInfo for the current workingDIB copy.
 Public curDIBValues As FilterInfo
 
-'In March 2015, I implemented unique preview identifiers.  This gives us a way to detect if a preview action is operating on the same image
-' as the previous preview action.  Since a single tool dialog may generate thousands of previews (if the user is moving lots of sliders around),
-' we can cache the preview image once, then simply copy it.  This is much faster than constantly regenerating the preview, especially if the
-' source image is large or a complex selection is active.
-Private m_PreviousPreviewID As Double
-
-Private m_PreviousPreviewCopy As pdDIB
+'In March 2015, I implemented unique preview identifiers.  This gives PD a way to detect when preview operations
+' target the same image (or image region) as a previous preview action.  Because a single tool dialog may generate
+' thousands of previews (if the user is moving lots of sliders around), PD will attempt to cache a valid preview
+' image once, then simply copy it on subsequent calls.  This is much faster than constantly regenerating the preview,
+' especially if the source image is large or a selection is active.
+Private m_PreviousPreviewID As Double, m_PreviousPreviewCopy As pdDIB, m_PreviewWasRegenerated As Boolean
+Private m_SelectionMaskBackup As pdDIB
 
 'When a preview control is unloaded, it can optionally call this to forcibly reset the preview engine's tracking ID.
-' This will force a full refresh on the next preview (generally advised, in case the user switches between images).
+' This forces a full refresh on the next preview (which is always advised, in case the user switches between images).
 Public Sub ResetPreviewIDs()
     m_PreviousPreviewID = 0#
 End Sub
 
-'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
+'This function can be used to populate a SafeArray2D structure against any arbitrary DIB.
 Public Sub PrepSafeArray(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
     'Populate a relevant SafeArray variable for the supplied DIB
@@ -113,9 +108,8 @@ Public Sub PrepSafeArray(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
 End Sub
 
-'This function can be used to populate a valid SAFEARRAY2D structure against any DIB, but instead of using bytes, each pixel
-' is represented by a full LONG.
-' DO NOT USE THIS ON 24-BPP DIBS, OBVIOUSLY!
+'For performance reasons, it is sometimes preferable to access DIB data in 32-bit increments.  Use this function
+' to wrap a Long-type array around a DIB.
 Public Sub PrepSafeArray_Long(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
     'Populate a relevant SafeArray variable for the supplied DIB
@@ -131,9 +125,10 @@ Public Sub PrepSafeArray_Long(ByRef srcSA As SafeArray2D, ByRef srcDIB As pdDIB)
     
 End Sub
 
-'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
-' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
-' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
+'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData,
+' but to apply it against something other than the current image's active layer.  This function is roughly
+' equivalent to prepImageData, below, but stripped down and specifically designed for PREVIEWS ONLY.
+' A source DIB must be explicitly supplied.
 Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
     'Before doing anything else, see if we can simply re-use our previous preview image
@@ -246,8 +241,6 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SafeArray2D, ByRef srcDIB As p
         .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
         .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
-        .dibX = 0
-        .dibY = 0
         If previewTarget.ViewportFitFullImage Then
             If (srcDIB.GetDIBWidth <> 0) Then
                 .previewModifier = workingDIB.GetDIBWidth / srcDIB.GetDIBWidth
@@ -282,56 +275,62 @@ Public Sub FinalizeNonstandardPreview(ByRef previewTarget As pdFxPreviewCtl, Opt
     
 End Sub
 
-'PrepImageData's job is to copy the relevant DIB (or part of a DIB, if a selection is active) into a temporary object,
-' which individual filters and effects can then operate on.  prepImageData() also populates a relevant SafeArray object and
-' a host of other variables, which filters and effects can copy locally to ensure the fastest possible runtime speed.
+'PrepImageData is responsible for copying the relevant DIB (or portion of a DIB, if a selection is active)
+' into a temporary DIB object, one that external filters and effects can freely modify.  This function also
+' populates a relevant SafeArray struct and other variables related to image processing; filters and effects
+' can use these values to figure out how to handle the associated preview DIB.
 '
-'In one of the better triumphs of PD's design, this function is used for both previews and actual filter applications.
-' The isPreview parameter is used to notify the function of the intended purpose of a given call.  If isPreview is TRUE,
-' the image will automatically be scaled to the size of the preview area, which allows the tool dialog to render much faster.
-' Note that for this to work, an pdFxPreview control must be passed to the function.
+'In one of the better triumphs of PD's design, this function is shared between previews and final effect appliations.
+' The isPreview parameter is used to notify the function of the intended purpose of a given request.  When isPreview
+' is TRUE, the source image is automatically scaled to the size of the preview area; this means many fewer pixels
+' to process, which in turn allows the tool dialog to render much faster.  (Importantly, for this to work, a valid
+' pdFxPreview reference must be passed to the function.)
 '
-'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
-' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
+'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is
+' the current DIB's width, but some routines run vertically and the progress bar maximum will need to be changed
+' to match.
 Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     g_cancelCurrentAction = False
     
-    'The new Layers design sometimes requires us to apply actions outside of a layer's actual boundary.
-    ' (For example: a selected area that extends outside the boundary of the current image.)  When this
-    ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
-    ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
+    Dim selToolActive As Boolean
+    selToolActive = pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn
+    
+    'When selections are active, we may need to process pixels outside the active layer's boundaries.
+    ' This requires special handling to render a correct image; basically, we must null-pad the current layer's
+    ' pixel data to the size of its parent image.  When the filter completes, we'll extract the relevant portion
+    ' of the effect and merge it automatically.
     Dim tmpLayer As pdLayer, selBounds As RectF
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+    If selToolActive Then
         Set tmpLayer = New pdLayer
         selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
     End If
             
-    'If this effect is just a preview, we will need to calculate a new width and height relative to the size
-    ' of the target preview window.
+    'If this effect is just a preview, we need to calculate a new width and height relative to the size of the
+    ' target preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
     Dim newWidth As Long, newHeight As Long
     
-    'Handle the (much-easier) "not a preview" case first - basically, copy the current DIB without modification
+    '"This effect is not a preview"
     If (Not isPreview) Then
         
-        'Prepare our temporary DIB
         If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
+        m_PreviewWasRegenerated = True
         
-        'Check for an active selection; if one is present, use that instead of the layer DIB.
+        'Check for an active selection.  If one exists, we need to use it instead of the full layer DIB.
         ' (Note that no special processing is applied to the selected area - a full rectangle is passed to the
         ' source function, with no accounting for non-rectangular boundaries or feathering.  Those features are
         ' handled *after* the effect has already been processed.)
-        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+        If selToolActive Then
             
             'Before proceeding further, null-pad the layer in question.  This allows selections to work, even if
             ' they extend beyond the layer's borders.
             tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
             tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
-            'Crop out the relevant portion of the layer from the selection boundary.
+            'Crop the relevant portion of the layer out, using the selection boundary as a guide.
             workingDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
             GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveLayer.layerDIB.GetAlphaPremultiplication
@@ -340,35 +339,32 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             workingDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB()
         End If
         
-    'This is an effect preview, meaning we have to prepare a custom image for operation.  Basically, we need to prepare
-    ' a copy of the active layer that matches the requested dimensions of the preview area (which vary from effect to
-    ' effect), while also accounting for the boundaries defined by the current selection, if any.
+    'This is an effect preview, meaning we need to prepare a custom image for operation.  Basically, we need to create
+    ' a copy of the active layer that matches the dimensions of the preview window, while also accounting for things
+    ' like boundary changes defined by an active selection.
     Else
         
         'Before doing anything else, see if we can simply re-use our previous preview image
         If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
-        
-            'We know workingDIB and m_PreviousPreviewCopy are NOT nothing, thanks to the check above, so no DIB instantation is required.
-            
-            'Simply copy m_PreviousPreviewCopy into workingDIB
             workingDIB.CreateFromExistingDIB m_PreviousPreviewCopy
+            m_PreviewWasRegenerated = False
             
-        'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated, so we try
-        ' to avoid it whenever possible.)
+        'The preview target has changed, so we need regenerate our cached preview image from scratch.
+        ' (This is time-consuming and complicated, so try to avoid it whenever possible.)
         Else
         
-            'Prepare our temporary DIB
             If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
+            m_PreviewWasRegenerated = True
             
             'Start by calculating the source area for the preview.  This changes based on several criteria:
             ' 1) Is the preview area set to "fit full image" or "100% zoom"?
-            ' 2) Is a selection is active?  If so, we only want to preview the selected area.  (I may change this behavior in the future,
-            '     so the user can actually see the fully composited result of any changes.)
+            ' 2) Is a selection active?  If so, we only want to preview the selected area.  (I may change this
+            '     behavior in the future, so the user can actually see the fully composited result of any changes.)
             
             'The full image is being previewed.  Retrieve the entire thing.
             If previewTarget.ViewportFitFullImage Then
             
-                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+                If selToolActive Then
                     srcWidth = selBounds.Width
                     srcHeight = selBounds.Height
                 Else
@@ -384,7 +380,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 
                 'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
                 ' to the selection boundaries.
-                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+                If selToolActive Then
                 
                     If (selBounds.Width < srcWidth) Then
                         srcWidth = selBounds.Width
@@ -406,13 +402,14 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                 
             End If
             
-            'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
-            ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
+            'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.
+            ' The only exception to this is when the image is actually smaller than the preview area - in that case
+            ' we just use the whole image.
             dstWidth = previewTarget.GetPreviewWidth
             dstHeight = previewTarget.GetPreviewHeight
                     
             If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
-                ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+                PDMath.ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
             Else
                 newWidth = srcWidth
                 newHeight = srcHeight
@@ -421,12 +418,12 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
             Dim hOffset As Long, vOffset As Long
             
-            'Next, we will create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
+            'Next, create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
             ' actions are applied to this DIB; if the user does not cancel the action, that DIB will be copied over the
             ' primary image.  If they cancel, we'll simply discard the temporary DIB.
             
             'Just like with a full image, if a selection is active, we only want to process the selected area.
-            If pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn Then
+            If selToolActive Then
             
                 'Start by chopping out the full rectangular bounding area of the selection, and placing it inside a temporary object.
                 ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
@@ -521,14 +518,14 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     End If
     
     'Premultiplied alpha is typically removed prior to processing; this allows various tools to return proper results.
-    ' Note that individual tools can override this behavior - this is helpful in certain cases, e.g. area filters like
-    ' blur, where *not* premultiplying alpha causes the black RGB values from transparent areas to be "picked up"
-    ' by the area handling.
+    ' Note that individual tools can override this behavior - this is helpful in certain cases, e.g. area filters
+    ' like blur, where *not* premultiplying alpha causes black RGB values from transparent areas to be "picked up" by
+    ' other areas.
     If (workingDIB.GetDIBColorDepth = 32) And (workingDIB.GetAlphaPremultiplication <> doNotUnPremultiplyAlpha) Then workingDIB.SetAlphaPremultiplication doNotUnPremultiplyAlpha
     
     'If a selection is active, make a backup of the selected area.  (We do this regardless of whether the current
     ' action is a preview or not.)
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+    If selToolActive Then
         If (workingDIBBackup Is Nothing) Then Set workingDIBBackup = New pdDIB
         workingDIBBackup.CreateFromExistingDIB workingDIB
     End If
@@ -547,8 +544,6 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
         .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
         .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
-        .dibX = 0
-        .dibY = 0
         If isPreview Then
             If previewTarget.ViewportFitFullImage Then
                 .previewModifier = workingDIB.GetDIBWidth / pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
@@ -565,7 +560,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
     If (Not isPreview) And (Not doNotTouchProgressBar) Then
-        If newProgBarMax = -1 Then
+        If (newProgBarMax = -1) Then
             SetProgBarMax (curDIBValues.Left + curDIBValues.Width)
         Else
             SetProgBarMax newProgBarMax
@@ -574,19 +569,19 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     
     'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
     'Debug.Print "prepImageData worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.GetDIBStride & ")" & ", " & workingDIB.GetDIBPointer
-
+    
 End Sub
 
-'The counterpart to prepImageData, finalizeImageData copies the working DIB back into the source image, then renders
-' everything to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData
-' will rely on the preview-related values calculated by prepImageData(), as it's presumed that preImageData will ALWAYS
-' be called before this routine.
+'The counterpart to PrepImageData, FinalizeImageData copies the working DIB back into the source image, then renders
+' everything to the screen.  Like PrepImageData(), a preview target can also be named; if it is, FinalizeImageData
+' will rely on all preview-related values calculated by PrepImageData() because these two functions are always
+' designed to be called in-order as a pair.
 '
-'Unlike prepImageData, this function has to do quite a bit of processing when selections are active.  The selection
-' mask must be scanned for each pixel, and the results blended with the original image as appropriate.  For 32bpp images
-' this is especially ugly.  (This is the price we pay for full selection feathering support!)
+'Note that unlike PrepImageData, this function has to do a lot of extra processing when selections are active.
+' The selection mask must be scanned for each pixel, and the results blended with the original image as appropriate.
+' (This is the price we pay for full selection feathering support!)
 Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
-
+    
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
     If (Not isPreview) And g_cancelCurrentAction Then
@@ -597,7 +592,10 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+    Dim selToolActive As Boolean
+    selToolActive = (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn)
+    
+    If selToolActive Then
         
         'Retrieve the current selection boundaries
         Dim selBounds As RectF
@@ -607,28 +605,38 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         ' (Note that "relevant size" differs between effect previews, which tend to be much smaller, and the final
         '  application of the effect to the current layer.)
         Dim selMaskCopy As pdDIB
-        Set selMaskCopy = New pdDIB
         
         'If this is a preview, resize the selection mask to match the preview size
         If isPreview Then
             
-            'TODO: cache the selection mask copy at module-level, and reuse it during previews (as it may be expensive
-            ' to recalculate on large images)
-            selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
+            If m_PreviewWasRegenerated Or (m_SelectionMaskBackup Is Nothing) Then
             
-            'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
-            If previewTarget.ViewportFitFullImage Then
-                GDI_Plus.GDIPlus_StretchBlt selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , , , , , True
-            
-            'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
-            ' selection processing DIB.
+                If (selMaskCopy Is Nothing) Then Set selMaskCopy = New pdDIB
+                
+                'TODO: cache the selection mask copy at module-level, and reuse it during previews (as it may be expensive
+                ' to recalculate on large images)
+                selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
+                
+                'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
+                If previewTarget.ViewportFitFullImage Then
+                    GDI_Plus.GDIPlus_StretchBlt selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , GP_IM_Default, , , , True
+                
+                'The preview is a 100% zoom portion of the image.  Copy only the relevant part of the selection mask into the
+                ' selection processing DIB.
+                Else
+                    GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
+                End If
+                
+                Set m_SelectionMaskBackup = selMaskCopy
+                
             Else
-                GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + previewTarget.offsetX, selBounds.Top + previewTarget.offsetY, vbSrcCopy
+                Set selMaskCopy = m_SelectionMaskBackup
             End If
             
         'If this is *not* a preview, simply crop out the portion of the selection mask matching the current preview area.
         ' (TODO: this copy really isn't necessary; just point the array at the actual selection mask, instead!)
         Else
+            If (selMaskCopy Is Nothing) Then Set selMaskCopy = New pdDIB
             selMaskCopy.CreateBlank selBounds.Width, selBounds.Height, 32, 0, 0
             GDI.BitBltWrapper selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         End If
@@ -778,7 +786,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
             
-            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+            If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIB.GetAlphaPremultiplication) Then
                 workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.SetInitialAlphaPremultiplicationState True
@@ -809,7 +817,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
-            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+            If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) And (Not workingDIBBackup.GetAlphaPremultiplication) Then
                 workingDIBBackup.SetAlphaPremultiplication True
             Else
                 workingDIBBackup.SetInitialAlphaPremultiplicationState True
