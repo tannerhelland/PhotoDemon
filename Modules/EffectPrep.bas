@@ -424,49 +424,30 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
             
             'Just like with a full image, if a selection is active, we only want to process the selected area.
             If selToolActive Then
-            
-                'Start by chopping out the full rectangular bounding area of the selection, and placing it inside a temporary object.
-                ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
-                ' area at this juncture.  The full bounding rect of the selection is processed as-is, and it as at the *draw* step
-                ' that we do any further processing.)
-                Dim tmpDIB As pdDIB
-                Set tmpDIB = New pdDIB
-                tmpDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
                 
                 'Before proceeding further, make a copy of the active layer, and null-pad it to the size of the parent image.
                 ' This will allow any possible selection to work, regardless of a layer's actual area.
                 tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
                 tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                 
-                'NOW we can copy over the active layer's data, within the bounding box of the active selection
-                GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
-                
-                'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
+                'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection.
                 If previewTarget.ViewportFitFullImage Then
-                    workingDIB.CreateFromExistingDIB tmpDIB, newWidth, newHeight
-                
+                    workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+                    GDI_Plus.GDIPlus_StretchBlt workingDIB, 0, 0, newWidth, newHeight, tmpLayer.layerDIB, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, , GP_IM_Bilinear
+                    
                 'The user is operating at 100% zoom.  Retrieve a subsection of the selected area, but do not scale it.
                 Else
                 
                     'Calculate offsets, if any, for the selected area
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
+                    workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
                     
-                    If ((workingDIB.GetDIBWidth <> newWidth) Or (workingDIB.GetDIBHeight <> newHeight)) Then
-                        workingDIB.CreateBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-                    Else
-                        workingDIB.ResetDIB
-                    End If
+                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpLayer.layerDIB.GetDIBDC, hOffset + selBounds.Left, vOffset + selBounds.Top, vbSrcCopy
+                    workingDIB.SetInitialAlphaPremultiplicationState tmpLayer.layerDIB.GetAlphaPremultiplication
                     
-                    GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.GetDIBDC, hOffset, vOffset, vbSrcCopy
-                    workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().GetAlphaPremultiplication
-                
                 End If
                 
-                'Release our temporary DIB
-                tmpDIB.EraseDIB
-                Set tmpDIB = Nothing
-            
             'If a selection is not currently active, this step is incredibly simple!
             Else
                 
@@ -480,12 +461,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
                     'Calculate offsets, if any, for the image
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
-                    
-                    If ((workingDIB.GetDIBWidth <> newWidth) Or (workingDIB.GetDIBHeight <> newHeight)) Then
-                        workingDIB.CreateBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-                    Else
-                        workingDIB.ResetDIB
-                    End If
+                    workingDIB.CreateBlank newWidth, newHeight, 32, 0, 0
                     
                     GDI.BitBltWrapper workingDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, hOffset, vOffset, vbSrcCopy
                     workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().GetAlphaPremultiplication
@@ -585,7 +561,6 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
     If (Not isPreview) And g_cancelCurrentAction Then
-        workingDIB.EraseDIB
         Set workingDIB = Nothing
         Exit Sub
     End If
@@ -612,9 +587,6 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             If m_PreviewWasRegenerated Or (m_SelectionMaskBackup Is Nothing) Then
             
                 If (selMaskCopy Is Nothing) Then Set selMaskCopy = New pdDIB
-                
-                'TODO: cache the selection mask copy at module-level, and reuse it during previews (as it may be expensive
-                ' to recalculate on large images)
                 selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
                 
                 'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
