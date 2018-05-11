@@ -95,9 +95,6 @@ Public Sub ReleaseZstd()
 
     If (m_ZstdHandle <> 0) Then
         
-        VBHacks.FreeLib m_ZstdHandle
-        m_ZstdHandle = 0
-        
         If (m_CompressionContext <> 0) Then
             ZSTD_freeCCtx m_CompressionContext
             m_CompressionContext = 0
@@ -107,6 +104,9 @@ Public Sub ReleaseZstd()
             ZSTD_freeDCtx m_DecompressionContext
             m_DecompressionContext = 0
         End If
+        
+        VBHacks.FreeLib m_ZstdHandle
+        m_ZstdHandle = 0
         
     End If
     
