@@ -881,21 +881,11 @@ Friend Function GetDPI() As Double
     If (m_DPI = 0#) Then GetDPI = 96# Else GetDPI = m_DPI
 End Function
 
-Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
+Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double)
     
     'Many image types do not store resolution information; default to 96 in this case
     If (xRes = 0#) Then xRes = 96
     If (yRes = 0#) Then yRes = 96
-    
-    'FreeImage is pretty damn stupid when it comes to DPI.  If no DPI information is found, it will return "72" by default.
-    ' If the source of this call is FreeImage, we want to replace 72 with a more modern default of 96.  Obviously this creates
-    ' a problem when images have an actual resolution of 72 DPI, as there is no way to tell if FreeImage set that by default,
-    ' or if it is the actual DPI value of the file.  If this occurs, we can use ExifTool to retrieve an actual value as
-    ' stored in the file.
-    If sourceIsFreeImage Then
-        If (Int(xRes) = 72) Then xRes = 96#
-        If (Int(yRes) = 72) Then yRes = 96#
-    End If
     
     m_XResolution = xRes
     m_YResolution = yRes

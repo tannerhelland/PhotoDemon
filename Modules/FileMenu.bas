@@ -475,7 +475,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         newImage.UpdateSize
         
         'Assign the requested DPI to the new image
-        newImage.SetDPI newDPI, newDPI, False
+        newImage.SetDPI newDPI, newDPI
         
         'Reset any/all file format markers; at save-time, PD will run heuristics on the image's contents and suggest a
         ' better format accordingly.

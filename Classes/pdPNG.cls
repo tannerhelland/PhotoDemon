@@ -1034,7 +1034,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
             Dim dpiWidth As Double, dpiHeight As Double
             dpiWidth = (CDbl(physWidth) / 100#) * 2.54
             dpiHeight = (CDbl(physHeight) / 100#) * 2.54
-            If (Not dstImage Is Nothing) Then dstImage.SetDPI dpiWidth, dpiHeight, False
+            If (Not dstImage Is Nothing) Then dstImage.SetDPI dpiWidth, dpiHeight
         End If
         
     End If

@@ -224,7 +224,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     fi_DataType = FreeImage_GetImageType(fi_hDIB)
     FI_DebugMsg "Heuristics show image bit-depth: " & fi_BPP & ", pixel type: " & FI_GetImageTypeAsString(fi_DataType), suppressDebugData
     
-    dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
+    dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
     FI_LoadBackgroundColor fi_hDIB, dstDIB
     dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
     
@@ -757,7 +757,7 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
             dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
             fi_DataType = FreeImage_GetImageType(fi_hDIB)
-            dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
+            dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB)
             FI_LoadBackgroundColor fi_hDIB, dstDIB
             dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
             
