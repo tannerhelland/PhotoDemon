@@ -260,7 +260,6 @@ End Enum
     Private Const fw_DontCare = 0, fw_Thin = 100, fw_Extralight = 200, fw_Ultralight = 200, fw_Light = 300, fw_Normal = 400, fw_Regular = 400, fw_Medium = 500, fw_SemiBold = 600, fw_DemiBold = 600, fw_Bold = 700, fw_ExtraBold = 800, fw_UltraBold = 800, fw_Heavy = 900, fw_Black = 900
 #End If
 
-'GDI font quality
 Public Enum GDI_FontQuality
     fq_Default = 0
     fq_Draft = 1
@@ -272,6 +271,36 @@ End Enum
 
 #If False Then
     Private Const fq_Default = 0, fq_Draft = 1, fq_Proof = 2, fq_NonAntialiased = 3, fq_Antialiased = 4, fq_ClearType = 5
+#End If
+
+Public Enum GDI_TextAlign
+
+    ta_NOUPDATECP = 0
+    ta_UPDATECP = 1
+
+    ta_LEFT = 0
+    ta_RIGHT = 2
+    ta_CENTER = 6
+
+    ta_TOP = 0
+    ta_BOTTOM = 8
+    ta_BASELINE = 24
+    ta_RTLREADING = 256
+    ta_MASK = (ta_BASELINE + ta_CENTER + ta_UPDATECP + ta_RTLREADING)
+
+    'Vertical text layouts can use these slightly altered enums for easier reading
+    vta_BASELINE = ta_BASELINE
+    vta_LEFT = ta_BOTTOM
+    vta_RIGHT = ta_TOP
+    vta_CENTER = ta_CENTER
+    vta_BOTTOM = ta_RIGHT
+    vta_TOP = ta_LEFT
+    
+End Enum
+
+#If False Then
+    Private Const ta_NOUPDATECP = 0, ta_UPDATECP = 1, ta_LEFT = 0, ta_RIGHT = 2, ta_CENTER = 6, ta_TOP = 0, ta_BOTTOM = 8, ta_BASELINE = 24, ta_RTLREADING = 256, ta_MASK = (ta_BASELINE + ta_CENTER + ta_UPDATECP + ta_RTLREADING)
+    Private Const vta_BASELINE = ta_BASELINE, vta_LEFT = ta_BOTTOM, vta_RIGHT = ta_TOP, vta_CENTER = ta_CENTER, vta_BOTTOM = ta_RIGHT, vta_TOP = ta_LEFT
 #End If
 
 'GDI font creation and management
@@ -407,7 +436,7 @@ Public Function GetMatchingUIFont(ByVal srcFontSize As Single, Optional ByVal is
     
     'During compile-time, we don't need access to all of PD's font features.  Just return a dummy UI font
     ' unless the program is actually running
-    If pdMain.IsProgramRunning Then
+    If PDMain.IsProgramRunning Then
 
         'Add this font size+style combination to the collection, as necessary
         Dim fontIndex As Long

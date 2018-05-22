@@ -219,7 +219,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRULER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDRuler", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Pixels are used by default
     m_RulerUnit = mu_Pixels
@@ -233,7 +233,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -244,7 +244,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -452,19 +452,20 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
                 
                 'Attempt to create a vertically optimized version of the UI font.  (The @ prefix is a
                 ' weird Windows way to define this - see https://msdn.microsoft.com/en-us/library/cc194859.aspx)
-                ' Note that XP specifically is unlikely to have a vertically optimized version, which is
-                ' okay - the ruler will still render correctly, but kerning and hinting won't be as nice.
-                ' (Also note: Windows doesn't ship with a standalone vertical-oriented version of Segoe UI;
-                ' instead, it should give us a copy of @Malgun Gothic, which is the Korean OS UI default,
-                ' and it contains a vertically optimized version of Segoe UI "under the hood".
-                If OS.IsVistaOrLater Then
+                ' Note that Windows Vista and earlier are unlikely to have a vertically optimized version,
+                ' which is okay - the ruler will still render correctly, but kerning and hinting won't be
+                ' as nice.  (Also note: Windows doesn't ship with a standalone vertical-oriented version
+                ' of Segoe UI; instead, it should give us a copy of @Malgun Gothic, which is the Korean OS
+                ' UI default, and it contains a vertically optimized version of Segoe UI "under the hood".)
+                If OS.IsWin7OrLater Then
                     m_VerticalFont.SetFontFace "@" & tmpFont.GetFontFace()
                 Else
                     m_VerticalFont.SetFontFace tmpFont.GetFontFace()
                 End If
                 
                 m_VerticalFont.SetFontSize 8!
-                If (Not m_VerticalFont.CreateFontObject(900)) Then PDDebug.LogAction "WARNING!  Vertical font failed!"
+                If (Not m_VerticalFont.CreateFontObject(900&)) Then PDDebug.LogAction "WARNING!  Vertical font failed!"
+                PDDebug.LogAction "pdRuler is using the following vertical font: " & m_VerticalFont.GetFontFace()
                 
             End If
             
@@ -543,7 +544,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     'Rendering is pretty easy - fill a fraction of the control with the current progress level!
     Dim okToRender As Boolean
-    okToRender = pdMain.IsProgramRunning() And ucSupport.AmIVisible() And (g_OpenImageCount > 0)
+    okToRender = PDMain.IsProgramRunning() And ucSupport.AmIVisible() And (g_OpenImageCount > 0)
     If okToRender Then okToRender = (Not pdImages(g_CurrentImage) Is Nothing)
     If okToRender Then
         
@@ -663,11 +664,31 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             halfSize = bWidth * 0.4
             quarterSize = bWidth * 0.25
             
+            'Font rendering behaves differently under different versions of Windows.  This affects
+            ' text positioning offsets in a hugely obnoxious way.  (Note that this is further compounded
+            ' by the different vertical font choices required by different OS versions.)  I have *not*
+            ' tested this under Windows 8 or Vista, due to the lack of dedicated testing rigs - so I'm
+            ' counting on users to report any problems back to me.
+            Dim vertOffsetX As Long
+            
+            'Windows 10 is straightforward
+            If OS.IsWin10OrLater Or (Not OS.IsProgramCompiled) Then
+                vertOffsetX = -4
+                
+            'Windows 7 comes with a vertically optimized font, but x-positioning is weirdly fucked up
+            ElseIf OS.IsVistaOrLater Then
+                vertOffsetX = 0
+            
+            'XP does *not* provide a vertically optimized font, but x-positioning is normal
+            Else
+                vertOffsetX = -3
+            End If
+            
             'Vertical fonts are rendered using a special font object.
             If (Not m_VerticalFont Is Nothing) Then
-                
+            
                 m_VerticalFont.SetFontColor rulerFontColor
-                m_VerticalFont.SetTextAlignment vbLeftJustify
+                m_VerticalFont.SetTextAlignmentEx vta_BASELINE Or vta_CENTER
                 m_VerticalFont.AttachToDC bufferDC
                     
                 For y = m_LoopStart To m_LoopEnd Step m_Step
@@ -678,7 +699,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     
                     'Render this line, and position text to the right of it
                     cPainter.DrawLineI cSurface, cPen, 0, yNewInt, bWidth, yNewInt
-                    m_VerticalFont.FastRenderText -4, yNewInt + 3 + m_VerticalFont.GetWidthOfString(CStr(y)), CStr(y)
+                    m_VerticalFont.FastRenderText vertOffsetX, yNewInt + 3 + m_VerticalFont.GetWidthOfString(CStr(y)), CStr(y)
                     
                     'Next, draw midpoint notches.  Which notches we draw varies based on the current interval.
                     ' The default interval setting is base-10 (e.g. 0, 1, 2 or 0, 100, 200).  In this setting,
@@ -763,7 +784,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint redrawImmediately
-    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
+    If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -794,7 +815,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

@@ -76,16 +76,6 @@ Private Const OUT_DEFAULT_PRECIS As Long = 0
 Private Const OUT_CHARACTER_PRECIS As Long = 2
 Private Const OUT_DEVICE_PRECIS As Long = 5
 
-'Text alignment
-Private Const TA_LEFT As Long = 0
-Private Const TA_RIGHT As Long = 2
-Private Const TA_CENTER As Long = 6
-Private Const TA_TOP As Long = 0
-Private Const TA_BOTTOM As Long = 8
-Private Const TA_BASELINE As Long = 24
-Private Const TA_UPDATECP As Long = 1
-Private Const TA_NOUPDATECP As Long = 0
-
 'Transparent font background
 Private Const FONT_TRANSPARENT As Long = &H1
 
@@ -135,7 +125,7 @@ Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
-Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As GDI_TextAlign) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -258,21 +248,21 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     
     Select Case m_TextAlignment
         
-        Case TA_LEFT
+        Case ta_LEFT
             If useEllipses Then
                 dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_LEFT
             Else
                 dtFlags = dtFlags Or DT_SINGLELINE Or DT_LEFT Or DT_NOCLIP
             End If
             
-        Case TA_RIGHT
+        Case ta_RIGHT
             If useEllipses Then
                 dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_RIGHT
             Else
                 dtFlags = dtFlags Or DT_SINGLELINE Or DT_RIGHT Or DT_NOCLIP
             End If
             
-        Case TA_CENTER
+        Case ta_CENTER
             If useEllipses Then
                 dtFlags = dtFlags Or ELLIPSES_METHOD Or DT_MODIFYSTRING Or DT_CENTER
             Else
@@ -313,13 +303,13 @@ Friend Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     
     Select Case m_TextAlignment
         
-        Case TA_LEFT
+        Case ta_LEFT
             dtFlags = dtFlags Or DT_LEFT
             
-        Case TA_RIGHT
+        Case ta_RIGHT
             dtFlags = dtFlags Or DT_RIGHT
             
-        Case TA_CENTER
+        Case ta_CENTER
             dtFlags = dtFlags Or DT_CENTER
         
     End Select
@@ -492,17 +482,22 @@ Friend Sub SetTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     Select Case newAlignment
         Case vbLeftJustify
-            m_TextAlignment = TA_LEFT
+            m_TextAlignment = ta_LEFT
         Case vbCenter
-            m_TextAlignment = TA_CENTER
+            m_TextAlignment = ta_CENTER
         Case vbRightJustify
-            m_TextAlignment = TA_RIGHT
+            m_TextAlignment = ta_RIGHT
     End Select
     
     'All alignment settings are handled via flags to DrawText.  For DrawText flags to work, the alignment of the current DC must be
     ' set to TA_LEFT, TA_TOP, and TA_NOUPDATECP (see http://msdn.microsoft.com/en-us/library/dd162498.aspx)
-    If (m_hDC <> 0) Then SetTextAlign m_hDC, TA_LEFT Or TA_TOP Or TA_NOUPDATECP
+    If (m_hDC <> 0) Then SetTextAlign m_hDC, ta_LEFT Or ta_TOP Or ta_NOUPDATECP
     
+End Sub
+
+'Set text alignment directly.  Note that this can fuck with DrawText - see SetTextAlignment, above, for details!
+Friend Sub SetTextAlignmentEx(ByVal newAlignment As GDI_TextAlign)
+    If (m_hDC <> 0) Then SetTextAlign m_hDC, newAlignment
 End Sub
 
 'Return the width (and below, height) of a string, in pixels.  This action REQUIRES that a DC be currently set for this
@@ -691,7 +686,7 @@ Private Sub Class_Initialize()
     m_origFontSize = 11
     
     m_FontColor = 0
-    m_TextAlignment = TA_LEFT
+    m_TextAlignment = ta_LEFT
         
 End Sub
 
