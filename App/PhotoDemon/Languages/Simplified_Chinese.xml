@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3436</langversion>
+<langversion>7.0.3437</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12722,6 +12722,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>Copy this tag to the clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset tag to its original value</original>
 <translation>复位标记为原始值</translation>
 </phrase>
@@ -12729,6 +12734,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>Mark this entire group for removal</original>
 <translation>标记此整个组为删除</translation>
+</phrase>
+
+<phrase>
+<original>Copy all tags in this group to the clipboard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12891,7 +12901,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>每行 %1，一个条目列表</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15405,10 +15415,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 12482 total words. -->
 
 </pdData>

@@ -461,8 +461,15 @@ End Function
 ' (IMPORTANT NOTE: the data placed on the clipboard is owned by the clipboard - NOT you - so we don't need to worry about freeing it later.)
 ' (IMPORTANT NOTE: the passed array must be initialized, or the function will fail.)
 Friend Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte, Optional ByVal freeOnFailure As Boolean = True) As Boolean
+    SetClipboardBinaryData = SetClipboardBinaryData_Ptr(clipFormatID, VarPtr(srcData(LBound(srcData))), (UBound(srcData) - LBound(srcData)) + 1, freeOnFailure)
+End Function
+
+'Stick arbitrary binary data on the clipboard.  An associated clipboard format is required.
+' (IMPORTANT NOTE: the data placed on the clipboard is owned by the clipboard - NOT you - so you don't need to worry about freeing it later.)
+' (IMPORTANT NOTE: as with any arbitrary ptr function, this function will fail if the passed pointer and/or length are not valid.)
+Friend Function SetClipboardBinaryData_Ptr(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal srcPtr As Long, ByVal srcLenBytes As Long, Optional ByVal freeOnFailure As Boolean = True) As Boolean
     
-    SetClipboardBinaryData = False
+    SetClipboardBinaryData_Ptr = False
     
     On Error GoTo SetClipboardFailure
     
@@ -470,32 +477,28 @@ Friend Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
     ' prior to rendering data, as another program owns the clipboard as part of their Paste action - this is the sole exception.)
     If m_IsClipboardOpen Or m_DelayedRenderingActive Then
         
-        'Determine how much binary data we need to write
-        Dim blobSize As Long
-        blobSize = (UBound(srcData) - LBound(srcData)) + 1
-        
-        'Ask the system for a global chunk of (moveable!) memory.  The moveable part is important; clipboard data requires it, so the system
-        ' can move resources around as necessary.
+        'Ask the system for a global chunk of (moveable!) memory.  The moveable part is important; clipboard data requires it,
+        ' so the system can move resources around as necessary.
         Dim hGlobalHandle As Long
-        hGlobalHandle = GlobalAlloc(GMEM_MOVEABLE, blobSize)
+        hGlobalHandle = GlobalAlloc(GMEM_MOVEABLE, srcLenBytes)
         If (hGlobalHandle <> 0) Then
             
             'Get a raw pointer to our new global memory object
             Dim ptrGlobal As Long
             ptrGlobal = GlobalLock(hGlobalHandle)
             If (ptrGlobal <> 0) Then
-            
+                
                 'Copy our data over, then unlock the memory block.  (Remember that the clipboard is going to assume ownership over our
                 ' hGlobal object.)
-                CopyMemoryStrict ptrGlobal, VarPtr(srcData(LBound(srcData))), blobSize
+                CopyMemoryStrict ptrGlobal, srcPtr, srcLenBytes
                 GlobalUnlock hGlobalHandle
-                        
+                
                 'Hand the data over to the clipboard.  If we succeed, the data is no longer ours.
-                SetClipboardBinaryData = (SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
+                SetClipboardBinaryData_Ptr = (SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
                 
                 'If SetClipboardData fails, we must free the hGlobal handle to prevent a leak.
                 'Thank you to @wqweto for this tip; see https://github.com/tannerhelland/PhotoDemon/issues/234
-                If ((Not SetClipboardBinaryData) And freeOnFailure) Then GlobalFree hGlobalHandle
+                If ((Not SetClipboardBinaryData_Ptr) And freeOnFailure) Then GlobalFree hGlobalHandle
                 
             Else
                 PDDebug.LogAction "WARNING!  SetClipboardBinaryData couldn't allocate a valid global memory handle; clipboard operation abandoned."
@@ -512,7 +515,7 @@ Friend Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
     Exit Function
     
 SetClipboardFailure:
-    SetClipboardBinaryData = False
+    SetClipboardBinaryData_Ptr = False
 
 End Function
 

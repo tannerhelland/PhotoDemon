@@ -326,6 +326,16 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     
 End Sub
 
+'Sometimes (mostly during debugging) it's helpful to copy arbitrary text data to the clipboard.
+' This function will do that, taking care to preserve Unicode text.
+Friend Sub ClipboardCopy_Text(ByRef srcString As String)
+    If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
+        m_Clipboard.ClearClipboard
+        m_Clipboard.SetClipboardBinaryData_Ptr CF_UNICODETEXT, StrPtr(srcString), LenB(srcString) + 2
+        m_Clipboard.ClipboardClose
+    End If
+End Sub
+
 Friend Sub ClipboardEmpty()
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
         m_Clipboard.ClearClipboard

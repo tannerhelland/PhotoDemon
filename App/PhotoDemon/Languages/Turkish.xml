@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3340</langversion>
+<langversion>6.8.3341</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12728,6 +12728,11 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>Copy this tag to the clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset tag to its original value</original>
 <translation>özgün değerine etiketi sıfırlayın</translation>
 </phrase>
@@ -12735,6 +12740,11 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>Mark this entire group for removal</original>
 <translation>kaldırılması için bu grubun tamamını işaretle</translation>
+</phrase>
+
+<phrase>
+<original>Copy all tags in this group to the clipboard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12897,7 +12907,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>satır başına %1, bir giriş listesi</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15409,10 +15419,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 12482 total words. -->
 
 </pdData>

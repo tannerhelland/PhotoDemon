@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.25</langversion>
+<langversion>1.0.26</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12730,6 +12730,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>Copy this tag to the clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset tag to its original value</original>
 <translation>태그를 원래 값으로 재설정하십시오.</translation>
 </phrase>
@@ -12737,6 +12742,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>Mark this entire group for removal</original>
 <translation>이 전체 그룹을 제거 대상으로 표시하십시오.</translation>
+</phrase>
+
+<phrase>
+<original>Copy all tags in this group to the clipboard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12899,7 +12909,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>한 줄에 하나씩 항목  %1 목록</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15415,10 +15425,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 12482 total words. -->
 
 </pdData>

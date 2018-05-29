@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.60</langversion>
+<langversion>1.0.61</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12732,6 +12732,11 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>Copy this tag to the clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset tag to its original value</original>
 <translation>टैग को उसके मूल मूल्य पर रीसेट करें</translation>
 </phrase>
@@ -12739,6 +12744,11 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>Mark this entire group for removal</original>
 <translation>इस संपूर्ण समूह को हटाने के लिए चिह्नित करें</translation>
+</phrase>
+
+<phrase>
+<original>Copy all tags in this group to the clipboard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12901,7 +12911,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation> %1 की सूची, प्रति पंक्ति एक प्रविष्टि</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15417,10 +15427,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 12482 total words. -->
 
 </pdData>

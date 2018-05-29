@@ -100,95 +100,6 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
-      Index           =   1
-      Left            =   8040
-      TabIndex        =   5
-      Top             =   1200
-      Visible         =   0   'False
-      Width           =   6090
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   240
-         TabIndex        =   6
-         Top             =   0
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag names"
-      End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   1
-         Left            =   240
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag values"
-      End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   420
-         TabIndex        =   8
-         Top             =   3240
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
-      End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   240
-         Top             =   2160
-         Width           =   5625
-         _ExtentX        =   9922
-         _ExtentY        =   476
-         Caption         =   "advanced"
-         FontSize        =   11
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdHyperlink hypExiftool 
-         Height          =   255
-         Left            =   0
-         Top             =   5700
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   "visit the ExifTool homepage"
-         FontSize        =   9
-         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-      End
-      Begin PhotoDemon.pdLabel lblExifTool 
-         Height          =   255
-         Left            =   120
-         Top             =   5370
-         Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   ""
-         FontSize        =   9
-         ForeColor       =   -2147483640
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdButton cmdMarkPrivateTags 
-         Height          =   555
-         Left            =   420
-         TabIndex        =   15
-         Top             =   2640
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   979
-         Caption         =   "Remove tags that might contain personal information"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6015
       Index           =   0
       Left            =   8040
       TabIndex        =   4
@@ -280,6 +191,117 @@ Begin VB.Form FormMetadata
          _ExtentY        =   1111
          AutoToggle      =   -1  'True
       End
+      Begin PhotoDemon.pdButtonToolbox btnTagOptions 
+         Height          =   630
+         Index           =   2
+         Left            =   1440
+         TabIndex        =   16
+         Top             =   4560
+         Width           =   630
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         AutoToggle      =   -1  'True
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6015
+      Index           =   1
+      Left            =   8040
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   0
+         Left            =   240
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag names"
+      End
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   1
+         Left            =   240
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   8
+         Top             =   3240
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
+      End
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   240
+         Top             =   2160
+         Width           =   5625
+         _ExtentX        =   9922
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdHyperlink hypExiftool 
+         Height          =   255
+         Left            =   0
+         Top             =   5700
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   "visit the ExifTool homepage"
+         FontSize        =   9
+         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+      End
+      Begin PhotoDemon.pdLabel lblExifTool 
+         Height          =   255
+         Left            =   120
+         Top             =   5370
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   9
+         ForeColor       =   -2147483640
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdButton cmdMarkPrivateTags 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   15
+         Top             =   2640
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Remove tags that might contain personal information"
+      End
+   End
+   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
+      Height          =   630
+      Index           =   2
+      Left            =   1560
+      TabIndex        =   17
+      Top             =   6600
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      AutoToggle      =   -1  'True
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -291,8 +313,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright 2013-2018 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 08/April/16
-'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
+'Last updated: 29/May/18
+'Last update: add new buttons for copying metadata to the clipboard
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -305,7 +327,7 @@ Attribute VB_Exposed = False
 ' tag counts, so any type or amount of metadata should theoretically be viewable.
 '
 'Categories are displayed on the left, and selecting a category repopulates the fields on the right.  Future updates
-' could include the ability to add or remove individual tags...
+' could include the ability to add individual tags, and ideally, a simplified interface for common tags...
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -343,8 +365,13 @@ Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 'Tag buttons.  These may not all be available on all tags (e.g. some tags cannot be edited, so they don't get a "reset" button)
 Private Enum PDMETADATA_TAG_BUTTONS
     MDTB_Remove = 0
-    MDTB_Reset = 1
+    MDTB_Copy = 1
+    MDTB_Reset = 2
 End Enum
+
+#If False Then
+    Private Const MDTB_Remove = 0, MDTB_Copy = 1, MDTB_Reset = 2
+#End If
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -387,6 +414,21 @@ Private Sub btnGroupOptions_Click(Index As Integer)
             For i = 0 To m_MDCategories(curCategory).Count - 1
                 m_AllTags(curCategory, i).TagMarkedForRemoval = removalState
             Next i
+        
+        'Copy entire group to clipboard
+        Case MDTB_Copy
+            
+            Dim cString As pdString
+            Set cString = New pdString
+            Const COLON_SPACE As String = ": "
+            
+            For i = 0 To m_MDCategories(curCategory).Count - 1
+                cString.Append m_AllTags(curCategory, i).TagNameFriendly
+                cString.Append COLON_SPACE
+                cString.AppendLine m_AllTags(curCategory, i).TagValueFriendly
+            Next i
+            
+            g_Clipboard.ClipboardCopy_Text cString.ToString()
             
         'Reset entire group
         Case MDTB_Reset
@@ -406,14 +448,21 @@ Private Sub btnGroupOptions_Click(Index As Integer)
 End Sub
 
 Private Sub btnTagOptions_Click(Index As Integer)
-
+    
     Select Case Index
     
         Case MDTB_Remove
         
+        Case MDTB_Copy
+        
+            If (m_GroupIndex >= 0) And (m_TagIndex >= 0) Then
+                g_Clipboard.ClipboardCopy_Text m_AllTags(m_GroupIndex, m_TagIndex).TagNameFriendly & ": " & m_AllTags(m_GroupIndex, m_TagIndex).TagValueFriendly
+            End If
+            
         Case MDTB_Reset
                 
             If (m_GroupIndex >= 0) And (m_TagIndex >= 0) Then
+            
                 m_AllTags(m_GroupIndex, m_TagIndex).UserIDNew = vbNullString
                 m_AllTags(m_GroupIndex, m_TagIndex).UserValueNew = vbNullString
                 m_AllTags(m_GroupIndex, m_TagIndex).UserModifiedAllSessions = False
@@ -642,19 +691,24 @@ Private Sub Form_Load()
     btsEditPanel.ListIndex = 0
     
     Dim buttonSize As Long
-    buttonSize = FixDPI(32)
-    btnTagOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
-    btnTagOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
-    btnGroupOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
-    btnGroupOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
+    buttonSize = Interface.FixDPI(32)
     
+    btnTagOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
     btnTagOptions(MDTB_Remove).AssignTooltip "Mark this tag for removal"
+    btnTagOptions(MDTB_Copy).AssignImage "edit_copy", , buttonSize, buttonSize
+    btnTagOptions(MDTB_Copy).AssignTooltip "Copy this tag to the clipboard"
+    btnTagOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
     btnTagOptions(MDTB_Reset).AssignTooltip "Reset tag to its original value"
+    
+    btnGroupOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
     btnGroupOptions(MDTB_Remove).AssignTooltip "Mark this entire group for removal"
+    btnGroupOptions(MDTB_Copy).AssignImage "edit_copy", , buttonSize, buttonSize
+    btnGroupOptions(MDTB_Copy).AssignTooltip "Copy all tags in this group to the clipboard"
+    btnGroupOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
     btnGroupOptions(MDTB_Reset).AssignTooltip "Reset entire group to its original values"
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
-    If Len(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
+    If (LenB(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
         lblTechnicalReport.Visible = True
         cmdTechnicalReport.Visible = True
     Else
@@ -1053,7 +1107,7 @@ Private Sub UpdateTagView()
                         'If this entry's ID and VALUE are identical (as they are for many XMP tags, as XMP deals solely in text),
                         ' it's redundant to list both.  For EXIF values, however, the ID may be numerical while the VALUE is
                         ' a nice, human-readable chunk of text, so display both.
-                        If StrComp(strID, strValue, vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(strID, strValue, False) Then
                             lstValue.AddItem strValue
                         Else
                             lstValue.AddItem "(" & strID & ") " & strValue
@@ -1062,13 +1116,13 @@ Private Sub UpdateTagView()
                         'Next, we want to figure out what .ListIndex value to set.  Typically, this is the tag's initial value,
                         ' but if the user has edited this value (during this session or a previous one), we need to use that
                         ' .ListIndex instead.  This is determined prior to running the loop (e.g. see above).
-                        If StrComp(targetID, LCase$(.DB_StackIDs.GetString(i)), vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(targetID, .DB_StackIDs.GetString(i), True) Then
                             newListIndex = i
                             listIndexFound = True
                         
                         'As a failsafe, also compare the "print-friendly" version of the current value
                         Else
-                            If StrComp(targetValue, LCase$(.DB_StackValues.GetString(i)), vbBinaryCompare) = 0 Then
+                            If Strings.StringsEqual(targetValue, .DB_StackValues.GetString(i), True) Then
                                 newListIndex = i
                                 listIndexFound = True
                             End If
@@ -1099,7 +1153,7 @@ Private Sub UpdateTagView()
                     Else
                         
                         'If this is a list-type tag, we will replace the default separator (;) with newlines
-                        If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
+                        If (.DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence) Then
                             If (btsTechnical(1).ListIndex = 0) Then
                                 txtValue.Text = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
                             Else
@@ -1123,7 +1177,7 @@ Private Sub UpdateTagView()
             
             'The reflow position variable now points at the bottom of the relevant edit control (edit box, list, label, etc).
             ' Add some padding before proceeding.
-            reflowTop = reflowTop + FixDPI(6)
+            reflowTop = reflowTop + Interface.FixDPI(6)
             
             'After determining which edit control to use, we now need to determine the visibility and positioning of various
             ' warning labels, type descriptors, and other per-tag information.  As before, most of this information is
@@ -1142,14 +1196,14 @@ Private Sub UpdateTagView()
                     strTagRestrictions = ConvertDataTypeToString(m_AllTags(curGroup, curTag))
                     
                     'We only list restrictions if necessary.  Generic "text" tags are treated as if they have no restrictions.
-                    If (Len(strTagRestrictions) <> 0) And (StrComp(strTagRestrictions, "text", vbBinaryCompare) <> 0) Then
+                    If (LenB(strTagRestrictions) <> 0) And Strings.StringsNotEqual(strTagRestrictions, "text", False) Then
                         lblTagType.Caption = g_Language.TranslateMessage("tag restrictions: ") & strTagRestrictions
                         lblTagType.SetTop reflowTop
                         lblTagType.Visible = True
                         
                         'Any time an element is made visible, we add its height to the running reflow offset, so subsequent
                         ' elements can be positioned correctly.
-                        reflowTop = reflowTop + lblTagType.GetHeight + FixDPI(6)
+                        reflowTop = reflowTop + lblTagType.GetHeight + Interface.FixDPI(6)
                         
                     Else
                         lblTagType.Visible = False
@@ -1167,7 +1221,7 @@ Private Sub UpdateTagView()
                     
                     'Any time an element is made visible, we add its height to the running reflow offset, so subsequent
                     ' elements can be positioned correctly.
-                    reflowTop = reflowTop + lblWarning.GetHeight + FixDPI(6)
+                    reflowTop = reflowTop + lblWarning.GetHeight + Interface.FixDPI(6)
                     
                 Else
                     lblWarning.Visible = False
@@ -1190,9 +1244,10 @@ Private Sub UpdateTagView()
                 
             End If
             
-            'All tags receive a "remove this tag" option
+            'All tags receive "remove this tag" and "copy this tag" options
             btnTagOptions(MDTB_Remove).SetTop reflowTop
             btnTagOptions(MDTB_Remove).Value = .TagMarkedForRemoval
+            btnTagOptions(MDTB_Copy).SetTop reflowTop
             
             'Editable tags also receive a "reset this tag" button
             If .DB_IsWritable Then

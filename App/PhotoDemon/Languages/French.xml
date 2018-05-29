@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.357</langversion>
+<langversion>6.7.358</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -12735,6 +12735,11 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
+<original>Copy this tag to the clipboard</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset tag to its original value</original>
 <translation>Réinitialiser le tag à sa valeur d'origine</translation>
 </phrase>
@@ -12742,6 +12747,11 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <phrase>
 <original>Mark this entire group for removal</original>
 <translation>Marquez l'ensemble de ce groupe pour le retrait</translation>
+</phrase>
+
+<phrase>
+<original>Copy all tags in this group to the clipboard</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12904,7 +12914,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>liste de %1, une entrée par ligne</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 67 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15422,10 +15432,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2580</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4687 phrases. -->
-<!-- 2107 are duplicates, so only 2580 unique phrases have been written to file. -->
-<!-- These 2580 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 12482 total words. -->
 
 </pdData>
