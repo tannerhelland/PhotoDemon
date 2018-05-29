@@ -149,11 +149,9 @@ Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) A
 
 'Set a new cursor for a given class
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
 Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
-Private Const GCL_HCURSOR As Long = (-12)
 
 'Reconstruct a full mouse movement history.  Note that this requires the MOUSEMOVEPOINT type, declared elsewhere.
 Private Enum PD_MouseResolution
@@ -205,7 +203,7 @@ Private m_MouseTrackingActive As Boolean
 Private m_HoverModeActive As Boolean, m_LastHoverX As Single, m_LastHoverY As Single
 
 'If the user requests that we force a persistent cursor for this object, that cursor handle will be stored here.
-Private m_CursorHandle As Long, m_PrevClassCursorHandle As Long
+Private m_CursorHandle As Long
 
 'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
 ' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
@@ -334,7 +332,6 @@ Friend Sub SetDefWindowProcFallback(ByVal newMode As Boolean)
 End Sub
 
 Friend Sub ResetTracking()
-    ResetClassCursor
     m_CaptureCounter = 0
     m_MouseMoveCount = 0
     m_MouseHasBeenCaptured = False
@@ -361,7 +358,7 @@ Friend Sub SetCursor_System(Optional ByVal systemCursorType As SystemCursorConst
     End If
     
     'Check for duplicate cursor requests, and ignore them as necessary
-    If applyImmediately Then ApplyCursor False
+    If applyImmediately Then ApplyCursor
         
 End Sub
 
@@ -377,24 +374,14 @@ Friend Sub SetCursor_Resource(ByVal pngResourceName As String, Optional ByVal cu
     
     If (m_CursorHandle <> tmpCursorHandle) Then
         m_CursorHandle = tmpCursorHandle
-        ApplyCursor False
+        ApplyCursor
     End If
     
 End Sub
 
-'Private helper function used by SetCursor_System and SetCursor_Resource, above.  When setting the cursor for the first time,
-' it is helpful to reset the class cursor definition so that Windows doesn't automatically raise WM_SETCURSOR messages
-' every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class cursor and overwrite
-' it with NULL.
-Private Sub ApplyCursor(Optional ByVal removeExistingClassCursor As Boolean = False)
-    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_hWnd, GCL_HCURSOR, 0&)
+'Private helper function used by SetCursor_System and SetCursor_Resource, above.
+Private Sub ApplyCursor()
     SetCursor m_CursorHandle
-End Sub
-
-'Partner to ApplyCursor, above.  To be used only when the mouse leaves a cursor-controlled area.
-Private Sub ResetClassCursor()
-    SetClassLong m_hWnd, GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via SetHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
-    SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some controls
 End Sub
 
 'Populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent API.  (This is done frequently,
@@ -801,16 +788,8 @@ Private Function HandleMouseMove(ByVal uiMsg As Long, ByVal wParam As Long, ByVa
     'If the mouse is moving, that means it has entered the control.  If we aren't already tracking it,
     ' do so now, and raise a MouseEnter event to match.
     If (Not m_MouseTrackingActive) Then
-        
         m_MouseTrackingActive = RequestMouseTrackingForHwnd()
-        
-        'Reset the class cursor and re-apply any custom cursor now.
-        ApplyCursor True
-        
         RaiseEvent MouseEnter(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
-        
-    Else
-        ApplyCursor False
     End If
         
     'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
@@ -1050,11 +1029,6 @@ Private Function HandleMouseLeave(ByVal uiMsg As Long, ByVal wParam As Long, ByV
         
         RaiseEvent MouseLeave(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
         
-        'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
-        ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
-        ' cursor to other objects that share this class.
-        ResetClassCursor
-        
     End If
     
 End Function
@@ -1173,7 +1147,7 @@ Private Function HandleAppCommand(ByVal uiMsg As Long, ByVal wParam As Long, ByV
 End Function
 
 Private Function HandleSetCursor(ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
-    ApplyCursor False
+    ApplyCursor
     msgEaten = True
     HandleSetCursor = 1
 End Function

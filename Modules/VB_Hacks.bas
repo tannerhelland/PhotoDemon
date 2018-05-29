@@ -36,7 +36,7 @@ Private Type winMsg
 End Type
 
 'Some APIs are used *so* frequently throughout PD that we declare them publicly
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDst As Any, ByRef lpSrc As Any, ByVal byteLength As Long)
 Public Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Public Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal numOfBytes As Long, ByVal fillValue As Byte)
 Public Declare Sub ZeroMemory Lib "kernel32" Alias "RtlZeroMemory" (ByVal dstPointer As Long, ByVal numOfBytes As Long)
@@ -75,15 +75,15 @@ Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 
-Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (ByRef lpMsg As winMsg) As Long
-Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function DispatchMessageA Lib "user32" (ByRef lpMsg As winMsg) As Long
+Private Declare Function PeekMessageA Lib "user32" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
 
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
-Private Const WH_KEYBOARD = 2
+Private Const WH_KEYBOARD As Long = 2
 
 'Unsigned arithmetic helpers
 Private Const SIGN_BIT As Long = &H80000000
@@ -349,9 +349,9 @@ End Function
 Public Sub DoEventsTimersOnly()
     Dim tmpMsg As winMsg
     Const WM_TIMER As Long = &H113
-    Do While PeekMessage(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
+    Do While PeekMessageA(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
         TranslateMessage tmpMsg
-        DispatchMessage tmpMsg
+        DispatchMessageA tmpMsg
     Loop
 End Sub
 
