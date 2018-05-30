@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.526</langversion>
+<langversion>7.2.560</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -850,7 +850,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Undo</original>
-<translation>Rückgängigmachen</translation>
+<translation>Rückgängig</translation>
 </phrase>
 
 <phrase>
@@ -3928,7 +3928,7 @@ or the File > Open and File > Import menus.</original>
 <translation>Ziehen Sie ein Bild auf diese Fläche, um mit der Bearbeitung zu beginnen.
 
 Sie können auch den Button "Bild öffnen" oben links verwenden
-oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
+oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation>
 </phrase>
 
 <!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4749,7 +4749,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>pc</original>
-<translation></translation>
+<translation>pc</translation>
 </phrase>
 
 <phrase>
@@ -4913,7 +4913,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>&Undo</original>
-<translation>&Rückgängigmachen</translation>
+<translation>&Rückgängig</translation>
 </phrase>
 
 <phrase>
@@ -12736,7 +12736,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Copy this tag to the clipboard</original>
-<translation></translation>
+<translation>Dieses Tag in die Zwischenablage kopieren</translation>
 </phrase>
 
 <phrase>
@@ -12751,7 +12751,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Copy all tags in this group to the clipboard</original>
-<translation></translation>
+<translation>Alle Tags in dieser Gruppe in die Zwischenablage kopieren</translation>
 </phrase>
 
 <phrase>
@@ -13361,7 +13361,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>undo</original>
-<translation>Rückgängigmachen</translation>
+<translation>Rückgängig</translation>
 </phrase>
 
 <phrase>
@@ -14678,7 +14678,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>use black point compensation</original>
-<translation></translation>
+<translation>Schwarzpunktkompensation verwenden</translation>
 </phrase>
 
 <phrase>
@@ -14823,7 +14823,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>undo/redo</original>
-<translation>Rückgängigmachen/Wiederherstellen</translation>
+<translation>Rückgängig/Wiederherstellen</translation>
 </phrase>
 
 <phrase>
@@ -15097,7 +15097,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation></translation>
+<translation>BPC ist hauptsächlich für kolorimetrische Rendering-Intents relevant, wo es hilft, Details in dunklen (Schatten-) Regionen von Bildern beizubehalten. Für die meisten Workflows sollte BPC eingeschaltet sein.</translation>
 </phrase>
 
 <phrase>
