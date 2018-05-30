@@ -213,17 +213,17 @@
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation></translation>
+<translation>請問您想要如何載入此影像?</translation>
 </phrase>
 
 <phrase>
 <original>Open it as a standalone image.</original>
-<translation></translation>
+<translation>開啟為獨立影像。</translation>
 </phrase>
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation></translation>
+<translation>加入至目前影像為新的圖層。</translation>
 </phrase>
 
 <phrase>
@@ -233,7 +233,7 @@
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation></translation>
+<translation>以後不再詢問此問題</translation>
 </phrase>
 
 <phrase>
@@ -345,7 +345,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 <phrase>
 <original>Initial save required</original>
-<translation></translation>
+<translation>需要初始化儲存</translation>
 </phrase>
 
 <phrase>
@@ -502,12 +502,12 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Adjusting shadows and highlights</original>
-<translation></translation>
+<translation>正在調整陰影與亮部</translation>
 </phrase>
 
 <phrase>
 <original>Enhancing shadows and highlights</original>
-<translation></translation>
+<translation>正在增強陰影與亮部</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
@@ -529,17 +529,17 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation></translation>
+<translation>正在計算影像中的不同色彩</translation>
 </phrase>
 
 <phrase>
 <original>Total unique colors: %1</original>
-<translation>總計唯一色彩: %1</translation>
+<translation>總計不同色彩: %1</translation>
 </phrase>
 
 <phrase>
 <original>This image contains %1 unique colors.</original>
-<translation>此影像包含 %1 唯一色彩。</translation>
+<translation>此影像包含 %1 不同色彩。</translation>
 </phrase>
 
 <phrase>
@@ -808,12 +808,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>An error has occurred (#</original>
-<translation></translation>
+<translation>發生錯誤 (#</translation>
 </phrase>
 
 <phrase>
 <original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation></translation>
+<translation>選擇的檔案並非 PDI 格式，已放棄載入。</translation>
 </phrase>
 
 <!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1054,17 +1054,17 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>感知</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>相對色彩濃度</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>絕對色彩濃度</translation>
 </phrase>
 
 <phrase>
@@ -1595,7 +1595,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>All supported palettes</original>
-<translation></translation>
+<translation>所有支援的色票</translation>
 </phrase>
 
 <phrase>
@@ -1615,37 +1615,37 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>GIMP Palette</original>
-<translation></translation>
+<translation>GIMP 色票</translation>
 </phrase>
 
 <phrase>
 <original>PaintShop Pro Palette</original>
-<translation></translation>
+<translation>PaintShop Pro 色票</translation>
 </phrase>
 
 <phrase>
 <original>Paint.NET Palette</original>
-<translation></translation>
+<translation>Paint.NET 色票</translation>
 </phrase>
 
 <phrase>
 <original>Select a palette</original>
-<translation></translation>
+<translation>選擇一個色票</translation>
 </phrase>
 
 <phrase>
 <original>New palette</original>
-<translation></translation>
+<translation>新增色票</translation>
 </phrase>
 
 <phrase>
 <original>Export palette</original>
-<translation></translation>
+<translation>匯出色票</translation>
 </phrase>
 
 <phrase>
 <original>Exporting palette</original>
-<translation></translation>
+<translation>正在匯出色票</translation>
 </phrase>
 
 <phrase>
@@ -1728,7 +1728,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>artistic license</original>
-<translation></translation>
+<translation>藝術授權條款</translation>
 </phrase>
 
 <phrase>
@@ -1781,7 +1781,7 @@ Please make sure the device is turned on and ready for use.</original>
 
 <phrase>
 <original>Scanner Interface Error</original>
-<translation></translation>
+<translation>掃描器介面錯誤</translation>
 </phrase>
 
 <phrase>
@@ -1808,7 +1808,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Scanned Image</original>
-<translation></translation>
+<translation>已掃描影像</translation>
 </phrase>
 
 <phrase>
@@ -1818,12 +1818,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Scanner/digital camera import disabled</original>
-<translation></translation>
+<translation>掃描器或數位相機匯入已停用</translation>
 </phrase>
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation></translation>
+<translation>發生未知錯誤。請確定您的掃描器已經開啟並可供使用。</translation>
 </phrase>
 
 <phrase>
@@ -1848,7 +1848,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>掃描已取消</translation>
 </phrase>
 
 <phrase>
@@ -1885,12 +1885,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>正在使用 OptiPNG 最佳化 PNG 檔案。這可能需要一些時間</translation>
 </phrase>
 
 <phrase>
 <original>OptiPNG optimization successful!</original>
-<translation></translation>
+<translation>OptiPNG 最佳化成功!</translation>
 </phrase>
 
 <!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1940,12 +1940,12 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Preparing image for printing</original>
-<translation></translation>
+<translation>正在準備列印影像</translation>
 </phrase>
 
 <phrase>
 <original>Image successfully sent to Windows Photo Printer.</original>
-<translation></translation>
+<translation>影像已成功傳送至 Windows Photo Printer。</translation>
 </phrase>
 
 <!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1973,7 +1973,7 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 
 <phrase>
 <original>Out of memory.  Function canceled.</original>
-<translation></translation>
+<translation>記憶體不足。操作已取消。</translation>
 </phrase>
 
 <phrase>
@@ -2087,12 +2087,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>水平切變</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>垂直切變</translation>
 </phrase>
 
 <phrase>
@@ -2654,27 +2654,27 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation></translation>
+<translation>正在初始化軟體更新 (此功能可於 [工具] -> [選項] 選單中停用)</translation>
 </phrase>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation>%1.%2 Beta %3</translation>
 </phrase>
 
 <phrase>
 <original>pre-alpha</original>
-<translation></translation>
+<translation>pre-alpha</translation>
 </phrase>
 
 <phrase>
 <original>alpha</original>
-<translation></translation>
+<translation>alpha</translation>
 </phrase>
 
 <phrase>
 <original>beta</original>
-<translation></translation>
+<translation>beta</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -2718,7 +2718,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Out of memory</original>
-<translation></translation>
+<translation>記憶體不足</translation>
 </phrase>
 
 <phrase>
@@ -2847,7 +2847,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Windows Clipboard Error</original>
-<translation></translation>
+<translation>Windows 剪貼簿錯誤</translation>
 </phrase>
 
 <phrase>
@@ -2857,22 +2857,22 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Clipboard data imported successfully</original>
-<translation></translation>
+<translation>剪貼簿資料已成功匯入</translation>
 </phrase>
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation></translation>
+<translation>影像網址已找到。正在開始嘗試下載</translation>
 </phrase>
 
 <phrase>
 <original>Image imported successfully</original>
-<translation></translation>
+<translation>影像已成功匯入</translation>
 </phrase>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation></translation>
+<translation>影像下載失敗。請複製一個有效的影像網址並再試一次。</translation>
 </phrase>
 
 <phrase>
@@ -3537,7 +3537,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
-<translation></translation>
+<translation>色票已由 PhotoDemon %1 匯出</translation>
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3778,7 +3778,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Fit image</original>
-<translation>縮放至合適大小</translation>
+<translation>合適大小</translation>
 </phrase>
 
 <!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -3928,7 +3928,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>palette size</original>
-<translation>調色盤大小</translation>
+<translation>色票大小</translation>
 </phrase>
 
 <phrase>
@@ -4578,7 +4578,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Scroll</original>
-<translation></translation>
+<translation>捲動</translation>
 </phrase>
 
 <phrase>
@@ -4638,12 +4638,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Scroll left</original>
-<translation></translation>
+<translation>向左捲動</translation>
 </phrase>
 
 <phrase>
 <original>Scroll right</original>
-<translation></translation>
+<translation>向右捲動</translation>
 </phrase>
 
 <!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4831,12 +4831,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Color profile</original>
-<translation></translation>
+<translation>色彩描述檔</translation>
 </phrase>
 
 <phrase>
 <original>Palette</original>
-<translation></translation>
+<translation>色票</translation>
 </phrase>
 
 <phrase>
@@ -5006,12 +5006,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Remove all metadata</original>
-<translation></translation>
+<translation>移除所有中繼資料</translation>
 </phrase>
 
 <phrase>
 <original>Count unique colors</original>
-<translation>計算唯一色彩</translation>
+<translation>計算不同色彩</translation>
 </phrase>
 
 <phrase>
@@ -5356,7 +5356,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Histogram</original>
-<translation>長條圖</translation>
+<translation>色階分佈圖</translation>
 </phrase>
 
 <phrase>
@@ -5371,7 +5371,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Stretch</original>
-<translation></translation>
+<translation>延伸</translation>
 </phrase>
 
 <phrase>
@@ -5416,7 +5416,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Photo filters</original>
-<translation>照片濾鏡</translation>
+<translation>相片濾鏡</translation>
 </phrase>
 
 <phrase>
@@ -5961,7 +5961,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Zoom to value</original>
-<translation></translation>
+<translation>縮放至</translation>
 </phrase>
 
 <phrase>
@@ -5971,12 +5971,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Show rulers</original>
-<translation></translation>
+<translation>顯示尺規</translation>
 </phrase>
 
 <phrase>
 <original>Show status bar</original>
-<translation></translation>
+<translation>顯示狀態列</translation>
 </phrase>
 
 <phrase>
@@ -6056,7 +6056,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Reset all toolboxes</original>
-<translation></translation>
+<translation>重設所有工具箱</translation>
 </phrase>
 
 <phrase>
@@ -6128,7 +6128,9 @@ or the File > Open and File > Import menus.</original>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>最新版本的 PhotoDemon 已經可供使用!
+
+此更新將自動於背景中處理。完成時您將會收到通知。</translation>
 </phrase>
 
 <phrase>
@@ -6152,22 +6154,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Photo filter</original>
-<translation></translation>
+<translation>相片濾鏡</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct color</original>
-<translation></translation>
+<translation>自動校正色彩</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct contrast</original>
-<translation></translation>
+<translation>自動校正對比</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct lighting</original>
-<translation></translation>
+<translation>自動校正亮度</translation>
 </phrase>
 
 <phrase>
@@ -6182,7 +6184,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Auto enhance contrast</original>
-<translation></translation>
+<translation>自動增強對比</translation>
 </phrase>
 
 <phrase>
@@ -6222,12 +6224,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Add blank layer</original>
-<translation></translation>
+<translation>新增空白圖層</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate Layer</original>
-<translation></translation>
+<translation>複製圖層</translation>
 </phrase>
 
 <phrase>
@@ -6237,12 +6239,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Raise layer to top</original>
-<translation></translation>
+<translation>移至最上層</translation>
 </phrase>
 
 <phrase>
 <original>Lower layer to bottom</original>
-<translation></translation>
+<translation>移至最下層</translation>
 </phrase>
 
 <phrase>
@@ -6252,7 +6254,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation></translation>
+<translation>順時針 90 度旋轉圖層</translation>
 </phrase>
 
 <phrase>
@@ -6262,32 +6264,32 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Rotate layer 180</original>
-<translation></translation>
+<translation>旋轉圖層 180 度</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation></translation>
+<translation>任意旋轉圖層</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer horizontally</original>
-<translation></translation>
+<translation>水平翻轉圖層</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer vertically</original>
-<translation></translation>
+<translation>垂直翻轉圖層</translation>
 </phrase>
 
 <phrase>
 <original>Rasterize layer</original>
-<translation></translation>
+<translation>點陣化圖層</translation>
 </phrase>
 
 <phrase>
 <original>Rasterize all layers</original>
-<translation></translation>
+<translation>點陣化所有圖層</translation>
 </phrase>
 
 <phrase>
@@ -6337,7 +6339,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Kaleidoscope</original>
-<translation></translation>
+<translation>萬花筒</translation>
 </phrase>
 
 <phrase>
@@ -6451,7 +6453,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Stretch histogram</original>
-<translation></translation>
+<translation>延伸色階分佈圖</translation>
 </phrase>
 
 <phrase>
@@ -6461,17 +6463,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation></translation>
+<translation>內容感知影像調整大小</translation>
 </phrase>
 
 <phrase>
 <original>Fit canvas to layer</original>
-<translation></translation>
+<translation>依圖層調整畫布</translation>
 </phrase>
 
 <phrase>
 <original>Fit canvas to all layers</original>
-<translation></translation>
+<translation>依所有圖層調整畫布</translation>
 </phrase>
 
 <phrase>
@@ -6496,12 +6498,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Removing existing translation</original>
-<translation></translation>
+<translation>正在移除現有翻譯</translation>
 </phrase>
 
 <phrase>
 <original>Applying new translation</original>
-<translation></translation>
+<translation>正在套用新翻譯</translation>
 </phrase>
 
 <phrase>
@@ -6551,12 +6553,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation></translation>
+<translation>順時針 90 度旋轉影像</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation></translation>
+<translation>逆時針 90 度旋轉影像</translation>
 </phrase>
 
 <phrase>
@@ -6566,7 +6568,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Arbitrary image rotation</original>
-<translation></translation>
+<translation>任意旋轉影像</translation>
 </phrase>
 
 <phrase>
@@ -6596,22 +6598,22 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Export selected area as image</original>
-<translation></translation>
+<translation>匯出所選區域為影像</translation>
 </phrase>
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation></translation>
+<translation>匯出所選遮罩為影像</translation>
 </phrase>
 
 <phrase>
 <original>Select scanner or camera</original>
-<translation></translation>
+<translation>選擇掃描器或相機</translation>
 </phrase>
 
 <phrase>
 <original>Unsharp mask</original>
-<translation></translation>
+<translation>非銳化遮罩</translation>
 </phrase>
 
 <phrase>
@@ -6621,7 +6623,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Remove alpha channel</original>
-<translation></translation>
+<translation>移除 alpha 通道</translation>
 </phrase>
 
 <!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
@@ -6637,12 +6639,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>dithering amount</original>
-<translation></translation>
+<translation>抖動量</translation>
 </phrase>
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>抖動</translation>
 </phrase>
 
 <phrase>
@@ -6688,7 +6690,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Brightness/Contrast</original>
-<translation></translation>
+<translation>亮度/對比</translation>
 </phrase>
 
 <phrase>
@@ -6703,17 +6705,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>brightness</original>
-<translation></translation>
+<translation>亮度</translation>
 </phrase>
 
 <phrase>
 <original>contrast</original>
-<translation></translation>
+<translation>對比</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation></translation>
+<translation>正在調整亮度與對比</translation>
 </phrase>
 
 <phrase>
@@ -6754,27 +6756,27 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>preserve luminance</original>
-<translation></translation>
+<translation>保留明亮度</translation>
 </phrase>
 
 <phrase>
 <original>output channel</original>
-<translation></translation>
+<translation>輸出通道</translation>
 </phrase>
 
 <phrase>
 <original>input channel(s)</original>
-<translation></translation>
+<translation>輸入通道</translation>
 </phrase>
 
 <phrase>
 <original>options for all channels</original>
-<translation></translation>
+<translation>全部通道選項</translation>
 </phrase>
 
 <phrase>
 <original>Mixing color channels</original>
-<translation></translation>
+<translation>混合色彩通道</translation>
 </phrase>
 
 <!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -6785,7 +6787,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>color space</original>
-<translation></translation>
+<translation>色彩空間</translation>
 </phrase>
 
 <phrase>
@@ -6795,12 +6797,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>CMY</original>
-<translation></translation>
+<translation>CMY</translation>
 </phrase>
 
 <phrase>
 <original>CMYK</original>
-<translation></translation>
+<translation>CMYK</translation>
 </phrase>
 
 <phrase>
@@ -6810,7 +6812,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>magenta</original>
-<translation></translation>
+<translation>洋紅</translation>
 </phrase>
 
 <phrase>
@@ -6820,7 +6822,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>key (black)</original>
-<translation></translation>
+<translation>key (黑色)</translation>
 </phrase>
 
 <phrase>
@@ -6841,12 +6843,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>new balance</original>
-<translation></translation>
+<translation>新平衡</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting color balance</original>
-<translation></translation>
+<translation>正在調整色彩平衡</translation>
 </phrase>
 
 <!-- Adjustments_ColorBalance.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -6872,7 +6874,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Colorizing image</original>
-<translation></translation>
+<translation>正在進行影像著色</translation>
 </phrase>
 
 <!-- Adjustments_Color_Colorize.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
@@ -6893,22 +6895,22 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Converting image to black and white</original>
-<translation></translation>
+<translation>正在轉換影像為黑白</translation>
 </phrase>
 
 <phrase>
 <original>Fastest Calculation (average value)</original>
-<translation></translation>
+<translation>最快計算 (平均值)</translation>
 </phrase>
 
 <phrase>
 <original>Highest Quality (ITU Standard)</original>
-<translation></translation>
+<translation>最高品質 (ITU 標準)</translation>
 </phrase>
 
 <phrase>
 <original>Desaturate</original>
-<translation></translation>
+<translation>去除色彩</translation>
 </phrase>
 
 <phrase>
@@ -6918,17 +6920,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Single color channel</original>
-<translation></translation>
+<translation>單一色彩通道</translation>
 </phrase>
 
 <phrase>
 <original>minimum</original>
-<translation></translation>
+<translation>最小</translation>
 </phrase>
 
 <phrase>
 <original>maximum</original>
-<translation></translation>
+<translation>最大</translation>
 </phrase>
 
 <!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -7180,7 +7182,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Exit histogram</original>
-<translation>結束長條圖</translation>
+<translation>結束色階分佈圖</translation>
 </phrase>
 
 <phrase>
@@ -7195,7 +7197,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>fill histogram curves</original>
-<translation>填滿長條圖曲線</translation>
+<translation>填滿色階分佈圖曲線</translation>
 </phrase>
 
 <phrase>
@@ -7210,7 +7212,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>(備註: 您可將滑鼠移至長條圖上方以計算數值)</translation>
+<translation>(備註: 您可將滑鼠移至色階分佈圖上方以計算數值)</translation>
 </phrase>
 
 <phrase>
@@ -7240,22 +7242,22 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Please wait while the histogram is updated</original>
-<translation>當長條圖更新時請稍候片刻</translation>
+<translation>當色階分佈圖更新時請稍候片刻</translation>
 </phrase>
 
 <phrase>
 <original>Updating histogram</original>
-<translation>更新長條圖</translation>
+<translation>更新色階分佈圖</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing image histogram for maximum and minimum values</original>
-<translation></translation>
+<translation>正在分析影像色階分佈的最大值與最小值</translation>
 </phrase>
 
 <phrase>
 <original>Stretching histogram</original>
-<translation></translation>
+<translation>正在延伸色階分佈圖</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -7266,7 +7268,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Equalize Histogram</original>
-<translation>均衡長條圖</translation>
+<translation>均衡色階分佈圖</translation>
 </phrase>
 
 <phrase>
@@ -7276,7 +7278,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>target histogram</original>
-<translation>目標長條圖</translation>
+<translation>目標色階分佈圖</translation>
 </phrase>
 
 <phrase>
@@ -7451,7 +7453,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Generating HDR map for image</original>
-<translation></translation>
+<translation>正在為影像產生 HDR map</translation>
 </phrase>
 
 <!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -7847,7 +7849,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Applying photo filter</original>
-<translation></translation>
+<translation>正在套用相片濾鏡</translation>
 </phrase>
 
 <!-- Adjustments_Photo_PhotoFilters.frm contains 105 phrases. 27 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
@@ -8002,12 +8004,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Discard</original>
-<translation></translation>
+<translation>捨棄</translation>
 </phrase>
 
 <phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
-<translation></translation>
+<translation>發現自動儲存資料。您想要將其還原嗎?</translation>
 </phrase>
 
 <phrase>
@@ -8022,7 +8024,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Warning: autosave data will be deleted</original>
-<translation></translation>
+<translation>警告: 自動儲存資料將被刪除</translation>
 </phrase>
 
 <phrase>
@@ -8038,17 +8040,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Color panel settings</original>
-<translation></translation>
+<translation>色彩面板設定</translation>
 </phrase>
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation></translation>
+<translation>色票於此檔案 (%1)</translation>
 </phrase>
 
 <phrase>
 <original>palette to use</original>
-<translation></translation>
+<translation>色票以使用</translation>
 </phrase>
 
 <phrase>
@@ -8058,7 +8060,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>palette</original>
-<translation></translation>
+<translation>色票</translation>
 </phrase>
 
 <!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8085,12 +8087,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Saved presets</original>
-<translation></translation>
+<translation>已儲存的預設集</translation>
 </phrase>
 
 <phrase>
 <original>delete preset</original>
-<translation></translation>
+<translation>刪除預設集</translation>
 </phrase>
 
 <phrase>
@@ -8105,7 +8107,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>(no saved presets)</original>
-<translation></translation>
+<translation>(沒有已儲存的預設集)</translation>
 </phrase>
 
 <phrase>
@@ -8135,12 +8137,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>add new preset</original>
-<translation></translation>
+<translation>新增預設集</translation>
 </phrase>
 
 <phrase>
 <original>edit existing presets</original>
-<translation></translation>
+<translation>編輯現有預設集</translation>
 </phrase>
 
 <!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -8700,7 +8702,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>images with unsaved changes</original>
-<translation></translation>
+<translation>尚未儲存變更的影像</translation>
 </phrase>
 
 <phrase>
@@ -8747,7 +8749,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>This image</original>
-<translation></translation>
+<translation>此影像</translation>
 </phrase>
 
 <phrase>
@@ -8803,7 +8805,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>瞭解更多新功能於 %1</translation>
 </phrase>
 
 <phrase>
@@ -8813,12 +8815,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>最新版本的 PhotoDemon 已可供使用。請重新啟動程式以完成更新程序。</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>立即重新啟動以使用最新版本的程式。</translation>
 </phrase>
 
 <phrase>
@@ -8870,7 +8872,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>layer: %1</original>
-<translation></translation>
+<translation>圖層: %1</translation>
 </phrase>
 
 <phrase>
@@ -9091,7 +9093,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>speed</original>
-<translation></translation>
+<translation>速度</translation>
 </phrase>
 
 <!-- Effects_Artistic_Kaleidoscope.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -9102,17 +9104,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>horizontal strength</original>
-<translation></translation>
+<translation>水平強度</translation>
 </phrase>
 
 <phrase>
 <original>vertical strength</original>
-<translation></translation>
+<translation>垂直強度</translation>
 </phrase>
 
 <phrase>
 <original>Applying modern art techniques</original>
-<translation></translation>
+<translation>正在套用現代藝術風格</translation>
 </phrase>
 
 <!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9123,7 +9125,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>detail</original>
-<translation></translation>
+<translation>細節</translation>
 </phrase>
 
 <phrase>
@@ -9257,7 +9259,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fast</original>
-<translation></translation>
+<translation>快速</translation>
 </phrase>
 
 <phrase>
@@ -9330,7 +9332,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Kuwahara</original>
-<translation></translation>
+<translation>Kuwahara</translation>
 </phrase>
 
 <phrase>
@@ -9706,22 +9708,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>horizontal wavelength</original>
-<translation></translation>
+<translation>水平波長</translation>
 </phrase>
 
 <phrase>
 <original>vertical wavelength</original>
-<translation></translation>
+<translation>垂直波長</translation>
 </phrase>
 
 <phrase>
 <original>horizontal strength (amplitude)</original>
-<translation></translation>
+<translation>水平強度 (振幅)</translation>
 </phrase>
 
 <phrase>
 <original>vertical strength (amplitude)</original>
-<translation></translation>
+<translation>垂直強度 (振幅)</translation>
 </phrase>
 
 <phrase>
@@ -10118,7 +10120,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distribution</original>
-<translation>分布</translation>
+<translation>分佈</translation>
 </phrase>
 
 <phrase>
@@ -10570,12 +10572,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>palettes in this file</original>
-<translation></translation>
+<translation>色票於此檔案</translation>
 </phrase>
 
 <phrase>
 <original>choose a palette file</original>
-<translation></translation>
+<translation>選取一個色票檔案</translation>
 </phrase>
 
 <phrase>
@@ -10610,22 +10612,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>正在產生最佳色票</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>正在套用新色票至影像</translation>
 </phrase>
 
 <phrase>
 <original>%1 (%2 colors)</original>
-<translation></translation>
+<translation>%1 (%2 色彩)</translation>
 </phrase>
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation></translation>
+<translation>警告! 色票檔案無效。</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -10771,22 +10773,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>top-left</original>
-<translation></translation>
+<translation>左上</translation>
 </phrase>
 
 <phrase>
 <original>top-right</original>
-<translation></translation>
+<translation>右上</translation>
 </phrase>
 
 <phrase>
 <original>bottom-right</original>
-<translation></translation>
+<translation>右下</translation>
 </phrase>
 
 <phrase>
 <original>bottom-left</original>
-<translation></translation>
+<translation>左下</translation>
 </phrase>
 
 <!-- Effects_Transform_Perspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10864,7 +10866,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Shearing image</original>
-<translation></translation>
+<translation>切變影像</translation>
 </phrase>
 
 <!-- Effects_Transform_Shear.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10875,12 +10877,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>vertical offset</original>
-<translation></translation>
+<translation>垂直位移</translation>
 </phrase>
 
 <phrase>
 <original>horizontal offset</original>
-<translation></translation>
+<translation>水平位移</translation>
 </phrase>
 
 <phrase>
@@ -10921,7 +10923,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation></translation>
+<translation>點選 [確定] 以開始進行修復</translation>
 </phrase>
 
 <phrase>
@@ -10976,7 +10978,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation></translation>
+<translation>修復完成。%1 個檔案已修復。</translation>
 </phrase>
 
 <phrase>
@@ -11301,17 +11303,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Folder access unavailable</original>
-<translation></translation>
+<translation>無法存取資料夾</translation>
 </phrase>
 
 <phrase>
 <original>Start processing!</original>
-<translation></translation>
+<translation>開始處理!</translation>
 </phrase>
 
 <phrase>
 <original>Next</original>
-<translation></translation>
+<translation>下一步</translation>
 </phrase>
 
 <phrase>
@@ -11426,7 +11428,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Save the current list of images</original>
-<translation></translation>
+<translation>儲存目前列表的影像</translation>
 </phrase>
 
 <phrase>
@@ -11531,7 +11533,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Estimating time remaining</original>
-<translation></translation>
+<translation>預估剩餘時間</translation>
 </phrase>
 
 <!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
@@ -11672,12 +11674,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>always apply this action to multi-image files</original>
-<translation></translation>
+<translation>永遠套用此操作至包含數個影像的檔案</translation>
 </phrase>
 
 <phrase>
 <original>Load only the first page</original>
-<translation></translation>
+<translation>僅載入第一頁</translation>
 </phrase>
 
 <phrase>
@@ -11717,12 +11719,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Load each icon as a separate image</original>
-<translation></translation>
+<translation>載入每一個圖示為不同影像</translation>
 </phrase>
 
 <phrase>
 <original>This option will load every icon in the ICO file as an individual image.</original>
-<translation></translation>
+<translation>此操作將會載入 ICO 檔案中每一個圖示為獨立的影像。</translation>
 </phrase>
 
 <phrase>
@@ -11732,7 +11734,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>This option will only load a single icon from the ICO file.</original>
-<translation></translation>
+<translation>此操作將僅載入 ICO 檔案中的單一圖示。</translation>
 </phrase>
 
 <phrase>
@@ -11773,27 +11775,27 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>screenshot source</original>
-<translation></translation>
+<translation>螢幕擷圖來源</translation>
 </phrase>
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation></translation>
+<translation>請選擇一個視窗以擷圖</translation>
 </phrase>
 
 <phrase>
 <original>Target window required</original>
-<translation></translation>
+<translation>需要目標視窗</translation>
 </phrase>
 
 <phrase>
 <original>entire desktop</original>
-<translation></translation>
+<translation>完整桌面</translation>
 </phrase>
 
 <phrase>
 <original>specific program</original>
-<translation></translation>
+<translation>指定程式</translation>
 </phrase>
 
 <phrase>
@@ -11813,7 +11815,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Please select another one.</original>
-<translation></translation>
+<translation>請選擇另一個。</translation>
 </phrase>
 
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11860,12 +11862,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>one image per page</original>
-<translation></translation>
+<translation>每個頁面單個影像</translation>
 </phrase>
 
 <phrase>
 <original>multiple images per page</original>
-<translation></translation>
+<translation>每個頁面多個影像</translation>
 </phrase>
 
 <phrase>
@@ -11905,7 +11907,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Step 1 of 2: basic print settings</original>
-<translation></translation>
+<translation>步驟 1 / 2: 基本列印設定</translation>
 </phrase>
 
 <phrase>
@@ -11941,7 +11943,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>copies</original>
-<translation></translation>
+<translation>複本</translation>
 </phrase>
 
 <phrase>
@@ -11997,7 +11999,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>restrict palette size</original>
-<translation></translation>
+<translation>限制色票大小</translation>
 </phrase>
 
 <phrase>
@@ -12108,7 +12110,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>by color</original>
-<translation></translation>
+<translation>依色彩</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12561,7 +12563,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon %1 2000-%2 著作權屬 Tanner Helland 與參與貢獻者所有</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12714,12 +12716,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>1 tag in this category</original>
-<translation></translation>
+<translation>1 個標籤位於此分類</translation>
 </phrase>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation>%1 標籤位於此分類</translation>
+<translation>%1 個標籤位於此分類</translation>
 </phrase>
 
 <phrase>
@@ -13876,7 +13878,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>This option adjusts the width of a line selection.</original>
-<translation></translation>
+<translation>此選項將調整線形選取寬度。</translation>
 </phrase>
 
 <phrase>
@@ -14271,7 +14273,9 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <original>Are you sure you want to delete %1?
 
 (Even though this is an official PhotoDemon language file, you can safely delete it.)</original>
-<translation></translation>
+<translation>您確定要刪除 %1 嗎?
+
+(如果此為 PhotoDemon 官方的語言檔案，您可以放心刪除)</translation>
 </phrase>
 
 <phrase>
@@ -14281,7 +14285,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation></translation>
+<translation>您沒有權限存取此資料夾。請以系統管理員身分執行並再試一次。</translation>
 </phrase>
 
 <phrase>
@@ -14293,7 +14297,9 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <original>Are you sure you want to delete %1?
 
 (Unless you have manually backed up this language file, this action cannot be undone.)</original>
-<translation></translation>
+<translation>您確定要刪除 %1 嗎?
+
+(除非您手動備份此語言檔案，否則是無法還原刪除檔案的)</translation>
 </phrase>
 
 <phrase>
@@ -14417,7 +14423,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)</original>
-<translation></translation>
+<translation>(備註: 在您按下 [下一步] 或 [上一步] 按鈕前，將不會自動儲存變更)</translation>
 </phrase>
 
 <phrase>
@@ -14442,12 +14448,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>When you are finished editing this language, please consider sharing it!  Contact me by visiting</original>
-<translation></translation>
+<translation>當您完成編輯此語言檔案，請您分享出來讓更多人使用! 請聯絡</translation>
 </phrase>
 
 <phrase>
 <original>so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!</original>
-<translation></translation>
+<translation>我們可以加入您的翻譯至官方支援語言列表。即使您只有翻譯一部分，都非常有幫助!</translation>
 </phrase>
 
 <phrase>
@@ -14553,7 +14559,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>generate debug logs</original>
-<translation></translation>
+<translation>產生偵錯記錄檔</translation>
 </phrase>
 
 <phrase>
@@ -14618,7 +14624,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>use black point compensation</original>
-<translation></translation>
+<translation>使用黑點補償</translation>
 </phrase>
 
 <phrase>
@@ -15328,17 +15334,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>palette contents</original>
-<translation></translation>
+<translation>色票內容</translation>
 </phrase>
 
 <phrase>
 <original>palette to export</original>
-<translation></translation>
+<translation>色票以匯出</translation>
 </phrase>
 
 <phrase>
 <original>current palette</original>
-<translation></translation>
+<translation>目前色票</translation>
 </phrase>
 
 <phrase>
@@ -15348,7 +15354,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>overwrite</original>
-<translation></translation>
+<translation>覆寫</translation>
 </phrase>
 
 <phrase>
