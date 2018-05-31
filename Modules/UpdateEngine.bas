@@ -280,7 +280,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 
                 'Construct a URL that matches the selected update track.  GitHub currently hosts PD's update downloads.
                 Dim updateURL As String
-                updateURL = "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/auto/"
+                updateURL = "https://github.com/tannerhelland/PhotoDemon-Updates/blob/master/auto/"
                 
                 Select Case trackWithValidUpdate
                 
@@ -296,7 +296,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 End Select
                 
                 'Download files ship using a custom archive format
-                updateURL = updateURL & ".pdz"
+                updateURL = updateURL & ".pdz?raw=true"
 
                 'Request a download from the main form.  Note that we also use the reported checksum as the file's
                 ' unique ID value. (Post-download and extraction, this value will be used to ensure that the extracted
@@ -391,7 +391,7 @@ Public Sub NotifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
 End Sub
 
 Public Function IsUpdatePackageAvailable() As Boolean
-    IsUpdatePackageAvailable = (Len(m_UpdateFilePath) <> 0)
+    IsUpdatePackageAvailable = (LenB(m_UpdateFilePath) <> 0)
 End Function
 
 'Replacing files at run-time is unpredictable; sometimes we can delete the files, sometimes we can't.
@@ -506,7 +506,7 @@ Public Sub StandardUpdateChecks()
         'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
+        FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK", "https://github.com/tannerhelland/PhotoDemon-Updates/blob/master/summary/pdupdate.xml?raw=true", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
         
     End If
     
