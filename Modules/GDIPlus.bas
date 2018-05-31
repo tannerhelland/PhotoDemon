@@ -750,6 +750,10 @@ Private Enum GP_PropertyTagType
     GP_PTT_SRational = 10
 End Enum
 
+#If False Then
+    Private Const GP_PTT_Byte = 1, GP_PTT_ASCII = 2, GP_PTT_Short = 3, GP_PTT_Long = 4, GP_PTT_Rational = 5, GP_PTT_Undefined = 7, GP_PTT_SLONG = 9, GP_PTT_SRational = 10
+#End If
+
 Public Enum GP_RotateFlip
     GP_RF_NoneFlipNone = 0
     GP_RF_90FlipNone = 1
@@ -940,10 +944,11 @@ Private Type GP_MetafileHeader
 End Type
 
 'GDI+ image properties
-Private Type GP_PropertyItem
+Public Type GP_PropertyItem
     propID As GP_PropertyTag    'Tag identifier
     propLength As Long          'Length of the property value, in bytes
     propType As Integer         'Type of tag value (one of GP_PropertyTagType)
+    ignorePadding As Integer
     propValue As Long           'Property value or pointer to property value, contingent on propType, above
 End Type
 
@@ -974,9 +979,16 @@ Private Const GP_EP_LuminanceTable As String = "{EDB33BCE-0266-4A77-B904-2721609
 Private Const GP_EP_ChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
 Private Const GP_EP_SaveFlag As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
 
-'REQUIRES GDI+ v1.1 OR LATER!
+'THESE ENCODER PROPERTIES REQUIRE GDI+ v1.1 OR LATER!
 Private Const GP_EP_ColorSpace As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
 Private Const GP_EP_SaveAsCMYK As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
+
+'Multi-frame (GIF) and multi-page (TIFF) files support retrieval of individual pages via something Microsoft
+' confusingly calls "frame dimensions".  Frame retrieval functions require to specify which kind of frame
+' you want to retrieve; these GUIDs control that.
+Private Const GP_FD_Page As String = "{7462DC86-6180-4C7E-8E3F-EE7333A7A483}"
+Private Const GP_FD_Resolution As String = "{84236F7B-3BD3-428F-8DAB-4EA1439CA315}"
+Private Const GP_FD_Time As String = "{6AEDBD6D-3FB5-418A-83A6-7F45229DC872}"
 
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
@@ -1097,6 +1109,7 @@ Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEnco
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
 Private Declare Function GdipGetImageHorizontalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef dstHResolution As Single) As GP_Result
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal hImage As Long, ByRef dstPixelFormat As GP_PixelFormat) As GP_Result
+Private Declare Function GdipGetImageRawFormat Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDstGuid As Long) As GP_Result
 Private Declare Function GdipGetImageType Lib "gdiplus" (ByVal srcImage As Long, ByRef dstImageType As GP_ImageType) As GP_Result
 Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef dstVResolution As Single) As GP_Result
 Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Long) As GP_Result
@@ -1126,8 +1139,10 @@ Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As 
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 Private Declare Function GdipGetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByRef dstWrapMode As GP_WrapMode) As GP_Result
 
-Private Declare Function GdipGetImageRawFormat Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDstGuid As Long) As GP_Result
+Private Declare Function GdipImageGetFrameCount Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByRef dstCount As Long) As GP_Result
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rotateFlipType As GP_RotateFlip) As GP_Result
+Private Declare Function GdipImageSelectActiveFrame Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByVal frameIndex As Long) As GP_Result
+
 Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
 
 Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
@@ -1894,7 +1909,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByRef dstImage As pdImage = Nothing, Optional ByRef numOfPages As Long = 1) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As GP_Result
@@ -1930,79 +1945,84 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim isMetafile As Boolean
     isMetafile = (imgFormatFIF = PDIF_EMF) Or (imgFormatFIF = PDIF_WMF)
     
-    'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
-    Dim profileSize As Long, imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile, colorProfileHash As String
+    'Multi-page TIFFs also require special consideration; set another flag in advance.
+    ' (Note that an obnoxious reliance on GUIDs forces us to cache a persistent object identifying frame parameters;
+    '  we will reuse this later in the function, as necessary.)
+    Dim frameDimensionClsID As clsID
+    CopyGUIDIntoByteArray GP_FD_Page, VarPtr(frameDimensionClsID)
     
-    'NOTE! the passed profileSize value must always be zeroed before using GdipGetPropertyItemSize, because the function will not update
-    ' the variable's value if no tag is found.  Seems like an asinine oversight, but oh well.
-    profileSize = 0
-    GdipGetPropertyItemSize hImage, GP_PT_ICCProfile, profileSize
+    Dim isMultiPageTIFF As Boolean, tiffPageCount As Long
+    If (imgFormatFIF = PDIF_TIFF) Then
+        If (GdipImageGetFrameCount(hImage, VarPtr(frameDimensionClsID), tiffPageCount) = GP_OK) Then isMultiPageTIFF = (tiffPageCount > 1)
+    End If
     
-    'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
-    imgHasIccProfile = (profileSize > 0)
+    'We're now going to retrieve various image properties using standard GDI+ property retrieval functions.
+    Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
+    
+    'Look for an ICC profile and cache the result; if the image *does* have an embedded profile, we will use
+    ' it in a subsequent function as part of transforming pixel bytes to a standard 32-bit buffer.
+    Dim imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile
+    imgHasIccProfile = GDIPlus_ImageGetProperty(hImage, GP_PT_ICCProfile, tmpPropHeader, tmpPropBuffer)
+    
     If imgHasIccProfile Then
-    
-        Dim iccProfileBuffer() As Byte
-        ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
-        GdipGetPropertyItem hImage, GP_PT_ICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
         'Create a temporary profile, and add it to PD's central color management cache
         Set embeddedProfile = New pdICCProfile
-        embeddedProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
-        Erase iccProfileBuffer
+        embeddedProfile.LoadICCFromPtr tmpPropHeader.propLength, tmpPropHeader.propValue
+        Erase tmpPropBuffer
         
+        Dim colorProfileHash As String
         colorProfileHash = ColorManagement.AddProfileToCache(embeddedProfile)
         If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original colorProfileHash
         
     End If
     
-    'Look for orientation flags.  This is most relevant for JPEGs coming from a digital camera.
-    profileSize = 0
-    GdipGetPropertyItemSize hImage, GP_PT_Orientation, profileSize
-    
-    If (profileSize > 0) And UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
-        
-        'Orientation tag will only ever be 2 bytes
-        Dim tmpPropertyBuffer() As Byte
-        ReDim tmpPropertyBuffer(0 To profileSize - 1) As Byte
-        GdipGetPropertyItem hImage, GP_PT_Orientation, profileSize, ByVal VarPtr(tmpPropertyBuffer(0))
-        
-        'The first 16 bytes of a GDI+ property are a standard header.  We need the MSB of the 2-byte trailer of the returned array.
-        Select Case tmpPropertyBuffer(profileSize - 2)
-        
-            'Standard orientation - ignore!
-            Case 1
-        
-            'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
-            Case 2
-                GdipImageRotateFlip hImage, GP_RF_NoneFlipX
+    'Next, pull an orientation flag, if any.  This is most relevant for JPEGs coming from a digital camera.
+    If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
+        If GDIPlus_ImageGetProperty(hImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
             
-            'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
-            Case 3
-                GdipImageRotateFlip hImage, GP_RF_180FlipNone
-            
-            'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
-            Case 4
-                GdipImageRotateFlip hImage, GP_RF_NoneFlipY
-            
-            'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
-            Case 5
-                GdipImageRotateFlip hImage, GP_RF_270FlipY
-            
-            'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
-            Case 6
-                GdipImageRotateFlip hImage, GP_RF_90FlipNone
+            'The returned buffer should only ever be two bytes, as this property is an integer.
+            If (tmpPropHeader.propLength = 2) Then
                 
-            'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
-            Case 7
-                GdipImageRotateFlip hImage, GP_RF_90FlipY
+                'Select based on the MSB
+                Select Case tmpPropBuffer(0)
+                    
+                    'Standard orientation - ignore!
+                    Case 1
                 
-            'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
-            Case 8
-                GdipImageRotateFlip hImage, GP_RF_270FlipNone
+                    'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
+                    Case 2
+                        GdipImageRotateFlip hImage, GP_RF_NoneFlipX
+                    
+                    'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
+                    Case 3
+                        GdipImageRotateFlip hImage, GP_RF_180FlipNone
+                    
+                    'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
+                    Case 4
+                        GdipImageRotateFlip hImage, GP_RF_NoneFlipY
+                    
+                    'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
+                    Case 5
+                        GdipImageRotateFlip hImage, GP_RF_270FlipY
+                    
+                    'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
+                    Case 6
+                        GdipImageRotateFlip hImage, GP_RF_90FlipNone
+                        
+                    'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
+                    Case 7
+                        GdipImageRotateFlip hImage, GP_RF_90FlipY
+                        
+                    'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
+                    Case 8
+                        GdipImageRotateFlip hImage, GP_RF_270FlipNone
+                
+                End Select
+            
+            End If
         
-        End Select
-        
+        End If
     End If
     
     'Metafiles can contain brushes and other objects stored at extremely high DPIs.
@@ -2349,6 +2369,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End If
                 
     End If
+    
+    'If this is a multipage TIFF, notify the caller as they may want to load subsequent pages as well
+    If isMultiPageTIFF Then numOfPages = tiffPageCount
     
 End Function
 
@@ -3183,7 +3206,7 @@ End Sub
 
 'Thanks to Carles P.V. for providing the following function, which is used as part of GDI+ image saving.
 ' You can download Carles's full original project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Sub CopyGUIDIntoByteArray(ByVal sGuid As String, ByVal ptrToArray As Long)
+Private Sub CopyGUIDIntoByteArray(ByRef sGuid As String, ByVal ptrToArray As Long)
     CLSIDFromString StrPtr(sGuid), ptrToArray
 End Sub
 
@@ -4467,34 +4490,83 @@ Public Function GDIPlus_ImageGetPixelFormat(ByVal hImage As Long) As GP_PixelFor
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
-'It's important to check the return value of this function; it will be FALSE if the image does not
-' contain/provide the requested property.  Also note that all properties are returned as byte arrays.
-' It is up to the caller to make sense of this return, presumably using the MSDN guide at
+'Retrieve an image "property" (usually something defined inside a metadata region).  For example, you can
+' use this to pull an ICC profile out of an image, or EXIF data like "orientation" for smartphone photos.
+'
+'Note that it is *critical* to check the return value of this function.  It will return FALSE if the image
+' does not contain/provide/support the requested property.
+'
+'Also note that all properties are returned as byte arrays.  It is up to the caller to make sense of the
+' bytes in whatever way is appropriate for the requested property.  This MSDN guide can help with that:
 ' https://msdn.microsoft.com/en-us/library/ms534416(v=vs.85).aspx
-Public Function GDIPlus_ImageGetProperty(ByVal hImage As Long, ByVal gpPropertyID As GP_PropertyTag, ByRef dstBuffer() As Byte) As Boolean
+'
+'The returned header can also help you interpret the data correctly, but note that we have to format the
+' header type a little weirdly due to padding issues.  As such, the "property type" member is not
+' specifically declared as an enum, although you can treat it as an integer of GP_PropertyTagType.
+'
+'Note also that the header's property value pointer is manually overwritten by this function, so that it
+' points at the returned array instead of the temporary buffer passed to GDI+.
+Public Function GDIPlus_ImageGetProperty(ByVal hImage As Long, ByVal gpPropertyID As GP_PropertyTag, ByRef dstHeader As GP_PropertyItem, ByRef dstValueBuffer() As Byte) As Boolean
+    
+    GDIPlus_ImageGetProperty = False
     
     Dim tmpReturn As GP_Result, propSize As Long
     tmpReturn = GdipGetPropertyItemSize(hImage, gpPropertyID, propSize)
-    If (tmpReturn = GP_OK) Then
     
-        If (propSize > 0) Then
-            ReDim dstBuffer(0 To propSize - 1) As Byte
-            tmpReturn = GdipGetPropertyItem(hImage, gpPropertyID, propSize, VarPtr(dstBuffer(0)))
-            If (tmpReturn = GP_OK) Then
-                GDIPlus_ImageGetProperty = True
+    If (tmpReturn = GP_OK) Then
+        
+        'Even if the call was successful, the property may not exist; check for a non-zero size.
+        ' (Note that the returned buffer contains two pieces of data: a 16-byte header, and (n) bytes
+        '  of actual property value information.  If (n) = 0, the value buffer is empty, and we don't
+        '  want to return anything whatsoever, despite the presence of a property header.)
+        GDIPlus_ImageGetProperty = (propSize > 16)
+        If GDIPlus_ImageGetProperty Then
+        
+            ReDim tmpBuffer(0 To propSize - 1) As Byte
+            tmpReturn = GdipGetPropertyItem(hImage, gpPropertyID, propSize, VarPtr(tmpBuffer(0)))
+            GDIPlus_ImageGetProperty = (tmpReturn = GP_OK)
+            
+            If GDIPlus_ImageGetProperty Then
+            
+                'The returned buffer is formatted in a unique way.  The first 16-bytes are a GP_PropertyItem header;
+                ' followed by the actual property value as a stream of raw bytes (whose interpretation varies based
+                ' on the property type defined by the header).  As a convenience, let's parse the raw buffer into
+                ' separate, usable chunks, while also performing some failsafe checks on the returned data.
+                
+                'First, pull out the header
+                CopyMemoryStrict VarPtr(dstHeader), VarPtr(tmpBuffer(0)), 16
+                
+                'Make sure the header type matches the property we requested, and make sure the data pointer also
+                ' points at the temporary buffer *immediately* following the header.  (If it doesn't, something weird
+                ' is afoot, and I'd like to figure out wtf is happening.)
+                If (dstHeader.propID <> gpPropertyID) Then InternalGDIPlusError "GdipGetPropertyItem returned wrong property?", dstHeader.propID & " vs " & gpPropertyID
+                If (dstHeader.propValue <> VarPtr(tmpBuffer(16))) Then InternalGDIPlusError "GdipGetPropertyItem returned a crazy pointer?", dstHeader.propValue & " vs " & VarPtr(tmpBuffer(16))
+                If (dstHeader.propLength <> (propSize - 16)) Then InternalGDIPlusError "GdipGetPropertyItem returned a strangely sized buffer?", dstHeader.propLength & " vs " & propSize
+                
+                'Now we can size the value buffer and copy the relevant property value bytes into it.
+                GDIPlus_ImageGetProperty = (dstHeader.propLength > 0)
+                If GDIPlus_ImageGetProperty Then
+                    
+                    ReDim dstValueBuffer(0 To dstHeader.propLength - 1) As Byte
+                    CopyMemoryStrict VarPtr(dstValueBuffer(0)), dstHeader.propValue, dstHeader.propLength
+                    
+                    'Cheat and overwrite the header's pointer with a new pointer to the value buffer we're returning
+                    dstHeader.propValue = VarPtr(dstValueBuffer(0))
+                    
+                Else
+                    InternalGDIPlusError "GdipGetPropertyItem returned an invalid property length", CStr(dstHeader.propLength)
+                End If
+            
             Else
                 InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-                GDIPlus_ImageGetProperty = False
             End If
-        Else
-            GDIPlus_ImageGetProperty = False
-        End If
         
-    Else
-        'NOTE: it's totally okay for an image to not have a given property.  This is not a meaningful error,
-        ' so we do not report it.
-        'InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-        GDIPlus_ImageGetProperty = False
+        Else
+            InternalGDIPlusError "GdipGetPropertyItem returned a propsize less than 16", propSize
+        End If
+    
+    'It's totally okay for an image to not provide a given property.  This is not an error (or even a warning),
+    ' so don't report it.
     End If
     
 End Function

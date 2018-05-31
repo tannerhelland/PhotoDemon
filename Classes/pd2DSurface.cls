@@ -424,8 +424,6 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         Dim imgWidth As Long, imgHeight As Long
         GDI_Plus.GDIPlus_ImageGetDimensions hGdipImage, imgWidth, imgHeight
         
-        Dim tmpPropertyBuffer() As Byte
-        
         'If the source image is a metafile, we can enable some bonus features on Vista+
         If isImageMetafile Then
             
@@ -482,11 +480,11 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         Else
         
             'Automatically apply any orientation metadata, if present
-            If GDI_Plus.GDIPlus_ImageGetProperty(hGdipImage, GP_PT_Orientation, tmpPropertyBuffer) Then
+            Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
+            If GDI_Plus.GDIPlus_ImageGetProperty(hGdipImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
             
-                'The first 16 bytes of a GDI+ property are ignored.  For the orientation property, we need the MSB of the
-                ' 2-byte trailer of the returned array.
-                Select Case tmpPropertyBuffer(UBound(tmpPropertyBuffer) - 1)
+                'For the orientation property, we need the MSB of the 2-byte array (which is just an integer).
+                Select Case tmpPropBuffer(0)
                 
                     'For details on what the different orientation values mean, visit https://msdn.microsoft.com/en-us/library/ms534416(v=vs.85).aspx
                     Case 1
@@ -512,15 +510,15 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         End If
         
         'Check for the presence of an alpha channel
-        Dim imgPixelFormat As GP_PixelFormat, hasAlpha As Boolean
+        Dim imgPixelFormat As GP_PixelFormat, imgHasAlpha As Boolean
         imgPixelFormat = GDI_Plus.GDIPlus_ImageGetPixelFormat(hGdipImage)
-        hasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0) Or ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
+        imgHasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0) Or ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
         
         'Metafiles require special handling on Vista and earlier
         Set m_SurfaceDIB = New pdDIB
         
         If isImageMetafile Then
-            If emfPlusConversionSuccessful Or hasAlpha Then
+            If emfPlusConversionSuccessful Or imgHasAlpha Then
                 m_SurfaceDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
             Else
                 m_SurfaceDIB.CreateBlank imgWidth, imgHeight, 24
@@ -531,7 +529,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         
         'It's finally time to copy the GDI+ image data into our internal DIB container.  Note that 32-bpp images are
         ' handled differently from 24-bpp images, due to some quirks with GDI+.
-        If hasAlpha Then
+        If imgHasAlpha Then
             
             'Make sure the image is in 32-bpp premultiplied ARGB format
             If (imgPixelFormat <> GP_PF_32bppPARGB) And (Not isImageMetafile) Then GDI_Plus.GDIPlus_ImageForcePremultipliedAlpha hGdipImage, imgWidth, imgHeight
@@ -576,6 +574,7 @@ Private Function InternalGDIPlusLoadImage(ByVal hGdipImage As Long, Optional ByV
         
         'If successful, relay any remaining surface properties to the GDI+ container associated with this surface
         If InternalGDIPlusLoadImage Then
+        
             m_SurfaceType = P2_ST_Bitmap
             m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
             InternalGDIPlusLoadImage = (m_SurfaceHandle <> 0)

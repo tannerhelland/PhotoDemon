@@ -677,11 +677,11 @@ End Function
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
-Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByRef numOfPages As Long = 1) As Boolean
     
     LoadGDIPlusImage = False
     
-    If GDI_Plus.GDIPlusLoadPicture(imagePath, dstDIB, dstImage) Then
+    If GDI_Plus.GDIPlusLoadPicture(imagePath, dstDIB, dstImage, numOfPages) Then
         If (Not dstDIB Is Nothing) Then LoadGDIPlusImage = ((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
     End If
     
@@ -986,13 +986,14 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If g_ImageFormats.GDIPlusEnabled Then
             
             PDDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-            CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB, dstImage)
+            CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
             
             If CascadeLoadGenericImage Then
                 decoderUsed = id_GDIPlus
                 dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
                 dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
                 dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
+                imageHasMultiplePages = (numOfPages > 1)
             End If
                 
         End If

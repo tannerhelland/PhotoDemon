@@ -12731,7 +12731,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation>Diesen Tag zum Entfernen markieren</translation>
+<translation>Dieses Tag zum Entfernen markieren</translation>
 </phrase>
 
 <phrase>
@@ -12741,7 +12741,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Reset tag to its original value</original>
-<translation>Tag auf seinen Originalwert zurücksetzen</translation>
+<translation>Tag auf dessen Originalwert zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -12816,12 +12816,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation>Dies ist ein geschützter Tag. Bearbeitungen sind erlaubt, diese können aber zum Erzeugen einer gültigen Bilddatei überschrieben werden.</translation>
+<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, diese können aber zum Erzeugen einer gültigen Bilddatei überschrieben werden.</translation>
 </phrase>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation>Dieser Tag ist beschränkt. Er kann nicht bearbeitet werden und Anfragen zur Entfernung werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
+<translation>Dieses Tag ist beschränkt. Es kann nicht bearbeitet werden und Anfragen zur Entfernung werden ignoriert, wenn diese in einer ungültigen Datei resultieren.</translation>
 </phrase>
 
 <phrase>

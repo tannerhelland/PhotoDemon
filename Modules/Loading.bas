@@ -234,12 +234,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             If ImageImporter.ForceTo32bppMode(targetDIB) Then VBHacks.DoEventsTimersOnly
             
             '*************************************************************************************************************************************
-            ' If we were forced to fall back to GDI+ as our loading engine, disable any remaining load-time FreeImage features
-            '*************************************************************************************************************************************
-            
-            If (decoderUsed <> id_FreeImage) Then imageHasMultiplePages = False
-            
-            '*************************************************************************************************************************************
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
             '*************************************************************************************************************************************
                 
@@ -335,7 +329,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: as of v7.0, this feature has been disabled for icons and GIFs.  Why?  PD doesn't yet provide a way to
         ' export "multipage" versions of these files.  As such, importing them as multipage is just frustrating.  I'll look
         ' at fixing this in a future release.
-        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) Then
+        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) And (decoderUsed = id_FreeImage) Then
             
             'TODO: deal with UI prompt options here!
             

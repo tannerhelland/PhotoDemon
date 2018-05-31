@@ -100,7 +100,9 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
     'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
     ' will cause us to abandon the attempt entirely.)
     If (keepLoading < png_Failure) Then
-    
+        
+        PDDebug.LogAction "File is PNG; running internal parser..."
+        
         'Parse the original file into chunks.  (Once this is done, we no longer need to maintain an
         ' in-memory copy of the original PNG data.)
         keepLoading = Me.Step2_PreLoadChunks(srcFile)
