@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.154</langversion>
+<langversion>1.0.155</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -699,28 +699,8 @@ If проблемот продолжи, ве молиме да го пријав
 <!-- BEGIN text for GDIPlus.bas -->
 
 <phrase>
-<original>GDI+ failed to render blur effect (Error Code %1).</original>
-<translation>GDI не успеа да направи заматеност (Код на грешка %1).</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to set effect parameters.</original>
-<translation>GDI не успеа да поставите параметри ефект.</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to create blur effect object</original>
-<translation>GDI не успеа да создаде објект blur решение ефект</translation>
-</phrase>
-
-<phrase>
-<original>Creating GDI+ compatible image copy</original>
-<translation>Креирање на GDI копија компатибилен слика</translation>
-</phrase>
-
-<phrase>
-<original>Preparing GDI+ encoder for this filetype</original>
-<translation>Подготовка GDI енкодер за овој тип на датотека</translation>
+<original>Multipage image found.  Loading page #%1 of %2</original>
+<translation>Најдени се повеќегодишни слики. Вчитувам страница # %1 од %2</translation>
 </phrase>
 
 <phrase>
@@ -733,7 +713,7 @@ If проблемот продолжи, ве молиме да го пријав
 <translation>Зачувај заврши.</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for GDIPlus.bas-->
 
@@ -1898,16 +1878,11 @@ To овозможи поддршка скенер, молам копирајте
 </phrase>
 
 <phrase>
-<original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Најдени се повеќегодишни слики. Вчитувам страница # %1 од %2</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>Примена тон мапирање</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Plugin_FreeImage.bas-->
 
@@ -15432,10 +15407,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4689 phrases. -->
-<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 12482 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12455 total words. -->
 
 </pdData>

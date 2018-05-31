@@ -319,7 +319,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
-    If Not (m_SrcImage Is Nothing) Then
+    If (Not m_SrcImage Is Nothing) Then
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If

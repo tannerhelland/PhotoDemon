@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3341</langversion>
+<langversion>6.8.3342</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -700,28 +700,8 @@ If o problema persistir, por favor denuncie para os desenvolvedores PhotoDemon v
 <!-- BEGIN text for GDIPlus.bas -->
 
 <phrase>
-<original>GDI+ failed to render blur effect (Error Code %1).</original>
-<translation>GDI não conseguiu tornar efeito blur (Código de erro %1).</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to set effect parameters.</original>
-<translation>GDI não conseguiu definir os parâmetros de efeito.</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to create blur effect object</original>
-<translation>GDI não conseguiu criar efeito borrão objeto</translation>
-</phrase>
-
-<phrase>
-<original>Creating GDI+ compatible image copy</original>
-<translation>Criar cópia de imagem GDI compatível</translation>
-</phrase>
-
-<phrase>
-<original>Preparing GDI+ encoder for this filetype</original>
-<translation>Preparando GDI codificador para este tipo de arquivo</translation>
+<original>Multipage image found.  Loading page #%1 of %2</original>
+<translation>Imagem de várias páginas encontrada. Página de carregamento # %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -734,7 +714,7 @@ If o problema persistir, por favor denuncie para os desenvolvedores PhotoDemon v
 <translation>Salve completa.</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for GDIPlus.bas-->
 
@@ -1898,16 +1878,11 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 </phrase>
 
 <phrase>
-<original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Imagem de várias páginas encontrada. Página de carregamento # %1 de %2</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>Aplicando de mapeamento de tom</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Plugin_FreeImage.bas-->
 
@@ -15431,10 +15406,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4689 phrases. -->
-<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 12482 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12455 total words. -->
 
 </pdData>

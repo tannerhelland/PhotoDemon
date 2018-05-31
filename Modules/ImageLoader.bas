@@ -952,54 +952,76 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         dstImage.SetOriginalFileFormat PDIF_PNG
     End If
     
-    'If our various internal engines passed on the image, move to FreeImage.  Note that FreeImage may raise additional dialogs
-    ' (e.g. for HDR/RAW images), so it does not return a binary pass/fail.  (If the function fails due to user cancellation,
-    ' we will suppress subsequent error message boxes.)
-    freeImage_Return = PD_FAILURE_GENERIC
-    If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then
+    'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
+    ' (Pre v7.2, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to a
+    ' lot of bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now more selective about
+    ' which library gets used first.)
+    If (Not CascadeLoadGenericImage) Then
     
-        'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
-        ' TODO: preferences or prompt for how to handle such files??
-        numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
-        imageHasMultiplePages = (numOfPages > 1)
-        freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB, , , dstImage)
-        CascadeLoadGenericImage = (freeImage_Return = PD_SUCCESS)
+        'FreeImage's TIFF support (via libTIFF?) is wonky.  It's prone to bad crashes and inexplicable memory
+        ' issues (including allocation failures on normal-sized images), so for TIFFs we want to try GDI+ before
+        ' trying FreeImage.  (PD's GDI+ image loader was heavily restructured in v7.2 to support things like
+        ' multi-page import, so this strategy wasn't viable until then.)
+        Dim tryGDIPlusFirst As Boolean
+        tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "tif", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "tiff", True)
         
-        'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),
-        ' then continue with the load process.
-        If CascadeLoadGenericImage Then
+        If tryGDIPlusFirst Then
+            CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            freeImage_Return = PD_FAILURE_GENERIC
+            If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             
-            decoderUsed = id_FreeImage
-            
+        'For other formats, let FreeImage have a go at it, and we'll try GDI+ if it fails
+        Else
+            freeImage_Return = PD_FAILURE_GENERIC
+            If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+        End If
+        
+    End If
+    
+End Function
+
+Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+    
+    'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
+    ' TODO: preferences or prompt for how to handle such files??
+    numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
+    imageHasMultiplePages = (numOfPages > 1)
+    freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB, , , dstImage)
+    AttemptFreeImageLoad = (freeImage_Return = PD_SUCCESS)
+    
+    'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),
+    ' then continue with the load process.
+    If AttemptFreeImageLoad Then
+        
+        decoderUsed = id_FreeImage
+        
+        dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
+        dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
+        dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
+        If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
+        
+    End If
+        
+End Function
+
+Private Function AttemptGDIPlusLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+
+    If g_ImageFormats.GDIPlusEnabled Then
+        
+        PDDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+        AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
+        
+        If AttemptGDIPlusLoad Then
+            decoderUsed = id_GDIPlus
             dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
             dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
             dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
-            If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
-            
+            imageHasMultiplePages = (numOfPages > 1)
         End If
-        
+            
     End If
-            
-    'If FreeImage fails for some reason, let GDI+ have a go at it.
-    If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
         
-        If g_ImageFormats.GDIPlusEnabled Then
-            
-            PDDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
-            CascadeLoadGenericImage = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
-            
-            If CascadeLoadGenericImage Then
-                decoderUsed = id_GDIPlus
-                dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
-                dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
-                dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
-                imageHasMultiplePages = (numOfPages > 1)
-            End If
-                
-        End If
-        
-    End If
-    
 End Function
 
 'Test an incoming image file against PD's internal decoder engines.  This function is much faster than

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3341</langversion>
+<langversion>6.8.3342</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -699,28 +699,8 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 <!-- BEGIN text for GDIPlus.bas -->
 
 <phrase>
-<original>GDI+ failed to render blur effect (Error Code %1).</original>
-<translation>GDI bulanıklık efekti (Hata Kodu %1) işlemek için başarısız oldu.</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to set effect parameters.</original>
-<translation>GDI efekt parametrelerini ayarlamak için başarısız oldu.</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ failed to create blur effect object</original>
-<translation>GDI bulanıklık efekti nesnesi oluşturmak için başarısız oldu</translation>
-</phrase>
-
-<phrase>
-<original>Creating GDI+ compatible image copy</original>
-<translation>Oluşturma GDI uyumlu görüntü kopyalama</translation>
-</phrase>
-
-<phrase>
-<original>Preparing GDI+ encoder for this filetype</original>
-<translation>Bu filetype için GDI encoder hazırlanıyor</translation>
+<original>Multipage image found.  Loading page #%1 of %2</original>
+<translation>Çok sayfalı görüntü bulundu.  %2, sayfa %1 yükleniyor</translation>
 </phrase>
 
 <phrase>
@@ -733,7 +713,7 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 <translation>tam kaydedin.</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for GDIPlus.bas-->
 
@@ -1894,16 +1874,11 @@ To programı üzerine kayıp olarak kutlandı) plug-in dizine ve programı yükl
 </phrase>
 
 <phrase>
-<original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Çok sayfalı görüntü bulundu.  %2, sayfa %1 yükleniyor</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>Uygulamak sesi-haritalama</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Plugin_FreeImage.bas-->
 
@@ -15419,10 +15394,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4689 phrases. -->
-<!-- 2107 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 12482 total words. -->
+<!-- As of this build, PhotoDemon contains 4685 phrases. -->
+<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 12455 total words. -->
 
 </pdData>

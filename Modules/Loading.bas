@@ -329,27 +329,43 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: as of v7.0, this feature has been disabled for icons and GIFs.  Why?  PD doesn't yet provide a way to
         ' export "multipage" versions of these files.  As such, importing them as multipage is just frustrating.  I'll look
         ' at fixing this in a future release.
-        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) And (decoderUsed = id_FreeImage) Then
+        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) Then
             
             'TODO: deal with UI prompt options here!
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
             
-            'We now have several options for loading the remaining pages in this file.
+            'The actual load process now varies by import engine.  PD can use both FreeImage and GDI+
+            ' to import multipage images.
+            If (decoderUsed = id_FreeImage) Then
             
-            'For most images, the easiest path would be to keep calling the standard FI_LoadImage function(), passing it updated
-            ' page numbers as we go.  This ensures that all the usual fallbacks and detailed edge-case handling (like ICC profiles
-            ' that vary by page) are handled correctly.
-            '
-            'However, it also means that the source file is loaded/unloaded on each frame, because the FreeImage load function
-            ' was never meant to be used like this.  This isn't a problem for images with a few pages, but if the image is large
-            ' and/or if it has tons of frames (like a length animated GIF), we could be here awhile.
-            '
-            'As of 7.0, a better solution exists: ask FreeImage to cache the source file, and keep it cached until all frames
-            ' have been loaded.  This is *way* faster, and it also lets us bypass a bunch of per-file validation checks
-            ' (since we already know the source file is okay).
-            loadSuccessful = Plugin_FreeImage.FinishLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
+                'We now have several options for loading the remaining pages in this file.
+                
+                'For most images, the easiest path would be to keep calling the standard FI_LoadImage function(), passing it updated
+                ' page numbers as we go.  This ensures that all the usual fallbacks and detailed edge-case handling (like ICC profiles
+                ' that vary by page) are handled correctly.
+                '
+                'However, it also means that the source file is loaded/unloaded on each frame, because the FreeImage load function
+                ' was never meant to be used like this.  This isn't a problem for images with a few pages, but if the image is large
+                ' and/or if it has tons of frames (like a length animated GIF), we could be here awhile.
+                '
+                'As of 7.0, a better solution exists: ask FreeImage to cache the source file, and keep it cached until all frames
+                ' have been loaded.  This is *way* faster, and it also lets us bypass a bunch of per-file validation checks
+                ' (since we already know the source file is okay).
+                loadSuccessful = Plugin_FreeImage.FinishLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
+            
+            'GDI+ path
+            Else
+            
+                'If we implement a load-time dialog in the future, and the user (for whatever reason) doesn't want
+                ' all pages loaded, call this function to free cached multipage handles:
+                'GDI_Plus.MultiPageDataNotWanted
+                
+                'Otherwise, assume they want all pages loaded
+                loadSuccessful = GDI_Plus.ContinueLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
+            
+            End If
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or ICON.
             ' (TIFFs don't require this, as all pages are typically the same size.)

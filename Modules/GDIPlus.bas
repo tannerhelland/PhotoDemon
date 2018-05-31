@@ -852,6 +852,13 @@ Private Type tmpLong
     lngResult As Long
 End Type
 
+'On GDI+ v1.1 or later, certain effects can be rendered via GDI+.  Note that these are buggy and *not* well-tested,
+' so we avoid them in PD except for curiosity and testing purposes.
+Private Type GP_BlurParams
+    BP_Radius As Single
+    BP_ExpandEdge As Long
+End Type
+
 'Exporting images via GDI+ is a big headache.  A number of convoluted structs are required if the user
 ' wants to custom-set any image properties.
 Private Type GP_EncoderParameter
@@ -1026,9 +1033,6 @@ Private Declare Function GdipCombineRegionRectI Lib "gdiplus" (ByVal hRegion As 
 Private Declare Function GdipCombineRegionRegion Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcRegion As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipCombineRegionPath Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcPath As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
 
-'This EMF convert function only works on Vista+!
-Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
-
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDIBitmapInfo As BITMAPINFO, ByRef srcBitmapData As Any, ByRef dstGdipBitmap As Long) As GP_Result
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByRef Scan0 As Any, ByRef dstGdipBitmap As Long) As GP_Result
 Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
@@ -1038,6 +1042,7 @@ Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImage
 Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RectF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
+Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal pathFillMode As GP_FillMode, ByRef dstPath As Long) As GP_Result
 Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptrToSrcPath As Long, ByRef dstPathGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal srcColor As Long, ByVal srcWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
@@ -1178,6 +1183,7 @@ Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal 
 Private Declare Function GdipSetInfinite Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newInterpolationMode As GP_InterpolationMode) As GP_Result
 Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
 Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As PointFloat) As GP_Result
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
@@ -1211,6 +1217,16 @@ Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, B
 Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As GP_Result
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal allowableError As Single) As GP_Result
 
+'Some GDI+ functions are *only* supported on GDI+ 1.1, which first shipped with Vista (but requires explicit activation
+' via manifest, and as such, is unavailable to PD until Win 7).  Take care to confirm the availability of these functions
+' before using them.
+Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
+Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal hGraphics As Long, ByVal srcMetafile As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As GP_MetafileType, ByVal ptrToMetafileDescription As Long, ByRef dstMetafilePtr As Long) As GP_Result
+Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef dstEffect As Long) As GP_Result
+Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal hEffect As Long) As GP_Result
+Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByRef drawRect As RectF, ByVal hTransformMatrix As Long, ByVal hEffect As Long, ByVal hImageAttributes As Long, ByVal srcUnit As GP_Unit) As GP_Result
+Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal hEffect As Long, ByRef srcParams As Any, ByVal srcParamSize As Long) As GP_Result
+
 'Non-GDI+ helper functions:
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal ptrToGuidString As Long, ByVal ptrToByteArray As Long) As Long
 Private Declare Function CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
@@ -1223,12 +1239,9 @@ Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
-Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 Private Declare Function StringFromCLSID Lib "ole32" (ByVal ptrToGuid As Long, ByRef ptrToDstString As Long) As Long
-Private Declare Function SysAllocString Lib "oleaut32" (ByVal srcWCharPtr As Long) As Long
-Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcAnsiPtr As Long, ByVal srcLength As Long) As String
 
 'Internally cached values:
 
@@ -1244,40 +1257,13 @@ Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
 ' we simply create a default identity matrix at initialization, then re-use it as necessary.
 Private m_AttributesMatrix() As Single
 
-'***************************************************************************
-
-'Old declarations and descriptions follow.  These need to be reworked into something coherent, but it's a
-' slog of a process...
-
-Private Type clsID
-    Data1         As Long
-    Data2         As Integer
-    Data3         As Integer
-    Data4(0 To 7) As Byte
-End Type
-
-
-'Load image from file, process said file, etc.
-Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
-
-'Note: only supported in GDI+ v1.1!
-Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As GP_MetafileType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
-
-'CopyMemory
-Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
-
-'GDI+ calls related to drawing lines and various shapes
-'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
-Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
-Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
-Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
-Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RectF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
-Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
-
-Private Type BlurParams
-    bRadius As Single
-    ExpandEdge As Long
-End Type
+'When loading multi-page TIFF images, we first perform a default load operation on the first TIFF page.
+' (This gives the user something to work with if subsequent pages fail, which is worryingly possible
+' given the complexities of loading TIFFs.)  PD's master load function can then do whatever it needs to
+' - e.g. prompt the user for desired load behavior - and notify us of the result.  If the user wants more
+' pages from the file, we don't have to load it again; instead, we can just switch pages and carry on
+' where we left off.
+Private m_hMultiPageTIFF As Long
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1415,9 +1401,9 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     If GdipCreateEffect(&H633C80A4, &H482B1843, &H28BEF29E, &HD4FDC534, hEffect) = 0 Then
         
         'Next, create a compatible set of blur parameters and pass those to the GDI+ blur object
-        Dim tmpParams As BlurParams
-        tmpParams.bRadius = CSng(blurRadius)
-        tmpParams.ExpandEdge = 0
+        Dim tmpParams As GP_BlurParams
+        tmpParams.BP_Radius = CSng(blurRadius)
+        tmpParams.BP_ExpandEdge = 0
     
         If GdipSetEffectParameters(hEffect, tmpParams, Len(tmpParams)) = 0 Then
     
@@ -1433,22 +1419,18 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
             GdipCreateMatrix2 1&, 0&, 0&, 1&, 0&, 0&, tmpMatrix
             
             'Attempt to render the blur effect
-            Dim GDIPlusDebug As Long
+            Dim GDIPlusDebug As GP_Result
             GDIPlusDebug = GdipDrawImageFX(hGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, GP_U_Pixel)
             
-            If GDIPlusDebug = 0 Then
-                GDIPlusBlurDIB = True
-            Else
-                GDIPlusBlurDIB = False
-                Message "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
-            End If
+            GDIPlusBlurDIB = (GDIPlusDebug = GP_OK)
+            If (Not GDIPlusBlurDIB) Then PDDebug.LogAction "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
             
             'Delete our temporary transformation matrix
-            GdipDeleteMatrix tmpMatrix
+            If (tmpMatrix <> 0) Then GdipDeleteMatrix tmpMatrix
             
         Else
             GDIPlusBlurDIB = False
-            Message "GDI+ failed to set effect parameters."
+            PDDebug.LogAction "GDI+ failed to set effect parameters."
         End If
     
         'Delete our GDI+ blur object
@@ -1456,7 +1438,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     
     Else
         GDIPlusBlurDIB = False
-        Message "GDI+ failed to create blur effect object"
+        PDDebug.LogAction "GDI+ failed to create blur effect object"
     End If
         
     'Release both the destination graphics object and the source bitmap object
@@ -1929,16 +1911,16 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Retrieve the image's format as a GUID
-    Dim imgClsID As clsID
-    GdipGetImageRawFormat hImage, VarPtr(imgClsID)
+    Dim formatGUID(0 To 15) As Byte
+    GdipGetImageRawFormat hImage, VarPtr(formatGUID(0))
     
     'Convert the GUID into a string
     Dim imgStringPointer As Long, imgFormatGuidString As String
-    StringFromCLSID VarPtr(imgClsID), imgStringPointer
+    StringFromCLSID VarPtr(formatGUID(0)), imgStringPointer
     imgFormatGuidString = Strings.StringFromCharPtr(imgStringPointer, True)
     
     'And finally, convert the string into an FIF long
-    Dim imgFormatFIF As Long
+    Dim imgFormatFIF As PD_IMAGE_FORMAT
     imgFormatFIF = GetFIFFromGUID(imgFormatGuidString)
     
     'Metafiles require special consideration; set that flag in advance
@@ -1948,12 +1930,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'Multi-page TIFFs also require special consideration; set another flag in advance.
     ' (Note that an obnoxious reliance on GUIDs forces us to cache a persistent object identifying frame parameters;
     '  we will reuse this later in the function, as necessary.)
-    Dim frameDimensionClsID As clsID
-    CopyGUIDIntoByteArray GP_FD_Page, VarPtr(frameDimensionClsID)
+    Dim frameDimensionID(0 To 15) As Byte
+    CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
     
     Dim isMultiPageTIFF As Boolean, tiffPageCount As Long
     If (imgFormatFIF = PDIF_TIFF) Then
-        If (GdipImageGetFrameCount(hImage, VarPtr(frameDimensionClsID), tiffPageCount) = GP_OK) Then isMultiPageTIFF = (tiffPageCount > 1)
+        If (GdipImageGetFrameCount(hImage, VarPtr(frameDimensionID(0)), tiffPageCount) = GP_OK) Then isMultiPageTIFF = (tiffPageCount > 1)
     End If
     
     'We're now going to retrieve various image properties using standard GDI+ property retrieval functions.
@@ -1977,52 +1959,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
     End If
     
-    'Next, pull an orientation flag, if any.  This is most relevant for JPEGs coming from a digital camera.
+    'Next, pull an orientation flag, if any.  This is most relevant for JPEGs coming from a digital camera, but other
+    ' formats (like TIFF) can also supply it.
     If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
-        If GDIPlus_ImageGetProperty(hImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
-            
-            'The returned buffer should only ever be two bytes, as this property is an integer.
-            If (tmpPropHeader.propLength = 2) Then
-                
-                'Select based on the MSB
-                Select Case tmpPropBuffer(0)
-                    
-                    'Standard orientation - ignore!
-                    Case 1
-                
-                    'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
-                    Case 2
-                        GdipImageRotateFlip hImage, GP_RF_NoneFlipX
-                    
-                    'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
-                    Case 3
-                        GdipImageRotateFlip hImage, GP_RF_180FlipNone
-                    
-                    'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
-                    Case 4
-                        GdipImageRotateFlip hImage, GP_RF_NoneFlipY
-                    
-                    'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
-                    Case 5
-                        GdipImageRotateFlip hImage, GP_RF_270FlipY
-                    
-                    'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
-                    Case 6
-                        GdipImageRotateFlip hImage, GP_RF_90FlipNone
-                        
-                    'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
-                    Case 7
-                        GdipImageRotateFlip hImage, GP_RF_90FlipY
-                        
-                    'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
-                    Case 8
-                        GdipImageRotateFlip hImage, GP_RF_270FlipNone
-                
-                End Select
-            
-            End If
-        
-        End If
+        If AutoCorrectImageOrientation(hImage) Then PDDebug.LogAction "Image contains orientation data, and it was successfully handled."
     End If
     
     'Metafiles can contain brushes and other objects stored at extremely high DPIs.
@@ -2141,28 +2081,26 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
     End If
     
-    'Retrieve the image's alpha channel data (if any)
-    Dim HasAlpha As Boolean
-    HasAlpha = False
+    'Look for an alpha channel
+    Dim imgHasAlpha As Boolean
+    imgHasAlpha = False
     
-    Dim iPixelFormat As GP_PixelFormat
-    GdipGetImagePixelFormat hImage, iPixelFormat
-    HasAlpha = ((iPixelFormat And GP_PF_Alpha) <> 0)
-    HasAlpha = ((iPixelFormat And GP_PF_PreMultAlpha) <> 0)
+    Dim imgPixelFormat As GP_PixelFormat
+    GdipGetImagePixelFormat hImage, imgPixelFormat
+    imgHasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0)
+    If (Not imgHasAlpha) Then imgHasAlpha = ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
     
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
-    imgColorDepth = GetColorDepthFromPixelFormat(iPixelFormat)
+    imgColorDepth = GetColorDepthFromPixelFormat(imgPixelFormat)
     
     'Check for CMYK images
     Dim isCMYK As Boolean
-    isCMYK = ((iPixelFormat And GP_PF_32bppCMYK) = GP_PF_32bppCMYK)
+    isCMYK = ((imgPixelFormat And GP_PF_32bppCMYK) = GP_PF_32bppCMYK)
     If isCMYK Then PDDebug.LogAction "CMYK image found."
     
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, cTransform As pdLCMSTransform
-    Dim copyBitmapData As GP_BitmapData
-    Dim tmpRect As RectL
-    Dim hGraphics As Long
+    Dim hGraphics As Long, copyBitmapData As GP_BitmapData, tmpRect As RectL
     
     'We now want to split handling for metafiles vs bitmaps.  Metafiles can be directly "painted" onto the target surface, which allows us
     ' to bypass unnecessary allocations.
@@ -2200,10 +2138,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
         'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
         ' 32bpp (including CMYK) images require a bit of extra work.
-        If HasAlpha Then
+        If imgHasAlpha Then
             
             'Make sure the image is in 32bpp premultiplied ARGB format
-            If (iPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage
+            If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage
             
             'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
             
@@ -2327,9 +2265,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     dstDIB.SetOriginalColorDepth imgColorDepth
     dstDIB.SetInitialAlphaPremultiplicationState True
     
-    'Release any remaining GDI+ handles
-    GdipDisposeImage hImage
-    GDIPlusLoadPicture = True
+    'Release any remaining GDI+ handles.  IMPORTANTLY, if this is a multipage TIFF, we *skip* this step,
+    ' as we'll be reusing the image handle on subsequent pages.
+    If isMultiPageTIFF Then
+        m_hMultiPageTIFF = hImage
+        numOfPages = tiffPageCount
+    Else
+        GdipDisposeImage hImage
+    End If
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
     ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
@@ -2367,13 +2310,357 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 End If
             End If
         End If
-                
+        
     End If
     
-    'If this is a multipage TIFF, notify the caller as they may want to load subsequent pages as well
-    If isMultiPageTIFF Then numOfPages = tiffPageCount
+    'Return success!
+    GDIPlusLoadPicture = True
     
 End Function
+
+'Returns TRUE if the source image...
+' 1) contains orientation data, and...
+' 2) said orientation data is *not* "standard orientation", and...
+' 3) we successfully apply said orientation data to the underlying image
+'
+'If you don't want orientation data applied, *don't call this function*!
+Private Function AutoCorrectImageOrientation(ByRef hImage As Long) As Boolean
+    
+    Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
+    If GDIPlus_ImageGetProperty(hImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
+                
+        'The returned buffer should only ever be two bytes, as this property is an integer.
+        If (tmpPropHeader.propLength = 2) Then
+            
+            'Select based on the MSB
+            Select Case tmpPropBuffer(0)
+                
+                'Standard orientation - ignore!
+                Case 1
+            
+                'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
+                Case 2
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_NoneFlipX) = GP_OK)
+                    
+                'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
+                Case 3
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_180FlipNone) = GP_OK)
+                
+                'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
+                Case 4
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_NoneFlipY) = GP_OK)
+                
+                'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
+                Case 5
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_270FlipY) = GP_OK)
+                
+                'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
+                Case 6
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_90FlipNone) = GP_OK)
+                    
+                'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
+                Case 7
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_90FlipY) = GP_OK)
+                    
+                'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
+                Case 8
+                    AutoCorrectImageOrientation = (GdipImageRotateFlip(hImage, GP_RF_270FlipNone) = GP_OK)
+            
+            End Select
+        
+        End If
+    
+    End If
+        
+End Function
+
+'After calling GDIPlusLoadPicture and discovering that your file is a multi-page TIFF, you can call this function to
+' continue loading subsequent pages into the active image.  If you do *not* do this, please call MultiPageDataNotWanted,
+' below, to free the handle that GDIPlusLoadPicture helpfully cached for you.
+Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As Boolean
+    
+    ContinueLoadingMultipageImage = False
+    
+    'For now, just free the incoming handle
+    If (m_hMultiPageTIFF <> 0) Then
+        
+        'Failsafe check to ensure the destination DIB exists
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        
+        'GDI+ uses GUIDs to access frame parameters
+        Dim frameDimensionID(0 To 15) As Byte
+        CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
+        
+        'Ensure the passed page count is accurate
+        Dim tiffPageCount As Long
+        If (GdipImageGetFrameCount(m_hMultiPageTIFF, VarPtr(frameDimensionID(0)), tiffPageCount) = GP_OK) Then
+            If (tiffPageCount <> numOfPages) Then InternalGDIPlusError "ContinueLoadingMultipageImage passed bad page numbers", "reported page count differs (" & CStr(numOfPages) & " vs " & CStr(tiffPageCount) & ")"
+        Else
+            PDDebug.LogAction "GDI+ page count successfully verified: " & tiffPageCount
+        End If
+        
+        'We're going to be pulling a lot of information from each page, as we try to support edge-cases like
+        ' CMYK or color-managed pages.
+        Dim imgWidth As Long, imgHeight As Long, imgHResolution As Single, imgVResolution As Single
+        Dim imgPixelFormat As GP_PixelFormat, imgColorDepth As Long, imgHasAlpha As Boolean, isCMYK As Boolean
+        Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, cTransform As pdLCMSTransform
+        Dim hGraphics As Long, copyBitmapData As GP_BitmapData, tmpRect As RectL
+        Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
+        Dim imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile
+        
+        Dim pageToLoad As Long
+        For pageToLoad = 1 To numOfPages - 1
+            
+            'If the image is large, it's nice to provide status updates to the user, as this may take awhile
+            Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages
+            If ((pageToLoad And 7) = 0) Then ProgressBars.Replacement_DoEvents FormMain.hWnd
+            
+            'Select the current page
+            If (GdipImageSelectActiveFrame(m_hMultiPageTIFF, VarPtr(frameDimensionID(0)), pageToLoad) = GP_OK) Then
+                
+                'Throughout this process, we'll be notifying the destination DIB of various page parameters.
+                dstDIB.SetOriginalFormat PDIF_TIFF
+                
+                'Retrieve this frame's size
+                GdipGetImageWidth m_hMultiPageTIFF, imgWidth
+                GdipGetImageHeight m_hMultiPageTIFF, imgHeight
+                
+                'Retrieve this frame's horizontal and vertical resolution (if any)
+                GdipGetImageHorizontalResolution m_hMultiPageTIFF, imgHResolution
+                GdipGetImageVerticalResolution m_hMultiPageTIFF, imgVResolution
+                dstDIB.SetDPI imgHResolution, imgVResolution
+                
+                'Look for an alpha channel
+                GdipGetImagePixelFormat m_hMultiPageTIFF, imgPixelFormat
+                imgHasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0)
+                If (Not imgHasAlpha) Then imgHasAlpha = ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
+                
+                'Check for CMYK pages
+                isCMYK = ((imgPixelFormat And GP_PF_32bppCMYK) = GP_PF_32bppCMYK)
+                If isCMYK Then PDDebug.LogAction "CMYK page found."
+                
+                'Make a note of the image's specific color depth, as relevant to PD
+                imgColorDepth = GetColorDepthFromPixelFormat(imgPixelFormat)
+                dstDIB.SetOriginalColorDepth imgColorDepth
+                
+                'Look for an ICC profile and cache the result
+                imgHasIccProfile = GDIPlus_ImageGetProperty(m_hMultiPageTIFF, GP_PT_ICCProfile, tmpPropHeader, tmpPropBuffer)
+                If imgHasIccProfile Then
+                    Set embeddedProfile = New pdICCProfile
+                    embeddedProfile.LoadICCFromPtr tmpPropHeader.propLength, tmpPropHeader.propValue
+                    Erase tmpPropBuffer
+                    
+                    'TODO: when we eventually get around to full color-management, we'll want to convert subsequent
+                    ' layers to the same color space as the base layer.  For now, however, we just convert to sRGB.
+                    
+                End If
+                
+                'Next, pull an orientation flag, if any, and apply it to the underlying page
+                If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
+                    If AutoCorrectImageOrientation(m_hMultiPageTIFF) Then PDDebug.LogAction "Image contains orientation data, and it was successfully handled."
+                End If
+                
+                'We now need to copy the relevant image bytes into the destination DIB.  This is complicated, unfortunately.
+                
+                'Create the destination DIB for this image.  Alpha-channels require special handling.
+                If isCMYK Then
+                    dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
+                Else
+                    dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
+                End If
+                
+                'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
+                ' 32bpp (including CMYK) images require a bit of extra work.
+                If imgHasAlpha Then
+                    
+                    'Make sure the image is in 32bpp premultiplied ARGB format
+                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageTIFF, m_hMultiPageTIFF
+                    
+                    'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+                    
+                    'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
+                    With copyBitmapData
+                        .BD_Width = imgWidth
+                        .BD_Height = imgHeight
+                        .BD_PixelFormat = GP_PF_32bppPARGB
+                        .BD_Stride = dstDIB.GetDIBStride
+                        .BD_Scan0 = dstDIB.GetDIBPointer
+                    End With
+                    
+                    'Next, prepare a clipping rect
+                    With tmpRect
+                        .Left = 0
+                        .Top = 0
+                        .Right = imgWidth
+                        .Bottom = imgHeight
+                    End With
+                    
+                    'Use LockBits to perform the copy for us.
+                    GdipBitmapLockBits m_hMultiPageTIFF, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
+                    GdipBitmapUnlockBits m_hMultiPageTIFF, copyBitmapData
+        
+                Else
+                    
+                    'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
+                    ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
+                    If (isCMYK And imgHasIccProfile) Then
+                    
+                        'Create a blank 32bpp DIB, which will hold the CMYK data
+                        Dim tmpCMYKDIB As pdDIB
+                        Set tmpCMYKDIB = New pdDIB
+                        tmpCMYKDIB.CreateBlank imgWidth, imgHeight, 32
+                    
+                        'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
+                        With copyBitmapData
+                            .BD_Width = imgWidth
+                            .BD_Height = imgHeight
+                            .BD_PixelFormat = GP_PF_32bppCMYK
+                            .BD_Stride = tmpCMYKDIB.GetDIBStride
+                            .BD_Scan0 = tmpCMYKDIB.GetDIBPointer
+                        End With
+                        
+                        'Next, prepare a clipping rect
+                        With tmpRect
+                            .Left = 0
+                            .Top = 0
+                            .Right = imgWidth
+                            .Bottom = imgHeight
+                        End With
+                        
+                        'Use LockBits to perform the copy for us.
+                        GdipBitmapLockBits m_hMultiPageTIFF, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppCMYK, copyBitmapData
+                        GdipBitmapUnlockBits m_hMultiPageTIFF, copyBitmapData
+                        
+                        'We now need to apply the CMYK transform.  This is a multistep process that has been condensed here due to
+                        ' its rarity in the actual processing chain.
+                        Dim cmSuccessful As Boolean
+                        cmSuccessful = False
+
+                        Set srcProfile = New pdLCMSProfile
+                        Set dstProfile = New pdLCMSProfile
+
+                        If srcProfile.CreateFromPDICCObject(embeddedProfile) Then
+                            If dstProfile.CreateSRGBProfile() Then
+
+                                Set cTransform = New pdLCMSTransform
+                                If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, TYPE_CMYK_8, TYPE_BGR_8, INTENT_PERCEPTUAL) Then
+
+                                    Set srcProfile = Nothing: Set dstProfile = Nothing
+                                    cmSuccessful = cTransform.ApplyTransformToArbitraryMemory(copyBitmapData.BD_Scan0, dstDIB.GetDIBScanline(0), copyBitmapData.BD_Stride, dstDIB.GetDIBStride, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth, False)
+
+                                    If cmSuccessful Then
+                                        PDDebug.LogAction "Copying newly transformed sRGB data..."
+                                        dstDIB.SetColorManagementState cms_ProfileConverted
+                                        dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                                        dstDIB.SetInitialAlphaPremultiplicationState True
+                                    End If
+
+                                    Set cTransform = Nothing
+
+                                End If
+                            End If
+                        End If
+                        
+                        'Check for potential failure states, and fall back to a naive CMYK transform as necessary.
+                        If (Not cmSuccessful) Then
+                            
+                            PDDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+                            
+                            GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+                            If (hGraphics <> 0) Then
+                                GdipDrawImageRect hGraphics, m_hMultiPageTIFF, 0, 0, imgWidth, imgHeight
+                                GdipDeleteGraphics hGraphics
+                            End If
+                            
+                        End If
+                        
+                        Set tmpCMYKDIB = Nothing
+                    
+                    Else
+                        
+                        'Render the GDI+ image directly onto the newly created DIB
+                        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+                        If (hGraphics <> 0) Then
+                            GdipDrawImageRect hGraphics, m_hMultiPageTIFF, 0, 0, imgWidth, imgHeight
+                            GdipDeleteGraphics hGraphics
+                        End If
+                        
+                    End If
+                
+                'End alpha vs no-alpha check
+                End If
+                
+                'The destination DIB now contains a full copy of the page data!  Convert it to 32-bpp as necessary.
+                dstDIB.SetInitialAlphaPremultiplicationState True
+                ImageImporter.ForceTo32bppMode dstDIB
+                
+                'If this page has an embedded color profile, we want to apply it to the destination image now,
+                ' if we haven't already.  (Only CMYK images will have been processed already.)
+                If (Not isCMYK) And imgHasIccProfile Then
+                    
+                    PDDebug.LogAction "Applying color management to current page..."
+                    
+                    Set srcProfile = New pdLCMSProfile
+                    Set dstProfile = New pdLCMSProfile
+                    
+                    If srcProfile.CreateFromPDICCObject(embeddedProfile) Then
+                        If dstProfile.CreateSRGBProfile() Then
+                            
+                            Dim srcFormat As LCMS_PIXEL_FORMAT
+                            If (dstDIB.GetDIBColorDepth = 24) Then srcFormat = TYPE_BGR_8 Else srcFormat = TYPE_BGRA_8
+                            
+                            Set cTransform = New pdLCMSTransform
+                            If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
+                                
+                                Set srcProfile = Nothing: Set dstProfile = Nothing
+                                If dstDIB.GetAlphaPremultiplication Then dstDIB.SetAlphaPremultiplication False
+                                cmSuccessful = cTransform.ApplyTransformToPDDib(dstDIB)
+                                
+                                If cmSuccessful Then
+                                    PDDebug.LogAction "Copying newly transformed sRGB data..."
+                                    dstDIB.SetColorManagementState cms_ProfileConverted
+                                    dstDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                                    dstDIB.SetAlphaPremultiplication True
+                                End If
+                                
+                                Set cTransform = Nothing
+                                
+                            Else
+                                PDDebug.LogAction "WARNING!  Image could not be color-managed; color space mismatch is a likely explanation."
+                            End If
+                        End If
+                    End If
+                    
+                End If
+                
+                'Create a blank layer in the receiving image, and copy our DIB into it
+                Dim newLayerID As Long, newLayerName As String
+                newLayerID = targetImage.CreateBlankLayer
+                newLayerName = Layers.GenerateInitialLayerName(vbNullString, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, True
+                
+            Else
+                PDDebug.LogAction "WARNING!  Failed to set active page #" & pageToLoad
+            End If
+        
+        Next pageToLoad
+        
+        'Before exiting, make sure we free the master image handle!
+        GDI_Plus.ReleaseGDIPlusImage m_hMultiPageTIFF
+        
+        ContinueLoadingMultipageImage = True
+        
+    Else
+        InternalGDIPlusError "ContinueLoadingMultipageImage failed", "multipage handle was prematurely closed"
+    End If
+    
+End Function
+
+'Encountered a multi-page TIFF and you just want to load one page?  No worries; just call this function after the load
+' function completes to free any cached multi-page assets.
+Public Sub MultiPageDataNotWanted()
+    If (m_hMultiPageTIFF <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageTIFF
+End Sub
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
 Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As GP_PixelFormat) As Long
@@ -2403,7 +2690,9 @@ End Function
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
 Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As PD_2D_FileFormatExport, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
-
+    
+    Message "Saving the file..."
+    
     On Error GoTo GDIPlusSaveError
     PDDebug.LogAction "Prepping image for GDI+ export..."
     
@@ -2415,9 +2704,8 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
-    
     With imgHeader.Header
-        .Size = Len(imgHeader.Header)
+        .Size = LenB(imgHeader.Header)
         .Planes = 1
         .BitCount = tmpDIB.GetDIBColorDepth
         .Width = tmpDIB.GetDIBWidth
@@ -2425,37 +2713,31 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End With
 
     'Use GDI+ to create a GDI+-compatible bitmap
-    Dim GDIPlusReturn As Long
+    Dim GDIPlusReturn As GP_Result
     Dim hImage As Long
     
-    Message "Creating GDI+ compatible image copy..."
+    PDDebug.LogAction "Creating GDI+ image copy..."
         
     'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
     ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
     If (tmpDIB.GetDIBColorDepth = 32) Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
         GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, GP_PF_32bppARGB, ByVal tmpDIB.GetDIBPointer, hImage)
-    
     Else
         GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetDIBPointer, hImage)
     End If
     
-    If (GDIPlusReturn <> 0) Then
-        GdipDisposeImage hImage
+    If (GDIPlusReturn <> GP_OK) Then
+        GDI_Plus.ReleaseGDIPlusImage hImage
         GDIPlusSavePicture = False
         Exit Function
     End If
     
     'Certain image formats require extra parameters, and because the values are passed ByRef, they can't be constants
-    Dim gif_EncoderVersion As GP_EncoderValue
-    gif_EncoderVersion = GP_EV_VersionGif89
-    
     Dim gdipColorDepth As Long
     gdipColorDepth = outputColorDepth
     
-    Dim TIFF_Compression As GP_EncoderValue
-    TIFF_Compression = GP_EV_CompressionLZW
+    Dim tiff_Compression As GP_EncoderValue
+    tiff_Compression = GP_EV_CompressionLZW
     
     'TIFF has some unique constraints on account of its many compression schemes.  Because it only supports a subset
     ' of compression types, we must adjust our code accordingly.
@@ -2465,149 +2747,171 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0
-                If gdipColorDepth = 1 Then TIFF_Compression = GP_EV_CompressionCCITT4 Else TIFF_Compression = GP_EV_CompressionLZW
+                If (gdipColorDepth = 1) Then tiff_Compression = GP_EV_CompressionCCITT4 Else tiff_Compression = GP_EV_CompressionLZW
                 
             'No compression
             Case 1
-                TIFF_Compression = GP_EV_CompressionNone
+                tiff_Compression = GP_EV_CompressionNone
                 
             'Macintosh Packbits (RLE)
             Case 2
-                TIFF_Compression = GP_EV_CompressionRle
+                tiff_Compression = GP_EV_CompressionRle
             
             'Proper deflate (Adobe-style) - not supported by GDI+
             Case 3
-                TIFF_Compression = GP_EV_CompressionLZW
+                tiff_Compression = GP_EV_CompressionLZW
             
             'Obsolete deflate (PKZIP or zLib-style) - not supported by GDI+
             Case 4
-                TIFF_Compression = GP_EV_CompressionLZW
+                tiff_Compression = GP_EV_CompressionLZW
             
             'LZW
             Case 5
-                TIFF_Compression = GP_EV_CompressionLZW
+                tiff_Compression = GP_EV_CompressionLZW
                 
             'JPEG - not supported by GDI+
             Case 6
-                TIFF_Compression = GP_EV_CompressionLZW
+                tiff_Compression = GP_EV_CompressionLZW
             
             'Fax Group 3
             Case 7
                 gdipColorDepth = 1
-                TIFF_Compression = GP_EV_CompressionCCITT3
+                tiff_Compression = GP_EV_CompressionCCITT3
             
             'Fax Group 4
             Case 8
                 gdipColorDepth = 1
-                TIFF_Compression = GP_EV_CompressionCCITT4
+                tiff_Compression = GP_EV_CompressionCCITT4
                 
         End Select
     
     End If
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncClsID As clsID
-    Dim uEncParams As GP_EncoderParameters
-    Dim aEncParams() As Byte
-
-    Message "Preparing GDI+ encoder for this filetype..."
+    Dim exportGuid(0 To 15) As Byte
+    
+    'GDI+ takes encoder parameters in a very particular sequential format:
+    ' 4 byte long: number of encoder parameters
+    ' (n) * LenB(GP_EncoderParameter): actual encoder parameters
+    '
+    'There's no easy way to create a variable-length struct like this in VB6, so instead, we create
+    ' an array of encoder params, and as the final step before calling GDI+, we copy everything into
+    ' a temporary byte array formatted per GDI+'s requirements.
+    Dim numExportParams As Long
+    Dim exportParams() As GP_EncoderParameter
+    
+    PDDebug.LogAction "Preparing GDI+ encoder..."
     
     'Get the clsID for this encoder
-    GetEncoderGUIDForPd2dFormat imgFormat, VarPtr(uEncClsID)
+    GetEncoderGUIDForPd2dFormat imgFormat, VarPtr(exportGuid(0))
     
     Select Case imgFormat
         
         'BMP export
         Case P2_FFE_BMP
-            uEncParams.EP_Count = 1
-            ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.EP_Parameter
+            numExportParams = 1
+            ReDim exportParams(0 To numExportParams - 1) As GP_EncoderParameter
+            
+            With exportParams(0)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                CLSIDFromString StrPtr(GP_EP_ColorDepth), VarPtr(.EP_GUID(0))
                 .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
-            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-    
         'GIF export
         Case P2_FFE_GIF
-            uEncParams.EP_Count = 1
-            ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.EP_Parameter
+            Dim gif_EncoderVersion As GP_EncoderValue
+            gif_EncoderVersion = GP_EV_VersionGif89
+            
+            numExportParams = 1
+            ReDim exportParams(0 To numExportParams - 1) As GP_EncoderParameter
+            
+            With exportParams(0)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_Version, VarPtr(.EP_GUID(0))
+                CLSIDFromString StrPtr(GP_EP_Version), VarPtr(.EP_GUID(0))
                 .EP_ValuePtr = VarPtr(gif_EncoderVersion)
             End With
             
-            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-            
         'JPEG export (requires extra work to specify a quality for the encode)
         Case P2_FFE_JPEG
-            uEncParams.EP_Count = 1
-            ReDim aEncParams(1 To Len(uEncParams))
+        
+            numExportParams = 1
+            ReDim exportParams(0 To numExportParams - 1) As GP_EncoderParameter
             
-            With uEncParams.EP_Parameter
+            With exportParams(0)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_Quality, VarPtr(.EP_GUID(0))
+                CLSIDFromString StrPtr(GP_EP_Quality), VarPtr(.EP_GUID(0))
                 .EP_ValuePtr = VarPtr(jpegQuality)
             End With
             
-            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-        
         'PNG export
         Case P2_FFE_PNG
-            uEncParams.EP_Count = 1
-            ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.EP_Parameter
+            numExportParams = 1
+            ReDim exportParams(0 To numExportParams - 1) As GP_EncoderParameter
+            
+            With exportParams(0)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                CLSIDFromString StrPtr(GP_EP_ColorDepth), VarPtr(.EP_GUID(0))
                 .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
-            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-        
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case P2_FFE_TIFF
-            uEncParams.EP_Count = 2
-            ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.EP_Parameter) * 2)
             
-            With uEncParams.EP_Parameter
+            numExportParams = 2
+            ReDim exportParams(0 To numExportParams - 1) As GP_EncoderParameter
+            
+            With exportParams(0)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_Compression, VarPtr(.EP_GUID(0))
-                .EP_ValuePtr = VarPtr(TIFF_Compression)
+                CLSIDFromString StrPtr(GP_EP_Compression), VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(tiff_Compression)
             End With
             
-            CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-            
-            With uEncParams.EP_Parameter
+            With exportParams(1)
                 .EP_NumOfValues = 1
                 .EP_ValueType = GP_EVT_Long
-                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                CLSIDFromString StrPtr(GP_EP_ColorDepth), VarPtr(.EP_GUID(0))
                 .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
-            CopyMemory aEncParams(Len(uEncParams) + 1), uEncParams.EP_Parameter, Len(uEncParams.EP_Parameter)
-    
     End Select
 
     'With our encoder prepared, we can finally continue with the save
     Files.FileDeleteIfExists dstFilename
     
-    Message "Saving the file..."
+    'Convert our list of params to a format GDI+ understands.
+    Dim tmpEncodeParams() As Byte, tmpEncodeParamSize As Long
+    If (numExportParams > 0) Then
+        tmpEncodeParamSize = 4 + LenB(exportParams(0)) * numExportParams
+    Else
+        tmpEncodeParamSize = 4
+    End If
     
-    'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
+    'First comes the number of parameters
+    ReDim tmpEncodeParams(0 To tmpEncodeParamSize - 1) As Byte
+    CopyMemoryStrict VarPtr(tmpEncodeParams(0)), VarPtr(numExportParams), 4&
     
-    If (GDIPlusReturn <> 0) Then
-        GdipDisposeImage hImage
+    '...followed by each parameter in turn
+    If (numExportParams > 0) Then
+        Dim i As Long
+        For i = 0 To numExportParams - 1
+            CopyMemoryStrict VarPtr(tmpEncodeParams(4)) + (i * LenB(exportParams(0))), VarPtr(exportParams(i)), LenB(exportParams(0))
+        Next i
+    End If
+    
+    'Pass all completed structs to GDI+ and let it handle everything from here
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exportGuid(0)), VarPtr(tmpEncodeParams(0)))
+    
+    If (GDIPlusReturn <> GP_OK) Then
+        GDI_Plus.ReleaseGDIPlusImage hImage
         GDIPlusSavePicture = False
         Exit Function
     End If
@@ -2621,7 +2925,6 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Exit Function
     
 GDIPlusSaveError:
-
     GDIPlusSavePicture = False
     
 End Function
@@ -2637,11 +2940,11 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
     
         'Request a PNG encoder from GDI+
-        Dim uEncClsID As clsID
+        Dim exportGuid(0 To 15) As Byte
         Dim uEncParams As GP_EncoderParameters
         Dim aEncParams() As Byte
             
-        GetEncoderGUIDForPd2dFormat P2_FFE_PNG, VarPtr(uEncClsID)
+        GetEncoderGUIDForPd2dFormat P2_FFE_PNG, VarPtr(exportGuid(0))
         uEncParams.EP_Count = 1
         ReDim aEncParams(1 To Len(uEncParams))
         
@@ -2651,7 +2954,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         With uEncParams.EP_Parameter
             .EP_NumOfValues = 1
             .EP_ValueType = GP_EVT_Long
-            CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+            CLSIDFromString StrPtr(GP_EP_ColorDepth), VarPtr(.EP_GUID(0))
             .EP_ValuePtr = VarPtr(gdipColorDepth)
         End With
         
@@ -2661,7 +2964,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         Files.FileDeleteIfExists dstFilename
         
         'Perform the encode and save
-        GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
+        GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(exportGuid(0)), aEncParams(1))
         GDIPlusQuickSavePNG = (GDIPlusReturn = GP_OK)
         
         'Release the GDI+ copy of the image
@@ -3204,12 +3507,6 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
 
 End Sub
 
-'Thanks to Carles P.V. for providing the following function, which is used as part of GDI+ image saving.
-' You can download Carles's full original project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Sub CopyGUIDIntoByteArray(ByRef sGuid As String, ByVal ptrToArray As Long)
-    CLSIDFromString StrPtr(sGuid), ptrToArray
-End Sub
-
 'Given a GUID string, return a Long-type image format identifier
 Private Function GetFIFFromGUID(ByRef srcGUID As String) As PD_IMAGE_FORMAT
     
@@ -3654,41 +3951,46 @@ Public Function GetGDIPlusRegionHandle() As Long
     GdipCreateRegion GetGDIPlusRegionHandle
 End Function
 
-Public Function ReleaseGDIPlusBrush(ByVal srcHandle As Long) As Boolean
+Public Function ReleaseGDIPlusBrush(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusBrush = (GdipDeleteBrush(srcHandle) = GP_OK)
+        If ReleaseGDIPlusBrush Then srcHandle = 0
     Else
         ReleaseGDIPlusBrush = True
     End If
 End Function
 
-Public Function ReleaseGDIPlusGraphics(ByVal srcHandle As Long) As Boolean
+Public Function ReleaseGDIPlusGraphics(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusGraphics = (GdipDeleteGraphics(srcHandle) = GP_OK)
+        If ReleaseGDIPlusGraphics Then srcHandle = 0
     Else
         ReleaseGDIPlusGraphics = True
     End If
 End Function
 
-Public Function ReleaseGDIPlusImage(ByVal srcHandle As Long) As Boolean
+Public Function ReleaseGDIPlusImage(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusImage = (GdipDisposeImage(srcHandle) = GP_OK)
+        If ReleaseGDIPlusImage Then srcHandle = 0
     Else
         ReleaseGDIPlusImage = True
     End If
 End Function
 
-Public Function ReleaseGDIPlusPen(ByVal srcHandle As Long) As Boolean
+Public Function ReleaseGDIPlusPen(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusPen = (GdipDeletePen(srcHandle) = GP_OK)
+        If ReleaseGDIPlusPen Then srcHandle = 0
     Else
         ReleaseGDIPlusPen = True
     End If
 End Function
 
-Public Function ReleaseGDIPlusRegion(ByVal srcHandle As Long) As Boolean
+Public Function ReleaseGDIPlusRegion(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusRegion = (GdipDeleteRegion(srcHandle) = GP_OK)
+        If ReleaseGDIPlusRegion Then srcHandle = 0
     Else
         ReleaseGDIPlusRegion = True
     End If
@@ -4868,12 +5170,8 @@ Public Function GDIPlus_ImageUpgradeMetafile(ByVal hImage As Long, ByVal srcGrap
     Dim tmpReturn As GP_Result
     tmpReturn = GdipConvertToEmfPlus(srcGraphicsForConvertSettings, hImage, ByVal 0&, GP_MT_EmfDual, 0&, dstNewMetafile)
     
-    If (tmpReturn = GP_OK) Then
-        GDIPlus_ImageUpgradeMetafile = True
-    Else
-        GDIPlus_ImageUpgradeMetafile = False
-        InternalGDIPlusError vbNullString, vbNullString, tmpReturn
-    End If
+    GDIPlus_ImageUpgradeMetafile = (tmpReturn = GP_OK)
+    If Not GDIPlus_ImageUpgradeMetafile Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
     
 End Function
 

@@ -707,7 +707,7 @@ End Function
 
 'After the first page of a multipage image has been loaded successfully, call this function to load the remaining pages into the
 ' destination object.
-Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As PD_OPERATION_OUTCOME
+Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As PD_OPERATION_OUTCOME
 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     

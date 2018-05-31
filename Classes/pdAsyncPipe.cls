@@ -349,7 +349,7 @@ End Function
 'Send string data to the child process.
 Friend Sub SendData(ByRef srcData As String)
     
-    If (Len(srcData) <> 0) Then
+    If (LenB(srcData) <> 0) Then
         
         'If UTF-8 mode is active, convert incoming strings to UTF-8 before appending them to the buffer
         Dim byteBuffer() As Byte, writeLen As Long

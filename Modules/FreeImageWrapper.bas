@@ -5733,7 +5733,7 @@ End Function
 '--------------------------------------------------------------------------------
 
 'Edited by Tanner: the old function was wasteful; this is simpler
-Private Function pGetStringFromPointerA(ByRef ptr As Long) As String
+Private Function pGetStringFromPointerA(ByVal ptr As Long) As String
     pGetStringFromPointerA = Strings.StringFromCharPtr(ptr, False)
 End Function
 
@@ -5956,55 +5956,50 @@ End Function
 
 Public Sub FreeImage_InitErrorHandler()
 
-   ' Call this function once for using the FreeImage 3 error handling callback.
-   ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
-
-   Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
+    'Initialize the error message array
+    ReDim g_FreeImageErrorMessages(0) As String
+    
+    ' Call this function once for using the FreeImage 3 error handling callback.
+    ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
+    Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
    
-   'Initialize the error message array
-   ReDim g_FreeImageErrorMessages(0) As String
-
 End Sub
 
-Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Message As Long)
-
-    Dim strErrorMessage As String
-    Dim strImageFormat As String
-
-   ' This function is called whenever the FreeImage 3 libraray throws an error.
-   ' Currently this function gets the error message and the format name of the
-   ' involved image type as VB string and prints both to the VB Debug console. Feel
-   ' free to modify this function to call an error handling routine of your own.
-
-   strErrorMessage = Trim$(pGetStringFromPointerA(Message))
-   strImageFormat = FreeImage_GetFormatFromFIF(Format)
-   
-    'Save a copy of the FreeImage error in a public string, where other functions can retrieve it
-    If LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0 Then
-        
-        'See if this error already exists in the log
-        Dim errorFound As Boolean
-        errorFound = False
-        
-        Dim i As Long
-        For i = 0 To UBound(g_FreeImageErrorMessages)
-            If Strings.StringsEqual(g_FreeImageErrorMessages(i), strErrorMessage, True) Then
-                errorFound = True
-                Exit For
-            End If
-        Next i
-        
-        'If the error was not found in the log, add it now
-        If Not errorFound Then
-            ReDim Preserve g_FreeImageErrorMessages(0 To UBound(g_FreeImageErrorMessages) + 1) As String
-            g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = Trim$(strErrorMessage)
-        End If
-    Else
-        g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = Trim$(strErrorMessage)
-    End If
+' This function is called whenever the FreeImage 3 libraray throws an error.
+' Currently this function gets the error message and the format name of the
+' involved image type as VB string and prints both to the VB Debug console. Feel
+' free to modify this function to call an error handling routine of your own.
+Private Sub FreeImage_ErrorHandler(ByVal imgFormat As FREE_IMAGE_FORMAT, ByVal ptrMessage As Long)
     
-    PDDebug.LogAction "FreeImage returned the following internal error:", PDM_External_Lib
-    PDDebug.LogAction vbTab & strErrorMessage, PDM_External_Lib
-    PDDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_External_Lib
+    Dim strErrorMessage As String
+    If (ptrMessage <> 0) Then strErrorMessage = Trim$(pGetStringFromPointerA(ptrMessage)) Else strErrorMessage = "unknown error, no char ptr"
+    
+    If (LenB(strErrorMessage) <> 0) Then
+        
+        'Save a copy of the FreeImage error in a public string, where other functions can retrieve it
+        If (LenB(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0) Then
+            
+            'See if this error already exists in the log
+            Dim errorFound As Boolean: errorFound = False
+            
+            Dim i As Long
+            For i = 0 To UBound(g_FreeImageErrorMessages)
+                errorFound = Strings.StringsEqual(g_FreeImageErrorMessages(i), strErrorMessage, True)
+                If errorFound Then Exit For
+            Next i
+            
+            'If the error was not found in the log, add it now
+            If (Not errorFound) Then
+                ReDim Preserve g_FreeImageErrorMessages(0 To UBound(g_FreeImageErrorMessages) + 1) As String
+                g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = strErrorMessage
+            End If
+            
+        Else
+            g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = strErrorMessage
+        End If
+        
+        PDDebug.LogAction "FreeImage reported an internal error: " & strErrorMessage, PDM_External_Lib
+        
+    End If
     
 End Sub
