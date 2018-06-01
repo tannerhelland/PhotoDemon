@@ -983,6 +983,8 @@ End Function
 
 Private Function AttemptFreeImageLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
     
+    PDDebug.LogAction "Attempting to load via FreeImage..."
+    
     'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
     ' TODO: preferences or prompt for how to handle such files??
     numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
@@ -1009,7 +1011,7 @@ Private Function AttemptGDIPlusLoad(ByRef srcFile As String, ByRef dstImage As p
 
     If g_ImageFormats.GDIPlusEnabled Then
         
-        PDDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+        PDDebug.LogAction "Attempting to load via GDI+..."
         AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
         
         If AttemptGDIPlusLoad Then

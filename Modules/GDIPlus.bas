@@ -6,21 +6,14 @@ Attribute VB_Name = "GDI_Plus"
 'Last updated: 25/July/17
 'Last update: fix alpha premultiplication tracking after certain resize operations
 '
-'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
-' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
-' is used for a number of specialized tasks, including viewport rendering of 32bpp images, regional blur of selection masks, antialiased
-' lines and circles on various dialogs, and more.
+'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback
+' for image loading and saving if the FreeImage DLL was not found, but over time it has become more and more essential
+' to PhotoDemon .  As of version 7.2, GDI+ is embedded deeply into PD's rendering pipeline, as it's currently the
+' easiest+fastest way to quickly resize 32-bpp image data regardless of underlying PC features.  It is also used
+' extensively in rendering PD's custom UI.
 '
-'Note that - by design - some enums in this class differ subtly from the actual GDI+ enums.  This is a deliberate decision
-' to make certain enums play more nicely with other imaging libraries and/or features.  PD handles translation between the
-' correct enums as necessary.
-'
-'These routines are adapted from the work of a number of other talented VB programmers.  Since GDI+ is not well-documented
-' for VB users, I first pieced this module together from the following pieces of code:
-' Avery P's initial GDI+ deconstruction: http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1
-' Carles P.V.'s iBMP implementation: http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-' Robert Rayment's PaintRR implementation: http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
-' Many thanks to these individuals for their outstanding work on graphics in VB.
+'Jose Roca's convenient GDI+ reference has been a huge help with GDI+ development:
+' http://www.jose.it-berater.org/gdiplus/iframe/index.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -28,9 +21,6 @@ Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 
 Option Explicit
-
-'As of 2017, this module is undergoing massive reorganization.  Enums, constants, and functions that have been migrated
-' to the new (clean) format are placed in this top section.
 
 Public Enum GP_Result
     GP_OK = 0
@@ -1380,7 +1370,7 @@ End Function
 Public Function GDIPlusRotateFlip_InPlace(ByRef srcDIB As pdDIB, ByVal rotationType As GP_RotateFlip) As Boolean
     Dim hGdipBitmap As Long
     If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
-        GDIPlusRotateFlip_InPlace = GdipImageRotateFlip(hGdipBitmap, rotationType) = GP_OK
+        GDIPlusRotateFlip_InPlace = (GdipImageRotateFlip(hGdipBitmap, rotationType) = GP_OK)
         GdipDisposeImage hGdipBitmap
     End If
 End Function

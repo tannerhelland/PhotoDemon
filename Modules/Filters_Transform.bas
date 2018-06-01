@@ -433,7 +433,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                 If (selQuickX < selSafeX) And (srcQuickY < selSafeY) Then
                 thisAlpha = selData(selQuickX, srcQuickY)
                 Else
-                pdDebug.LogAction "WARNING!  OOB!  " & CStr(selQuickX \ 4) & ", " & srcQuickY
+                PDDebug.LogAction "WARNING!  OOB!  " & CStr(selQuickX \ 4) & ", " & srcQuickY
                 End If
                 
                 If (thisAlpha > 0) Then
@@ -546,7 +546,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     Exit Sub
     
 CropProblem:
-    pdDebug.LogAction "WARNING!  Filters_Transform.CropToSelection error #" & Err.Number & ": " & Err.Description
+    PDDebug.LogAction "WARNING!  Filters_Transform.CropToSelection error #" & Err.Number & ": " & Err.Description
     
 End Sub
 

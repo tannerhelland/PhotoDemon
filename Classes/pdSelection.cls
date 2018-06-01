@@ -2098,6 +2098,8 @@ Private Sub CreateSelectionMask()
                 Dim actualRoundedRadius As Double
                 actualRoundedRadius = PDMath.Min2Float_Single(m_CornersLocked.Width, m_CornersLocked.Height) * (GetSelectionProperty_Float(sp_RoundedCornerRadius) * 0.01)
                 
+                dstSurface.SetSurfacePixelOffset P2_PO_Half
+                
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
                     m_Painter.FillRoundRectangleF_FromRectF dstSurface, foreBrush, m_CornersLocked, actualRoundedRadius
                 Else
