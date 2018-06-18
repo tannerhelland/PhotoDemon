@@ -51,7 +51,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         
     'Handle non-arrow keys next
     Else
-                
+        
         'Delete key: delete the active layer (if allowed)
         If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
             markEventHandled = True

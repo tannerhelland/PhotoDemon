@@ -286,9 +286,20 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             'Notify the parent image that the entire image now needs to be recomposited
             pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
             
-            'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
+            'If the caller wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", vbNullString, UNDO_Image_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerID, -1
+                
+                Dim tmpProcCall As PD_ProcessCall
+                With tmpProcCall
+                    .pcID = g_Language.TranslateMessage("New layer from file")
+                    .pcParameters = vbNullString
+                    .pcRaiseDialog = False
+                    .pcRecorded = True
+                    .pcUndoType = UNDO_Image_VectorSafe
+                End With
+                
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcCall, pdImages(g_CurrentImage).GetActiveLayerID
+                
             End If
             
             'Render the new image to screen

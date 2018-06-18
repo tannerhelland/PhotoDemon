@@ -2,26 +2,26 @@ Attribute VB_Name = "Public_EnumsAndTypes"
 Option Explicit
 
 'Standard WAPI types
-Public Type POINTAPI
+Public Type PointAPI
     x As Long
     y As Long
 End Type
 
-Public Type RECT
+Public Type Rect
     Left As Long
     Top As Long
     Right As Long
     Bottom As Long
 End Type
 
-Public Type RECTF_RB
+Public Type RectF_RB
     Left As Single
     Top As Single
     Right As Single
     Bottom As Single
 End Type
 
-Public Type winRect
+Public Type WinRect
     x1 As Long
     y1 As Long
     x2 As Long
@@ -276,19 +276,6 @@ End Enum
 #If False Then
     Private Const PD_PERF_BESTQUALITY = 0, PD_PERF_BALANCED = 1, PD_PERF_FASTEST = 2
 #End If
-
-'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new
-' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
-' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
-' buttons so the user knows which action they are undo/redoing.)
-Public Type PD_UndoEntry
-    processID As String             'Name of the associated action (e.g. "Gaussian blur")
-    processParamString As String    'Processor string supplied to the action
-    undoType As PD_UndoType        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-    undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
-    relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
-    thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
-End Type
 
 'PhotoDemon supports multiple image encoders and decoders.
 Public Enum PD_ImageDecoder
@@ -683,9 +670,19 @@ Public Type PD_ProcessCall
     pcID As String
     pcParameters As String
     pcUndoType As PD_UndoType
-    pcTool As Long
+    pcTool As PDTools
     pcRaiseDialog As Boolean
     pcRecorded As Boolean
+End Type
+
+'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new
+' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
+' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
+' buttons so the user knows which action they are undo/redoing.)
+Public Type PD_UndoEntry
+    srcProcCall As PD_ProcessCall   'The processor call that initiated this Undo action
+    undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+    thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
 
 'As of 7.0, PD automatically handles navigation keypresses for a variety of controls.  Want more keys handled?
@@ -716,7 +713,7 @@ End Enum
 Public Type PAINTSTRUCT
     hDC As Long
     fErase As Long
-    rcPaint As RECT
+    rcPaint As Rect
     fRestore As Long
     fIncUpdate As Long
     rgbReserved(0 To 31) As Byte

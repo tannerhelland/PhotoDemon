@@ -116,7 +116,7 @@ End Enum
 #End If
 
 'The coordinates of the current selection (if rectangular)
-Private m_CornersUnlocked As RECTF_RB
+Private m_CornersUnlocked As RectF_RB
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
 Private m_CornersLocked As RectF
@@ -246,7 +246,7 @@ Private WithEvents m_AntTimer As pdTimer
 Attribute m_AntTimer.VB_VarHelpID = -1
 
 'Retrieve various boundary rects.  Full descriptions of these rects are given above.
-Friend Function GetCornersUnlockedRect() As RECTF_RB
+Friend Function GetCornersUnlockedRect() As RectF_RB
     GetCornersUnlockedRect = m_CornersUnlocked
 End Function
 
@@ -387,10 +387,10 @@ Friend Sub InitFromXML(ByVal srcXML As String)
             
             'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
             With m_CornersLocked
-                .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionLeft", 0), True)
-                .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionTop", 0), False)
-                .Width = TranslateValueRelToAbs(cParams.GetDouble("SelectionWidth", 0), True)
-                .Height = TranslateValueRelToAbs(cParams.GetDouble("SelectionHeight", 0), False)
+                .Left = TranslateValueRelToAbs(cParams.GetSingle("SelectionLeft", 0!), True)
+                .Top = TranslateValueRelToAbs(cParams.GetSingle("SelectionTop", 0!), False)
+                .Width = TranslateValueRelToAbs(cParams.GetSingle("SelectionWidth", 0!), True)
+                .Height = TranslateValueRelToAbs(cParams.GetSingle("SelectionHeight", 0!), False)
             End With
             
             'Additional parameters vary by selection type
@@ -401,10 +401,10 @@ Friend Sub InitFromXML(ByVal srcXML As String)
                 Case ss_Rectangle, ss_Circle, ss_Line
                 
                     With m_CornersUnlocked
-                        .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorLeft", 0#), True)
-                        .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorTop", 0#), False)
-                        .Right = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorRight", 0#), True)
-                        .Bottom = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorBottom", 0#), False)
+                        .Left = TranslateValueRelToAbs(cParams.GetSingle("SelectionVectorLeft", 0!), True)
+                        .Top = TranslateValueRelToAbs(cParams.GetSingle("SelectionVectorTop", 0!), False)
+                        .Right = TranslateValueRelToAbs(cParams.GetSingle("SelectionVectorRight", 0!), True)
+                        .Bottom = TranslateValueRelToAbs(cParams.GetSingle("SelectionVectorBottom", 0!), False)
                     End With
                 
                 'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
@@ -580,16 +580,16 @@ End Function
 ' This allows selections to be correctly stretched to images of any arbitrary size.
 '
 'This function handles translation of coordinate values between absolute and relative geometries.
-Private Function TranslateValueAbsToRel(ByVal srcFloat As Double, ByVal useWidth As Boolean) As Double
+Private Function TranslateValueAbsToRel(ByVal srcFloat As Single, ByVal useWidth As Boolean) As Single
     Dim tmpDimension As Double
     If useWidth Then tmpDimension = m_parentPDImage.Width Else tmpDimension = m_parentPDImage.Height
-    If (tmpDimension <> 0#) Then TranslateValueAbsToRel = srcFloat / tmpDimension Else TranslateValueAbsToRel = 0#
+    If (tmpDimension <> 0#) Then TranslateValueAbsToRel = CSng(CDbl(srcFloat) / tmpDimension) Else TranslateValueAbsToRel = 0!
 End Function
 
-Private Function TranslateValueRelToAbs(ByVal srcFloat As Double, ByVal useWidth As Boolean) As Double
+Private Function TranslateValueRelToAbs(ByVal srcFloat As Single, ByVal useWidth As Boolean) As Single
     Dim tmpDimension As Double
     If useWidth Then tmpDimension = m_parentPDImage.Width Else tmpDimension = m_parentPDImage.Height
-    TranslateValueRelToAbs = srcFloat * tmpDimension
+    TranslateValueRelToAbs = CSng(CDbl(srcFloat) * tmpDimension)
 End Function
 
 'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the new selection on-screen,
@@ -604,15 +604,15 @@ Friend Sub SelectAll()
     SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
-        .Left = 0
-        .Top = 0
+        .Left = 0!
+        .Top = 0!
         .Right = m_parentPDImage.Width
         .Bottom = m_parentPDImage.Height
     End With
     
     With m_CornersLocked
-        .Left = 0
-        .Top = 0
+        .Left = 0!
+        .Top = 0!
         .Width = m_parentPDImage.Width
         .Height = m_parentPDImage.Height
     End With
@@ -2008,7 +2008,12 @@ Private Sub CreateSelectionMask()
     Else
         useAA = False
     End If
-                
+    
+    'Some setting combinations result in us *not* using antialiasing.  Alongside this, we must also manually
+    ' clamp all coordinates to integer boundaries or GDI+ may still output antialiased-like results.
+    Dim fixedCornersLocked As RectF
+    fixedCornersLocked = m_CornersLocked
+    
     If useAA Then
         dstSurface.SetSurfaceAntialiasing P2_AA_HighQuality
     Else
@@ -2022,7 +2027,7 @@ Private Sub CreateSelectionMask()
             Dim lFrac As Single, tFrac As Single
             lFrac = PDMath.Frac(m_CornersLocked.Left)
             tFrac = PDMath.Frac(m_CornersLocked.Top)
-            With m_CornersLocked
+            With fixedCornersLocked
                 .Left = Int(.Left)
                 .Top = Int(.Top)
                 .Width = Int(.Width + lFrac)
@@ -2084,10 +2089,10 @@ Private Sub CreateSelectionMask()
             If (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#) Then
             
                 If (Me.GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillRectangleF_FromRectF dstSurface, foreBrush, m_CornersLocked
+                    m_Painter.FillRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked
                 Else
                     maskPath.AddRectangle_RectF m_CornersLocked
-                    m_Painter.DrawRectangleF_FromRectF dstSurface, maskPen, m_CornersLocked
+                    m_Painter.DrawRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked
                 End If
             
             'RECTANGLE SELECTION *WITH* ROUNDED CORNERS
@@ -2096,15 +2101,15 @@ Private Sub CreateSelectionMask()
                 'The round-rectangle radius property is stored as a ratio on the scale [0, 100.0].  We want to scale this value to
                 ' an absolute value, based on the current size of the rectangle.  (Where 100.0 = maximum corner curvature.)
                 Dim actualRoundedRadius As Double
-                actualRoundedRadius = PDMath.Min2Float_Single(m_CornersLocked.Width, m_CornersLocked.Height) * (GetSelectionProperty_Float(sp_RoundedCornerRadius) * 0.01)
+                actualRoundedRadius = PDMath.Min2Float_Single(fixedCornersLocked.Width, fixedCornersLocked.Height) * (GetSelectionProperty_Float(sp_RoundedCornerRadius) * 0.01)
                 
                 dstSurface.SetSurfacePixelOffset P2_PO_Half
                 
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillRoundRectangleF_FromRectF dstSurface, foreBrush, m_CornersLocked, actualRoundedRadius
+                    m_Painter.FillRoundRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked, actualRoundedRadius
                 Else
                     maskPath.AddRoundedRectangle_RectF m_CornersLocked, actualRoundedRadius
-                    m_Painter.DrawRoundRectangleF_FromRectF dstSurface, maskPen, m_CornersLocked, actualRoundedRadius
+                    m_Painter.DrawRoundRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked, actualRoundedRadius
                 End If
                 
             End If
@@ -2116,14 +2121,14 @@ Private Sub CreateSelectionMask()
             ' why GDI+ renders this way, but it's possible that they did it to make it semi-"backwards compatible" with GDI methods
             ' (which treat the bottom-right point as exclusive).
             Dim newEllipseWidth As Single, newEllipseHeight As Single
-            newEllipseWidth = PDMath.Max2Float_Single(m_CornersLocked.Width - 1#, 1#)
-            newEllipseHeight = PDMath.Max2Float_Single(m_CornersLocked.Height - 1#, 1#)
+            newEllipseWidth = PDMath.Max2Float_Single(fixedCornersLocked.Width - 1#, 1#)
+            newEllipseHeight = PDMath.Max2Float_Single(fixedCornersLocked.Height - 1#, 1#)
                 
             If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                m_Painter.FillEllipseF dstSurface, foreBrush, m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
+                m_Painter.FillEllipseF dstSurface, foreBrush, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
             Else
                 maskPath.AddEllipse_Relative m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
-                m_Painter.DrawEllipseF dstSurface, maskPen, m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
+                m_Painter.DrawEllipseF dstSurface, maskPen, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
             End If
             
         

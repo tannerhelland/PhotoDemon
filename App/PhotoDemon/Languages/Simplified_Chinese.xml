@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3440</langversion>
+<langversion>7.0.3442</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1208,7 +1208,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>%1 页</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 46 phrases. 26 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -2270,6 +2270,11 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>Modify selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Remove selection</original>
 <translation>删除选择</translation>
 </phrase>
@@ -2291,7 +2296,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>错误报告的说明</translation>
 </phrase>
 
-<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -15359,10 +15364,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4689 phrases. -->
-<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12326 total words. -->
+<!-- As of this build, PhotoDemon contains 4693 phrases. -->
+<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 12328 total words. -->
 
 </pdData>

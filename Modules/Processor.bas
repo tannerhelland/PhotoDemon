@@ -3,9 +3,9 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 08/August/17
-'Last update: finish migrating *every last damn function* to XML params.  For the first time in history,
-'             this module is now sensibly organized!
+'Last updated: 18/June/18
+'Last update: unify process property handling between this module and the Undo engine; both now operate directly
+'             on PD_ProcessCall structs, instead of passing around a long list of bare variables.
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -26,8 +26,8 @@ Attribute VB_Name = "Processor"
 Option Explicit
 Option Compare Text
 
-'Some process operations pass special return values between child and parent process functions.  These are hard-coded to reduce
-' problems with versioning.
+'Some process operations pass special return values between child and parent process functions.
+' These are hard-coded to reduce problems with versioning.
 Private Const PD_PROCESS_EXIT_NOW As String = "EXIT_NOW"
 
 'Full processor information of the previous request (used to provide the "Repeat Last Action" feature)
@@ -112,9 +112,22 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         PDDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_Processor
     End If
     
-    'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
-    ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
+    'Store the passed parameters inside a local PD_ProcessCall object; some external functions prefer to
+    ' receive proc info like this, instead of as separate params.
+    Dim thisProcData As PD_ProcessCall
+    With thisProcData
+        .pcID = processID
+        .pcParameters = processParameters
+        .pcRaiseDialog = raiseDialog
+        .pcRecorded = recordAction
+        .pcTool = relevantTool
+        .pcUndoType = createUndo
+    End With
+    
+    'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data
+    ' from the LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
     If Strings.StringsEqual(processID, "repeat last action", True) Then
+        thisProcData = m_LastProcess
         With m_LastProcess
             processID = .pcID
             raiseDialog = .pcRaiseDialog
@@ -144,19 +157,20 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         Exit Sub
     End If
     
-    'If a selection is active, certain functions (primarily transformations) will remove it before proceeding. This is typically
-    ' done by functions that resize or reorient the image in a way that makes the selection's shape irrelevant. Because PD requires
-    ' the selection mask and image size to remain in sync, errors may occur if selections persist after a size change - and this is
-    ' particularly relevant for the Undo/Redo engine, because it will crash if it attempts to load an Undo file of an image, and the
-    ' image size is not the same as the current selection.
+    'If a selection is active, certain functions (primarily transformations) will remove it before proceeding.
+    ' This is typically done by functions that resize or reorient the image in a way that makes the selection's
+    ' shape irrelevant. Because PD requires the selection mask and image size to remain in sync, errors may occur
+    ' if selections persist after a size change - and this is particularly relevant for the Undo/Redo engine,
+    ' because it will crash if it attempts to load an Undo file of an image, and the image size is not the same
+    ' as the current selection.
     '
-    'Anyway, before moving deeper into the processor, check for actions that disallow selections, and prior to processing them,
-    ' initiate a Remove Selection request.
+    'Anyway, before moving deeper into the processor, check for actions that disallow selections, and prior to
+    ' processing them, initiate a Remove Selection request.
     RemoveSelectionAsNecessary processID, raiseDialog, processParameters, createUndo
     
     'If we made it all the way here, notify the macro recorder that something interesting has happened.
     ' (It may choose to store this action for later playback.)
-    Macros.NotifyProcessorEvent processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+    Macros.NotifyProcessorEvent thisProcData
     
     'If a dialog is being displayed, forcibly disable Undo creation.  (This is really just a failsafe; PD's various dialog functions
     ' are smart about not requesting Undo/Redo events for dialog actions.)
@@ -167,14 +181,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If (createUndo <> UNDO_Nothing) Then
         
         'Save this action's information in the m_LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
-        With m_LastProcess
-            .pcID = processID
-            .pcRaiseDialog = raiseDialog
-            .pcParameters = processParameters
-            .pcUndoType = createUndo
-            .pcTool = relevantTool
-            .pcRecorded = recordAction
-        End With
+        m_LastProcess = thisProcData
         
         'If the user wants us to time how long this action takes, mark the current time now
         If g_DisplayTimingReports Then VBHacks.GetHighResTime m_ProcessingTime
@@ -313,8 +320,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStartTime
     
     'After an action completes, figure out if we need to push a new entry onto the Undo/Redo stack.  (Note that for convenience,
-    ' this sub will also handle roll-back of some UI elements if the current operation was canceled prematurely.)
-    FinalizeUndoRedoState processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+    ' this sub also handles roll-back of some UI elements if the current operation was canceled prematurely.)
+    FinalizeUndoRedoState thisProcData
     
     Dim procUndoStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStopTime
@@ -554,7 +561,17 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     If (targetLayerID = -1) Then targetLayerID = pdImages(g_CurrentImage).GetActiveLayerID
     
     'Notify the macro recorder that something interesting has happened
-    Macros.NotifyProcessorEvent processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+    Dim tmpProcData As PD_ProcessCall
+    With tmpProcData
+        .pcID = processID
+        .pcParameters = processParameters
+        .pcRaiseDialog = raiseDialog
+        .pcRecorded = recordAction
+        .pcTool = relevantTool
+        .pcUndoType = createUndo
+    End With
+    
+    Macros.NotifyProcessorEvent tmpProcData
     
     'If a dialog is being displayed, forcibly disable Undo creation
     If raiseDialog Then createUndo = UNDO_Nothing
@@ -600,7 +617,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
         
         'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
         ' processID requests.
-        pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, targetLayerID, relevantTool ', True
+        pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcData, targetLayerID
         
     End If
     
@@ -901,12 +918,27 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
             lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_Selection)
             
             'If such a param string exists, compare it against the current selection param string
-            If (Len(lastSelParamString) <> 0) Then
-            
+            If (LenB(lastSelParamString) <> 0) Then
+                
                 'If the last selection Undo param string does not match the current selection param string, the user has
                 ' modified the selection in some way since the last Undo was created.  Create a new entry now.
                 If Strings.StringsNotEqual(lastSelParamString, pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, True) Then
-                    pdImages(g_CurrentImage).UndoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection
+                    
+                    'Ensure "modify selection" is available to the translation engine
+                    Dim tmpString As String
+                    tmpString = g_Language.TranslateMessage("Modify selection")
+                    
+                    Dim tmpProcData As PD_ProcessCall
+                    With tmpProcData
+                        .pcID = "Modify selection"
+                        .pcParameters = pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML()
+                        .pcRaiseDialog = False
+                        .pcRecorded = True
+                        .pcUndoType = UNDO_Selection
+                    End With
+                    
+                    pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcData
+                    
                 End If
             
             End If
@@ -1163,7 +1195,7 @@ Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog 
 End Sub
 
 'After a processor action completes, call this function to push a new entry onto the Undo/Redo stack (as necessary)
-Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
 
     'If the user canceled the requested action before it completed, we may need to manually roll back some processor phases
     If g_cancelCurrentAction Then
@@ -1185,7 +1217,7 @@ Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialo
         '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
         ' 3) If we are in the midst of playing back a recorded macro.  (Undo/Redo entries take time and memory to process,
         '     so we ignore them during macro playback)
-        If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And recordAction Then
+        If (srcProcData.pcUndoType <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And srcProcData.pcRecorded Then
             If (Not pdImages(g_CurrentImage) Is Nothing) Then
                 
                 'In most cases, the Undo/Redo engine can automatically figure out what layer is affected by the current action.
@@ -1193,18 +1225,22 @@ Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialo
                 '
                 'Let's start by grabbing the active layer ID.  (We cache it in case subsequent modifications cause it to change.)
                 Dim affectedLayerID As Long
-                affectedLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+                If (srcProcData.pcUndoType = UNDO_Selection) Then
+                    affectedLayerID = -1
+                Else
+                    affectedLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+                End If
                 
                 'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
                 ' a layer, then switches to a new layer, Fade will affect the *old layer* only).  Find the relevant layer ID
                 ' before calling the Undo engine.
-                If Strings.StringsEqual(processID, "Fade", True) Then
+                If Strings.StringsEqual(srcProcData.pcID, "Fade", True) Then
                     Dim tmpDIB As pdDIB
                     pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
                 End If
             
                 'Create the Undo data
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData srcProcData, affectedLayerID
             
             End If
         End If

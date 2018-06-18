@@ -425,11 +425,23 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         '
         '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
         If (Macros.GetMacroStatus <> MacroBATCH) Then
+            
             Dim autoSaveTime As Currency
             VBHacks.GetHighResTime autoSaveTime
             PDDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
-            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), vbNullString, UNDO_Everything
+            
+            Dim tmpProcCall As PD_ProcessCall
+            With tmpProcCall
+                .pcID = g_Language.TranslateMessage("Original image")
+                .pcParameters = vbNullString
+                .pcUndoType = UNDO_Everything
+                .pcRaiseDialog = False
+                .pcRecorded = True
+            End With
+            
+            targetImage.UndoManager.CreateUndoData tmpProcCall
             PDDebug.LogAction "Initial auto-save creation took " & VBHacks.GetTimeDiffNowAsString(autoSaveTime)
+            
         End If
             
             

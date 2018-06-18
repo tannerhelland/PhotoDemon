@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3344</langversion>
+<langversion>6.8.3346</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1208,7 +1208,7 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 <translation>Side 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 46 phrases. 26 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -2277,6 +2277,11 @@ Error nummer %
 </phrase>
 
 <phrase>
+<original>Modify selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Remove selection</original>
 <translation>Fjern avgrensning</translation>
 </phrase>
@@ -2298,7 +2303,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Bug rapport instruksjoner</translation>
 </phrase>
 
-<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -15373,10 +15378,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2575</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4689 phrases. -->
-<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
-<!-- These 2575 phrases contain approximately 12326 total words. -->
+<!-- As of this build, PhotoDemon contains 4693 phrases. -->
+<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 12328 total words. -->
 
 </pdData>

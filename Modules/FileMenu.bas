@@ -504,7 +504,16 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
         'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
         ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
         ' manual save (e.g. AutoSave).
-        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), vbNullString, UNDO_Everything
+        Dim tmpProcData As PD_ProcessCall
+        With tmpProcData
+            .pcID = g_Language.TranslateMessage("Original image")
+            .pcParameters = vbNullString
+            .pcUndoType = UNDO_Everything
+            .pcRaiseDialog = False
+            .pcRecorded = True
+        End With
+        
+        newImage.UndoManager.CreateUndoData tmpProcData
         
         'Synchronize all interface elements to match the newly loaded image(s), including various layer-specific settings
         Interface.SyncInterfaceToCurrentImage

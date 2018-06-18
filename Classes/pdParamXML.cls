@@ -147,10 +147,10 @@ Friend Function GetLong(ByRef paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Friend Function GetSingle(ByRef paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
+Friend Function GetSingle(ByRef paramName As String, Optional ByVal defaultReturn As Single = 0!) As Single
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
-        GetSingle = CDblCustom(Trim$(paramValue))
+        GetSingle = CSngCustom(Trim$(paramValue))
     Else
         GetSingle = defaultReturn
     End If
@@ -409,6 +409,16 @@ Private Function CDblCustom(ByVal srcString As String) As Double
     
     'We can now use Val() to convert to Double
     If TextSupport.IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
+    
+End Function
+
+Private Function CSngCustom(ByVal srcString As String) As Single
+
+    'Replace commas with periods
+    If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
+    
+    'We can now use Val() to convert to Double
+    If TextSupport.IsNumberLocaleUnaware(srcString) Then CSngCustom = Val(srcString) Else CSngCustom = 0!
     
 End Function
 

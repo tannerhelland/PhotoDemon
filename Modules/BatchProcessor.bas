@@ -383,26 +383,19 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     
 End Function
 
-Public Sub NotifyProcessorEvent(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Public Sub NotifyProcessorEvent(ByRef srcProcData As PD_ProcessCall)
 
-    'At present, PD only records actions when a macro is actively running.  (In the future, it may be cool to *always* record
-    ' user actions, which would allow the user to create macros from anything they've done in a given session.)
-    If (Macros.GetMacroStatus = MacroSTART) And recordAction Then
+    'At present, PD only records actions when a macro is actively running.  (In the future, it may be cool
+    ' to *always* record user actions, and allow the user to create macros from anything they've done in a
+    ' given session.)
+    If (Macros.GetMacroStatus = MacroSTART) And srcProcData.pcRecorded Then
     
         'Increase the process count
         m_ProcessCount = m_ProcessCount + 1
         
         'Copy the current process's information into the tracking array
         ReDim Preserve m_Processes(0 To m_ProcessCount) As PD_ProcessCall
-        
-        With m_Processes(m_ProcessCount)
-            .pcID = processID
-            .pcRaiseDialog = raiseDialog
-            .pcParameters = processParameters
-            .pcUndoType = createUndo
-            .pcTool = relevantTool
-            .pcRecorded = recordAction
-        End With
+        m_Processes(m_ProcessCount) = srcProcData
         
     End If
     
