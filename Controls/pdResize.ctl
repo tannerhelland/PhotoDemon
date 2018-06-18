@@ -216,7 +216,7 @@ Attribute VB_Exposed = False
 ' automatically propagate across them.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -615,7 +615,7 @@ End Sub
 ' significant digits) to match.  Use this function to do so.
 Private Sub ConvertUnitsToNewValue(ByVal oldUnit As PD_MeasurementUnit, ByVal newUnit As PD_MeasurementUnit)
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'Start by retrieving the old values in pixel measurements
     Dim imgWidthPixels As Double, imgHeightPixels As Double
@@ -732,7 +732,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRESIZE_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDResize", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -754,13 +754,13 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
 
     'Translate various bits of UI text at run-time
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Add tooltips to the controls that natively support them
         cmdAspectRatio.AssignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
@@ -796,7 +796,7 @@ Private Sub PopulateDropdowns()
     'Populate the width unit drop-down box
     cmbWidthUnit.Clear
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         If Not m_PercentDisabled Then cmbWidthUnit.AddItem g_Language.TranslateMessage("percent"), 0
         cmbWidthUnit.AddItem g_Language.TranslateMessage("pixels")
         cmbWidthUnit.AddItem g_Language.TranslateMessage("inches")
@@ -820,7 +820,7 @@ Private Sub PopulateDropdowns()
     'Populate the resolution unit box
     cmbResolution.Clear
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         cmbResolution.AddItem g_Language.TranslateMessage("pixels / inch (PPI)"), 0
         cmbResolution.AddItem g_Language.TranslateMessage("pixels / centimeter (PPCM)"), 1
         cmbResolution.ListIndex = ru_PPI
@@ -913,7 +913,7 @@ End Sub
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
 Private Sub UpdateAspectRatio()
 
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     If tudWidth.IsValid(False) And tudHeight.IsValid(False) Then
     
@@ -1087,7 +1087,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'Add the "lock aspect ratio" button
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             Dim buttonImageSize As Long
             buttonImageSize = Interface.FixDPI(32)
             cmdAspectRatio.AssignImage "generic_unlock", , buttonImageSize, buttonImageSize
@@ -1095,7 +1095,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         End If
         
         UpdateColorList
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
         lblWidth.UpdateAgainstCurrentTheme

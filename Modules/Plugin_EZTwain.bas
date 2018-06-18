@@ -17,7 +17,7 @@ Attribute VB_Name = "Plugin_EZTwain"
 ' available from the EZTW32 developers at http://eztwain.com/ezt1_download.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -49,8 +49,8 @@ Public Function InitializeEZTwain() As Boolean
         m_ScanningAvailable = InitializeEZTwain
         
         If (Not InitializeEZTwain) Then
-            pdDebug.LogAction "WARNING!  LoadLibrary failed to load EZTwain.  Last DLL error: " & Err.LastDllError
-            pdDebug.LogAction "(FYI, the attempted path was: " & eztPath & ")"
+            PDDebug.LogAction "WARNING!  LoadLibrary failed to load EZTwain.  Last DLL error: " & Err.LastDllError
+            PDDebug.LogAction "(FYI, the attempted path was: " & eztPath & ")"
         End If
         
     Else
@@ -211,5 +211,5 @@ ScanError:
 End Sub
 
 Private Sub RaiseInternalDebugEvent(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString)
-    pdDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
+    PDDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
 End Sub

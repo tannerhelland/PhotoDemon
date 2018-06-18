@@ -10,7 +10,7 @@ Attribute VB_Name = "MoveTool"
 ' tool panel form for more details on how the UI relays relevant tool data here.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -40,7 +40,7 @@ Attribute VB_Exposed = False
 ' a built-in VB picture box.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -308,12 +308,12 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
-    If ucSupport.ThemeUpdateRequired And pdMain.IsProgramRunning() Then
+    If ucSupport.ThemeUpdateRequired And PDMain.IsProgramRunning() Then
         ucSupport.UpdateAgainstThemeAndLanguage
         RedrawBackBuffer
     End If

@@ -77,7 +77,7 @@ Attribute VB_Exposed = False
 '     original file until all interactions are complete.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -199,7 +199,7 @@ End Enum
 ' fixed size*, meaning they can be read into a fixed-width array in a single pass.
 Private Type PDP_NODE
 
-    nodeName As String * 32                 'Name of the node, as a standard VB String (DBCS).  It is thus 64 bytes long.
+    NodeName As String * 32                 'Name of the node, as a standard VB String (DBCS).  It is thus 64 bytes long.
                                             ' Note that node name has no special meaning to this class; it is up to the caller to make
                                             ' the name meaningful.
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be
@@ -367,7 +367,7 @@ Friend Function AddNode(Optional ByVal thisNodeName As String = vbNullString, Op
     'Copy the supplied values into the node directory.  Note that all three ID types are optional, but hopefully the user has
     ' been smart enough to make use of at least one of them!
     With m_NodeDirectory(m_numOfNodes - 1)
-        .nodeName = thisNodeName
+        .NodeName = thisNodeName
         .NodeID = thisNodeID
         .OptionalNodeType = thisNodeType
     End With
@@ -1381,7 +1381,7 @@ Friend Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
     
     'Fill the supplied variables with the corresponding data for this node
     With m_NodeDirectory(nodeIndex)
-        dstNodeName = .nodeName
+        dstNodeName = .NodeName
         dstNodeID = .NodeID
         dstOptionalNodeType = .OptionalNodeType
     End With
@@ -1390,32 +1390,38 @@ Friend Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
 End Function
 
-'Shortcut function for extracting a node's contents directly to file.  This function requires the data to have been added via the dedicated
-' AutoAddNodeFromFile() function, above, as that function automatically populates all necessary fields for file extraction.
+'Shortcut function for extracting a node's contents directly to file.  This function requires the data to
+' have been added via the dedicated AutoAddNodeFromFile() function, above, as that function automatically
+' populates all necessary fields for file extraction.
 '
-'In the future, additional functions will be added for extracting all files in the pdPackage, but for this function, a source filename
-' (WITH EXTENSION) is required.  This filename is case-sensitive.  If the desired file was originally added using a relative path, YOU MUST
-' INCLUDE THE RELATIVE PATH in the filename sent to this function.  This is required as a pdPackage may contain something like
-' "\Subfolder1\Filename.txt" and "\Subfolder2\Filename.txt", and if extracting by filename, it can't differentiate between these two unless
+'A source filename (WITH EXTENSION) is required.  This filename is case-sensitive.  If the desired file was
+' originally added using a relative path, YOU MUST INCLUDE THE RELATIVE PATH in the filename sent to this
+' function.  This is required as a pdPackage may contain something like "\Subfolder1\Filename.txt" and
+' "\Subfolder2\Filename.txt", and if extracting by filename, it can't differentiate between these two unless
 ' you provide the relative path.
 '
-'If the requested file was originally added with a relative path (e.g. "/Subfolder/Filename.txt") then two things should be noted:
+'If the requested file was originally added with a relative path (e.g. "/Subfolder/Filename.txt") then two
+' things should be noted:
 ' 1) Again, the full original filename PLUS PATH must be supplied as srcFilename
-' 2) When writing out the file, any relative folders will be forcibly created, as necessary.  If they cannot be created, the file write will
-'    (obviously) fail.
-' 3) If you don't want to reconstruct the file's relative path, simply supply your own custom path+filename in dstPath, then set the
-'    optional dstPathIncludesFilename to TRUE.  This will cause pdPackage to ignore the original relative path and filename information.
+' 2) When writing out the file, any relative folders will be forcibly created, as necessary.  If they cannot
+'    be created, the file write will (obviously) fail.
+' 3) If you don't want to reconstruct the file's relative path, simply supply your own custom path+filename
+'    in dstPath, then set the optional dstPathIncludesFilename to TRUE.  This will cause pdPackage to ignore
+'    the original relative path and filename information.
 '
 'If you don't want to mess with relative paths, you have two choices:
 ' 1) Simply supply bare filenames to the autoAddNodeFromFile function in the first place (duh).
-' 2) Set the optional ignoreRelativePathIfPresent parameter to TRUE.  Note that this parameter does not change the requirement for passing a
-'    relative path in as srcFilename; all it does is strip the relative path(s) prior to writing the file.
+' 2) Set the optional ignoreRelativePathIfPresent parameter to TRUE.  Note that this parameter does not change
+'    the requirement for passing a relative path in as srcFilename; all it does is strip the relative path(s)
+'    prior to writing the file.
 '
-'As a convenience, this function also provides built-in file rename functionality.  If the dstPathIncludesFilename value is set to TRUE, the
-' file's original name (AND ANY RELATIVE PATHS, if included), will be ignored in favor of the supplied dstPath string.  Obviously, if using
-' this feature, make sure dstPath includes the filename and extension, e.g. dstPath = "C:\newFilename.ext"
+'As a convenience, this function also provides built-in file rename functionality.  If the dstPathIncludesFilename
+' value is set to TRUE, the file's original name (AND ANY RELATIVE PATHS, if included), will be ignored in favor
+' of the supplied dstPath string.  Obviously, if using this feature, make sure dstPath includes the filename and
+' extension, e.g. dstPath = "C:\newFilename.ext".
 '
-'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path was successfully constructed.
+'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path
+' was successfully constructed.
 Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the file node type identifier to 32 chars.
@@ -1426,25 +1432,20 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     'If this node contains a relative path, we'll detect it automatically
     Dim thisNodeType As PDP_SPECIAL_NODE_TYPE
     
-    'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
-    Dim filenameArray() As Byte
-    ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
-    CopyMemoryStrict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
-    
     'Start searching the node array for matches
     Dim retBytes() As Byte
-    Dim i As Long, nodeIndex As Long, nodeFound As Boolean
+    Dim i As Long, nodeIndex As Long, nodeFound As Boolean, testFilename As String
     nodeIndex = -1
     nodeFound = False
     
     For i = 0 To UBound(m_NodeDirectory)
     
-        'Look for two types of node names: bare filenames, and filenames with relative paths attached.
+        'Look for two types of noded: bare filenames, and filenames with relative paths attached.
         ' (pdPackage handles both types automatically)
-        If Strings.StringsEqual(nodeName32_1, m_NodeDirectory(i).nodeName, False) Then
+        If Strings.StringsEqual(nodeName32_1, m_NodeDirectory(i).NodeName, False) Then
             nodeFound = True
             thisNodeType = PDP_SN_Filename
-        ElseIf Strings.StringsEqual(nodeName32_2, m_NodeDirectory(i).nodeName, False) Then
+        ElseIf Strings.StringsEqual(nodeName32_2, m_NodeDirectory(i).NodeName, False) Then
             nodeFound = True
             thisNodeType = PDP_SN_FilenameAndRelativePath
         Else
@@ -1467,10 +1468,10 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 If nodeFound Then
                     
                     'Extract the header array, which will contain the filename of this file
-                    If GetNodeDataByIndex(i, True, retBytes) Then
-                    
+                    If Me.GetNodeDataByIndex_String(i, True, testFilename) Then
+                        
                         'If this byte array equals the source filename, we have a match (DING DING DING).
-                        If CheckArrayEquality(filenameArray, retBytes) Then
+                        If Strings.StringsEqual(srcFilename, testFilename) Then
                             nodeFound = True
                             nodeIndex = i
                             Exit For
@@ -1569,6 +1570,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         End If
         
     Else
+        InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile couldn't find the requested source file: " & srcFilename
         AutoExtractSingleFile = False
     End If
 
@@ -1620,10 +1622,10 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
     
         'Look for two types of node names: bare filenames, and filenames with relative paths attached.
         ' (pdPackage handles both types automatically)
-        If Strings.StringsEqual(nodeName32_1, m_NodeDirectory(i).nodeName, False) Then
+        If Strings.StringsEqual(nodeName32_1, m_NodeDirectory(i).NodeName, False) Then
             nodeFound = True
             thisNodeType = PDP_SN_Filename
-        ElseIf Strings.StringsEqual(nodeName32_2, m_NodeDirectory(i).nodeName, False) Then
+        ElseIf Strings.StringsEqual(nodeName32_2, m_NodeDirectory(i).NodeName, False) Then
             nodeFound = True
             thisNodeType = PDP_SN_FilenameAndRelativePath
         Else
@@ -1776,7 +1778,7 @@ Friend Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional By
         
         Dim i As Long
         For i = 0 To UBound(m_NodeDirectory)
-            If Strings.StringsEqual(nodeName32, m_NodeDirectory(i).nodeName, caseInsensitiveMatching) Then
+            If Strings.StringsEqual(nodeName32, m_NodeDirectory(i).NodeName, caseInsensitiveMatching) Then
                 GetNodeIndexFromName = i
                 Exit For
             End If

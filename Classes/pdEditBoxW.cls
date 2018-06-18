@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 '    fonts between all pdEditBoxW instances (to reduce GDI object count).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -391,7 +391,7 @@ Friend Property Let Text(ByRef newString As String)
         m_TextBackup = newString
     End If
     
-    If pdMain.IsProgramRunning() Then RaiseEvent Change
+    If PDMain.IsProgramRunning() Then RaiseEvent Change
     
 End Property
 
@@ -413,7 +413,7 @@ End Property
 
 Friend Property Let Visible(ByVal newVisibility As Boolean)
     m_Visible = newVisibility
-    If m_Visible And pdMain.IsProgramRunning() Then
+    If m_Visible And PDMain.IsProgramRunning() Then
         If (m_EditBoxHwnd = 0) Then RaiseEvent CreateTextBoxNow
         ShowWindow m_EditBoxHwnd, SW_SHOWNA
     Else
@@ -461,7 +461,7 @@ Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         If determineHeightForMe Then yHeight = Me.SuggestedHeight
         
         'Create the window!
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
                 x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
             If (m_EditBoxHwnd <> 0) Then UserControls.NotifyAPIWindowCreated
@@ -474,7 +474,7 @@ Friend Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
             Me.Visible = m_Visible
             
             'We need to subclass a number of different messages, both for the edit box window and for the parent control.
-            If pdMain.IsProgramRunning() Then
+            If PDMain.IsProgramRunning() Then
                 
                 'Subclass the edit box itself
                 m_EditBoxSubclassed = VBHacks.StartSubclassing(m_EditBoxHwnd, Me)
@@ -661,7 +661,7 @@ Private Sub m_MouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub Class_Initialize()
-    If pdMain.IsProgramRunning() Then Set m_MouseEvents = New pdInputMouse
+    If PDMain.IsProgramRunning() Then Set m_MouseEvents = New pdInputMouse
     m_Enabled = True
     m_Visible = True
 End Sub
@@ -917,7 +917,7 @@ End Function
 
 'On focus events, keyboard hooks are set or removed accordingly.  See the VBHacks module for details.
 Private Sub InstallKeyboardHook()
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         If (m_HookID = 0) Then m_HookID = VBHacks.NotifyEditBoxHookNeeded(Me)
     End If
 End Sub

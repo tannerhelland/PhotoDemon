@@ -47,7 +47,7 @@ Attribute VB_Exposed = False
 ' and key events we potentially raise.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -198,7 +198,7 @@ Public Sub ClearCanvas()
     bHeight = ucSupport.GetBackBufferHeight
         
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() Then
+    If (g_OpenImageCount = 0) And PDMain.IsProgramRunning() Then
         
         Dim placeholderImageSize As Long
         placeholderImageSize = 256
@@ -426,7 +426,7 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     
     'If no images are loaded, repaint ourselves automatically
-    If (g_OpenImageCount = 0) And pdMain.IsProgramRunning() Then
+    If (g_OpenImageCount = 0) And PDMain.IsProgramRunning() Then
         Me.ClearCanvas
     Else
     
@@ -456,7 +456,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
 End Sub
 
@@ -518,7 +518,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         UpdateColorList
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
         If (g_OpenImageCount = 0) Then Me.ClearCanvas
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

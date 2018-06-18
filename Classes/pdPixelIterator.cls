@@ -37,7 +37,7 @@ Attribute VB_Exposed = False
 ' (located in PD's central Public_Enums_and_Types module).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

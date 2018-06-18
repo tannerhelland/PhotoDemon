@@ -77,7 +77,7 @@ Attribute VB_Exposed = False
 'To straighten a layer instead of the entire image, use the Layer -> Orientation -> Straighten menu.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -302,7 +302,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
         
         Message "Straighten complete."
         SetProgBarVal 0

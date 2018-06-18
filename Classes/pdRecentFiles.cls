@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 ' every thumbnail in the menu!) so it really needed to be dealt with before 7.0 releases.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 Option Explicit
@@ -476,7 +476,7 @@ Friend Function GetNumOfItems() As Long
 End Function
 
 Private Sub InternalError(ByVal errText As String)
-    pdDebug.LogAction "WARNING!  pdRecentFiles has a problem: " & errText
+    PDDebug.LogAction "WARNING!  pdRecentFiles has a problem: " & errText
 End Sub
 
 Private Sub Class_Initialize()

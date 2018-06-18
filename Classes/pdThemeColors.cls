@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 'This way, the rendering function inside each UC can access colors very quickly, regardless of changes to control state.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -54,7 +54,7 @@ Friend Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
     ' (Note that this step will fail inside the IDE; a workaround is provided.)
     m_ObjectName = srcObjectName
-    If pdMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
+    If PDMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
         InitializeColorList = g_Themer.VerifyThemeObject(srcObjectName)
     Else
         InitializeColorList = True
@@ -94,7 +94,7 @@ Friend Function LoadThemeColor(ByVal colorIndex As Long, ByRef srcColorName As S
         Dim baseColorValue As Long
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
-        If pdMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
+        If PDMain.IsProgramRunning() And (Not g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
             If g_Themer.RetrieveColorFromCache(m_ObjectName, srcColorName, m_ColorList(colorIndex)) Then

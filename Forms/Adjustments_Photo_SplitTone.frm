@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright 2015-2018 by Tanner Helland, first build Copyright 2014 by Audioglider
+'Copyright 2015-2018 by Tanner Helland
 'Created: 07/May/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params
@@ -124,10 +124,8 @@ Attribute VB_Exposed = False
 ' areas of greatest contrast in the image.  I think it's quite an excellent tool, and its results should be comparable
 ' to what you'd get from (much more expensive) professional software like Adobe Lightroom.
 '
-'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

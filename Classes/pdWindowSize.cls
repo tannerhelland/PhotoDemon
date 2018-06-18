@@ -23,7 +23,7 @@ Attribute VB_Exposed = False
 ' this parent class is used.  It provides replacement move/size functions that rely on WAPI for correct behavior.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -76,7 +76,7 @@ Private m_WindowRect As winRect
 ' bypass VB's faulty handling.
 Friend Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         EndSubclassing
         

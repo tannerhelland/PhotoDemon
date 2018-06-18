@@ -41,7 +41,7 @@ Attribute VB_Exposed = False
 'This control is best used in places where a side-by-side comparison between two elements is required.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -241,10 +241,10 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDNEWOLD_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDNewOld", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     'Inside the IDE, use placeholder text
-    If (Not pdMain.IsProgramRunning()) Then
+    If (Not PDMain.IsProgramRunning()) Then
         m_NewCaptionTranslated = "new:"
         m_OldCaptionTranslated = "original:"
     End If
@@ -268,7 +268,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -358,9 +358,9 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         UpdateColorList
         
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
             m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
             ucSupport.UpdateAgainstThemeAndLanguage
@@ -403,7 +403,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     Set tmpFont = Nothing
     
     'Next, draw borders around the new and old items
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
             
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True

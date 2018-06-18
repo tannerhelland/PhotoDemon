@@ -240,7 +240,7 @@ Attribute VB_Exposed = False
 ' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

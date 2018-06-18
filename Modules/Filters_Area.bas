@@ -13,7 +13,7 @@ Attribute VB_Name = "Filters_Area"
 ' filters, like Gaussian Blur, have their own specialized, optimized implementations.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -490,8 +490,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
-    Dim hasAlpha As Boolean
-    hasAlpha = (qvDepth = 4)
+    Dim imgHasAlpha As Boolean
+    imgHasAlpha = (qvDepth = 4)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -545,7 +545,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     ReDim gFloat(initX To finalX, initY To finalY) As Single
     ReDim bFloat(initX To finalX, initY To finalY) As Single
     
-    If hasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
+    If imgHasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
     
     Const ONE_DIV_255 As Double = 1# / 255#
     
@@ -562,7 +562,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         gFloat(x, y) = g * ONE_DIV_255
         bFloat(x, y) = b * ONE_DIV_255
         
-        If hasAlpha Then
+        If imgHasAlpha Then
             a = imageData(quickX + 3, y)
             aFloat(x, y) = a * ONE_DIV_255
         End If
@@ -602,7 +602,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             Next x
             
             'Apply alpha separately
-            If hasAlpha Then
+            If imgHasAlpha Then
                 
                 aFloat(initX, y) = aFloat(initX, y) * boundaryScale
                 
@@ -664,7 +664,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                 Next y
                 
                 'Handle alpha separately
-                If hasAlpha Then
+                If imgHasAlpha Then
                     
                     aFloat(x, initY) = aFloat(x, initY) * boundaryScale
                     
@@ -715,7 +715,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             imageData(quickX + 2, y) = r
             
             'Handle alpha separately
-            If hasAlpha Then
+            If imgHasAlpha Then
                 a = aFloat(x, y) * postScale
                 If (a > 255) Then a = 255
                 imageData(quickX + 3, y) = a
@@ -762,8 +762,8 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
-    Dim hasAlpha As Boolean
-    hasAlpha = (qvDepth = 4)
+    Dim imgHasAlpha As Boolean
+    imgHasAlpha = (qvDepth = 4)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -821,7 +821,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     ReDim gFloat(initX To finalX, initY To finalY) As Single
     ReDim bFloat(initX To finalX, initY To finalY) As Single
     
-    If hasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
+    If imgHasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
     
     Const ONE_DIV_255 As Double = 1# / 255#
     
@@ -838,7 +838,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         gFloat(x, y) = g * ONE_DIV_255
         bFloat(x, y) = b * ONE_DIV_255
         
-        If hasAlpha Then
+        If imgHasAlpha Then
             a = imageData(quickX + 3, y)
             aFloat(x, y) = a * ONE_DIV_255
         End If
@@ -882,7 +882,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             End If
             
             'Apply alpha separately
-            If hasAlpha Then
+            If imgHasAlpha Then
                 
                 aFloat(initX, y) = aFloat(initX, y) * boundaryScale
                 
@@ -932,7 +932,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             imageData(quickX + 2, y) = r
             
             'Handle alpha separately
-            If hasAlpha Then
+            If imgHasAlpha Then
                 a = aFloat(x, y) * postScale
                 If (a > 255) Then a = 255
                 imageData(quickX + 3, y) = a

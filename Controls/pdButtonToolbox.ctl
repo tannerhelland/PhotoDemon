@@ -56,7 +56,7 @@ Attribute VB_Exposed = False
 '     by design to make it easier to toggle state in the toolbox maintenance code.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -245,7 +245,7 @@ End Property
 ' No preprocessing is currently applied to DIBs loaded as a resource.
 Public Sub AssignImage(Optional ByRef resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
-    If (Not pdMain.IsProgramRunning) Then Exit Sub
+    If (Not PDMain.IsProgramRunning) Then Exit Sub
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
@@ -296,7 +296,7 @@ End Sub
 'Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
-    If (Not pdMain.IsProgramRunning) Then Exit Sub
+    If (Not PDMain.IsProgramRunning) Then Exit Sub
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If (LenB(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
@@ -583,7 +583,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDTOOLBUTTON_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDToolButton", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
            
 End Sub
 
@@ -599,7 +599,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -613,7 +613,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -677,7 +677,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
         
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'A single-pixel border is always drawn around the control
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, 1
@@ -735,8 +735,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

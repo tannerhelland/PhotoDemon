@@ -16,7 +16,7 @@ Attribute VB_Name = "PluginManager"
 ' CORE_PLUGINS enum and associated CORE_PLUGIN_COUNT constant.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -42,14 +42,14 @@ End Enum
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.93"
+Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.99"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.9.0"
-Private Const EXPECTED_LZ4_VERSION As String = "10801"
+Private Const EXPECTED_LZ4_VERSION As String = "10802"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.7"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
-Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
+Private Const EXPECTED_ZLIB_VERSION As String = "1.2.11"
 Private Const EXPECTED_ZSTD_VERSION As String = "10304"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove

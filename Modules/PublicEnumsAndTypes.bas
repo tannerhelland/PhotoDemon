@@ -388,14 +388,15 @@ End Enum
     Private Const PDUF_DAILY = 0, PDUF_WEEKLY = 1, PDUF_MONTHLY = 2, PDUF_NEVER = 3
 #End If
 
-Public Enum PD_UPDATE_TRACK
-    PDUT_STABLE = 0
-    PDUT_BETA = 1
-    PDUT_NIGHTLY = 2
+Public Enum PD_UpdateTrack
+    [ut_None] = -1
+    ut_Stable = 0
+    ut_Beta = 1
+    ut_Developer = 2
 End Enum
 
 #If False Then
-    Private Const PDUT_STABLE = 0, PDUT_BETA = 1, PDUT_NIGHTLY = 2
+    Private Const ut_None = -1, ut_Stable = 0, ut_Beta = 1, ut_Developer = 2
 #End If
 
 'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.  Callers need to

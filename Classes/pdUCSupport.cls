@@ -26,7 +26,7 @@ Attribute VB_Exposed = False
 ' see fit.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1146,7 +1146,7 @@ Friend Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boo
 End Function
 
 Friend Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
-    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetCursor_System standardCursorType
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetCursor_System standardCursorType, True
 End Sub
 
 Friend Sub RequestCursor_Resource(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)

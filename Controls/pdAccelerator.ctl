@@ -54,7 +54,7 @@ Attribute VB_Exposed = False
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -206,7 +206,7 @@ End Sub
 'Hooks cannot be released while actually inside the hookproc.  Call this function to safely release a hook, even from within a hookproc.
 Private Sub SafelyReleaseHook()
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
@@ -249,7 +249,7 @@ Private Sub UserControl_Initialize()
     ReDim m_Hotkeys(0 To INITIAL_HOTKEY_LIST_SIZE - 1) As pdHotkey
         
     'You may want to consider straight-up disabling hotkeys inside the IDE
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'UI-related timers run at 60 fps
         Set m_ReleaseTimer = New pdTimer
@@ -276,7 +276,7 @@ End Sub
 'Hook activation/deactivation must be controlled manually by the caller
 Public Function ActivateHook() As Boolean
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
@@ -445,7 +445,7 @@ Private Function AreEventsFrozen() As Boolean
     On Error GoTo EventStateCheckError
     
     If UserControl.Enabled Then
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             AreEventsFrozen = UserControl.EventsFrozen
         Else
             AreEventsFrozen = True

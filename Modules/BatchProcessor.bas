@@ -20,7 +20,7 @@ Attribute VB_Name = "Macros"
 ' to load an outdated macro file.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -333,7 +333,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                 ' a failsafe for faulty old versions of PD.
                 Else
                     
-                    pdDebug.LogAction "WARNING!  m_ProcessCount is zero!  Macro file is technically valid, but there's nothing to see here..."
+                    PDDebug.LogAction "WARNING!  m_ProcessCount is zero!  Macro file is technically valid, but there's nothing to see here..."
                     
                     Message "Macro complete!"
                     PlayMacroFromFile = True

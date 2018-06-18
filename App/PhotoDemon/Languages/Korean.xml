@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.27</langversion>
+<langversion>1.0.29</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2284,47 +2284,10 @@ Description:  %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>버그 신고서를 제출해 주셔서 감사합니다. 가능한 한 빨리 버그를 해결하려면 PhotoDemon이 하나 더 질문에 답해야합니다.
-
- GitHub 계정이 있습니까? (이것이 무엇을 의미하는지 모른다면 "아니오"라고 대답하십시오.)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Photodemon을 더 잘 만들어 주셔서 감사합니다.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon이 자동으로 GitHub 버그 보고서 웹 페이지를 열었습니다. 제목 상자에 문제에 대한 간단한 설명과 함께 다음 오류 번호를 입력하십시오.  %1
-VBCRL 큰 오류 입력시까지 진행된 단계를 포함하여 큰 텍스트 상자에 제공 할 수있는 추가 세부 정보는 다음과 같이 빠르게 수정 될 수 있습니다. 
-
- 완료되면 새 발행물 제출 버튼을 클릭하십시오. 고맙습니다!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub 버그 리포트 지침</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon이 자동으로 버그보고 웹 페이지를 열었습니다. 설명 상자에이 오류가 발생한 단계를 설명하십시오. 해당 상자에 
-
-A가 표시되어 있으므로 다음 오류 번호를 포함하십시오.  %1
-
- 완료되면 제출 단추를 클릭하십시오. 고맙습니다!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2332,7 +2295,7 @@ A가 표시되어 있으므로 다음 오류 번호를 포함하십시오.  %1
 <translation>버그보고 지침</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2666,6 +2629,11 @@ P 숫자 값을 입력하십시오.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>소프트웨어 업데이터 초기화 (이 기능은 도구 -> 옵션 메뉴에서 비활성화 할 수 있습니다)</translation>
 </phrase>
@@ -2690,7 +2658,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>베타</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6086,8 +6054,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>작은 기부로 저희를 지원하십시오 (감사합니다!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6096,13 +6069,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>의견 제출</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>버그 신고서 제출</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6448,20 +6416,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>버그 신고서를 제출해 주셔서 감사합니다. 가능한 한 빨리 버그를 해결하려면 PhotoDemon이 어디로 보내야하는지 알 필요가 있습니다.
-
- GitHub 계정이 있습니까? (이것이 무엇을 의미하는지 모른다면 "아니오"라고 대답하십시오.)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Photodemon을 고쳐 주셔서 감사합니다.</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>스트레치 히스토그램</translation>
 </phrase>
@@ -6636,7 +6590,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12537,11 +12491,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Photodemon 개발에 기부하십시오.</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>빠르고 자유로운 휴대용 사진 편집기</translation>
 </phrase>
@@ -12549,11 +12498,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>개발, 디자인 또는 번역 작업에 참여하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>저자에게 문의하십시오.</translation>
 </phrase>
 
 <phrase>
@@ -12582,11 +12526,36 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation>Tanner Helland 및 Contributors의 PhotoDemon 저작권  %1 2000-  %2입니다.</translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Photodemon 개발에 기부하십시오.</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15400,10 +15369,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

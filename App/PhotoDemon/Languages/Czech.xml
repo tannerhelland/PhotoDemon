@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3342</langversion>
+<langversion>6.8.3344</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2285,47 +2285,10 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Děkujeme, že jste odeslali zprávu o chybě. Chcete-li se ujistit, že je vaše chyba řešena co nejrychleji, aplikace PhotoDemon potřebuje odpovědět na jednu další otázku.
-
-Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Děkujeme, že jste vylepšili aplikaci PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon automaticky otevřel pro vás webovou stránku s chybovými hlášeními GitHub. Do pole Název zadejte následující číslo chyby s krátkým popisem problému: %1
-
-Any další podrobnosti, které můžete zadat do velkého textového pole včetně kroků, které vedly k této chybě, vám pomohou dostat se do opravy tak rychle, jak Possible.
-
-Po dokončení klikněte na tlačítko Submit New Issue. Děkuji!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>Pokyny k hlášení chyb GitHub</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon automaticky otevřel webovou stránku s chybovými hlášeními. Do pole Comment (Popis) popište kroky, které vedly k této chybě.
-VBCRLV tomto okně prosím uveďte následující číslo chyby: %1
-
-Po dokončení klikněte na tlačítko Odeslat. Děkuji!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2333,7 +2296,7 @@ Po dokončení klikněte na tlačítko Odeslat. Děkuji!</translation>
 <translation>Pokyny k hlášení chyb</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2667,6 +2630,11 @@ Při zadání číselné hodnoty.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Inicializace aktualizace softwaru (tato funkce může být zakázána v nabídce Nástroje -> Možnosti)</translation>
 </phrase>
@@ -2691,7 +2659,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6087,8 +6055,13 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Podpořte nás s malým darem (děkujeme!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6097,13 +6070,8 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>Odeslat zpětnou vazbu</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Odeslat zprávu o chybě</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6449,20 +6417,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Děkujeme, že jste odeslali zprávu o chybě. Chcete-li se ujistit, že je vaše chyba řešena co nejrychleji, musí PhotoDemon vědět, kam ji poslat.
-
-Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Děkujeme za upřesnění PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>Roztáhnout histogram</translation>
 </phrase>
@@ -6637,7 +6591,7 @@ Máte účet GitHub? (Pokud nemáte tušení, co to znamená, odpovězte "Ne".)<
 <translation>Odstraňte alfa kanál</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12538,11 +12492,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Darujte na vývoj aplikace PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>Rychlý, bezplatný přenosný editor fotografií</translation>
 </phrase>
@@ -12550,11 +12499,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Účast na vývojových, projekčních nebo překladatelských pracích</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Kontaktujte autora</translation>
 </phrase>
 
 <phrase>
@@ -12583,11 +12527,36 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Darujte na vývoj aplikace PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15400,10 +15369,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

@@ -53,7 +53,7 @@ Attribute VB_Exposed = False
 '    provided them in this class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -286,7 +286,7 @@ End Sub
 Private Sub InstallKeyboardHook()
     
     'Check for an existing hook
-    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And pdMain.IsProgramRunning() Then
+    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And PDMain.IsProgramRunning() Then
         
         'If a hook is already active, and we're trying to unhook it safely, we don't want to reinstall our hook
         Dim tryingToUnhook As Boolean: tryingToUnhook = False

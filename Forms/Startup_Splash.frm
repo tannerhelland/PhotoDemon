@@ -45,7 +45,7 @@ Attribute VB_Exposed = False
 'Last update: handle paint messages internally, rather than leaning on AutoRedraw
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -177,7 +177,7 @@ Public Sub PrepareRestOfSplash()
         FlipBackBufferToScreen
         
     Else
-        pdDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
+        PDDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
     End If
     
 End Sub
@@ -229,7 +229,7 @@ End Sub
 Private Sub Form_Load()
 
     'Unfortunately, we have to subclass to prevent obnoxious flickering when the form is first displayed
-    If pdMain.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
+    If PDMain.IsProgramRunning() And OS.IsProgramCompiled() Then VBHacks.StartSubclassing Me.hWnd, Me
     
 End Sub
 

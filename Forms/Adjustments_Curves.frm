@@ -170,7 +170,7 @@ Attribute VB_Exposed = False
 ' (e.g. VERY FAST!).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -665,7 +665,7 @@ End Sub
 'TODO: rewrite this monstrosity against pd2D, and render to a persistent DIB instead of directly to the picture box (ugh)
 Private Sub RedrawPreviewBox()
 
-    If (Not cmdBar.PreviewsAllowed) Or (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not cmdBar.PreviewsAllowed) Or (Not PDMain.IsProgramRunning()) Then Exit Sub
 
     picDraw.Picture = LoadPicture(vbNullString)
     

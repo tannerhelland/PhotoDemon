@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 ' RedrawNeeded() event.)
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
-' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -125,7 +125,7 @@ End Sub
 ' ignored if those features are not required.
 Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'Make sure there's room in the array for this item.
     If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
@@ -408,7 +408,7 @@ End Property
 ' don't do it.  (I mention this because this function rejects invalid ListIndex requests, with that sole exception.)
 Friend Property Let ListIndex(ByVal newIndex As Long)
 
-    If (newIndex >= -1) And (newIndex < m_NumOfItems) And pdMain.IsProgramRunning() Then
+    If (newIndex >= -1) And (newIndex < m_NumOfItems) And PDMain.IsProgramRunning() Then
     
         m_ListIndex = newIndex
         RaiseEvent Click

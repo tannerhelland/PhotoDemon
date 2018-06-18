@@ -27,7 +27,7 @@ Attribute VB_Exposed = False
 'Note that this class *does* perform some subclassing, so I cannot guarantee that it's IDE-safe.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -184,7 +184,7 @@ Friend Sub LoadDefaultPDTheme()
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the designer.)
     Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         themeName = UserPrefs.GetPref_String("Themes", "CurrentTheme", "Dark")
         themeFilename = "Default_" & themeName & ".xml"
@@ -231,9 +231,9 @@ Friend Sub LoadDefaultPDTheme()
     End If
     
     If themeLoadedCorrectly Then
-        If pdMain.IsProgramRunning() Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
+        If PDMain.IsProgramRunning() Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
     Else
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             
             RaiseThemingError "failed to load theme file: " & themeFilename & ".  Attempting theme recovery now...", True
             AttemptThemeRecovery
@@ -426,7 +426,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
     ' 3) (not currently implemented) The user's /Data folder, which contains user-specific data (and can be deleted willy-nilly)
     
     'Attempt to resolve the passed themeFilename to one of these locations
-    If (pdMain.IsProgramRunning() And (Not g_ProgramShuttingDown)) Then
+    If (PDMain.IsProgramRunning() And (Not g_ProgramShuttingDown)) Then
     
         If LoadThemeWithAllFallbacks(themeFilename, m_XML) Then
             
@@ -864,7 +864,7 @@ Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef srcFile
 End Sub
 
 Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'If we're not already subclassing this hWnd (something that shouldn't be possible, but better safe than sorry),
         ' add it to our subclassed list.
@@ -879,7 +879,7 @@ End Sub
 Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
     
     'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         VBHacks.StopSubclassing srcHwnd, Me
         m_SubclassedHWnds.DeleteEntry srcHwnd
         m_SubclassedHWnds.TrimDeletedEntries

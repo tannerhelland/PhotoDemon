@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2014-2018 by Tanner Helland, first build Copyright 2013 Audioglider
+'Copyright 2014-2018 by Tanner Helland
 'Created: 26/June/13
 'Last updated: 02/August/17
 'Last update: rewrite against entirely new, improved algorithm
@@ -79,10 +79,8 @@ Attribute VB_Exposed = False
 ' This provides reasonably good control, while limiting the amount of change applied at the high and
 ' low ends of the scale.
 '
-'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

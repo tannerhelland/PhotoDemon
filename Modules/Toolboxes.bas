@@ -9,7 +9,7 @@ Attribute VB_Name = "Toolboxes"
 'Miscellaneous routines related to rendering and handling PhotoDemon's toolboxes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -93,7 +93,7 @@ End Sub
 'Before unloading the toolboxes, call this sub to write our current toolbox data out to the user's preference file.
 Public Sub SaveToolboxData()
 
-    If pdMain.WasStartupSuccessful() Then
+    If PDMain.WasStartupSuccessful() Then
 
         Dim i As PD_Toolbox
         For i = [_First] To [_Last]

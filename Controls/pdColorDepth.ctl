@@ -128,7 +128,7 @@ Attribute VB_Exposed = False
 'Last update: migrate copy+paste implementation to dedicated UC
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -508,7 +508,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UpdateColorDepthVisibility()
@@ -581,28 +581,28 @@ Private Sub UpdateTransparencyOptions()
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
             clsComposite.Visible = False
-            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
             
         'alpha by cut-off
         Case 2
             sldAlphaCutoff.Visible = True
             clsAlphaColor.Visible = False
             clsComposite.Visible = True
-            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
         
         'alpha by color
         Case 3
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = True
             clsComposite.Visible = True
-            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(True)
+            If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(True)
             
         'no alpha
         Case 4
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
             clsComposite.Visible = True
-            If pdMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
+            If PDMain.IsProgramRunning() Then RaiseEvent ColorSelectionRequired(False)
     
     End Select
     
@@ -694,7 +694,7 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True, g_Themer.GetGenericUIColor(UI_Background))
     End If
@@ -710,7 +710,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'UpdateColorList
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
         cboColorModel.UpdateAgainstCurrentTheme

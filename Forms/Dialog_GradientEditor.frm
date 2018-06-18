@@ -373,7 +373,7 @@ Attribute VB_Exposed = False
 ' does not allow you to set the gradient's shape and/or angle.  (That must be done externally.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

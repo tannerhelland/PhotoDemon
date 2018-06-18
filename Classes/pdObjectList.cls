@@ -21,7 +21,7 @@ Attribute VB_Exposed = False
 'This class is exclusively used by the NavKey module.  Look there for implementation details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -72,7 +72,7 @@ Implements ISubclass
 
 Friend Sub SetParentHWnd(ByVal hWnd As Long)
     
-    If (pdMain.IsProgramRunning() And (hWnd <> 0)) Then
+    If (PDMain.IsProgramRunning() And (hWnd <> 0)) Then
     
         m_ParentHWnd = hWnd
         

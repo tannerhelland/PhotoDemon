@@ -115,7 +115,7 @@ Attribute VB_Exposed = False
 'Images that had been loaded by PhotoDemon but never modified will not be shown.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -211,7 +211,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     If tmpDIB.CreateFromFile(srcImagePath) Then
-        picPreview.copyDIB tmpDIB, , True, , True, , True
+        picPreview.CopyDIB tmpDIB, , True, , True, , True
     Else
         picPreview.PaintText g_Language.TranslateMessage("Preview not available")
     End If

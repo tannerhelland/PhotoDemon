@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 'Regardless of which surface type you use, you can always access an hDC for external GDI interop purposes.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
-' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

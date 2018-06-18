@@ -74,7 +74,11 @@ README_PSC-version.txt
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe
+/Support/Update builder/zlibwapi.dll
+/Support/Update Builder 2.0/PhotoDemon_Update_Generator.exe
+/Support/Update Builder 2.0/libzstd.dll
 /Support/Update patcher/PD_Update_Patcher.exe
+/Support/Update Patcher 2.0/PD_Update_Patcher.exe
 /Support/Project-wide search and replace/VBP_SearchAndReplace.exe
 /Data
 *.tmpxml

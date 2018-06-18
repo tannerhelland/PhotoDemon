@@ -12,7 +12,7 @@ Attribute VB_Name = "ImageExporter"
 ' details (which are many, especially given PD's many "automatic" export features).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -44,7 +44,7 @@ Attribute VB_Exposed = False
 ' to update a single master function for pen selection, then have the change propagate to all tool windows.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -275,7 +275,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDPS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDPenSelector", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -299,7 +299,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -354,7 +354,7 @@ Private Sub RedrawBackBuffer()
     If (bufferDC = 0) Then Exit Sub
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
@@ -426,8 +426,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

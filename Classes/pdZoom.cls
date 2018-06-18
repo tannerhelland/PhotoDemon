@@ -21,7 +21,7 @@ Attribute VB_Exposed = False
 'The main user of this class is the Viewport_Handler module.  Look there for relevant implementation details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -66,8 +66,8 @@ Friend Function GetZoomValue(ByVal zoomIndex As Long) As Double
             
             'Retrieve the current viewport's width and height
             Dim viewportWidth As Double, viewportHeight As Double
-            viewportWidth = FormMain.mainCanvas(0).GetCanvasWidth
-            viewportHeight = FormMain.mainCanvas(0).GetCanvasHeight
+            viewportWidth = FormMain.MainCanvas(0).GetCanvasWidth
+            viewportHeight = FormMain.MainCanvas(0).GetCanvasHeight
             
             'Calculate a width and height ratio in advance
             Dim horizontalRatio As Double, verticalRatio As Double

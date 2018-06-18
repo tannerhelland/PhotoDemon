@@ -32,7 +32,7 @@ Attribute VB_Exposed = False
 ' - Dana Seaman's UnicodeTutorialVB (http://www.cyberactivex.com/UnicodeTutorialVb.htm)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1847,7 +1847,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                         If ((findResult.dwFileAttributes And vbDirectory) <> 0) Then
                         
                             'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
-                            If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(basePath & chkFile)
+                            If recurseSubfolders Then cFoldersToCheck.AddString Me.PathAddBackslash(curFolder & chkFile)
                             
                         'This is not a folder, but a file.  Add it to the destination file list if it meets any white/blacklisted criteria.
                         Else
@@ -1870,7 +1870,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                                 If returnRelativeStrings Then
                                     dstFiles.AddString Me.GenerateRelativePath(basePath, Me.FileGetPath(curFolder) & chkFile, True)
                                 Else
-                                    dstFiles.AddString basePath & chkFile
+                                    dstFiles.AddString curFolder & chkFile
                                 End If
                             End If
                         

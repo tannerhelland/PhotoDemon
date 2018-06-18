@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 'This class also handles all preset file/save operations.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -378,5 +378,5 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub DebugNote(ByRef debugMessage As String)
-    If (LenB(debugMessage) <> 0) Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
+    If (LenB(debugMessage) <> 0) Then PDDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
 End Sub

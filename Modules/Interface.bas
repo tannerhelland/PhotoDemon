@@ -13,7 +13,7 @@ Attribute VB_Name = "Interface"
 ' As such, some functions may operate differently (or not at all) while in the IDE.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1216,7 +1216,7 @@ End Sub
 Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'This function can be a rather egregious time hog, so I profile it from time-to-time to check for regressions
     Dim startTime As Currency
@@ -1302,7 +1302,7 @@ End Sub
 Public Sub ReleaseFormTheming(ByRef srcForm As Form)
     
     'This function may be triggered during compilation; avoid this
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         If (Not g_Themer Is Nothing) Then g_Themer.RemoveWindowPainter srcForm.hWnd
         NavKey.NotifyFormUnloading srcForm
     End If
@@ -1938,7 +1938,7 @@ End Sub
 ' to the underlying control.  If you do, those images will obviously overwrite this warning!)
 Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB

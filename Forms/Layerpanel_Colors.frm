@@ -91,7 +91,7 @@ Attribute VB_Exposed = False
 'This form is the subpanel for the color selector panel.  It is currently under construction.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -132,9 +132,9 @@ End Sub
 
 Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If (LenB(histValue) <> 0) And pdMain.IsProgramRunning() And (targetDC <> 0) Then
+    If (LenB(histValue) <> 0) And PDMain.IsProgramRunning() And (targetDC <> 0) Then
         
-        If pdMain.IsProgramRunning Then
+        If PDMain.IsProgramRunning Then
         
             If (ptrToRectF <> 0) Then
                 
@@ -297,7 +297,7 @@ Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered
     
     If (bufferDC = 0) Then Exit Sub
     
-    If pdMain.IsProgramRunning Then
+    If PDMain.IsProgramRunning Then
     
         Dim cPainter As pd2DPainter
         Drawing2D.QuickCreatePainter cPainter

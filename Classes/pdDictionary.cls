@@ -38,7 +38,7 @@ Attribute VB_Exposed = False
 ' as case-specific (e.g. "key" and "KEY" would be treated as separate entries).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

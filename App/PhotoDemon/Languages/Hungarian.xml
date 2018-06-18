@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3342</langversion>
+<langversion>6.8.3344</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2275,48 +2275,10 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Köszönjük, hogy elküldte a hibajelentést. Ahhoz, hogy a hiba a címzettje a lehető leggyorsabban, PhotoDemon szüksége, hogy válaszoljon egy több question.
-
-Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Köszönöm, hogy PhotoDemon jobb</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon automatikusan nyitott GitHub hibajelentés weboldal az Ön számára. A Cím mezőbe, írja be az alábbi hiba számát egy rövid leírást a probléma: %1
-
-Any további részleteket tud nyújtani a nagy szövegdobozba, beleértve azokat a lépéseket, vezetett fel a hiba, amely segít, hogy kap rögzített leggyorsabban possible.
-
-When kész, kattintson a Submit Új probléma gombra. Köszönöm!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub hibajelentés utasítások</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon automatikusan nyitott hibajelentés weboldal az Ön számára. A Megjegyzés mezőbe, írja le azokat a lépéseket, vezetett ehhez error.
-
-Also abban a dobozban, kérjük, az alábbi hiba száma: %1
-
-When elkészült, kattintson a Küldés gombra. Köszönöm!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2324,7 +2286,7 @@ When elkészült, kattintson a Küldés gombra. Köszönöm!</translation>
 <translation>Hibajelentés utasítások</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2658,6 +2620,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Inicializálása szoftverfrissítés (ezt a funkciót ki lehet kapcsolni az Eszközök -> Beállítások menü)</translation>
 </phrase>
@@ -2682,7 +2649,7 @@ Please enter a numeric value.</original>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6077,8 +6044,13 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Támogass minket egy kis adománnyal (köszönöm!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6087,13 +6059,8 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>visszajelzés elküldése</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Submit hibajelentés</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6437,20 +6404,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Köszönjük, hogy elküldte a hibajelentést. Ahhoz, hogy a hiba a címzettje a lehető leggyorsabban, PhotoDemon tudnia kell, hogy hova küldje it.
-
-Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Köszönöm a rögzítő PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>stretch hisztogram</translation>
 </phrase>
@@ -6625,7 +6578,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12525,11 +12478,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Adományozni PhotoDemon fejlesztés</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>A gyors, ingyenes, hordozható fotószerkesztő</translation>
 </phrase>
@@ -12537,11 +12485,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Vegyen részt a fejlesztési, tervezési, vagy fordítási munka</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Kapcsolat a szerző</translation>
 </phrase>
 
 <phrase>
@@ -12570,11 +12513,36 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Adományozni PhotoDemon fejlesztés</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15384,10 +15352,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

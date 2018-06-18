@@ -59,7 +59,7 @@ Attribute VB_Exposed = False
 '    If these ever prove helpful, I'll drop 'em in.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -323,7 +323,7 @@ DownloadError:
     
     m_LastErrorNumber = Err.Number
     m_LastErrorDescription = Err.Description
-    pdDebug.LogAction "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
+    PDDebug.LogAction "WARNING!  An error occurred in pdDownload's AsyncReadComplete event.  Download abandoned."
     
     'Download failed.  Populate struct elements anyway, then raise a completion event with the FAIL flag set.
     With m_DownloadList(itemIndex)
@@ -523,7 +523,7 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     If (DoesKeyExist(downloadKey) >= 0) Then
     
         'Duplicate keys are not allowed.
-        pdDebug.LogAction "WARNING: duplicate download key requested in pdDownload.AddToQueue(), meaning an update request is likely already in-progress.  Ignoring duplicate request."
+        PDDebug.LogAction "WARNING: duplicate download key requested in pdDownload.AddToQueue(), meaning an update request is likely already in-progress.  Ignoring duplicate request."
         AddToQueue = False
         Exit Function
     
@@ -602,7 +602,7 @@ Public Function ForceDownloadQueueSize(ByVal newSize As Long) As Boolean
 
     'Perform a failsafe check against current queue contents
     If (newSize < m_NumOfFiles) Or (newSize < 0) Then
-        pdDebug.LogAction "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
+        PDDebug.LogAction "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
         ForceDownloadQueueSize = False
         Exit Function
     End If
@@ -685,7 +685,7 @@ StartDownloadingFailure:
     
     'TODO: implement "try again later" status
     If (keyIndex >= 0) Then m_DownloadList(keyIndex).CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
-    pdDebug.LogAction "WARNING!  pdDownload.StartDownloadingByIndex had an error (#" & Err.Number & "): " & Err.Description
+    PDDebug.LogAction "WARNING!  pdDownload.StartDownloadingByIndex had an error (#" & Err.Number & "): " & Err.Description
     
 End Function
 

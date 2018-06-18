@@ -42,7 +42,7 @@ Attribute VB_Exposed = False
 'For implementation details, refer to pdSlider.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -683,7 +683,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSLIDERSTANDALONE_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDSliderStandalone", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Update the control-level track and slider diameters to reflect current screen DPI
     m_TrackDiameter = FixDPI(TRACK_DIAMETER)
@@ -754,7 +754,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 'If the track style is some kind of custom gradient, make sure our internal gradient backdrop is valid before the control
@@ -827,9 +827,9 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     If (m_SliderBackgroundDIB.GetDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.GetDIBHeight <> m_SliderAreaHeight) Then
         m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, finalBackColor, 255
-        If pdMain.IsProgramRunning() Then Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
+        If PDMain.IsProgramRunning() Then Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
     Else
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
             Drawing2D.QuickCreateSolidBrush cBrush, finalBackColor
             m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight
@@ -847,7 +847,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     'Regardless of control enablement, we always render the track background.  (If the control is *enabled*, we will draw
     ' much more on top of this!)
     Dim tmpRectF As RectF
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'For default slider knobs, the underlying track is simply a line with rounded edges
         If (m_KnobStyle = DefaultKnobStyle) Then
@@ -873,7 +873,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
     'The rest of the track is only rendered if the control is currently enabled.
-    If Me.Enabled And pdMain.IsProgramRunning() Then
+    If Me.Enabled And PDMain.IsProgramRunning() Then
     
         'This control supports a variety of specialty slider styles.  Some of these styles require a DIB supplied by the owner -
         ' note that they *will not* render properly until that DIB is provided!
@@ -927,7 +927,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
-    If (Not skipScreenEntirely) And pdMain.IsProgramRunning() Then RedrawBackBuffer refreshImmediately
+    If (Not skipScreenEntirely) And PDMain.IsProgramRunning() Then RedrawBackBuffer refreshImmediately
         
 End Sub
 
@@ -937,7 +937,7 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
     
     'First, see if a notch needs to be drawn.  If the notch mode is "none", exit now.
     If (m_NotchPosition = DoNotDisplayNotch) Then Exit Sub
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     Dim notchColor As Long
     notchColor = m_Colors.RetrieveColor(PDSS_Notch, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
@@ -1032,7 +1032,7 @@ Private Sub CreateOwnerDrawnTrack()
     'First, we want to create a DIB at the required size.  Note that this is just a plain rectangular DIB.
     ' (After the owner does their rendering, we'll modify the size and alpha as necessary.)
     SizeDIBToTrackArea m_GradientDIB
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     Dim trackRadius As Single
     trackRadius = (m_TrackDiameter) * 0.5
@@ -1062,7 +1062,7 @@ Private Sub CreateGradientTrack()
     
     'Recreate the gradient DIB to the size of the background track area
     SizeDIBToTrackArea m_GradientDIB
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     Dim trackRadius As Single
     trackRadius = (m_TrackDiameter) \ 2
@@ -1402,7 +1402,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     GDI.BitBltWrapper bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
     m_SliderBackgroundDIB.FreeFromDC
     
-    If (Me.Enabled And pdMain.IsProgramRunning()) Then
+    If (Me.Enabled And PDMain.IsProgramRunning()) Then
         
         Dim trackHighlightColor As Long, trackJumpIndicatorColor As Long
         Dim thumbFillColor As Long, thumbBorderColor As Long
@@ -1498,8 +1498,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

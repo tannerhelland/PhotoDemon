@@ -52,7 +52,7 @@ Attribute VB_Exposed = False
 ' 5) Support for floating-point values, with automatic formatting as relevant
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -190,7 +190,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
             RelayUpdatedColorsToEditBox
         End If
         
-        If pdMain.IsProgramRunning() Then RedrawBackBuffer
+        If PDMain.IsProgramRunning() Then RedrawBackBuffer
         PropertyChanged "Enabled"
         
     End If
@@ -280,7 +280,7 @@ End Property
 
 Public Property Let ShowResetButton(ByVal newState As Boolean)
     m_ShowResetButton = newState
-    If pdMain.IsProgramRunning() Then UpdateControlLayout
+    If PDMain.IsProgramRunning() Then UpdateControlLayout
     PropertyChanged "ShowResetButton"
 End Property
 
@@ -292,7 +292,7 @@ End Property
 'When the number of significant digits changes, we automatically update the text display to reflect the new amount
 Public Property Let SigDigits(ByVal newValue As Long)
     m_SigDigits = newValue
-    If pdMain.IsProgramRunning() Then m_EditBox.Text = GetFormattedStringValue(m_Value)
+    If PDMain.IsProgramRunning() Then m_EditBox.Text = GetFormattedStringValue(m_Value)
     PropertyChanged "SigDigits"
 End Property
 
@@ -312,7 +312,7 @@ Public Property Let Value(ByVal newValue As Double)
                 
         'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
         ' will momentarily solve any faulty bound/value relationships.)
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             
             If (m_Value < m_Min) Then m_Value = m_Min
             If (m_Value > m_Max) Then m_Value = m_Max
@@ -589,7 +589,7 @@ End Sub
 
 Private Sub m_EditBox_Change()
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     If IsTextEntryValid() Then
         If m_ErrorState Then
@@ -609,7 +609,7 @@ Private Sub m_EditBox_Change()
 End Sub
 
 Private Sub m_EditBox_GotFocusAPI()
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     m_FocusCount = m_FocusCount + 1
     EvaluateFocusCount
     RedrawBackBuffer
@@ -617,7 +617,7 @@ End Sub
 
 Private Sub m_EditBox_LostFocusAPI()
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     m_FocusCount = m_FocusCount - 1
     EvaluateFocusCount
@@ -646,7 +646,7 @@ Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub m_EditBox_Resize()
-    If (Not m_InternalResizeState) And pdMain.IsProgramRunning() Then UpdateControlLayout
+    If (Not m_InternalResizeState) And PDMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -686,10 +686,10 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSPINNER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDSpinner", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Prep timer objects
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         Set m_UpButtonTimer = New pdTimer
         Set m_DownButtonTimer = New pdTimer
     End If
@@ -719,7 +719,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Show()
-    If ((Not m_EditBox Is Nothing) And pdMain.IsProgramRunning()) Then CreateEditBox
+    If ((Not m_EditBox Is Nothing) And PDMain.IsProgramRunning()) Then CreateEditBox
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -885,7 +885,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
         RelayUpdatedColorsToEditBox
@@ -1079,7 +1079,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
+    If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
 
 End Sub
 
@@ -1190,8 +1190,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

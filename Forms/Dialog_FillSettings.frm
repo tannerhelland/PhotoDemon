@@ -252,7 +252,7 @@ Attribute VB_Exposed = False
 ' could easily be expanded in the future thanks to its modular design.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -477,7 +477,7 @@ Private Sub Form_Load()
     'Numbers will also have a trailing dash, so add that width now
     m_LargestWidth = m_LargestWidth + tmpFont.GetWidthOfString(" - ")
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         If (m_Filler Is Nothing) Then Set m_Filler = New pd2DBrush
         If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
         Set m_PreviewDIB = New pdDIB

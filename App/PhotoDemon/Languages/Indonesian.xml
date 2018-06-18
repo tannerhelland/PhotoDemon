@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.301</langversion>
+<langversion>6.6.303</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2288,48 +2288,10 @@ Deskripsi: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Terima kasih Terlah Mengirimkan Laporan Bug. Memastikan Bug anda ditangani secepat mungkin, PhotoDemon memerlukan anda untuk menjawab satu lagi Pertanyaan.
-
-And Boleh mempunyai akun GitHub? (Jika anda tidak tahu apa alat Ini, jawaban "Tidak".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Terima kasih telah membuat PhotoDemon Lebih Baik</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon telah secara Otomatis membuka GitHub laporan Bug Halaman Web untuk anda. Dalam Judul Kotak, Masukkan Nomor Kesalahan berikut dengan penerangan ringkas masalah: %1
-
-Apa Saja Detail tambahan anda boleh menyediakan di dalam kotak teks yang besar, termasuk langkah-langkah yang membawa kepada Kesalahan ini, ia akan membantu mendapatkan tetap secepat Mungkin.
-
-Ketika selesai, klik Tombol Terbitan Baru Kirim. Terima kasih!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub Intruksi Laporan Bug</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon telah secara Otomatis membuka laman web laporan bug untuk anda. Di dalam kotak komen, Tolong Jelaskan langkah-langkah yang membawa kepada Kesalahan.
-
-ini Juga dalam kotak yang, Nomor Kesalahan berikut: %1
-
-Juga selesai, klik Tombol Kirim. Terima kasih!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2337,7 +2299,7 @@ Juga selesai, klik Tombol Kirim. Terima kasih!</translation>
 <translation>Intruksi Laporan Bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2671,6 +2633,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Menginisialisasi pembaruan perangkat lunak (fitur ini dapat dinonaktifkan dari alat -> Pilihan)</translation>
 </phrase>
@@ -2695,7 +2662,7 @@ Please masukkan nilai berangka.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6097,8 +6064,13 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Dukung kami dengan sumbangan kecil (terima kasih!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6107,13 +6079,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>Kirim umpan balik</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Menyerahkan laporan bug</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6460,20 +6427,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Terima kasih telah mengirimkan laporan bug. Untuk memastikan bug Anda ditujukan secepat mungkin, PhotoDemon perlu tahu di mana untuk mengirimkannya.
-
-Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menjawab "No"....</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Terima kasih untuk memperbaiki PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>histogram peregangan</translation>
 </phrase>
@@ -6648,7 +6601,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12549,11 +12502,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Sumbang pengembangan PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>Cepat,Mudah , Editor Photo Portable</translation>
 </phrase>
@@ -12561,11 +12509,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Berpartisipasi dalam pengembangan, desain, atau pekerjaan penerjemahan</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Hubungi penulis</translation>
 </phrase>
 
 <phrase>
@@ -12594,11 +12537,36 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Sumbang pengembangan PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15413,10 +15381,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

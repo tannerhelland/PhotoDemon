@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3342</langversion>
+<langversion>6.8.3344</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2287,48 +2287,10 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Obrigado por enviar um relatório de bug. Para verificar se o erro é tratado como mais rápido possível, PhotoDemon precisa de você para responder a mais uma question.
-
-Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa, responda "Não".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Obrigado por fazer PhotoDemon melhor</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon abriu automaticamente uma página GitHub relatório de bug para você. Na caixa Título, digite o seguinte número de erro com uma breve descrição do problema: %1
-
-Any detalhes adicionais que você pode fornecer na caixa de texto grande, incluindo os passos que levaram a esse erro, irá ajudá-la a ficar fixo, o mais rapidamente possible.
-
-When terminar, clique no botão Novo de submissão. Obrigado!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub instruções de relatórios de bugs</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon abriu automaticamente uma página relatório de bug para você. Na caixa de comentário, por favor descreva os passos que levaram a este error.
-
-Also nessa caixa, por favor, inclua o seguinte número de erro: %1
-
-When terminar, clique no botão Enviar. Obrigado!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2336,7 +2298,7 @@ When terminar, clique no botão Enviar. Obrigado!</translation>
 <translation>Instruções de relatório de bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2670,6 +2632,11 @@ Please válidos inserir um valor numérico.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Inicializar atualizador de software (este recurso pode ser desativado a partir das Ferramentas -> Opções)</translation>
 </phrase>
@@ -2694,7 +2661,7 @@ Please válidos inserir um valor numérico.</translation>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6091,8 +6058,13 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Apoie-nos com uma pequena doação (obrigado!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6101,13 +6073,8 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>enviar avaliação</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Enviar relatório de erros</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6454,20 +6421,6 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Obrigado por enviar um relatório de bug. Para verificar se o erro é tratado como mais rápido possível, PhotoDemon precisa saber para onde enviar it.
-
-Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa, responda "Não".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Obrigado por fixação PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>histograma Trecho</translation>
 </phrase>
@@ -6642,7 +6595,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12542,11 +12495,6 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Doar para o desenvolvimento PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>o editor de fotos fácil e gratuita, portátil</translation>
 </phrase>
@@ -12554,11 +12502,6 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Participar em trabalhos de desenvolvimento, desenho ou tradução</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Entre em contato com o autor</translation>
 </phrase>
 
 <phrase>
@@ -12587,11 +12530,36 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Doar para o desenvolvimento PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15406,10 +15374,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.62</langversion>
+<langversion>1.0.64</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2286,46 +2286,10 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>बग रिपोर्ट सबमिट करने के लिए धन्यवाद। यह सुनिश्चित करने के लिए कि आपके बग को जितनी जल्दी संभव हो उतना जल्दी सुलझाया जा सके, आपको एक और सवाल का उत्तर देने के लिए फोटोडैमॉन की आवश्यकता है। 
-
-Do आपके पास एक GitHub खाता है? (यदि आपको पता नहीं है कि इसका क्या अर्थ है, तो "नहीं" का जवाब दें।)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Photodemon को बेहतर बनाने के लिए धन्यवाद</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon ने स्वचालित रूप से आपके लिए एक GitHub बग रिपोर्ट वेबपृष्ठ खोल दिया है। शीर्षक बॉक्स में, कृपया समस्या का एक संक्षिप्त विवरण के साथ निम्नलिखित त्रुटि संख्या दर्ज करें: %1
-VBCRL अतिरिक्त विवरण जो आप बड़े टेक्स्ट बॉक्स में प्रदान कर सकते हैं, जिसमें इस त्रुटि के लिए उठाए गए कदम भी शामिल हैं, इसे शीघ्र ही तय किया जाएगा संभव। 
-
- समाप्त होने पर, नया अंक सबमिट करें बटन पर क्लिक करें धन्यवाद!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub बग रिपोर्ट निर्देश</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon ने स्वचालित रूप से आपके लिए एक बग रिपोर्ट वेबपेज खोला है टिप्पणी बॉक्स में, कृपया इस त्रुटि का कारण होने वाले चरणों का वर्णन करें। 
-VBCRL उस बॉक्स में भी, कृपया निम्न त्रुटि संख्या शामिल करें: %1
-
- समाप्त होने पर, सबमिट करें बटन पर क्लिक करें धन्यवाद!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2333,7 +2297,7 @@ VBCRL उस बॉक्स में भी, कृपया निम्न �
 <translation>बग रिपोर्ट निर्देश</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2667,6 +2631,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>सॉफ़्टवेयर अपडेटर शुरू कर रहा है (इस सुविधा को उपकरण -> विकल्प मेनू से अक्षम किया जा सकता है)</translation>
 </phrase>
@@ -2691,7 +2660,7 @@ Please enter a numeric value.</original>
 <translation>बीटा</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6087,8 +6056,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>एक छोटे से दान के साथ हमें समर्थन (धन्यवाद!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6097,13 +6071,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>प्रतिपुष्टि दें</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>बग रिपोर्ट सबमिट करें</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6450,20 +6419,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>बग रिपोर्ट सबमिट करने के लिए धन्यवाद। यह सुनिश्चित करने के लिए कि आपके बग को जितनी जल्दी हो सके संबोधित किया गया है, PhotoDemon को यह जानना आवश्यक है कि इसे कहाँ भेजना है। 
-
-Do आपके पास एक GitHub खाता है? (यदि आपको पता नहीं है कि इसका क्या अर्थ है, तो "नहीं" का जवाब दें।)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Photodemon फिक्स करने के लिए धन्यवाद</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>खिंचाव हिस्टोग्राम</translation>
 </phrase>
@@ -6638,7 +6593,7 @@ Do आपके पास एक GitHub खाता है? (यदि आप�
 <translation>अल्फा चैनल निकालें</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12539,11 +12494,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Photodemon विकास के लिए दान करें</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>तेज, निःशुल्क, पोर्टेबल फोटो संपादक</translation>
 </phrase>
@@ -12551,11 +12501,6 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>विकास, डिजाइन या अनुवाद कार्य में भाग लेना</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>लेखक से संपर्क करें</translation>
 </phrase>
 
 <phrase>
@@ -12584,11 +12529,36 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Photodemon विकास के लिए दान करें</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15402,10 +15372,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

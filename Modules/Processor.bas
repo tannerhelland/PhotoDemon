@@ -19,7 +19,7 @@ Attribute VB_Name = "Processor"
 ' more interesting functions.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1216,29 +1216,11 @@ End Sub
 'If the processor experiences an error, and the user is willing to file a bug report, this function will trigger
 Private Sub FileErrorReport(ByVal errNumber As Long)
 
-    'GitHub requires a login for submitting Issues; check for that first
-    Dim secondaryReturn As VbMsgBoxResult
-
-    secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbInformation Or vbYesNo, "Thanks for making PhotoDemon better")
-
-    'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
-    If (secondaryReturn = vbYes) Then
+    'Shell a browser window with the GitHub issue report form
+    Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
     
-        'Shell a browser window with the GitHub issue report form
-        Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
-        
-        'Display one final message box with additional instructions
-        PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation Or vbOKOnly, "GitHub bug report instructions", errNumber
-        
-    Else
-        
-        'Shell a browser window with the photodemon.org contact form
-        Web.OpenURL "http://photodemon.org/about/contact/"
-        
-        'Display one final message box with additional instructions
-        PDMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: %1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation Or vbOKOnly, "Bug report instructions", errNumber
-        
-    End If
+    'Display one final message box with additional instructions
+    PDMsgBox "PhotoDemon has automatically opened the bug report webpage for you.  Please click the ""New Issue"" button, then select ""Bug Report"".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1" & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation Or vbOKOnly, "Bug report instructions", errNumber
     
 End Sub
 

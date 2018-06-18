@@ -83,7 +83,7 @@ Attribute VB_Exposed = False
 ' middle pixel equal to the mean of the block with the smallest variance.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -108,11 +108,11 @@ Public Sub Kuwahara(ByVal effectParams As String, Optional ByVal toPreview As Bo
     Dim stdDevsR(0 To 3) As Double
     Dim stdDevsG(0 To 3) As Double
     Dim stdDevsB(0 To 3) As Double
-    Dim pixels(0 To 3) As RGBQUAD
+    Dim pixels(0 To 3) As RGBQuad
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
+    Dim tmpSA As SafeArray2D
     
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
@@ -301,7 +301,7 @@ Public Sub Kuwahara(ByVal effectParams As String, Optional ByVal toPreview As Bo
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Kuwahara filter", , GetLocalParamString(), UNDO_LAYER
+    Process "Kuwahara filter", , GetLocalParamString(), UNDO_Layer
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

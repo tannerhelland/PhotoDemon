@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 ' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
-' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -897,6 +897,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                 
             'If DIB creation failed, clear out the work we've done so far
             Else
+                PDDebug.LogAction "WARNING!  pdDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & "); last API error was #" & Err.LastDllError
                 Me.EraseDIB
             End If
             

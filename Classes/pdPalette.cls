@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 'If you encounter other palette formats and you'd like PhotoDemon to support them, please let me know via GitHub.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1669,7 +1669,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
         If (Len(m_Palettes(useGroupIndex).GetPaletteName()) <> 0) Then .AppendLine "Name: " & m_Palettes(useGroupIndex).GetPaletteName()
         .AppendLine "#"
         If addPDCredit Then
-            .AppendLine "# " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(http://photodemon.org)")
+            .AppendLine "# " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(https://photodemon.org)")
             .AppendLine "#"
         End If
     End With
@@ -1727,7 +1727,7 @@ Friend Function SavePalettePaintDotNet(ByRef dstFile As String, Optional ByVal u
     'Start by writing a few standard lines, kind of like a header
     With dstText
         .AppendLine "; paint.net palette file"
-        If addPDCredit Then .AppendLine ";  " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(http://photodemon.org)")
+        If addPDCredit Then .AppendLine ";  " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(https://photodemon.org)")
     End With
     
     'Next come all the colors.  Paint.NET does not support color names, so only RGB values will be written.

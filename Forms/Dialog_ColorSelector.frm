@@ -264,7 +264,7 @@ Attribute VB_Exposed = False
 '    for the DB32 palette that provides a great default color selection on first load.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -500,7 +500,7 @@ End Sub
 
 Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If (LenB(histValue) <> 0) And pdMain.IsProgramRunning() And (targetDC <> 0) Then
+    If (LenB(histValue) <> 0) And PDMain.IsProgramRunning() And (targetDC <> 0) Then
     
         Dim tmpRectF As RectF
         If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
@@ -630,7 +630,7 @@ Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If pdMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If PDMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -651,7 +651,7 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If pdMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If PDMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long

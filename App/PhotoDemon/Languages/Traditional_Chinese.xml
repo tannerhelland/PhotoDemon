@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.29</langversion>
+<langversion>7.0.31</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -2251,48 +2251,10 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>感謝您回報錯誤。為了更快解決您遇到的錯誤，PhotoDemon 需要您協助我們回答幾項問題。
-
-您有 GitHub 帳戶嗎? (如果您不清楚這是什麼，請回答「否」。)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>感謝您讓 PhotoDemon 更好</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon 已為您自動開啟 GitHub 錯誤回報網頁。於標題欄中，請輸入以下錯誤代碼並簡單描述此問題: %1
-
-更多詳細資訊您可以在大型文字方塊中輸入，包含您是執行哪些步驟而發生此錯誤，可以幫助我們更快修復此問題。
-
-當填寫完成後，請按下 [Submit New Issue] 按鈕。感謝您!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub 錯誤回報說明</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon 已為您自動開啟 GitHub 錯誤回報網頁。於評論欄中，請您描述是執行哪些步驟而發生此錯誤。
-
-在此欄位中，也請您填寫以下錯誤代碼: %1
-
-當填寫完成後，請按下 [Submit] 按鈕。感謝您!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2300,7 +2262,7 @@ When finished, click the Submit button.  Thank you!</original>
 <translation>錯誤回報說明</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2628,6 +2590,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>正在初始化軟體更新 (此功能可於 [工具] -> [選項] 選單中停用)</translation>
 </phrase>
@@ -2652,7 +2619,7 @@ Please enter a numeric value.</original>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6050,8 +6017,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>透過小額贊助支持我們 (感謝您!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6060,13 +6032,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>提交意見反應</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>回報錯誤</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6413,20 +6380,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>感謝您回報錯誤。為了更快解決您遇到的錯誤，PhotoDemon 想要知道您要如何傳送錯誤回報。
-
-您有 GitHub 帳戶嗎? (如果您不清楚這是什麼，請回答「否」。)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>感謝您幫助修復 PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>延伸色階分佈圖</translation>
 </phrase>
@@ -6601,7 +6554,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12492,11 +12445,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>贊助 PhotoDemon 的開發</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>快速、免費、可攜式的影像編輯軟體</translation>
 </phrase>
@@ -12504,11 +12452,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>參與開發、設計或翻譯工作</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>聯絡作者</translation>
 </phrase>
 
 <phrase>
@@ -12537,11 +12480,36 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation>PhotoDemon %1 2000-%2 著作權屬 Tanner Helland 與參與貢獻者所有</translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>贊助 PhotoDemon 的開發</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15348,10 +15316,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

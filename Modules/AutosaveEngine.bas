@@ -21,7 +21,7 @@ Attribute VB_Name = "Autosaves"
 ' "clean shutdown" file.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -119,13 +119,13 @@ Public Sub InitializeAutosave()
         shutDownClean = Autosaves.WasLastShutdownClean
         
         'Notify the debugger; it may use this information to generate additional debug data
-        pdDebug.NotifyLastSessionState shutDownClean
+        PDDebug.NotifyLastSessionState shutDownClean
         
         'If our last shutdown was clean, skip further processing
         If (Not shutDownClean) Then
             
             'Oh no!  Something went horribly wrong with the last PD session.
-            pdDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
+            PDDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
             
             'See if there's any image autosave data worth recovering.
             If (Autosaves.SaveableImagesPresent > 0) Then
@@ -160,11 +160,11 @@ Public Sub InitializeAutosave()
             End If
         
         Else
-            pdDebug.LogAction "Previous shutdown was clean (no autosave data found)."
+            PDDebug.LogAction "Previous shutdown was clean (no autosave data found)."
         End If
         
     Else
-        pdDebug.LogAction "Multiple PhotoDemon sessions active; autosave check abandoned."
+        PDDebug.LogAction "Multiple PhotoDemon sessions active; autosave check abandoned."
     End If
     
 End Sub

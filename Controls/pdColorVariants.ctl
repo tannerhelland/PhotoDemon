@@ -45,7 +45,7 @@ Attribute VB_Exposed = False
 ' appearance on the main canvas.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -357,7 +357,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCV_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDColorVariants", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
@@ -392,7 +392,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -435,7 +435,7 @@ Private Sub UpdateControlLayout()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Re-calculate all control subregions.  This is a little confusing (okay, a LOT confusing), but basically we want to
         ' create an evenly spaced border around the central color rect, with subdivided regions that provide some dynamic
@@ -636,7 +636,7 @@ End Sub
 ' Call this function to auto-calculate them, but try to do it only when necessary, as there's a lot of math involved.
 Private Sub CalculateVariantColors()
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'The primary color serves as the base color for all subsequent calculations.  Retrieve its RGB and HSV quads now.
     Dim rPrimary As Long, gPrimary As Long, bPrimary As Long, hPrimary As Double, sPrimary As Double, vPrimary As Double
@@ -755,7 +755,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         Dim borderColor As Long
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
@@ -804,7 +804,7 @@ End Sub
 Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
     'Failsafe for compile-time errors when properties are written
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     Dim toolString As String, hexString As String, rgbString As String
     
@@ -875,8 +875,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.561</langversion>
+<langversion>7.2.578</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -734,12 +734,12 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -1966,7 +1966,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Melden Sie bitte diesen Fehler via Menü "Hilfe > Fehlerbericht einreichen".</translation>
+Melden Sie bitte diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -2288,48 +2288,12 @@ Beschreibung: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Vielen Dank für das Einreichen eines Fehlerberichts! Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, benötigt PhotoDemon von Ihnen Antwort auf eine weitere Frage:
-
-Haben Sie einen Account bei GitHub? (Wenn Sie keine Idee davon haben, was dies bedeutet, antworten Sie mit "Nein".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Danke - damit machen Sie PhotoDemon besser</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat automatisch eine GitHub-Fehlerberichtsseite für Sie eröffnet. In das Titelfeld geben Sie bitte die folgende Fehlernummer ein mit einer kurzen Beschreibung des Problems: %1
+<translation>PhotoDemon hat die Website für Fehlerberichte automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem" und wählen dann "Fehlerbericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
 
-Alle weiteren Details können Sie in das große Textfeld schreiben, einschließlich der Schritte, die zu diesem Fehler geführt haben. Das wird helfen, das Problem schnellstmöglich zu beheben.
-
-Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Vielen Dank!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>Instruktionen zum GitHub-Fehlerbericht</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon hat automatisch eine Fehlerberichtswebseite für Sie eröffnet. Im Kommentarfeld beschreiben Sie bitte die Schritte, die zu diesem Fehler geführt haben.
-
-Geben Sie in das Feld bitte auch die folgende Fehlernummer an: %1
-
-Nach Abschluss klicken Sie bitte auf den Button "Einreichen". Vielen Dank!</translation>
+Wenn fertig, klicken Sie auf den Button "Neues Problem einreichen". Vielen Dank!</translation>
 </phrase>
 
 <phrase>
@@ -2337,7 +2301,7 @@ Nach Abschluss klicken Sie bitte auf den Button "Einreichen". Vielen Dank!</tran
 <translation>Instruktionen zum Fehlerbericht</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2364,12 +2328,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
+Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Verwenden Sie bitte das Menüitem "Hilfe > Fehlerbericht einreichen", um dieses Ereignis zu melden.</translation>
+<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Verwenden Sie bitte das Menüitem "Hilfe > Fehlerbericht einreichen", um dieses Vorfall zu melden.</translation>
 </phrase>
 
 <phrase>
@@ -2671,6 +2635,11 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Software-Updater wird initialisiert (dieses Feature kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
 </phrase>
@@ -2695,7 +2664,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6092,8 +6061,13 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Uns mit einer kleinen Spende unterstützen (Vielen Dank!)</translation>
+<original>Support us on Patreon</original>
+<translation>Uns auf Patreon unterstützen</translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation>Uns mit einer einmaligen Spende unterstützen</translation>
 </phrase>
 
 <phrase>
@@ -6102,13 +6076,8 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>Feedback einreichen</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Fehlerbericht einreichen</translation>
+<original>Submit bug report or feedback</original>
+<translation>Fehlerbericht oder Feedback einreichen</translation>
 </phrase>
 
 <phrase>
@@ -6455,20 +6424,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Vielen Dank für das Einreichen eines Fehlerberichts. Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, muss PhotoDemon wissen, wohin dieser gesendet wird.
-
-Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies bedeutet, antworten Sie mit "Nein".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Danke - damit unterstüzen Sie PhotoDemon bei der Behebung von Problemen</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>Histogramm strecken</translation>
 </phrase>
@@ -6643,7 +6598,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10864,7 +10819,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
-<translation>Wenn Sie die Leinwand vergrößern wollen, um das gedrehte Bild anzupassen, verwenden Sie stattdessen bitte den Menüpunkt "Bild > Drehen".</translation>
+<translation>Wenn Sie die Leinwand vergrößern wollen, um das gedrehte Bild anzupassen, verwenden Sie stattdessen bitte das Menü "Bild > Drehen".</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12542,11 +12497,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Spenden Sie für die Entwicklung von PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>Der schnelle, freie und portable Fotoeditor</translation>
 </phrase>
@@ -12554,11 +12504,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Beteiligen Sie sich an Entwicklungs-, Design- oder Übersetzungsarbeiten</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Kontaktieren Sie den Autor</translation>
 </phrase>
 
 <phrase>
@@ -12587,11 +12532,36 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation>Förderer</translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Spenden Sie für die Entwicklung von PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation>SUPER FÖRDERER</translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation>DANKE an unsere wunderbaren Patreon-Unterstützer!</translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation>(Sie können auch zu einem Förderer werden! Klicken Sie hier, um mehr zu erfahren.)</translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -13391,7 +13361,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Diese Option wird ein blankes Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder finden Sie unter dem Menüpunkt "Datei > Importieren".</translation>
+<translation>Diese Option wird ein blankes Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder können Sie im Menü "Datei > Importieren" finden.</translation>
 </phrase>
 
 <phrase>
@@ -15406,10 +15376,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

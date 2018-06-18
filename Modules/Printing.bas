@@ -11,7 +11,7 @@ Attribute VB_Name = "Printing"
 ' http://www.tek-tips.com/faqs.cfm?fid=3603
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -128,7 +128,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String
     tmpFilename = UserPrefs.GetTempPath & "PhotoDemon_print.png"
-    pdDebug.LogAction "Preparing to print: " & tmpFilename
+    PDDebug.LogAction "Preparing to print: " & tmpFilename
     
     'Write the temporary DIB out to a temporary PNG file, then free it
     Saving.QuickSaveDIBAsPNG tmpFilename, tmpDIB

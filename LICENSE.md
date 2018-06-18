@@ -1,10 +1,10 @@
-PhotoDemon is copyright © 2018 by Tanner Helland and Contributors.
+PhotoDemon is copyright ¬© 2018 by Tanner Helland and Contributors.
 
 PhotoDemon is released under a BSD license.  A full copy of the BSD license is included below.
 
 PLEASE NOTE: sections of PhotoDemon's source code were written by third-parties and may be subject to additional copyrights and licenses.  Documentation within a specific folder or source code file supercedes the BSD license governing this project as a whole.
 
-Questions regarding licensing should be directed to: http://photodemon.org/about/contact/
+Questions regarding licensing should be directed to: https://photodemon.org/about/
 
 Full text of PhotoDemon and third-party plugin licenses follow.
 
@@ -31,7 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
 +    Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 +    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ìAS ISî AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‚ÄúAS IS‚Äù AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 
@@ -48,27 +48,27 @@ reasonable modifications.
 
 Definitions:
 
-ìPackageî refers to the collection of files distributed by the
+‚ÄúPackage‚Äù refers to the collection of files distributed by the
 Copyright Holder, and derivatives of that collection of files
 created through textual modification.
 
-ìStandard Versionî refers to such a Package if it has not been
+‚ÄúStandard Version‚Äù refers to such a Package if it has not been
 modified, or has been modified in accordance with the wishes
 of the Copyright Holder as specified below.
 
-ìCopyright Holderî is whoever is named in the copyright or
+‚ÄúCopyright Holder‚Äù is whoever is named in the copyright or
 copyrights for the package.
 
-ìYouî is you, if youíre thinking about copying or distributing
+‚ÄúYou‚Äù is you, if you‚Äôre thinking about copying or distributing
 this Package.
 
-ìReasonable copying feeî is whatever you can justify on the
+‚ÄúReasonable copying fee‚Äù is whatever you can justify on the
 basis of media cost, duplication charges, time of people involved,
 and so on. (You will not be required to justify it to the
 Copyright Holder, but only to the computing community at large
 as a market that must bear the fee.)
 
-ìFreely Availableî means that no fee is charged for the item
+‚ÄúFreely Available‚Äù means that no fee is charged for the item
 itself, though there may be fees involved in handling the item.
 It also means that recipients of the item may redistribute it
 under the same conditions they received it.
@@ -123,7 +123,7 @@ Package. You may not charge a fee for this Package itself. However,
 you may distribute this Package in aggregate with other (possibly
 commercial) programs as part of a larger (possibly commercial) software
 distribution provided that you do not advertise this Package as a
-product of your own. You may embed this Packageís interpreter within
+product of your own. You may embed this Package‚Äôs interpreter within
 an executable of yours (by linking); this shall be construed as a mere
 form of aggregation, provided that the complete Standard Version of the
 interpreter is so embedded.
@@ -133,7 +133,7 @@ output from the programs of this Package do not automatically fall
 under the copyright of this Package, but belong to whoever generated
 them, and may be sold commercially, and may be aggregated with this
 Package. If such scripts or library files are aggregated with this
-Package via the so-called ìundumpî or ìunexecî methods of producing a
+Package via the so-called ‚Äúundump‚Äù or ‚Äúunexec‚Äù methods of producing a
 binary executable image, then distribution of such an image shall
 neither be construed as a distribution of this Package nor shall it
 fall under the restrictions of Paragraphs 3 and 4, provided that you do
@@ -150,14 +150,14 @@ regression tests for the language.
 
 8. Aggregation of this Package with a commercial distribution is always
 permitted provided that the use of this Package is embedded; that is,
-when no overt attempt is made to make this Packageís interfaces visible
+when no overt attempt is made to make this Package‚Äôs interfaces visible
 to the end user of the commercial distribution. Such use shall not be
 construed as a distribution of this Package.
 
 9. The name of the Copyright Holder may not be used to endorse or promote
 products derived from this software without specific prior written permission.
 
-10. THIS PACKAGE IS PROVIDED ìAS ISî AND WITHOUT ANY EXPRESS OR
+10. THIS PACKAGE IS PROVIDED ‚ÄúAS IS‚Äù AND WITHOUT ANY EXPRESS OR
 IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
 WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -173,40 +173,40 @@ Per the EZTwain FAQ at eztwain.com:
 
 ** FreeImage license (FIPL) ** 
 
-FreeImage Public License ñ Version 1.0
-óóóóóóóóóóóóóóó
+FreeImage Public License ‚Äì Version 1.0
+‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî‚Äî
 
 1. Definitions.
 
-1.1. ìContributorî means each entity that creates or contributes to the creation of Modifications.
+1.1. ‚ÄúContributor‚Äù means each entity that creates or contributes to the creation of Modifications.
 
-1.2. ìContributor Versionî means the combination of the Original Code, prior Modifications used by a Contributor, and the Modifications made by that particular Contributor.
+1.2. ‚ÄúContributor Version‚Äù means the combination of the Original Code, prior Modifications used by a Contributor, and the Modifications made by that particular Contributor.
 
-1.3. ìCovered Codeî means the Original Code or Modifications or the combination of the Original Code and Modifications, in each case including portions thereof.
+1.3. ‚ÄúCovered Code‚Äù means the Original Code or Modifications or the combination of the Original Code and Modifications, in each case including portions thereof.
 
-1.4. ìElectronic Distribution Mechanismî means a mechanism generally accepted in the software development community for the electronic transfer of data.
+1.4. ‚ÄúElectronic Distribution Mechanism‚Äù means a mechanism generally accepted in the software development community for the electronic transfer of data.
 
-1.5. ìExecutableî means Covered Code in any form other than Source Code.
+1.5. ‚ÄúExecutable‚Äù means Covered Code in any form other than Source Code.
 
-1.6. ìInitial Developerî means the individual or entity identified as the Initial Developer in the Source Code notice required by Exhibit A.
+1.6. ‚ÄúInitial Developer‚Äù means the individual or entity identified as the Initial Developer in the Source Code notice required by Exhibit A.
 
-1.7. ìLarger Workî means a work which combines Covered Code or portions thereof with code not governed by the terms of this License.
+1.7. ‚ÄúLarger Work‚Äù means a work which combines Covered Code or portions thereof with code not governed by the terms of this License.
 
-1.8. ìLicenseî means this document.
+1.8. ‚ÄúLicense‚Äù means this document.
 
-1.9. ìModificationsî means any addition to or deletion from the substance or structure of either the Original Code or any previous Modifications. When Covered Code is released as a series of files, a
+1.9. ‚ÄúModifications‚Äù means any addition to or deletion from the substance or structure of either the Original Code or any previous Modifications. When Covered Code is released as a series of files, a
 Modification is:
 
 A. Any addition to or deletion from the contents of a file containing Original Code or previous Modifications.
 
 B. Any new file that contains any part of the Original Code or previous Modifications.
 
-1.10. ìOriginal Codeî means Source Code of computer software code which is described in the Source Code notice required by Exhibit A as Original Code, and which, at the time of its release under this License is not already Covered Code governed by this License.
+1.10. ‚ÄúOriginal Code‚Äù means Source Code of computer software code which is described in the Source Code notice required by Exhibit A as Original Code, and which, at the time of its release under this License is not already Covered Code governed by this License.
 
-1.11. ìSource Codeî means the preferred form of the Covered Code for making modifications to it, including all modules it contains, plus any associated interface definition files, scripts used to control
-compilation and installation of an Executable, or a list of source code differential comparisons against either the Original Code or another well known, available Covered Code of the Contributorís choice. The Source Code can be in a compressed or archival form, provided the appropriate decompression or de-archiving software is widely available for no charge.
+1.11. ‚ÄúSource Code‚Äù means the preferred form of the Covered Code for making modifications to it, including all modules it contains, plus any associated interface definition files, scripts used to control
+compilation and installation of an Executable, or a list of source code differential comparisons against either the Original Code or another well known, available Covered Code of the Contributor‚Äôs choice. The Source Code can be in a compressed or archival form, provided the appropriate decompression or de-archiving software is widely available for no charge.
 
-1.12. ìYouî means an individual or a legal entity exercising rights under, and complying with all of the terms of, this License or a future version of this License issued under Section 6.1. For legal entities, ìYouî includes any entity which controls, is controlled by, or is under common control with You. For purposes of this definition, ìcontrolî means (a) the power, direct or indirect, to cause the
+1.12. ‚ÄúYou‚Äù means an individual or a legal entity exercising rights under, and complying with all of the terms of, this License or a future version of this License issued under Section 6.1. For legal entities, ‚ÄúYou‚Äù includes any entity which controls, is controlled by, or is under common control with You. For purposes of this definition, ‚Äúcontrol‚Äù means (a) the power, direct or indirect, to cause the
 direction or management of such entity, whether by contract or otherwise, or (b) ownership of fifty percent (50%) or more of the outstanding shares or beneficial ownership of such entity.
 
 2. Source Code License.
@@ -216,7 +216,7 @@ The Initial Developer hereby grants You a world-wide, royalty-free, non-exclusiv
 
 (a) to use, reproduce, modify, display, perform, sublicense and distribute the Original Code (or portions thereof) with or without Modifications, or as part of a Larger Work; and
 
-(b) under patents now or hereafter owned or controlled by Initial Developer, to make, have made, use and sell (ìUtilizeî) the Original Code (or portions thereof), but solely to the extent that
+(b) under patents now or hereafter owned or controlled by Initial Developer, to make, have made, use and sell (‚ÄúUtilize‚Äù) the Original Code (or portions thereof), but solely to the extent that
 any such patent is reasonably necessary to enable You to Utilize the Original Code (or portions thereof) and not to any greater extent that may be necessary to Utilize further Modifications or
 combinations.
 
@@ -232,7 +232,7 @@ may be necessary to Utilize further Modifications or combinations.
 
 3.1. Application of License.
 The Modifications which You create or to which You contribute are governed by the terms of this License, including without limitation Section 2.2. The Source Code version of Covered Code may be distributed only under the terms of this License or a future version of this License released under Section 6.1, and You must include a copy of this License with every copy of the Source Code You distribute. You may not offer or impose any terms on any Source Code version that alters or
-restricts the applicable version of this License or the recipientsí rights hereunder. However, You may include an additional document offering the additional rights described in Section 3.5.
+restricts the applicable version of this License or the recipients‚Äô rights hereunder. However, You may include an additional document offering the additional rights described in Section 3.5.
 
 3.2. Availability of Source Code.
 Any Modification which You create or to which You contribute must be made available in Source Code form under the terms of this License either on the same media as an Executable version or via an accepted Electronic Distribution Mechanism to anyone to whom you made an Executable version available; and if made available via Electronic Distribution Mechanism, must remain available for at least twelve (12) months after the date it initially became available, or at least six (6) months after a subsequent version of that particular Modification has been made available to such recipients. You are responsible for ensuring that the Source Code version remains available even if the Electronic Distribution Mechanism is maintained by a third party.
@@ -243,22 +243,22 @@ You must cause all Covered Code to which you contribute to contain a file docume
 3.4. Intellectual Property Matters
 
 (a) Third Party Claims.
-If You have knowledge that a party claims an intellectual property right in particular functionality or code (or its utilization under this License), you must include a text file with the source code distribution titled ìLEGALî which describes the claim and the party making the claim in sufficient detail that a recipient will know whom to contact. If you obtain such knowledge after You make Your Modification available as described in Section 3.2, You shall promptly modify the LEGAL file in all copies You make
+If You have knowledge that a party claims an intellectual property right in particular functionality or code (or its utilization under this License), you must include a text file with the source code distribution titled ‚ÄúLEGAL‚Äù which describes the claim and the party making the claim in sufficient detail that a recipient will know whom to contact. If you obtain such knowledge after You make Your Modification available as described in Section 3.2, You shall promptly modify the LEGAL file in all copies You make
 available thereafter and shall take other steps (such as notifying appropriate mailing lists or newsgroups) reasonably calculated to inform those who received the Covered Code that new knowledge has been obtained.
 
 (b) Contributor APIs.
 If Your Modification is an application programming interface and You own or control patents which are reasonably necessary to implement that API, you must also include this information in the LEGAL file.
 
 3.5. Required Notices.
-You must duplicate the notice in Exhibit A in each file of the Source Code, and this License in any documentation for the Source Code, where You describe recipientsí rights relating to Covered Code. If You created one or more Modification(s), You may add your name as a Contributor to the notice described in Exhibit A. If it is not possible to put such notice in a particular Source Code file due to its
+You must duplicate the notice in Exhibit A in each file of the Source Code, and this License in any documentation for the Source Code, where You describe recipients‚Äô rights relating to Covered Code. If You created one or more Modification(s), You may add your name as a Contributor to the notice described in Exhibit A. If it is not possible to put such notice in a particular Source Code file due to its
 structure, then you must include such notice in a location (such as a relevant directory file) where a user would be likely to look for such a notice. You may choose to offer, and to charge a fee for, warranty, support, indemnity or liability obligations to one or more recipients of Covered Code. However, You may do so only on Your own behalf, and not on behalf of the Initial Developer or any Contributor. You must make it absolutely clear than any such warranty, support, indemnity or
 liability obligation is offered by You alone, and You hereby agree to indemnify the Initial Developer and every Contributor for any liability incurred by the Initial Developer or such Contributor as a result of
 warranty, support, indemnity or liability terms You offer.
 
 3.6. Distribution of Executable Versions.
 You may distribute Covered Code in Executable form only if the requirements of Section 3.1-3.5 have been met for that Covered Code, and if You include a notice stating that the Source Code version of the Covered Code is available under the terms of this License, including a description of how and where You have fulfilled the obligations of Section 3.2. The notice must be conspicuously included in any notice in an Executable version, related documentation or collateral in which You
-describe recipientsí rights relating to the Covered Code. You may distribute the Executable version of Covered Code under a license of Your choice, which may contain terms different from this License,
-provided that You are in compliance with the terms of this License and that the license for the Executable version does not attempt to limit or alter the recipientís rights in the Source Code version from the rights set forth in this License. If You distribute the Executable version under a different license You must make it absolutely clear that any terms which differ from this License are offered by You alone, not by the Initial Developer or any Contributor. You hereby agree to indemnify the Initial Developer and every Contributor for any liability incurred by the Initial Developer or such Contributor as a result of any such terms You offer.
+describe recipients‚Äô rights relating to the Covered Code. You may distribute the Executable version of Covered Code under a license of Your choice, which may contain terms different from this License,
+provided that You are in compliance with the terms of this License and that the license for the Executable version does not attempt to limit or alter the recipient‚Äôs rights in the Source Code version from the rights set forth in this License. If You distribute the Executable version under a different license You must make it absolutely clear that any terms which differ from this License are offered by You alone, not by the Initial Developer or any Contributor. You hereby agree to indemnify the Initial Developer and every Contributor for any liability incurred by the Initial Developer or such Contributor as a result of any such terms You offer.
 
 3.7. Larger Works.
 You may create a Larger Work by combining Covered Code with other code not governed by the terms of this License and distribute the Larger Work as a single product. In such a case, You must make sure the requirements of this License are fulfilled for the Covered Code.
@@ -281,11 +281,11 @@ Once Covered Code has been published under a particular version of the License, 
 No one other than Floris van den Berg has the right to modify the terms applicable to Covered Code created under this License.
 
 6.3. Derivative Works.
-If you create or use a modified version of this License (which you may only do in order to apply it to code which is not already Covered Code governed by this License), you must (a) rename Your license so that the phrases ìFreeImageî, `FreeImage Public Licenseî, ìFIPLî, or any confusingly similar phrase do not appear anywhere in your license and (b) otherwise make it clear that your version of the license contains terms which differ from the FreeImage Public License. (Filling in the name of the Initial Developer, Original Code or Contributor in the notice described in Exhibit A shall not of themselves be deemed to be modifications of this License.)
+If you create or use a modified version of this License (which you may only do in order to apply it to code which is not already Covered Code governed by this License), you must (a) rename Your license so that the phrases ‚ÄúFreeImage‚Äù, `FreeImage Public License‚Äù, ‚ÄúFIPL‚Äù, or any confusingly similar phrase do not appear anywhere in your license and (b) otherwise make it clear that your version of the license contains terms which differ from the FreeImage Public License. (Filling in the name of the Initial Developer, Original Code or Contributor in the notice described in Exhibit A shall not of themselves be deemed to be modifications of this License.)
 
 7. DISCLAIMER OF WARRANTY.
 
-COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN ìAS ISî BASIS, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES THAT THE COVERED CODE IS FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE OR NON-INFRINGING. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE COVERED CODE IS WITH YOU. SHOULD ANY COVERED CODE PROVE DEFECTIVE IN ANY RESPECT, YOU (NOT THE INITIAL DEVELOPER OR ANY OTHER CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS LICENSE. NO USE OF ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER.
+COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN ‚ÄúAS IS‚Äù BASIS, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES THAT THE COVERED CODE IS FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE OR NON-INFRINGING. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE COVERED CODE IS WITH YOU. SHOULD ANY COVERED CODE PROVE DEFECTIVE IN ANY RESPECT, YOU (NOT THE INITIAL DEVELOPER OR ANY OTHER CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS LICENSE. NO USE OF ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER.
 
 8. TERMINATION.
 
@@ -293,12 +293,12 @@ This License and the rights granted hereunder will terminate automatically if Yo
 
 9. LIMITATION OF LIABILITY.
 
-UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY, WHETHER TORT (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL THE INITIAL DEVELOPER, ANY OTHER CONTRIBUTOR, OR ANY DISTRIBUTOR OF COVERED CODE, OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE TO YOU OR ANY OTHER PERSON FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR LOSSES, EVEN IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES. THIS LIMITATION OF LIABILITY SHALL NOT APPLY TO LIABILITY FOR DEATH OR PERSONAL INJURY RESULTING FROM SUCH PARTYíS NEGLIGENCE TO THE EXTENT APPLICABLE LAW PROHIBITS SUCH LIMITATION. SOME JURISDICTIONS DO NOT ALLOW THE
+UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY, WHETHER TORT (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL THE INITIAL DEVELOPER, ANY OTHER CONTRIBUTOR, OR ANY DISTRIBUTOR OF COVERED CODE, OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE TO YOU OR ANY OTHER PERSON FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR LOSSES, EVEN IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES. THIS LIMITATION OF LIABILITY SHALL NOT APPLY TO LIABILITY FOR DEATH OR PERSONAL INJURY RESULTING FROM SUCH PARTY‚ÄôS NEGLIGENCE TO THE EXTENT APPLICABLE LAW PROHIBITS SUCH LIMITATION. SOME JURISDICTIONS DO NOT ALLOW THE
 EXCLUSION OR LIMITATION OF INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THAT EXCLUSION AND LIMITATION MAY NOT APPLY TO YOU.
 
 10. U.S. GOVERNMENT END USERS.
 
-The Covered Code is a ìcommercial item,î as that term is defined in 48 C.F.R. 2.101 (Oct. 1995), consisting of ìcommercial computer softwareî and ìcommercial computer software documentation,î as such terms are used in 48 C.F.R. 12.212 (Sept. 1995). Consistent with 48 C.F.R. 12.212 and 48 C.F.R. 227.7202-1 through 227.7202-4 (June 1995), all U.S. Government End Users acquire Covered Code with only those rights set forth herein.
+The Covered Code is a ‚Äúcommercial item,‚Äù as that term is defined in 48 C.F.R. 2.101 (Oct. 1995), consisting of ‚Äúcommercial computer software‚Äù and ‚Äúcommercial computer software documentation,‚Äù as such terms are used in 48 C.F.R. 12.212 (Sept. 1995). Consistent with 48 C.F.R. 12.212 and 48 C.F.R. 227.7202-1 through 227.7202-4 (June 1995), all U.S. Government End Users acquire Covered Code with only those rights set forth herein.
 
 11. MISCELLANEOUS.
 
@@ -312,9 +312,9 @@ responsibility on an equitable basis.
 
 EXHIBIT A.
 
-ìThe contents of this file are subject to the FreeImage Public License Version 1.0 (the ìLicenseî); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://home.wxs.nl/~flvdberg/freeimage-license.txt
+‚ÄúThe contents of this file are subject to the FreeImage Public License Version 1.0 (the ‚ÄúLicense‚Äù); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://home.wxs.nl/~flvdberg/freeimage-license.txt
 
-Software distributed under the License is distributed on an ìAS ISî basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
+Software distributed under the License is distributed on an ‚ÄúAS IS‚Äù basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
 
 ------------------------------------------------------------------------
 
@@ -390,7 +390,7 @@ freely, subject to the following restrictions:
 licensed under pngquant's original licenses (near the end of this file),
 and contain extensive changes and additions by Kornel Lesinski licensed under GPL v3.
 
-pngquant © 2009-2016 by Kornel Lesinski.
+pngquant ¬© 2009-2016 by Kornel Lesinski.
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -1030,7 +1030,7 @@ you like, as long as you acknowledge its origins.
 
 pngquant.c:
 
-   © 1989, 1991 by Jef Poskanzer.
+   ¬© 1989, 1991 by Jef Poskanzer.
 
    Permission to use, copy, modify, and distribute this software and its
    documentation for any purpose and without fee is hereby granted, provided
@@ -1041,7 +1041,7 @@ pngquant.c:
 
 pngquant.c and rwpng.c/h:
 
-   © 1997-2002 by Greg Roelofs; based on an idea by Stefan Schneider.
+   ¬© 1997-2002 by Greg Roelofs; based on an idea by Stefan Schneider.
 
    All rights reserved.
 
@@ -1070,12 +1070,12 @@ pngquant.c and rwpng.c/h:
 
 ** zLib license (zLib) ** 
 
-zlib.h ó interface of the ëzlibí general purpose compression library
+zlib.h ‚Äî interface of the ‚Äòzlib‚Äô general purpose compression library
 version 1.2.8, April 28th, 2013
 
 Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler
 
-This software is provided ëas-isí, without any express or implied
+This software is provided ‚Äòas-is‚Äô, without any express or implied
 warranty. In no event will the authors be held liable for any damages
 arising from the use of this software.
 

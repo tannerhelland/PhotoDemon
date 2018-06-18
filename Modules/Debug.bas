@@ -21,7 +21,7 @@ Attribute VB_Name = "PDDebug"
 ' of the class as generic as possible in case this is helpful to others.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -269,13 +269,13 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_Mem_Report)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
     
     'If we've gone GAP_BETWEEN_MEMORY_REPORTS events without a RAM report, provide one now
-    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + GAP_BETWEEN_MEMORY_REPORTS)) Then pdDebug.LogAction vbNullString, PDM_Mem_Report
+    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + GAP_BETWEEN_MEMORY_REPORTS)) Then PDDebug.LogAction vbNullString, PDM_Mem_Report
 
 End Sub
 
 'Shorcut function for logging timing results
 Public Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
-    pdDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
+    PDDebug.LogAction "Timing report: " & strDescription & " - " & Format$(timeTakenRaw * 1000#, "#####0") & " ms", PDM_Timer_Report
 End Sub
 
 'If this is the first session after a hard crash, we want to forcibly activate the debugger (if user preferences allow)
@@ -326,9 +326,9 @@ Public Sub NotifyLastSessionState(ByVal lastSessionDidntCrash As Boolean)
                 
                 'The user has debug logging set to "automatic" - so we're allowed to invoke the debugger!  Start it up.
                 UserPrefs.SetEmergencyDebugger True
-                pdDebug.StartDebugger True, , False
-                pdDebug.LogAction "WARNING!  A recent PD session crashed (" & CStr(sessionsSinceLastCrash) & " session(s) ago)."
-                pdDebug.LogAction "          Even though this is a production build, debug logging has been activated as a failsafe."
+                PDDebug.StartDebugger True, , False
+                PDDebug.LogAction "WARNING!  A recent PD session crashed (" & CStr(sessionsSinceLastCrash) & " session(s) ago)."
+                PDDebug.LogAction "          Even though this is a production build, debug logging has been activated as a failsafe."
                 
             End If
             
@@ -435,24 +435,24 @@ Public Function StartDebugger(Optional ByVal writeLogDataToFile As Boolean = Fal
     m_debuggerActive = True
     
     'Log an initial event, to note that debug mode was successfully initiated
-    pdDebug.LogAction "Debugger initialized successfully"
+    PDDebug.LogAction "Debugger initialized successfully"
     
     'Perform an initial memory check; this gives us a nice baseline measurement
-    pdDebug.LogAction vbNullString, PDM_Mem_Report
+    PDDebug.LogAction vbNullString, PDM_Mem_Report
     
     'If messages were logged prior to this class being formally initialized, dump them now
     If (Not m_backupMessages Is Nothing) Then
         
         If (m_backupMessages.GetNumOfStrings > 0) Then
         
-            pdDebug.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
-            pdDebug.LogAction "(They are presented here with their original timestamps.)"
+            PDDebug.LogAction "(The following " & m_backupMessages.GetNumOfStrings & " actions were logged prior to initialization.)"
+            PDDebug.LogAction "(They are presented here with their original timestamps.)"
             
             For i = 0 To m_backupMessages.GetNumOfStrings - 1
-                pdDebug.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
+                PDDebug.LogAction m_backupMessages.GetString(i), PDM_Startup_Message, True
             Next i
             
-            pdDebug.LogAction "(End of pre-initialization data)"
+            PDDebug.LogAction "(End of pre-initialization data)"
             
         End If
         
@@ -514,7 +514,7 @@ Private Function GetLogID() As Long
             
             'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
             GetLogID = minID
-            pdDebug.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
+            PDDebug.LogAction "(Reusing debug log file #" & CStr(GetLogID) & " for this session.)"
         
         Else
         

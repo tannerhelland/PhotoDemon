@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3342</langversion>
+<langversion>6.8.3344</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2283,48 +2283,10 @@ Açıklama: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Bir hata raporu gönderdiğiniz için teşekkür ederiz. böcek mümkün olduğunca çabuk ele emin olmak için, PhotoDemon bir GitHub hesabınız varsa question.
-
-Do bir daha cevap sana ihtiyacı var? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Daha iyi PhotoDemon yapmak için teşekkürler</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon sizin için otomatik olarak bir GitHub hata raporu web sayfasını açtı. Başlık kutusuna, sorun kısa bir bilgi ile, aşağıdaki hata girin: Bu hata yol açan adımlar da dahil olmak üzere geniş metin kutusuna sağlayabilir %1
-
-Any ek ayrıntılar, o kadar hızlı bir şekilde sabit olsun yardımcı olacak possible.
-
-When Yeni Sayı Gönder düğmesini tıklayın, bitmiş. Teşekkür ederim!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub hata raporu talimatları</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon sizin için otomatik olarak bir hata raporu web sayfası açtı. Açıklama kutusuna, bu kutunun bu error.
-
-Also yol açan adımları açıklayın lütfen aşağıdaki hata numarasını ekleyin: 1
-
-When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2332,7 +2294,7 @@ When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
 <translation>Hata raporu talimatları</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2666,6 +2628,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>yazılım güncellemesi başlatılıyor (bu özellik Araçlar devre dışı bırakılabilir -> Seçenekler menüsü)</translation>
 </phrase>
@@ -2690,7 +2657,7 @@ Please enter a numeric value.</original>
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6085,8 +6052,13 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Bize küçük bir bağışla destek verin (teşekkürler!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6095,13 +6067,8 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>geri bildirim gönderin</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>hata raporu gönderin</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6447,20 +6414,6 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Bir hata raporu gönderdiğiniz için teşekkür ederiz. mümkün olduğunca çabuk böcek ele emin olmak için, PhotoDemon nerede bir GitHub hesabınız var it.
-
-Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>PhotoDemon sabitleme için teşekkürler</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>streç histogram</translation>
 </phrase>
@@ -6635,7 +6588,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12535,11 +12488,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>PhotoDemon gelişimine bağış yapın</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>hızlı, ücretsiz, taşınabilir fotoğraf editörü</translation>
 </phrase>
@@ -12547,11 +12495,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Geliştirme, tasarım veya çeviri çalışmalarına katılmak</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Yazarla iletişime geçin</translation>
 </phrase>
 
 <phrase>
@@ -12580,11 +12523,36 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>PhotoDemon gelişimine bağış yapın</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15394,10 +15362,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

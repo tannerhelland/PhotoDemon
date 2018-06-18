@@ -11,7 +11,7 @@ Attribute VB_Name = "Colors"
 ' required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -802,7 +802,7 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     
     'If the color type is STILL unknown and/or invalid, there's nothing we can do.  Exit immediately.
     If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
-        If pdMain.IsProgramRunning() Then pdDebug.LogAction "WARNING!  Colors.GetColorFromString was unable to resolve the color string " & srcString & "."
+        If PDMain.IsProgramRunning() Then PDDebug.LogAction "WARNING!  Colors.GetColorFromString was unable to resolve the color string " & srcString & "."
         GetColorFromString = False
         Exit Function
     End If

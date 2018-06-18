@@ -44,7 +44,7 @@ Attribute VB_Exposed = False
 ' and all toolbars were moved to their own forms.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -59,7 +59,7 @@ Attribute m_WindowSize.VB_VarHelpID = -1
 
 Private Sub Form_Load()
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         Set m_WindowSize = New pdWindowSize
         m_WindowSize.AttachToHWnd Me.hWnd, True
     End If
@@ -77,7 +77,7 @@ Private Sub Form_Unload(Cancel As Integer)
         ReleaseFormTheming Me
         Set m_WindowSize = Nothing
     Else
-        pdDebug.LogAction "WARNING!  toolbar_Options was unloaded prematurely - why??"
+        PDDebug.LogAction "WARNING!  toolbar_Options was unloaded prematurely - why??"
         Cancel = True
     End If
 End Sub

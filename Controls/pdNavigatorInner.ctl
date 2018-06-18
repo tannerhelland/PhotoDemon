@@ -39,7 +39,7 @@ Attribute VB_Exposed = False
 'For implementation details, please refer to the main pdNavigator control.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -261,7 +261,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDNAVINNER_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDNavInner", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -271,7 +271,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
@@ -317,7 +317,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'If an image has been loaded, determine a centered position for the image's thumbnail
         If (g_OpenImageCount <= 0) Then
@@ -444,8 +444,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

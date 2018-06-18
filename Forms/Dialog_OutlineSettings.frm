@@ -190,7 +190,7 @@ Attribute VB_Exposed = False
 ' easily be expanded in the future due to its modular design.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -362,7 +362,7 @@ Private Sub Form_Load()
     cboCorner.AddItem "round"
     cboCorner.ListIndex = 0
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
         If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pd2DPath
         Set m_PreviewDIB = New pdDIB

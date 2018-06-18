@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 ' palettes can be managed by a single pdPalette instance).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -227,7 +227,7 @@ Friend Sub FindAndRemoveDuplicates()
         
         m_NumOfColors = m_NumOfColors - numRemoved
         ReDim Preserve m_Palette(0 To m_NumOfColors - 1) As PDPaletteEntry
-        pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
+        PDDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
         
     End If
     
@@ -276,7 +276,7 @@ Friend Sub FindAndRemoveDuplicates_Fast()
         
         m_NumOfColors = m_NumOfColors - numRemoved
         ReDim Preserve m_Palette(0 To m_NumOfColors - 1) As PDPaletteEntry
-        pdDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
+        PDDebug.LogAction "Palette contained duplicate entries; color count reduced from " & CStr(m_NumOfColors + numRemoved) & " to " & CStr(m_NumOfColors) & " colors."
         
     End If
     

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.155</langversion>
+<langversion>1.0.157</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2287,48 +2287,10 @@ Error број %
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Ви благодариме за поднесување на извештај за бубачка. За да бидете сигурни дека вашата бубачка се однесува како што е можно побрзо, PhotoDemon ќе мора да одговори на уште еден question.
-
-Do имате сметка на GitHub? (Ако немате идеја што значи тоа, одговорот е "Не".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Ви благодариме за правење PhotoDemon подобро</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки GitHub за вас. Во полето за наслов, ве молиме внесете ја следнава грешка број со краток опис на проблемот: %1
-
-Any дополнителни детали може да се обезбеди во голем поле за текст, вклучувајќи го и чекорите кои доведоа до оваа грешка, ќе помогне да се добие фиксна толку брзо како што possible.
-
-When завршите, кликнете на Прати копчето Нов проблем. Ти благодарам!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>инструкции извештај за бубачка GitHub</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки за вас. Во полето за коментар, ве молиме опишете ги чекорите кои доведоа до оваа error.
-
-Also во таа кутија, молам вклучи следнава грешка: %1
-
-When заврши, кликнете на копчето Submit. Ти благодарам!</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2336,7 +2298,7 @@ When заврши, кликнете на копчето Submit. Ти благо�
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2670,6 +2632,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Иницијализирање ажурирање на софтверот (оваа функција може да биде исклучен од Алатки -> менито за опции)</translation>
 </phrase>
@@ -2694,7 +2661,7 @@ Please enter a numeric value.</original>
 <translation>бета</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6091,8 +6058,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>Поддржи ни мала донација (ви благодариме!)</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6101,13 +6073,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>достават повратни информации</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>Достават извештај за бубачки</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6454,20 +6421,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Ви благодариме за поднесување на извештај за бубачка. За да бидете сигурни дека се однесува на вашиот бубачки како што е можно побрзо, PhotoDemon треба да знае каде да се испрати it.
-
-Do имате сметка на GitHub? (Ако немате идеја што значи тоа, одговорот е "Не".)</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>Ви благодариме за одредување PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>Рашири хистограм</translation>
 </phrase>
@@ -6642,7 +6595,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12543,11 +12496,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>Донирајте до развој на PhotoDemon</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>брза, слободна, пренослив фото едитор</translation>
 </phrase>
@@ -12555,11 +12503,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>Учествувајте во развојот, дизајнот или преводот</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>Контактирајте го авторот</translation>
 </phrase>
 
 <phrase>
@@ -12588,11 +12531,36 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>Донирајте до развој на PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15407,10 +15375,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

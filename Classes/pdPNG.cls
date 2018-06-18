@@ -37,7 +37,7 @@ Attribute VB_Exposed = False
 ' please let me know so I can resolve them before 7.2 stable releases.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

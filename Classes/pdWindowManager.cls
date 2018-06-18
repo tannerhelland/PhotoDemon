@@ -36,7 +36,7 @@ Attribute VB_Exposed = False
 ' (http://www.vbforums.com/showthread.php?527802-VB6-UniCaption).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -659,7 +659,7 @@ Friend Sub RegisterMainForm(ByRef parentForm As Form)
     'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
     m_MainWindowHWnd = parentForm.hWnd
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Apply any unique styles to the parent window
         Dim newWinStyle As Long
@@ -725,7 +725,7 @@ End Sub
 ' the window in question; plan accordingly!)
 Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
-    If ((srcHwnd <> 0) And pdMain.IsProgramRunning()) Then
+    If ((srcHwnd <> 0) And PDMain.IsProgramRunning()) Then
     
         With m_MinMaxEntries(m_numOfMinMaxEntries)
             .hWnd = srcHwnd

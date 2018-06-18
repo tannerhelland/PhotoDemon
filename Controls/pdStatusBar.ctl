@@ -149,7 +149,7 @@ Attribute VB_Exposed = False
 'For implementation details, please refer to pdCanvas.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -478,13 +478,13 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, False
     ucSupport.RequestExtraFunctionality True
-    If pdMain.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
+    If PDMain.IsProgramRunning() Then ucSupport.RequestCursor IDC_ARROW
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTATUSBAR_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDStatusBar", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
     Drawing2D.QuickCreatePainter m_Painter
@@ -498,7 +498,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -506,7 +506,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -653,7 +653,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDSB_Background, Me.Enabled))
     If (bufferDC = 0) Then Exit Sub
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
@@ -709,7 +709,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         UpdateColorList
         
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             
             Dim buttonIconSize As Long
             buttonIconSize = Interface.FixDPI(16)
@@ -775,7 +775,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.UpdateAgainstCurrentTheme
         cmbSizeUnit.UpdateAgainstCurrentTheme
         
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
         cmbZoom.Top = (UserControl.ScaleHeight - cmbZoom.GetHeight) \ 2

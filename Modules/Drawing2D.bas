@@ -13,7 +13,7 @@ Attribute VB_Name = "Drawing2D"
 ' but I have tried to design it so that other backends can be supported without much trouble.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -820,6 +820,6 @@ End Sub
 ' to raise their own error events, or perhaps handle their errors internally.  (By default, pd2D does *not* halt on errors.)
 Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
     If (LenB(errSource) = 0) Then errSource = "pd2D"
-    pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
-    If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
+    PDDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
+    If (ErrNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
 End Sub

@@ -1,6 +1,6 @@
 # PhotoDemon 7.0.1
 
-![Screenshot](http://photodemon.org/images/PD_70_b1.jpg)
+![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
@@ -10,9 +10,9 @@ PhotoDemon is completely open-source and available under a permissive BSD licens
 
 New contributions from coders, designers, translators, and enthusiasts are always welcome.
 
-* For information on the latest stable release, visit http://photodemon.org
+* For information on the latest stable release, visit https://photodemon.org
 * To download the program's source code, visit https://github.com/tannerhelland/PhotoDemon
-* To download a nightly build of the latest source code, visit http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip 
+* To download a nightly build of the latest source code, visit https://photodemon.org/download/
 
 ***
 
@@ -43,7 +43,7 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 ### Contributions
 PhotoDemon is maintained by a single individual with a family to support.  If you would like to make a small donation to support ongoing development, please visit:
 
-http://photodemon.org/donate/
+https://photodemon.org/donate/
 
 A full list of (wonderful!) contributors is available in AUTHORS.md.
 

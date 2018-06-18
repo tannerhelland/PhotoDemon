@@ -15,7 +15,7 @@ Attribute VB_Name = "Plugin_FreeImage"
 ' FreeImage usage from classic VB.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -558,6 +558,8 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             If (new_hDIB <> fi_hDIB) Then
                 FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 fi_hDIB = new_hDIB
+            Else
+                PDDebug.LogAction "WARNING!  FI_GetFIObjectIntoDIB failed to convert a color depth!"
             End If
             
         End If
@@ -722,18 +724,9 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
     If (fileFIF = PDIF_GIF) Then
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename, , , , fi_ImportFlags Or FILO_GIF_PLAYBACK)
     ElseIf (fileFIF = FIF_ICO) Then
-        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , fi_ImportFlags)
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , fi_ImportFlags Or FILO_ICO_MAKEALPHA)
     Else
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename, , , , fi_ImportFlags)
-    End If
-    
-    'FreeImage handles icon files poorly; a workaround is required to get them to return any masks as pre-built alpha channels.
-    If (fileFIF = FIF_ICO) Then
-        If (FreeImage_GetBPP(fi_hDIB) < 32) Then
-            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-            FreeImage_CloseMultiBitmap fi_multi_hDIB
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , FILO_ICO_MAKEALPHA)
-        End If
     End If
     
     'We are now going to keep that source file open for the duration of the load process.

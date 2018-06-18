@@ -276,7 +276,7 @@ Attribute VB_Exposed = False
 'As of June '14, per-channel levels, set-by-color options, and Auto Levels are now supported.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1365,7 +1365,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
     
-    If cmdBar.PreviewsAllowed And pdMain.IsProgramRunning() Then
+    If cmdBar.PreviewsAllowed And PDMain.IsProgramRunning() Then
         
         cmdBar.MarkPreviewStatus False
         

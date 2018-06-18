@@ -60,7 +60,7 @@ Attribute VB_Exposed = False
 ' the standard command bar.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -310,7 +310,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCB_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCommandBar", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -320,7 +320,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -329,7 +329,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
@@ -341,7 +341,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo SomethingStoleFocus
-    If pdMain.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
+    If PDMain.IsProgramRunning() And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdOK.hWnd
 
 SomethingStoleFocus:
     
@@ -379,7 +379,7 @@ Private Sub UpdateControlLayout()
     End If
     
     'Make the control the same width as its parent
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         If bWidth <> parentWindowWidth Then ucSupport.RequestNewSize parentWindowWidth
         
@@ -423,8 +423,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
         ' colors are loaded FIRST
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
         Dim cbBackgroundColor As Long
         cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)

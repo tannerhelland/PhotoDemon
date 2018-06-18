@@ -105,7 +105,7 @@ Attribute VB_Exposed = False
 ' menu system right off the bat.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -276,7 +276,7 @@ End Sub
 'The accent color strip is owner-drawn, so we must respond to rendering events and paint the accent colors manually
 Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
-    If ((Len(btnValue) <> 0) And pdMain.IsProgramRunning()) Then
+    If ((Len(btnValue) <> 0) And PDMain.IsProgramRunning()) Then
     
         Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&

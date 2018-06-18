@@ -1,117 +1,78 @@
+# pngquant 2
 
-http://pngquant.org
+[pngquant](https://pngquant.org) is a PNG compresor that significantly reduces file sizes by converting images to a more efficient 8-bit PNG format *with alpha channel* (often 60-80% smaller than 24/32-bit PNG files). Compressed images are fully standards-compliant and are supported by all web browsers and operating systems.
 
-##Usage
+[This](https://github.com/kornelski/pngquant) is the official `pngquant` repository. The compression engine is also available [as an embeddable library](https://github.com/ImageOptim/libimagequant).
 
-- batch conversion of multiple files: `pngquant 256 *.png`
-- Unix-style stdin/stdout chaining: `… | pngquant 16 | …`
+## Usage
 
-To further reduce file size, you may want to consider [optipng](http://optipng.sourceforge.net) or [ImageOptim](http://imageoptim.pornel.net).
+- batch conversion of multiple files: `pngquant *.png`
+- Unix-style stdin/stdout chaining: `… | pngquant - | …`
 
-###BATCH FILES
-Originally produced by Thomas Rutter, now with minor amendments by BJ.
+To further reduce file size, try [optipng](http://optipng.sourceforge.net), [ImageOptim](https://imageoptim.com), or [zopflipng](https://github.com/google/zopfli).
 
-You can drag and drop your 24-bit PNGs onto these batch files as an easy way
-to process them without messing around with the command line. Dithered and
-non-dithered optimised copies of the source PNGs will be created in the same
-directory as the originals. The batch files must remain in the same directory
-as pngquant.exe.
+## Features
 
-##Options
+ * High-quality palette generation
+  - advanced quantization algorithm with support for gamma correction and premultiplied alpha
+  - unique dithering algorithm that does not add unnecessary noise to the image
+
+ * Configurable quality level
+  - automatically finds required number of colors and can skip images which can't be converted with the desired quality
+
+ * Fast, modern code
+  - based on a portable [libimagequant library](https://github.com/ImageOptim/libimagequant)
+  - C99 with no workarounds for legacy systems or compilers ([apart from Visual Studio](https://github.com/kornelski/pngquant/tree/msvc))
+  - multicore support (via OpenMP) and Intel SSE optimizations
+
+## Options
 
 See `pngquant -h` for full list.
 
-###`--quality min-max`
+### `--quality min-max`
 
 `min` and `max` are numbers in range 0 (worst) to 100 (perfect), similar to JPEG. pngquant will use the least amount of colors required to meet or exceed the `max` quality. If conversion results in quality below the `min` quality the image won't be saved (if outputting to stdin, 24-bit original will be output) and pngquant will exit with status code 99.
 
     pngquant --quality=65-80 image.png
 
-###`--ext new.png`
+### `--ext new.png`
 
-Set custom extension (suffix) for output filename. By default `-or8.png` or `-fs8.png` is used. If you use `-ext .png -force` options pngquant will overwrite input files in place (use with caution).
+Set custom extension (suffix) for output filename. By default `-or8.png` or `-fs8.png` is used. If you use `--ext=.png --force` options pngquant will overwrite input files in place (use with caution).
 
-###`--speed N`
+### `-o out.png` or `--output out.png`
 
-Speed/quality trade-off from 1 (brute-force) to 10 (fastest). The default is 3. Speed 10 has 5% lower quality, but is 8 times faster than the default.
+Writes converted file to the given path. When this option is used only single input file is allowed.
 
-###`--iebug`
+### `--skip-if-larger`
 
-Workaround for IE6, which only displays fully opaque pixels. pngquant will make almost-opaque pixels fully opaque and will avoid creating new transparent colors.
+Don't write converted files if the conversion isn't worth it.
 
-###`--version`
+### `--speed N`
 
-Print version information to stdout.
+Speed/quality trade-off from 1 (slowest, highest quality, smallest files) to 11 (fastest, less consistent quality, light comperssion). The default is 3. It's recommended to keep the default, unless you need to generate images in real time (e.g. map tiles). Higher speeds are fine with 256 colors, but don't handle lower number of colors well.
 
-###`-`
+### `--nofs`
 
-Read image from stdin and send result to stdout.
+Disables Floyd-Steinberg dithering.
 
-###`--`
+### `--floyd=0.5`
 
-Stops processing of arguments. This allows use of file names that start with `-`. If you're using pngquant in a script, it's advisable to put this before file names:
+Controls level of dithering (0 = none, 1 = full). Note that the `=` character is required.
 
-    pngquant $OPTIONS -- "$FILE"
+### `--posterize bits`
 
+Reduce precision of the palette by number of bits. Use when the image will be displayed on low-depth screens (e.g. 16-bit displays or compressed textures in ARGB444 format).
 
-#COPYRIGHT AND LICENSES
+### `--strip`
 
-Improved PNGQuant is
-- Copyright (C) 1989, 1991 by Jef Poskanzer
-- Copyright (C) 1997, 2000, 2002 by Greg Roelofs; based on an idea by Stefan Schneider.
-- Copyright (C) 2009-2012 by Kornel Lesinski.
-** Permission to use, copy, modify, and distribute this software and its
-** documentation for any purpose and without fee is hereby granted, provided
-** that the above copyright notice appear in all copies and that both that
-** copyright notice and this permission notice appear in supporting
-** documentation.  This software is provided "as is" without express or
-** implied warranty.
+Don't copy optional PNG chunks. Metadata is always removed on Mac (when using Cocoa reader).
 
-libpng:
-* Copyright (c) 1998-2009 Glenn Randers-Pehrson
-* (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
-* (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
-- Full license is supplied in png.h file, but here is an excerpt:
-* The PNG Reference Library is supplied "AS IS".  The Contributing Authors
-* and Group 42, Inc. disclaim all warranties, expressed or implied,
-* including, without limitation, the warranties of merchantability and of
-* fitness for any purpose.  The Contributing Authors and Group 42, Inc.
-* assume no liability for direct, indirect, incidental, special, exemplary,
-* or consequential damages, which may result from the use of the PNG
-* Reference Library, even if advised of the possibility of such damage.
-*
-* Permission is hereby granted to use, copy, modify, and distribute this
-* source code, or portions hereof, for any purpose, without fee, subject
-* to the following restrictions:
-*
-* 1. The origin of this source code must not be misrepresented.
-*
-* 2. Altered versions must be plainly marked as such and
-* must not be misrepresented as being the original source.
-*
-* 3. This Copyright notice may not be removed or altered from
-*    any source or altered source distribution.
-*
-* The Contributing Authors and Group 42, Inc. specifically permit, without
-* fee, and encourage the use of this source code as a component to
-* supporting the PNG file format in commercial products.  If you use this
-* source code in a product, acknowledgment is not required but would be
-* appreciated.
+See [man page](https://github.com/kornelski/pngquant/blob/master/pngquant.1) (`man pngquant`) for the full list of options.
 
-zlib:
-- Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
-* This software is provided 'as-is', without any express or implied
-* warranty.  In no event will the authors be held liable for any damages
-* arising from the use of this software.
-*
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-*
-* 1. The origin of this software must not be misrepresented; you must not
-* claim that you wrote the original software. If you use this software
-* in a product, an acknowledgment in the product documentation would be
-* appreciated but is not required.
-* 2. Altered source versions must be plainly marked as such, and must not be
-* misrepresented as being the original software.
-* 3. This notice may not be removed or altered from any source distribution.
+## License
+
+pngquant is dual-licensed:
+
+* Under **GPL v3** or later with an additional [copyright notice](https://github.com/kornelski/pngquant/blob/master/COPYRIGHT) that must be kept for the older parts of the code.
+
+* Or [a **commercial license**](https://supportedsource.org/projects/pngquant) for use in non-GPL software (e.g. closed-source or App Store distribution). You can [get the license via Supported Source](https://supportedsource.org/projects/pngquant/purchase). Email kornel@pngquant.org if you have any questions.

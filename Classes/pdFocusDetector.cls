@@ -23,7 +23,7 @@ Attribute VB_Exposed = False
 ' it with the hWnd you want tracked.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -66,7 +66,7 @@ End Sub
 ' load this class.
 Friend Sub StartFocusTracking(ByVal srcHwnd As Long)
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Release any existing subclassers
         If (m_hWnd <> 0) Then

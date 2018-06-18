@@ -22,7 +22,7 @@ Attribute VB_Name = "UserPrefs"
 ' between versions, but as long as you use the wrapping functions in this class, settings will be handled correctly.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -698,13 +698,13 @@ Private Sub CreateNewPreferencesFile()
                 ' want to be bothered by myriad updates, so I've changed the default to beta builds only.  Advanced users
                 ' can always opt for a faster update frequency.
                 Case PD_PRE_ALPHA, PD_ALPHA
-                    .WriteTag "UpdateTrack", PDUT_BETA
+                    .WriteTag "UpdateTrack", ut_Beta
                     
                 Case PD_BETA
-                    .WriteTag "UpdateTrack", PDUT_BETA
+                    .WriteTag "UpdateTrack", ut_Beta
                     
                 Case PD_PRODUCTION
-                    .WriteTag "UpdateTrack", PDUT_STABLE
+                    .WriteTag "UpdateTrack", ut_Stable
             
             End Select
             

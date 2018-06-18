@@ -58,7 +58,7 @@ Attribute VB_Exposed = False
 ' synchronizing the owner-drawn listview and the scrollbar, as necessary.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -271,6 +271,12 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     lbView.RemoveItem itemIndex
 End Sub
 
+'In response to things like MouseOver events, the caller can request different cursors.
+' (By default, list items are always treated as clickable - so they get a hand cursor.)
+Public Sub RequestCursor(Optional ByVal sysCursorID As SystemCursorConstant = IDC_HAND)
+    lbView.RequestCursor sysCursorID
+End Sub
+
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
 Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
@@ -345,7 +351,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLISTBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDListBox", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
 End Sub
 
@@ -358,7 +364,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -371,7 +377,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -475,7 +481,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         lbView.UpdateAgainstCurrentTheme
         vScroll.UpdateAgainstCurrentTheme
     End If

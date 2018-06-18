@@ -56,7 +56,7 @@ Attribute VB_Exposed = False
 '    for now.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -145,7 +145,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     ucSupport.SetCaptionAlignment newAlignment
-    If (Not pdMain.IsProgramRunning()) Then UpdateControlLayout
+    If (Not PDMain.IsProgramRunning()) Then UpdateControlLayout
     PropertyChanged "Alignment"
 End Property
 
@@ -175,7 +175,7 @@ Public Property Let Caption(ByRef newCaption As String)
     
     'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
     ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update.
-    If (Not pdMain.IsProgramRunning()) Then
+    If (Not PDMain.IsProgramRunning()) Then
         UpdateControlLayout
     Else
         If (m_Layout = AutoSizeControl) Then UpdateControlLayout
@@ -364,7 +364,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDHYPERLINK_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDHyperlink", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
                     
 End Sub
 
@@ -431,7 +431,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -454,7 +454,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -606,7 +606,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
-    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
+    If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -621,8 +621,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

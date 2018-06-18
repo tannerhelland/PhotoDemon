@@ -56,13 +56,13 @@ Begin VB.Form FormAbout
       _ExtentY        =   11245
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   375
-         Index           =   0
+         Index           =   1
          Left            =   240
-         Top             =   1440
+         Top             =   1920
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
-         Caption         =   "Donate to PhotoDemon development"
+         Caption         =   ""
          URL             =   "http://photodemon.org/donate/"
       End
       Begin PhotoDemon.pdLabel lblAbout 
@@ -100,9 +100,9 @@ Begin VB.Form FormAbout
       End
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   375
-         Index           =   1
+         Index           =   2
          Left            =   240
-         Top             =   1920
+         Top             =   2400
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
@@ -111,20 +111,20 @@ Begin VB.Form FormAbout
       End
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   375
-         Index           =   2
+         Index           =   0
          Left            =   240
-         Top             =   3840
+         Top             =   1440
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
-         Caption         =   "Contact the author"
-         URL             =   "http://photodemon.org/about/contact/"
+         Caption         =   ""
+         URL             =   "https://www.patreon.com/photodemon/overview"
       End
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   375
          Index           =   3
          Left            =   240
-         Top             =   2400
+         Top             =   2880
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
@@ -135,7 +135,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   4
          Left            =   240
-         Top             =   2880
+         Top             =   3360
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
@@ -146,7 +146,7 @@ Begin VB.Form FormAbout
          Height          =   375
          Index           =   5
          Left            =   240
-         Top             =   3360
+         Top             =   3840
          Width           =   9300
          _ExtentX        =   16404
          _ExtentY        =   661
@@ -158,12 +158,32 @@ Begin VB.Form FormAbout
       Height          =   6375
       Index           =   1
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   5
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
       _ExtentY        =   11245
       Begin PhotoDemon.pdListBoxOD lstContributors 
+         Height          =   6135
+         Left            =   120
+         TabIndex        =   6
+         Top             =   240
+         Width           =   9405
+         _ExtentX        =   16589
+         _ExtentY        =   10821
+         BorderlessMode  =   -1  'True
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlAbout 
+      Height          =   6375
+      Index           =   2
+      Left            =   120
+      TabIndex        =   2
+      Top             =   840
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   11245
+      Begin PhotoDemon.pdListBoxOD lstPatrons 
          Height          =   6135
          Left            =   120
          TabIndex        =   4
@@ -190,10 +210,10 @@ Attribute VB_Exposed = False
 'PhotoDemon would not be possible without the help of many, many amazing people.  THANK YOU!
 '
 'If you contributed to PhotoDemon's development in some way, but your name isn't listed here,
-' please let me know!  I can always be reached via http://photodemon.org/about/contact/
+' please let me know!  I can always be reached via https://photodemon.org/about/contact/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -202,13 +222,16 @@ Option Explicit
 Private Type PD_Contributor
     ctbName As String
     ctbURL As String
+    isInternal As Boolean
 End Type
 
-Private m_contributorList() As PD_Contributor
-Private m_numOfContributors As Long
+Private m_contributorList() As PD_Contributor, m_numOfContributors As Long
+Private m_patronList() As PD_Contributor, m_numOfPatrons As Long
+Private m_superPatronEndIndex As Long
 
-'Height of each credit content block
-Private Const BLOCKHEIGHT As Long = 24
+'Height of each credit content block (at 96 DPI)
+Private Const BLOCKHEIGHT_CONTRIBUTOR As Long = 24
+Private Const BLOCKHEIGHT_PATRON As Long = 28
 
 Private Sub btsPanel_Click(ByVal buttonIndex As Long)
     UpdateVisiblePanel
@@ -223,10 +246,12 @@ End Sub
 
 Private Sub Form_Load()
     
-    lstContributors.ListItemHeight = FixDPI(BLOCKHEIGHT)
+    lstContributors.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT_CONTRIBUTOR)
+    lstPatrons.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT_PATRON)
     
     btsPanel.AddItem "About", 0
     btsPanel.AddItem "Contributors", 1
+    btsPanel.AddItem "Patrons", 2
     btsPanel.ListIndex = 0
     UpdateVisiblePanel
     
@@ -234,11 +259,65 @@ Private Sub Form_Load()
     lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors", ChrW$(169), Year(Now))
     lblAbout(1).Caption = Updates.GetPhotoDemonNameAndVersion()
     
+    'Fill some specialty links
+    Dim actualText As String
+    actualText = g_Language.TranslateMessage("Support us on Patreon")
+    
+    'Win 7+ supports some helpful symbolic unicode chars
+    If OS.IsWin7OrLater Then actualText = ChrW(&H2665) & Space$(2) & actualText
+    hypAbout(0).Caption = actualText
+    
+    actualText = g_Language.TranslateMessage("Donate to PhotoDemon development")
+    If OS.IsWin7OrLater Then actualText = ChrW(&H2665) & Space$(2) & actualText
+    hypAbout(1).Caption = actualText
+    
+    'Fill the "Patron" panel text
+    ReDim m_patronList(0 To 15) As PD_Contributor
+    m_numOfPatrons = 0
+    
+    'On certain OSes, we can use Unicode symbols to make the text a little more fun
+    Dim uncSpecial As String, setSpaces As String
+    setSpaces = Space$(4)
+    
+    'Super patrons
+    actualText = g_Language.TranslateMessage("SUPER PATRONS")
+    If OS.IsWin7OrLater Then
+        uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
+        GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
+    Else
+        GeneratePatron actualText, , True
+    End If
+    
+    GeneratePatron "Johannes Nendel"
+    m_superPatronEndIndex = m_numOfPatrons
+    GeneratePatron vbNullString
+    
+    'Regular patrons (TODO someday soon, I hope!)
+    'actualText = g_Language.TranslateMessage("PATRONS")
+    'If OS.IsWin7OrLater Then
+    '    uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
+    '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
+    'Else
+    '    GeneratePatron actualText, , True
+    'End If
+    'GeneratePatron vbNullString
+    
+    'Thank you text
+    actualText = g_Language.TranslateMessage("THANK YOU to our wonderful Patreon supporters!")
+    If OS.IsWin7OrLater Then
+        uncSpecial = ChrW(&H2665)    'Hearts
+        GeneratePatron uncSpecial & setSpaces & actualText, , True
+    Else
+        GeneratePatron actualText
+    End If
+    
+    actualText = g_Language.TranslateMessage("(You can become a patron, too!  Click here to learn more.)")
+    GeneratePatron actualText, "https://www.patreon.com/photodemon/overview"
+    
     'Fill the "Contributor" panel text
     ReDim m_contributorList(0 To 31) As PD_Contributor
     m_numOfContributors = 0
     
-    'Shout-outs to designers, programmers, testers and sponsors
     GenerateContributor "Abhijit Mhapsekar"
     GenerateContributor "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1"
     GenerateContributor "Alexander Dorn"
@@ -247,14 +326,12 @@ Private Sub Form_Load()
     GenerateContributor "Andrew Yeoman"
     GenerateContributor "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/"
     GenerateContributor "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
-    GenerateContributor "Audioglider", "https://github.com/audioglider"
     GenerateContributor "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
     GenerateContributor "Boban Gjerasimoski", "https://www.behance.net/Boban_Gjerasimoski"
     GenerateContributor "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1"
     GenerateContributor "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
     GenerateContributor "ChenLin"
     GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
-    GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
     GenerateContributor "DarkAlchy"
@@ -286,7 +363,7 @@ Private Sub Form_Load()
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateContributor "Mohammad Reza Karimi"
-    GenerateContributor "Nguyen Van Hung"
+    GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"
     GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
     GenerateContributor "Old Abiquiu Photographic"
     GenerateContributor "Paul Bourke", "http://paulbourke.net/miscellaneous/"
@@ -296,7 +373,7 @@ Private Sub Form_Load()
     GenerateContributor "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652"
     GenerateContributor "Raj Chaudhuri", "https://github.com/rajch"
     GenerateContributor "Robert Rayment", "http://rrprogs.com/"
-    GenerateContributor "Roy (rk)"
+    GenerateContributor "Roy K (rk)"
     GenerateContributor "Shishi"
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
@@ -305,9 +382,16 @@ Private Sub Form_Load()
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
     GenerateContributor "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=55292624&lngWId=1"
     
-    'Add dummy entries to the owner-drawn list box
-    lstContributors.SetAutomaticRedraws False, False
+    'Add dummy entries to the owner-drawn list boxes
     Dim i As Long
+    
+    lstPatrons.SetAutomaticRedraws False, False
+    For i = 0 To m_numOfPatrons - 1
+        lstPatrons.AddItem vbNullString
+    Next i
+    lstPatrons.SetAutomaticRedraws True, True
+    
+    lstContributors.SetAutomaticRedraws False, False
     For i = 0 To m_numOfContributors - 1
         lstContributors.AddItem vbNullString
     Next i
@@ -318,11 +402,21 @@ Private Sub Form_Load()
      
 End Sub
 
-Private Sub GenerateContributor(ByVal contributorName As String, Optional ByVal contributorURL As String = vbNullString)
+Private Sub GenerateContributor(ByRef contributorName As String, Optional ByRef contributorURL As String = vbNullString)
     If (m_numOfContributors > UBound(m_contributorList)) Then ReDim Preserve m_contributorList(0 To m_numOfContributors * 2 - 1) As PD_Contributor
     m_contributorList(m_numOfContributors).ctbName = contributorName
     m_contributorList(m_numOfContributors).ctbURL = contributorURL
     m_numOfContributors = m_numOfContributors + 1
+End Sub
+
+Private Sub GeneratePatron(ByRef patronName As String, Optional ByRef patronURL As String = vbNullString, Optional ByVal patronIsInternalText As Boolean = False)
+    If (m_numOfPatrons > UBound(m_patronList)) Then ReDim Preserve m_patronList(0 To m_numOfPatrons * 2 - 1) As PD_Contributor
+    With m_patronList(m_numOfPatrons)
+        .ctbName = patronName
+        .ctbURL = patronURL
+        .isInternal = patronIsInternalText
+    End With
+    m_numOfPatrons = m_numOfPatrons + 1
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -343,7 +437,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
     Dim itemIsClickable As Boolean
     itemIsClickable = (LenB(m_contributorList(itemIndex).ctbURL) <> 0)
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         Dim txtColor As Long
         If itemIsClickable Then
@@ -401,9 +495,139 @@ Private Sub lstContributors_MouseLeave()
 End Sub
 
 Private Sub lstContributors_MouseOver(ByVal itemIndex As Long, itemTextEn As String)
+
     If ((itemIndex < m_numOfContributors) And (itemIndex >= 0)) Then
+        
         lstContributors.AssignTooltip m_contributorList(itemIndex).ctbURL
+        
+        'Only clickable entries should get a hand icon
+        If (LenB(m_contributorList(itemIndex).ctbURL) <> 0) Then
+            lstContributors.RequestCursor IDC_HAND
+        Else
+            lstContributors.RequestCursor IDC_DEFAULT
+        End If
+        
     Else
         lstContributors.AssignTooltip vbNullString
     End If
+    
+End Sub
+
+Private Sub lstPatrons_Click()
+    If ((lstPatrons.ListIndex < m_numOfPatrons) And (lstPatrons.ListIndex >= 0)) Then
+        If (LenB(m_patronList(lstPatrons.ListIndex).ctbURL) <> 0) Then Web.OpenURL m_patronList(lstPatrons.ListIndex).ctbURL
+    End If
+End Sub
+
+Private Sub lstPatrons_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+
+    If (bufferDC = 0) Then Exit Sub
+    
+    'Calculate text colors (which vary depending on hover state and URL availability)
+    Dim itemIsClickable As Boolean
+    itemIsClickable = (LenB(m_patronList(itemIndex).ctbURL) <> 0) And (Not m_patronList(itemIndex).isInternal)
+    
+    If PDMain.IsProgramRunning() Then
+    
+        Dim txtColor As Long
+        If itemIsClickable Then
+            txtColor = g_Themer.GetGenericUIColor(UI_TextClickable, , , itemIsHovered)
+        Else
+            txtColor = g_Themer.GetGenericUIColor(UI_TextReadOnly)
+        End If
+        
+        'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
+        Dim tmpRectF As RectF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        
+        'Manually paint an uncolored background
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
+        Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background, Me.Enabled)
+        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        
+        'Prepare and render the patron's name
+        Dim drawString As String
+        drawString = m_patronList(itemIndex).ctbName
+        
+        Dim tmpFont As pdFont, txtFontSize As Single
+        txtFontSize = 10!
+        If (itemIndex <= m_superPatronEndIndex) Then txtFontSize = 12!
+        
+        If itemIsClickable Then
+            Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, False, False, itemIsHovered)
+        Else
+            
+            If m_patronList(itemIndex).isInternal Then
+                
+                'Win 7+ supports some symbols that earlier OSes do not
+                If OS.IsWin7OrLater Then
+                
+                    With m_patronList(itemIndex)
+                        If Strings.StringsEqual(.ctbURL, "header", True) Then
+                            Set tmpFont = New pdFont
+                            tmpFont.SetFontFace "Segoe UI Symbol"
+                            tmpFont.SetFontBold True
+                            tmpFont.SetFontSize txtFontSize
+                            tmpFont.CreateFontObject
+                        Else
+                            Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, (itemIndex <= m_superPatronEndIndex), False, False)
+                        End If
+                    End With
+                    
+                Else
+                    Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, (itemIndex <= m_superPatronEndIndex), False, False)
+                End If
+            
+            Else
+                Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, False, False, False)
+            End If
+            
+        End If
+        
+        tmpFont.AttachToDC bufferDC
+        tmpFont.SetFontColor txtColor
+        tmpFont.SetTextAlignment vbLeftJustify
+        
+        Dim targetRect As RECT
+        With targetRect
+            .Left = tmpRectF.Left
+            .Top = tmpRectF.Top
+            .Right = tmpRectF.Left + tmpRectF.Width
+            .Bottom = tmpRectF.Top + tmpRectF.Height
+        End With
+        
+        tmpFont.DrawCenteredTextToRect drawString, targetRect, True
+        tmpFont.ReleaseFromDC
+        
+    End If
+    
+End Sub
+
+Private Sub lstPatrons_MouseLeave()
+    lstPatrons.AssignTooltip vbNullString
+End Sub
+
+Private Sub lstPatrons_MouseOver(ByVal itemIndex As Long, itemTextEn As String)
+
+    If ((itemIndex < m_numOfPatrons) And (itemIndex >= 0)) Then
+        
+        'Only clickable entries should get a hand icon
+        Dim isClickable As Boolean
+        isClickable = (LenB(m_patronList(itemIndex).ctbURL) <> 0) And (Not m_patronList(itemIndex).isInternal)
+        
+        If isClickable Then
+            lstPatrons.RequestCursor IDC_HAND
+            lstPatrons.AssignTooltip m_patronList(itemIndex).ctbURL
+        Else
+            lstPatrons.RequestCursor IDC_DEFAULT
+            lstPatrons.AssignTooltip vbNullString
+        End If
+        
+    Else
+        lstPatrons.AssignTooltip vbNullString
+    End If
+    
 End Sub

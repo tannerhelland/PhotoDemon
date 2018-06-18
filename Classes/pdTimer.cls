@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 ' (retrieved from http://vb.mvps.org/samples/TimerObj/)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -99,7 +99,7 @@ Friend Sub StopTimer()
         If timerReleaseCheck Then
             UserControls.NotifyTimerDestroyed
         Else
-            pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."
+            PDDebug.LogAction "WARNING!  pdTimer object was not released successfully."
         End If
         
     End If

@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin PhotoDemon.pdCanvas MainCanvas 
       Height          =   5055
@@ -36,14 +36,14 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1542,23 +1542,23 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuHelpTop 
       Caption         =   "&Help"
       Begin VB.Menu MnuHelp 
-         Caption         =   "Support us with a small donation (thank you!)"
+         Caption         =   "Support us on Patreon..."
          Index           =   0
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "-"
+         Caption         =   "Support us with a one-time donation..."
          Index           =   1
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Check for &updates"
+         Caption         =   "-"
          Index           =   2
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Submit feedback..."
+         Caption         =   "Check for &updates..."
          Index           =   3
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Submit bug report..."
+         Caption         =   "Submit bug report or feedback..."
          Index           =   4
       End
       Begin VB.Menu MnuHelp 
@@ -1566,15 +1566,15 @@ Begin VB.Form FormMain
          Index           =   5
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&Visit PhotoDemon website"
+         Caption         =   "&Visit PhotoDemon website..."
          Index           =   6
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Download PhotoDemon source code"
+         Caption         =   "Download PhotoDemon source code..."
          Index           =   7
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Read license and terms of use"
+         Caption         =   "Read license and terms of use..."
          Index           =   8
       End
       Begin VB.Menu MnuHelp 
@@ -1582,7 +1582,7 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&About"
+         Caption         =   "&About..."
          Index           =   10
       End
    End
@@ -1609,7 +1609,7 @@ Attribute VB_Exposed = False
 ' parameters to other, more interesting sections of the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2629,7 +2629,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    If pdMain.ContinueLoadingProgram() Then
+    If PDMain.ContinueLoadingProgram() Then
     
         '*************************************************************************************************************************************
         ' Now that all program engines are initialized, we can finally display the primary window
@@ -2954,7 +2954,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
-    If Updates.IsUpdatePackageAvailable And pdMain.WasStartupSuccessful() Then
+    If Updates.IsUpdatePackageAvailable And PDMain.WasStartupSuccessful() Then
         
         If Updates.PatchProgramFiles() Then
             PDDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
@@ -2979,7 +2979,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Autosaves.NotifyCleanShutdown
     
     PDDebug.LogAction "Shutdown appears to be clean.  Turning final control over to pdMain.FinalShutdown()..."
-    pdMain.FinalShutdown
+    PDMain.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
     'If g_UserWantsRestart Then Updates.InitiateRestart
@@ -3488,15 +3488,21 @@ End Sub
 
 'All help menu entries are launched from here
 Private Sub MnuHelp_Click(Index As Integer)
-
+    
     Select Case Index
         
-        'Donations are so very, very welcome!
+        'Donations are greatly appreciated!
         Case 0
-            Web.OpenURL "http://photodemon.org/donate"
+            Web.OpenURL "https://www.patreon.com/photodemon/overview"
             
-        'Check for updates
+        Case 1
+            Web.OpenURL "https://photodemon.org/donate"
+        
+        '(separator)
         Case 2
+        
+        'Check for updates
+        Case 3
             Message "Checking for software updates..."
             
             'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
@@ -3504,43 +3510,13 @@ Private Sub MnuHelp_Click(Index As Integer)
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
             FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
             
-        'Submit feedback
-        Case 3
-            Web.OpenURL "http://photodemon.org/about/contact/"
-        
-        'Submit bug report
+        'Submit bug report or feedback
         Case 4
-            'GitHub requires a login for submitting Issues; check for that first
-            Dim msgReturn As VbMsgBoxResult
-            
-            'If the user has previously been prompted about having a GitHub account, use their previous answer
-            If UserPrefs.DoesValueExist("Core ", "Has GitHub Account") Then
-            
-                Dim hasGitHub As Boolean
-                hasGitHub = UserPrefs.GetPref_Boolean("Core", "Has GitHub Account", False)
-                
-                If hasGitHub Then msgReturn = vbYes Else msgReturn = vbNo
-            
-            'If this is the first time they are submitting feedback, ask them if they have a GitHub account
-            Else
-            
-                msgReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbInformation Or vbYesNoCancel, "Thanks for fixing PhotoDemon")
-                
-                'If their answer was anything but "Cancel", store that answer to file
-                If msgReturn = vbYes Then UserPrefs.SetPref_Boolean "Core", "Has GitHub Account", True
-                If msgReturn = vbNo Then UserPrefs.SetPref_Boolean "Core", "Has GitHub Account", False
-                
-            End If
-            
-            'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
-            If (msgReturn = vbYes) Then
-                'Shell a browser window with the GitHub issue report form
-                Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
-            ElseIf msgReturn = vbNo Then
-                'Shell a browser window with the photodemon.org contact form
-                Web.OpenURL "http://photodemon.org/about/contact/"
-            End If
-            
+            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
+        
+        '(separator)
+        Case 5
+        
         'PhotoDemon's homepage
         Case 6
             Web.OpenURL "http://www.photodemon.org"
@@ -3551,8 +3527,11 @@ Private Sub MnuHelp_Click(Index As Integer)
         
         'Read terms and license agreement
         Case 8
-            Web.OpenURL "http://photodemon.org/about/license/"
-            
+            Web.OpenURL "https://photodemon.org/license/"
+        
+        '(separator)
+        Case 9
+        
         'Display About page
         Case 10
             ShowPDDialog vbModal, FormAbout

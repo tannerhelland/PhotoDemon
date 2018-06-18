@@ -10,7 +10,7 @@ Attribute VB_Name = "Menus"
 ' to tackle the worst parts of run-time maintenance, so other functions don't need to.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -540,17 +540,17 @@ Public Sub InitializeMenus()
     
     'Help Menu
     AddMenuItem "&Help", "help_top", 10
-    AddMenuItem "Support us with a small donation (thank you!)", "help_donate", 10, 0, , "help_heart"
-    AddMenuItem "-", "-", 10, 1
-    AddMenuItem "Check for &updates", "help_checkupdates", 10, 2, , "help_update"
-    AddMenuItem "Submit feedback...", "help_contact", 10, 3, , "help_contact"
-    AddMenuItem "Submit bug report...", "help_reportbug", 10, 4, , "help_reportbug"
+    AddMenuItem "Support us on Patreon...", "help_patreon", 10, 0, , "help_heart"
+    AddMenuItem "Support us with a one-time donation...", "help_donate", 10, 1, , "help_heart"
+    AddMenuItem "-", "-", 10, 2
+    AddMenuItem "Check for &updates...", "help_checkupdates", 10, 3, , "help_update"
+    AddMenuItem "Submit bug report or feedback...", "help_reportbug", 10, 4, , "help_reportbug"
     AddMenuItem "-", "-", 10, 5
-    AddMenuItem "&Visit PhotoDemon website", "help_website", 10, 6, , "help_website"
-    AddMenuItem "Download PhotoDemon source code", "help_sourcecode", 10, 7, , "help_github"
-    AddMenuItem "Read license and terms of use", "help_license", 10, 8, , "help_license"
+    AddMenuItem "&Visit PhotoDemon website...", "help_website", 10, 6, , "help_website"
+    AddMenuItem "Download PhotoDemon source code...", "help_sourcecode", 10, 7, , "help_github"
+    AddMenuItem "Read license and terms of use...", "help_license", 10, 8, , "help_license"
     AddMenuItem "-", "-", 10, 9
-    AddMenuItem "&About", "help_about", 10, 10, , "help_about"
+    AddMenuItem "&About...", "help_about", 10, 10, , "help_about"
     
 End Sub
 

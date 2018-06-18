@@ -45,7 +45,7 @@ Attribute VB_Exposed = False
 ' would be, while still reporting useful things like DPI-accurate size changes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -194,7 +194,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDC_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDContainer", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     'By default, assume a normal coloring scheme
     m_UniqueBackColor = -1
@@ -207,7 +207,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
@@ -228,7 +228,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         ucSupport.SetCustomBackcolor targetBackColor
         UserControl.BackColor = targetBackColor
         
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     
     End If
     

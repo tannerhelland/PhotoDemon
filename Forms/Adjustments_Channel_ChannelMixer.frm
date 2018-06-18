@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright 2013-2018 by Tanner Helland, first build Copyright 2014 Audioglider
+'Copyright 2014-2018 by Tanner Helland
 'Created: 08/June/13
 'Last updated: 23/September/14
 'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
@@ -175,10 +175,8 @@ Attribute VB_Exposed = False
 ' of the photo.  This is disabled when "monochrome" is active (obviously, as otherwise the gray values would
 ' never change!)
 '
-'Thank you to Audioglider for contributing the first version of this tool to PhotoDemon.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

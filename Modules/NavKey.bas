@@ -22,7 +22,7 @@ Attribute VB_Name = "NavKey"
 ' "Default" and "Cancel" commands on each dialog.  Individual dialogs don't have to manage any of this.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

@@ -30,8 +30,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   9
       Top             =   1320
       Width           =   3255
-      _extentx        =   5741
-      _extenty        =   4048
+      _ExtentX        =   5741
+      _ExtentY        =   4048
    End
    Begin PhotoDemon.pdContainer ctlGroupLayerButtons 
       Height          =   525
@@ -39,8 +39,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   4
       Top             =   6720
       Width           =   3735
-      _extentx        =   6588
-      _extenty        =   926
+      _ExtentX        =   6588
+      _ExtentY        =   926
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
          Index           =   0
@@ -48,9 +48,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   5
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -59,9 +59,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -70,9 +70,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   7
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -81,9 +81,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   8
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
    End
    Begin PhotoDemon.pdDropDown cboBlendMode 
@@ -92,8 +92,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   0
       Top             =   480
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
@@ -102,8 +102,8 @@ Begin VB.Form layerpanel_Layers
       Top             =   6240
       Visible         =   0   'False
       Width           =   3255
-      _extentx        =   5741
-      _extenty        =   556
+      _ExtentX        =   5741
+      _ExtentY        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -111,10 +111,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   120
       Width           =   675
-      _extentx        =   1191
-      _extenty        =   423
-      caption         =   "opacity:"
-      layout          =   2
+      _ExtentX        =   1191
+      _ExtentY        =   423
+      Caption         =   "opacity:"
+      Layout          =   2
    End
    Begin PhotoDemon.pdSlider sltLayerOpacity 
       CausesValidation=   0   'False
@@ -123,12 +123,12 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   2
       Top             =   30
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   53
-      max             =   100
-      value           =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   4868
+      _ExtentY        =   53
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -136,10 +136,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   540
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "blend:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "blend:"
+      Layout          =   2
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -147,10 +147,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   960
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "alpha:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "alpha:"
+      Layout          =   2
    End
    Begin PhotoDemon.pdDropDown cboAlphaMode 
       Height          =   360
@@ -158,8 +158,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   3
       Top             =   900
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
 End
 Attribute VB_Name = "layerpanel_Layers"
@@ -180,7 +180,7 @@ Attribute VB_Exposed = False
 'This form is the subpanel for layer settings.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

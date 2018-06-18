@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 'Obviously, this class relies heavily on WAPI.  Functions are documented to the best of my knowledge and ability.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -336,7 +336,7 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         Dim i As Long
         For i = LBound(m_FontCollection) To UBound(m_FontCollection)

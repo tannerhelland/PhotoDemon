@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 ' this window, as necessary.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -116,7 +116,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint False
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint False
 End Sub
 
 Public Sub NotifyTooltipSettings(ByRef ttCaption As String, ByRef ttTitle As String, ByVal internalPadding As Single, ByVal titlePadding As Single)
@@ -145,7 +145,7 @@ End Sub
 Private Sub RedrawBackBuffer()
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         Dim bufferDC As Long
@@ -212,5 +212,5 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
-    If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+    If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub

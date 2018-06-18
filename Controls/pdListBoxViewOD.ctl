@@ -40,7 +40,7 @@ Attribute VB_Exposed = False
 ' "ListBoxOD" control, which contains additional UI work for synchronizing against a scroll bar.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -86,6 +86,10 @@ Attribute ucSupport.VB_VarHelpID = -1
 'Most owner-drawn listboxes use the same general visual behavior as other listboxes (e.g. glowing outline on hover,
 ' control outline on focus, etc).  Some may choose to suspend this behavior in favor of a custom solution, however.
 Private m_BorderlessMode As Boolean
+
+'The last cursor requested by our owner.  During MouseMove events, we will default to
+' this cursor code (typically the "hand" cursor).
+Private m_LastCursor As SystemCursorConstant
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -272,7 +276,7 @@ End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
     If (listSupport.ListIndexHovered >= 0) Then
-        ucSupport.RequestCursor IDC_HAND
+        ucSupport.RequestCursor m_LastCursor
         RaiseEvent MouseOver(listSupport.ListIndexHovered, listSupport.List(listSupport.ListIndexHovered))
     Else
         ucSupport.RequestCursor IDC_DEFAULT
@@ -344,6 +348,13 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     listSupport.RemoveItem itemIndex
 End Sub
 
+'In response to things like MouseOver events, the caller can request different cursors.
+' (By default, list items are always treated as clickable - so they get a hand cursor.)
+Public Sub RequestCursor(Optional ByVal sysCursorID As SystemCursorConstant = IDC_HAND)
+    ucSupport.RequestCursor sysCursorID
+    m_LastCursor = sysCursorID
+End Sub
+
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
 Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
@@ -351,7 +362,7 @@ Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRe
 End Sub
 
 Public Function ShouldScrollBarBeVisible() As Boolean
-    ShouldScrollBarBeVisible = (ScrollMax > 0)
+    ShouldScrollBarBeVisible = (Me.ScrollMax > 0)
 End Function
 
 Public Function ScrollMax() As Long
@@ -382,12 +393,15 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLISTBOXOD_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDListBoxView", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
     listSupport.ListSupportMode = PDLM_LISTBOX
+    
+    'Set any other typical defaults
+    m_LastCursor = IDC_HAND
     
 End Sub
 
@@ -399,7 +413,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -411,7 +425,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -463,7 +477,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
     
         'Cache colors in advance, so we can simply reuse them in the inner loop
         Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
@@ -608,8 +622,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

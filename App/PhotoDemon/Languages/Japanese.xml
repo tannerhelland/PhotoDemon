@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.50</langversion>
+<langversion>1.0.52</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2285,47 +2285,10 @@ Description：％2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>バグレポートを提出していただきありがとうございます。 あなたのバグができるだけ早く解決されるように、PhotoDemonはもう1つの質問に答える必要があります.
-
-あなたはGitHubアカウントを持っていますか？ （これが何を意味するのか分からない場合は、「いいえ」と答えてください）。</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>PhotoDemonをより良くしてくれてありがとう</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemonが自動的にGitHubのバグレポートWebページを開きました。 タイトルボックスには、問題の簡単な説明とともに次のエラー番号を入力してください。％1
-VBCRLこのエラーに至った手順を含めて大きなテキストボックスに追加できる詳細は、 
-
-終了したら、[新しい問題提出]ボタンをクリックします。 ありがとうございました！</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHubバグレポートの指示</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemonは自動的にバグレポートWebページを開きました。 [コメント]ボックスに、このエラーにつながった手順を説明してください。そのボックスの
-
-Alsoには、次のエラー番号を含めてください：％1
-
-終了したら、[送信]ボタンをクリックします。 ありがとうございました！</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2333,7 +2296,7 @@ Alsoには、次のエラー番号を含めてください：％1
 <translation>バグレポートの指示</translation>
 </phrase>
 
-<!-- Processor.bas contains 127 phrases. 60 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Processor.bas contains 123 phrases. 60 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2667,6 +2630,11 @@ P数値を入力してください。</translation>
 </phrase>
 
 <phrase>
+<original>unknown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>ソフトウェアアップデータの初期化（この機能はツール - >オプションメニューから無効にすることができます）</translation>
 </phrase>
@@ -2691,7 +2659,7 @@ P数値を入力してください。</translation>
 <translation>ベータ</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -6087,8 +6055,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Support us with a small donation (thank you!)</original>
-<translation>小さな寄付で私たちをサポートしてください（ありがとう！）</translation>
+<original>Support us on Patreon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Support us with a one-time donation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6097,13 +6070,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Submit feedback</original>
-<translation>フィードバックを送信</translation>
-</phrase>
-
-<phrase>
-<original>Submit bug report</original>
-<translation>バグレポートを送信する</translation>
+<original>Submit bug report or feedback</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6449,20 +6417,6 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>バグレポートを提出していただきありがとうございます。 あなたのバグができるだけ早く解決されるように、PhotoDemonはどこに送信するかを知る必要があります.
-
-あなたはGitHubアカウントを持っていますか？ （これが何を意味するのか分からない場合は、「いいえ」と答えてください）。</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for fixing PhotoDemon</original>
-<translation>PhotoDemonの修正をありがとう</translation>
-</phrase>
-
-<phrase>
 <original>Stretch histogram</original>
 <translation>ストレッチヒストグラム</translation>
 </phrase>
@@ -6637,7 +6591,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>アルファチャンネルを削除</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 190 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12538,11 +12492,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>Donate to PhotoDemon development</original>
-<translation>PhotoDemon開発に寄付する</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>高速、無料、ポータブルフォトエディタ</translation>
 </phrase>
@@ -12550,11 +12499,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <phrase>
 <original>Participate in development, design, or translation work</original>
 <translation>開発、設計、または翻訳作業に参加する</translation>
-</phrase>
-
-<phrase>
-<original>Contact the author</original>
-<translation>著者に連絡する</translation>
 </phrase>
 
 <phrase>
@@ -12583,11 +12527,36 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
+<original>Patrons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Donate to PhotoDemon development</original>
+<translation>PhotoDemon開発に寄付する</translation>
+</phrase>
+
+<phrase>
+<original>SUPER PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>THANK YOU to our wonderful Patreon supporters!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15401,10 +15370,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2575</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4685 phrases. -->
-<!-- 2108 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 12455 total words. -->
+<!-- As of this build, PhotoDemon contains 4689 phrases. -->
+<!-- 2114 are duplicates, so only 2575 unique phrases have been written to file. -->
+<!-- These 2575 phrases contain approximately 12326 total words. -->
 
 </pdData>

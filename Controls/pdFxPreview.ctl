@@ -86,7 +86,7 @@ Attribute VB_Exposed = False
 '    location on the image as, say, a center point for a filter (e.g. vignetting works great with this).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -163,7 +163,7 @@ End Property
 Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
     pdPreviewBox.AllowZoomPan = isAllowed
     PropertyChanged "DisableZoomPan"
-    If (pdMain.IsProgramRunning()) Then UpdateControlLayout
+    If (PDMain.IsProgramRunning()) Then UpdateControlLayout
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -174,7 +174,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    If pdMain.IsProgramRunning() Then RedrawBackBuffer
+    If PDMain.IsProgramRunning() Then RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 
@@ -329,7 +329,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDFXPREVIEW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDFXPreview", colorCount
-    If (Not pdMain.IsProgramRunning()) Then UpdateColorList
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     'Prep the various buttonstrips
     btsState.AddItem "before", 0
@@ -364,13 +364,13 @@ End Sub
 
 'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then UpdateControlLayout
+    If Not PDMain.IsProgramRunning() Then UpdateControlLayout
 End Sub
 
 'After a resize or paint request, update the layout of our control
 Private Sub UpdateControlLayout()
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
         Dim newPicWidth As Long, newPicHeight As Long
@@ -430,6 +430,6 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         pdPreviewBox.UpdateAgainstCurrentTheme
         btsState.UpdateAgainstCurrentTheme
         btsZoom.UpdateAgainstCurrentTheme
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub

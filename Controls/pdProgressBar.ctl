@@ -49,7 +49,7 @@ Attribute VB_Exposed = False
 ' 3) Just like a system progress bar, a "marquee" mode is provided for tasks with unpredictable time requirements
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -123,7 +123,7 @@ Public Property Let MarqueeMode(ByVal newMode As Boolean)
         PropertyChanged "MarqueeMode"
         
         'Start or release the marquee timer, as necessary
-        If m_MarqueeMode And pdMain.IsProgramRunning Then
+        If m_MarqueeMode And PDMain.IsProgramRunning Then
             Set m_MarqueeTimer = New pdTimer
             m_MarqueeTimer.Interval = 16
             m_MarqueeTimer.StartTimer
@@ -233,7 +233,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDPROGRESSBAR_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDProgressBar", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
 End Sub
 
@@ -244,7 +244,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -255,7 +255,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not pdMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
+    If (Not PDMain.IsProgramRunning()) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -304,7 +304,7 @@ Private Sub RedrawBackBuffer()
     If (bufferDC = 0) Then Exit Sub
     
     'Rendering is pretty easy - fill a fraction of the control with the current progress level!
-    If pdMain.IsProgramRunning() And ucSupport.AmIVisible() Then
+    If PDMain.IsProgramRunning() And ucSupport.AmIVisible() Then
         
         Dim cPainter As pd2DPainter
         Drawing2D.QuickCreatePainter cPainter
@@ -426,7 +426,7 @@ Private Sub RedrawBackBuffer()
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint True
-    If (Not pdMain.IsProgramRunning()) Then UserControl.Refresh
+    If (Not PDMain.IsProgramRunning()) Then UserControl.Refresh
     
 End Sub
 
@@ -445,7 +445,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
 

@@ -88,7 +88,7 @@ Attribute VB_Exposed = False
 ' testing will be necessary to make sure no possible connectivity errors have been overlooked.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -197,7 +197,7 @@ Public Function DownloadURLToTempFile(ByVal URL As String, Optional ByVal suppre
     If (downloadSize <> 0) Then SetProgBarMax downloadSize
     
     'We need a temporary file to house the file; generate it automatically, using the extension of the original file.
-    pdDebug.LogAction "URL validated.  Creating temp file for the image bytes..."
+    PDDebug.LogAction "URL validated.  Creating temp file for the image bytes..."
     
     Dim tmpFilename As String
     tmpFilename = cFile.MakeValidWindowsFilename(Files.FileGetName(URL))

@@ -878,7 +878,7 @@ Attribute VB_Exposed = False
 'Note that this form interacts heavily with the pdPreferences class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -1612,7 +1612,7 @@ Private Sub LoadAllPreferences()
             cboUpdates(1).AddItem "stable, beta, and developer releases", 2
             
             'Retrieve the current preference
-            cboUpdates(1).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Track", PDUT_BETA)
+            cboUpdates(1).ListIndex = UserPrefs.GetPref_Long("Updates", "Update Track", ut_Beta)
             cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
         'END update track
         

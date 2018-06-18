@@ -50,7 +50,7 @@ Attribute VB_Exposed = False
 ' 5) When the control receives focus via keyboard, a special focus rect is drawn.  Focus via mouse is conveyed via text glow.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -187,7 +187,7 @@ End Property
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If (newBoldSetting <> m_FontBold) Then
         m_FontBold = newBoldSetting
-        If pdMain.IsProgramRunning() Then UpdateControlLayout
+        If PDMain.IsProgramRunning() Then UpdateControlLayout
         PropertyChanged "FontBold"
     End If
 End Property
@@ -407,7 +407,7 @@ Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
@@ -597,7 +597,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As BTSV_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "ButtonStrip", colorCount
-    If Not pdMain.IsProgramRunning() Then UpdateColorList
+    If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'Set various UI trackers to default values.
     m_FocusRectActive = -1
@@ -631,7 +631,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not pdMain.IsProgramRunning() Then ucSupport.RequestRepaint True
+    If Not PDMain.IsProgramRunning() Then ucSupport.RequestRepaint True
 End Sub
 
 'Store all associated properties
@@ -875,7 +875,7 @@ Private Sub RedrawBackBuffer()
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
-    If ((m_numOfButtons > 0) And pdMain.IsProgramRunning()) Then
+    If ((m_numOfButtons > 0) And PDMain.IsProgramRunning()) Then
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
@@ -994,7 +994,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         
         'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
-        If pdMain.IsProgramRunning() Then
+        If PDMain.IsProgramRunning() Then
             
             'See if translations are necessary.
             Dim isTranslationActive As Boolean
@@ -1020,10 +1020,10 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'This control requests quite a few colors from the central themer; update its color cache now
         UpdateColorList
         
-        If pdMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
+        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         
         'Update all text managed by the support class (e.g. tooltips)
-        If pdMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
         
     End If
     

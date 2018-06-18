@@ -12,14 +12,14 @@ Attribute VB_Name = "Files"
 ' functions without worrying about the details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
 Option Explicit
 
 'API calls for retrieving detailed date time for a given file
-Private Const STARTF_USESHOWWINDOW = &H1
+Private Const STARTF_USESHOWWINDOW As Long = &H1
 Private Const SW_NORMAL As Long = 1
 Private Const SW_HIDE As Long = 0
 Private Const WAIT_INFINITE As Long = -1

@@ -318,7 +318,7 @@ Attribute VB_Exposed = False
 'This form includes all user-editable settings for the Basic Text tool.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -582,7 +582,7 @@ Private Sub Form_Load()
     'Forcibly hide the "convert to text layer" panel
     toolpanel_Text.picConvertLayer.Visible = False
     
-    If pdMain.IsProgramRunning() Then
+    If PDMain.IsProgramRunning() Then
         
         'This tool is separated into two panels: text entry, and text settings
         btsMain.AddItem "text", 0

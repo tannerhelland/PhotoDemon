@@ -9,7 +9,7 @@ Attribute VB_Name = "FileMenu"
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

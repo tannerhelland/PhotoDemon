@@ -16,7 +16,7 @@ Attribute VB_Name = "GDI_Plus"
 ' http://www.jose.it-berater.org/gdiplus/iframe/index.htm
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -2414,6 +2414,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 'Retrieve this frame's size
                 GdipGetImageWidth m_hMultiPageTIFF, imgWidth
                 GdipGetImageHeight m_hMultiPageTIFF, imgHeight
+                
+                PDDebug.LogAction "Loading page with dimensions (" & CStr(imgWidth) & "x" & CStr(imgHeight) & ")"
                 
                 'Retrieve this frame's horizontal and vertical resolution (if any)
                 GdipGetImageHorizontalResolution m_hMultiPageTIFF, imgHResolution

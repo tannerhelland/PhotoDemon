@@ -90,7 +90,7 @@ Attribute VB_Exposed = False
 ' but I remain worried that this task may prove a bit much for VB6.  We'll see.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 

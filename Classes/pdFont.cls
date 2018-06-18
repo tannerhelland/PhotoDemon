@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 '    one is fastest (or best for your needs), profile several.  GDI performance is not always predictable.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -193,7 +193,7 @@ End Sub
 
 'This function draws horizontally and vertically centered text within a specified rect, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
-Friend Sub DrawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT, Optional ByVal centerVertically As Boolean = False)
+Friend Sub DrawCenteredTextToRect(ByRef srcString As String, ByRef dstRect As RECT, Optional ByVal centerVertically As Boolean = False)
     
     Dim dtFlags As Long
     dtFlags = DT_CENTER

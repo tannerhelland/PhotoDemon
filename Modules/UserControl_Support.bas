@@ -10,7 +10,7 @@ Attribute VB_Name = "UserControls"
 ' all controls, I've tried to collect reusable functions here.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -863,7 +863,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     
     On Error GoTo UnexpectedTTTrouble
     
-    If (Not pdMain.IsProgramRunning()) Then Exit Sub
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'If a tooltip is currently active, suspend the release timer (because we're just going to "snap" the current
     ' tooltip window into place, rather than waiting for an animation).

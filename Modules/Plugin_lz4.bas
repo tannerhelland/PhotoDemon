@@ -27,7 +27,7 @@ Attribute VB_Name = "Plugin_lz4"
 ' during a typical session.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
@@ -68,10 +68,10 @@ Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
     
     'If we initialized the library successfully, cache some lz4-specific data
     If InitializeLz4 Then
-        pdDebug.LogAction "lz4 and lz4hc compression engines are ready."
+        PDDebug.LogAction "lz4 and lz4hc compression engines are ready."
     Else
-        pdDebug.LogAction "WARNING!  LoadLibrary failed to load lz4.  Last DLL error: " & Err.LastDllError
-        pdDebug.LogAction "(FYI, the attempted path was: " & lz4Path & ")"
+        PDDebug.LogAction "WARNING!  LoadLibrary failed to load lz4.  Last DLL error: " & Err.LastDllError
+        PDDebug.LogAction "(FYI, the attempted path was: " & lz4Path & ")"
     End If
     
 End Function
@@ -206,7 +206,7 @@ Public Function Lz4DecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData 
     
     'Check for error returns
     If (finalSize <= 0) Then
-        pdDebug.LogAction "lz4_decompress_safe failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        PDDebug.LogAction "lz4_decompress_safe failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "lz4_decompress failed", finalSize
         finalSize = 0
     End If
@@ -223,7 +223,7 @@ Public Function Lz4Decompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal know
     
     'Check for error returns
     If (finalSize <= 0) Then
-        pdDebug.LogAction "lz4_decompress_safe failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        PDDebug.LogAction "lz4_decompress_safe failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "lz4_decompress failed", finalSize
         finalSize = 0
     End If
@@ -258,8 +258,8 @@ End Function
 
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As Long = 256)
     If (faultyReturnCode <> 256) Then
-        pdDebug.LogAction "lz4 returned an error code: " & faultyReturnCode, PDM_External_Lib
+        PDDebug.LogAction "lz4 returned an error code: " & faultyReturnCode, PDM_External_Lib
     Else
-        pdDebug.LogAction "lz4 experienced an error; additional explanation may be: " & errString, PDM_External_Lib
+        PDDebug.LogAction "lz4 experienced an error; additional explanation may be: " & errString, PDM_External_Lib
     End If
 End Sub
