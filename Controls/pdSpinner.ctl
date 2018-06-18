@@ -562,6 +562,10 @@ Private Sub m_DownButtonTimer_Timer()
     'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
     MoveValueUp
     
+    'If the resulting value change causes a long-running event to trigger, we need to manually
+    ' yield for input events like WM_MOUSEUP.
+    ProgressBars.Replacement_DoEvents Me.hWnd
+    
 End Sub
 
 Private Sub m_UpButtonTimer_Timer()
@@ -574,6 +578,10 @@ Private Sub m_UpButtonTimer_Timer()
     
     'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
     MoveValueDown
+    
+    'If the resulting value change causes a long-running event to trigger, we need to manually
+    ' yield for input events like WM_MOUSEUP.
+    ProgressBars.Replacement_DoEvents Me.hWnd
     
 End Sub
 
