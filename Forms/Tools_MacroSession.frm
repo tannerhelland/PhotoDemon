@@ -1,12 +1,12 @@
 VERSION 5.00
-Begin VB.Form FormUndoHistory 
+Begin VB.Form FormMacroSession 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Undo history"
-   ClientHeight    =   6390
+   Caption         =   " Create macro from session history"
+   ClientHeight    =   8475
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   9615
+   ClientWidth     =   11790
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,44 +19,43 @@ Begin VB.Form FormUndoHistory
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   426
+   ScaleHeight     =   565
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   641
+   ScaleWidth      =   786
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   255
-      Index           =   0
-      Left            =   480
-      Top             =   5280
-      Width           =   8895
-      _ExtentX        =   15690
-      _ExtentY        =   450
-      Caption         =   "* current image state"
-      FontItalic      =   -1  'True
-   End
-   Begin PhotoDemon.pdListBoxOD lstUndo 
+   Begin PhotoDemon.pdListBoxOD lstStart 
       Height          =   5055
       Left            =   240
       TabIndex        =   1
-      Top             =   120
-      Width           =   9135
-      _ExtentX        =   20558
+      Top             =   240
+      Width           =   5415
+      _ExtentX        =   9551
       _ExtentY        =   8916
-      Caption         =   "available image states"
+      Caption         =   "first macro action"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   5655
-      Width           =   9615
-      _ExtentX        =   16960
+      Top             =   7740
+      Width           =   11790
+      _ExtentX        =   20796
       _ExtentY        =   1296
       DontAutoUnloadParent=   -1  'True
    End
+   Begin PhotoDemon.pdListBoxOD lstEnd 
+      Height          =   5055
+      Left            =   6120
+      TabIndex        =   2
+      Top             =   240
+      Width           =   5415
+      _ExtentX        =   9551
+      _ExtentY        =   8916
+      Caption         =   "final macro action"
+   End
 End
-Attribute VB_Name = "FormUndoHistory"
+Attribute VB_Name = "FormMacroSession"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -133,10 +132,7 @@ End Function
 
 Private Sub cmdBar_OKClick()
     
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.AddParam "UndoHistoryPoint", lstUndo.ListIndex + 1
-    Process "Undo history", , cParams.GetParamString(), UNDO_Nothing
+    'TODO!
     
 End Sub
 
@@ -159,15 +155,24 @@ Private Sub Form_Load()
     'Retrieve a copy of all Undo data from the current image's undo manager
     pdImages(g_CurrentImage).UndoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
     
-    'Populate the owner-drawn listbox with the retrieved Undo data (including thumbnails)
-    lstUndo.ListItemHeight = FixDPI(BLOCKHEIGHT)
-    lstUndo.SetAutomaticRedraws False
+    'Populate the owner-drawn listboxes with copies of the retrieved Undo data (including thumbnails)
     Dim i As Long
+    
+    lstStart.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
+    lstStart.SetAutomaticRedraws False
     For i = 0 To m_numOfUndos - 1
-        lstUndo.AddItem , i
+        lstStart.AddItem , i
     Next i
-    lstUndo.SetAutomaticRedraws True, True
-    lstUndo.ListIndex = m_curUndoIndex - 1
+    lstStart.SetAutomaticRedraws True, True
+    If (lstStart.ListCount > 1) Then lstStart.ListIndex = 1 Else lstStart.ListIndex = 0
+    
+    lstEnd.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
+    lstEnd.SetAutomaticRedraws False
+    For i = 0 To m_numOfUndos - 1
+        lstEnd.AddItem , i
+    Next i
+    lstEnd.SetAutomaticRedraws True, True
+    lstEnd.ListIndex = m_curUndoIndex - 1
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -178,8 +183,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
-    
+Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+
     If (bufferDC = 0) Then Exit Sub
     
     'Retrieve the boundary region for this list entry
@@ -188,10 +193,10 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left
-    offsetY = tmpRectF.Top + FixDPI(2)
+    offsetY = tmpRectF.Top + Interface.FixDPI(2)
         
     Dim linePadding As Long
-    linePadding = FixDPI(2)
+    linePadding = Interface.FixDPI(2)
     
     Dim mHeight As Single
         
@@ -214,16 +219,16 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     Dim thumbNewWidth As Long, thumbNewHeight As Long, thumbMax As Long
     thumbMax = Interface.FixDPI(UNDO_THUMB_SMALL)
     PDMath.ConvertAspectRatio m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, thumbMax, thumbMax, thumbNewWidth, thumbNewHeight
-    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + FixDPI(4) + (thumbMax - thumbNewWidth) \ 2, offsetY + (FixDPI(BLOCKHEIGHT) - thumbMax) \ 2 + (thumbMax - thumbNewHeight) \ 2, thumbNewWidth, thumbNewHeight, m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
+    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + Interface.FixDPI(4) + (thumbMax - thumbNewWidth) \ 2, offsetY + (Interface.FixDPI(BLOCKHEIGHT) - thumbMax) \ 2 + (thumbMax - thumbNewHeight) \ 2, thumbNewWidth, thumbNewHeight, m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
     
     'Figure out how much space the thumbnail has taken; we'll shift text to the left of this
     Dim thumbWidth As Long
-    thumbWidth = offsetX + FixDPI(4) + FixDPI(UNDO_THUMB_SMALL)
+    thumbWidth = offsetX + Interface.FixDPI(4) + Interface.FixDPI(UNDO_THUMB_SMALL)
     
     'Render the title text
     If (LenB(drawString) <> 0) Then
         m_TitleFont.AttachToDC bufferDC
-        m_TitleFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
+        m_TitleFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4), drawString
         m_TitleFont.ReleaseFromDC
     End If
             
@@ -233,8 +238,70 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     If (LenB(drawString) <> 0) Then
         mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
         m_DescriptionFont.AttachToDC bufferDC
-        m_DescriptionFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
+        m_DescriptionFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4) + mHeight, drawString
+        m_DescriptionFont.ReleaseFromDC
+    End If
+    
+End Sub
+
+Private Sub lstStart_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+    
+    If (bufferDC = 0) Then Exit Sub
+    
+    'Retrieve the boundary region for this list entry
+    Dim tmpRectF As RectF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    Dim offsetY As Single, offsetX As Single
+    offsetX = tmpRectF.Left
+    offsetY = tmpRectF.Top + Interface.FixDPI(2)
+        
+    Dim linePadding As Long
+    linePadding = Interface.FixDPI(2)
+    
+    Dim mHeight As Single
+        
+    'If this filter has been selected, draw the background with the system's current selection color
+    If itemIsSelected Then
+        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+    Else
+        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+    End If
+    
+    'Prepare a title string (with an asterisk added to the "current" image state title)
+    Dim drawString As String
+    If (itemIndex + 1) = m_curUndoIndex Then drawString = "* "
+    drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).srcProcCall.pcID)
+    
+    'Render the thumbnail for this entry, and note that the thumbnail is *not* guaranteed to be square.
+    
+    Dim thumbNewWidth As Long, thumbNewHeight As Long, thumbMax As Long
+    thumbMax = Interface.FixDPI(UNDO_THUMB_SMALL)
+    PDMath.ConvertAspectRatio m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, thumbMax, thumbMax, thumbNewWidth, thumbNewHeight
+    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + Interface.FixDPI(4) + (thumbMax - thumbNewWidth) \ 2, offsetY + (Interface.FixDPI(BLOCKHEIGHT) - thumbMax) \ 2 + (thumbMax - thumbNewHeight) \ 2, thumbNewWidth, thumbNewHeight, m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
+    
+    'Figure out how much space the thumbnail has taken; we'll shift text to the left of this
+    Dim thumbWidth As Long
+    thumbWidth = offsetX + Interface.FixDPI(4) + Interface.FixDPI(UNDO_THUMB_SMALL)
+    
+    'Render the title text
+    If (LenB(drawString) <> 0) Then
+        m_TitleFont.AttachToDC bufferDC
+        m_TitleFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4), drawString
+        m_TitleFont.ReleaseFromDC
+    End If
+            
+    'Below that, add the description text (if any)
+    drawString = GetStringForUndoType(m_undoEntries(itemIndex).srcProcCall.pcUndoType, m_undoEntries(itemIndex).undoLayerID)
+    
+    If (LenB(drawString) <> 0) Then
+        mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
+        m_DescriptionFont.AttachToDC bufferDC
+        m_DescriptionFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4) + mHeight, drawString
         m_DescriptionFont.ReleaseFromDC
     End If
         
 End Sub
+

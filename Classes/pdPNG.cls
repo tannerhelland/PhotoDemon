@@ -67,20 +67,21 @@ End Enum
 Private m_Header As PD_PNGHeader
 
 'If warnings are encountered during processing, we push their messages onto a string stack.  (We may
-' decide to report these to the user... I haven't decided yet.  Either way, it'll be helpful for debugging.)
+' decide to report these to the user... I haven't decided yet.  Either way, it's helpful for debugging.)
 Private m_Warnings As pdStringStack
 
-'pdStream makes our life much easier!
+'pdStream handles actual byte traversal; it also makes our life much easier!
 Private m_Stream As pdStream
 
 'At present, we require the caller to pass an identical source file path to every load function.
-' (This is a cheap and easy way to ensure no funny business is afoot!)
+' (This is a cheap and easy way to ensure no funny business.)
 Private m_SourceFilename As String
 
 'In interlaced images, the number of pixels-per-reduced image is non-obvious.  We calculate these
 ' line lengths as part of the decompression pass, and rather than re-calculate them on subsequent passes,
 ' we simply cache the results and re-use them later.  (Note that there is no "y" byte count, because it
-' is the same as the pixel count.)
+' is the same as the pixel count; x requires a separate value, due to potential multi-byte-per-pixel
+' color depths.)
 Private m_XPixelCount() As Long, m_YPixelCount() As Long
 Private m_XByteCount() As Long
 
@@ -1825,14 +1826,9 @@ Private Sub ConstructGrayPalette(ByRef srcPalette() As RGBQuad, ByRef srcPalette
             
 End Sub
 
-'TODO!  We can now assemble the image's underlying pixel data.  Note that
-' the way we do this varies by color-mode and bit-depth.  If the image has an ICC profile, we want to leave data
-' in its original format in some circumstances (e.g. 16-bit-per-channel images must remain high-bit-depth prior
-' to ICC conversion), while in others (e.g. 1-bit images) there is no advantage to leaving pixels in their
-' original state.  (In fact, we *must* convert them to another color-depth in order to ICC-correct them.)
-
-'NOTE: this function only works if m_Header has been populated!  We need access to color-mode and bit-depth data
-' in order to calculate interlacing pixel counts.
+'Interlaced sub-images have varying sizes depending on the iteration pass.  This function returns the
+' width and height of a given interlaced sub-image; m_Header *must* be populated for this to work, since it
+' relies on color-mode and bit-depth data.
 Private Function GetSizeInterlaced(ByRef dstX As Long, ByRef dstY As Long, ByVal intPass As Long)
 
     'Per the spec, each interlacing pass encodes the following pixels from each 8x8 block in the image:

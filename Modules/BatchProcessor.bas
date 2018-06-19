@@ -223,14 +223,14 @@ Private Sub UpdateMacroUI(ByVal recordingIsActive As Boolean)
         toolbar_Toolbox.lblRecording.Visible = True
         
         'Disable "start recording", and enable "stop recording"
-        FormMain.MnuRecordMacro(0).Enabled = False
-        FormMain.MnuRecordMacro(1).Enabled = True
+        FormMain.MnuMacroCreate(2).Enabled = False
+        FormMain.MnuMacroCreate(3).Enabled = True
     
     Else
         Message "Macro recording stopped."
         toolbar_Toolbox.lblRecording.Visible = False
-        FormMain.MnuRecordMacro(0).Enabled = True
-        FormMain.MnuRecordMacro(1).Enabled = False
+        FormMain.MnuMacroCreate(2).Enabled = True
+        FormMain.MnuMacroCreate(3).Enabled = False
     End If
 
 End Sub

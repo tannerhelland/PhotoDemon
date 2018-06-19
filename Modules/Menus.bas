@@ -469,9 +469,11 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 7, 2
     AddMenuItem "Theme...", "tools_theme", 7, 3
     AddMenuItem "-", "-", 7, 4
-    AddMenuItem "Record macro", "tools_macrotop", 7, 5, , "macro_record"
-        AddMenuItem "Start recording", "tools_recordmacro", 7, 5, 0, "macro_record"
-        AddMenuItem "Stop recording...", "tools_stopmacro", 7, 5, 1, "macro_stop"
+    AddMenuItem "Create macro", "tools_macrocreatetop", 7, 5
+        AddMenuItem "From history...", "tools_macrofromhistory", 7, 5, 0, "edit_history"
+        AddMenuItem "-", "-", 7, 5, 1
+        AddMenuItem "Start recording", "tools_recordmacro", 7, 5, 2, "macro_record"
+        AddMenuItem "Stop recording...", "tools_stopmacro", 7, 5, 3, "macro_stop"
     AddMenuItem "Play macro...", "tools_playmacro", 7, 6, , "macro_play"
     AddMenuItem "Recent macros", "tools_recentmacros", 7, 7
     AddMenuItem "-", "-", 7, 8

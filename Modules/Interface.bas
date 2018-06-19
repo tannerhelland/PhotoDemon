@@ -20,7 +20,7 @@ Attribute VB_Name = "Interface"
 
 Option Explicit
 
-Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
+Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As PointAPI) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
@@ -1586,7 +1586,7 @@ Public Sub EnableUserInput()
     ' still lies over the canvas.  (The likelihood of movement, especially between paint ops, is high,
     ' and if we don't do this, the mouse cursor won't reflect any position updates that have occurred since
     ' the last action was started.)
-    Dim tmpPoint As POINTAPI, mouseMustBeFaked As Boolean
+    Dim tmpPoint As PointAPI, mouseMustBeFaked As Boolean
     If (GetCursorPos(tmpPoint) <> 0) Then mouseMustBeFaked = FormMain.MainCanvas(0).IsScreenCoordInsideCanvasView(tmpPoint.x, tmpPoint.y)
     
     '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray

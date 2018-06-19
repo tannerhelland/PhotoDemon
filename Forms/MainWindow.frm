@@ -1300,16 +1300,24 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Record macro"
+         Caption         =   "Create macro"
          Index           =   5
-         Begin VB.Menu MnuRecordMacro 
-            Caption         =   "Start recording"
+         Begin VB.Menu MnuMacroCreate 
+            Caption         =   "From session history..."
             Index           =   0
          End
-         Begin VB.Menu MnuRecordMacro 
+         Begin VB.Menu MnuMacroCreate 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuMacroCreate 
+            Caption         =   "Start recording"
+            Index           =   2
+         End
+         Begin VB.Menu MnuMacroCreate 
             Caption         =   "Stop recording..."
             Enabled         =   0   'False
-            Index           =   1
+            Index           =   3
          End
       End
       Begin VB.Menu MnuTool 
@@ -1623,6 +1631,29 @@ Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
+
+Private Sub MnuMacroCreate_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'Create from session history
+        Case 0
+            ShowPDDialog vbModal, FormMacroSession
+            
+        '(separator)
+        Case 1
+        
+        'Start recording
+        Case 2
+            Process "Start macro recording", , , UNDO_Nothing
+        
+        'Stop recording
+        Case 3
+            Process "Stop macro recording", True
+        
+    End Select
+    
+End Sub
 
 Private Sub MnuTest_Click()
     
@@ -2371,22 +2402,6 @@ Private Sub mnuRecentMacros_Click(Index As Integer)
     
     'Check - just in case - to make sure the path isn't empty
     If (LenB(tmpString) <> 0) Then Macros.PlayMacroFromFile tmpString
-    
-End Sub
-
-Private Sub MnuRecordMacro_Click(Index As Integer)
-    
-    Select Case Index
-    
-        'Start recording
-        Case 0
-            Process "Start macro recording", , , UNDO_Nothing
-        
-        'Stop recording
-        Case 1
-            Process "Stop macro recording", True
-        
-    End Select
     
 End Sub
 
@@ -4137,7 +4152,7 @@ Private Sub mnuTool_Click(Index As Integer)
         '(separator)
         Case 4
         
-        'Record macro (top-level)
+        'Create macro (top-level)
         Case 5
         
         'Play saved macro
