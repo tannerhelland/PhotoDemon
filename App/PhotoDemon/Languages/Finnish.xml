@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3346</langversion>
+<langversion>6.8.3347</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1377,16 +1377,6 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>makro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Tallenna makrotason tietojen</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>Macro tallennettu.</translation>
 </phrase>
@@ -1403,6 +1393,16 @@ Please verify that these image(s) exist, and that they use a supported image for
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>Varoitus: viimeinen mahdollisuus pelastaa makro</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>makro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Tallenna makrotason tietojen</translation>
 </phrase>
 
 <phrase>
@@ -5867,8 +5867,13 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>Record makro</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6097,6 +6102,16 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>Aloita makron tallennus</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Lopeta makron tallennus</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Uusi versio PhotoDemon on käytettävissä. Päivitys automaattisesti käsittely taustalla</translation>
 </phrase>
@@ -6297,16 +6312,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Erode (minimi sijoitus)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>Aloita makron tallennus</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Lopeta makron tallennus</translation>
 </phrase>
 
 <phrase>
@@ -6594,7 +6599,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15372,12 +15377,58 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.363</langversion>
+<langversion>6.7.364</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1382,16 +1382,6 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>Macro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Opslaan macrogegevens</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>Macro succesvol opgeslagen.</translation>
 </phrase>
@@ -1408,6 +1398,16 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>Waarschuwing: Laatste kans om macro op te slaan</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Macro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Opslaan macrogegevens</translation>
 </phrase>
 
 <phrase>
@@ -5874,8 +5874,13 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>Opnemen macro</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6104,6 +6109,16 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>Start Macro Opname</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Stop Macro Opname</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Een nieuwe versie van PhotoDemon is beschikbaar. De update wordt automatisch verwerkt op de achtergrond</translation>
 </phrase>
@@ -6304,16 +6319,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Eroderen (minimum rangschikking)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>Start Macro Opname</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Stop Macro Opname</translation>
 </phrase>
 
 <phrase>
@@ -6601,7 +6606,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15379,12 +15384,58 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

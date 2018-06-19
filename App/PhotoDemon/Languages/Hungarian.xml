@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3346</langversion>
+<langversion>6.8.3347</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1375,16 +1375,6 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>Macro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Save makroadatok</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>Macro sikeresen mentve.</translation>
 </phrase>
@@ -1401,6 +1391,16 @@ Please verify that these image(s) exist, and that they use a supported image for
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>Figyelmeztetés: utolsó esély, hogy mentse makró</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Macro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Save makroadatok</translation>
 </phrase>
 
 <phrase>
@@ -5859,8 +5859,13 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>Record makró</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6089,6 +6094,16 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>Kezdés makrórögzítést</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Állj makrórögzítést</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Új verziója PhotoDemon elérhető. A frissítés automatikusan feldolgozása a háttérben</translation>
 </phrase>
@@ -6286,16 +6301,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Rontja (minimum rang)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>Kezdés makrórögzítést</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Állj makrórögzítést</translation>
 </phrase>
 
 <phrase>
@@ -6583,7 +6588,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15355,12 +15360,58 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

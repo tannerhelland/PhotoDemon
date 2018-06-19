@@ -110,7 +110,7 @@ Public Sub ApplySharpenFilter(ByVal effectParams As String, Optional ByVal toPre
         Dim tmpString As String
         tmpString = tmpString & "0|0|0|0|0|"
         tmpString = tmpString & "0|0|" & Trim$(Str(-sStrength)) & "|0|0|"
-        tmpString = tmpString & "0|" & Trim$(Str(-sStrength)) & "|" & Trim$(Str(sStrength * 4# + 1#)) & "|" & Trim$(Str(-sStrength)) & "|0|"
+        tmpString = tmpString & "0|" & Trim$(Str(-sStrength)) & "|" & Trim$(Str$(sStrength * 4# + 1#)) & "|" & Trim$(Str(-sStrength)) & "|0|"
         tmpString = tmpString & "0|0|" & Trim$(Str(-sStrength)) & "|0|0|"
         tmpString = tmpString & "0|0|0|0|0"
     

@@ -117,88 +117,14 @@ Public Sub StopMacro()
     'Update any related macro UI elements
     Macros.UpdateMacroUI False
     
-    'Automatically launch the save macro data routine
-    Dim saveDialog As pdOpenSaveDialog
-    Set saveDialog = New pdOpenSaveDialog
-        
-    Dim sFile As String
-    
-    Dim cdFilter As String
-    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
-            
-    Dim cdTitle As String
-    cdTitle = g_Language.TranslateMessage("Save macro data")
-    
     'If the user cancels the save dialog, we'll raise a warning to tell them that the macro will be lost for good.
     ' That dialog gives them an option to return to the save dialog, which will bring us back to this line of code.
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
-        
-        'Save this macro's directory as the default macro path
-        UserPrefs.SetMacroPath sFile
-        
-        'Create a pdXML class, which will help us assemble the macro file
-        Dim xmlEngine As pdXML
-        Set xmlEngine = New pdXML
-        xmlEngine.PrepareNewXML "Macro"
-        
-        'Write out the XML version we're using for this macro
-        xmlEngine.WriteTag "pdMacroVersion", MACRO_VERSION_2014
-        
-        'We now want to count the number of actual processes that we will be writing to file.  A valid process meets
-        ' the following criteria:
-        ' 1) It isn't blank/empty
-        ' 2) It doesn't display a dialog
-        ' 3) It was not specifically marked as "DO_NOT_RECORD"
-        
-        'Due to the previous check at the top of this function, we already know how many valid functions are in the process list,
-        ' and this value is guaranteed to be non-zero.
-        
-        'Write out the number of valid processes in the macro
-        xmlEngine.WriteTag "processCount", CStr(numOfValidProcesses)
-        xmlEngine.WriteBlankLine
-        
-        'Now, write out each macro entry in the current process list
-        numOfValidProcesses = 0
-        
-        For i = 0 To m_ProcessCount
-            
-            'We only want to write out valid processes, using the same criteria as the original counting loop above.
-            If (Len(m_Processes(i).pcID) <> 0) And (Not m_Processes(i).pcRaiseDialog) And m_Processes(i).pcRecorded Then
-                numOfValidProcesses = numOfValidProcesses + 1
-                
-                'Start each process entry with a unique identifier
-                xmlEngine.WriteTagWithAttribute "processEntry", "index", numOfValidProcesses, vbNullString, True
-                
-                'Write out all the properties of this entry.  (Note that some properties can be inferred, so we don't
-                ' need to actually store them inside the file.)
-                With m_Processes(i)
-                    xmlEngine.WriteTag "ID", .pcID
-                    xmlEngine.WriteTag "Parameters", .pcParameters
-                    xmlEngine.WriteTag "MakeUndo", Trim$(Str(.pcUndoType))
-                    xmlEngine.WriteTag "Tool", Trim$(Str(.pcTool))
-                End With
-                
-                'Note that the Dialog and Recorded properties are not written to file.  There is no need to remember
-                ' them, as we know their values must be FALSE and TRUE, respectively, per the check above.
-            
-                'Close this process entry
-                xmlEngine.CloseTag "processEntry"
-                xmlEngine.WriteBlankLine
-            End If
-            
-        Next i
-        
-        'With all tags successfully written, we can now close the XML data and write it out to file.
-        xmlEngine.WriteXMLToFile sFile
-        
-        Message "Macro saved successfully."
-        
-        'At this point, the macro should be added to the Recent Macros list
-        g_RecentMacros.MRU_AddNewFile sFile
-        
+    Dim sFile As String
+    If DisplayMacroSaveDialog(sFile) Then
+        If ExportProcCallsToMacroFile(sFile, m_Processes, 0, m_ProcessCount) Then Message "Macro saved successfully."
     Else
         
         msgReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbExclamation Or vbYesNo, "Warning: last chance to save macro")
@@ -211,6 +137,107 @@ SaveMacroAgain:
     m_ProcessCount = 0
     
 End Sub
+
+'Display the "export macro" dialog.  The destination filename, if any, is returned in the srcFilename parameter.
+'RETURNS: TRUE if the user clicks OK, FALSE otherwise.
+Public Function DisplayMacroSaveDialog(Optional ByRef srcFilename As String = vbNullString) As Boolean
+    
+    Dim cdFilter As String
+    cdFilter = "PhotoDemon " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Save macro data")
+    
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    DisplayMacroSaveDialog = saveDialog.GetSaveFileName(srcFilename, , True, cdFilter, 1, UserPrefs.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd)
+    
+    'On a successful save, set the selected folder as the default macro path
+    If DisplayMacroSaveDialog Then UserPrefs.SetMacroPath srcFilename
+    
+End Function
+
+Public Function ExportProcCallsToMacroFile(ByRef dstFilename As String, ByRef srcProcCalls() As PD_ProcessCall, Optional ByVal startIndex As Long = 0, Optional ByVal endIndex As Long = -1, Optional ByVal addToRecentMacroList As Boolean = True) As Boolean
+    
+    'If an ending index hasn't been passed, infer it from the passed array size
+    If (endIndex < 0) Then endIndex = UBound(srcProcCalls)
+    
+    'Create a pdXML class, which will help us assemble the macro file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.PrepareNewXML "Macro"
+    
+    'Write out the XML version we're using for this macro
+    xmlEngine.WriteTag "pdMacroVersion", MACRO_VERSION_2014
+    
+    'We now want to count the number of actual processes that we will be writing to file.  A valid process meets
+    ' the following criteria:
+    ' 1) It isn't blank/empty
+    ' 2) It doesn't display a dialog
+    ' 3) It was not specifically marked as "DO_NOT_RECORD"
+    
+    'Calculate this number now
+    Dim numValidActions As Long
+    numValidActions = 0
+    
+    Dim i As Long
+    For i = startIndex To endIndex
+        With srcProcCalls(i)
+            If (LenB(.pcID) <> 0) And (Not .pcRaiseDialog) And .pcRecorded Then
+                numValidActions = numValidActions + 1
+            End If
+        End With
+    Next i
+    
+    'Due to the previous check at the top of this function, we already know how many valid functions are in the process list,
+    ' and this value is guaranteed to be non-zero.
+    
+    'Write out the number of valid processes in the macro
+    xmlEngine.WriteTag "processCount", CStr(numValidActions)
+    xmlEngine.WriteBlankLine
+    
+    'Now, write out each macro entry in the source process list
+    numValidActions = 0
+    
+    For i = startIndex To endIndex
+        
+        With srcProcCalls(i)
+        
+            'We only want to write out valid processes, using the same criteria as the validation loop above.
+            If (LenB(.pcID) <> 0) And (Not .pcRaiseDialog) And .pcRecorded Then
+        
+                numValidActions = numValidActions + 1
+                
+                'Start each process entry with a unique identifier
+                xmlEngine.WriteTagWithAttribute "processEntry", "index", numValidActions, vbNullString, True
+                
+                'Write out all the properties of this entry.  (Note that some properties can be inferred, so we don't
+                ' need to actually store them inside the file.)
+                xmlEngine.WriteTag "ID", .pcID
+                xmlEngine.WriteTag "Parameters", .pcParameters
+                xmlEngine.WriteTag "MakeUndo", Trim$(Str$(.pcUndoType))
+                xmlEngine.WriteTag "Tool", Trim$(Str$(.pcTool))
+                
+                'Note that the Dialog and Recorded properties are not written to file.  There is no need to remember
+                ' them, as we know their values must be FALSE and TRUE, respectively, per the check above.
+                
+                'Close this process entry
+                xmlEngine.CloseTag "processEntry"
+                xmlEngine.WriteBlankLine
+                
+            End If
+            
+        End With
+        
+    Next i
+    
+    'With all tags successfully written, we can now close the XML data and write it out to file.
+    ExportProcCallsToMacroFile = xmlEngine.WriteXMLToFile(dstFilename)
+    
+    'Update the Recent Macros list
+    If addToRecentMacroList Then g_RecentMacros.MRU_AddNewFile dstFilename
+    
+End Function
 
 'All macro-related UI instructions should be placed here, as PD can terminate a macro recording session for any number of reasons,
 ' and it needs a uniform way to wipe macro-related UI changes).

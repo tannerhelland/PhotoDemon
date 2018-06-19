@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.66</langversion>
+<langversion>1.0.67</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1382,16 +1382,6 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>मैक्रो</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>मैक्रो डेटा सहेजें</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>मेक्रो सफलतापूर्वक सहेजा गया</translation>
 </phrase>
@@ -1408,6 +1398,16 @@ Please verify that these image(s) exist, and that they use a supported image for
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>चेतावनी: मैक्रो को बचाने का आखिरी मौका</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>मैक्रो</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>मैक्रो डेटा सहेजें</translation>
 </phrase>
 
 <phrase>
@@ -5871,8 +5871,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>रिकॉर्ड मैक्रो</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6101,6 +6106,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>मैक्रो रिकॉर्डिंग प्रारंभ करें</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>मैक्रो रिकॉर्डिंग रोकें</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Photodemon का एक नया संस्करण उपलब्ध है। अपडेट स्वचालित रूप से पृष्ठभूमि में प्रोसेस कर रहा है</translation>
 </phrase>
@@ -6301,16 +6316,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>ईरोड (न्यूनतम रैंक)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>मैक्रो रिकॉर्डिंग प्रारंभ करें</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>मैक्रो रिकॉर्डिंग रोकें</translation>
 </phrase>
 
 <phrase>
@@ -6598,7 +6603,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>अल्फा चैनल निकालें</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15375,12 +15380,58 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

@@ -3,7 +3,7 @@ Begin VB.Form FormMacroSession
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Create macro from session history"
-   ClientHeight    =   8475
+   ClientHeight    =   7545
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   11790
@@ -19,10 +19,22 @@ Begin VB.Form FormMacroSession
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   565
+   ScaleHeight     =   503
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   786
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblSummary 
+      Height          =   495
+      Left            =   360
+      Top             =   6000
+      Width           =   11295
+      _ExtentX        =   19923
+      _ExtentY        =   2143
+      Alignment       =   2
+      Caption         =   ""
+      FontBold        =   -1  'True
+      FontSize        =   11
+   End
    Begin PhotoDemon.pdListBoxOD lstStart 
       Height          =   5055
       Left            =   240
@@ -31,14 +43,14 @@ Begin VB.Form FormMacroSession
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   8916
-      Caption         =   "first macro action"
+      Caption         =   "first action"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
       Left            =   0
       TabIndex        =   0
-      Top             =   7740
+      Top             =   6810
       Width           =   11790
       _ExtentX        =   20796
       _ExtentY        =   1296
@@ -52,7 +64,18 @@ Begin VB.Form FormMacroSession
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   8916
-      Caption         =   "final macro action"
+      Caption         =   "last action"
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   255
+      Index           =   0
+      Left            =   360
+      Top             =   5400
+      Width           =   8895
+      _ExtentX        =   15690
+      _ExtentY        =   450
+      Caption         =   "* current image state in the main window"
+      FontItalic      =   -1  'True
    End
 End
 Attribute VB_Name = "FormMacroSession"
@@ -132,7 +155,46 @@ End Function
 
 Private Sub cmdBar_OKClick()
     
-    'TODO!
+    'Make sure the selected positions are valid.
+    If (lstEnd.ListIndex >= lstStart.ListIndex) Then
+        
+        'Perform a second check to make sure the user hasn't just selected the "original image" index
+        If (lstEnd.ListIndex > 0) Then
+        
+            'The macro module handles the actual dialog raising for us
+            Dim dstFile As String
+            If Macros.DisplayMacroSaveDialog(dstFile) Then
+            
+                'Copy the relevant processor data into a dedicated PD_ProcessCall array, which we will then pass
+                ' to the macro module for further handling.
+                Dim finalMacro() As PD_ProcessCall, numMacros As Long
+                numMacros = (lstEnd.ListIndex - lstStart.ListIndex) + 1
+                
+                ReDim finalMacro(0 To numMacros - 1) As PD_ProcessCall
+                
+                Dim i As Long
+                For i = 0 To numMacros - 1
+                    finalMacro(i) = m_undoEntries(lstStart.ListIndex + i).srcProcCall
+                Next i
+                
+                If ExportProcCallsToMacroFile(dstFile, finalMacro, 0, numMacros - 1) Then
+                    Message "Macro saved successfully."
+                    Unload Me
+                End If
+                
+            End If
+            
+        Else
+            PDMsgBox "WARNING: this is not a valid macro.  You must include at least one action that modifies the image.", vbExclamation Or vbOKOnly Or vbApplicationModal, "Invalid macro"
+            cmdBar.DoNotUnloadForm
+            Exit Sub
+        End If
+        
+    Else
+        PDMsgBox "WARNING: this is not a valid macro.  The last action cannot occur after the first action.", vbExclamation Or vbOKOnly Or vbApplicationModal, "Invalid macro"
+        cmdBar.DoNotUnloadForm
+        Exit Sub
+    End If
     
 End Sub
 
@@ -172,7 +234,10 @@ Private Sub Form_Load()
         lstEnd.AddItem , i
     Next i
     lstEnd.SetAutomaticRedraws True, True
-    lstEnd.ListIndex = m_curUndoIndex - 1
+    lstEnd.ListIndex = lstEnd.ListCount - 1
+    
+    'Update the summary report of the default macro
+    UpdateSummary
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -181,6 +246,10 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub lstEnd_Click()
+    UpdateSummary
 End Sub
 
 Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
@@ -205,8 +274,10 @@ Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
         m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
         m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
     Else
-        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
-        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        Dim itemIsValid As Boolean
+        itemIsValid = (itemIndex >= lstStart.ListIndex)
+        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, itemIsValid, , itemIsHovered)
+        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, itemIsValid, , itemIsHovered)
     End If
     
     'Prepare a title string (with an asterisk added to the "current" image state title)
@@ -241,6 +312,21 @@ Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
         m_DescriptionFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4) + mHeight, drawString
         m_DescriptionFont.ReleaseFromDC
     End If
+    
+End Sub
+
+Private Sub lstStart_Click()
+    
+    'Whenever the starting macro changes, we want to redraw the final macro list so we can
+    ' "dim" invalid final macro choices.
+    lstEnd.SetAutomaticRedraws False
+    
+    'Try to prevent the user from creating invalid final macros.
+    If (lstEnd.ListIndex < lstStart.ListIndex) Then lstEnd.ListIndex = lstStart.ListIndex
+    
+    lstEnd.SetAutomaticRedraws True, True
+    
+    UpdateSummary
     
 End Sub
 
@@ -292,7 +378,7 @@ Private Sub lstStart_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lo
         m_TitleFont.FastRenderText thumbWidth + Interface.FixDPI(16) + offsetX, offsetY + Interface.FixDPI(4), drawString
         m_TitleFont.ReleaseFromDC
     End If
-            
+    
     'Below that, add the description text (if any)
     drawString = GetStringForUndoType(m_undoEntries(itemIndex).srcProcCall.pcUndoType, m_undoEntries(itemIndex).undoLayerID)
     
@@ -305,3 +391,14 @@ Private Sub lstStart_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lo
         
 End Sub
 
+Private Sub UpdateSummary()
+    If (lstEnd.ListIndex >= lstStart.ListIndex) Then
+        If (lstEnd.ListIndex > 0) Then
+            lblSummary.Caption = g_Language.TranslateMessage("Your final macro will contain %1 action(s).", (lstEnd.ListIndex - lstStart.ListIndex) + 1)
+        Else
+            lblSummary.Caption = g_Language.TranslateMessage("WARNING: this is not a valid macro.  You must include at least one action that modifies the image.")
+        End If
+    Else
+        lblSummary.Caption = g_Language.TranslateMessage("WARNING: this is not a valid macro.  The last action cannot occur after the first action.")
+    End If
+End Sub

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.31</langversion>
+<langversion>1.0.32</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1380,16 +1380,6 @@ P 이러한 이미지가 존재하고 지원되는 이미지 형식 (예: JPEG �
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>매크로</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>매크로 데이터 저장</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>매크로가 성공적으로 저장되었습니다.</translation>
 </phrase>
@@ -1406,6 +1396,16 @@ P 이러한 이미지가 존재하고 지원되는 이미지 형식 (예: JPEG �
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>경고: 매크로를 저장할 마지막 기회</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>매크로</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>매크로 데이터 저장</translation>
 </phrase>
 
 <phrase>
@@ -5869,8 +5869,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>매크로 기록</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6099,6 +6104,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>매크로 기록 시작</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>매크로 기록 중지</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Photodemon의 새 버전을 사용할 수 있습니다. 업데이트가 백그라운드에서 자동으로 처리됩니다.</translation>
 </phrase>
@@ -6298,16 +6313,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>에로 데 (최소 순위)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>매크로 기록 시작</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>매크로 기록 중지</translation>
 </phrase>
 
 <phrase>
@@ -6595,7 +6600,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15372,12 +15377,58 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

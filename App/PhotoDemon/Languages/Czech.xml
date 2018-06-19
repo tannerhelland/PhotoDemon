@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3346</langversion>
+<langversion>6.8.3347</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1381,16 +1381,6 @@ Naše ověřte, zda tyto obrázky existují a zda používají podporovaný form
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>Makro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Ukládání dat maker</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>Makro úspěšně uloženo.</translation>
 </phrase>
@@ -1407,6 +1397,16 @@ Naše ověřte, zda tyto obrázky existují a zda používají podporovaný form
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>Upozornění: poslední šance na uložení makra</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Makro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Ukládání dat maker</translation>
 </phrase>
 
 <phrase>
@@ -5870,8 +5870,13 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>Nahrát makro</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6100,6 +6105,16 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>Spusťte záznam makra</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Zastavte nahrávání maker</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>K dispozici je nová verze aplikace PhotoDemon. Aktualizace se automaticky zpracovává na pozadí</translation>
 </phrase>
@@ -6299,16 +6314,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Erode (minimální hodnost)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>Spusťte záznam makra</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Zastavte nahrávání maker</translation>
 </phrase>
 
 <phrase>
@@ -6596,7 +6601,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Odstraňte alfa kanál</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15372,12 +15377,58 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.366</langversion>
+<langversion>6.7.367</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -1380,16 +1380,6 @@ PVerifique que estas imágenes existan y que utilicen un formato de imagen compa
 </phrase>
 
 <phrase>
-<original>Macro</original>
-<translation>Macro</translation>
-</phrase>
-
-<phrase>
-<original>Save macro data</original>
-<translation>Guarde los datos macro</translation>
-</phrase>
-
-<phrase>
 <original>Macro saved successfully.</original>
 <translation>Macro guardado correctamente.</translation>
 </phrase>
@@ -1406,6 +1396,16 @@ PVerifique que estas imágenes existan y que utilicen un formato de imagen compa
 <phrase>
 <original>Warning: last chance to save macro</original>
 <translation>Advertencia: última oportunidad para salvar macro</translation>
+</phrase>
+
+<phrase>
+<original>Macro</original>
+<translation>Macro</translation>
+</phrase>
+
+<phrase>
+<original>Save macro data</original>
+<translation>Guarde los datos macro</translation>
 </phrase>
 
 <phrase>
@@ -5872,8 +5872,13 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Record macro</original>
-<translation>Grabar macro</translation>
+<original>Create macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From session history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6102,6 +6107,16 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>Start macro recording</original>
+<translation>Inicie la grabación de macros</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Detener la grabación de macros</translation>
+</phrase>
+
+<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Una nueva versión de PhotoDemon está disponible. La actualización está procesando automáticamente en segundo plano</translation>
 </phrase>
@@ -6302,16 +6317,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Erode (rango mínimo)</translation>
-</phrase>
-
-<phrase>
-<original>Start macro recording</original>
-<translation>Inicie la grabación de macros</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Detener la grabación de macros</translation>
 </phrase>
 
 <phrase>
@@ -6599,7 +6604,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 190 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15376,12 +15381,58 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for File_Export_Palette.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4693 phrases. -->
-<!-- 2117 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 12328 total words. -->
+<!-- As of this build, PhotoDemon contains 4713 phrases. -->
+<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 12391 total words. -->
 
 </pdData>
