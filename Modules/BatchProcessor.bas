@@ -3,21 +3,28 @@ Attribute VB_Name = "Macros"
 'PhotoDemon Macro Interface
 'Copyright 2001-2018 by Tanner Helland
 'Created: 10/21/01
-'Last updated: 14/July/17
-'Last update: properly encapsulate macro tracking functions
+'Last updated: 21/June/18
+'Last update: better segregate functionality into discrete chunks; this lets us reuse things like the
+'             XML exporter in other places (e.g. the new "Create macro from history" tool)
 '
-'This (relatively small) sub handles all macro-related operations.  Macros are simply a recorded list of program operations, which
-' can be "played back" to automate complex lists of image processing actions.  To create a macro, the user can "record" themselves
-' applying a series of actions to an image.  When finished, they can then save that complete list of actions to file, then re-play
-' those actions back at any time in the future.
+'This (relatively small) sub handles all macro-related operations.  Macros are simply a recorded list
+' of program operations, which can be "played back" to automate complex lists of image processing actions.
 '
-'PhotoDemon's batch processing wizard allows use of macros, so that any combination of actions can be applied to any combination of
-' images automatically.  This is a trademark feature of the program.
+'To create a macro, the user current has two options:
+' 1) They can "record" themselves applying a series of actions to an image.
+' 2) They can retroactively create a macro from a list of operations they've applied during this session.
 '
-'As of 2014, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's new string-based param
-' design, and all macro settings are saved out to valid XML files.  This makes the human-readable and human-editable, but it also
-' means that old macro files are no longer supported.  Users of old macro files are automatically warned of this change if they try
-' to load an outdated macro file.
+'Either way, a list of specific actions will be exported to file, and that file can then be re-played
+' against any image in the future.
+'
+'PhotoDemon's batch processing wizard has an integrated "play macro on image" tool, so that any combination
+' of actions can be applied to any combination of images automatically.  This is a trademark feature of
+' the program.
+'
+'As of 2014, the macro engine has been rewritten in significant ways.  Macros now rely on PhotoDemon's new
+' string-based param design, and all macro settings are saved as XML files.  This makes them human-readable
+' and human-editable, but it also means that old macro files are no longer supported.  Users of old macro
+' files are automatically warned of this change if they try to load an outdated macro file.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

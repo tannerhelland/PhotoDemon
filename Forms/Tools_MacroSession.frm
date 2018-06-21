@@ -84,23 +84,27 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Undo History dialog
-'Copyright 2014-2018 by Tanner Helland
-'Created: 14/July/14
-'Last updated: 22/May/16
-'Last update: overhaul UI to use new owner-drawn pdListBox
+'Create macro from session history tool
+'Copyright 2018-2018 by Tanner Helland
+'Created: 18/June/18
+'Last updated: 21/June/18
+'Last update: wrap up initial build
 '
-'This is a first draft of a functional Undo History browser for PD.  Most applications provide this as a floating
-' toolbar, but because that would require some complicated UI work (including integration into PD's window manager),
-' I'm postponing such an implementation until after we've gotten the browser working first.
+'In https://github.com/tannerhelland/PhotoDemon/issues/265, jpbro provided a great suggestion - that for many users,
+' it would be easier to create macros retroactively, from some set of steps they have already completed.  His idea
+' was to use the Undo History as a starting point for a "create macro from history" tool, and sure enough, that's
+' exactly what this dialog does.
 '
-'All previous image states, including selections, are available for restoration.
+'The main UI code is lifted almost entirely from the Undo History window, with a few minor modifications to make
+' its unique rules clearer (e.g. graying out actions in the "final action" list that occurred before the currently
+' selected action in the "first action" list).
 '
-'Obviously, this dialog interacts heavily with the pdUndo class, as only the undo manager has access to the full
-' Undo/Redo stack, including detailed information like process IDs, Undo file types, etc.
+'Macros saved from this tool will be byte-for-byte identical to ones created via standard recording, because the
+' Macro engine itself is still used for writing the macro files.  (We just pass it an "artificial" list of
+' recorded actions, created from the selected history points.)
 '
-'When the user selects a point for restoration, the Undo/Redo manager handles the actual work of restoring the image
-' to that point.  This dialog simply presents the list to the user, and returns a clicked index position to pdUndo.
+'For additional discussion and testing, please refer to https://github.com/tannerhelland/PhotoDemon/issues/265.
+' Thank you again to jpbro for his suggestion and subsequent testing.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -109,22 +113,27 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This array contains the contents of the current Undo stack, as copied from the pdUndo class
+'This array contains the contents of the current Undo stack, as copied from the pdUndo class.  We use it to
+' generate the list of operations applied during this session.
 Private m_undoEntries() As PD_UndoEntry
 
-'Total number of Undo entries, and index of the current Undo entry (e.g. the current image state in the undo/redo chain).
+'Total number of Undo entries, and index of the current Undo entry (e.g. the current image state in the
+' undo/redo chain).
 Private m_numOfUndos As Long, m_curUndoIndex As Long
 
-'Height of each Undo content block
+'Height of each content block in the custom-drawn listboxes
 Private Const BLOCKHEIGHT As Long = 58
 
-'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
-' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
+'Two font objects; one for action names and one for action descriptions.  (Two are needed because they have
+' different sizes and colors, and it is faster to cache the associated fonts rather than constantly recreating
+' them through a single pdFont object.)
 Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 
-'The size at which we render the thumbnail images
+'The size used for rendering action thumbnail images
 Private Const UNDO_THUMB_SMALL As Long = 48
 
+'Certain types of actions (e.g. selections, operations on layers) may need additional information to be helpful.
+' This helper function provides generic helper text for a given action type.
 Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UndoType, Optional ByVal layerID As Long = 0) As String
 
     Dim newText As String
@@ -200,24 +209,24 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Initialize a custom font object for undo action names
+    'Initialize a custom font object for action names
     Set m_TitleFont = New pdFont
     m_TitleFont.SetFontBold True
     m_TitleFont.SetFontSize 12
     m_TitleFont.CreateFontObject
     m_TitleFont.SetTextAlignment vbLeftJustify
     
-    '...and a second custom font object for undo descriptions
+    '...and a second custom font object for action descriptions
     Set m_DescriptionFont = New pdFont
     m_DescriptionFont.SetFontBold False
     m_DescriptionFont.SetFontSize 10
     m_DescriptionFont.CreateFontObject
     m_DescriptionFont.SetTextAlignment vbLeftJustify
     
-    'Retrieve a copy of all Undo data from the current image's undo manager
+    'Retrieve a copy of all session Undo data from the current image's undo manager
     pdImages(g_CurrentImage).UndoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
     
-    'Populate the owner-drawn listboxes with copies of the retrieved Undo data (including thumbnails)
+    'Populate the owner-drawn listboxes with copies of the retrieved action lists (including thumbnails)
     Dim i As Long
     
     lstStart.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
@@ -286,7 +295,6 @@ Private Sub lstEnd_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long
     drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).srcProcCall.pcID)
     
     'Render the thumbnail for this entry, and note that the thumbnail is *not* guaranteed to be square.
-    
     Dim thumbNewWidth As Long, thumbNewHeight As Long, thumbMax As Long
     thumbMax = Interface.FixDPI(UNDO_THUMB_SMALL)
     PDMath.ConvertAspectRatio m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, thumbMax, thumbMax, thumbNewWidth, thumbNewHeight
@@ -362,7 +370,6 @@ Private Sub lstStart_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lo
     drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).srcProcCall.pcID)
     
     'Render the thumbnail for this entry, and note that the thumbnail is *not* guaranteed to be square.
-    
     Dim thumbNewWidth As Long, thumbNewHeight As Long, thumbMax As Long
     thumbMax = Interface.FixDPI(UNDO_THUMB_SMALL)
     PDMath.ConvertAspectRatio m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, thumbMax, thumbMax, thumbNewWidth, thumbNewHeight
