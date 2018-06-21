@@ -1630,7 +1630,20 @@ Attribute m_InterfaceTimer.VB_VarHelpID = -1
 Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
 
+'Focus detection is used to correct some hotkey behavior.  (Specifically, when this form loses focus,
+' PD resets its hotkey tracker; this solves problems created by Alt+Tabbing away from the program,
+' and PD thinking the Alt-key is still down when the user returns.)
+Private WithEvents m_FocusDetector As pdFocusDetector
+
 Private m_AllowedToReflowInterface As Boolean
+
+Private Sub m_FocusDetector_GotFocusReliable()
+    pdHotkeys.RecaptureKeyStates
+End Sub
+
+Private Sub m_FocusDetector_LostFocusReliable()
+    pdHotkeys.ResetKeyStates
+End Sub
 
 Private Sub MnuMacroCreate_Click(Index As Integer)
     
@@ -2665,9 +2678,9 @@ Private Sub Form_Load()
         FormMain.Refresh
         DoEvents
         
-        'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
-        ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
-        '  cases are covered nicely.)
+        'Visibility for the options toolbox is automatically set according to the current tool; this is different from
+        ' other dialogs. (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing
+        ' the window state, so all cases are covered nicely.)
         toolbar_Toolbox.ResetToolButtonStates
         
         'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
@@ -2745,6 +2758,11 @@ Private Sub Form_Load()
         'In debug mode, note that we are about to turn control over to the user
         PDDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
         PDDebug.LogAction vbNullString, PDM_Mem_Report
+        
+        'Before setting focus to the main form, active a focus tracker; this class catches some cases
+        ' that VB's built-in focus events do not.
+        Set m_FocusDetector = New pdFocusDetector
+        m_FocusDetector.StartFocusTracking FormMain.hWnd
         
         'Finally, return focus to the main form
         g_WindowManager.SetFocusAPI FormMain.hWnd

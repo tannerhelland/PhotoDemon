@@ -32,10 +32,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Accelerator ("Hotkey") handler
 'Copyright 2013-2018 by Tanner Helland and contributors
-'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon
-'Last updated: 08/December/17
-'Last update by: jpbro (https://github.com/jpbro)
-'Last update: queue rapidly fired hotkeys instead of just dropping them
+'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
+'Last updated: 21/June/18
+'Last update: new workaround to correctly capture keypress state after PD loses focus via keyboard actions
+'             (e.g. Alt+Tab).  Thank you jpbro for reporting; see https://github.com/tannerhelland/PhotoDemon/issues/267
+'             for additional details.
 '
 'For many years, PD used vbAccelerator's "hook control" to handle program hotkeys:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
@@ -88,9 +89,10 @@ Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
 Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
 
-'New solution!  Virtual-key tracking is a bad idea, because we want to know key state at the time the hotkey was pressed
-' (not what it is right now).  Solving this is as easy as tracking key up/down state for Ctrl/Alt/Shift presses and
-' storing the results locally.
+'New solution!  Virtual-key tracking is a bad idea, because we want to know key state at the time the hotkey
+' was pressed (not what it is right now).  Solving this is as easy as tracking key up/down state for Ctrl/Alt/Shift
+' presses and storing the results locally - but note that this does require some extra checking for things
+' like Alt+Tab keypresses.  (See https://github.com/tannerhelland/PhotoDemon/issues/267 for more details.)
 Private m_CtrlDown As Boolean, m_AltDown As Boolean, m_ShiftDown As Boolean
 
 'If the control's hook proc is active and primed, this will be set to TRUE.  (HookID is the actual Windows hook handle.)
@@ -102,6 +104,11 @@ Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) 
 ' until this returns to FALSE*.  To ensure correct unhooking behavior, we use a timer failsafe.
 Private m_InHookNow As Boolean
 Private m_InFireTimerNow As Boolean
+
+'When PD loses and then gains focus, we need to manually update our control key tracking.  This is done
+' by manually checking key state (instead of waiting for a hook event, which we may have missed as
+' PD wasn't active!).
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
 'Keyboard accelerators are troublesome to handle because they interfere with PD's dynamic hooking solution for
 ' various canvas and control-related key events.  To work around this limitation, module-level variables are set
@@ -239,6 +246,7 @@ Public Sub ReleaseResources()
 End Sub
 
 Private Sub UserControl_Initialize()
+
     Set m_AcceleratorQueue = New VBA.Collection
     Set m_AcceleratorAccumulator = New VBA.Collection
     
@@ -258,7 +266,8 @@ Private Sub UserControl_Initialize()
         Set m_FireTimer = New pdTimer
         m_FireTimer.Interval = 17
         
-        'Hooks are not installed at initialization.  The program must explicitly request initialization.
+        'Hooks are no longer installed at initialization.  The program must explicitly request initialization
+        ' (via the ActivateHook function).
         
     End If
     
@@ -312,6 +321,27 @@ Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = T
         
     End If
     
+End Sub
+
+'When PD gains focus, call this function to update all key state tracking.  (This addresses the rare case
+' where the user is *already* holding a key down when PD is activated - we can then use that down key as
+' part of a subsequent hotkey combo.)
+Public Sub RecaptureKeyStates()
+    m_CtrlDown = IsVirtualKeyDown(VK_CONTROL)
+    m_AltDown = IsVirtualKeyDown(VK_ALT)
+    m_ShiftDown = IsVirtualKeyDown(VK_SHIFT)
+End Sub
+
+'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+End Function
+
+'When PD loses focus, call this function to reset all key state tracking
+Public Sub ResetKeyStates()
+    m_CtrlDown = False
+    m_AltDown = False
+    m_ShiftDown = False
 End Sub
 
 'Add a new accelerator key combination to the collection.  A ton of PD-specific functionality is included in this function, so let me break it down.
