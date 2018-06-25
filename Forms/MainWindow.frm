@@ -1634,6 +1634,7 @@ Attribute m_MetadataTimer.VB_VarHelpID = -1
 ' PD resets its hotkey tracker; this solves problems created by Alt+Tabbing away from the program,
 ' and PD thinking the Alt-key is still down when the user returns.)
 Private WithEvents m_FocusDetector As pdFocusDetector
+Attribute m_FocusDetector.VB_VarHelpID = -1
 
 Private m_AllowedToReflowInterface As Boolean
 

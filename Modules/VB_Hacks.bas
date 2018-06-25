@@ -356,7 +356,12 @@ Public Sub DoEventsTimersOnly()
 End Sub
 
 Public Function FreeLib(ByVal hLib As Long) As Boolean
-    If (hLib = 0) Then FreeLib = True Else FreeLib = (FreeLibrary(hLib) <> 0)
+    If (hLib = 0) Then
+        FreeLib = True
+    Else
+        FreeLib = (FreeLibrary(hLib) <> 0)
+        If FreeLib Then hLib = 0
+    End If
 End Function
 
 Public Function LoadLib(ByRef libPathAndName As String) As Long

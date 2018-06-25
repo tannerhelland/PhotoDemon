@@ -71,14 +71,8 @@ Public Function InitializeFreeImage() As Boolean
 End Function
 
 Public Function ReleaseFreeImage() As Boolean
-    
-    If (m_FreeImageHandle <> 0) Then
-        VBHacks.FreeLib m_FreeImageHandle
-        m_FreeImageHandle = 0
-    End If
-    
+    If (m_FreeImageHandle <> 0) Then VBHacks.FreeLib m_FreeImageHandle
     ReleaseFreeImage = True
-    
 End Function
 
 'Load a given file.  If successful, returns a non-zero FreeImage handle.  Multi-page files will also fill a multipage DIB handle,

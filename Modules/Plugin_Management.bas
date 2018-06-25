@@ -3,17 +3,17 @@ Attribute VB_Name = "PluginManager"
 'Core Plugin Manager
 'Copyright 2014-2018 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 01/December/16
-'Last update: integrate zstd as a permanent plugin
+'Last updated: 25/June/18
+'Last update: integrate cairo as a permanent plugin
 '
-'As PD grows, it's more and more difficult to supply the functionality we need through WAPI alone.  To that end,
-' a number of third-party plugins are now required for proper program operation.
+'As PD grows, it's more and more difficult to supply the functionality I need through WAPI alone.
+' To that end, a number of third-party libraries are required for proper program operation.
 '
-'To simplify the management of these plugins, I've created this singular module.  My hope is that future plugins
-' will be easier to add and maintain thanks to this.
+'To simplify the management of these plugins, I've created this "plugin manager".  The goal is to
+' make future third-party libraries easier to deploy and maintain.
 '
-'When adding a new plugin, please make sure to read the declarations at the top of the class, particularly the
-' CORE_PLUGINS enum and associated CORE_PLUGIN_COUNT constant.
+'When adding a new required library, please make sure to read the module-level declarations,
+' particularly the CORE_PLUGINS enum and associated CORE_PLUGIN_COUNT constant.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -25,23 +25,25 @@ Option Explicit
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
 Public Enum CORE_PLUGINS
-    CCP_ExifTool = 0
-    CCP_EZTwain = 1
-    CCP_FreeImage = 2
-    CCP_LittleCMS = 3
-    CCP_lz4 = 4
-    CCP_OptiPNG = 5
-    CCP_PNGQuant = 6
-    CCP_zLib = 7
-    CCP_zstd = 8
+    CCP_Cairo = 0
+    CCP_ExifTool = 1
+    CCP_EZTwain = 2
+    CCP_FreeImage = 3
+    CCP_LittleCMS = 4
+    CCP_lz4 = 5
+    CCP_OptiPNG = 6
+    CCP_PNGQuant = 7
+    CCP_zLib = 8
+    CCP_zstd = 9
 End Enum
 
 #If False Then
-    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_lz4 = 4, CCP_OptiPNG = 5, CCP_PNGQuant = 6, CCP_zLib = 7, CCP_zstd = 8
+    Private Const CCP_Cairo = 0, CCP_ExifTool = 1, CCP_EZTwain = 2, CCP_FreeImage = 3, CCP_LittleCMS = 4, CCP_lz4 = 5, CCP_OptiPNG = 6, CCP_PNGQuant = 7, CCP_zLib = 8, CCP_zstd = 9
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
+Private Const EXPECTED_CAIRO_VERSION As String = "1.14.12"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.99"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
@@ -54,7 +56,7 @@ Private Const EXPECTED_ZSTD_VERSION As String = "10304"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 9
+Private Const CORE_PLUGIN_COUNT As Long = 10
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
@@ -64,8 +66,9 @@ Private m_PluginAllowed() As Boolean
 Private m_PluginInitialized() As Boolean
 
 'For high-performance code paths, we specifically track a few plugin states.
-Private m_ZlibEnabled As Boolean, m_ZstdEnabled As Boolean, m_lz4Enabled As Boolean
-Private m_ExifToolEnabled As Boolean, m_OptiPNGEnabled As Boolean, m_LCMSEnabled As Boolean
+Private m_CairoEnabled As Boolean, m_ExifToolEnabled As Boolean, m_LCMSEnabled As Boolean
+Private m_lz4Enabled As Boolean, m_OptiPNGEnabled As Boolean, m_ZlibEnabled As Boolean
+Private m_ZstdEnabled As Boolean
 
 'Path to plugin folder.  For security reasons, this is forcibly constructed as an absolute path
 ' (generally "App.Path/App/PhotoDemon/Plugins"), because we pass it directly to LoadLibrary.
@@ -172,6 +175,8 @@ End Sub
 ' like README or LICENSE files - just the core DLL or EXE for the plugin.
 Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            GetPluginFilename = "cairo.dll"
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
         Case CCP_EZTwain
@@ -195,6 +200,8 @@ End Function
 
 Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            GetPluginName = "Cairo"
         Case CCP_ExifTool
             GetPluginName = "ExifTool"
         Case CCP_EZTwain
@@ -228,6 +235,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     GetPluginVersion = vbNullString
     
     Select Case pluginEnumID
+        
+        'Cairo provides a dedicated version-checking function
+        Case CCP_Cairo
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Cairo.GetCairoVersion()
         
         'ExifTool can write its version number to stdout
         Case CCP_ExifTool
@@ -278,7 +289,10 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
     dstStringStack.ResetStack
     
     Select Case pluginEnumID
-    
+        
+        Case CCP_Cairo
+            dstStringStack.AddString "cairo-README.txt"
+        
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"
                     
@@ -301,7 +315,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
             dstStringStack.AddString "pngquant-README.txt"
         
         Case CCP_zLib
-            dstStringStack.AddString "zlib-README.txt"
+            dstStringStack.AddString "zlibwapi-README.txt"
             
         Case CCP_zstd
             dstStringStack.AddString "libzstd-LICENSE.txt"
@@ -328,6 +342,8 @@ End Sub
 ' including forcible disablement by the user, bugs, missing files, etc; this catch-all function returns a binary "enabled" state.)
 Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Select Case pluginEnumID
+        Case CCP_Cairo
+            IsPluginCurrentlyEnabled = m_CairoEnabled
         Case CCP_ExifTool
             IsPluginCurrentlyEnabled = m_ExifToolEnabled
         Case CCP_EZTwain
@@ -354,6 +370,8 @@ End Function
 ' Plugin Manager dialog or the plugin initialization functions.
 Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
     Select Case pluginEnumID
+        Case CCP_Cairo
+            m_CairoEnabled = newEnabledState
         Case CCP_ExifTool
             m_ExifToolEnabled = newEnabledState
         Case CCP_EZTwain
@@ -386,6 +404,8 @@ End Function
 ' we load the rest of the program's core plugins.  This function determines which wave a plugin is loaded during.
 Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Select Case pluginEnumID
+        Case CCP_Cairo
+            IsPluginHighPriority = False
         Case CCP_ExifTool
             IsPluginHighPriority = False
         Case CCP_EZTwain
@@ -411,6 +431,8 @@ End Function
 ' be helpful for seeing if a user has manually updated a plugin file to some new version (which is generally okay!)
 Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            ExpectedPluginVersion = EXPECTED_CAIRO_VERSION
         Case CCP_ExifTool
             ExpectedPluginVersion = EXPECTED_EXIFTOOL_VERSION
         Case CCP_EZTwain
@@ -435,6 +457,8 @@ End Function
 'Simplified function for retrieving the homepage URL for a given plugin
 Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            GetPluginHomepage = "https://www.cairographics.org/"
         Case CCP_ExifTool
             GetPluginHomepage = "http://www.sno.phy.queensu.ca/~phil/exiftool/"
         Case CCP_EZTwain
@@ -459,6 +483,8 @@ End Function
 'Simplified function for retrieving the license name for a given plugin
 Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            GetPluginLicenseName = g_Language.TranslateMessage("GNU LGPLv2.1")
         Case CCP_ExifTool
             GetPluginLicenseName = g_Language.TranslateMessage("artistic license")
         Case CCP_EZTwain
@@ -483,6 +509,8 @@ End Function
 'Simplified function for retrieving the license URL for a given plugin
 Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
+        Case CCP_Cairo
+            GetPluginLicenseURL = "https://www.cairographics.org/"
         Case CCP_ExifTool
             GetPluginLicenseURL = "http://dev.perl.org/licenses/artistic.html"
         Case CCP_EZTwain
@@ -519,6 +547,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Dim initializationSuccessful As Boolean
     
     Select Case pluginEnumID
+        
+        'Cairo maintains a program-wide handle for the life of the program, which we attempt to generate now.
+        Case CCP_Cairo
+            initializationSuccessful = Plugin_Cairo.InitializeCairo()
         
         'Unlike most plugins, ExifTool is an .exe file.  Because we interact with it asynchronously, we start it now, then leave
         ' it in "wait" mode.
@@ -575,7 +607,10 @@ End Function
 Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
     
     Select Case pluginEnumID
-    
+        
+        Case CCP_Cairo
+            m_CairoEnabled = pluginState
+        
         Case CCP_ExifTool
             m_ExifToolEnabled = pluginState
                     
@@ -727,6 +762,11 @@ Public Sub TerminateAllPlugins()
     
     LittleCMS.ReleaseLCMS
     PDDebug.LogAction "LittleCMS released"
+    
+    If m_CairoEnabled Then
+        Plugin_Cairo.ReleaseCairo
+        m_CairoEnabled = False
+    End If
     
     If m_ZlibEnabled Then
         Compression.ShutDownCompressionEngine PD_CE_ZLib
