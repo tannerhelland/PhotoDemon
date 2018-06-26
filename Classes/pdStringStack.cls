@@ -136,46 +136,6 @@ Friend Function GetStringPointer(ByVal strIndex As Long) As Long
 
 End Function
 
-'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
-' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
-' for the code.  (Note that the original function listed there is buggy!  I had to add some
-' fixes for exponent strings, which the original code did not handle correctly.)
-Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
-    
-    Dim Negative As Boolean, Number As Boolean, Period As Boolean, Positive As Boolean, Exponent As Boolean
-    Dim x As Long
-    For x = 1& To Len(Expression)
-        Select Case Mid$(Expression, x, 1&)
-        Case "0" To "9"
-            Number = True
-        Case "-"
-            If Period Or Number Or Negative Or Positive Then Exit Function
-            Negative = True
-        Case "."
-            If Period Or Exponent Then Exit Function
-            Period = True
-        Case "E", "e"
-            If Not Number Then Exit Function
-            If Exponent Then Exit Function
-            Exponent = True
-            Number = False
-            Negative = False
-            Period = False
-        Case "+"
-            If Not Exponent Then Exit Function
-            If Number Or Negative Or Positive Then Exit Function
-            Positive = True
-        Case " ", vbTab, vbVerticalTab, vbCr, vbLf, vbFormFeed
-            If Period Or Number Or Exponent Or Negative Then Exit Function
-        Case Else
-            Exit Function
-        End Select
-    Next x
-        
-    IsNumberLocaleUnaware = Number
-    
-End Function
-
 'This function may seem like a ridiculous addition, but it's actually very helpful in PD.  pdStringStack is used by pdFSO
 ' when retrieving all subfolders inside some base folder.  When performing something like a tree copy, I like to pre-sort
 ' the subfolder list by length.  This greatly simplifies the code required to create the new folder tree prior to performing

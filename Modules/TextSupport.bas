@@ -6,12 +6,17 @@ Attribute VB_Name = "TextSupport"
 'Last updated: 08/August/17
 'Last update: remove legacy BuildParams() parameter system
 '
+'PhotoDemon interacts with a *lot* of text input.  This module contains various bits of text support code,
+' typically based around tasks like "validate a user's text input" or "convert arbitrary text input
+' into a usable numeric value".
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
 '***************************************************************************
 
 Option Explicit
+
 
 'Check a Long-type value to see if it falls within a given range
 Public Function RangeValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVal cMax As Double) As Boolean
@@ -48,14 +53,25 @@ Public Function EntryValid(ByVal checkVal As Variant, ByVal cMin As Double, ByVa
     End If
 End Function
 
-'A custom CDbl function that accepts both commas and decimals as a separator
+'PD uses this (cheap, possibly ill-conceived) custom CDbl() function to coerce arbitrary floating-point
+' text into a proper numeric type, regardless of locale settings.  The function *will* fail if thousands
+' separators are present - the text *must* be limited to a single separator of standard type (".", ",",
+' and the Arabic decimal separator 0x066b are currently allowed).
+'
+'This function is used to work around one of the more annoying aspects of portable software - the possibility
+' of underlying system/user locale data changing arbitrarily, and possibly changing in ways that inconvenience
+' the user (e.g. a U.S. traveler trying to use a portable app while on vacation in the E.U.).  The hope is
+' that it allows users to enter floating-point values however they want, without worrying about system
+' settings they may/may not have control over.
 Public Function CDblCustom(ByVal srcString As String) As Double
 
-    'Replace commas with periods
-    If (InStr(1, srcString, ",", vbBinaryCompare) > 0) Then srcString = Replace$(srcString, ",", ".", , , vbBinaryCompare)
+    'Coerce arbitrary decimal separators into the standard, locale-invariant "."
+    If (InStr(1, srcString, ",", vbBinaryCompare) <> 0) Then srcString = Replace$(srcString, ",", ".", , , vbBinaryCompare)
+    If (InStr(1, srcString, ChrW$(&H66B&), vbBinaryCompare) <> 0) Then srcString = Replace$(srcString, ChrW$(&H66B&), ".", , , vbBinaryCompare)
     
-    'We can now use Val() to convert to Double
-    If IsNumberLocaleUnaware(srcString) Then
+    'Perform a final check to make sure the string looks like a valid, locale-invariant number;
+    ' if it does, use VB's built-in Val() to convert to Double.
+    If TextSupport.IsNumberLocaleUnaware(srcString) Then
         CDblCustom = Val(srcString)
     Else
         CDblCustom = 0#
@@ -65,45 +81,47 @@ End Function
 
 'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
 ' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
-' for the code.  (Note that the original function listed there is buggy!  I had to add some
-' fixes for exponent strings, which the original code did not handle correctly.)
-Public Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
+' for the code.  (Note that the original function listed there is buggy!  I had to add fixes for
+' exponent strings because the original code did not handle them correctly.)
+Public Function IsNumberLocaleUnaware(ByRef srcExpression As String) As Boolean
     
-    Dim Negative As Boolean
-    Dim Number As Boolean
-    Dim Period As Boolean
-    Dim Positive As Boolean
-    Dim Exponent As Boolean
+    Dim numIsNegative As Boolean, numIsPositive As Boolean
+    Dim txtIsNumber As Boolean, txtIsPeriod As Boolean, txtIsExponent As Boolean
+    
     Dim x As Long
-    For x = 1& To Len(Expression)
-        Select Case Mid$(Expression, x, 1&)
-        Case "0" To "9"
-            Number = True
-        Case "-"
-            If Period Or Number Or Negative Or Positive Then Exit Function
-            Negative = True
-        Case "."
-            If Period Or Exponent Then Exit Function
-            Period = True
-        Case "E", "e"
-            If Not Number Then Exit Function
-            If Exponent Then Exit Function
-            Exponent = True
-            Number = False
-            Negative = False
-            Period = False
-        Case "+"
-            If Not Exponent Then Exit Function
-            If Number Or Negative Or Positive Then Exit Function
-            Positive = True
-        Case " ", vbTab, vbVerticalTab, vbCr, vbLf, vbFormFeed
-            If Period Or Number Or Exponent Or Negative Then Exit Function
-        Case Else
-            Exit Function
+    For x = 1& To Len(srcExpression)
+    
+        Select Case Mid$(srcExpression, x, 1&)
+            
+            Case "0" To "9"
+                txtIsNumber = True
+            Case "-"
+                If txtIsPeriod Or txtIsNumber Or numIsNegative Or numIsPositive Then Exit Function
+                numIsNegative = True
+            Case "."
+                If (txtIsPeriod Or txtIsExponent) Then Exit Function
+                txtIsPeriod = True
+            Case "E", "e"
+                If (Not txtIsNumber) Then Exit Function
+                If txtIsExponent Then Exit Function
+                txtIsExponent = True
+                txtIsNumber = False
+                numIsNegative = False
+                txtIsPeriod = False
+            Case "+"
+                If (Not txtIsExponent) Then Exit Function
+                If (txtIsNumber Or numIsNegative Or numIsPositive) Then Exit Function
+                numIsPositive = True
+            Case " ", vbTab, vbVerticalTab, vbCr, vbLf, vbFormFeed
+                If (txtIsPeriod Or txtIsNumber Or txtIsExponent Or numIsNegative) Then Exit Function
+            Case Else
+                Exit Function
+        
         End Select
+        
     Next x
         
-    IsNumberLocaleUnaware = Number
+    IsNumberLocaleUnaware = txtIsNumber
     
 End Function
 

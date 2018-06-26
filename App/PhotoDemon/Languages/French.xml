@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.364</langversion>
+<langversion>6.7.365</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1734,6 +1734,11 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
+<original>GNU LGPLv2.1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>artistic license</original>
 <translation>licence artistique</translation>
 </phrase>
@@ -1768,7 +1773,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -4652,7 +4657,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
-<!-- pdSpinner.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdSpinner.ctl contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdSpinner.ctl-->
 
@@ -15429,12 +15434,29 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_MacroSession.frm-->
 
+<!-- BEGIN text for Plugin_Cairo.bas -->
+
+<phrase>
+<original>this plugin is not compatible with your version of Windows</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for Plugin_Cairo.bas-->
+
+<!-- BEGIN text for Evaluator.bas -->
+
+<!-- Evaluator.bas contains 0 phrases. -->
+
+<!-- END text for Evaluator.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2585</phrasecount>
+<phrasecount>2587</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4713 phrases. -->
-<!-- 2128 are duplicates, so only 2585 unique phrases have been written to file. -->
-<!-- These 2585 phrases contain approximately 12391 total words. -->
+<!-- As of this build, PhotoDemon contains 4719 phrases. -->
+<!-- 2132 are duplicates, so only 2587 unique phrases have been written to file. -->
+<!-- These 2587 phrases contain approximately 12402 total words. -->
 
 </pdData>

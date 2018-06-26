@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2018 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 27/February/17
-'Last update: extend "significant digits" property to support any arbitrary precision
+'Last updated: 26/June/18
+'Last update: integrate with Evaluator module to support arbitrary formulae evaluation
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -50,6 +50,9 @@ Attribute VB_Exposed = False
 ' 3) Locale handling (so that both comma and decimal can be supported as valid input)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for floating-point values, with automatic formatting as relevant
+' 6) Evaluation of simple mathematical formulae, e.g. "(1+2)*3" will evaluate to "9" automatically,
+'    with the final value reflected via the Value property as the formula is entered, and the edit box
+'    text changed to match the final result when the edit box loses focus.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -58,10 +61,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This object can raise a Change event (which triggers when the Value property is changed by ANY means) as well as a
-' an event I call "FinalChange".  FinalChange triggers under the same conditions as Change, *EXCEPT* when the mouse
-' button is held down over one of the spinners.  FinalChange will not fire until the mouse button is released, which
-' makes it ideal for things like syncing time-consuming UI elements.
+'This object can raise a Change event (which triggers when the Value property is changed by ANY means)
+' as well as a an event I call "FinalChange".  FinalChange triggers under the same conditions as Change,
+' *EXCEPT* when the mouse button is held down over one of the spinners.  FinalChange will not fire until
+' the mouse button is released, which makes it ideal for syncing things like time-consuming UI elements.
 Public Event Change()
 Public Event FinalChange()
 Public Event ResetClick()
@@ -302,14 +305,14 @@ Attribute Value.VB_UserMemId = 0
 End Property
 
 Public Property Let Value(ByVal newValue As Double)
-        
+    
     'For performance reasons, we don't make any internal changes unless the new value deviates from the existing one.
     ' (The exception to the rule is if the control is currently in error state; if that happens, we process all new
     ' value requests, in hope of receiving one that resolves the error.)
     If (newValue <> m_Value) Or m_ErrorState Then
         
         m_Value = newValue
-                
+        
         'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
         ' will momentarily solve any faulty bound/value relationships.)
         If PDMain.IsProgramRunning() Then
@@ -605,7 +608,7 @@ Private Sub m_EditBox_Change()
             RedrawBackBuffer
         End If
         m_textBoxInitiated = True
-        Me.Value = CDblCustom(m_EditBox.Text)
+        Me.Value = Evaluator.Evaluate(m_EditBox.Text)
         m_textBoxInitiated = False
     Else
         If Me.Enabled Then
@@ -630,10 +633,12 @@ Private Sub m_EditBox_LostFocusAPI()
     m_FocusCount = m_FocusCount - 1
     EvaluateFocusCount
     
-    'Validate the edit box's contents when focus is lost
+    'Validate the edit box's contents when focus is lost, and if a formula was entered, place its final
+    ' calculation result in the edit box (instead of the formula)
     If IsTextEntryValid() Then
         If m_ErrorState Then m_ErrorState = False
-        Value = CDblCustom(m_EditBox.Text)
+        Me.Value = Evaluator.Evaluate(m_EditBox.Text)
+        m_EditBox.Text = GetFormattedStringValue(m_Value)
     Else
         If Me.Enabled Then m_ErrorState = True
     End If
@@ -1129,19 +1134,27 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         If (cursorPos >= Len(chkString)) Then cursorPos = Len(chkString)
         m_EditBox.SelStart = cursorPos
     End If
+    
+    Dim checkVal As Double
+    
+    'If the entry is numeric, ensure it lies within the proper range for this control
+    If IsNumeric(chkString) Then
+        checkVal = TextSupport.CDblCustom(chkString)
+        IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
+        If (Not IsTextEntryValid) And displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
         
-    If (Not IsNumeric(chkString)) Then
-        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text
-        IsTextEntryValid = False
+    'If the entry is *not* numeric, attempt to evaluate it as a formula
     Else
         
-        Dim checkVal As Double
-        checkVal = CDblCustom(chkString)
-    
-        If (checkVal >= m_Min) And (checkVal <= m_Max) Then
-            IsTextEntryValid = True
+        'Can the text be evaluated as an expression?
+        If Evaluator.CanEvaluate(chkString) Then
+            checkVal = Evaluator.Evaluate(chkString)
+            IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
+            If (Not IsTextEntryValid) And displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+        
+        'If the evaluator fails, place the edit box in an error state (and displays a red, chunky outline)
         Else
-            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text
             IsTextEntryValid = False
         End If
         
@@ -1152,17 +1165,24 @@ End Function
 'After a component of this control obtains or loses focus, you need to call this function.  This function will figure
 ' out if it's time to raise a matching Got/LostFocusAPI event for the control as a whole.
 Private Sub EvaluateFocusCount()
+    
     If (m_FocusCount <> 0) Then
         If (Not m_HasFocus) Then
             m_HasFocus = True
             RaiseEvent GotFocusAPI
         End If
+    
+    'When focus count = 0, it means all component controls have lost focus.  Raise a LostFocus event
+    ' that our parent can use as necessary.
     Else
+    
         If m_HasFocus Then
             m_HasFocus = False
             RaiseEvent LostFocusAPI
         End If
+        
     End If
+    
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

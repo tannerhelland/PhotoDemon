@@ -100,8 +100,7 @@ Public Function InitializeCairo() As Boolean
     'Due to current null-pointer crashes on XP (which I have tried and failed to resolve),
     ' Cairo support is limited to Win 7+.  It's possible that the library will also run fine on Vista,
     ' but without an active test rig, I'm not going to risk it.
-    If False Then
-    'If OS.IsWin7OrLater Then
+    If OS.IsWin7OrLater Then
         
         If (m_hLibCairo = 0) Then
         
@@ -128,11 +127,11 @@ End Function
 
 'When PD closes, be a good citizen and release our library handle!
 Public Sub ReleaseCairo()
-    VBHacks.FreeLib m_hLibCairo
+    If (m_hLibCairo <> 0) Then VBHacks.FreeLib m_hLibCairo
 End Sub
 
 Public Function GetCairoVersion() As String
-    GetCairoVersion = Strings.StringFromCharPtr(cairo_version_string(), False)
+    If (m_hLibCairo <> 0) Then GetCairoVersion = Strings.StringFromCharPtr(cairo_version_string(), False) Else GetCairoVersion = g_Language.TranslateMessage("this plugin is not compatible with your version of Windows")
 End Function
 
 'Only works on 32-bpp DIBs at present
