@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.56</langversion>
+<langversion>1.0.58</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4654,7 +4654,23 @@ or the File > Open and File > Import menus.</original>
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
-<!-- pdSpinner.ctl contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>%1 = %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"%1" produces an out of range result (%2).
+The final value must be between %3 and %4.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon doesn't understand the expression: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdSpinner.ctl-->
 
@@ -15448,10 +15464,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2587</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4719 phrases. -->
-<!-- 2132 are duplicates, so only 2587 unique phrases have been written to file. -->
-<!-- These 2587 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4733 phrases. -->
+<!-- 2143 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12418 total words. -->
 
 </pdData>

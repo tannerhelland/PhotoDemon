@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.582</langversion>
+<langversion>7.2.613</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -302,12 +302,12 @@
 
 <phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Start des Plugin-Dienstes fehlgeschlagen (Pipe konnte nicht erstellt werden).</translation>
+<translation>Start des Plugin-Dienstes ist fehlgeschlagen (Pipe konnte nicht erstellt werden).</translation>
 </phrase>
 
 <phrase>
 <original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Start des Plugin-Dienstes fehlgeschlagen (Prozess konnte nicht erstellt werden: %1).</translation>
+<translation>Start des Plugin-Dienstes ist fehlgeschlagen (Prozess konnte nicht erstellt werden: %1).</translation>
 </phrase>
 
 <!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -734,12 +734,12 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 ist fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 ist fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -1276,7 +1276,7 @@ Schließen Sie bitte diese Datei in allen anderen laufenden Programmen, dann ver
 
 <phrase>
 <original>Failed to load %1</original>
-<translation>Laden von %1 fehlgeschlagen</translation>
+<translation>Laden von %1 ist fehlgeschlagen</translation>
 </phrase>
 
 <phrase>
@@ -1294,7 +1294,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 
 <phrase>
 <original>Image import failed</original>
-<translation>Bildimport fehlgeschlagen</translation>
+<translation>Bildimport ist fehlgeschlagen</translation>
 </phrase>
 
 <phrase>
@@ -1312,7 +1312,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 
 <phrase>
 <original>Image Import Failed</original>
-<translation>Bildimport fehlgeschlagen</translation>
+<translation>Bildimport ist fehlgeschlagen</translation>
 </phrase>
 
 <phrase>
@@ -1735,7 +1735,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>GNU LGPLv2.1</original>
-<translation></translation>
+<translation>GNU LGPLv2.1</translation>
 </phrase>
 
 <phrase>
@@ -1839,12 +1839,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
+<translation>Unbekannter Fehler ist aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
 <original>Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?</original>
-<translation>Scan erfolgreich, aber Speichern der temporären Datei fehlgeschlagen. Ist es möglich, dass Ihr Festplattenlaufwerk voll (oder fast voll) ist?</translation>
+<translation>Scan erfolgreich, aber temporäres Speichern der Datei ist fehlgeschlagen. Ist es möglich, dass Ihr Festplattenlaufwerk voll (oder fast voll) ist?</translation>
 </phrase>
 
 <phrase>
@@ -1854,7 +1854,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Fehler beim Zugriff auf temporäre Datei. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Starten Sie bitte PhotoDemon mit Administratorrechten und versuchen es erneut.</translation>
+<translation>Temporärer Fehler bei Dateizugriff. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Starten Sie bitte PhotoDemon mit Administratorrechten und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -1880,7 +1880,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
-<translation>Import via FreeImage fehlgeschlagen (Fehler # %1)</translation>
+<translation>Import via FreeImage ist fehlgeschlagen (Fehler # %1)</translation>
 </phrase>
 
 <phrase>
@@ -2284,7 +2284,7 @@ Beschreibung: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation></translation>
+<translation>Auswahl modifizieren</translation>
 </phrase>
 
 <phrase>
@@ -2445,7 +2445,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
+<translation>Unbekannter Fehler ist aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2646,7 +2646,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>unknown</original>
-<translation></translation>
+<translation>Unbekannt</translation>
 </phrase>
 
 <phrase>
@@ -2869,7 +2869,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation>Download des Bildes fehlgeschlagen. Kopieren Sie bitte eine gültige Bild-URL und versuchen es erneut.</translation>
+<translation>Download des Bildes ist fehlgeschlagen. Kopieren Sie bitte eine gültige Bild-URL und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2909,7 +2909,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Failed to load embedded image; invalid header found.</original>
-<translation>Fehler beim Laden des eingebetteten Bildes; ungültigen Header gefunden.</translation>
+<translation>Laden des eingebetteten Bildes ist fehlgeschlagen; ungültigen Header gefunden.</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3482,7 +3482,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Verzeichnis ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Verzeichnis ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
@@ -3492,7 +3492,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datenfragment ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datenfragment ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
@@ -3502,7 +3502,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datei-Node ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datei-Node ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
@@ -3517,7 +3517,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Checksum failed for node #</original>
-<translation>Prüfsumme fehlgeschlagen für Node #</translation>
+<translation>Prüfsumme ist fehlgeschlagen für Node #</translation>
 </phrase>
 
 <!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -4660,7 +4660,23 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
-<!-- pdSpinner.ctl contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>%1 = %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"%1" produces an out of range result (%2).
+The final value must be between %3 and %4.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon doesn't understand the expression: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdSpinner.ctl-->
 
@@ -5882,12 +5898,12 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Create macro</original>
-<translation></translation>
+<translation>Makro erstellen</translation>
 </phrase>
 
 <phrase>
 <original>From session history</original>
-<translation></translation>
+<translation>Aus Sitzungsverlauf</translation>
 </phrase>
 
 <phrase>
@@ -14502,7 +14518,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>translation failed!</original>
-<translation>Übersetzung fehlgeschlagen!</translation>
+<translation>Übersetzung ist fehlgeschlagen!</translation>
 </phrase>
 
 <phrase>
@@ -15393,42 +15409,42 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Create macro from session history</original>
-<translation></translation>
+<translation>Makro aus Sitzungsverlauf erstellen</translation>
 </phrase>
 
 <phrase>
 <original>first action</original>
-<translation></translation>
+<translation>Erste Aktion</translation>
 </phrase>
 
 <phrase>
 <original>last action</original>
-<translation></translation>
+<translation>Letzte Aktion</translation>
 </phrase>
 
 <phrase>
 <original>* current image state in the main window</original>
-<translation></translation>
+<translation>* aktueller Bildzustand im Hauptfenster</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation></translation>
+<translation>WARNUNG: Dies ist kein gültiges Makro. Sie müssen mindestens eine Aktion hinzufügen, die das Bild modifiziert.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid macro</original>
-<translation></translation>
+<translation>Ungültiges Makro</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation></translation>
+<translation>WARNUNG: Dies ist kein gültiges Makro. Die letzte Aktion kann nicht nach der ersten Aktion erfolgen.</translation>
 </phrase>
 
 <phrase>
 <original>Your final macro will contain %1 action(s).</original>
-<translation></translation>
+<translation>Ihr finales Makro enthält %1 Aktion(en).</translation>
 </phrase>
 
 <!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -15439,7 +15455,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>this plugin is not compatible with your version of Windows</original>
-<translation></translation>
+<translation>Dieses Plugin ist nicht mit Ihrer Windows-Version kompatibel</translation>
 </phrase>
 
 <!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -15454,10 +15470,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2587</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4719 phrases. -->
-<!-- 2132 are duplicates, so only 2587 unique phrases have been written to file. -->
-<!-- These 2587 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4733 phrases. -->
+<!-- 2143 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12418 total words. -->
 
 </pdData>

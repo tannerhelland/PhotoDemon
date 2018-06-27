@@ -767,6 +767,7 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     m_MouseButtonState = 0
+    m_MouseInsideUC = False
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -911,6 +912,14 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
             
         End If
         
+        'If the mouse is *not* over the control, reset the last-known mouse (x, y).  These values are used to calculate
+        ' tooltip positioning, and for keyboard-centric controls (like edit boxes), we want the tooltip to default to
+        ' displaying immediately below the control.
+        If (Not m_MouseInsideUC) Then
+            m_LastMouseX = newWidth \ 2
+            m_LastMouseY = newHeight
+        End If
+        
     End If
     
 End Sub
@@ -995,7 +1004,7 @@ End Function
 ' (IMPORTANT NOTE: per Windows rules, a parentHwnd is required.  We can't request the parent hWnd at creation time,
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
-Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
+Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False, Optional ByVal raiseImmediatelyRegardlessOfMouse As Boolean = False)
     
     If PDMain.IsProgramRunning() Then
     
@@ -1020,7 +1029,7 @@ Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByRef newTooltip As String, O
         Else
             'If a tooltip is already active, or if the caller wants immediate tooltip display and the mouse
             ' is inside this control, update the existing tooltip immediately.
-            If UserControls.IsTooltipActive(m_hWnd) Or (m_TTImmediate And m_MouseInsideUC) Then RaiseTooltip m_LastMouseX, m_LastMouseY
+            If UserControls.IsTooltipActive(m_hWnd) Or (m_TTImmediate And m_MouseInsideUC) Or (m_TTImmediate And raiseImmediatelyRegardlessOfMouse) Then RaiseTooltip m_LastMouseX, m_LastMouseY
         End If
         
     End If

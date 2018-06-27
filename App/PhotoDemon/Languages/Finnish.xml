@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3348</langversion>
+<langversion>6.8.3350</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4651,7 +4651,23 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
-<!-- pdSpinner.ctl contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>%1 = %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"%1" produces an out of range result (%2).
+The final value must be between %3 and %4.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon doesn't understand the expression: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdSpinner.ctl-->
 
@@ -15447,10 +15463,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2587</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4719 phrases. -->
-<!-- 2132 are duplicates, so only 2587 unique phrases have been written to file. -->
-<!-- These 2587 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4733 phrases. -->
+<!-- 2143 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12418 total words. -->
 
 </pdData>

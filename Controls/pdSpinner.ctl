@@ -127,6 +127,22 @@ Attribute m_DownButtonTimer.VB_VarHelpID = -1
 'When the current control value is invalid, this is set to TRUE
 Private m_ErrorState As Boolean
 
+'If the current entry appears to be a formula (instead of a bare numeric value), this will be set to TRUE.
+' We insta-display tooltips when formulas are entered, so the user can see the result of the calculation.
+Private Enum PD_SpinEntryType
+    set_Numeric = 0
+    set_NumericButOOB = 1
+    set_Formula = 2
+    set_FormulaButOOB = 3
+    set_Broken = 4
+End Enum
+
+#If False Then
+    Private Const set_Numeric = 0, set_NumericButOOB = 1, set_Formula = 2, set_FormulaButOOB = 3, set_Broken = 4
+#End If
+
+Private m_EntryType As PD_SpinEntryType
+
 '2D painting support classes
 Private m_Painter As pd2DPainter
 
@@ -602,19 +618,39 @@ Private Sub m_EditBox_Change()
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
-    If IsTextEntryValid() Then
-        If m_ErrorState Then
-            m_ErrorState = False
-            RedrawBackBuffer
-        End If
-        m_textBoxInitiated = True
-        Me.Value = Evaluator.Evaluate(m_EditBox.Text)
-        m_textBoxInitiated = False
-    Else
-        If Me.Enabled Then
+    If Me.Enabled Then
+    
+        If IsTextEntryValid() Then
+            If m_ErrorState Then
+                m_ErrorState = False
+                RedrawBackBuffer
+            End If
+            m_textBoxInitiated = True
+            Me.Value = Evaluator.Evaluate(m_EditBox.Text)
+            m_textBoxInitiated = False
+        Else
             m_ErrorState = True
             RedrawBackBuffer
         End If
+        
+        'Update the tooltip, as appropriate
+        Dim tipText As String
+        If (m_EntryType = set_Numeric) Then
+            Me.AssignTooltip vbNullString, vbNullString, False
+        ElseIf (m_EntryType = set_NumericButOOB) Then
+            tipText = g_Language.TranslateMessage("%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
+            Me.AssignTooltip tipText, "Invalid entry", True
+        ElseIf (m_EntryType = set_Formula) Then
+            tipText = g_Language.TranslateMessage("%1 = %2", m_EditBox.Text, Me.Value)
+            Me.AssignTooltip tipText, vbNullString, True
+        ElseIf (m_EntryType = set_FormulaButOOB) Then
+            tipText = g_Language.TranslateMessage("""%1"" produces an out of range result (%2)." & vbCrLf & "The final value must be between %3 and %4.", m_EditBox.Text, Evaluator.Evaluate(m_EditBox.Text), GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max))
+            Me.AssignTooltip tipText, "Invalid entry", True
+        Else
+            tipText = g_Language.TranslateMessage("PhotoDemon doesn't understand the expression: %1", m_EditBox.Text)
+            Me.AssignTooltip tipText, "Invalid entry", True
+        End If
+        
     End If
     
 End Sub
@@ -642,6 +678,9 @@ Private Sub m_EditBox_LostFocusAPI()
     Else
         If Me.Enabled Then m_ErrorState = True
     End If
+    
+    'Clear the tooltip, if any
+    Me.AssignTooltip vbNullString, vbNullString, False
     
     'Focus changes require a redraw
     RedrawBackBuffer
@@ -1139,21 +1178,30 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     
     'If the entry is numeric, ensure it lies within the proper range for this control
     If IsNumeric(chkString) Then
+        m_EntryType = set_Numeric
         checkVal = TextSupport.CDblCustom(chkString)
         IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
-        If (Not IsTextEntryValid) And displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+        If (Not IsTextEntryValid) Then
+            m_EntryType = set_NumericButOOB
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+        End If
         
     'If the entry is *not* numeric, attempt to evaluate it as a formula
     Else
         
         'Can the text be evaluated as an expression?
         If Evaluator.CanEvaluate(chkString) Then
+            m_EntryType = set_Formula
             checkVal = Evaluator.Evaluate(chkString)
             IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
-            If (Not IsTextEntryValid) And displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+            If (Not IsTextEntryValid) Then
+                m_EntryType = set_FormulaButOOB
+                If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+            End If
         
         'If the evaluator fails, place the edit box in an error state (and displays a red, chunky outline)
         Else
+            m_EntryType = set_Broken
             If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text
             IsTextEntryValid = False
         End If
@@ -1226,5 +1274,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTitle As String = vbNullString, Optional ByVal raiseTipsImmediately As Boolean = False)
-    ucSupport.AssignTooltip Me.hWnd, newTooltip, newTooltipTitle
+    ucSupport.AssignTooltip Me.hWnd, newTooltip, newTooltipTitle, raiseTipsImmediately, raiseTipsImmediately
 End Sub
