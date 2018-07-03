@@ -114,9 +114,6 @@ End Enum
 
 Private m_ControlShape As COLOR_WHEEL_SHAPE
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -349,9 +346,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     m_MouseInsideRegion = -1
-    
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -772,23 +766,23 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         Dim i As Long
         For i = CV_Primary To CV_RedDown
             Drawing2D.QuickCreateSolidBrush cBrush, m_ColorDisplay(i)
-            m_Painter.FillPath cSurface, cBrush, m_ColorRegions(i)
-            m_Painter.DrawPath cSurface, cPen, m_ColorRegions(i)
+            PD2D.FillPath cSurface, cBrush, m_ColorRegions(i)
+            PD2D.DrawPath cSurface, cPen, m_ColorRegions(i)
         Next i
         
         'Draw a special outline around the central primary color, to help it stand out more.  (But only do this if
         ' the central primary color is UNSELECTED; if it's selected, we'll paint it in the accent color momentarily.)
         If (m_MouseInsideRegion <> CV_Primary) Then
             Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop
-            m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(CV_Primary)
-            m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(CV_Primary)
+            PD2D.DrawPath cSurface, cPenUIBase, m_ColorRegions(CV_Primary)
+            PD2D.DrawPath cSurface, cPenUITop, m_ColorRegions(CV_Primary)
         End If
         
         'If a subregion is currently hovered, trace it with a highlight outline.
         If (m_MouseInsideRegion >= 0) Then
             Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop, True
-            m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(m_MouseInsideRegion)
-            m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(m_MouseInsideRegion)
+            PD2D.DrawPath cSurface, cPenUIBase, m_ColorRegions(m_MouseInsideRegion)
+            PD2D.DrawPath cSurface, cPenUITop, m_ColorRegions(m_MouseInsideRegion)
         End If
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing

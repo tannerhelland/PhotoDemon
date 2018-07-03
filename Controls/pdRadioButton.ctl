@@ -89,9 +89,6 @@ Private m_RadioButtonRect As RectF
 ' padding calculations involved in positioning the radio button and caption relative to the control as a whole.
 Private m_ClickableRect As RectF, m_MouseInsideClickableRect As Boolean
 
-'pd2D is used for rendering
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -332,9 +329,6 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
-    'Prep a pd2D painter
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDRADIOBUTTON_COLOR_LIST: colorCount = [_Count]
@@ -484,7 +478,7 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSolidPen cPen, borderWidth, radioColorBorder
         
         With m_RadioButtonRect
-            m_Painter.DrawCircleF cSurface, cPen, .Left + .Width * 0.5, .Top + .Height * 0.5, .Width * 0.5
+            PD2D.DrawCircleF cSurface, cPen, .Left + .Width * 0.5, .Top + .Height * 0.5, .Width * 0.5
         End With
         
         'If the button state is TRUE, draw a smaller circle inside the border
@@ -493,7 +487,7 @@ Private Sub RedrawBackBuffer()
         
         If m_Value Then
             With m_RadioButtonRect
-                m_Painter.FillEllipseF cSurface, cBrush, .Left + Interface.FixDPIFloat(3), .Top + Interface.FixDPIFloat(3), .Width - Interface.FixDPIFloat(6), .Height - Interface.FixDPIFloat(6)
+                PD2D.FillEllipseF cSurface, cBrush, .Left + Interface.FixDPIFloat(3), .Top + Interface.FixDPIFloat(3), .Width - Interface.FixDPIFloat(6), .Height - Interface.FixDPIFloat(6)
             End With
         End If
         

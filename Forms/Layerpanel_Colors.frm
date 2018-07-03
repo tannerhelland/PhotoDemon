@@ -104,10 +104,6 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 'To avoid nested resize calls, trackers are used
 Private m_ResizeInProgress As Boolean
 
-'We do some custom rendering in this panel (for the color history dialog), so it's helpful to cache a
-' pd2DPainter object.
-Private m_Painter As pd2DPainter
-
 'As of Feb 2018, this panel now supports multiple rendering modes.  We can shortcut certain actions if
 ' certain panels are not visible, so it's important to track this.
 Public Enum PD_ColorPanelMode
@@ -148,7 +144,7 @@ Private Sub clrHistory_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue 
                 Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
                 Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
                 Drawing2D.QuickCreateSolidBrush cBrush, cmResult
-                m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+                PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
                 
                 Set cSurface = Nothing: Set cBrush = Nothing
             
@@ -299,9 +295,6 @@ Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered
     
     If PDMain.IsProgramRunning Then
     
-        Dim cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
-        
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         cSurface.SetSurfacePixelOffset P2_PO_Half
@@ -331,7 +324,7 @@ Private Sub cmdSettings_DrawButton(ByVal bufferDC As Long, ByVal buttonIsHovered
                 If (i = 0) Then .Left = .Left - .Width * 2.5
                 If (i = 2) Then .Left = .Left + .Width * 2.5
             End With
-            cPainter.FillRectangleF_FromRectF cSurface, cBrush, dotRectF(i)
+            PD2D.FillRectangleF_FromRectF cSurface, cBrush, dotRectF(i)
         Next i
         
         Set cBrush = Nothing: Set cSurface = Nothing
@@ -345,7 +338,6 @@ Private Sub Form_Load()
     m_ResizeInProgress = True
     
     'Prep some items related to the color history UI
-    Set m_Painter = New pd2DPainter
     clrHistory.RequestCustomSubclassing WM_PD_PRIMARY_COLOR_APPLIED, True
     
     'Load any last-used settings for this form

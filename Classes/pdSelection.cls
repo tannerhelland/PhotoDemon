@@ -237,10 +237,6 @@ Private m_LastOverlayCache As String
 ' they are stored in a dictionary, and only created/accessed as necessary.
 Private m_PropertyDict As pdDictionary
 
-'Rendering is handled via pd2D.  A default painter class is created with the class, so you never have to worry about
-' instantiating your own.
-Private m_Painter As pd2DPainter
-
 'Marching ant outlines require an animation timer
 Private WithEvents m_AntTimer As pdTimer
 Attribute m_AntTimer.VB_VarHelpID = -1
@@ -2089,10 +2085,10 @@ Private Sub CreateSelectionMask()
             If (Me.GetSelectionProperty_Float(sp_RoundedCornerRadius) = 0#) Then
             
                 If (Me.GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked
+                    PD2D.FillRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked
                 Else
                     maskPath.AddRectangle_RectF m_CornersLocked
-                    m_Painter.DrawRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked
+                    PD2D.DrawRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked
                 End If
             
             'RECTANGLE SELECTION *WITH* ROUNDED CORNERS
@@ -2106,10 +2102,10 @@ Private Sub CreateSelectionMask()
                 dstSurface.SetSurfacePixelOffset P2_PO_Half
                 
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillRoundRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked, actualRoundedRadius
+                    PD2D.FillRoundRectangleF_FromRectF dstSurface, foreBrush, fixedCornersLocked, actualRoundedRadius
                 Else
                     maskPath.AddRoundedRectangle_RectF m_CornersLocked, actualRoundedRadius
-                    m_Painter.DrawRoundRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked, actualRoundedRadius
+                    PD2D.DrawRoundRectangleF_FromRectF dstSurface, maskPen, fixedCornersLocked, actualRoundedRadius
                 End If
                 
             End If
@@ -2125,10 +2121,10 @@ Private Sub CreateSelectionMask()
             newEllipseHeight = PDMath.Max2Float_Single(fixedCornersLocked.Height - 1#, 1#)
                 
             If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                m_Painter.FillEllipseF dstSurface, foreBrush, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
+                PD2D.FillEllipseF dstSurface, foreBrush, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
             Else
                 maskPath.AddEllipse_Relative m_CornersLocked.Left, m_CornersLocked.Top, newEllipseWidth, newEllipseHeight
-                m_Painter.DrawEllipseF dstSurface, maskPen, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
+                PD2D.DrawEllipseF dstSurface, maskPen, fixedCornersLocked.Left, fixedCornersLocked.Top, newEllipseWidth, newEllipseHeight
             End If
             
         
@@ -2150,7 +2146,7 @@ Private Sub CreateSelectionMask()
             'Interior/exterior selections are easy: just add a single line to a path object
             If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
                 linePath.AddLine m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom
-                m_Painter.DrawPath dstSurface, linePen, linePath
+                PD2D.DrawPath dstSurface, linePen, linePath
                 m_Bounds = linePath.GetPathBoundariesF(linePen)
             Else
                     
@@ -2209,7 +2205,7 @@ Private Sub CreateSelectionMask()
                 
                 '*Now* we can draw this like any other bordered selection
                 maskPath.AddPath linePath
-                m_Painter.DrawPath dstSurface, maskPen, linePath
+                PD2D.DrawPath dstSurface, maskPen, linePath
                 
                 'Because it's convenient, calculate boundaries while we're here
                 m_Bounds = linePath.GetPathBoundariesF(maskPen)
@@ -2230,10 +2226,10 @@ Private Sub CreateSelectionMask()
                 polyPath.AddPolygon m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, (GetSelectionProperty_Float(sp_PolygonCurvature) > 0#), GetSelectionProperty_Float(sp_PolygonCurvature)
                 
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillPath dstSurface, foreBrush, polyPath
+                    PD2D.FillPath dstSurface, foreBrush, polyPath
                     m_Bounds = polyPath.GetPathBoundariesF()
                 Else
-                    m_Painter.DrawPath dstSurface, maskPen, polyPath
+                    PD2D.DrawPath dstSurface, maskPen, polyPath
                     m_Bounds = polyPath.GetPathBoundariesF(maskPen)
                 End If
                 
@@ -2256,10 +2252,10 @@ Private Sub CreateSelectionMask()
                 lassoPath.AddPolygon m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, (GetSelectionProperty_Float(sp_SmoothStroke) > 0#), GetSelectionProperty_Float(sp_SmoothStroke)
                 
                 If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
-                    m_Painter.FillPath dstSurface, foreBrush, lassoPath
+                    PD2D.FillPath dstSurface, foreBrush, lassoPath
                     m_Bounds = lassoPath.GetPathBoundariesF()
                 Else
-                    m_Painter.DrawPath dstSurface, maskPen, lassoPath
+                    PD2D.DrawPath dstSurface, maskPen, lassoPath
                     m_Bounds = lassoPath.GetPathBoundariesF(maskPen)
                 End If
             
@@ -2496,8 +2492,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         Dim i As Long
         
         'pd2D is used for all rendering.  Note that a "highlight" pen is only created if a POI is currently in use
-        Dim cSurface As pd2DSurface, cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True, dstCanvas.hWnd
         
         Dim cPenBaseNormal As pd2DPen, cPenTopNormal As pd2DPen, cPenBaseHighlight As pd2DPen, cPenTopHighlight As pd2DPen
@@ -2534,11 +2529,11 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             'In keeping with convention, corner nodes are rendered as squares centered over each node
             For i = 0 To 3
                 If (i = cornerPOI) Then
-                    cPainter.DrawRectangleF cSurface, cPenBaseHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-                    cPainter.DrawRectangleF cSurface, cPenTopHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    PD2D.DrawRectangleF cSurface, cPenBaseHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    PD2D.DrawRectangleF cSurface, cPenTopHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
                 Else
-                    cPainter.DrawRectangleF cSurface, cPenBaseNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-                    cPainter.DrawRectangleF cSurface, cPenTopNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    PD2D.DrawRectangleF cSurface, cPenBaseNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    PD2D.DrawRectangleF cSurface, cPenTopNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
                 End If
             Next i
             
@@ -2560,11 +2555,11 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 
                 For i = 0 To UBound(poiList)
                     If (i = curPOI) Then
-                        cPainter.DrawCircleF cSurface, cPenBaseHighlight, poiList(i).x, poiList(i).y, circRadius
-                        cPainter.DrawCircleF cSurface, cPenTopHighlight, poiList(i).x, poiList(i).y, circRadius
+                        PD2D.DrawCircleF cSurface, cPenBaseHighlight, poiList(i).x, poiList(i).y, circRadius
+                        PD2D.DrawCircleF cSurface, cPenTopHighlight, poiList(i).x, poiList(i).y, circRadius
                     Else
-                        cPainter.DrawCircleF cSurface, cPenBaseNormal, poiList(i).x, poiList(i).y, circRadius
-                        cPainter.DrawCircleF cSurface, cPenTopNormal, poiList(i).x, poiList(i).y, circRadius
+                        PD2D.DrawCircleF cSurface, cPenBaseNormal, poiList(i).x, poiList(i).y, circRadius
+                        PD2D.DrawCircleF cSurface, cPenTopNormal, poiList(i).x, poiList(i).y, circRadius
                     End If
                 Next i
             
@@ -2582,16 +2577,16 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                         If (i = 0) And (Not m_PolygonClosed) Then
                             Dim cBrushFill As pd2DBrush
                             Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 75#
-                            cPainter.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
+                            PD2D.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
                             Set cBrushFill = Nothing
                         End If
                         
                         If (i = curPOI) Then
-                            cPainter.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
-                            cPainter.DrawCircleF cSurface, cPenTopHighlight, polyX, polyY, circRadius
+                            PD2D.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
+                            PD2D.DrawCircleF cSurface, cPenTopHighlight, polyX, polyY, circRadius
                         Else
-                            cPainter.DrawCircleF cSurface, cPenBaseNormal, polyX, polyY, circRadius
-                            cPainter.DrawCircleF cSurface, cPenTopNormal, polyX, polyY, circRadius
+                            PD2D.DrawCircleF cSurface, cPenBaseNormal, polyX, polyY, circRadius
+                            PD2D.DrawCircleF cSurface, cPenTopNormal, polyX, polyY, circRadius
                         End If
                         
                     Next i
@@ -2603,7 +2598,7 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         
         'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
         ' this function gets expanded in the future.
-        Set cSurface = Nothing: Set cPainter = Nothing
+        Set cSurface = Nothing
         Set cPenBaseNormal = Nothing: Set cPenTopNormal = Nothing
         Set cPenBaseHighlight = Nothing: Set cPenTopHighlight = Nothing
         
@@ -2923,7 +2918,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
         GDI_Plus.GDIPlus_GraphicsSetCompositingMode cSurface.GetHandle, GP_CM_SourceCopy
         Drawing2D.QuickCreateSolidBrush cBrush, defaultFillColor, newA * 100
-        m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_ViewportOverlay.GetDIBWidth, m_ViewportOverlay.GetDIBHeight
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_ViewportOverlay.GetDIBWidth, m_ViewportOverlay.GetDIBHeight
         Set cBrush = Nothing: Set cSurface = Nothing
         
         'With the lookup table successfully generated, we can generate the overlay using identical code (regardless of the
@@ -3210,8 +3205,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         If (renderType = PDSR_Outline) Then
             
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
-            m_Painter.DrawPath cSurface, cPenUIBase, m_FinalOutline
-            m_Painter.DrawPath cSurface, cPenUITop, m_FinalOutline
+            PD2D.DrawPath cSurface, cPenUIBase, m_FinalOutline
+            PD2D.DrawPath cSurface, cPenUITop, m_FinalOutline
         
         'Render the outline using an animated "marching ants" approach
         Else
@@ -3229,8 +3224,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             cDottedPen.SetPenDashes_UNSAFE VarPtr(m_AntDashes(0)), 2
             cDottedPen.SetPenDashOffset m_AntDashOffset
             
-            m_Painter.DrawPath cSurface, cBlackPen, m_FinalOutline
-            m_Painter.DrawPath cSurface, cDottedPen, m_FinalOutline
+            PD2D.DrawPath cSurface, cBlackPen, m_FinalOutline
+            PD2D.DrawPath cSurface, cDottedPen, m_FinalOutline
                         
             'If marching ants are being used, make sure our timer is enabled now
             If (Not m_AntTimer.IsActive) Then
@@ -3719,9 +3714,6 @@ Private Sub Class_Initialize()
     
     'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
-    
-    'Prepare a pd2D rendering class and any associated rendering objects
-    Drawing2D.QuickCreatePainter m_Painter
     
     ReDim m_AntDashes(0 To 1) As Single
     m_AntDashes(0) = ANT_DASH_SIZE

@@ -1,16 +1,14 @@
 Attribute VB_Name = "Drawing2D"
 '***************************************************************************
-'High-Performance Backend-Agnostic 2D Rendering Interface
+'High-Performance 2D Rendering Interface
 'Copyright 2012-2018 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 11/May/16
 'Last update: continue migrating various rendering bits out of GDI+ and into this generic renderer.
 '
-'In 2015-2018, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton of 2D rendering tasks,
-' so it was finally time to migrate PD's hoary old GDI+ interface to a more modern solution.
-'
-'This module provides a renderer-agnostic solution for various 2D drawing tasks.  At present, it leans only on GDI+,
-' but I have tried to design it so that other backends can be supported without much trouble.
+'In 2015-2018, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton
+' of 2D rendering tasks, so it was finally time to migrate PD's hoary old GDI+ interface to a more
+' modern solution.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -520,12 +518,6 @@ Public Function GetNameOfFileFormat(ByVal srcFormat As PD_2D_FileFormatImport) A
     End Select
 End Function
 
-'Shortcut function for creating a generic painter
-Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
-    If (dstPainter Is Nothing) Then Set dstPainter = New pd2DPainter
-    QuickCreatePainter = True
-End Function
-
 'Shortcut function for creating a new rectangular region with the default rendering backend
 Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal rLeft As Single, ByVal rTop As Single, ByVal rWidth As Single, ByVal rHeight As Single) As Boolean
     If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion Else dstRegion.ResetAllProperties
@@ -661,27 +653,24 @@ Public Function QuickLoadPicture(ByRef dstObject As Object, ByVal srcPath As Str
         Dim dstSurface As pd2DSurface
         If Drawing2D.QuickCreateSurfaceFromDC(dstSurface, dstObject.hDC, True, dstObject.hWnd) Then
             
-            Dim cPainter As pd2DPainter
-            If Drawing2D.QuickCreatePainter(cPainter) Then
-                If resizeImageToFit Then
-                    
-                    'If the source surface is smaller than the destination surface, center the image to fit
-                    If ((srcSurface.GetSurfaceWidth < dstSurface.GetSurfaceWidth) And (srcSurface.GetSurfaceHeight < dstSurface.GetSurfaceHeight)) Then
-                        QuickLoadPicture = cPainter.DrawSurfaceI(dstSurface, (dstSurface.GetSurfaceWidth - srcSurface.GetSurfaceWidth) \ 2, (dstSurface.GetSurfaceHeight - srcSurface.GetSurfaceHeight) \ 2, srcSurface)
-                    Else
-                    
-                        'Calculate the correct target size, and use that size when painting.
-                        Dim newWidth As Long, newHeight As Long
-                        PDMath.ConvertAspectRatio srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, dstSurface.GetSurfaceWidth, dstSurface.GetSurfaceHeight, newWidth, newHeight
-                        
-                        dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
-                        QuickLoadPicture = cPainter.DrawSurfaceResizedI(dstSurface, (dstSurface.GetSurfaceWidth - newWidth) \ 2, (dstSurface.GetSurfaceHeight - newHeight) \ 2, newWidth, newHeight, srcSurface)
-                        
-                    End If
-                    
+            If resizeImageToFit Then
+                
+                'If the source surface is smaller than the destination surface, center the image to fit
+                If ((srcSurface.GetSurfaceWidth < dstSurface.GetSurfaceWidth) And (srcSurface.GetSurfaceHeight < dstSurface.GetSurfaceHeight)) Then
+                    QuickLoadPicture = PD2D.DrawSurfaceI(dstSurface, (dstSurface.GetSurfaceWidth - srcSurface.GetSurfaceWidth) \ 2, (dstSurface.GetSurfaceHeight - srcSurface.GetSurfaceHeight) \ 2, srcSurface)
                 Else
-                    QuickLoadPicture = cPainter.DrawSurfaceI(dstSurface, 0, 0, srcSurface)
+                
+                    'Calculate the correct target size, and use that size when painting.
+                    Dim newWidth As Long, newHeight As Long
+                    PDMath.ConvertAspectRatio srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, dstSurface.GetSurfaceWidth, dstSurface.GetSurfaceHeight, newWidth, newHeight
+                    
+                    dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
+                    QuickLoadPicture = PD2D.DrawSurfaceResizedI(dstSurface, (dstSurface.GetSurfaceWidth - newWidth) \ 2, (dstSurface.GetSurfaceHeight - newHeight) \ 2, newWidth, newHeight, srcSurface)
+                    
                 End If
+                
+            Else
+                QuickLoadPicture = PD2D.DrawSurfaceI(dstSurface, 0, 0, srcSurface)
             End If
             
         End If
@@ -762,58 +751,28 @@ Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optio
 End Sub
 
 'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when m_DebugMode = TRUE.
-Public Sub DEBUG_NotifyBrushCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Brush creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifyBrushCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
 End Sub
 
-Public Sub DEBUG_NotifyPathCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_PathCount_GDIPlus = m_PathCount_GDIPlus + 1 Else m_PathCount_GDIPlus = m_PathCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Path creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifyPathCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_PathCount_GDIPlus = m_PathCount_GDIPlus + 1 Else m_PathCount_GDIPlus = m_PathCount_GDIPlus - 1
 End Sub
 
-Public Sub DEBUG_NotifyPenCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifyPenCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
 End Sub
 
-Public Sub DEBUG_NotifyRegionCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_RegionCount_GDIPlus = m_RegionCount_GDIPlus + 1 Else m_RegionCount_GDIPlus = m_RegionCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Region creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifyRegionCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_RegionCount_GDIPlus = m_RegionCount_GDIPlus + 1 Else m_RegionCount_GDIPlus = m_RegionCount_GDIPlus - 1
 End Sub
 
-Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifySurfaceCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
 End Sub
 
-Public Sub DEBUG_NotifyTransformCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
-    Select Case targetBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            If objectCreated Then m_TransformCount_GDIPlus = m_TransformCount_GDIPlus + 1 Else m_TransformCount_GDIPlus = m_TransformCount_GDIPlus - 1
-        Case Else
-            InternalError "Bad Parameter", "Transform creation/destruction was not counted: backend ID unknown"
-    End Select
+Public Sub DEBUG_NotifyTransformCountChange(ByVal objectCreated As Boolean)
+    If objectCreated Then m_TransformCount_GDIPlus = m_TransformCount_GDIPlus + 1 Else m_TransformCount_GDIPlus = m_TransformCount_GDIPlus - 1
 End Sub
 
 'In a default build, external pd2D classes relay any internal errors to this function.  You may wish to modify those classes

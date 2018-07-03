@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.58</langversion>
+<langversion>1.0.59</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -262,6 +262,12 @@
 <!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for EffectPrep.bas-->
+
+<!-- BEGIN text for Evaluator.bas -->
+
+<!-- Evaluator.bas contains 0 phrases. -->
+
+<!-- END text for Evaluator.bas-->
 
 <!-- BEGIN text for Plugin_ExifTool.bas -->
 
@@ -1718,17 +1724,23 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for Palettes.bas-->
 
-<!-- BEGIN text for PDMath.bas -->
+<!-- BEGIN text for PD2D.bas -->
 
-<!-- PDMath.bas contains 0 phrases. -->
+<!-- PD2D.bas contains 0 phrases. -->
 
-<!-- END text for PDMath.bas-->
+<!-- END text for PD2D.bas-->
 
 <!-- BEGIN text for Debug.bas -->
 
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDMath.bas -->
+
+<!-- PDMath.bas contains 0 phrases. -->
+
+<!-- END text for PDMath.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -1775,6 +1787,17 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
+
+<!-- BEGIN text for Plugin_Cairo.bas -->
+
+<phrase>
+<original>this plugin is not compatible with your version of Windows</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for Plugin_Cairo.bas-->
 
 <!-- BEGIN text for Plugin_EZTwain.bas -->
 
@@ -2782,12 +2805,6 @@ P数値を入力してください。</translation>
 
 <!-- END text for pd2DGradient.cls-->
 
-<!-- BEGIN text for pd2DPainter.cls -->
-
-<!-- pd2DPainter.cls contains 0 phrases. -->
-
-<!-- END text for pd2DPainter.cls-->
-
 <!-- BEGIN text for pd2DPath.cls -->
 
 <!-- pd2DPath.cls contains 0 phrases. -->
@@ -2811,6 +2828,12 @@ P数値を入力してください。</translation>
 <!-- pd2DSurface.cls contains 0 phrases. -->
 
 <!-- END text for pd2DSurface.cls-->
+
+<!-- BEGIN text for pd2DSurfaceCairo.cls -->
+
+<!-- pd2DSurfaceCairo.cls contains 0 phrases. -->
+
+<!-- END text for pd2DSurfaceCairo.cls-->
 
 <!-- BEGIN text for pd2DTransform.cls -->
 
@@ -12578,6 +12601,11 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
+<original>PATRONS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>THANK YOU to our wonderful Patreon supporters!</original>
 <translation></translation>
 </phrase>
@@ -12587,7 +12615,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -15445,29 +15473,12 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_MacroSession.frm-->
 
-<!-- BEGIN text for Plugin_Cairo.bas -->
-
-<phrase>
-<original>this plugin is not compatible with your version of Windows</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for Plugin_Cairo.bas-->
-
-<!-- BEGIN text for Evaluator.bas -->
-
-<!-- Evaluator.bas contains 0 phrases. -->
-
-<!-- END text for Evaluator.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2591</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4733 phrases. -->
-<!-- 2143 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 12418 total words. -->
+<!-- As of this build, PhotoDemon contains 4735 phrases. -->
+<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
+<!-- These 2591 phrases contain approximately 12419 total words. -->
 
 </pdData>

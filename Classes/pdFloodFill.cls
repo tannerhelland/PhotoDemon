@@ -47,7 +47,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'A stack is used to track pixels that need to be checked
-Private m_Stack() As POINTAPI
+Private m_Stack() As PointAPI
 Private m_StackPosition As Long
 Private m_StackHeight As Long
 Private Const INITIAL_STACK_HEIGHT As Long = 4096
@@ -101,10 +101,10 @@ Private m_SearchMode As PD_FloodSearch
 Private m_AntialiasingMode As Boolean
 
 'Obviously the function needs a starting x/y position
-Private m_InitPoint As POINTAPI
+Private m_InitPoint As PointAPI
 
 'Flood fills always return a 32-bpp DIB that describes the flood fill results.  This DIB is painted via pd2D.
-Private m_Painter As pd2DPainter, m_Brush As pd2DBrush
+Private m_Brush As pd2DBrush
 
 'Get/set functions for all relevant flood fill parameters
 Friend Function GetAntialiasingMode() As Boolean
@@ -123,7 +123,7 @@ Friend Function SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
     m_CompareMode = newCompareMode
 End Function
 
-Friend Function GetInitialPoint() As POINTAPI
+Friend Function GetInitialPoint() As PointAPI
     GetInitialPoint = m_InitPoint
 End Function
 
@@ -220,10 +220,9 @@ Friend Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
         
-        If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
         If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
         
-        m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
+        PD2D.FillPath cSurface, m_Brush, dstOutlinePath
         Set cSurface = Nothing
         
         'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
@@ -580,7 +579,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
             yIn = m_StackPosition + (rightBound - leftBound + 1) * 2
             If (m_StackHeight < yIn) Then
                 m_StackHeight = yIn * 2 + 1
-                ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+                ReDim Preserve m_Stack(0 To m_StackHeight) As PointAPI
             End If
             
             'Now that a safe stack size is guaranteed, we can push the pixels above and below this one onto the stack
@@ -759,7 +758,7 @@ Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     'Resize the stack as necessary
     If (m_StackPosition > m_StackHeight) Then
         m_StackHeight = m_StackHeight * 2 + 1
-        ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+        ReDim Preserve m_Stack(0 To m_StackHeight) As PointAPI
     End If
     
     'Mark this point as "due to be checked", so it does not get re-checked
@@ -777,7 +776,7 @@ End Sub
 Friend Sub FreeUpResources()
     
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
-    ReDim m_Stack(0 To m_StackHeight) As POINTAPI
+    ReDim m_Stack(0 To m_StackHeight) As PointAPI
     
     m_BoundsX = 0
     m_BoundsY = 0
@@ -787,7 +786,6 @@ Friend Sub FreeUpResources()
     m_OutlineBoundsY = 0
     ReDim m_FillResults(0, 0) As Byte
     
-    Set m_Painter = Nothing
     Set m_Brush = Nothing
     Set m_FillOutline = Nothing
     
@@ -798,7 +796,7 @@ Private Sub Class_Initialize()
     'Reset all stack values
     m_StackPosition = 0
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
-    ReDim m_Stack(0 To m_StackHeight) As POINTAPI
+    ReDim m_Stack(0 To m_StackHeight) As PointAPI
     
     'Reset our check and fill arrays
     m_BoundsX = 0

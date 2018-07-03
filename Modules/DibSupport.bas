@@ -1142,11 +1142,10 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
             End If
             
             'Use pd2D to render the outline onto the image
-            Dim cPainter As pd2DPainter, cSurface As pd2DSurface
-            Drawing2D.QuickCreatePainter cPainter
+            Dim cSurface As pd2DSurface
             Drawing2D.QuickCreateSurfaceFromDC cSurface, srcDIB.GetDIBDC, True
-            cPainter.DrawPolygonF cSurface, outlinePen, numOfPoints, VarPtr(finalPolygon(0))
-            Set cSurface = Nothing: Set cPainter = Nothing
+            PD2D.DrawPolygonF cSurface, outlinePen, numOfPoints, VarPtr(finalPolygon(0))
+            Set cSurface = Nothing
             
             OutlineDIB = True
             

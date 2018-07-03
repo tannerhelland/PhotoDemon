@@ -86,9 +86,6 @@ Private m_FocusRectActive As Long
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -438,9 +435,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     ucSupport.RequestCaptionSupport
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTRIP_COLOR_LIST: colorCount = [_Count]
@@ -618,7 +612,7 @@ Private Sub RedrawBackBuffer()
         
             For i = 0 To m_numOfButtons - 1
                 With m_Buttons(i).btBounds
-                    m_Painter.DrawRectangleF cSurface, cPen, .Left, .Top, .Right - .Left, .Bottom - .Top
+                    PD2D.DrawRectangleF cSurface, cPen, .Left, .Top, .Right - .Left, .Bottom - .Top
                 End With
             Next i
             
@@ -632,13 +626,13 @@ Private Sub RedrawBackBuffer()
                 With m_Buttons(m_ButtonIndex).btBounds
                     cPen.ReleasePen
                     Drawing2D.QuickCreateSolidPen cPen, 4#, vbBlack, 100#
-                    m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, .Left, .Top, .Right, .Bottom
+                    PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, .Left, .Top, .Right, .Bottom
                 End With
                 
                 With m_Buttons(m_ButtonIndex).btBounds
                     cPen.ReleasePen
                     Drawing2D.QuickCreateSolidPen cPen, 3#, g_Themer.GetGenericUIColor(UI_Accent), 100#
-                    m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, .Left, .Top, .Right, .Bottom
+                    PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, .Left, .Top, .Right, .Bottom
                 End With
                 
             End If
@@ -655,8 +649,8 @@ Private Sub RedrawBackBuffer()
                 
                 Dim cOuterPen As pd2DPen
                 Drawing2D.QuickCreatePairOfUIPens cOuterPen, cPen, True
-                m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, tmpRectF
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+                PD2D.DrawRectangleF_FromRectF cSurface, cOuterPen, tmpRectF
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
                 Set cOuterPen = Nothing
                 
             End If

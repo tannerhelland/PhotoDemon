@@ -2005,7 +2005,7 @@ Public Declare Function FreeImage_AllocateEx Lib "FreeImage.dll" Alias "_FreeIma
   Optional ByVal GreenMask As Long = 0, _
   Optional ByVal BlueMask As Long = 0) As Long
            
-Public Declare Function FreeImage_AllocateExT Lib "FreeImage.dll" Alias "_FreeImage_AllocateExT@36" ( _
+Public Declare Function FreeImage_AllocateExT Lib "FreeImage.dll" Alias "_FreeImage_AllocateExT@40" ( _
            ByVal ImageType As FREE_IMAGE_TYPE, _
            ByVal Width As Long, _
            ByVal Height As Long, _
@@ -6002,4 +6002,55 @@ Private Sub FreeImage_ErrorHandler(ByVal imgFormat As FREE_IMAGE_FORMAT, ByVal p
         
     End If
     
+End Sub
+
+Public Sub FreeImage_TestRandomExportFeatures(ByRef dstFile As String)
+
+    'Create an easy-to-recognize palette (hue rainbow, from 0.0 to 1.0)
+    Dim tmpPalette() As RGBQuad
+    ReDim tmpPalette(0 To 255) As RGBQuad
+    
+    Dim r As Double, g As Double, b As Double
+    Dim i As Long
+    For i = 0 To 255
+        Colors.fHSVtoRGB CSng(i) / 255#, 1#, 1#, r, g, b
+        tmpPalette(i).Red = Int(r * 255#)
+        tmpPalette(i).Green = Int(g * 255#)
+        tmpPalette(i).Blue = Int(b * 255#)
+        tmpPalette(i).Alpha = 0
+    Next i
+    
+    'Allocate an 8-bpp FreeImage object
+    Dim hImage As Long
+    hImage = FreeImage_AllocateExT(FIT_BITMAP, 256, 256, 8, ByVal 0&, 0&, ByVal VarPtr(tmpPalette(0)))
+    
+    If (hImage <> 0) Then
+    
+        'Fill the image bits in an obvious pattern (each byte = its horizontal position)
+        Dim tmpScanLine() As Byte
+        ReDim tmpScanLine(0 To 255) As Byte
+        For i = 0 To 255
+            tmpScanLine(i) = i
+        Next i
+        
+        'Copy our image bits into FreeImage's buffer
+        Dim dstPtr As Long
+        For i = 0 To 255
+            dstPtr = FreeImage_GetScanline(hImage, i)
+            CopyMemoryStrict dstPtr, VarPtr(tmpScanLine(0)), 256
+        Next i
+        
+        'Create a blank transparency table (this will give us a "dummy" tRNS chunk in the final file)
+        For i = 0 To 255
+            tmpScanLine(i) = 0
+        Next i
+        FreeImage_SetTransparencyTable hImage, VarPtr(tmpScanLine(0)), 256
+        
+        'Export the PNG and free the FreeImage handle
+        FreeImage_SaveEx hImage, dstFile, FIF_PNG, FISO_PNG_Z_DEFAULT_COMPRESSION, FICD_8BPP
+        
+        FreeImage_Unload hImage
+        
+    End If
+
 End Sub

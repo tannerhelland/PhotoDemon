@@ -186,9 +186,6 @@ Private m_LastThemeID As String
 ' they're ready.
 Private m_SuspendAutoRepaint As Boolean
 
-'pd2DPaint classes, for generic fill/stroke capabilities
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -658,9 +655,9 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
             Drawing2D.QuickCreateSurfaceFromDC cSurface, m_BackBuffer.GetDIBDC, False
             
             If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-                m_Painter.FillRectangleI cSurface, cBrush, 0#, 0#, m_Width, m_Height
+                PD2D.FillRectangleI cSurface, cBrush, 0#, 0#, m_Width, m_Height
             Else
-                m_Painter.FillRectangleF cSurface, cBrush, rpLeft, rpTop, rpWidth, rpHeight
+                PD2D.FillRectangleF cSurface, cBrush, rpLeft, rpTop, rpWidth, rpHeight
             End If
             
         Else
@@ -1371,8 +1368,6 @@ Private Sub Class_Initialize()
     ' formal UC registration event.
     Set m_BackBuffer = New pdDIB
     Set m_Caption = New pdCaption
-    Set m_Painter = New pd2DPainter
-    Drawing2D.QuickCreatePainter m_Painter
     
 End Sub
 

@@ -37,9 +37,6 @@ Option Explicit
 'This class is not yet capable of serializing itself to/from XML strings, but it may be possible in the future...
 'Private cSerialize As pdParamXML
 
-'The backend used to manage this region.  At present, this is immutable; once set, it cannot be migrated.
-Private m_RegionBackend As PD_2D_RENDERING_BACKEND
-
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
 
@@ -56,102 +53,49 @@ Friend Function AddRectangleF(ByVal rLeft As Single, ByVal rTop As Single, ByVal
     tmpRectF.Width = rWidth
     tmpRectF.Height = rHeight
     
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            AddRectangleF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, tmpRectF, useCombineMode)
-    End Select
+    AddRectangleF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, tmpRectF, useCombineMode)
     
 End Function
 
 Friend Function AddRectangle_FromRectF(ByRef srcRectF As RectF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            AddRectangle_FromRectF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, srcRectF, useCombineMode)
-    End Select
-    
+    AddRectangle_FromRectF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, srcRectF, useCombineMode)
 End Function
 
 Friend Function AddRectangle_FromRectL(ByRef srcRectL As RectL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            AddRectangle_FromRectL = GDI_Plus.GDIPlus_RegionAddRectL(m_RegionHandle, srcRectL, useCombineMode)
-    End Select
-    
+    AddRectangle_FromRectL = GDI_Plus.GDIPlus_RegionAddRectL(m_RegionHandle, srcRectL, useCombineMode)
 End Function
 
 Friend Function AddRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            AddRegion = GDI_Plus.GDIPlus_RegionAddRegion(m_RegionHandle, srcRegion.GetHandle, useCombineMode)
-    End Select
-    
+    AddRegion = GDI_Plus.GDIPlus_RegionAddRegion(m_RegionHandle, srcRegion.GetHandle, useCombineMode)
 End Function
 
 Friend Function AddPath(ByRef srcPath As pd2DPath, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
-    
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            AddPath = GDI_Plus.GDIPlus_RegionAddPath(m_RegionHandle, srcPath.GetHandle, useCombineMode)
-    End Select
-    
+    AddPath = GDI_Plus.GDIPlus_RegionAddPath(m_RegionHandle, srcPath.GetHandle, useCombineMode)
 End Function
 
 Friend Function CloneRegion(ByRef srcRegion As pd2DRegion) As Boolean
-
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            CloneRegion = GDI_Plus.GDIPlus_RegionClone(srcRegion.GetHandle, m_RegionHandle)
-    End Select
-    
+    CloneRegion = GDI_Plus.GDIPlus_RegionClone(srcRegion.GetHandle, m_RegionHandle)
 End Function
 
 Friend Function GetRegionBoundsF() As RectF
-    If (m_RegionHandle <> 0) Then
-        Select Case m_RegionBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                GetRegionBoundsF = GDI_Plus.GDIPlus_RegionGetClipRectF(m_RegionHandle)
-        End Select
-    End If
+    If (m_RegionHandle <> 0) Then GetRegionBoundsF = GDI_Plus.GDIPlus_RegionGetClipRectF(m_RegionHandle)
 End Function
 
 Friend Function GetRegionBoundsL() As RectL
-    If (m_RegionHandle <> 0) Then
-        Select Case m_RegionBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                GetRegionBoundsL = GDI_Plus.GDIPlus_RegionGetClipRectI(m_RegionHandle)
-        End Select
-    End If
+    If (m_RegionHandle <> 0) Then GetRegionBoundsL = GDI_Plus.GDIPlus_RegionGetClipRectI(m_RegionHandle)
 End Function
 
 Friend Function IsPointInRegion(ByVal srcX As Single, ByVal srcY As Single) As Boolean
-    If (m_RegionHandle <> 0) Then
-        Select Case m_RegionBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                IsPointInRegion = GDI_Plus.GDIPlus_RegionContainsPoint(m_RegionHandle, srcX, srcY)
-        End Select
-    End If
+    If (m_RegionHandle <> 0) Then IsPointInRegion = GDI_Plus.GDIPlus_RegionContainsPoint(m_RegionHandle, srcX, srcY)
 End Function
 
 Friend Function IsPointInRegionInt(ByVal srcX As Long, ByVal srcY As Long) As Boolean
-    If (m_RegionHandle <> 0) Then
-        Select Case m_RegionBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                IsPointInRegionInt = GDI_Plus.GDIPlus_RegionContainsPointI(m_RegionHandle, srcX, srcY)
-        End Select
-    End If
+    If (m_RegionHandle <> 0) Then IsPointInRegionInt = GDI_Plus.GDIPlus_RegionContainsPointI(m_RegionHandle, srcX, srcY)
 End Function
 
 'Don't use this function unless you know what you're doing.  This will copy (*not* clone) an external handle from the
@@ -164,58 +108,28 @@ Friend Sub AssignExternalHandleDirectly(ByVal srcHandle As Long)
 End Sub
 
 Friend Function MakeRegionInfinite() As Boolean
-
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-             MakeRegionInfinite = GDI_Plus.GDIPlus_RegionSetInfinite(m_RegionHandle)
-    End Select
-    
+    MakeRegionInfinite = GDI_Plus.GDIPlus_RegionSetInfinite(m_RegionHandle)
 End Function
 
 Friend Function MakeRegionEmpty() As Boolean
-
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-             MakeRegionEmpty = GDI_Plus.GDIPlus_RegionSetEmpty(m_RegionHandle)
-    End Select
-    
+    MakeRegionEmpty = GDI_Plus.GDIPlus_RegionSetEmpty(m_RegionHandle)
 End Function
 
 Friend Function IsRegionInfinite() As Boolean
-
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-             IsRegionInfinite = GDI_Plus.GDIPlus_RegionIsInfinite(m_RegionHandle)
-    End Select
-    
+    IsRegionInfinite = GDI_Plus.GDIPlus_RegionIsInfinite(m_RegionHandle)
 End Function
 
 Friend Function IsRegionEmpty() As Boolean
-
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-             IsRegionEmpty = GDI_Plus.GDIPlus_RegionIsEmpty(m_RegionHandle)
-    End Select
-    
+    IsRegionEmpty = GDI_Plus.GDIPlus_RegionIsEmpty(m_RegionHandle)
 End Function
 
 Friend Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
-    
     If (m_RegionHandle = 0) Then Me.CreateRegion
-    
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-             IsEqual = GDI_Plus.GDIPlus_RegionsAreEqual(srcRegion.GetHandle, m_RegionHandle)
-    End Select
-    
+    IsEqual = GDI_Plus.GDIPlus_RegionsAreEqual(srcRegion.GetHandle, m_RegionHandle)
 End Function
 
 Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
@@ -224,10 +138,6 @@ Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     Else
         GetHandle = m_RegionHandle
     End If
-End Function
-
-Friend Function GetRegionBackend() As PD_2D_RENDERING_BACKEND
-    GetRegionBackend = m_RegionBackend
 End Function
 
 'Retrieve a copy of this region in GDI format.  Note that the caller is responsible for freeing the hRgn
@@ -240,29 +150,17 @@ Friend Function HasRegion() As Boolean
     HasRegion = (m_RegionHandle <> 0)
 End Function
 
-'You only need to manually initialize a backend if you plan on using a NON-DEFAULT backend.
-' (Objects with the default backend are initialized automatically.)
-Friend Function InitializeRegionBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
-    m_RegionBackend = targetBackend
-    InitializeRegionBackend = True
-End Function
-
 'Create an actual region handle using the current backend and the current region settings.
 ' NOTE: the caller doesn't *need* to call this directly.  If GetRegionHandle is called and the region doesn't
 '       yet exist, it will be auto-created.
 Friend Function CreateRegion() As Boolean
 
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
-    
-    'Call the backend-specific creation function
-    Select Case m_RegionBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            m_RegionHandle = GDI_Plus.GetGDIPlusRegionHandle()
-    End Select
+    m_RegionHandle = GDI_Plus.GetGDIPlusRegionHandle()
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
     CreateRegion = (m_RegionHandle <> 0)
-    If (CreateRegion And m_DebugMode) Then Drawing2D.DEBUG_NotifyRegionCountChange m_RegionBackend, True
+    If (CreateRegion And m_DebugMode) Then Drawing2D.DEBUG_NotifyRegionCountChange True
     
 End Function
 
@@ -270,17 +168,13 @@ Friend Function ReleaseRegion() As Boolean
     
     If (m_RegionHandle <> 0) Then
         
-        'Call the backend-specific release function
-        Select Case m_RegionBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                ReleaseRegion = GDI_Plus.ReleaseGDIPlusRegion(m_RegionHandle)
-        End Select
+        ReleaseRegion = GDI_Plus.ReleaseGDIPlusRegion(m_RegionHandle)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
         If ReleaseRegion Then
             m_RegionHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyRegionCountChange m_RegionBackend, False
+            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyRegionCountChange False
         End If
     
     Else

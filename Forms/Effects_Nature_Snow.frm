@@ -234,10 +234,6 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
     Dim blurNeeded As Boolean
     blurNeeded = (softenRadius > 0#)
     
-    'pd2D is used to render individual flakes.  Create a painter, surface, and brush.
-    Dim cPainter As pd2DPainter
-    Drawing2D.QuickCreatePainter cPainter
-    
     'If we're just gonna blur the flakes, we don't need to care about antialiasing.  If no blur is occurring,
     ' however, use antialiasing to improve output.
     Dim dstSurface As pd2DSurface
@@ -285,7 +281,7 @@ Public Sub ApplySnowEffect(ByVal effectParams As String, Optional ByVal toPrevie
         cBrush.SetBrushOpacity m_Randomize.GetRandomFloat_WH() * 67# + 33#
         
         'Draw our completed polygon, and use a "curvature" algorithm to give it a more natural shape.
-        cPainter.FillPolygonF_FromPtF dstSurface, cBrush, 3, VarPtr(shapeCorners(0)), True
+        PD2D.FillPolygonF_FromPtF dstSurface, cBrush, 3, VarPtr(shapeCorners(0)), True
     
     Next x
     

@@ -281,19 +281,19 @@ Private Sub Form_Load()
     
     'Super patrons
     actualText = g_Language.TranslateMessage("SUPER PATRONS")
-    If OS.IsWin7OrLater Then
-        uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
-        GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
-    Else
-        GeneratePatron actualText, , True
-    End If
+    'If OS.IsWin7OrLater Then
+    '    uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
+    '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
+    'Else
+    '    GeneratePatron actualText, , True
+    'End If
     
-    GeneratePatron "Johannes Nendel"
-    m_superPatronEndIndex = m_numOfPatrons
-    GeneratePatron vbNullString
+    'GeneratePatron "(name goes here)"
+    'm_superPatronEndIndex = m_numOfPatrons
+    'GeneratePatron vbNullString
     
     'Regular patrons (TODO someday soon, I hope!)
-    'actualText = g_Language.TranslateMessage("PATRONS")
+    actualText = g_Language.TranslateMessage("PATRONS")
     'If OS.IsWin7OrLater Then
     '    uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
     '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
@@ -451,12 +451,11 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
         
         'Manually paint an uncolored background
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background, Me.Enabled)
-        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cBrush = Nothing: Set cSurface = Nothing
         
         'Prepare and render the contributor's name
         Dim drawString As String
@@ -541,12 +540,11 @@ Private Sub lstPatrons_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
         
         'Manually paint an uncolored background
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background, Me.Enabled)
-        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cBrush = Nothing: Set cSurface = Nothing
         
         'Prepare and render the patron's name
         Dim drawString As String

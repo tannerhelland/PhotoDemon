@@ -143,9 +143,6 @@ End Enum
 
 Private m_EntryType As PD_SpinEntryType
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -731,9 +728,6 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_RIGHT, VK_DOWN, VK_LEFT, vbKeyAdd, vbKeySubtract
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSPINNER_COLOR_LIST: colorCount = [_Count]
@@ -975,11 +969,11 @@ Private Sub RedrawBackBuffer()
         
         'Start by filling the button regions.  We will overpaint these (as necessary) with relevant border styles
         Drawing2D.QuickCreateSolidBrush cBrush, downButtonFillColor
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_DownRect
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_DownRect
         cBrush.SetBrushColor upButtonFillColor
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_UpRect
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_UpRect
         cBrush.SetBrushColor resetButtonFillColor
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_ResetRect
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_ResetRect
         
         'Calculate positioning and color of the edit box border.  (Note that the edit box doesn't paint its own border;
         ' we render a pseudo-border onto the underlying UC around its position, instead.)
@@ -1005,7 +999,7 @@ Private Sub RedrawBackBuffer()
         ' and we attempt to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
         If (m_MouseOverUpButton Or m_MouseOverDownButton Or gotKeyFocus) Then
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
         
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
@@ -1018,42 +1012,42 @@ Private Sub RedrawBackBuffer()
         If m_MouseOverUpButton Or gotKeyFocus Then
             If (resetButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
             End If
             If (downButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
             End If
             If (upButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
             End If
         Else
             If m_MouseOverDownButton Or gotKeyFocus Then
                 If (resetButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
                 End If
                 If (upButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
                 End If
                 If (downButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
                 End If
             Else
                 If (upButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
                 End If
                 If (downButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
                 End If
                 If (resetButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
                 End If
             End If
         End If
@@ -1061,7 +1055,7 @@ Private Sub RedrawBackBuffer()
         'If neither spin button is active, paint the edit box last
         If (Not (m_MouseOverUpButton Or m_MouseOverDownButton)) Then
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
         
         'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
@@ -1080,8 +1074,8 @@ Private Sub RedrawBackBuffer()
         buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         
         Drawing2D.QuickCreateSolidPen cPen, 2#, upButtonArrowColor, , P2_LJ_Round, P2_LC_Round
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
+        PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
+        PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
                     
         'Next, the down-pointing arrow
         buttonPt1.x = m_DownRect.Left + FixDPIFloat(4) + 0.5
@@ -1094,8 +1088,8 @@ Private Sub RedrawBackBuffer()
         buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         
         cPen.SetPenColor downButtonArrowColor
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
+        PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
+        PD2D.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
         
         'Finally, calculate coordinate positions for the reset button arcs.  (These are drawn dynamically.)
         If m_ShowResetButton Then
@@ -1113,7 +1107,7 @@ Private Sub RedrawBackBuffer()
             'New single-arrow design (which matches "reset" icons in the rest of PD):
             cPen.SetPenStartCap P2_LC_Round
             cPen.SetPenEndCap P2_LC_ArrowAnchor
-            m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, 148, -305
+            PD2D.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, 148, -305
             
         End If
         
@@ -1122,8 +1116,8 @@ Private Sub RedrawBackBuffer()
         'resetAngleStart = 20#
         'cPen.SetPenStartCap P2_LC_ArrowAnchor
         'cPen.SetPenEndCap P2_LC_Round
-        'm_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
-        'm_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
+        'PD2D.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
+        'PD2D.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     

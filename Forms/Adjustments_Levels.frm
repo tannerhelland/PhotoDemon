@@ -1154,7 +1154,7 @@ Private Sub Form_Load()
     m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
     
     'Render sample gradients for input/output levels
-    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
     Dim boundsRectF As RectF
     With boundsRectF
         .Left = 0
@@ -1163,11 +1163,10 @@ Private Sub Form_Load()
         .Width = picOutputGradient.ScaleWidth
     End With
     
-    Drawing2D.QuickCreatePainter cPainter
     Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
     Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
-    cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
-    Set cSurface = Nothing: Set cBrush = Nothing: Set cPainter = Nothing
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
+    Set cSurface = Nothing: Set cBrush = Nothing
     picOutputGradient.Picture = picOutputGradient.Image
     
     'Apply translations and visual themes
@@ -1418,15 +1417,14 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
         blockFill.SetBrushMode P2_BM_Solid
         blockFill.SetBrushOpacity 100#
         
-        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         
         'Fill the target picture boxes with the current background color
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
         Drawing2D.QuickCreateSurfaceFromDC cSurface, picInputArrows.hDC, False
-        cPainter.FillRectangleF cSurface, cBrush, 0, 0, picInputArrows.ScaleWidth, picInputArrows.ScaleHeight
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picInputArrows.ScaleWidth, picInputArrows.ScaleHeight
         Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputArrows.hDC, False
-        cPainter.FillRectangleF cSurface, cBrush, 0, 0, picOutputArrows.ScaleWidth, picOutputArrows.ScaleHeight
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, picOutputArrows.ScaleWidth, picOutputArrows.ScaleHeight
         
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         
@@ -1463,17 +1461,17 @@ Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
             End If
             
             blockFill.SetBrushColor targetColor
-            cPainter.FillPath cSurface, blockFill, tmpBlock
+            PD2D.FillPath cSurface, blockFill, tmpBlock
             
             'The node outline and arrow fill varies by hover/active state
             If ((i = m_ActiveArrow) Or (i = m_HoverArrow)) Then
-                cPainter.DrawPath cSurface, activeOutlinePen, tmpBlock
-                cPainter.FillPath cSurface, activeArrowFill, tmpArrow
-                cPainter.DrawPath cSurface, activeOutlinePen, tmpArrow
+                PD2D.DrawPath cSurface, activeOutlinePen, tmpBlock
+                PD2D.FillPath cSurface, activeArrowFill, tmpArrow
+                PD2D.DrawPath cSurface, activeOutlinePen, tmpArrow
             Else
-                cPainter.DrawPath cSurface, inactiveOutlinePen, tmpBlock
-                cPainter.FillPath cSurface, inactiveArrowFill, tmpArrow
-                cPainter.DrawPath cSurface, inactiveOutlinePen, tmpArrow
+                PD2D.DrawPath cSurface, inactiveOutlinePen, tmpBlock
+                PD2D.FillPath cSurface, inactiveArrowFill, tmpArrow
+                PD2D.DrawPath cSurface, inactiveOutlinePen, tmpArrow
             End If
             
         Next i

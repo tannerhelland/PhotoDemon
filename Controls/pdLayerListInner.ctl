@@ -79,9 +79,6 @@ Public Event LostFocusAPI()
 'The rectangle where the list is actually rendered
 Private m_ListRect As RectF
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -686,9 +683,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_DELETE, VK_INSERT, VK_SPACE, VK_TAB
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLAYERBOX_COLOR_LIST: colorCount = [_Count]
@@ -1010,7 +1004,7 @@ Private Sub RedrawBackBuffer()
                         'Fill this block with the appropriate color.  (The actively selected layer is highlighted.)
                         If layerIsSelected Then paintColor = itemColorSelectedFill Else paintColor = itemColorUnselectedFill
                         Drawing2D.QuickCreateSolidBrush cBrush, paintColor
-                        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, blockRect
+                        PD2D.FillRectangleF_FromRectF cSurface, cBrush, blockRect
                         
                         'Next, start painting block elements in LTR order.
                         Dim objOffsetX As Long, objOffsetY As Long
@@ -1127,13 +1121,13 @@ Private Sub RedrawBackBuffer()
                 'First, draw a thin border around the hovered layer
                 If (layerHoverIndex = layerSelectedIndex) Then paintColor = itemColorSelectedBorderHover Else paintColor = itemColorUnselectedBorderHover
                 Drawing2D.QuickCreateSolidPen cPen, 1, paintColor
-                m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
+                PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
                 
                 'Next, if the mouse is specifically within the "toggle layer visibility" rect, paint *that* region
                 ' with a chunky border.
                 If PDMath.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
                     Drawing2D.QuickCreateSolidPen cPen, 3!, paintColor
-                    m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
+                    PD2D.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
                 End If
                 
             End If
@@ -1149,11 +1143,11 @@ Private Sub RedrawBackBuffer()
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus And (Not zeroLayers))
         
         Drawing2D.QuickCreateSolidPen cPen, borderWidth, borderColor
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
         
         If (Not listHasFocus) Then
             Drawing2D.QuickCreateSolidPen cPen, 1!, m_Colors.RetrieveColor(PDLB_Background, enabledState)
-            m_Painter.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
+            PD2D.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
         End If
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing

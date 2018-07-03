@@ -180,9 +180,6 @@ Private m_MouseOverSlider As Boolean, m_MouseOverSliderTrack As Boolean, m_Mouse
 ' can fire if necessary.  We use this tracker to guarantee that at least one Change() event is fired at initialization.
 Private m_FirstChangeEvent As Boolean
 
-'Painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -697,7 +694,6 @@ Private Sub UserControl_Initialize()
     m_FirstChangeEvent = True
     
     'Initialize various back buffers and background DIBs
-    Set m_Painter = New pd2DPainter
     Set m_SliderBackgroundDIB = New pdDIB
     
 End Sub
@@ -832,7 +828,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
         If PDMain.IsProgramRunning() Then
             Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
             Drawing2D.QuickCreateSolidBrush cBrush, finalBackColor
-            m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight
+            PD2D.FillRectangleI cSurface, cBrush, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight
         End If
     End If
         
@@ -853,7 +849,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
         If (m_KnobStyle = DefaultKnobStyle) Then
             Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
             cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
-            m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
+            PD2D.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
             
         'For a hollow-style knob, the underlying track is much larger, to make it easier to see the portion of the track
         ' selected by the current knob.
@@ -865,7 +861,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Op
             trackRadius = (m_TrackDiameter) \ 2
             
             GetKnobRectF tmpRectF
-            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, GetTrackLeft - trackRadius, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 2, GetTrackRight + trackRadius + 2, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 1
+            PD2D.FillRectangleF_AbsoluteCoords cSurface, cBrush, GetTrackLeft - trackRadius, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 2, GetTrackRight + trackRadius + 2, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 1
         End If
         
     End If
@@ -1004,8 +1000,8 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
         Drawing2D.QuickCreateSolidPen cPen, 1#, notchColor, , , P2_LC_Flat
-        m_Painter.DrawLineF cSurface, cPen, customX, 1, customX, 1 + notchSize
-        m_Painter.DrawLineF cSurface, cPen, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize
+        PD2D.DrawLineF cSurface, cPen, customX, 1, customX, 1 + notchSize
+        PD2D.DrawLineF cSurface, cPen, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize
         
     End If
     
@@ -1117,7 +1113,7 @@ Private Sub CreateGradientTrack()
                 End If
                 
                 cPen.SetPenColor RGB(tmpR * 255, tmpG * 255, tmpB * 255)
-                m_Painter.DrawLineF cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
+                PD2D.DrawLineF cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
                 
             Next x
             
@@ -1135,12 +1131,12 @@ Private Sub CreateGradientTrack()
         Drawing2D.QuickCreateSolidPen cPen, 1, m_GradientColorLeft
 
         For x = 0 To trackRadius - 1
-            m_Painter.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
+            PD2D.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
         Next x
 
         cPen.SetPenColor m_GradientColorRight
         For x = (m_GradientDIB.GetDIBWidth - trackRadius + 1) To m_GradientDIB.GetDIBWidth
-            m_Painter.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
+            PD2D.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
         Next x
         
     End If
@@ -1177,7 +1173,7 @@ Private Sub ApplyAlphaToGradientDIB()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, (m_KnobStyle = DefaultKnobStyle)
         If (m_KnobStyle = DefaultKnobStyle) Then
             Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
-            m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
+            PD2D.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
         
         'When using a hollow knob, we make the underlying gradient much larger, so it's easier for the user to see the color
         ' beneath the current position.
@@ -1188,7 +1184,7 @@ Private Sub ApplyAlphaToGradientDIB()
             
             Dim tmpRectF As RectF
             GetKnobRectF tmpRectF
-            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
+            PD2D.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
             
         End If
     
@@ -1432,7 +1428,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             'Convert that value into an actual pixel position on the track, then render a line between it and the current thumb position
             GetCustomValueCoordinates relevantMin, customX, customY
             Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackHighlightColor, , , P2_LC_Round
-            m_Painter.DrawLineF cSurface, cPen, customX, customY, relevantSliderPosX, customY
+            PD2D.DrawLineF cSurface, cPen, customX, customY, relevantSliderPosX, customY
             
         End If
         
@@ -1440,20 +1436,20 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         ' if the mouse is clicked.
         If m_MouseOverSliderTrack Then
             Drawing2D.QuickCreateSolidBrush cBrush, trackJumpIndicatorColor
-            m_Painter.FillCircleF cSurface, cBrush, m_MouseTrackX, (m_SliderAreaHeight \ 2), m_TrackDiameter / 2
+            PD2D.FillCircleF cSurface, cBrush, m_MouseTrackX, (m_SliderAreaHeight \ 2), m_TrackDiameter / 2
         End If
         
         'Finally, draw the thumb
         If (m_KnobStyle = DefaultKnobStyle) Then
         
             Drawing2D.QuickCreateSolidBrush cBrush, thumbFillColor
-            m_Painter.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+            PD2D.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
             'Draw the edge (exterior) circle around the slider.
             Dim sliderWidth As Single
             If m_MouseOverSlider Or ucSupport.DoIHaveFocus Then sliderWidth = 2.5 Else sliderWidth = 1.5
             Drawing2D.QuickCreateSolidPen cPen, sliderWidth, thumbBorderColor
-            m_Painter.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+            PD2D.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
         ElseIf (m_KnobStyle = SquareStyle) Then
             
@@ -1462,8 +1458,8 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             
             Dim tmpRectF As RectF
             GetKnobRectF tmpRectF
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPenTop, tmpRectF
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+            PD2D.DrawRectangleF_FromRectF cSurface, cPenTop, tmpRectF
             
             Set cPenTop = Nothing
             

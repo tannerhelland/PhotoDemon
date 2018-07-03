@@ -73,9 +73,6 @@ Private m_TextureWrapMode As PD_2D_WrapMode
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdParamXML
 
-'The backend used to render this brush.  At present, this is immutable; once set, it cannot be migrated.
-Private m_BrushBackend As PD_2D_RENDERING_BACKEND
-
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
 
@@ -157,10 +154,7 @@ Friend Sub SetBrushColor(ByVal newSetting As Long)
     
     'After setting a parameter, if a brush already exists, we must relay the new setting to the active backend
     If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
-        End Select
+        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
     End If
     
 End Sub
@@ -170,10 +164,7 @@ Friend Sub SetBrushOpacity(ByVal newSetting As Single)
     m_PrimaryOpacity = newSetting
     
     If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
-        End Select
+        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
     End If
     
 End Sub
@@ -278,10 +269,7 @@ Friend Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
     m_TextureWrapMode = newSetting
     
     If (m_BrushHandle <> 0) Then
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
-        End Select
+        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
     End If
     
 End Sub
@@ -403,72 +391,62 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_BRUSH_SETTINGS)
     'Property changes only need to be relayed if we've already created a handle
     If (m_BrushHandle <> 0) Then
     
-        'Relays obviously vary by the active backend!
-        Select Case m_BrushBackend
+        Select Case propID
+                        
+            Case P2_BrushMode
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushMode, m_BrushMode)) Then ReleaseBrush
             
-            Case P2_DefaultBackend, P2_GDIPlusBackend
+            Case P2_BrushColor
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
                 
-                Select Case propID
-                                
-                    Case P2_BrushMode
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushMode, m_BrushMode)) Then ReleaseBrush
-                    
-                    Case P2_BrushColor
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
-                        
-                    Case P2_BrushOpacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
-                        
-                    Case P2_BrushPatternStyle
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPatternStyle, m_PatternStyle)) Then ReleaseBrush
-                        
-                    Case P2_BrushPattern1Color
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Color, m_Pattern1Color)) Then ReleaseBrush
-                        
-                    Case P2_BrushPattern1Opacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Opacity, m_Pattern1Opacity)) Then ReleaseBrush
-                        
-                    Case P2_BrushPattern2Color
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Color, m_Pattern2Color)) Then ReleaseBrush
-                        
-                    Case P2_BrushPattern2Opacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
-                        
-                    Case P2_BrushGradientAllSettings
-                        If (Not m_Gradient Is Nothing) Then
-                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
-                        End If
-                    
-                    Case P2_BrushGradientShape
-                        If (Not m_Gradient Is Nothing) Then
-                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
-                        End If
-                        
-                    Case P2_BrushGradientAngle
-                        If (Not m_Gradient Is Nothing) Then
-                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
-                        End If
-                        
-                    Case P2_BrushGradientWrapMode
-                        If (Not m_Gradient Is Nothing) Then
-                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
-                        End If
-                        
-                    Case P2_BrushGradientNodes
-                        If (Not m_Gradient Is Nothing) Then
-                            If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
-                        End If
-                    
-                    Case P2_BrushTextureWrapMode
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
-                    
-                End Select
+            Case P2_BrushOpacity
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
                 
-            'In the future, other backends can be handled here...
-            Case Else
+            Case P2_BrushPatternStyle
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPatternStyle, m_PatternStyle)) Then ReleaseBrush
                 
+            Case P2_BrushPattern1Color
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Color, m_Pattern1Color)) Then ReleaseBrush
+                
+            Case P2_BrushPattern1Opacity
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Opacity, m_Pattern1Opacity)) Then ReleaseBrush
+                
+            Case P2_BrushPattern2Color
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Color, m_Pattern2Color)) Then ReleaseBrush
+                
+            Case P2_BrushPattern2Opacity
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
+                
+            Case P2_BrushGradientAllSettings
+                If (Not m_Gradient Is Nothing) Then
+                    If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
+                End If
+            
+            Case P2_BrushGradientShape
+                If (Not m_Gradient Is Nothing) Then
+                    If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
+                End If
+                
+            Case P2_BrushGradientAngle
+                If (Not m_Gradient Is Nothing) Then
+                    If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
+                End If
+                
+            Case P2_BrushGradientWrapMode
+                If (Not m_Gradient Is Nothing) Then
+                    If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
+                End If
+                
+            Case P2_BrushGradientNodes
+                If (Not m_Gradient Is Nothing) Then
+                    If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
+                End If
+            
+            Case P2_BrushTextureWrapMode
+                If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
+            
         End Select
-    
+        
     End If
         
 End Sub
@@ -551,19 +529,8 @@ Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     End If
 End Function
 
-Friend Function GetBrushBackend() As PD_2D_RENDERING_BACKEND
-    GetBrushBackend = m_BrushBackend
-End Function
-
 Friend Function HasBrush() As Boolean
     HasBrush = (m_BrushHandle <> 0)
-End Function
-
-'You only need to manually initialize a brush backend if you plan on using a non-default backend.  (Brushes with the
-' default backend are initialized automatically.)
-Friend Function InitializeBrushBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
-    m_BrushBackend = targetBackend
-    InitializeBrushBackend = True
 End Function
 
 'Create an actual brush handle using the current backend and the current brush settings.
@@ -601,7 +568,7 @@ Friend Function CreateBrush() As Boolean
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
     CreateBrush = (m_BrushHandle <> 0)
-    If (CreateBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyBrushCountChange m_BrushBackend, True
+    If (CreateBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyBrushCountChange True
     
 End Function
 
@@ -610,16 +577,13 @@ Friend Function ReleaseBrush() As Boolean
     If (m_BrushHandle <> 0) Then
         
         'Call the backend-specific release function
-        Select Case m_BrushBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                ReleaseBrush = GDI_Plus.ReleaseGDIPlusBrush(m_BrushHandle)
-        End Select
+        ReleaseBrush = GDI_Plus.ReleaseGDIPlusBrush(m_BrushHandle)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
         If ReleaseBrush Then
             m_BrushHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyBrushCountChange m_BrushBackend, False
+            If m_DebugMode Then Drawing2D.DEBUG_NotifyBrushCountChange False
         End If
     
     Else

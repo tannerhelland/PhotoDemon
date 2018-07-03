@@ -308,9 +308,6 @@ End Enum
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private m_ParentColorSelector As pdColorSelector
 
-'A painter is used for various owner-drawn elements
-Private m_Painter As pd2DPainter
-
 'The color selector history is saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
@@ -399,9 +396,6 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Cache the currentColor parameter so we can access it later
     m_OriginalColor = initialColor
-    
-    'Prep a painter for owner-drawn objects
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Sync all current color values to the initial color
     m_suspendTextResync = True
@@ -504,21 +498,17 @@ Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue A
     
         Dim tmpRectF As RectF
         If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+            
+        'Note that this control *is* color-managed inside this dialog
+        Dim cmResult As Long
+        ColorManagement.ApplyDisplayColorManagement_SingleColor CLng(histValue), cmResult
     
-        If (Not m_Painter Is Nothing) Then
-            
-            'Note that this control *is* color-managed inside this dialog
-            Dim cmResult As Long
-            ColorManagement.ApplyDisplayColorManagement_SingleColor CLng(histValue), cmResult
+        Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+        Drawing2D.QuickCreateSolidBrush cBrush, cmResult
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         
-            Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
-            Drawing2D.QuickCreateSolidBrush cBrush, cmResult
-            m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-            
-            Set cSurface = Nothing: Set cBrush = Nothing
-        
-        End If
+        Set cSurface = Nothing: Set cBrush = Nothing
         
     End If
     
@@ -630,7 +620,7 @@ Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If PDMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If PDMain.IsProgramRunning() And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -639,7 +629,7 @@ Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
         Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
         Drawing2D.QuickCreateSolidBrush cBrush, cmResult
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         Set cSurface = Nothing: Set cBrush = Nothing
         
     End If
@@ -651,7 +641,7 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RectF
     If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If PDMain.IsProgramRunning() And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
+    If PDMain.IsProgramRunning() And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -660,7 +650,7 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
         Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
         Drawing2D.QuickCreateSolidBrush cBrush, cmResult
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         Set cSurface = Nothing: Set cBrush = Nothing
         
     End If

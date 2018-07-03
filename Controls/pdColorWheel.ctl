@@ -89,9 +89,6 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 ' We can use this to help orient the user.
 Private m_HueHover As Double, m_SaturationHover As Double, m_ValueHover As Double
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -503,9 +500,6 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True
     ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCW_COLOR_LIST: colorCount = [_Count]
@@ -591,14 +585,13 @@ Private Sub CreateColorWheel()
     m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
     
     If PDMain.IsProgramRunning() Then
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_WheelBuffer.GetDIBDC, True
         Drawing2D.QuickCreateSolidBrush cBrush, RGB(255, 255, 255)
-        cPainter.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
+        PD2D.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
         cBrush.SetBrushColor RGB(0, 0, 0)
-        cPainter.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
-        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        PD2D.FillCircleF cSurface, cBrush, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
+        Set cBrush = Nothing: Set cSurface = Nothing
     End If
     
     'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
@@ -844,8 +837,8 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             borderTransparency = 75!
         End If
         Drawing2D.QuickCreateSolidPen cPen, borderWidth, wheelBorderColor, borderTransparency
-        m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
-        m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
+        PD2D.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
+        PD2D.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
         
         'Paint the saturation+value square
         If (Not m_SquareBuffer Is Nothing) Then
@@ -866,7 +859,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             End If
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, boxBorderColor, borderTransparency, P2_LJ_Miter, P2_LC_Flat
             If (Not m_MouseInsideBox) Then cSurface.SetSurfacePixelOffset P2_PO_Half
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_SVRectF
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_SVRectF
             cSurface.SetSurfacePixelOffset P2_PO_Normal
             
         End If
@@ -904,8 +897,8 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         
         'Render the completed slice onto the overlay
         Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, m_MouseDownWheel
-        m_Painter.DrawPath cSurface, cPenUIBase, slicePath
-        m_Painter.DrawPath cSurface, cPenUITop, slicePath
+        PD2D.DrawPath cSurface, cPenUIBase, slicePath
+        PD2D.DrawPath cSurface, cPenUITop, slicePath
         cSurface.SetSurfacePixelOffset P2_PO_Normal
         
         'Lastly, let's draw a circle around the current saturation + value point.
@@ -931,8 +924,8 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         
         'Draw a canvas-style circle around that point
         Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop, m_MouseDownBox
-        m_Painter.DrawCircleF cSurface, cPenUIBase, svX, svY, COLOR_CIRCLE_RADIUS
-        m_Painter.DrawCircleF cSurface, cPenUITop, svX, svY, COLOR_CIRCLE_RADIUS
+        PD2D.DrawCircleF cSurface, cPenUIBase, svX, svY, COLOR_CIRCLE_RADIUS
+        PD2D.DrawCircleF cSurface, cPenUITop, svX, svY, COLOR_CIRCLE_RADIUS
         
         'Finally, if the mouse is over the hue wheel or SV box, but the mouse is *NOT* down, we want to paint a little
         ' color triangle to let the user know what color they'd get if they DID click the mouse button in this location.
@@ -949,10 +942,10 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             pcPath.AddTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
             Drawing2D.QuickCreateSolidBrush cBrush, GetProposedColor()
-            m_Painter.FillPath cSurface, cBrush, pcPath
+            PD2D.FillPath cSurface, cBrush, pcPath
             
             Drawing2D.QuickCreateSolidPen cPen, 1, colorPreviewBorder, 75, P2_LJ_Round, P2_LC_Round
-            m_Painter.DrawPath cSurface, cPen, pcPath
+            PD2D.DrawPath cSurface, cPen, pcPath
             
             Set pcPath = Nothing
             

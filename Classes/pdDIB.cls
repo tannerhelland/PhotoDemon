@@ -750,7 +750,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
     
     On Error GoTo CouldNotCreateDIB
     
-    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
                 
     'By default, we try to avoid creating new DIBs whenever we can.  In the unlikely chance that this DIB already exists,
     ' let's compare its size and color depth to the requested dimensions - if they match, we can reuse this DIB as-is.
@@ -781,10 +781,9 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                 
                     If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
                     
-                    Drawing2D.QuickCreatePainter cPainter
                     Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.GetDIBDC, False
                     Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
-                    cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                    PD2D.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
                     Set cSurface = Nothing
                     
                 End If
@@ -876,10 +875,9 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                             'The back color may or may not be a system color, so translate it just in case
                             If (initialColor <> vbWhite) Then initialColor = TranslateColor(initialColor)
                             
-                            Drawing2D.QuickCreatePainter cPainter
                             Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
                             Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
-                            cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                            PD2D.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
                             Set cSurface = Nothing
                             
                         End If

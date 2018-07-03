@@ -254,19 +254,16 @@ Public Sub CopyDIB(ByRef srcDIB As pdDIB, Optional ByVal colorManagementMatters 
         Dim cPen As pd2DPen
         Drawing2D.QuickCreateSolidPen cPen, 1!, g_Themer.GetGenericUIColor(UI_CanvasElement)
         
-        Dim cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
-        
-        If drawBorderAroundImage Then cPainter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+        If drawBorderAroundImage Then PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
         If drawBorderAroundControl Then
             tmpRectF.Left = 0!
             tmpRectF.Top = 0!
             tmpRectF.Width = dstWidthOrig - 1
             tmpRectF.Height = dstHeightOrig - 1
-            cPainter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
         End If
         
-        Set cPainter = Nothing: Set cPen = Nothing: Set cSurface = Nothing
+        Set cPen = Nothing: Set cSurface = Nothing
         
     End If
     

@@ -239,15 +239,14 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     If (edgeType <> 0) Then workingDIB.SetAlphaPremultiplication True
     
     'Use pd2D to render the outline onto the image
-    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen
-    Drawing2D.QuickCreatePainter cPainter
+    Dim cSurface As pd2DSurface, cPen As pd2DPen
     Drawing2D.QuickCreateSurfaceFromDIB cSurface, workingDIB, True
     
     Set cPen = New pd2DPen
     cPen.SetPenPropertiesFromXML edgeStyle
     
-    cPainter.DrawPath cSurface, cPen, finalPath
-    Set cPen = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+    PD2D.DrawPath cSurface, cPen, finalPath
+    Set cPen = Nothing: Set cSurface = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic, True

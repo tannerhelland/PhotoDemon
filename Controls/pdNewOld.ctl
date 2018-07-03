@@ -67,9 +67,6 @@ Private m_NewItemRect As RectF, m_OldItemRect As RectF
 'The only hoverable item in this control is the "old" item rect
 Private m_OldItemIsHovered As Boolean
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -233,9 +230,6 @@ Private Sub UserControl_Initialize()
     
     'Request any control-specific functionality
     ucSupport.RequestExtraFunctionality True
-    
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -408,12 +402,12 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         Drawing2D.QuickCreateSolidPen cPen, 1#, m_Colors.RetrieveColor(PDNO_Border, Me.Enabled), 100#
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_NewItemRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_NewItemRect
         
         Dim oldItemBorderWidth As Single
         If m_OldItemIsHovered Or ucSupport.DoIHaveFocus Then oldItemBorderWidth = 3# Else oldItemBorderWidth = 1#
         Drawing2D.QuickCreateSolidPen cPen, oldItemBorderWidth, m_Colors.RetrieveColor(PDNO_Border, Me.Enabled, , m_OldItemIsHovered Or ucSupport.DoIHaveFocus), 100#
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_OldItemRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_OldItemRect
         
         Set cSurface = Nothing: Set cPen = Nothing
         

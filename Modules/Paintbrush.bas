@@ -130,7 +130,7 @@ Private m_ModifiedRectF As RectF, m_TotalModifiedRectF As RectF
 Private m_NumOfMouseEvents As Long
 
 'pd2D is used for certain brush styles
-Private m_Painter As pd2DPainter, m_Surface As pd2DSurface
+Private m_Surface As pd2DSurface
 
 'To improve responsiveness, we measure the time delta between viewport refreshes.  If painting is happening fast enough,
 ' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering;
@@ -547,7 +547,7 @@ Private Sub CreateSoftBrushReference_PD()
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
         Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor, m_BrushFlow
-        m_Painter.FillCircleF cSurface, cBrush, m_BrushSize * 0.5, m_BrushSize * 0.5, m_BrushSize * 0.5
+        PD2D.FillCircleF cSurface, cBrush, m_BrushSize * 0.5, m_BrushSize * 0.5, m_BrushSize * 0.5
         
         Set cBrush = Nothing: Set cSurface = Nothing
     
@@ -989,9 +989,9 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
             ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
             ' manually render a dab at the initial starting position.
             If isFirstStroke Then
-                m_Painter.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
+                PD2D.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
             Else
-                m_Painter.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
+                PD2D.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
             End If
             
         Case BE_PhotoDemon
@@ -1169,7 +1169,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
         ' for a performance boost, however.
         m_SrcPenDIB.AlphaBlendToDCEx pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize), Int(m_BrushSize), 0, 0, Int(m_BrushSize), Int(m_BrushSize), dabOpacity * 255
-        'm_Painter.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
+        'PD2D.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
         
     End If
     
@@ -1365,10 +1365,10 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     outerCrossBorder = 0.5
     
     If (Not m_MouseDown) Then
-        m_Painter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-        m_Painter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-        m_Painter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-        m_Painter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+        PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+        PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+        PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+        PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
     End If
     
     'If size allows, render a transformed brush outline onto the canvas as well
@@ -1380,8 +1380,8 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         
         copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
         copyOfBrushOutline.ApplyTransformation canvasMatrix
-        m_Painter.DrawPath cSurface, outerPen, copyOfBrushOutline
-        m_Painter.DrawPath cSurface, innerPen, copyOfBrushOutline
+        PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
+        PD2D.DrawPath cSurface, innerPen, copyOfBrushOutline
         
     End If
     
@@ -1399,7 +1399,6 @@ End Function
 Public Sub InitializeBrushEngine()
     m_BrushPreviewQuality = PD_PERF_BALANCED
     m_BrushAntialiasing = P2_AA_HighQuality
-    Drawing2D.QuickCreatePainter m_Painter
     m_MouseX = -1000000#
     m_MouseY = -1000000#
     m_BrushIsReady = False
@@ -1413,5 +1412,4 @@ Public Sub FreeBrushResources()
     Set m_CustomPenImage = Nothing
     Set m_BrushOutlineImage = Nothing
     Set m_BrushOutlinePath = Nothing
-    Set m_Painter = Nothing
 End Sub

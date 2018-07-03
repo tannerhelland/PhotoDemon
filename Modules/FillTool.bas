@@ -25,10 +25,6 @@ Private m_FloodFill As pdFloodFill, m_FillOutline As pd2DPath
 ' and we use the notification timestamp from the parent image to determine when it's time to update our local copy.
 Private m_FillImage As pdDIB, m_FillImageTimestamp As Currency
 
-'Fill rendering is handled via pd2D.  A default painter class is created automatically, so don't worry about
-' instantiating your own.
-Private m_Painter As pd2DPainter
-
 'Current mouse/pen input values.  These are blindly relayed to us by the canvas, and it's up to us to perform any
 ' special tracking calculations.
 Private m_MouseDown As Boolean
@@ -257,7 +253,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
             tmpSurface.SetSurfacePixelOffset P2_PO_Half
             
-            m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
+            PD2D.FillPath tmpSurface, tmpBrush, m_FillOutline
             
             'Free all finished pd2D objects
             Set tmpSurface = Nothing: Set tmpBrush = Nothing
@@ -278,7 +274,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             If m_FloodFill.GetAntialiasingMode Then tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality Else tmpSurface.SetSurfaceAntialiasing P2_AA_None
             tmpSurface.SetSurfacePixelOffset P2_PO_Half
             
-            m_Painter.FillPath tmpSurface, tmpBrush, m_FillOutline
+            PD2D.FillPath tmpSurface, tmpBrush, m_FillOutline
             
             'Free all finished pd2D objects
             Set tmpSurface = Nothing: Set tmpBrush = Nothing
@@ -336,7 +332,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
                 Dim tmpSrcSurface As pd2DSurface
                 Set tmpSrcSurface = New pd2DSurface
                 tmpSrcSurface.WrapSurfaceAroundPDDIB pdImages(g_CurrentImage).MainSelection.GetMaskDIB
-                m_Painter.DrawSurfaceF cSurface, 0, 0, tmpSrcSurface
+                PD2D.DrawSurfaceF cSurface, 0, 0, tmpSrcSurface
                 
                 Set tmpSrcSurface = Nothing
                 Set cSurface = Nothing
@@ -462,11 +458,10 @@ Public Sub RenderFillCursor(ByRef targetCanvas As pdCanvas)
     crossLength = 5#
     outerCrossBorder = 0.5
     
-    If (m_Painter Is Nothing) Then Set m_Painter = New pd2DPainter
-    m_Painter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-    m_Painter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-    m_Painter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-    m_Painter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+    PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+    PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+    PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+    PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
     
     'If we haven't loaded the fill cursor previously, do so now
     If (m_FillCursor Is Nothing) Then
@@ -477,7 +472,7 @@ Public Sub RenderFillCursor(ByRef targetCanvas As pdCanvas)
     Dim icoSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDIB icoSurface, m_FillCursor, True
     icoSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
-    m_Painter.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
+    PD2D.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
     
     Set cSurface = Nothing: Set icoSurface = Nothing
     Set innerPen = Nothing: Set outerPen = Nothing

@@ -125,9 +125,6 @@ Private m_AccentColors() As Long
 Private m_LangIndex As Long
 Private m_ThemeClass As PD_THEME_CLASS, m_ThemeAccent As PD_THEME_ACCENT, m_MonoIcons As Boolean
 
-'A painter is used for various owner-drawn elements
-Private m_Painter As pd2DPainter
-
 'The user input from the dialog.  If the user cancels this dialog, default settings will be used.
 Private m_CmdBarAnswer As VbMsgBoxResult
 
@@ -145,9 +142,6 @@ Public Sub ShowDialog()
     m_ThemeClass = g_Themer.GetCurrentThemeClass()
     m_ThemeAccent = g_Themer.GetCurrentThemeAccent()
     If (m_ThemeAccent = PDTA_Undefined) Then m_ThemeAccent = PDTA_Blue
-    
-    'Prep a painter for owner-drawn objects
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Retrieve a list of available languages from the translation engine
     m_LangIndex = g_Language.GetCurrentLanguageIndex
@@ -280,25 +274,21 @@ Private Sub strAccents_DrawButton(ByVal btnIndex As Long, ByVal btnValue As Stri
     
         Dim tmpRectF As RectF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+
+        'Map the index to an actual color
+        Dim targetColor As Long
+        targetColor = m_AccentColors(btnIndex)
+        
+        'Note that accents colors *are* color-managed inside this dialog
+        Dim cmResult As Long
+        ColorManagement.ApplyDisplayColorManagement_SingleColor targetColor, cmResult
     
-        If (Not m_Painter Is Nothing) Then
-            
-            'Map the index to an actual color
-            Dim targetColor As Long
-            targetColor = m_AccentColors(btnIndex)
-            
-            'Note that accents colors *are* color-managed inside this dialog
-            Dim cmResult As Long
-            ColorManagement.ApplyDisplayColorManagement_SingleColor targetColor, cmResult
+        Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+        Drawing2D.QuickCreateSolidBrush cBrush, cmResult
+        PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         
-            Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
-            Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
-            Drawing2D.QuickCreateSolidBrush cBrush, cmResult
-            m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-            
-            Set cSurface = Nothing: Set cBrush = Nothing
-        
-        End If
+        Set cSurface = Nothing: Set cBrush = Nothing
         
     End If
     

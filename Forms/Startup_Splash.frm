@@ -206,8 +206,7 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         lineRadius = FixDPI(6)
         lineY = m_splashDIB.GetDIBHeight - FixDPI(2) - lineRadius
         
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface, cPen As pd2DPen
         
         Set cSurface = New pd2DSurface
         cSurface.WrapSurfaceAroundPDDIB m_BackBuffer
@@ -215,7 +214,7 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
         Drawing2D.QuickCreateSolidPen cPen, lineRadius, g_Themer.GetGenericUIColor(UI_Accent), 100#, , P2_LC_Round
-        cPainter.DrawLineF cSurface, cPen, lineOffset, lineY, (m_splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_progressAtFirstNotify) / (m_maxProgress - m_progressAtFirstNotify)), lineY
+        PD2D.DrawLineF cSurface, cPen, lineOffset, lineY, (m_splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_progressAtFirstNotify) / (m_maxProgress - m_progressAtFirstNotify)), lineY
         
         Set cSurface = Nothing
         

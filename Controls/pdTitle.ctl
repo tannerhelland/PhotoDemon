@@ -86,9 +86,6 @@ Private Const GRIPPER_PADDING As Long = 12
 ' _MouseMove events will compare against these coordinates to determine drag distance.
 Private m_InitMouseX As Single, m_InitMouseY As Single
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -300,7 +297,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     ' this drag (which in turn causes mouse coords to go berserk).
     If (Not g_WindowManager Is Nothing) Then
         
-        Dim tmpPoint As POINTAPI
+        Dim tmpPoint As PointAPI
         tmpPoint.x = x
         tmpPoint.y = y
         g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
@@ -350,7 +347,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     If (Button And pdLeftButton <> 0) And (Not g_WindowManager Is Nothing) Then
         
         'Convert the mouse coord to screen coordinates
-        Dim tmpPoint As POINTAPI
+        Dim tmpPoint As PointAPI
         tmpPoint.x = x
         tmpPoint.y = y
         g_WindowManager.GetClientToScreen Me.hWnd, tmpPoint
@@ -387,9 +384,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_SPACE
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
-    
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -602,7 +596,7 @@ Private Sub RedrawBackBuffer()
             Dim x As Long, y As Long
             For x = 0 To xStep Step xStep
             For y = yStep To bHeight - yStep Step yStep
-                m_Painter.FillRectangleI cSurface, cBrush, x, y, boxSize, boxSize
+                PD2D.FillRectangleI cSurface, cBrush, x, y, boxSize, boxSize
             Next y
             Next x
             
@@ -650,8 +644,8 @@ Private Sub RedrawBackBuffer()
         
         'Draw the drop-down arrow
         Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
-        m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
+        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
+        PD2D.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
         
         'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
         Dim ctlRect As RectF
@@ -664,17 +658,17 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
         cPen.SetPenWidth 1#
         cPen.CreatePenFromBrush cBrush
-        m_Painter.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
+        PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
         
         'For convenience, you can uncomment this line to also paint the bottom boundary of the control.
         ' I've used this while trying to perfect rendering layouts.
-        'm_Painter.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
+        'PD2D.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top + ctlRect.Height - 1, ctlRect.Width, ctlRect.Top + ctlRect.Height - 1
         
         ctlRect.Top = ctlRect.Top - 1
         ctlRect.Width = ctlRect.Width - 1
         Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, , , , 270#
         cPen.CreatePenFromBrush cBrush
-        m_Painter.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
+        PD2D.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         

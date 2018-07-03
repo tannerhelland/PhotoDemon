@@ -163,8 +163,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
         hLookupX(j) = (CSng(j + 1) / 257#) * CSng(imgWidth)
     Next j
     
-    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
-    Drawing2D.QuickCreatePainter cPainter
+    Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
     
     For i = 0 To 3
         
@@ -230,8 +229,8 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
         
         'Render the paths to their target DIBs
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIBs(i).GetDIBDC, True
-        cPainter.FillPath cSurface, cBrush, tmpPath
-        cPainter.DrawPath cSurface, cPen, tmpPath
+        PD2D.FillPath cSurface, cBrush, tmpPath
+        PD2D.DrawPath cSurface, cPen, tmpPath
         
         'Mark alpha premultiplication status
         dstDIBs(i).SetInitialAlphaPremultiplicationState True

@@ -83,9 +83,6 @@ Private m_HistoryItemHovered As Long
 'If the control has focus, the currently selected index is stored here; -1 means "nothing has been selected"
 Private m_LastItemClicked As Long
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -472,9 +469,6 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_SPACE
     ucSupport.RequestCaptionSupport
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDHISTORY_COLOR_LIST: colorCount = [_Count]
@@ -710,7 +704,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         
             For i = 0 To m_HistoryCount - 1
                 With m_HistoryItems(i).ItemRect
-                    m_Painter.DrawRectangleF cSurface, cPen, .Left, .Top, .Width, .Height
+                    PD2D.DrawRectangleF cSurface, cPen, .Left, .Top, .Width, .Height
                 End With
             Next i
             
@@ -722,15 +716,15 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             'Last-clicked item is only highlighted if the control has focus
             If ucSupport.DoIHaveFocus Then
                 If (m_LastItemClicked >= 0) Then
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_LastItemClicked).ItemRect
-                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_LastItemClicked).ItemRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_LastItemClicked).ItemRect
+                    PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_LastItemClicked).ItemRect
                 End If
             End If
             
             'Hovered entries are always highlighted
             If (m_HistoryItemHovered >= 0) Then
-                m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cOuterPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_HistoryItems(m_HistoryItemHovered).ItemRect
             End If
                 
             Set cOuterPen = Nothing

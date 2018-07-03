@@ -57,9 +57,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'pd2D is used for painting
-Private m_Painter As pd2DPainter
-
 'When a tooltip is first invoked, this class figures out the best place to position the tooltip window.  As part of
 ' that effort, it fills a matching rect where various bits of the tooltip need to be rendered (like the border, title,
 ' caption, and others, as necessary).
@@ -99,8 +96,6 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub Form_Load()
-    
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -157,7 +152,7 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
         Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDTT_Border)
-        m_Painter.DrawRectangleF cSurface, cPen, 0, 0, ucSupport.GetBackBufferWidth - 1, ucSupport.GetBackBufferHeight - 1
+        PD2D.DrawRectangleF cSurface, cPen, 0, 0, ucSupport.GetBackBufferWidth - 1, ucSupport.GetBackBufferHeight - 1
         
         Set cSurface = Nothing: Set cPen = Nothing: Set cBrush = Nothing
         

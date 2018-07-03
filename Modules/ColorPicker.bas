@@ -21,9 +21,6 @@ Option Explicit
 Private m_MouseDown As Boolean
 Private m_MouseX As Single, m_MouseY As Single
 
-'Custom cursor rendering uses pd2D
-Private m_Painter As pd2DPainter
-
 'Color-picker cursor, retrieved as a resource at run-time
 Private m_ColorPickerCursor As pdDIB
 
@@ -71,11 +68,10 @@ Public Sub RenderColorPickerCursor(ByRef targetCanvas As pdCanvas)
     crossLength = 5#
     outerCrossBorder = 0.5
     
-    If (m_Painter Is Nothing) Then Set m_Painter = New pd2DPainter
-    m_Painter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-    m_Painter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-    m_Painter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-    m_Painter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+    PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+    PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+    PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+    PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
     
     'If we haven't loaded the fill cursor previously, do so now
     If (m_ColorPickerCursor Is Nothing) Then
@@ -86,7 +82,7 @@ Public Sub RenderColorPickerCursor(ByRef targetCanvas As pdCanvas)
     Dim icoSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDIB icoSurface, m_ColorPickerCursor, True
     'icoSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
-    m_Painter.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
+    PD2D.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
     
     Set cSurface = Nothing: Set icoSurface = Nothing
     Set innerPen = Nothing: Set outerPen = Nothing

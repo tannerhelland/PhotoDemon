@@ -79,9 +79,6 @@ Private m_PaletteItemSelected As Long
 'Fast palette matching comes courtesy of a dedicated KD-tree class
 Private m_ColorLookup As pdKDTree
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -461,9 +458,6 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True
     ucSupport.RequestCaptionSupport
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDHISTORY_COLOR_LIST: colorCount = [_Count]
@@ -686,28 +680,28 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             'Fill the rects already created for each palette entry
             For i = 0 To colorLoopMax
                 cBrush.SetBrushColor m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(i)
-                m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_PaletteRects(i)
+                PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_PaletteRects(i)
             Next i
             
             'Next, draw borders around each palette entry
             Dim cPen As pd2DPen
             Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDH_Border)
             For i = 0 To colorLoopMax
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(i)
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(i)
             Next i
             
             'Next, highlight the hovered and/or selected color, if any
             If (m_PaletteItemSelected >= 0) Then
                 Dim cOuterPen As pd2DPen
                 Drawing2D.QuickCreatePairOfUIPens cOuterPen, cPen, True
-                m_Painter.DrawRectangleF_FromRectF cSurface, cOuterPen, m_PaletteRects(m_PaletteItemSelected)
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(m_PaletteItemSelected)
+                PD2D.DrawRectangleF_FromRectF cSurface, cOuterPen, m_PaletteRects(m_PaletteItemSelected)
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(m_PaletteItemSelected)
                 Set cOuterPen = Nothing
             End If
             
             If (m_PaletteItemHovered >= 0) Then
                 Drawing2D.QuickCreateSolidPen cPen, 3, m_Colors.RetrieveColor(PDH_Border, True, False, True)
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(m_PaletteItemHovered)
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_PaletteRects(m_PaletteItemHovered)
             End If
             
             Set cSurface = Nothing: Set cPen = Nothing

@@ -561,9 +561,6 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             End If
         End If
         
-        Dim cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
-        
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
         
@@ -591,7 +588,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         If (m_Orientation = pdo_Horizontal) Then
         
             'Start by drawing a full-width line across the bottom of the ruler
-            cPainter.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
+            PD2D.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
             
             halfSize = bHeight * 0.4
             quarterSize = bHeight * 0.25
@@ -609,7 +606,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                 
                 'Render this line, and position text to the right of it
-                cPainter.DrawLineI cSurface, cPen, xNewInt, 0, xNewInt, bHeight
+                PD2D.DrawLineI cSurface, cPen, xNewInt, 0, xNewInt, bHeight
                 tmpFont.FastRenderText xNewInt + 3, -1, CStr(x)
                 
                 'Next, draw midpoint notches.  Which notches we draw varies based on the current interval.
@@ -621,9 +618,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.1) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If ((i And &H1) = 0) Then
-                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
+                            PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
                         Else
-                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                            PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
                         End If
                     Next i
                 
@@ -635,9 +632,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.25) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If (i = 2) Then
-                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
+                            PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
                         Else
-                            cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                            PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
                         End If
                     Next i
                 
@@ -647,7 +644,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     For i = 1 To 4
                         Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.2) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
-                        cPainter.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
+                        PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
                     Next i
                 End If
                 
@@ -659,7 +656,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         Else
             
             'Start by drawing a full-height line across the right of the ruler
-            cPainter.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
+            PD2D.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
             
             halfSize = bWidth * 0.4
             quarterSize = bWidth * 0.25
@@ -698,7 +695,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                     
                     'Render this line, and position text to the right of it
-                    cPainter.DrawLineI cSurface, cPen, 0, yNewInt, bWidth, yNewInt
+                    PD2D.DrawLineI cSurface, cPen, 0, yNewInt, bWidth, yNewInt
                     m_VerticalFont.FastRenderText vertOffsetX, yNewInt + 3 + m_VerticalFont.GetWidthOfString(CStr(y)), CStr(y)
                     
                     'Next, draw midpoint notches.  Which notches we draw varies based on the current interval.
@@ -710,9 +707,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                             Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.1) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If ((i And &H1) = 0) Then
-                                cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
+                                PD2D.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
                             Else
-                                cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                                PD2D.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
                             End If
                         Next i
                     
@@ -724,9 +721,9 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                             Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.25) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If (i = 2) Then
-                                cPainter.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
+                                PD2D.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
                             Else
-                                cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                                PD2D.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
                             End If
                         Next i
                     
@@ -736,7 +733,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         For i = 1 To 4
                             Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.2) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
-                            cPainter.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
+                            PD2D.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
                         Next i
                     End If
                     
@@ -773,12 +770,12 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         ' "glow" effect without visually obscuring where the mouse position accurately lies (lays? idk).
         cPen.SetPenOpacity 25!
         cPen.SetPenWidth 3!
-        cPainter.DrawLineF cSurface, cPen, drawPosX1, drawPosY1, drawPosX2, drawPosY2
+        PD2D.DrawLineF cSurface, cPen, drawPosX1, drawPosY1, drawPosX2, drawPosY2
         cPen.SetPenOpacity 100!
         cPen.SetPenWidth 1!
-        cPainter.DrawLineF cSurface, cPen, drawPosX1, drawPosY1, drawPosX2, drawPosY2
+        PD2D.DrawLineF cSurface, cPen, drawPosX1, drawPosY1, drawPosX2, drawPosY2
         
-        Set cPen = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        Set cPen = Nothing: Set cSurface = Nothing
         
     End If
     

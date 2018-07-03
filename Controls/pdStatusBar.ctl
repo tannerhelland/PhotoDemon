@@ -184,9 +184,6 @@ Private m_LinePositions() As Single
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'pd2D is used for painting
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -487,7 +484,6 @@ Private Sub UserControl_Initialize()
     If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
-    Drawing2D.QuickCreatePainter m_Painter
     m_UnitOfMeasurement = mu_Pixels
     
 End Sub
@@ -679,7 +675,7 @@ Private Sub RedrawBackBuffer()
             
             Dim i As Long
             For i = 0 To UBound(m_LinePositions)
-                m_Painter.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
+                PD2D.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
             Next i
             
             Set cSurface = Nothing: Set cPen = Nothing

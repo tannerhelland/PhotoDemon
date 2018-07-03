@@ -1785,12 +1785,11 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             End If
             
             'Render the path
-            Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-            Drawing2D.QuickCreatePainter cPainter
+            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
             Drawing2D.QuickCreateSurfaceFromDC cSurface, GetRuntimeUIDIB.GetDIBDC, True
             Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_GrayDark)
-            cPainter.FillPath cSurface, cBrush, tmpPath
-            Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+            PD2D.FillPath cSurface, cBrush, tmpPath
+            Set cBrush = Nothing: Set cSurface = Nothing
     
     End Select
     

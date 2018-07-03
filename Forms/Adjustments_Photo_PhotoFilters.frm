@@ -285,8 +285,7 @@ Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
     linePadding = FixDPI(2)
     
     'pd2D is used for extra drawing capabilities
-    Dim cPainter As pd2DPainter, cPen As pd2DPen, cBrush As pd2DBrush, cSurface As pd2DSurface
-    Drawing2D.QuickCreatePainter cPainter
+    Dim cPen As pd2DPen, cBrush As pd2DBrush, cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
     'Modify font colors to match the current selection state of this item
@@ -308,10 +307,10 @@ Private Sub lstFilters_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As 
     End With
     
     Drawing2D.QuickCreateSolidBrush cBrush, m_Filters(itemIndex).RGBColor
-    cPainter.FillRectangleF_FromRectF cSurface, cBrush, colorRectF
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, colorRectF
     
     Drawing2D.QuickCreateSolidPen cPen, 1#, g_Themer.GetGenericUIColor(UI_GrayDefault)
-    cPainter.DrawRectangleF_FromRectF cSurface, cPen, colorRectF
+    PD2D.DrawRectangleF_FromRectF cSurface, cPen, colorRectF
     
     'To minimize confusion, release the surface now; all subsequent objects will draw directly to the target DC
     Set cSurface = Nothing

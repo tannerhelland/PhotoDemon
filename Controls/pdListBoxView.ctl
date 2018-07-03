@@ -78,9 +78,6 @@ Attribute listSupport.VB_VarHelpID = -1
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'pd2D is used for rendering
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -366,9 +363,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDListBoxView", colorCount
     If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
-    'Initialize a pd2D painter
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
@@ -535,7 +529,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                     If itemIsHovered Then cBrush.SetBrushColor itemColorUnselectedFillHover Else cBrush.SetBrushColor itemColorUnselectedFill
                 End If
                 
-                m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRect
+                PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRect
                 
                 '...followed by its border...
                 If itemIsSelected Then
@@ -543,7 +537,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 Else
                     If itemIsHovered Then cPen.SetPenColor itemColorUnselectedBorderHover Else cPen.SetPenColor itemColorUnselectedBorder
                 End If
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRect
+                PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRect
                 
                 '...and finally, its caption
                 If itemIsSelected Then
@@ -559,7 +553,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
                 If itemHasSeparator Then
                     lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) * 0.5
                     cPen.SetPenColor separatorColor
-                    m_Painter.DrawLineF cSurface, cPen, m_ListRect.Left + Interface.FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - Interface.FixDPI(12), lineY
+                    PD2D.DrawLineF cSurface, cPen, m_ListRect.Left + Interface.FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - Interface.FixDPI(12), lineY
                 End If
                 
             Next i
@@ -577,12 +571,12 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
         cPen.SetPenWidth borderWidth
         cPen.SetPenColor borderColor
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_ListRect
         
         If (Not listHasFocus) Then
             cPen.SetPenColor finalBackColor
             cPen.SetPenWidth 1!
-            m_Painter.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
+            PD2D.DrawRectangleI cSurface, cPen, 0, 0, bWidth - 1, bHeight - 1
         End If
         
         Set cPen = Nothing: Set cBrush = Nothing: Set cSurface = Nothing

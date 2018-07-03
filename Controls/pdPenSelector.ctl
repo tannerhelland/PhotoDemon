@@ -71,9 +71,6 @@ Private m_IsDialogLive As Boolean
 'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
 Private m_PenRect As RectF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -260,9 +257,6 @@ Private Sub UserControl_Initialize()
     
     Set m_PreviewPath = New pd2DPath
     
-    'Prep painting classes
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
@@ -361,7 +355,7 @@ Private Sub RedrawBackBuffer()
         
         'Paint a checkerboard background first.  (Note that this brush is cached globally, so we never have to
         ' create our own version of it.)
-        m_Painter.FillRectangleF_FromRectF cSurface, g_CheckerboardBrush, m_PenRect
+        PD2D.FillRectangleF_FromRectF cSurface, g_CheckerboardBrush, m_PenRect
         
         'Next, create a matching GDI+ pen
         Set cPen = New pd2DPen
@@ -384,7 +378,7 @@ Private Sub RedrawBackBuffer()
         m_PreviewPath.CreateSamplePathForRect m_PenRect, hPadding, vPadding
         
         cSurface.SetSurfaceClip_FromRectF m_PenRect, P2_CM_Replace
-        m_Painter.DrawPath cSurface, cPen, m_PreviewPath
+        PD2D.DrawPath cSurface, cPen, m_PreviewPath
         
         'Before drawing borders around the pen results, ask our parent control to apply color-management to
         ' the pen preview.  (Note that this *will* result in the background checkerboard being color-managed.
@@ -399,7 +393,7 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSolidPen cPen, outlineWidth, outlineColor
         cSurface.SetSurfaceAntialiasing P2_AA_None
         cSurface.SetSurfaceClip_None
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PenRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_PenRect
         
         Set cSurface = Nothing: Set cPen = Nothing
         

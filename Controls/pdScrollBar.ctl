@@ -176,9 +176,6 @@ End Enum
 
 Private m_VisualStyle As ScrollBarVisualStyle
 
-'pd2D is used for rendering
-Private m_Painter As pd2DPainter
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -828,9 +825,6 @@ Private Sub UserControl_Initialize()
     
     m_MouseInsideUC = False
     
-    'Prep a pd2D renderer
-    Drawing2D.QuickCreatePainter m_Painter
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSCROLL_COLOR_LIST: colorCount = [_Count]
@@ -1029,23 +1023,23 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         
         'Up button
         cBrush.SetBrushColor upButtonFillColor
-        m_Painter.FillRectangleI_FromRectL cSurface, cBrush, upLeftRect
+        PD2D.FillRectangleI_FromRectL cSurface, cBrush, upLeftRect
         cPen.SetPenColor upButtonBorderColor
-        m_Painter.DrawRectangleI_FromRectL cSurface, cPen, upLeftRect
+        PD2D.DrawRectangleI_FromRectL cSurface, cPen, upLeftRect
         
         'Down button
         cBrush.SetBrushColor downButtonFillColor
-        m_Painter.FillRectangleI_FromRectL cSurface, cBrush, downRightRect
+        PD2D.FillRectangleI_FromRectL cSurface, cBrush, downRightRect
         cPen.SetPenColor downButtonBorderColor
-        m_Painter.DrawRectangleI_FromRectL cSurface, cPen, downRightRect
+        PD2D.DrawRectangleI_FromRectL cSurface, cPen, downRightRect
         
         'Unlike the up/down buttons, we want the thumb to be antialiased and to use subpixel positioning.
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         If (m_ThumbSize > 0) Then
             cBrush.SetBrushColor thumbFillColor
-            m_Painter.FillRectangleF_FromRectF cSurface, cBrush, thumbRect
+            PD2D.FillRectangleF_FromRectF cSurface, cBrush, thumbRect
             cPen.SetPenColor thumbBorderColor
-            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, thumbRect
+            PD2D.DrawRectangleF_FromRectF cSurface, cPen, thumbRect
         End If
         
         'Finally, paint the arrows themselves.  (Note that antialiasing remains on.)
@@ -1075,8 +1069,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         cPen.SetPenColor upButtonArrowColor
         cPen.SetPenWidth 2!
         cPen.SetPenLineCap P2_LC_Round
-        m_Painter.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
-        m_Painter.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
+        PD2D.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
+        PD2D.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
                     
         'Next, the down/right-pointing arrow
         If m_OrientationHorizontal Then
@@ -1100,8 +1094,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         End If
         
         cPen.SetPenColor downButtonArrowColor
-        m_Painter.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
-        m_Painter.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
+        PD2D.DrawLineF cSurface, cPen, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y
+        PD2D.DrawLineF cSurface, cPen, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y
         
         Set cBrush = Nothing: Set cPen = Nothing: Set cSurface = Nothing
         

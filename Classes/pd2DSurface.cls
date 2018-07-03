@@ -35,9 +35,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The current surface type.  At present, this is immutable; once set, it cannot be migrated
-Private m_SurfaceBackend As PD_2D_RENDERING_BACKEND
-
 'The current surface handle.  Will be 0 if the surface is uninitialized.  The meaning of this value varies by backend.
 Private m_SurfaceHandle As Long
 
@@ -131,72 +128,54 @@ End Function
 
 Friend Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     m_SurfaceAntialiasing = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_Antialias Else GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_None
-    End If
+    If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_Antialias Else GDI_Plus.SetGDIPlusGraphicsAntialiasing m_SurfaceHandle, GP_SM_None
 End Sub
 
 Friend Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
     m_SurfaceBlendUsingSRGBGamma = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        If m_SurfaceBlendUsingSRGBGamma Then GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_GammaCorrected Else GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_AssumeLinear
-    End If
+    If m_SurfaceBlendUsingSRGBGamma Then GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_GammaCorrected Else GDI_Plus.SetGDIPlusGraphicsBlendUsingSRGBGamma m_SurfaceHandle, GP_CQ_AssumeLinear
 End Sub
 
 Friend Sub SetSurfaceCompositing(ByVal newSetting As PD_2D_CompositeMode)
     m_SurfaceCompositeMode = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        If (m_SurfaceCompositeMode = P2_CM_Blend) Then GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceOver Else GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceCopy
-    End If
+    If (m_SurfaceCompositeMode = P2_CM_Blend) Then GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceOver Else GDI_Plus.SetGDIPlusGraphicsCompositeMode m_SurfaceHandle, GP_CM_SourceCopy
 End Sub
 
 Friend Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
     m_SurfacePixelOffset = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        If (m_SurfacePixelOffset >= P2_PO_Half) Then GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_Half Else GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_None
-    End If
+    If (m_SurfacePixelOffset >= P2_PO_Half) Then GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_Half Else GDI_Plus.SetGDIPlusGraphicsPixelOffset m_SurfaceHandle, GP_POM_None
 End Sub
 
 Friend Sub SetSurfaceRenderingOriginX(ByVal newSetting As Long)
     m_SurfaceRenderingOriginX = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        GDI_Plus.SetGDIPlusGraphicsRenderingOriginX m_SurfaceHandle, m_SurfaceRenderingOriginX
-    End If
+    GDI_Plus.SetGDIPlusGraphicsRenderingOriginX m_SurfaceHandle, m_SurfaceRenderingOriginX
 End Sub
 
 Friend Sub SetSurfaceRenderingOriginY(ByVal newSetting As Long)
     m_SurfaceRenderingOriginY = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        GDI_Plus.SetGDIPlusGraphicsRenderingOriginY m_SurfaceHandle, m_SurfaceRenderingOriginY
-    End If
+    GDI_Plus.SetGDIPlusGraphicsRenderingOriginY m_SurfaceHandle, m_SurfaceRenderingOriginY
 End Sub
 
 Friend Sub SetSurfaceResizeQuality(ByVal newSetting As PD_2D_ResizeQuality)
     m_SurfaceResizeQuality = newSetting
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        Select Case m_SurfaceResizeQuality
-            Case P2_RQ_Fast
-                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_NearestNeighbor
-            Case P2_RQ_Bilinear
-                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_Bilinear
-            Case P2_RQ_Bicubic
-                GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_HighQualityBicubic
-        End Select
-    End If
+    Select Case m_SurfaceResizeQuality
+        Case P2_RQ_Fast
+            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_NearestNeighbor
+        Case P2_RQ_Bilinear
+            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_Bilinear
+        Case P2_RQ_Bicubic
+            GDI_Plus.SetGDIPlusGraphicsResizeQuality m_SurfaceHandle, GP_IM_HighQualityBicubic
+    End Select
 End Sub
 
 Friend Sub SetSurfaceWorldTransform(ByRef srcTransform As pd2DTransform)
     m_SurfaceWorldTransform = srcTransform.GetHandle
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
-    End If
+    GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
 End Sub
 
 Friend Sub SetSurfaceWorldTransform_ByHandle(ByVal srcTransform As Long)
     m_SurfaceWorldTransform = srcTransform
-    If (m_SurfaceBackend = P2_DefaultBackend) Or (m_SurfaceBackend = P2_GDIPlusBackend) Then
-        GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
-    End If
+    GDI_Plus.SetGDIPlusGraphicsWorldTransform m_SurfaceHandle, m_SurfaceWorldTransform
 End Sub
 
 'Some property changes exist only at run-time.  Because these properties are not well-defined, they do not support
@@ -210,13 +189,10 @@ Friend Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boole
         
         If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion
         
-        Select Case m_SurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                Dim tmpHandle As Long
-                tmpHandle = GDI_Plus.GDIPlus_GraphicsGetClipRegion(m_SurfaceHandle)
-                dstRegion.AssignExternalHandleDirectly tmpHandle
-                GetSurfaceClippingRegion = (tmpHandle <> 0)
-        End Select
+        Dim tmpHandle As Long
+        tmpHandle = GDI_Plus.GDIPlus_GraphicsGetClipRegion(m_SurfaceHandle)
+        dstRegion.AssignExternalHandleDirectly tmpHandle
+        GetSurfaceClippingRegion = (tmpHandle <> 0)
         
     Else
         GetSurfaceClippingRegion = False
@@ -227,12 +203,7 @@ End Function
 Friend Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
-    
-        Select Case m_SurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                SetSurfaceClip_FromRectangle = GDI_Plus.GDIPlus_GraphicsSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode)
-        End Select
-        
+        SetSurfaceClip_FromRectangle = GDI_Plus.GDIPlus_GraphicsSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode)
     Else
         SetSurfaceClip_FromRectangle = False
     End If
@@ -254,12 +225,7 @@ End Function
 Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
-    
-        Select Case m_SurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                SetSurfaceClip_FromRegion = GDI_Plus.GDIPlus_GraphicsSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode)
-        End Select
-        
+        SetSurfaceClip_FromRegion = GDI_Plus.GDIPlus_GraphicsSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode)
     Else
         SetSurfaceClip_FromRegion = False
     End If
@@ -269,12 +235,7 @@ End Function
 Friend Function SetSurfaceClip_None() As Boolean
 
     If (m_SurfaceHandle <> 0) Then
-    
-        Select Case m_SurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                SetSurfaceClip_None = GDI_Plus.GDIPlus_GraphicsResetClipRegion(m_SurfaceHandle)
-        End Select
-        
+        SetSurfaceClip_None = GDI_Plus.GDIPlus_GraphicsResetClipRegion(m_SurfaceHandle)
     Else
         SetSurfaceClip_None = False
     End If
@@ -307,9 +268,7 @@ Friend Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal clo
             End If
             
             'Copy the surface contents into place
-            Dim cPainter As pd2DPainter
-            Drawing2D.QuickCreatePainter cPainter
-            CloneSurface = cPainter.CopySurfaceI(Me, 0, 0, srcSurface)
+            CloneSurface = PD2D.CopySurfaceI(Me, 0, 0, srcSurface)
             
         End If
         
@@ -345,20 +304,14 @@ Friend Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
         
             m_SurfaceType = P2_ST_Bitmap
             
-            'Finally, wrap the appropriate backend around this newly created DC
-            Select Case m_SurfaceBackend
-                
-                Case P2_DefaultBackend, P2_GDIPlusBackend
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
-                    CreateBlankSurface = (m_SurfaceHandle <> 0)
+            m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
+            CreateBlankSurface = (m_SurfaceHandle <> 0)
                     
-                    'Apply any other stored settings to the newly created surface
-                    If CreateBlankSurface Then SyncAllPropertiesToBackend
+            'Apply any other stored settings to the newly created surface
+            If CreateBlankSurface Then SyncAllPropertiesToBackend
                     
-                    'When debug mode is active, all object creations are reported back to the master Drawing2D module
-                    If (CreateBlankSurface And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
-                    
-            End Select
+            'When debug mode is active, all object creations are reported back to the master Drawing2D module
+            If (CreateBlankSurface And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
     Else
@@ -381,30 +334,25 @@ Friend Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVa
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
-    Select Case m_SurfaceBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            
-            'To simplify handling of surface(s) created from file, we are only going to lean on GDI+ for the initial image
-            ' file parsing.  Once the image is loaded, we will transfer it to an internally managed DIB; this frees us from
-            ' obnoxious GDI+ constraints (like being forced to maintain file access for the lifetime of the image object).
-            '
-            'One downside of this approach is that metafiles will be forcibly rasterized.  This behavior could be "fixed"
-            ' in a future release, but honestly, knowing all surfaces are raster-type saves us a lot of trouble.
-            
-            'Start by using GDI+ to load the file into a GDI+ container.
-            Dim hGdipImage As Long, isImageMetafile As Boolean
-            hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromFile(srcFilename, isImageMetafile)
-            
-            If (hGdipImage <> 0) Then
-                CreateSurfaceFromFile = InternalGDIPlusLoadImage(hGdipImage, isImageMetafile, fixJPEGOrientation)
-            Else
-                CreateSurfaceFromFile = False
-            End If
-            
-            'When debug mode is active, all object creations are reported back to the master Drawing2D module
-            If (CreateSurfaceFromFile And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
-            
-    End Select
+    'To simplify handling of surface(s) created from file, we are only going to lean on GDI+ for the initial image
+    ' file parsing.  Once the image is loaded, we will transfer it to an internally managed DIB; this frees us from
+    ' obnoxious GDI+ constraints (like being forced to maintain file access for the lifetime of the image object).
+    '
+    'One downside of this approach is that metafiles will be forcibly rasterized.  This behavior could be "fixed"
+    ' in a future release, but honestly, knowing all surfaces are raster-type saves us a lot of trouble.
+    
+    'Start by using GDI+ to load the file into a GDI+ container.
+    Dim hGdipImage As Long, isImageMetafile As Boolean
+    hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromFile(srcFilename, isImageMetafile)
+    
+    If (hGdipImage <> 0) Then
+        CreateSurfaceFromFile = InternalGDIPlusLoadImage(hGdipImage, isImageMetafile, fixJPEGOrientation)
+    Else
+        CreateSurfaceFromFile = False
+    End If
+    
+    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    If (CreateSurfaceFromFile And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
 
@@ -598,23 +546,18 @@ Friend Function CreateSurfaceFromArray(ByRef srcArray() As Byte, Optional ByVal 
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
-    Select Case m_SurfaceBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            
-            'Start by using GDI+ to load the array into a GDI+ container.
-            Dim hGdipImage As Long, isImageMetafile As Boolean
-            hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromArray(srcArray, isImageMetafile)
-            
-            If (hGdipImage <> 0) Then
-                CreateSurfaceFromArray = InternalGDIPlusLoadImage(hGdipImage, isImageMetafile, fixJPEGOrientation)
-            Else
-                CreateSurfaceFromArray = False
-            End If
-            
-            'When debug mode is active, all object creations are reported back to the master Drawing2D module
-            If (CreateSurfaceFromArray And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
-            
-    End Select
+    'Start by using GDI+ to load the array into a GDI+ container.
+    Dim hGdipImage As Long, isImageMetafile As Boolean
+    hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromArray(srcArray, isImageMetafile)
+    
+    If (hGdipImage <> 0) Then
+        CreateSurfaceFromArray = InternalGDIPlusLoadImage(hGdipImage, isImageMetafile, fixJPEGOrientation)
+    Else
+        CreateSurfaceFromArray = False
+    End If
+    
+    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    If (CreateSurfaceFromArray And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
     
 End Function
 
@@ -639,43 +582,36 @@ Friend Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd 
             
             If (m_SurfaceHandle <> 0) Then Me.ReleaseSurface
             
-            'Call the backend-specific surface creation function
-            Select Case m_SurfaceBackend
+            m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(srcDC)
+            WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
+                    
+            If WrapSurfaceAroundDC Then
+                m_SurfaceDC = srcDC
+                m_SurfaceType = P2_ST_WrapperOnly
                 
-                Case P2_DefaultBackend, P2_GDIPlusBackend
-                    
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(srcDC)
-                    WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
-                    
-                    If WrapSurfaceAroundDC Then
-                        m_SurfaceDC = srcDC
-                        m_SurfaceType = P2_ST_WrapperOnly
-                        
-                        'Apply any other stored settings to the newly created surface
-                        SyncAllPropertiesToBackend
-                        
-                        'Determine how we're gonna get size data from this DC
-                        If (srcHwnd <> 0) Then
-                            m_SurfaceHWnd = srcHwnd
-                            m_SurfaceSizeMode = P2_SizeFromHWnd
-                        Else
-                            If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
-                                m_SurfaceWidthCaller = surfaceWidth
-                                m_SurfaceHeightCaller = surfaceHeight
-                                m_SurfaceSizeMode = P2_SizeFromCaller
-                            Else
-                                m_SurfaceSizeMode = P2_SizeUnknown
-                            End If
-                        End If
-                        
+                'Apply any other stored settings to the newly created surface
+                SyncAllPropertiesToBackend
+                
+                'Determine how we're gonna get size data from this DC
+                If (srcHwnd <> 0) Then
+                    m_SurfaceHWnd = srcHwnd
+                    m_SurfaceSizeMode = P2_SizeFromHWnd
+                Else
+                    If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
+                        m_SurfaceWidthCaller = surfaceWidth
+                        m_SurfaceHeightCaller = surfaceHeight
+                        m_SurfaceSizeMode = P2_SizeFromCaller
                     Else
-                        InternalError "GDI+ DC wrapper failed", "GDI+ failed to wrap the hDC passed to pd2DSurface.WrapSurfaceAroundDC"
+                        m_SurfaceSizeMode = P2_SizeUnknown
                     End If
-                    
-            End Select
+                End If
+                
+            Else
+                InternalError "GDI+ DC wrapper failed", "GDI+ failed to wrap the hDC passed to pd2DSurface.WrapSurfaceAroundDC"
+            End If
             
             'When debug mode is active, all object creations are reported back to the master Drawing2D module
-            If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
+            If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
             
         End If
     
@@ -696,25 +632,18 @@ Friend Function WrapSurfaceAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
     
     If (Not srcDIB Is Nothing) Then
-    
-        'Call the backend-specific surface creation function
-        Select Case m_SurfaceBackend
-                    
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                
-                Set m_SurfaceDIB = srcDIB
-                m_SurfaceType = P2_ST_Bitmap
-                
-                m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
-                WrapSurfaceAroundPDDIB = (m_SurfaceHandle <> 0)
-                
-                'Apply any other stored settings to the newly created surface
-                If WrapSurfaceAroundPDDIB Then SyncAllPropertiesToBackend
-                
-        End Select
+               
+        Set m_SurfaceDIB = srcDIB
+        m_SurfaceType = P2_ST_Bitmap
+        
+        m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(m_SurfaceDIB.GetDIBDC)
+        WrapSurfaceAroundPDDIB = (m_SurfaceHandle <> 0)
+        
+        'Apply any other stored settings to the newly created surface
+        If WrapSurfaceAroundPDDIB Then SyncAllPropertiesToBackend
             
         'When debug mode is active, all object creations are reported back to the master Drawing2D module
-        If (WrapSurfaceAroundPDDIB And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
+        If (WrapSurfaceAroundPDDIB And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange True
         
     Else
         InternalError "target DIB is null", "pd2DSurface.WrapSurfaceAroundPDDIB doesn't work on non-existent DIBs."
@@ -739,33 +668,26 @@ End Function
 ' 3) jpegQuality: integer on the range [0, 100] describing the output JPEG's quality.  100 = nearly lossless, 0 = extremely lossy
 Friend Function SaveSurfaceToFile(ByVal dstFilename As String, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
 
-    Select Case m_SurfaceBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            
-            Dim useTmpSurfaceCopy As Boolean: useTmpSurfaceCopy = False
-            Dim tmpSurfaceCopy As pd2DSurface
-            
-            'If the output color depth is 24-bpp or less, forcibly composite our surface against white prior to saving.
-            If ((dstFileFormat = P2_FFE_GIF) Or (dstFileFormat = P2_FFE_JPEG)) And (Me.GetSurfaceAlphaSupport) Then
-                Drawing2D.QuickCreateBlankSurface tmpSurfaceCopy, Me.GetSurfaceWidth, Me.GetSurfaceHeight, False, True, vbWhite, 100
-                Dim cPainter As pd2DPainter
-                Drawing2D.QuickCreatePainter cPainter
-                cPainter.DrawSurfaceCroppedI tmpSurfaceCopy, 0, 0, Me.GetSurfaceWidth, Me.GetSurfaceHeight, Me, 0, 0
-                useTmpSurfaceCopy = True
-            End If
-            
-            'Retrieve the relevant surface's GDI+ bitmap handle
-            Dim gdipBitmap As Long
-            If useTmpSurfaceCopy Then gdipBitmap = tmpSurfaceCopy.GetGdipImageHandle Else gdipBitmap = Me.GetGdipImageHandle
-            
-            'GDI+ handles the rest...
-            If (gdipBitmap <> 0) Then
-                SaveSurfaceToFile = GDI_Plus.GDIPlus_ImageSaveToFile(gdipBitmap, dstFilename, dstFileFormat, jpegQuality)
-            Else
-                InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToFile() failed because GDI+ failed to create a matching Bitmap object prior to saving."
-            End If
-        
-    End Select
+    Dim useTmpSurfaceCopy As Boolean: useTmpSurfaceCopy = False
+    Dim tmpSurfaceCopy As pd2DSurface
+    
+    'If the output color depth is 24-bpp or less, forcibly composite our surface against white prior to saving.
+    If ((dstFileFormat = P2_FFE_GIF) Or (dstFileFormat = P2_FFE_JPEG)) And (Me.GetSurfaceAlphaSupport) Then
+        Drawing2D.QuickCreateBlankSurface tmpSurfaceCopy, Me.GetSurfaceWidth, Me.GetSurfaceHeight, False, True, vbWhite, 100
+        PD2D.DrawSurfaceCroppedI tmpSurfaceCopy, 0, 0, Me.GetSurfaceWidth, Me.GetSurfaceHeight, Me, 0, 0
+        useTmpSurfaceCopy = True
+    End If
+    
+    'Retrieve the relevant surface's GDI+ bitmap handle
+    Dim gdipBitmap As Long
+    If useTmpSurfaceCopy Then gdipBitmap = tmpSurfaceCopy.GetGdipImageHandle Else gdipBitmap = Me.GetGdipImageHandle
+    
+    'GDI+ handles the rest...
+    If (gdipBitmap <> 0) Then
+        SaveSurfaceToFile = GDI_Plus.GDIPlus_ImageSaveToFile(gdipBitmap, dstFilename, dstFileFormat, jpegQuality)
+    Else
+        InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToFile() failed because GDI+ failed to create a matching Bitmap object prior to saving."
+    End If
     
 End Function
 
@@ -773,33 +695,26 @@ End Function
 ' isn't touched.
 Friend Function SaveSurfaceToArray(ByRef dstArray() As Byte, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 90) As Boolean
 
-    Select Case m_SurfaceBackend
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            
-            Dim useTmpSurfaceCopy As Boolean: useTmpSurfaceCopy = False
-            Dim tmpSurfaceCopy As pd2DSurface
-            
-            'If the output color depth is 24-bpp or less, forcibly composite our surface against white prior to saving.
-            If ((dstFileFormat = P2_FFE_GIF) Or (dstFileFormat = P2_FFE_JPEG)) And (Me.GetSurfaceAlphaSupport) Then
-                Drawing2D.QuickCreateBlankSurface tmpSurfaceCopy, Me.GetSurfaceWidth, Me.GetSurfaceHeight, False, True, vbWhite, 100
-                Dim cPainter As pd2DPainter
-                Drawing2D.QuickCreatePainter cPainter
-                cPainter.DrawSurfaceCroppedI tmpSurfaceCopy, 0, 0, Me.GetSurfaceWidth, Me.GetSurfaceHeight, Me, 0, 0
-                useTmpSurfaceCopy = True
-            End If
-            
-            'Retrieve the relevant surface's GDI+ bitmap handle
-            Dim gdipBitmap As Long
-            If useTmpSurfaceCopy Then gdipBitmap = tmpSurfaceCopy.GetGdipImageHandle Else gdipBitmap = Me.GetGdipImageHandle
-            
-            'GDI+ handles the rest...
-            If (gdipBitmap <> 0) Then
-                SaveSurfaceToArray = GDI_Plus.GDIPlus_ImageSaveToArray(gdipBitmap, dstArray, dstFileFormat, jpegQuality)
-            Else
-                InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToArray() failed because GDI+ failed to create a matching Bitmap object prior to saving."
-            End If
-        
-    End Select
+    Dim useTmpSurfaceCopy As Boolean: useTmpSurfaceCopy = False
+    Dim tmpSurfaceCopy As pd2DSurface
+    
+    'If the output color depth is 24-bpp or less, forcibly composite our surface against white prior to saving.
+    If ((dstFileFormat = P2_FFE_GIF) Or (dstFileFormat = P2_FFE_JPEG)) And (Me.GetSurfaceAlphaSupport) Then
+        Drawing2D.QuickCreateBlankSurface tmpSurfaceCopy, Me.GetSurfaceWidth, Me.GetSurfaceHeight, False, True, vbWhite, 100
+        PD2D.DrawSurfaceCroppedI tmpSurfaceCopy, 0, 0, Me.GetSurfaceWidth, Me.GetSurfaceHeight, Me, 0, 0
+        useTmpSurfaceCopy = True
+    End If
+    
+    'Retrieve the relevant surface's GDI+ bitmap handle
+    Dim gdipBitmap As Long
+    If useTmpSurfaceCopy Then gdipBitmap = tmpSurfaceCopy.GetGdipImageHandle Else gdipBitmap = Me.GetGdipImageHandle
+    
+    'GDI+ handles the rest...
+    If (gdipBitmap <> 0) Then
+        SaveSurfaceToArray = GDI_Plus.GDIPlus_ImageSaveToArray(gdipBitmap, dstArray, dstFileFormat, jpegQuality)
+    Else
+        InternalError "Could not create GDI+ Bitmap Object", "SaveSurfaceToArray() failed because GDI+ failed to create a matching Bitmap object prior to saving."
+    End If
     
 End Function
 
@@ -855,10 +770,6 @@ Friend Function GetGdipImageHandle() As Long
     
     GetGdipImageHandle = m_GdipImageHandle
     
-End Function
-
-Friend Function GetSurfaceBackend() As PD_2D_RENDERING_BACKEND
-    GetSurfaceBackend = m_SurfaceBackend
 End Function
 
 'Users never need to call this function; it is only used to accelerate various drawing options
@@ -967,13 +878,6 @@ Friend Function HasSurface() As Boolean
     HasSurface = (m_SurfaceHandle <> 0)
 End Function
 
-'You only need to manually initialize a surface backend if you plan on using a non-default backend.  (Surfaces with the
-' default backend are initialized automatically.)
-Friend Function InitializeSurfaceBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
-    m_SurfaceBackend = targetBackend
-    InitializeSurfaceBackend = True
-End Function
-
 'Erase the current surface's contents.  Roughly equivalent to .Cls in VB, except that this function accepts a
 ' color and/or alpha to use when erasing.
 '
@@ -994,19 +898,13 @@ Friend Function ReleaseSurface() As Boolean
     
     If (m_SurfaceHandle <> 0) Then
         
-        'Call the backend-specific release function
-        Select Case m_SurfaceBackend
-        
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                ReleaseSurface = GDI_Plus.ReleaseGDIPlusGraphics(m_SurfaceHandle)
-        
-        End Select
+        ReleaseSurface = GDI_Plus.ReleaseGDIPlusGraphics(m_SurfaceHandle)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
         If ReleaseSurface Then
             m_SurfaceHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, False
+            If (m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange False
             
             'Also reset any surface-type-specific values
             If (m_SurfaceType = P2_ST_WrapperOnly) Then

@@ -53,9 +53,6 @@ Private m_PenDashOffset As Single
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdParamXML
 
-'The backend used to render this pen.  At present, this is immutable; once set, it cannot be migrated
-Private m_PenBackend As PD_2D_RENDERING_BACKEND
-
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
 
@@ -166,10 +163,7 @@ End Sub
 'Subs like this offer better performance, but note that the GetPenPropertiesAsXML sub *will ignore this setting*!
 Friend Sub SetPenDashes_UNSAFE(ByVal ptrToDashLengths As Long, ByVal numOfDashes As Long)
     If (m_PenHandle <> 0) Then
-        Select Case m_PenBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                GDI_Plus.GDIPlus_PenSetDashArray m_PenHandle, ptrToDashLengths, numOfDashes
-        End Select
+        GDI_Plus.GDIPlus_PenSetDashArray m_PenHandle, ptrToDashLengths, numOfDashes
     End If
 End Sub
 
@@ -271,56 +265,46 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_PEN_SETTINGS)
     'Property changes only need to be relayed if we've already created a handle
     If (m_PenHandle <> 0) Then
     
-        'Relays obviously vary by the active backend!
-        Select Case m_PenBackend
-            
-            Case P2_DefaultBackend, P2_GDIPlusBackend
+        Select Case propID
                 
-                Select Case propID
-                        
-                    Case P2_PenAlignment
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenAlignment
-                        
-                    Case P2_PenColor
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenColor
-                        
-                    Case P2_PenDashCap
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
-                            
-                    Case P2_PenDashOffset
-                        GDI_Plus.GDIPlus_PenSetDashOffset m_PenHandle, m_PenDashOffset
-                        
-                    Case P2_PenEndCap
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
-                        
-                    Case P2_PenLineCap
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineCap
-                        
-                    Case P2_PenLineJoin
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineJoin
-                        
-                    Case P2_PenMiterLimit
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenMiterLimit
-                        
-                    Case P2_PenOpacity
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenOpacity
-                        
-                    Case P2_PenStartCap
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+            Case P2_PenAlignment
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenAlignment
+                
+            Case P2_PenColor
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenColor
+                
+            Case P2_PenDashCap
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
                     
-                    Case P2_PenStyle
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenStyle
-                        
-                    Case P2_PenWidth
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenWidth
-                        
-                End Select
+            Case P2_PenDashOffset
+                GDI_Plus.GDIPlus_PenSetDashOffset m_PenHandle, m_PenDashOffset
                 
-            'In the future, other backends can be handled here...
-            Case Else
+            Case P2_PenEndCap
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
+                
+            Case P2_PenLineCap
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineCap
+                
+            Case P2_PenLineJoin
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineJoin
+                
+            Case P2_PenMiterLimit
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenMiterLimit
+                
+            Case P2_PenOpacity
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenOpacity
+                
+            Case P2_PenStartCap
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+            
+            Case P2_PenStyle
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenStyle
+                
+            Case P2_PenWidth
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenWidth
                 
         End Select
-    
+        
     End If
         
 End Sub
@@ -385,19 +369,8 @@ Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     End If
 End Function
 
-Friend Function GetPenBackend() As PD_2D_RENDERING_BACKEND
-    GetPenBackend = m_PenBackend
-End Function
-
 Friend Function HasPen() As Boolean
     HasPen = (m_PenHandle <> 0)
-End Function
-
-'You only need to manually initialize a pen backend if you plan on using a non-default backend.  (Pens with the
-' default backend are initialized automatically.)
-Friend Function InitializePenBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
-    m_PenBackend = targetBackend
-    InitializePenBackend = True
 End Function
 
 'Create an actual pen handle using the current backend and the current pen settings.
@@ -407,23 +380,18 @@ Friend Function CreatePen() As Boolean
     
     If (m_PenHandle <> 0) Then ReleasePen
     
-    'Call the backend-specific surface creation function
-    Select Case m_PenBackend
-        
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, m_PenAlignment)
-            If (m_PenHandle <> 0) Then
-                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenDashCap, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
-                If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
-                If (m_PenEndCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
-                GDI_Plus.GDIPlus_PenSetDashOffset m_PenHandle, m_PenDashOffset
-            End If
-            CreatePen = (m_PenHandle <> 0)
+    m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, m_PenAlignment)
             
-    End Select
+    If (m_PenHandle <> 0) Then
+        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenDashCap, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
+        If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+        If (m_PenEndCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
+        GDI_Plus.GDIPlus_PenSetDashOffset m_PenHandle, m_PenDashOffset
+    End If
+    CreatePen = (m_PenHandle <> 0)
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If (CreatePen And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, True
+    If (CreatePen And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange True
     
 End Function
 
@@ -438,17 +406,11 @@ Friend Function CreatePenFromBrush(ByRef srcBrush As pd2DBrush) As Boolean
     
     If (m_PenHandle <> 0) Then ReleasePen
     
-    'Call the backend-specific surface creation function
-    Select Case m_PenBackend
-        
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            m_PenHandle = GDI_Plus.GetGDIPlusPenFromBrush(srcBrush.GetHandle, m_PenWidth)
-            CreatePenFromBrush = (m_PenHandle <> 0)
-            
-    End Select
+    m_PenHandle = GDI_Plus.GetGDIPlusPenFromBrush(srcBrush.GetHandle, m_PenWidth)
+    CreatePenFromBrush = (m_PenHandle <> 0)
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If (CreatePenFromBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, True
+    If (CreatePenFromBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange True
     
 End Function
 
@@ -456,17 +418,13 @@ Friend Function ReleasePen() As Boolean
     
     If (m_PenHandle <> 0) Then
         
-        'Call the backend-specific release function
-        Select Case m_PenBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                ReleasePen = GDI_Plus.ReleaseGDIPlusPen(m_PenHandle)
-        End Select
+        ReleasePen = GDI_Plus.ReleaseGDIPlusPen(m_PenHandle)
         
         'After a successful release, we must always reset the class-level handle to match, and during debug mode,
         ' the central Drawing2D module also needs to be notified.
         If ReleasePen Then
             m_PenHandle = 0
-            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, False
+            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange False
         End If
     
     Else
@@ -518,7 +476,6 @@ End Sub
 Private Sub Class_Terminate()
     Me.ReleasePen
 End Sub
-
 
 'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
 ' better fit your project (e.g. perhaps it could raise an actual error event).

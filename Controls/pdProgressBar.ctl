@@ -306,15 +306,12 @@ Private Sub RedrawBackBuffer()
     'Rendering is pretty easy - fill a fraction of the control with the current progress level!
     If PDMain.IsProgramRunning() And ucSupport.AmIVisible() Then
         
-        Dim cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
-        
         Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
         
         Dim cPen As pd2DPen
         Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDPB_Border, Me.Enabled)
-        cPainter.DrawRectangleF_FromRectF cSurface, cPen, m_BorderRect
+        PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_BorderRect
         Set cPen = Nothing
         
         'Marquee mode doesn't use the value or max properties; instead, all rendering is handled manually
@@ -344,7 +341,7 @@ Private Sub RedrawBackBuffer()
             Dim cBrush As pd2DBrush
             Drawing2D.QuickCreateSolidBrush cBrush, m_Colors.RetrieveColor(PDPB_Progress, Me.Enabled)
             With m_ProgressRect
-                cPainter.FillRectangleF cSurface, cBrush, .Left, .Top, .Width, .Height
+                PD2D.FillRectangleF cSurface, cBrush, .Left, .Top, .Width, .Height
             End With
             
             'Activate high-quality rendering
@@ -388,7 +385,7 @@ Private Sub RedrawBackBuffer()
             cSurface.SetSurfaceClip_FromRectF m_ProgressRect
             
             'Render the gradient!
-            cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRect
+            PD2D.FillRectangleF_FromRectF cSurface, cBrush, boundsRect
             Set cBrush = Nothing: Set cGradient = Nothing
             
             'Before we exit, make a note of the current time; we'll use this on subsequent animations to
@@ -411,7 +408,7 @@ Private Sub RedrawBackBuffer()
                 progBarWidth = (m_ProgBarValue / m_ProgBarMax) * m_ProgressRect.Width
                 
                 With m_ProgressRect
-                    cPainter.FillRectangleF cSurface, cBrush, .Left, .Top, progBarWidth, .Height
+                    PD2D.FillRectangleF cSurface, cBrush, .Left, .Top, progBarWidth, .Height
                 End With
                 
                 Set cBrush = Nothing
@@ -420,7 +417,7 @@ Private Sub RedrawBackBuffer()
             
         End If
         
-        Set cSurface = Nothing: Set cPainter = Nothing
+        Set cSurface = Nothing
         
     End If
     

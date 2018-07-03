@@ -290,9 +290,6 @@ Private m_SuspendRedraws As Boolean
 'Hatch count is constant, regardless of OS
 Private Const NUM_OF_HATCHES As Long = 53
 
-'2D painting support classes
-Private m_Painter As pd2DPainter
-
 'When the form first loads, we find the longest hatch index number (longest in *pixels*).  We do this so that we
 ' can align all hatch previews identically.
 Private m_LargestWidth As Single
@@ -452,9 +449,6 @@ Private Sub Form_Load()
     btsGradientShape.AddItem "diamond", 4
     UpdateGradientOptionVisibility
     
-    'The hatch preview box is owner-drawn, so calculate some additional metrics now
-    Drawing2D.QuickCreatePainter m_Painter
-    
     Dim tmpFont As pdFont
     Set tmpFont = Fonts.GetMatchingUIFont(10#)
     
@@ -598,54 +592,50 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
     Drawing2D.QuickCreateSolidBrush cBrush, itemBackColor
     Drawing2D.QuickCreateSolidPen cPen, 1, itemBorderColor, , P2_LJ_Miter
     
-    If (Not (m_Painter Is Nothing)) Then
-        
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-        
-        'Next, fill the border
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
-        
-        'Next, draw the caption
-        Dim tmpFont As pdFont
-        Set tmpFont = Fonts.GetMatchingUIFont(10#)
-        
-        Dim tmpString As String
-        tmpString = CStr(itemIndex + 1) & " - "
-        
-        tmpFont.SetFontColor itemTextColor
-        tmpFont.AttachToDC bufferDC
-        tmpFont.SetTextAlignment vbLeftJustify
-        tmpFont.FastRenderTextWithClipping tmpRectF.Left + FixDPI(4), tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, tmpString, False, True, False
-        tmpFont.ReleaseFromDC
-        Set tmpFont = Nothing
-        
-        'Finally, draw the hatch
-        Dim hatchRect As RectF
-        
-        With hatchRect
-            .Left = tmpRectF.Left + FixDPI(4) + m_LargestWidth
-            .Top = tmpRectF.Top + 2#
-            .Height = tmpRectF.Height - 4#
-            .Width = (tmpRectF.Left + tmpRectF.Width) - (hatchRect.Left) - FixDPI(4)
-        End With
-        
-        cBrush.ReleaseBrush
-        cBrush.SetBrushMode P2_BM_Pattern
-        cBrush.SetBrushPatternStyle itemIndex
-        cBrush.SetBrushPattern1Color vbBlack
-        cBrush.SetBrushPattern1Opacity 100
-        cBrush.SetBrushPattern2Color vbWhite
-        cBrush.SetBrushPattern2Opacity 100
-        cBrush.CreateBrush
-        
-        cSurface.SetSurfaceRenderingOriginX hatchRect.Left
-        cSurface.SetSurfaceRenderingOriginY hatchRect.Top
-        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, hatchRect
-        
-        cPen.SetPenColor hatchBorderColor
-        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, hatchRect
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
     
-    End If
+    'Next, fill the border
+    PD2D.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+    
+    'Next, draw the caption
+    Dim tmpFont As pdFont
+    Set tmpFont = Fonts.GetMatchingUIFont(10#)
+    
+    Dim tmpString As String
+    tmpString = CStr(itemIndex + 1) & " - "
+    
+    tmpFont.SetFontColor itemTextColor
+    tmpFont.AttachToDC bufferDC
+    tmpFont.SetTextAlignment vbLeftJustify
+    tmpFont.FastRenderTextWithClipping tmpRectF.Left + FixDPI(4), tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, tmpString, False, True, False
+    tmpFont.ReleaseFromDC
+    Set tmpFont = Nothing
+        
+    'Finally, draw the hatch
+    Dim hatchRect As RectF
+    
+    With hatchRect
+        .Left = tmpRectF.Left + FixDPI(4) + m_LargestWidth
+        .Top = tmpRectF.Top + 2#
+        .Height = tmpRectF.Height - 4#
+        .Width = (tmpRectF.Left + tmpRectF.Width) - (hatchRect.Left) - FixDPI(4)
+    End With
+    
+    cBrush.ReleaseBrush
+    cBrush.SetBrushMode P2_BM_Pattern
+    cBrush.SetBrushPatternStyle itemIndex
+    cBrush.SetBrushPattern1Color vbBlack
+    cBrush.SetBrushPattern1Opacity 100
+    cBrush.SetBrushPattern2Color vbWhite
+    cBrush.SetBrushPattern2Opacity 100
+    cBrush.CreateBrush
+        
+    cSurface.SetSurfaceRenderingOriginX hatchRect.Left
+    cSurface.SetSurfaceRenderingOriginY hatchRect.Top
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, hatchRect
+    
+    cPen.SetPenColor hatchBorderColor
+    PD2D.DrawRectangleF_FromRectF cSurface, cPen, hatchRect
     
 End Sub
 

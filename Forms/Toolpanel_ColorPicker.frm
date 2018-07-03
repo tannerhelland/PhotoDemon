@@ -317,9 +317,6 @@ Private m_SampleDIB As pdDIB
 'Preview DIB of the current color (displayed right there in the toolbox)
 Private m_PreviewDIB As pdDIB
 
-'pd2D handles various painting tasks
-Private m_Painter As pd2DPainter
-
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
@@ -653,11 +650,11 @@ Private Sub UpdateUIText()
         
         Dim tmpBrush As pd2DBrush
         Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), m_Alpha * (100# / 255#)
-        m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight
+        PD2D.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight
         
         '"Pure" color next
         Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(m_Red, m_Green, m_Blue), 100#
-        m_Painter.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight \ 2
+        PD2D.FillRectangleI tmpSurface, tmpBrush, 0, 0, sampleWidth, sampleHeight \ 2
         
     End If
     
@@ -688,9 +685,6 @@ Private Sub Form_Load()
     'At present, we default to "RGB" in the first color area, and "HSV" in the second
     cboColorSpace(0).ListIndex = cps_RGBA
     cboColorSpace(1).ListIndex = cps_HSV
-        
-    'Create a pd2D painter for rendering various on-screen elements
-    Drawing2D.QuickCreatePainter m_Painter
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings

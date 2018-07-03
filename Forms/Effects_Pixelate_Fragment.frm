@@ -200,10 +200,6 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
     dstSurface.WrapSurfaceAroundPDDIB workingDIB
     dstSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
     
-    'Prep a painter.  (It will handle the actual drawing.)
-    Dim cPainter As pd2DPainter
-    Drawing2D.QuickCreatePainter cPainter
-    
     'Prep a transformer.  (It will calculate rotations for us.)
     Dim cTransform As pd2DTransform
     Set cTransform = New pd2DTransform
@@ -221,7 +217,7 @@ Public Sub Fragment(ByVal effectParams As String, Optional ByVal toPreview As Bo
         cTransform.ApplyTransformToPointF topLeft
         
         'Draw a superimposed, semi-transparent copy
-        cPainter.DrawSurfaceF dstSurface, topLeft.x, topLeft.y, srcSurface, opacityLevel
+        PD2D.DrawSurfaceF dstSurface, topLeft.x, topLeft.y, srcSurface, opacityLevel
         
         'Advance the rotation
         cTransform.Reset

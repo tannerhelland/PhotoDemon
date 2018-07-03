@@ -427,13 +427,12 @@ Private Sub UpdatePreview()
         m_PreviewPath.CreateSamplePathForRect tmpRect, hPadding, vPadding
         
         'Paint the preview path
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface
-        Drawing2D.QuickCreatePainter cPainter
+        Dim cSurface As pd2DSurface
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_PreviewDIB.GetDIBDC, False
-        cPainter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
+        PD2D.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
         
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
-        cPainter.DrawPath cSurface, m_PenPreview, m_PreviewPath
+        PD2D.DrawPath cSurface, m_PenPreview, m_PreviewPath
         Set cSurface = Nothing
         
         'Copy the preview image to the screen

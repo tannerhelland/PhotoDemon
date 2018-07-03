@@ -159,9 +159,6 @@ Private Const MAX_STRIP_SIZE As Long = 300
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'pd2D is used for rendering
-Private m_Painter As pd2DPainter
-
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -896,9 +893,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDImageStrip", colorCount
     If Not PDMain.IsProgramRunning() Then UpdateColorList
     
-    'pd2D is used for rendering
-    Drawing2D.QuickCreatePainter m_Painter
-    
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
     m_CloseTriggeredOnThumbnail = -1
@@ -1177,16 +1171,16 @@ Private Sub RedrawBackBuffer()
         Select Case Me.Alignment
         
             Case vbAlignLeft
-                m_Painter.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
+                PD2D.DrawLineI cSurface, cPen, bWidth - 1, 0, bWidth - 1, bHeight
                 
             Case vbAlignTop
-                m_Painter.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
+                PD2D.DrawLineI cSurface, cPen, 0, bHeight - 1, bWidth, bHeight - 1
                 
             Case vbAlignRight
-                m_Painter.DrawLineI cSurface, cPen, 1, 0, 1, bHeight
+                PD2D.DrawLineI cSurface, cPen, 1, 0, 1, bHeight
                 
             Case vbAlignBottom
-                m_Painter.DrawLineI cSurface, cPen, 0, 1, bWidth, 1
+                PD2D.DrawLineI cSurface, cPen, 0, 1, bWidth, 1
                 
         End Select
         
@@ -1203,11 +1197,11 @@ End Sub
 Private Sub RenderThumbTab(ByVal thumbIndex As Long, ByRef thumbRectF As RectF, ByRef dstSurface As pd2DSurface, ByRef fillBrush As pd2DBrush, ByRef outlinePen As pd2DPen)
     
     'Fill the thumbnail's background
-    m_Painter.FillRectangleF_FromRectF dstSurface, fillBrush, thumbRectF
+    PD2D.FillRectangleF_FromRectF dstSurface, fillBrush, thumbRectF
     
     '...then paint a border around it (if it's selected)
     With thumbRectF
-        m_Painter.DrawRectangleF dstSurface, outlinePen, .Left + 1!, .Top + 1!, .Width - 2!, .Height - 2!
+        PD2D.DrawRectangleF dstSurface, outlinePen, .Left + 1!, .Top + 1!, .Width - 2!, .Height - 2!
     End With
     
     '...then paint the thumbnail image itself...

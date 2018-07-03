@@ -36,10 +36,9 @@ Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Lo
 ' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
 ' (e.g. ByRef PointArray(0)), while the cPoints parameter is the number of points in the array.  If two points are
 ' passed, a special Rect transform may occur on RtL systems; see http://msdn.microsoft.com/en-us/library/dd145046%28v=vs.85%29.aspx
-Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As PointAPI, ByVal cPoints As Long) As Long
 
 'At startup, PD caches a few different UI pens and brushes related to viewport rendering.
-Private m_Painter As pd2DPainter
 Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
 Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
 
@@ -124,7 +123,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Sin
     Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, colorLeft, colorRight
     cBrush.SetBrushGradientWrapMode P2_WM_Clamp
     
-    m_Painter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
+    PD2D.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
     
 End Sub
 
@@ -494,7 +493,7 @@ End Function
 Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
     
     'This API requires POINTAPI structs
-    Dim tmpPoint As POINTAPI
+    Dim tmpPoint As PointAPI
     
     With tmpPoint
         .x = srcX
@@ -609,8 +608,8 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     'Render the final UI
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
-    m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
-    m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
+    PD2D.DrawPath cSurface, m_PenUIBase, tmpPath
+    PD2D.DrawPath cSurface, m_PenUITop, tmpPath
     Set cSurface = Nothing
     
 End Sub
@@ -654,11 +653,11 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     Dim i As Long
     For i = 0 To 3
         If (i = curPOI) Then
-            m_Painter.DrawRectangleF cSurface, m_PenUIBaseHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
-            m_Painter.DrawRectangleF cSurface, m_PenUITopHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, m_PenUIBaseHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, m_PenUITopHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
         Else
-            m_Painter.DrawRectangleF cSurface, m_PenUIBase, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
-            m_Painter.DrawRectangleF cSurface, m_PenUITop, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, m_PenUIBase, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, m_PenUITop, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
         End If
     Next i
     
@@ -699,8 +698,8 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         Set tmpPath = New pd2DPath
         tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y
         
-        m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
-        m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
+        PD2D.DrawPath cSurface, m_PenUIBase, tmpPath
+        PD2D.DrawPath cSurface, m_PenUITop, tmpPath
         
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
         ' (At present, we skip this step if shearing is active, as I haven't figured out how to correctly skew the arc into the
@@ -749,8 +748,8 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             m_PenUITop.SetPenLineCap P2_LC_ArrowAnchor
             
             cSurface.SetSurfacePixelOffset P2_PO_Half
-            m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
-            m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
+            PD2D.DrawPath cSurface, m_PenUIBase, tmpPath
+            PD2D.DrawPath cSurface, m_PenUITop, tmpPath
             cSurface.SetSurfacePixelOffset P2_PO_Normal
             
             m_PenUIBase.SetPenLineCap prevLineCap
@@ -767,11 +766,11 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     Dim i As Long
     For i = 1 To 4
         If (curPOI = i) Then
-            m_Painter.DrawCircleF cSurface, m_PenUIBaseHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
-            m_Painter.DrawCircleF cSurface, m_PenUITopHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            PD2D.DrawCircleF cSurface, m_PenUIBaseHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            PD2D.DrawCircleF cSurface, m_PenUITopHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
         Else
-            m_Painter.DrawCircleF cSurface, m_PenUIBase, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
-            m_Painter.DrawCircleF cSurface, m_PenUITop, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            PD2D.DrawCircleF cSurface, m_PenUIBase, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            PD2D.DrawCircleF cSurface, m_PenUITop, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
         End If
     Next i
     
@@ -782,7 +781,6 @@ End Sub
 '
 '(Also, note the corresponding "release" function below.)
 Public Sub CacheUIPensAndBrushes()
-    If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBase, m_PenUITop
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBaseHighlight, m_PenUITopHighlight, True
 End Sub

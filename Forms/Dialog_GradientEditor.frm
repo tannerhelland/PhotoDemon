@@ -425,7 +425,6 @@ Private Const GRADIENT_NODE_HEIGHT As Single = 14#
 'Other gradient node UI renderers
 Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
-Private m_Painter As pd2DPainter
 
 'pdRandomize is used to create repeatable random patterns
 Private m_Random As pdRandomize
@@ -688,8 +687,6 @@ Private Sub Form_Load()
     
     If PDMain.IsProgramRunning() Then
     
-        Drawing2D.QuickCreatePainter m_Painter
-        
         If (m_NodePreview Is Nothing) Then Set m_NodePreview = New pd2DGradient
         
         'Set up a special mouse handler for the gradient interaction window
@@ -991,7 +988,7 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
         
         g_WindowManager.GetWindowRect_API picNodePreview.hWnd, nodePreviewRect
         
-        Dim tmpPoint As POINTAPI
+        Dim tmpPoint As PointAPI
         tmpPoint.x = nodePreviewRect.x1
         tmpPoint.y = nodePreviewRect.y1
         
@@ -1112,7 +1109,7 @@ Private Sub DrawGradientNodes()
         
         'Fill the interaction DIB with the current background color
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
-        m_Painter.FillRectangleF cSurface, cBrush, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         
         'Now all we do is use those to draw all the nodes in turn
@@ -1129,17 +1126,17 @@ Private Sub DrawGradientNodes()
             
             'The node's colored block is rendered the same regardless of hover
             blockFill.SetBrushColor m_GradientPoints(i).PointRGB
-            m_Painter.FillPath cSurface, blockFill, tmpBlock
+            PD2D.FillPath cSurface, blockFill, tmpBlock
             
             'All other renders vary by hover state
             If ((i = m_CurPoint) Or (i = m_CurHoverPoint)) Then
-                m_Painter.DrawPath cSurface, activeOutlinePen, tmpBlock
-                m_Painter.FillPath cSurface, activeArrowFill, tmpArrow
-                m_Painter.DrawPath cSurface, activeOutlinePen, tmpArrow
+                PD2D.DrawPath cSurface, activeOutlinePen, tmpBlock
+                PD2D.FillPath cSurface, activeArrowFill, tmpArrow
+                PD2D.DrawPath cSurface, activeOutlinePen, tmpArrow
             Else
-                m_Painter.DrawPath cSurface, inactiveOutlinePen, tmpBlock
-                m_Painter.FillPath cSurface, inactiveArrowFill, tmpArrow
-                m_Painter.DrawPath cSurface, inactiveOutlinePen, tmpArrow
+                PD2D.DrawPath cSurface, inactiveOutlinePen, tmpBlock
+                PD2D.FillPath cSurface, inactiveArrowFill, tmpArrow
+                PD2D.DrawPath cSurface, inactiveOutlinePen, tmpArrow
             End If
             
         Next i
@@ -1335,8 +1332,8 @@ Private Sub UpdatePreview_Auto()
     cBrush.SetBoundaryRect boundsRect
     
     With m_AutoPreviewDIB
-        m_Painter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
-        m_Painter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+        PD2D.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+        PD2D.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
     End With
     
     Set cSurface = Nothing
@@ -1382,8 +1379,8 @@ Private Sub UpdatePreview_Manual()
             cBrush.SetBoundaryRect boundsRect
             
             With m_NodePreviewDIB
-                m_Painter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
-                m_Painter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+                PD2D.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+                PD2D.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
             End With
             
             Set cSurface = Nothing
