@@ -1676,6 +1676,8 @@ Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
     
+    Plugin_Cairo.TestOnActiveImage
+    
 End Sub
 
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.

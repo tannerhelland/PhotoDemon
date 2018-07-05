@@ -41,6 +41,31 @@ Private m_hSurface As Long
 ' to a GDI+ Graphics object (where drawing settings are stored alongside the image).
 Private m_hContext As Long
 
-Friend Function WrapAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
-
+Friend Function GetCairoContextHandle() As Long
+    GetCairoContextHandle = m_hContext
 End Function
+
+Friend Function GetCairoSurfaceHandle() As Long
+    GetCairoSurfaceHandle = m_hSurface
+End Function
+
+Friend Function WrapAroundPDDIB(ByRef srcDIB As pdDIB) As Boolean
+    If (m_hSurface <> 0) Or (m_hContext <> 0) Then DeleteSurface
+    m_hSurface = Plugin_Cairo.GetCairoSurfaceFromPDDib(srcDIB, m_hContext)
+    WrapAroundPDDIB = (m_hSurface <> 0)
+End Function
+
+Friend Function WrapAroundDC(ByVal dstDC As Long) As Boolean
+    If (m_hSurface <> 0) Or (m_hContext <> 0) Then DeleteSurface
+    m_hSurface = Plugin_Cairo.WrapCairoSurfaceAroundDC(dstDC, m_hContext)
+    WrapAroundDC = (m_hSurface <> 0)
+End Function
+
+Friend Sub DeleteSurface()
+    If (m_hSurface <> 0) Then Plugin_Cairo.FreeCairoSurface m_hSurface
+    If (m_hContext <> 0) Then Plugin_Cairo.FreeCairoContext m_hContext
+End Sub
+
+Private Sub Class_Terminate()
+    DeleteSurface
+End Sub
