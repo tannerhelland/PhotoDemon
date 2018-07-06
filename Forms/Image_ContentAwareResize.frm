@@ -243,14 +243,14 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     Set cParams = New pdParamXML
     cParams.SetParamString xmlParams
     
-    Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Long
+    Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Double
     Dim thingToResize As PD_ACTION_TARGET
     
     With cParams
         imgWidth = .GetDouble("width")
         imgHeight = .GetDouble("height")
         imgResizeUnit = .GetLong("unit", mu_Pixels)
-        imgDPI = .GetLong("ppi", 96)
+        imgDPI = .GetDouble("ppi", 96)
         thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
     End With
     

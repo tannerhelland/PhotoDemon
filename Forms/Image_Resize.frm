@@ -456,7 +456,7 @@ End Sub
 Public Sub ResizeImage(ByVal resizeParams As String)
         
     'Parse incoming parameters into type-appropriate vars
-    Dim imgWidth As Double, imgHeight As Double, imgDPI As Long
+    Dim imgWidth As Double, imgHeight As Double, imgDPI As Double
     Dim resampleMethod As PD_RESAMPLE_ADVANCED, fitMethod As PD_RESIZE_FIT, newBackColor As Long
     Dim imgResizeUnit As PD_MeasurementUnit
     Dim thingToResize As PD_ACTION_TARGET
@@ -469,7 +469,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         imgWidth = .GetDouble("width")
         imgHeight = .GetDouble("height")
         imgResizeUnit = .GetLong("unit", mu_Pixels)
-        imgDPI = .GetLong("ppi", 96)
+        imgDPI = .GetDouble("ppi", 96)
         resampleMethod = .GetLong("algorithm", ResizeNormal)
         fitMethod = .GetLong("fit", ResizeFitStretch)
         newBackColor = .GetLong("fillcolor", vbWhite)

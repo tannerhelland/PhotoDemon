@@ -116,38 +116,84 @@ Friend Function GetResolution(ByRef xResolution As Double, ByRef yResolution As 
     On Error GoTo mdResolutionError
 
     Dim xResTagIndex As Long, yResTagIndex As Long
-
-    If DoesTagExist("XResolution", xResTagIndex) And DoesTagExist("YResolution", yResTagIndex) Then
+    Dim unitIsCentimeters As Boolean, resUnitIndex As Long
     
-        'Check for the presence of a resolution type.  If the resolution is in CM, we need to convert it to inches.
-        ' Similarly, if no unit is specified, assume inches.
-        Dim unitIsCentimeters As Boolean
-        unitIsCentimeters = False
+    'Resolution can appear in quite a few different places.  To try and get the user the value they expect,
+    ' we have to parse those places in a particular order.
+    Dim resFound As Boolean
+    
+    'First, look for a Photoshop-specific resolution tag.  I don't like doing this, because it reinforces the
+    ' notion that Adobe gets to do whatever the hell it wants and others will just "play along", but because
+    ' Photoshop-exported JPEGs can often have 3+ different resolution values in 3+ different locations, we
+    ' default to the internal Photoshop resolution value, if one exists.  (See this GitHub issue for additional
+    ' details/discussion: https://github.com/tannerhelland/PhotoDemon/issues/260 )
+    If DoesTagExistFullName("Photoshop:XResolution", xResTagIndex) And DoesTagExistFullName("Photoshop:YResolution", yResTagIndex) Then
         
-        Dim resUnitIndex As Long
-        If DoesTagExist("ResolutionUnit", resUnitIndex) Then
+        'Photoshop resolution tags exist.  To my knowledge, PS resolution values are always stored in inches.
+        ' (There is a "displayed units" tag, but even if this is set to cm, the stored resolution values
+        '  should still be in inches.)
+        resFound = True
+        xResolution = TextSupport.CDblCustom(m_Tags(xResTagIndex).TagValue)
+        yResolution = TextSupport.CDblCustom(m_Tags(yResTagIndex).TagValue)
         
-            'Note that 3 is a magic number used by EXIF to indicate CM.  See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
-            unitIsCentimeters = (CLng(m_Tags(resUnitIndex).TagValue) = 3)
+    End If
+    
+    'If Photoshop-specific tags weren't found, query EXIF-specific resolution values next
+    If (Not resFound) Then
+    
+        If DoesTagExistFullName("IFD0:XResolution", xResTagIndex) And DoesTagExistFullName("IFD0:YResolution", yResTagIndex) Then
+        
+            'EXIF resolution tags exist.
+            resFound = True
+            xResolution = TextSupport.CDblCustom(m_Tags(xResTagIndex).TagValue)
+            yResolution = TextSupport.CDblCustom(m_Tags(yResTagIndex).TagValue)
+            
+            'EXIF resolution data can be in CM or INCHES.  Conver them as necessary.
+            unitIsCentimeters = False
+            If DoesTagExistFullName("IFD0:ResolutionUnit", resUnitIndex) Then
+                unitIsCentimeters = Strings.StringsNotEqual(m_Tags(resUnitIndex).TagValueFriendly, "inches", True) And Strings.StringsNotEqual(m_Tags(resUnitIndex).TagValueFriendly, "in", True)
+            End If
+            
+            If unitIsCentimeters Then
+                xResolution = Units.GetInchesFromCM(xResolution)
+                yResolution = Units.GetInchesFromCM(yResolution)
+            End If
             
         End If
+    
+    End If
+    
+    'If neither Photoshop nor EXIF tags were found, look for generic x/y resolution data last.  We don't care
+    ' what group these come from - it'll vary by format (e.g. JFIF for JPEGs, pHYs for PNGs, etc)
+    If (Not resFound) Then
+    
+        If DoesTagExist("XResolution", xResTagIndex) And DoesTagExist("YResolution", yResTagIndex) Then
         
-        'Retrieve X and Y resolution values
-        xResolution = CDblCustom(m_Tags(xResTagIndex).TagValue)
-        yResolution = CDblCustom(m_Tags(yResTagIndex).TagValue)
-        
-        'If the units are in centimeters, convert them to inches
-        If unitIsCentimeters Then
-            xResolution = GetInchesFromCM(xResolution)
-            yResolution = GetInchesFromCM(yResolution)
+            'Check for the presence of a resolution type.  (If no unit is specified, assume inches.)
+            unitIsCentimeters = False
+            If DoesTagExist("ResolutionUnit", resUnitIndex) Then
+                unitIsCentimeters = Strings.StringsNotEqual(m_Tags(resUnitIndex).TagValueFriendly, "inches", True) And Strings.StringsNotEqual(m_Tags(resUnitIndex).TagValueFriendly, "in", True)
+            End If
+            
+            'Retrieve X and Y resolution values
+            xResolution = TextSupport.CDblCustom(m_Tags(xResTagIndex).TagValue)
+            yResolution = TextSupport.CDblCustom(m_Tags(yResTagIndex).TagValue)
+            
+            'If the units are in centimeters, convert them to inches
+            If unitIsCentimeters Then
+                xResolution = GetInchesFromCM(xResolution)
+                yResolution = GetInchesFromCM(yResolution)
+            End If
+            
+            resFound = True
+            
+        'Resolution tags don't exist.
         End If
         
-        GetResolution = True
-    
-    'Resolution tags don't exist.
-    Else
-        GetResolution = False
     End If
+    
+    'If any valid resolution data was found, return it.  (Source group doesn't matter.)
+    GetResolution = resFound
     
     Exit Function
     
@@ -163,7 +209,7 @@ Private Function DoesTagExist(ByVal tagName As String, Optional ByRef tagIndex A
     DoesTagExist = False
     
     'If this image has no metadata, exit now
-    If m_NumOfTags <= 0 Then Exit Function
+    If (m_NumOfTags <= 0) Then Exit Function
 
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long

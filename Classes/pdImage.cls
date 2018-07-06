@@ -821,9 +821,9 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         'The XML file checked out.  Start retrieving relevant values.
         Me.Width = xmlEngine.GetUniqueTag_Long("Width")
         Me.Height = xmlEngine.GetUniqueTag_Long("Height")
-        m_XResolution = xmlEngine.GetUniqueTag_Long("XResolution")
-        m_YResolution = xmlEngine.GetUniqueTag_Long("YResolution")
-        m_DPI = xmlEngine.GetUniqueTag_Long("DPI")
+        m_XResolution = xmlEngine.GetUniqueTag_Double("XResolution")
+        m_YResolution = xmlEngine.GetUniqueTag_Double("YResolution")
+        m_DPI = xmlEngine.GetUniqueTag_Double("DPI")
         
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
@@ -884,8 +884,8 @@ End Function
 Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double)
     
     'Many image types do not store resolution information; default to 96 in this case
-    If (xRes = 0#) Then xRes = 96
-    If (yRes = 0#) Then yRes = 96
+    If (xRes = 0#) Then xRes = 96#
+    If (yRes = 0#) Then yRes = 96#
     
     m_XResolution = xRes
     m_YResolution = yRes

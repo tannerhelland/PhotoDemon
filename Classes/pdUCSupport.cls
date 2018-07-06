@@ -718,7 +718,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
                     .Top = 1
                     .Left = 1
                     .Right = m_Width
-                    .Bottom = m_Caption.GetCaptionHeight() + FixDPI(6)
+                    .Bottom = m_Caption.GetCaptionHeight() + Interface.FixDPI(6)
                 End With
                 
             End If

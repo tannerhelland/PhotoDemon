@@ -226,14 +226,14 @@ End Function
 Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double)
     
     'Many image types do not store resolution information; default to 96 in this case
-    If (xRes = 0) Then xRes = 96
-    If (yRes = 0) Then yRes = 96
+    If (xRes = 0#) Then xRes = 96#
+    If (yRes = 0#) Then yRes = 96#
     
     m_XResolution = xRes
     m_YResolution = yRes
     
     'It is extremely rare for x/y resolution to differ, but just in case, calculate an average resolution as well
-    m_dibDPI = (xRes + yRes) \ 2
+    m_dibDPI = (xRes + yRes) * 0.5
 
 End Sub
 

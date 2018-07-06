@@ -3449,16 +3449,16 @@ End Function
 
 ' Bitmap resolution functions
 
-Public Function FreeImage_GetResolutionX(ByVal Bitmap As Long) As Long
+Public Function FreeImage_GetResolutionX(ByVal Bitmap As Long) As Double
 
    ' This function gets a DIB's resolution in X-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
    
-   FreeImage_GetResolutionX = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterX(Bitmap))
+   FreeImage_GetResolutionX = (0.0254 * FreeImage_GetDotsPerMeterX(Bitmap))
 
 End Function
 
-Public Sub FreeImage_SetResolutionX(ByVal Bitmap As Long, ByVal Resolution As Long)
+Public Sub FreeImage_SetResolutionX(ByVal Bitmap As Long, ByVal Resolution As Double)
 
    ' This function sets a DIB's resolution in X-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
@@ -3467,16 +3467,16 @@ Public Sub FreeImage_SetResolutionX(ByVal Bitmap As Long, ByVal Resolution As Lo
 
 End Sub
 
-Public Function FreeImage_GetResolutionY(ByVal Bitmap As Long) As Long
+Public Function FreeImage_GetResolutionY(ByVal Bitmap As Long) As Double
 
    ' This function gets a DIB's resolution in Y-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
 
-   FreeImage_GetResolutionY = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterY(Bitmap))
+   FreeImage_GetResolutionY = (0.0254 * FreeImage_GetDotsPerMeterY(Bitmap))
 
 End Function
 
-Public Sub FreeImage_SetResolutionY(ByVal Bitmap As Long, ByVal Resolution As Long)
+Public Sub FreeImage_SetResolutionY(ByVal Bitmap As Long, ByVal Resolution As Double)
 
    ' This function sets a DIB's resolution in Y-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.

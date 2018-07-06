@@ -447,7 +447,7 @@ Public Property Get ResizeWidthInPixels() As Long
     ResizeWidthInPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
 End Property
 
-Public Property Let ResizeWidthInPixels(newWidth As Long)
+Public Property Let ResizeWidthInPixels(ByVal newWidth As Long)
     If m_PercentDisabled Then
         cmbWidthUnit.ListIndex = mu_Pixels - 1
     Else
@@ -463,7 +463,7 @@ Public Property Get ResizeHeightInPixels() As Long
     ResizeHeightInPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
 End Property
 
-Public Property Let ResizeHeightInPixels(newHeight As Long)
+Public Property Let ResizeHeightInPixels(ByVal newHeight As Long)
     If m_PercentDisabled Then
         cmbWidthUnit.ListIndex = mu_Pixels - 1
     Else
@@ -506,7 +506,7 @@ End Property
 
 'Resolution can be set/retrieved via this property.  Note that if the current text value for resolution is invalid,
 ' this function will simply return the image's original resolution.
-Public Property Get ResizeDPIAsPPI() As Long
+Public Property Get ResizeDPIAsPPI() As Double
     If tudResolution.IsValid(False) Then
         ResizeDPIAsPPI = GetResolutionAsPPI()
     Else
@@ -514,21 +514,21 @@ Public Property Get ResizeDPIAsPPI() As Long
     End If
 End Property
 
-Public Property Let ResizeDPIAsPPI(newDPI As Long)
+Public Property Let ResizeDPIAsPPI(ByVal newDPI As Double)
     tudResolution = newDPI
     SyncDimensions True
 End Property
 
-Public Property Get ResizeDPI() As Long
+Public Property Get ResizeDPI() As Double
     If tudResolution.IsValid(False) Then
-        ResizeDPI = tudResolution
+        ResizeDPI = tudResolution.Value
     Else
         ResizeDPI = m_initDPI
     End If
 End Property
 
-Public Property Let ResizeDPI(newDPI As Long)
-    tudResolution = newDPI
+Public Property Let ResizeDPI(ByVal newDPI As Double)
+    tudResolution.Value = newDPI
     SyncDimensions True
 End Property
 
@@ -674,7 +674,7 @@ End Sub
 'Before using this control, dialogs MUST call this function to notify the control of the initial width/height values
 ' they want to use.  We cannot do this automatically as some dialogs determine this by the current image's dimensions
 ' (e.g. resize) while others may do it when no images are loaded (e.g. batch process).
-Public Sub SetInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcDPI As Double = 96)
+Public Sub SetInitialDimensions(ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcDPI As Double = 96#)
 
     'Store local copies
     m_initWidth = srcWidth
@@ -1036,7 +1036,7 @@ Public Sub SetAllSettingsFromXML(ByVal xmlData As String)
     With cParams
         Me.UnitOfMeasurement = .GetLong("sizeunit", mu_Pixels)
         Me.UnitOfResolution = .GetLong("dpiunit", ru_PPI)
-        Me.ResizeDPI = .GetLong("dpi", 96)
+        Me.ResizeDPI = .GetDouble("dpi", 96#)
         Me.ResizeWidth = .GetDouble("width", 1920)
         Me.ResizeHeight = .GetDouble("height", 1080)
     End With

@@ -338,7 +338,7 @@ End Sub
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeCanvas(ByVal functionParams As String)
     
-    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Long
+    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Double
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML

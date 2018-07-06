@@ -412,7 +412,7 @@ Public Function CreateNewImage(Optional ByVal newImageParameters As String)
     Set cParams = New pdParamXML
     cParams.SetParamString newImageParameters
     
-    Dim newWidth As Long, newHeight As Long, newDPI As Long
+    Dim newWidth As Long, newHeight As Long, newDPI As Double
     Dim newBackgroundType As Long, newBackgroundColor As Long
     
     With cParams
