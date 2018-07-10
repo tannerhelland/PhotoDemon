@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3447</langversion>
+<langversion>7.0.3449</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12911,11 +12911,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>显示技术名称</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>单击更改用于空边框的颜色</translation>
 </phrase>
@@ -12926,28 +12921,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>重采样算法</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>重采样图像质量</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>速度最快</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>最适合文字和插图</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>最好的照片</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12961,23 +12936,28 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>双立方</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>B样条</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>双三次（米切尔和奈特拉瓦利）</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>双三次（Catmull Rom）</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13006,12 +12986,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>默认情况下，使用描述性名称。高级用户可以使用选项选择更多的重采样技术。
-</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>改变图像的纵横比时，可能发生拉伸变形。系统会可以用空边界或交叉代替来解决这个问题。</translation>
 </phrase>
@@ -13026,7 +13000,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>调整层大小</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15464,10 +15438,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>

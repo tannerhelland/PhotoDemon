@@ -1262,7 +1262,7 @@ Private m_hMultiPageTIFF As Long
 ' why this is, but many, many iterative tests confirmed it.  Stranger still, in descending order after that, the fastest
 ' algorithms are: HighQualityBilinear, Bilinear, Bicubic.  Regular bicubic interpolation is some 4x slower than the
 ' high quality mode!!
-Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As GP_InterpolationMode) As Boolean
+Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As GP_InterpolationMode, Optional ByVal pixelOffsetMode As PD_2D_PixelOffset = P2_PO_Normal) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -1292,7 +1292,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         GdipCreateImageAttributes imgAttributesHandle
         GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0&, 0&
         GdipSetCompositingQuality hGdipGraphics, GP_CQ_AssumeLinear
-        GdipSetPixelOffsetMode hGdipGraphics, GP_POM_HighSpeed
+        If (pixelOffsetMode = P2_PO_Normal) Then GdipSetPixelOffsetMode hGdipGraphics, GP_POM_HighSpeed Else GdipSetPixelOffsetMode hGdipGraphics, GP_POM_HighQuality
         
         'Perform the resize
         If (GdipDrawImageRectRectI(hGdipGraphics, hGdipBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle) <> 0) Then

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.614</langversion>
+<langversion>7.2.616</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12925,11 +12925,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>Technische Namen zeigen</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>Hier klicken, um die verwendete Farbe für leere Rahmungen zu ändern</translation>
 </phrase>
@@ -12940,28 +12935,8 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>Resampling-Algorithmus</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>Resampling-Qualität</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>Am schnellsten</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>Am besten für Text und Illustrationen</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>Am besten für Fotos</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12975,23 +12950,28 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>Bikubisch</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>B-Spline</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>Bikubisch (Mitchell und Netravali)</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>Bikubisch (Catmull-Rom)</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13020,11 +13000,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>Standardmäßig werden hier deskriptive anstelle technischer Bezeichnungen verwendet. Fortgeschrittene Benutzer können diese Option umschalten, um weitere Resampling-Verfahren zu exponieren.</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Streckung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Zuschneidung verwendet werden.</translation>
 </phrase>
@@ -13039,7 +13014,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Layer-Größe wird geändert</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15481,10 +15456,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>

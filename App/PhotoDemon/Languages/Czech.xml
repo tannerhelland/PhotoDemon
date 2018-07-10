@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3351</langversion>
+<langversion>6.8.3353</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12920,11 +12920,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>Zobrazit technické názvy</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>Klepnutím změníte barvu použitou pro prázdné okraje</translation>
 </phrase>
@@ -12935,28 +12930,8 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>Algoritmus převzorkování</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>Kvalita převzorkování</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>Nejrychlejší</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>Nejlepší pro text a ilustrace</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>Nejlepší pro fotografie</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12970,23 +12945,28 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>Bicubic</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>B-Spline</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>Bicubic (Mitchell a Netravali)</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>Bicubic (Catmull-Rom)</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13015,11 +12995,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>Ve výchozím nastavení se namísto technických názvů používají popisné názvy. Pokročilí uživatelé mohou tuto možnost přepínat tak, aby odhalili další techniky převzorkování.</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>Při změně poměru stran obrazu se může objevit nežádoucí protahování. PhotoDemon se může vyhnout tomu pomocí prázdných okrajů nebo oříznutí místo toho.</translation>
 </phrase>
@@ -13034,7 +13009,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Změna velikosti vrstvy</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15474,10 +15449,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.36</langversion>
+<langversion>1.0.38</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12919,11 +12919,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>기술 이름 표시</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>빈 테두리에 사용되는 색을 변경하려면 클릭하십시오.</translation>
 </phrase>
@@ -12934,28 +12929,8 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>재 샘플링 알고리즘</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>재 샘플링 품질</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>가장 빠른</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>텍스트 및 그림에 가장 적합</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>사진에 가장 적합하다.</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12969,23 +12944,28 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>바이 큐빅</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>B- 스플라인</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>바이 큐빅 (미첼과 넷라 발리)</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>바이 큐빅 (Catmull-Rom)</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13014,11 +12994,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>기본적으로 기술적 인 이름 대신 기술적 인 이름이 사용됩니다. 고급 사용자는이 옵션을 토글하여 더 많은 리샘플링 기법을 노출 할 수 있습니다.</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>이미지의 종횡비를 변경할 때 바람직하지 않은 스트레칭이 발생할 수 있습니다. PhotoDemon은 공백 테두리 나 자르기 대신 이것을 사용하여 피할 수 있습니다.</translation>
 </phrase>
@@ -13033,7 +13008,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>레이어 크기 조정</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15474,10 +15449,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>

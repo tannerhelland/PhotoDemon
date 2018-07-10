@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.71</langversion>
+<langversion>1.0.73</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12922,11 +12922,6 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>तकनीकी नाम दिखाएं</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>रिक्त सीमाओं के लिए उपयोग किए गए रंग को बदलने के लिए क्लिक करें</translation>
 </phrase>
@@ -12937,28 +12932,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>पुनर्व्यवस्थित एल्गोरिथम</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>रीम्मुमलिंग गुणवत्ता</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>सबसे तेजी से</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>पाठ और चित्रों के लिए सर्वश्रेष्ठ</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>तस्वीरों के लिए सर्वश्रेष्ठ</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12972,23 +12947,28 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>Bicubic</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>बी तख़्ता</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>बाक्यूबिक (मिशेल और नेटारावली)</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>बाक्यूबिक (कैटमुल-रोम)</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13017,11 +12997,6 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>डिफ़ॉल्ट रूप से, तकनीकी वाले के स्थान पर वर्णनात्मक नामों का उपयोग किया जाता है उन्नत उपयोगकर्ता अधिक रीसंपलिंग तकनीकों को उजागर करने के लिए इस विकल्प को टॉगल कर सकते हैं।</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>जब एक छवि के पहलू अनुपात बदलते हैं, अवांछनीय खींच हो सकता है PhotoDemon इसके बजाय खाली सीमाओं या फसल का उपयोग कर से बच सकते हैं।</translation>
 </phrase>
@@ -13036,7 +13011,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>रीसाइज़िंग परत</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15477,10 +15452,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>

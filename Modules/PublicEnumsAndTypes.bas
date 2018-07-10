@@ -7,7 +7,7 @@ Public Type PointAPI
     y As Long
 End Type
 
-Public Type Rect
+Public Type RECT
     Left As Long
     Top As Long
     Right As Long
@@ -21,7 +21,7 @@ Public Type RectF_RB
     Bottom As Single
 End Type
 
-Public Type WinRect
+Public Type winRect
     x1 As Long
     y1 As Long
     x2 As Long
@@ -641,7 +641,7 @@ End Enum
 
 'Constants used for library-agnostic image resizing.  (At present, options 3, 4, 5 require the FreeImage library;
 ' if FreeImage is missing, Bspline will automatically target GDI+'s bicubic resampling.)
-Public Enum PD_RESAMPLE_ADVANCED
+Public Enum PD_ResampleOld
     ResizeNormal = 0
     ResizeBilinear = 1
     ResizeBspline = 2
@@ -654,7 +654,23 @@ End Enum
     Private Const ResizeNormal = 0, ResizeBilinear = 1, ResizeBspline = 2, ResizeBicubicMitchell = 3, ResizeBicubicCatmull = 4, ResizeSincLanczos = 5
 #End If
 
-Public Enum PD_RESIZE_FIT
+Public Enum PD_ResampleCurrent
+    pdrc_Automatic = 0
+    pdrc_NearestNeighbor = 1
+    pdrc_BilinearNormal = 2
+    pdrc_BilinearShrink = 3
+    pdrc_BicubicNormal = 4
+    pdrc_BicubicShrink = 5
+    pdrc_Mitchell = 6
+    pdrc_CatmullRom = 7
+    pdrc_Sinc = 8
+End Enum
+
+#If False Then
+    Private Const pdrc_Automatic = 0, pdrc_NearestNeighbor = 1, pdrc_BilinearNormal = 2, pdrc_BilinearShrink = 3, pdrc_BicubicNormal = 4, pdrc_BicubicShrink = 5, pdrc_Mitchell = 6, pdrc_CatmullRom = 7, pdrc_Sinc = 8
+#End If
+
+Public Enum PD_ResizeFit
     ResizeFitStretch = 0
     ResizeFitInclusive = 1
     ResizeFitExclusive = 2
@@ -713,7 +729,7 @@ End Enum
 Public Type PAINTSTRUCT
     hDC As Long
     fErase As Long
-    rcPaint As Rect
+    rcPaint As RECT
     fRestore As Long
     fIncUpdate As Long
     rgbReserved(0 To 31) As Byte

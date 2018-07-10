@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.59</langversion>
+<langversion>1.0.61</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12920,11 +12920,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <!-- BEGIN text for Image_Resize.frm (FormResize) -->
 
 <phrase>
-<original>show technical names</original>
-<translation>技術的な名前を表示する</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the color used for empty borders</original>
 <translation>空の枠線の色を変更する場合にクリックします。</translation>
 </phrase>
@@ -12935,28 +12930,8 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>resampling algorithm</original>
-<translation>再サンプリングアルゴリズム</translation>
-</phrase>
-
-<phrase>
-<original>resampling quality</original>
-<translation>リサンプリング品質</translation>
-</phrase>
-
-<phrase>
-<original>fastest</original>
-<translation>最も速い</translation>
-</phrase>
-
-<phrase>
-<original>best for text and illustrations</original>
-<translation>テキストやイラストに最適</translation>
-</phrase>
-
-<phrase>
-<original>best for photographs</original>
-<translation>写真に最適</translation>
+<original>Automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12970,23 +12945,28 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
+<original>Bilinear (optimized for downsizing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bicubic</original>
 <translation>バイキュービック</translation>
 </phrase>
 
 <phrase>
-<original>B-Spline</original>
-<translation>Bスプライン</translation>
+<original>Bicubic (optimized for downsizing)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Mitchell and Netravali)</original>
-<translation>バイキュービック（ミッチェルとネトラバリ）</translation>
+<original>Mitchell-Netravali</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Bicubic (Catmull-Rom)</original>
-<translation>バイキュービック（Catmull-Rom）</translation>
+<original>Catmull-Rom</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13015,11 +12995,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>デフォルトでは、技術的な名前の代わりに記述的な名前が使用されます。 上級ユーザーは、このオプションを切り替えて、より多くのリサンプリングテクニックを公開することができます。</translation>
-</phrase>
-
-<phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>画像のアスペクト比を変更すると、望ましくない伸びが生じることがあります。 PhotoDemonは空の枠線やクロップを使用することでこれを回避できます。</translation>
 </phrase>
@@ -13034,7 +13009,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>レイヤーのサイズ変更</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15475,10 +15450,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2586</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4735 phrases. -->
-<!-- 2144 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12419 total words. -->
+<!-- As of this build, PhotoDemon contains 4711 phrases. -->
+<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
+<!-- These 2586 phrases contain approximately 12384 total words. -->
 
 </pdData>
