@@ -1370,10 +1370,18 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
         If FormMain.MnuEdit(0).Enabled Then
+            
             pdImages(g_CurrentImage).UndoManager.RestoreUndoData
             Interface.NotifyImageChanged g_CurrentImage
+            
+            'Because Undo/Redo can involve image size changes (e.g. "Undo Resize Image"), we need to send a forcible
+            ' UI notification to ensure that elements like rulers are correctly updated.
+            FormMain.MainCanvas(0).RelayViewportChanges
+            
             undoOrRedoUsed = True
+            
         End If
+        
         Debug.Print "Processor time spent in Undo check: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0.00") & " ms"
         Process_EditMenu = True
             
@@ -1381,6 +1389,7 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         If FormMain.MnuEdit(1).Enabled Then
             pdImages(g_CurrentImage).UndoManager.RestoreRedoData
             Interface.NotifyImageChanged g_CurrentImage
+            FormMain.MainCanvas(0).RelayViewportChanges
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
@@ -1391,6 +1400,7 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         Else
             pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
             Interface.NotifyImageChanged g_CurrentImage
+            FormMain.MainCanvas(0).RelayViewportChanges
             undoOrRedoUsed = True
         End If
         Process_EditMenu = True
