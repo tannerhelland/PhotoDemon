@@ -287,9 +287,9 @@ Public Sub UpdateUIText()
         
         'Angle
         If Tools_Measure.GetAngleInDegrees(measureValue) Then
+            measureValue = Abs(measureValue)
             cmdAction(1).Enabled = (measureValue > 0.001)
             cmdAction(2).Enabled = (measureValue > 0.001)
-            measureValue = Abs(measureValue)
             If (measureValue > 90#) Then measureValue = (180# - measureValue)
             lblValue(1).Caption = Format$(measureValue, "#.00") & " " & ChrW(&HB0)
         Else
