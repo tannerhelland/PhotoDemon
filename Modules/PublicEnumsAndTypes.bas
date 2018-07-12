@@ -36,25 +36,26 @@ Public Enum PDTools
     NAV_DRAG = 0
     NAV_MOVE = 1
     COLOR_PICKER = 2
-    SELECT_RECT = 3
-    SELECT_CIRC = 4
-    SELECT_LINE = 5
-    SELECT_POLYGON = 6
-    SELECT_LASSO = 7
-    SELECT_WAND = 8
-    VECTOR_TEXT = 9
-    VECTOR_FANCYTEXT = 10
-    PAINT_BASICBRUSH = 11
-    PAINT_SOFTBRUSH = 12
-    PAINT_ERASER = 13
-    PAINT_FILL = 14
+    ND_MEASURE = 3
+    SELECT_RECT = 4
+    SELECT_CIRC = 5
+    SELECT_LINE = 6
+    SELECT_POLYGON = 7
+    SELECT_LASSO = 8
+    SELECT_WAND = 9
+    VECTOR_TEXT = 10
+    VECTOR_FANCYTEXT = 11
+    PAINT_BASICBRUSH = 12
+    PAINT_SOFTBRUSH = 13
+    PAINT_ERASER = 14
+    PAINT_FILL = 15
 End Enum
 
 #If False Then
-    Private Const NAV_DRAG = 0, NAV_MOVE = 1, COLOR_PICKER = 2
-    Private Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5, SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
-    Private Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
-    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12, PAINT_ERASER = 13, PAINT_FILL = 14
+    Private Const NAV_DRAG = 0, NAV_MOVE = 1, COLOR_PICKER = 2, ND_MEASURE = 3
+    Private Const SELECT_RECT = 4, SELECT_CIRC = 5, SELECT_LINE = 6, SELECT_POLYGON = 7, SELECT_LASSO = 8, SELECT_WAND = 9
+    Private Const VECTOR_TEXT = 10, VECTOR_FANCYTEXT = 11
+    Private Const PAINT_BASICBRUSH = 12, PAINT_SOFTBRUSH = 13, PAINT_ERASER = 14, PAINT_FILL = 15
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.

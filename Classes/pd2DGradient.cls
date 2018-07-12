@@ -590,7 +590,7 @@ End Function
 'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with this class via pd2DBrush,
 ' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
 ' correct backend-specific function!
-Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#) As Long
+Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1!) As Long
     
     'Make sure a gradient has been created
     If (m_NumOfPoints <= 0) Then
@@ -797,7 +797,7 @@ End Function
 
 'Given an index into the gradient point array, return a merged RGBA value using the opacity.
 ' (This is inefficient but it doesn't matter as it's only called a handful of times.)
-Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpacityModifier As Single = 1#) As Long
+Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpacityModifier As Single = 1!) As Long
     
     Dim dstQuad As RGBQuad
     dstQuad.Red = Colors.ExtractRed(m_GradientPoints(gpIndex).PointRGB)

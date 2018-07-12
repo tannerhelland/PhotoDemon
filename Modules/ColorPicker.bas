@@ -1,4 +1,4 @@
-Attribute VB_Name = "ColorPicker"
+Attribute VB_Name = "Tools_ColorPicker"
 '***************************************************************************
 'Color Picker Tool Manager
 'Copyright 2017-2018 by Tanner Helland
@@ -47,10 +47,6 @@ End Sub
 'Render a relevant fill cursor outline to the canvas, using the stored mouse coordinates as the cursor's position
 Public Sub RenderColorPickerCursor(ByRef targetCanvas As pdCanvas)
     
-    'Start by creating a transformation from the image space to the canvas space
-    Dim canvasMatrix As pd2DTransform
-    Drawing.GetTransformFromImageToCanvas canvasMatrix, targetCanvas, pdImages(g_CurrentImage), m_MouseX, m_MouseY
-    
     'We also want to pinpoint the precise cursor position
     Dim cursX As Double, cursY As Double
     Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, pdImages(g_CurrentImage), m_MouseX, m_MouseY, cursX, cursY
@@ -81,7 +77,6 @@ Public Sub RenderColorPickerCursor(ByRef targetCanvas As pdCanvas)
     'Paint the fill icon to the bottom-right of the actual cursor, Photoshop-style
     Dim icoSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDIB icoSurface, m_ColorPickerCursor, True
-    'icoSurface.SetSurfaceResizeQuality P2_RQ_Bilinear
     PD2D.DrawSurfaceF cSurface, cursX + crossLength * 1.4!, cursY + crossLength * 1.4!, icoSurface
     
     Set cSurface = Nothing: Set icoSurface = Nothing

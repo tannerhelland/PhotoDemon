@@ -42,6 +42,8 @@ Public Const EULER As Double = 2.71828182845905
 'Data constants
 Public Const LONG_MAX As Long = 2147483647
 Public Const DOUBLE_MAX As Double = 1.79769313486231E+308
+Public Const SINGLE_MIN As Single = 1.175494E-38
+Public Const SINGLE_MAX As Single = 3.402823E+38
 
 'Maximum width (in pixels) for custom-built tooltips
 Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400

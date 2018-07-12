@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3353</langversion>
+<langversion>6.8.3354</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2651,7 +2651,72 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for Units.bas -->
 
-<!-- Units.bas contains 0 phrases. -->
+<phrase>
+<original>px</original>
+<translation>Px</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>v</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>cm</translation>
+</phrase>
+
+<phrase>
+<original>mm</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pt</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pc</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>percent</original>
+<translation>procent</translation>
+</phrase>
+
+<phrase>
+<original>pixels</original>
+<translation>Pixelů</translation>
+</phrase>
+
+<phrase>
+<original>inches</original>
+<translation>Palců</translation>
+</phrase>
+
+<phrase>
+<original>centimeters</original>
+<translation>Centimetrů</translation>
+</phrase>
+
+<phrase>
+<original>millimeters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>picas</original>
+<translation></translation>
+</phrase>
+
+<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Units.bas-->
 
@@ -4523,41 +4588,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>percent</original>
-<translation>procent</translation>
-</phrase>
-
-<phrase>
-<original>pixels</original>
-<translation>Pixelů</translation>
-</phrase>
-
-<phrase>
-<original>inches</original>
-<translation>Palců</translation>
-</phrase>
-
-<phrase>
-<original>centimeters</original>
-<translation>Centimetrů</translation>
-</phrase>
-
-<phrase>
-<original>millimeters</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>points</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>picas</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>pixels / inch (PPI)</original>
 <translation>Pixelů</translation>
 </phrase>
@@ -4577,7 +4607,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <translation>Přesná velikost se bude lišit podle obrázku</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 36 phrases. 16 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- pdResize.ctl contains 36 phrases. 23 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -4710,36 +4740,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>px</original>
-<translation>Px</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>v</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>cm</translation>
-</phrase>
-
-<phrase>
-<original>mm</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pt</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pc</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Resize image</original>
 <translation>Změnit velikost obrázku</translation>
 </phrase>
@@ -4769,7 +4769,7 @@ The final value must be between %3 and %4.</original>
 <translation>Změňte jednotku velikosti obrázku zobrazenou vlevo od tohoto pole</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -13479,6 +13479,11 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
+<original>Measure angles and distances</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rectangular Selection</original>
 <translation>Obdélníkový výběr</translation>
 </phrase>
@@ -13538,7 +13543,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Malý kbelík (vyplňte barvou)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 67 phrases. 24 were duplicates of existing phrases, so only 43 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 69 phrases. 25 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15447,12 +15452,39 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for Tools_MacroSession.frm-->
 
+<!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
+
+<phrase>
+<original>swap points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten image to angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten layer to angle</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Measure.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Measure.frm-->
+
+<!-- BEGIN text for MeasureTool.bas -->
+
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for MeasureTool.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2586</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4711 phrases. -->
-<!-- 2125 are duplicates, so only 2586 unique phrases have been written to file. -->
-<!-- These 2586 phrases contain approximately 12384 total words. -->
+<!-- As of this build, PhotoDemon contains 4748 phrases. -->
+<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12398 total words. -->
 
 </pdData>

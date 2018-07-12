@@ -1459,7 +1459,7 @@ End Sub
 'Optimized "erase" blend mode function.  Unlike other blend modes, this blend mode *does* modify the bottom DIB (as required by
 ' erase functionality).  *Do not* apply a separate alpha blend after using this function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal alphaModifier As Single = 1#)
+Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal alphaModifier As Single = 1!)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)

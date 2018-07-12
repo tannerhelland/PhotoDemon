@@ -70,7 +70,7 @@ Desktop.ini
 PhotoDemon.exe
 README_PSC-version.txt
 *.7z
-/Data/Icons
+/App/PhotoDemon/Themes/Core_Icons.pdr
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe

@@ -1,4 +1,4 @@
-Attribute VB_Name = "Paintbrush"
+Attribute VB_Name = "Tools_Paint"
 '***************************************************************************
 'Paintbrush tool interface
 'Copyright 2016-2018 by Tanner Helland
@@ -422,7 +422,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
         
-        PDDebug.LogAction "Paintbrush.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Tools_Paint.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
     
@@ -1156,7 +1156,7 @@ End Sub
 
 'Apply a single paint dab to the target position.  Note that dab opacity is currently hard-coded at 100%; flow is controlled
 ' at brush creation time (instead of on-the-fly).  This may change depending on future brush dynamics implementations.
-Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal dabOpacity As Single = 1#)
+Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal dabOpacity As Single = 1!)
     
     Dim allowedToDab As Boolean: allowedToDab = True
     

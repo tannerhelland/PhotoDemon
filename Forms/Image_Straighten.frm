@@ -187,7 +187,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         finalDIB.CreateBlank srcWidth, srcHeight, 32, 0
         
         'Rotate the new image into place
-        GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, smallDIB, 0, 0, smallDIB.GetDIBWidth, smallDIB.GetDIBHeight, , , False
+        GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, smallDIB, 0, 0, smallDIB.GetDIBWidth, smallDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, False, True
         
         'For previews only, before rendering the final DIB to the screen, going some helpful
         ' guidelines to help the user confirm the accuracy of their straightening.
@@ -279,7 +279,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             End If
             
             'Rotate the new image into place
-            GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.GetDIBWidth, tmpLayerRef.layerDIB.GetDIBHeight, , , False
+            GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.GetDIBWidth, tmpLayerRef.layerDIB.GetDIBHeight, , , False, True
             
             'Copy the resized DIB into its parent layer
             tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
@@ -440,6 +440,8 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+'IMPORTANT NOTE: any changes made here need to be mirrored to the Tools_Measure module, specifically the
+' "straighten image/layer using this angle" feature.
 Private Function GetLocalParamString() As String
     
     Dim cParams As pdParamXML

@@ -1,4 +1,4 @@
-Attribute VB_Name = "FillTool"
+Attribute VB_Name = "Tools_Fill"
 '***************************************************************************
 'PhotoDemon Bucket Fill Manager
 'Copyright 2017-2018 by Tanner Helland
@@ -240,7 +240,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
             'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
             If (pdImages(g_CurrentImage).ScratchLayer Is Nothing) Then
-                PDDebug.LogAction "WARNING!  FillTool.NotifyMouseXY tried to merge into a blank scratch layer!"
+                PDDebug.LogAction "WARNING!  Tools_Fill.NotifyMouseXY tried to merge into a blank scratch layer!"
                 pdImages(g_CurrentImage).ResetScratchLayer True
             End If
             
@@ -261,7 +261,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             'Relay the correct blend and alpha settings to the scratch layer, then permanently commit the results
             pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_FillBlendMode
             pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_FillAlphaMode
-            FillTool.CommitFillResults False
+            Tools_Fill.CommitFillResults False
             
         Else
         
@@ -281,7 +281,7 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             
             'Commit the results permanently
             m_FillImage.SetInitialAlphaPremultiplicationState True
-            FillTool.CommitFillResults True, m_FillImage
+            Tools_Fill.CommitFillResults True, m_FillImage
             
         End If
         

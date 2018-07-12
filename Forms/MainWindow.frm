@@ -2538,7 +2538,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         ElseIf Strings.StringsEqual(keyName, "tool_activate_move", True) Then
             toolbar_Toolbox.SelectNewTool NAV_MOVE
         ElseIf Strings.StringsEqual(keyName, "tool_activate_colorpicker", True) Then
-            toolbar_Toolbox.SelectNewTool COLOR_PICKER
+            If (g_CurrentTool = COLOR_PICKER) Then toolbar_Toolbox.SelectNewTool ND_MEASURE Else toolbar_Toolbox.SelectNewTool COLOR_PICKER
         ElseIf Strings.StringsEqual(keyName, "tool_activate_selectrect", True) Then
             If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
         ElseIf Strings.StringsEqual(keyName, "tool_activate_selectlasso", True) Then
@@ -2897,8 +2897,8 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Destroy all paint-related resources
     PDDebug.LogAction "Destroying paint tool resources..."
-    Paintbrush.FreeBrushResources
-    FillTool.FreeFillResources
+    Tools_Paint.FreeBrushResources
+    Tools_Fill.FreeFillResources
         
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
@@ -2927,6 +2927,10 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_ColorPicker.hWnd
         Unload toolpanel_ColorPicker
         Set toolpanel_ColorPicker = Nothing
+    ElseIf (g_CurrentTool = ND_MEASURE) Then
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Measure.hWnd
+        Unload toolpanel_Measure
+        Set toolpanel_Measure = Nothing
     ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
         Unload toolpanel_Selections

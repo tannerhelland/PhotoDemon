@@ -187,11 +187,11 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
         'Blend mode
         Case 0
-            Paintbrush.SetBrushBlendMode cboBrushSetting(Index).ListIndex
+            Tools_Paint.SetBrushBlendMode cboBrushSetting(Index).ListIndex
         
         'Alpha mode
         Case 1
-            Paintbrush.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
+            Tools_Paint.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
             
     End Select
     
@@ -241,7 +241,7 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub sldSpacing_Change()
-    Paintbrush.SetBrushSpacing sldSpacing.Value
+    Tools_Paint.SetBrushSpacing sldSpacing.Value
 End Sub
 
 Private Sub sltBrushSetting_Change(Index As Integer)
@@ -250,19 +250,19 @@ Private Sub sltBrushSetting_Change(Index As Integer)
     
         'Radius
         Case 0
-            Paintbrush.SetBrushSize sltBrushSetting(Index).Value
+            Tools_Paint.SetBrushSize sltBrushSetting(Index).Value
         
         'Opacity
         Case 1
-            Paintbrush.SetBrushOpacity sltBrushSetting(Index).Value
+            Tools_Paint.SetBrushOpacity sltBrushSetting(Index).Value
             
         'Hardness
         Case 2
-            Paintbrush.SetBrushHardness sltBrushSetting(Index).Value
+            Tools_Paint.SetBrushHardness sltBrushSetting(Index).Value
             
         'Flow
         Case 3
-            Paintbrush.SetBrushFlow sltBrushSetting(Index).Value
+            Tools_Paint.SetBrushFlow sltBrushSetting(Index).Value
     
     End Select
     
@@ -270,38 +270,38 @@ End Sub
 
 'If you want to set all paintbrush settings at once, use this function
 Public Sub SyncAllPaintbrushSettingsToUI()
-    Paintbrush.SetBrushSize sltBrushSetting(0).Value
-    Paintbrush.SetBrushOpacity sltBrushSetting(1).Value
-    Paintbrush.SetBrushHardness sltBrushSetting(2).Value
-    Paintbrush.SetBrushFlow sltBrushSetting(3).Value
-    Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
-    Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
-    Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If (btsSpacing.ListIndex = 0) Then Paintbrush.SetBrushSpacing 0# Else Paintbrush.SetBrushSpacing sldSpacing.Value
+    Tools_Paint.SetBrushSize sltBrushSetting(0).Value
+    Tools_Paint.SetBrushOpacity sltBrushSetting(1).Value
+    Tools_Paint.SetBrushHardness sltBrushSetting(2).Value
+    Tools_Paint.SetBrushFlow sltBrushSetting(3).Value
+    Tools_Paint.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
+    Tools_Paint.SetBrushBlendMode cboBrushSetting(0).ListIndex
+    Tools_Paint.SetBrushAlphaMode cboBrushSetting(1).ListIndex
+    If (btsSpacing.ListIndex = 0) Then Tools_Paint.SetBrushSpacing 0# Else Tools_Paint.SetBrushSpacing sldSpacing.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
 Public Sub SyncUIToAllPaintbrushSettings()
-    sltBrushSetting(0).Value = Paintbrush.GetBrushSize()
-    sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity()
-    sltBrushSetting(2).Value = Paintbrush.GetBrushHardness()
-    sltBrushSetting(3).Value = Paintbrush.GetBrushFlow()
-    cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
-    cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
-    If (Paintbrush.GetBrushSpacing() = 0#) Then
+    sltBrushSetting(0).Value = Tools_Paint.GetBrushSize()
+    sltBrushSetting(1).Value = Tools_Paint.GetBrushOpacity()
+    sltBrushSetting(2).Value = Tools_Paint.GetBrushHardness()
+    sltBrushSetting(3).Value = Tools_Paint.GetBrushFlow()
+    cboBrushSetting(0).ListIndex = Tools_Paint.GetBrushBlendMode()
+    cboBrushSetting(1).ListIndex = Tools_Paint.GetBrushAlphaMode()
+    If (Tools_Paint.GetBrushSpacing() = 0#) Then
         btsSpacing.ListIndex = 0
     Else
         btsSpacing.ListIndex = 1
-        sldSpacing.Value = Paintbrush.GetBrushSpacing()
+        sldSpacing.Value = Tools_Paint.GetBrushSpacing()
     End If
 End Sub
 
 Private Sub UpdateSpacingVisibility()
     If (btsSpacing.ListIndex = 0) Then
         sldSpacing.Visible = False
-        Paintbrush.SetBrushSpacing 0#
+        Tools_Paint.SetBrushSpacing 0#
     Else
         sldSpacing.Visible = True
-        Paintbrush.SetBrushSpacing sldSpacing.Value
+        Tools_Paint.SetBrushSpacing sldSpacing.Value
     End If
 End Sub

@@ -27,10 +27,11 @@ Public Enum PD_MeasurementUnit
     mu_Millimeters = 4
     mu_Points = 5
     mu_Picas = 6
+    [mu_Max] = 6
 End Enum
 
 #If False Then
-    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4, mu_Points = 5, mu_Picas = 6
+    Private Const mu_Percent = 0, mu_Pixels = 1, mu_Inches = 2, mu_Centimeters = 3, mu_Millimeters = 4, mu_Points = 5, mu_Picas = 6, mu_Max = 6
 #End If
 
 Public Enum PD_ResolutionUnit
@@ -117,4 +118,69 @@ End Function
 
 Public Function GetCMFromInches(ByVal srcInches As Double) As Double
     GetCMFromInches = srcInches * 2.54
+End Function
+
+'Retrieve localized names for various measurement units
+Public Function GetNameOfUnit(ByVal srcUnit As PD_MeasurementUnit, Optional ByVal getAbbreviatedForm As Boolean = False) As String
+
+    If getAbbreviatedForm Then
+    
+        Select Case srcUnit
+        
+            Case mu_Percent
+                GetNameOfUnit = "%"
+            
+            Case mu_Pixels
+                GetNameOfUnit = g_Language.TranslateMessage("px")
+            
+            Case mu_Inches
+                GetNameOfUnit = g_Language.TranslateMessage("in")
+            
+            Case mu_Centimeters
+                GetNameOfUnit = g_Language.TranslateMessage("cm")
+                
+            Case mu_Millimeters
+                GetNameOfUnit = g_Language.TranslateMessage("mm")
+                
+            Case mu_Points
+                GetNameOfUnit = g_Language.TranslateMessage("pt")
+            
+            Case mu_Picas
+                GetNameOfUnit = g_Language.TranslateMessage("pc")
+            
+        End Select
+    
+    Else
+
+        Select Case srcUnit
+        
+            Case mu_Percent
+                GetNameOfUnit = g_Language.TranslateMessage("percent")
+            
+            Case mu_Pixels
+                GetNameOfUnit = g_Language.TranslateMessage("pixels")
+            
+            Case mu_Inches
+                GetNameOfUnit = g_Language.TranslateMessage("inches")
+            
+            Case mu_Centimeters
+                GetNameOfUnit = g_Language.TranslateMessage("centimeters")
+                
+            Case mu_Millimeters
+                GetNameOfUnit = g_Language.TranslateMessage("millimeters")
+                
+            Case mu_Points
+                GetNameOfUnit = g_Language.TranslateMessage("points")
+            
+            Case mu_Picas
+                GetNameOfUnit = g_Language.TranslateMessage("picas")
+            
+        End Select
+        
+    End If
+
+End Function
+
+Public Function GetNumOfAvailableUnits() As Long
+    GetNumOfAvailableUnits = mu_Max
 End Function

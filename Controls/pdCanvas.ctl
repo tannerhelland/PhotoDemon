@@ -681,7 +681,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     
             'Move stuff around
             Case NAV_MOVE
-                MoveTool.NotifyKeyDown Shift, vkCode, markEventHandled
+                Tools_Move.NotifyKeyDown Shift, vkCode, markEventHandled
             
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -767,11 +767,15 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Move stuff around
             Case NAV_MOVE
-                MoveTool.NotifyMouseDown Me, imgX, imgY
+                Tools_Move.NotifyMouseDown Me, imgX, imgY
                 
             'Color picker
             Case COLOR_PICKER
-                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+            
+            'Measure tool
+            Case ND_MEASURE
+                Tools_Measure.NotifyMouseDown FormMain.MainCanvas(0), imgX, imgY
             
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -830,10 +834,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
-                FillTool.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             'In the future, other tools can be handled here
             Case Else
@@ -908,11 +912,16 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Move stuff around
             Case NAV_MOVE
-                MoveTool.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
+                Tools_Move.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
                 
             'Color picker
             Case COLOR_PICKER
-                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+            
+            'Measure tool
+            Case ND_MEASURE
+                Tools_Measure.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
                 SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
             
             'Selection tools
@@ -928,10 +937,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
-                FillTool.NotifyMouseXY True, imgX, imgY, Me
+                Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
                 
         End Select
     
@@ -945,12 +954,16 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Move stuff around
             Case NAV_MOVE
-                m_LayerAutoActivateIndex = MoveTool.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
+                m_LayerAutoActivateIndex = Tools_Move.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
             
             'Color picker
             Case COLOR_PICKER
-                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
-                
+                Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+            
+            'Measure tool
+            Case ND_MEASURE
+                Tools_Measure.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
+            
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
@@ -959,10 +972,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
-                FillTool.NotifyMouseXY False, imgX, imgY, Me
+                Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
                 
             Case Else
             
@@ -1007,11 +1020,15 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
             'Move stuff around
             Case NAV_MOVE
-                MoveTool.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements
+                Tools_Move.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Color picker
             Case COLOR_PICKER
-                ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                Tools_ColorPicker.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                
+            'Measure tool
+            Case ND_MEASURE
+                Tools_Measure.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements, clickEventAlsoFiring
                 
             'Selection tools have their own dedicated handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1095,11 +1112,11 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             
             'Notify the brush engine of the final result, then permanently commit this round of brush work
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
-                Paintbrush.CommitBrushResults
+                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.CommitBrushResults
                 
             Case PAINT_FILL
-                FillTool.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+                Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
             Case Else
                     
@@ -1743,7 +1760,12 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case COLOR_PICKER
             CanvasView.RequestCursor_System IDC_ICON
             ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
-            
+        
+        'The measurement tool uses a combination of cursors and on-canvas UI to do its thing
+        Case ND_MEASURE
+            If Tools_Measure.SpecialCursorWanted() Then CanvasView.RequestCursor_System IDC_SIZEALL Else CanvasView.RequestCursor_System IDC_ARROW
+            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+        
         Case SELECT_RECT, SELECT_CIRC
         
             'When transforming selections, the cursor image depends on its proximity to a point of interest.
@@ -1942,11 +1964,13 @@ End Sub
 'When the status bar changes its current measurement unit (e.g. pixels, cm, inches), it needs to notify the canvas
 ' so that other UI elements - like rulers - can synchronize.
 Public Sub NotifyRulerUnitChange(ByVal newUnit As PD_MeasurementUnit)
-    If m_RulersVisible Then
-        hRuler.NotifyUnitChange newUnit
-        vRuler.NotifyUnitChange newUnit
-    End If
+    hRuler.NotifyUnitChange newUnit
+    vRuler.NotifyUnitChange newUnit
 End Sub
+
+Public Function GetRulerUnit() As PD_MeasurementUnit
+    GetRulerUnit = hRuler.GetCurrentUnit()
+End Function
 
 Public Sub NotifyImageStripVisibilityMode(ByVal newMode As Long)
     ImageStrip.VisibilityMode = newMode

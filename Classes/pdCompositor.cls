@@ -1568,7 +1568,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         
         'Note that we calculate this differently depending on whether this is the first paint event in a stroke, or a subsequent one
         Dim isFirstPaintEvent As Boolean
-        isFirstPaintEvent = (Paintbrush.GetNumOfStrokes <= 1)
+        isFirstPaintEvent = (Tools_Paint.GetNumOfStrokes <= 1)
         
         'Note: by forcing isFirstPaintEvent to TRUE, you can forcibly regenerate the full cached image on each stroke.
         'isFirstPaintEvent = True
@@ -1589,7 +1589,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         ' is large or if a bunch of weird blend/alpha modes are active.
         Dim intRectSrcStroke As RectF, intRectDstStroke As RectF
         If (Not fullCacheCreationRequired) Then
-            GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Paintbrush.GetModifiedUpdateRectF
+            GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Paint.GetModifiedUpdateRectF
             GetDstRectFromSrcRectF intRectDstStroke, intRectSrcStroke, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
         End If
         
@@ -1660,9 +1660,9 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                 ' This requires further study, but it will probably wait until post-7.0 when some other compositor projects are planned.
                 ' TODO 7.2: deal with comment above
                 If fullCacheCreationRequired Then
-                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
                 Else
-                    GDIPlus_StretchBlt lodDIB, (intRectDstStroke.Left - dstViewportRect.Left) - xOffsetInt, (intRectDstStroke.Top - dstViewportRect.Top) - yOffsetInt, intRectDstStroke.Width, intRectDstStroke.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                    GDIPlus_StretchBlt lodDIB, (intRectDstStroke.Left - dstViewportRect.Left) - xOffsetInt, (intRectDstStroke.Top - dstViewportRect.Top) - yOffsetInt, intRectDstStroke.Width, intRectDstStroke.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
                 End If
                 
             End If

@@ -363,18 +363,18 @@ End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
-    MoveTool.SetDrawLayerBorders chkLayerBorder.Value
+    Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
-    MoveTool.SetDrawLayerCornerNodes chkLayerNodes.Value
+    Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
-    MoveTool.SetDrawLayerRotateNodes chkRotateNode.Value
+    Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
     ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
 End Sub
 
@@ -421,9 +421,9 @@ Private Sub Form_Load()
     cboLayerResizeQuality.ListIndex = 1
     
     'Ensure our corresponding tool manager is synchronized with default layer rendering styles
-    MoveTool.SetDrawLayerBorders chkLayerBorder.Value
-    MoveTool.SetDrawLayerCornerNodes chkLayerNodes.Value
-    MoveTool.SetDrawLayerRotateNodes chkRotateNode.Value
+    Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
+    Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
+    Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
     
     'Load any last-used settings for this form
     'NOTE: this is currently disabled, as all settings on this form are synched to the active layer

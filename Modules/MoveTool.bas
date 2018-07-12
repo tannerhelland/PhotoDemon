@@ -1,4 +1,4 @@
-Attribute VB_Name = "MoveTool"
+Attribute VB_Name = "Tools_Move"
 '***************************************************************************
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2018 by Tanner Helland

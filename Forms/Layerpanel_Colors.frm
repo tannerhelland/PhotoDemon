@@ -400,10 +400,10 @@ Private Sub RelayColorChange(ByVal newColor As Long)
     Select Case g_CurrentTool
     
         Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
-            Paintbrush.SetBrushSourceColor newColor
+            Tools_Paint.SetBrushSourceColor newColor
             
         Case PAINT_FILL
-            FillTool.SetFillBrushColor newColor
+            Tools_Fill.SetFillBrushColor newColor
     
     End Select
     

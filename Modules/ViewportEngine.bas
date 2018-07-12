@@ -104,12 +104,15 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'The layer move/size tool provides a number of rendering options specific to that tool
             If (g_CurrentTool = NAV_MOVE) Then
-                If MoveTool.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                If MoveTool.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
-                If MoveTool.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                If Tools_Move.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+                If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                If Tools_Move.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
             ElseIf (g_CurrentTool = COLOR_PICKER) Then
-                If FormMain.MainCanvas(0).IsMouseOverCanvas Then ColorPicker.RenderColorPickerCursor dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_ColorPicker.RenderColorPickerCursor dstCanvas
+            
+            ElseIf (g_CurrentTool = ND_MEASURE) Then
+                Tools_Measure.RenderMeasureUI dstCanvas
             
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
@@ -128,11 +131,11 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     
             'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
             ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
-                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Paintbrush.RenderBrushOutline dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Paint.RenderBrushOutline dstCanvas
             
             'Fill tools also render a custom cursor
             ElseIf (g_CurrentTool = PAINT_FILL) Then
-                If FormMain.MainCanvas(0).IsMouseOverCanvas Then FillTool.RenderFillCursor dstCanvas
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Fill.RenderFillCursor dstCanvas
                 
             End If
             

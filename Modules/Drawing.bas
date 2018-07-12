@@ -801,3 +801,15 @@ Public Sub BorrowCachedUIPens(ByRef dstPenUIBase As pd2DPen, ByRef dstPenUITop A
         Set dstPenUITop = m_PenUITop
     End If
 End Sub
+
+Public Sub CloneCachedUIPens(ByRef dstPenUIBase As pd2DPen, ByRef dstPenUITop As pd2DPen, Optional ByVal wantHighlightPens As Boolean = False)
+    Set dstPenUIBase = New pd2DPen
+    Set dstPenUITop = New pd2DPen
+    If wantHighlightPens Then
+        dstPenUIBase.ClonePen m_PenUIBaseHighlight
+        dstPenUITop.ClonePen m_PenUITopHighlight
+    Else
+        dstPenUIBase.ClonePen m_PenUIBase
+        dstPenUITop.ClonePen m_PenUITop
+    End If
+End Sub

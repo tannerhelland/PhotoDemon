@@ -177,23 +177,23 @@ Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 Private Sub bsFillStyle_BrushChanged()
-    FillTool.SetFillBrush bsFillStyle.Brush
+    Tools_Fill.SetFillBrush bsFillStyle.Brush
 End Sub
 
 Private Sub btsFillArea_Click(ByVal buttonIndex As Long)
-    FillTool.SetFillSearchMode buttonIndex
+    Tools_Fill.SetFillSearchMode buttonIndex
 End Sub
 
 Private Sub btsFillMerge_Click(ByVal buttonIndex As Long)
-    FillTool.SetFillSampleMerged (buttonIndex = 0)
+    Tools_Fill.SetFillSampleMerged (buttonIndex = 0)
 End Sub
 
 Private Sub cboFillAlphaMode_Click()
-    FillTool.SetFillAlphaMode cboFillAlphaMode.ListIndex
+    Tools_Fill.SetFillAlphaMode cboFillAlphaMode.ListIndex
 End Sub
 
 Private Sub cboFillBlendMode_Click()
-    FillTool.SetFillBlendMode cboFillBlendMode.ListIndex
+    Tools_Fill.SetFillBlendMode cboFillBlendMode.ListIndex
 End Sub
 
 Private Sub cboFillCompare_Click()
@@ -205,7 +205,7 @@ Private Sub cboFillCompare_Click()
         sldFillTolerance.SigDigits = 1
     End If
     
-    FillTool.SetFillCompareMode cboFillCompare.ListIndex
+    Tools_Fill.SetFillCompareMode cboFillCompare.ListIndex
     
 End Sub
 
@@ -216,22 +216,22 @@ Private Sub cboSource_Click()
     bsFillStyle.Visible = (cboSource.ListIndex = 1)
     
     If (cboSource.ListIndex = 0) Then
-        FillTool.SetFillBrushSource fts_ColorOpacity
-        FillTool.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
-        FillTool.SetFillBrushOpacity sldOpacity.Value
+        Tools_Fill.SetFillBrushSource fts_ColorOpacity
+        Tools_Fill.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
+        Tools_Fill.SetFillBrushOpacity sldOpacity.Value
     Else
-        FillTool.SetFillBrushSource fts_CustomBrush
-        FillTool.SetFillBrush bsFillStyle.Brush
+        Tools_Fill.SetFillBrushSource fts_CustomBrush
+        Tools_Fill.SetFillBrush bsFillStyle.Brush
     End If
     
 End Sub
 
 Private Sub chkAntialiasing_Click()
-    FillTool.SetFillAA chkAntialiasing.Value
+    Tools_Fill.SetFillAA chkAntialiasing.Value
 End Sub
 
 Private Sub sldFillTolerance_Change()
-    FillTool.SetFillTolerance sldFillTolerance.Value
+    Tools_Fill.SetFillTolerance sldFillTolerance.Value
 End Sub
 
 Private Sub Form_Load()
@@ -273,16 +273,16 @@ End Sub
 
 'If you want to set all paintbrush settings at once, use this function
 Public Sub SyncAllFillSettingsToUI()
-    FillTool.SetFillAA chkAntialiasing.Value
-    FillTool.SetFillAlphaMode cboFillAlphaMode.ListIndex
-    FillTool.SetFillBlendMode cboFillBlendMode.ListIndex
-    FillTool.SetFillBrush bsFillStyle.Brush
-    FillTool.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
-    FillTool.SetFillBrushOpacity sldOpacity.Value
-    FillTool.SetFillCompareMode cboFillCompare.ListIndex
-    FillTool.SetFillSampleMerged (btsFillMerge.ListIndex = 0)
-    FillTool.SetFillSearchMode btsFillArea.ListIndex
-    FillTool.SetFillTolerance sldFillTolerance.Value
+    Tools_Fill.SetFillAA chkAntialiasing.Value
+    Tools_Fill.SetFillAlphaMode cboFillAlphaMode.ListIndex
+    Tools_Fill.SetFillBlendMode cboFillBlendMode.ListIndex
+    Tools_Fill.SetFillBrush bsFillStyle.Brush
+    Tools_Fill.SetFillBrushColor layerpanel_Colors.GetCurrentColor()
+    Tools_Fill.SetFillBrushOpacity sldOpacity.Value
+    Tools_Fill.SetFillCompareMode cboFillCompare.ListIndex
+    Tools_Fill.SetFillSampleMerged (btsFillMerge.ListIndex = 0)
+    Tools_Fill.SetFillSearchMode btsFillArea.ListIndex
+    Tools_Fill.SetFillTolerance sldFillTolerance.Value
 End Sub
 
 Public Sub UpdateAgainstCurrentTheme()
@@ -298,5 +298,5 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub sldOpacity_Change()
-    FillTool.SetFillBrushOpacity sldOpacity.Value
+    Tools_Fill.SetFillBrushOpacity sldOpacity.Value
 End Sub

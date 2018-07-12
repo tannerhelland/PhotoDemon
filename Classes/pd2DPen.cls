@@ -373,6 +373,16 @@ Friend Function HasPen() As Boolean
     HasPen = (m_PenHandle <> 0)
 End Function
 
+'Clone an existing pd2DPen instance.  This may not work for complicated pens like pens created from brushes;
+' for that, we'd need to look into a different solution.  (Standard pens will clone just fine, though.)
+Friend Function ClonePen(ByRef srcPen As pd2DPen) As Boolean
+    If (srcPen Is Nothing) Then
+        Me.ResetAllProperties
+    Else
+        Me.SetPenPropertiesFromXML srcPen.GetPenPropertiesAsXML()
+    End If
+End Function
+
 'Create an actual pen handle using the current backend and the current pen settings.
 ' NOTE: the caller doesn't actually *need* to call this directly.  If GetPenHandle is called and the pen doesn't yet exist,
 '       it will be auto-created.

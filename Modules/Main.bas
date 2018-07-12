@@ -300,7 +300,7 @@ Public Function ContinueLoadingProgram() As Boolean
     'Now that a theme has been loaded, we can initialize additional UI rendering elements
     g_Resources.NotifyThemeChange
     Drawing.CacheUIPensAndBrushes
-    Paintbrush.InitializeBrushEngine
+    Tools_Paint.InitializeBrushEngine
     Selections.InitializeSelectionRendering
     
     '*************************************************************************************************************************************

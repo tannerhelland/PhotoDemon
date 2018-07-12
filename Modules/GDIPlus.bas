@@ -3025,7 +3025,7 @@ End Function
 
 'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.
 ' This function is self-managing, meaning it will delete any GDI+ objects it generates.
-Public Function GetGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GP_FillMode = GP_FM_Alternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As RectF
+Public Function GetGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GP_FillMode = GP_FM_Alternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1!, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As RectF
 
     'Start by creating a blank GDI+ path object.
     Dim gdipPathHandle As Long
@@ -3212,7 +3212,7 @@ End Sub
 '
 'Note that the supplied plgPoints array *MUST HAVE THREE POINTS* in it, in the specific order: top-left, top-right, bottom-left.
 ' The fourth point is inferred from the other three.
-Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useHQOffsets As Boolean = True)
+Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1!, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal fixEdges As Boolean = False)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -3237,7 +3237,11 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat
         ' algorithm from drawing semi-transparent lines randomly around image borders.
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
-        If (newAlpha <> 1) Then GdipCreateImageAttributes imgAttributesHandle Else imgAttributesHandle = 0
+        If (newAlpha <> 1!) Or fixEdges Then GdipCreateImageAttributes imgAttributesHandle Else imgAttributesHandle = 0
+        
+        'Certain blt operations can cause GDI+ to fuck up edges.  Fix this by asking it to tile the image upon
+        ' exceeding boundaries (but only the caller specifies as much).
+        If fixEdges Then GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0, 0
         
         'To improve performance and quality, explicitly request high-speed (aka linear) alpha compositing operation, and high-quality
         ' pixel offsets (treat pixels as if they fall on pixel borders, instead of center points - this provides rudimentary edge
@@ -3246,7 +3250,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat
         If useHQOffsets Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
-        If (newAlpha <> 1) Then
+        If (newAlpha <> 1!) Then
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, GP_CMF_Default
         End If
@@ -3258,7 +3262,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As PointFloat
         If (imgAttributesHandle <> 0) Then GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
-        If (newAlpha <> 1) Then m_AttributesMatrix(3, 3) = 1
+        If (newAlpha <> 1!) Then m_AttributesMatrix(3, 3) = 1!
         
         'Update premultiplication status in the target
         dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
@@ -3897,7 +3901,7 @@ End Function
 'Shorthand function for quickly creating a new GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
 ' (Note that a single parameter is used to set both pen and dash endcaps; if you want these to differ, you must call the separate
 ' SetPenDashCap function, below.)
-Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penOpacity As Long = 255&, Optional ByVal penWidth As Single = 1#, Optional ByVal penLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal penLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal penDashMode As GP_DashStyle = GP_DS_Solid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penAlignment As GP_PenAlignment = GP_PA_Center) As Long
+Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penOpacity As Long = 255&, Optional ByVal penWidth As Single = 1!, Optional ByVal penLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal penLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal penDashMode As GP_DashStyle = GP_DS_Solid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penAlignment As GP_PenAlignment = GP_PA_Center) As Long
 
     'Create the base pen
     Dim hPen As Long
@@ -4434,7 +4438,7 @@ Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcI
         
 End Function
 
-Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal opacityModifier As Single = 1#) As Boolean
+Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal opacityModifier As Single = 1!) As Boolean
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
@@ -4457,7 +4461,7 @@ Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcI
         
 End Function
 
-Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByRef dstPlgPoints() As PointFloat, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal opacityModifier As Single = 1#) As Boolean
+Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByRef dstPlgPoints() As PointFloat, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal opacityModifier As Single = 1!) As Boolean
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long
@@ -4480,7 +4484,7 @@ Public Function GDIPlus_DrawImagePointsRectF(ByVal dstGraphics As Long, ByVal sr
         
 End Function
 
-Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByRef dstPlgPoints() As PointLong, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal opacityModifier As Single = 1#) As Boolean
+Public Function GDIPlus_DrawImagePointsRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByRef dstPlgPoints() As PointLong, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal opacityModifier As Single = 1!) As Boolean
     
     'Modified opacity requires us to create a temporary image attributes object
     Dim imgAttributesHandle As Long

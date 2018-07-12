@@ -284,6 +284,10 @@ Public Sub NotifyUnitChange(ByVal newUnit As PD_MeasurementUnit)
     End If
 End Sub
 
+Public Function GetCurrentUnit() As PD_MeasurementUnit
+    GetCurrentUnit = m_RulerUnit
+End Function
+
 Public Sub SetRedrawSuspension(ByVal newState As Boolean, Optional ByVal redrawImmediately As Boolean = False)
     m_SuspendRedraws = newState
     If (Not m_SuspendRedraws) And redrawImmediately Then UpdateControlLayout True
@@ -387,19 +391,20 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         
             Select Case m_RulerUnit
             
-                Case mu_Inches, mu_Centimeters, mu_Millimeters
+                'Pixels are the primary unit, and we can just use coordinates as-is
+                Case mu_Pixels
+                    .Left = m_imgCoordRectF.Left
+                    .Top = m_imgCoordRectF.Top
+                    .Width = m_imgCoordRectF.Width
+                    .Height = m_imgCoordRectF.Height
+                
+                'Other units require conversion
+                Case Else
                     .Left = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Left, curImgDPI)
                     .Top = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Top, curImgDPI)
                     .Width = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Width, curImgDPI)
                     .Height = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Height, curImgDPI)
                     
-                'Pixels are the only remaining supported unit; just use the image coordinates as-is!
-                Case Else
-                    .Left = m_imgCoordRectF.Left
-                    .Top = m_imgCoordRectF.Top
-                    .Width = m_imgCoordRectF.Width
-                    .Height = m_imgCoordRectF.Height
-            
             End Select
             
         End With

@@ -620,18 +620,18 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     If (dstPenTop Is Nothing) Then Set dstPenTop = New pd2DPen Else dstPenTop.ResetAllProperties
     
     With dstPenBase
-        .SetPenWidth 3#
+        .SetPenWidth 3!
         .SetPenColor vbBlack
-        .SetPenOpacity 75#
+        .SetPenOpacity 75!
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
         QuickCreatePairOfUIPens = .CreatePen()
     End With
     
     With dstPenTop
-        .SetPenWidth 1.6
+        .SetPenWidth 1.6!
         If useHighlightColor Then .SetPenColor g_Themer.GetGenericUIColor(UI_Accent) Else .SetPenColor vbWhite
-        .SetPenOpacity 87.5
+        .SetPenOpacity 87.5!
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
         QuickCreatePairOfUIPens = (QuickCreatePairOfUIPens And .CreatePen())

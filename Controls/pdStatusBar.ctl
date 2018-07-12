@@ -293,10 +293,10 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
             Select Case m_UnitOfMeasurement
                 Case mu_Pixels
                     lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
-                Case mu_Inches
-                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(mu_Inches, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(mu_Inches, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
-                Case mu_Centimeters
-                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(mu_Centimeters, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(mu_Centimeters, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
+                Case mu_Inches, mu_Centimeters
+                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
+                Case mu_Millimeters, mu_Points, mu_Picas
+                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0#") & ")"
             End Select
         End If
     End If
@@ -381,14 +381,19 @@ End Function
 'Fill the "size units" drop-down.  We must do this relatively late in the load process, as we have to wait for the translation
 ' engine to initialize.
 Public Function PopulateSizeUnits()
+    
+    cmbSizeUnit.SetAutomaticRedraws False
     cmbSizeUnit.Clear
-    cmbSizeUnit.AddItem "px", 0
-    cmbSizeUnit.AddItem "in", 1
-    cmbSizeUnit.AddItem "cm", 2
-    cmbSizeUnit.AddItem "mm", 3
-    cmbSizeUnit.AddItem "pt", 4
-    cmbSizeUnit.AddItem "pc", 5
+    
+    Dim i As Long
+    For i = 1 To Units.GetNumOfAvailableUnits()
+        cmbSizeUnit.AddItem Units.GetNameOfUnit(i, True), i - 1
+    Next i
+    
+    
     cmbSizeUnit.ListIndex = 0
+    cmbSizeUnit.SetAutomaticRedraws True, True
+    
 End Function
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
@@ -402,8 +407,9 @@ End Sub
 Private Sub cmbSizeUnit_Click()
     m_UnitOfMeasurement = cmbSizeUnit.ListIndex + 1
     If (g_OpenImageCount > 0) Then
-        DisplayImageSize pdImages(g_CurrentImage)
+        Me.DisplayImageSize pdImages(g_CurrentImage)
         FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex + 1
+        If (g_CurrentTool = ND_MEASURE) Then Tools_Measure.NotifyUnitChange
     End If
 End Sub
 
@@ -417,8 +423,8 @@ Private Sub CmbZoom_Click()
         ' coordinate space*.  When zoom is changed, we preserve the current center of the image relative to
         ' the center of the canvas, to make the zoom operation feel more natural.
         Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
-        centerXCanvas = FormMain.MainCanvas(0).GetCanvasWidth / 2
-        centerYCanvas = FormMain.MainCanvas(0).GetCanvasHeight / 2
+        centerXCanvas = FormMain.MainCanvas(0).GetCanvasWidth * 0.5
+        centerYCanvas = FormMain.MainCanvas(0).GetCanvasHeight * 0.5
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
         
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
