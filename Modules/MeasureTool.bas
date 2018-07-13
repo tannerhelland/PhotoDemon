@@ -3,7 +3,7 @@ Attribute VB_Name = "Tools_Measure"
 'Measure tool interface
 'Copyright 2018-2018 by Tanner Helland
 'Created: 11/July/17
-'Last updated: 12/July/17
+'Last updated: 13/July/17
 'Last update: wrap up initial build
 '
 'PD's Measure tool is very straightforward.  Additional details can be found in the associated form
@@ -171,6 +171,25 @@ Public Function GetSecondPoint(ByRef dstPoint As PointFloat) As Boolean
     dstPoint = m_Points(1)
     GetSecondPoint = True
 End Function
+
+Public Sub RequestRedraw()
+
+    If (Not m_MeasurementReady) Then Exit Sub
+    If (Not m_PointsSet(0)) Then Exit Sub
+    
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    toolpanel_Measure.UpdateUIText
+    
+End Sub
+
+Public Sub SetPointsManually(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+    m_PointsSet(0) = True
+    m_PointsSet(1) = True
+    m_Points(0).x = x1
+    m_Points(0).y = y1
+    m_Points(1).x = x2
+    m_Points(1).y = y2
+End Sub
 
 Public Function SpecialCursorWanted() As Boolean
     SpecialCursorWanted = (m_ActivePointIndex >= 0) Or (m_HoverPointIndex >= 0)
@@ -374,14 +393,32 @@ Public Sub RenderMeasureUI(ByRef targetCanvas As pdCanvas)
     
 End Sub
 
+Public Sub ResetPoints(Optional ByVal alsoRedrawViewport As Boolean = True)
+    InitializeMeasureTool
+    toolpanel_Measure.UpdateUIText
+    If alsoRedrawViewport Then ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+End Sub
+
+Public Sub Rotate2ndPoint90Degrees()
+
+    If (Not m_MeasurementReady) Then Exit Sub
+    If (Not m_PointsSet(0)) Then Exit Sub
+    
+    Dim tmpPoint As PointFloat
+    PDMath.RotatePointAroundPoint m_Points(1).x, m_Points(1).y, m_Points(0).x, m_Points(0).y, PDMath.DegreesToRadians(90), tmpPoint.x, tmpPoint.y
+    m_Points(1) = tmpPoint
+    
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    toolpanel_Measure.UpdateUIText
+    
+End Sub
+
 'NOTE: this code is a duplicate of the FormStraighten command string generator.  Any changes here need to
 ' also be mirrored there.
 Public Sub StraightenImageToMatch()
 
     Dim curAngle As Double
     If Tools_Measure.GetAngleInDegrees(curAngle) Then
-        
-        Debug.Print "start", curAngle
         
         'The straighten tool only works on angles on the range [-45, 45].  Beyond this point,
         ' the image has to be resized to an absurd degree.  Convert the image to the range
@@ -394,8 +431,6 @@ Public Sub StraightenImageToMatch()
         If (Abs(curAngle) > 45#) Then
             If (curAngle > 0#) Then curAngle = curAngle - 90# Else curAngle = curAngle + 90#
         End If
-        
-        Debug.Print "end", curAngle
         
         Dim cParams As pdParamXML
         Set cParams = New pdParamXML
@@ -419,13 +454,13 @@ Public Sub StraightenLayerToMatch()
         'The straighten tool only works on angles on the range [-45, 45].  Beyond this point,
         ' the image has to be resized to an absurd degree.  Convert the image to the range
         ' [-90, 90] to start
-        If (Abs(curAngle) > 90) Then
-            If (curAngle > 0) Then curAngle = curAngle - 180# Else curAngle = curAngle + 180#
+        If (Abs(curAngle) > 90#) Then
+            If (curAngle > 0#) Then curAngle = curAngle - 180# Else curAngle = curAngle + 180#
         End If
         
         'If the angle is > 45 from the horizon, assume it's measuring a vertical line (not a horizontal one).
-        If (Abs(curAngle) > 45) Then
-            If (curAngle > 0) Then curAngle = 90 - curAngle Else curAngle = 90 + curAngle
+        If (Abs(curAngle) > 45#) Then
+            If (curAngle > 0#) Then curAngle = curAngle - 90# Else curAngle = curAngle + 90#
         End If
         
         Dim cParams As pdParamXML

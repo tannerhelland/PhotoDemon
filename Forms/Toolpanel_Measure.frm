@@ -26,14 +26,25 @@ Begin VB.Form toolpanel_Measure
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdCheckBox chkShare 
+      Height          =   375
+      Left            =   45
+      TabIndex        =   3
+      Top             =   1080
+      Width           =   3855
+      _ExtentX        =   6800
+      _ExtentY        =   661
+      Caption         =   "share measurements between images"
+      Value           =   0   'False
+   End
    Begin PhotoDemon.pdButton cmdAction 
-      Height          =   480
+      Height          =   495
       Index           =   0
-      Left            =   0
+      Left            =   75
       TabIndex        =   0
       Top             =   0
-      Width           =   3975
-      _ExtentX        =   7011
+      Width           =   1935
+      _ExtentX        =   3413
       _ExtentY        =   873
       Caption         =   "swap points"
    End
@@ -206,26 +217,37 @@ Begin VB.Form toolpanel_Measure
       Caption         =   "0"
    End
    Begin PhotoDemon.pdButton cmdAction 
-      Height          =   480
+      Height          =   495
       Index           =   1
-      Left            =   0
+      Left            =   2025
       TabIndex        =   1
-      Top             =   480
-      Width           =   3975
-      _ExtentX        =   7011
-      _ExtentY        =   847
-      Caption         =   "straighten image to angle"
+      Top             =   0
+      Width           =   1935
+      _ExtentX        =   3413
+      _ExtentY        =   873
+      Caption         =   "straighten image"
    End
    Begin PhotoDemon.pdButton cmdAction 
-      Height          =   480
+      Height          =   495
       Index           =   2
-      Left            =   0
+      Left            =   2025
       TabIndex        =   2
-      Top             =   960
-      Width           =   3975
-      _ExtentX        =   7011
-      _ExtentY        =   847
-      Caption         =   "straighten layer to angle"
+      Top             =   510
+      Width           =   1935
+      _ExtentX        =   3413
+      _ExtentY        =   873
+      Caption         =   "straighten layer"
+   End
+   Begin PhotoDemon.pdButton cmdAction 
+      Height          =   495
+      Index           =   3
+      Left            =   75
+      TabIndex        =   4
+      Top             =   510
+      Width           =   1935
+      _ExtentX        =   3413
+      _ExtentY        =   873
+      Caption         =   "rotate 90"
    End
 End
 Attribute VB_Name = "toolpanel_Measure"
@@ -237,7 +259,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Measurement Tool Panel
 'Copyright 2013-2018 by Tanner Helland
 'Created: 11/July/18
-'Last updated: 12/July/18
+'Last updated: 13/July/18
 'Last update: wrap up initial build
 '
 'PD's measurement tool is pretty straightforward: measure the distance and angle between two points,
@@ -274,8 +296,16 @@ Public Sub UpdateUIText()
     
     If Tools_Measure.GetFirstPoint(firstPoint) And Tools_Measure.GetSecondPoint(secondPoint) Then
         
-        'Allow point swapping
+        'Save the current point positions to the active image.  (This lets us preserve measurements
+        ' across images.)
+        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-x1", firstPoint.x
+        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-y1", firstPoint.y
+        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-x2", secondPoint.x
+        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-y2", secondPoint.y
+        
+        'Allow point swapping and rotation
         cmdAction(0).Enabled = True
+        cmdAction(3).Enabled = True
         
         'Distance
         Dim measureValue As Double
@@ -375,6 +405,39 @@ Public Sub UpdateUIText()
     
 End Sub
 
+'The measurement tool has two settings: it can either share measurements across images
+' (great for unifying measurements), or it can allow each image to have its own measurement.
+' What we do when changing images depends on this setting.
+Public Sub NotifyActiveImageChanged()
+    
+    'Measurements are shared between images
+    If chkShare.Value Then
+    
+        'Simply redraw the screen; the current measurement points will be preserved
+        Tools_Measure.RequestRedraw
+    
+    'Each image gets its *own* measurements
+    Else
+    
+        'Relay this image's measurements (if any) to the measurement handler
+        If pdImages(g_CurrentImage).ImgStorage.DoesKeyExist("measure-tool-x1") Then
+        
+            'Send the updated points over
+            With pdImages(g_CurrentImage).ImgStorage
+                Tools_Measure.SetPointsManually .GetEntry_Double("measure-tool-x1"), .GetEntry_Double("measure-tool-y1"), .GetEntry_Double("measure-tool-x2"), .GetEntry_Double("measure-tool-y2")
+            End With
+            
+            Tools_Measure.RequestRedraw
+            
+        'This image doesn't have any stored measurements; clear 'em out
+        Else
+            Tools_Measure.ResetPoints True
+        End If
+    
+    End If
+    
+End Sub
+
 Private Sub cmdAction_Click(Index As Integer)
 
     Select Case Index
@@ -390,7 +453,11 @@ Private Sub cmdAction_Click(Index As Integer)
         'Straighten layer to angle
         Case 2
             Tools_Measure.StraightenLayerToMatch
-    
+            
+        'Rotate 90
+        Case 3
+            Tools_Measure.Rotate2ndPoint90Degrees
+        
     End Select
 
 End Sub

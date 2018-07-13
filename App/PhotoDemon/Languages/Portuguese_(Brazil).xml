@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3354</langversion>
+<langversion>6.8.3355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15460,21 +15460,31 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
 
 <phrase>
+<original>share measurements between images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>swap points</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>straighten image to angle</original>
+<original>straighten image</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>straighten layer to angle</original>
+<original>straighten layer</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>rotate 90</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Measure.frm-->
 
@@ -15486,10 +15496,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4748 phrases. -->
-<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4750 phrases. -->
+<!-- 2158 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12399 total words. -->
 
 </pdData>

@@ -537,7 +537,13 @@ End Function
 Public Sub InitializeToolsDependentOnImage()
     
     If (g_OpenImageCount > 0) Then
-    
+        
+        'The measurement tool has two settings: it can either share measurements across images
+        ' (great for unifying measurements), or it can allow each image to have its own measurement.
+        ' What we do when changing images depends on this setting.
+        If (g_CurrentTool = ND_MEASURE) Then toolpanel_Measure.NotifyActiveImageChanged
+        
+        'Paint tools are handled as a special case
         If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL) Then
             
             'A couple things require us to reset the scratch layer...
