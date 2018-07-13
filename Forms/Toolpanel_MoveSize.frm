@@ -151,8 +151,8 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   120
          TabIndex        =   14
          Top             =   60
-         Width           =   4950
-         _ExtentX        =   7223
+         Width           =   3495
+         _ExtentX        =   6165
          _ExtentY        =   1349
          Caption         =   "layer angle"
          FontSizeCaption =   10
@@ -162,11 +162,11 @@ Begin VB.Form toolpanel_MoveSize
       End
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
-         Left            =   5400
+         Left            =   4080
          TabIndex        =   16
          Top             =   60
-         Width           =   4950
-         _ExtentX        =   7223
+         Width           =   3495
+         _ExtentX        =   6165
          _ExtentY        =   1349
          Caption         =   "layer shear (x, y)"
          FontSizeCaption =   10
@@ -176,7 +176,7 @@ Begin VB.Form toolpanel_MoveSize
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
          Height          =   570
-         Left            =   10800
+         Left            =   8040
          TabIndex        =   17
          Top             =   360
          Width           =   660
@@ -186,11 +186,11 @@ Begin VB.Form toolpanel_MoveSize
       End
       Begin PhotoDemon.pdSlider sltLayerShearY 
          Height          =   405
-         Left            =   5400
+         Left            =   4080
          TabIndex        =   18
          Top             =   840
-         Width           =   4950
-         _ExtentX        =   7223
+         Width           =   3495
+         _ExtentX        =   6165
          _ExtentY        =   714
          Min             =   -5
          Max             =   5
@@ -199,7 +199,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   4
-         Left            =   10800
+         Left            =   8040
          Top             =   60
          Width           =   3120
          _ExtentX        =   5503
