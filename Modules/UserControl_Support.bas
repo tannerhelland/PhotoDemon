@@ -837,9 +837,16 @@ End Sub
 Public Sub PDControlReceivedFocus(ByVal controlHWnd As Long)
     
     'If a dropdown window is still active, hide it now
+    HideOpenDropdowns controlHWnd
+    
+End Sub
+
+'If a dropdown is open, this will release it
+Private Sub HideOpenDropdowns(Optional ByVal hWndResponsible As Long = 0)
+
     If (m_CurrentDropDownHWnd <> 0) Or (m_CurrentDropDownListHWnd <> 0) Then
     
-        If (m_CurrentDropDownHWnd <> controlHWnd) And (m_CurrentDropDownListHWnd <> controlHWnd) Then
+        If (m_CurrentDropDownHWnd <> hWndResponsible) And (m_CurrentDropDownListHWnd <> hWndResponsible) Then
             SetParent m_CurrentDropDownListHWnd, m_CurrentDropDownHWnd
             g_WindowManager.SetVisibilityByHWnd m_CurrentDropDownListHWnd, False
             m_CurrentDropDownHWnd = 0
@@ -864,6 +871,15 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     On Error GoTo UnexpectedTTTrouble
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    
+    'We run into trouble when displaying a tooltip when a dropdown box is active.  (The two windows
+    ' compete for top-level status, causing weird issues depending on Windows version.)  Rather than
+    ' mess with this, we simply suspend tooltip display while a dropdown is active.
+    If (m_CurrentDropDownHWnd <> 0) Or (m_CurrentDropDownListHWnd <> 0) Then Exit Sub
+    
+    'Alternatively, you could also close any drop-down boxes if they are still open; the following line
+    ' accomplishes that.
+    'HideOpenDropdowns
     
     'If a tooltip is currently active, suspend the release timer (because we're just going to "snap" the current
     ' tooltip window into place, rather than waiting for an animation).
@@ -976,7 +992,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RectL,
     
     'Start by figuring out which edge is closest to the current mouse position.  The passed mouse x/y ratios
     ' make this simple. (Each mouse value is a value [0, 1] instead of a hard-coded coordinate.)
-    Dim mouseScreenPos As POINTAPI
+    Dim mouseScreenPos As PointAPI
     mouseScreenPos.x = mouseX
     mouseScreenPos.y = mouseY
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetClientToScreen ownerHwnd, mouseScreenPos
