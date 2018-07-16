@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.375</langversion>
+<langversion>6.7.376</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -185,12 +185,6 @@
 
 <!-- END text for ColorManagement_ICM.bas-->
 
-<!-- BEGIN text for ColorPicker.bas -->
-
-<!-- ColorPicker.bas contains 0 phrases. -->
-
-<!-- END text for ColorPicker.bas-->
-
 <!-- BEGIN text for Colors.bas -->
 
 <!-- Colors.bas contains 0 phrases. -->
@@ -202,12 +196,6 @@
 <!-- Compression.bas contains 0 phrases. -->
 
 <!-- END text for Compression.bas-->
-
-<!-- BEGIN text for DibSupport.bas -->
-
-<!-- DibSupport.bas contains 0 phrases. -->
-
-<!-- END text for DibSupport.bas-->
 
 <!-- BEGIN text for DialogManager.bas -->
 
@@ -245,17 +233,23 @@
 
 <!-- END text for DialogManager.bas-->
 
-<!-- BEGIN text for Drawing2D.bas -->
+<!-- BEGIN text for DibSupport.bas -->
 
-<!-- Drawing2D.bas contains 0 phrases. -->
+<!-- DibSupport.bas contains 0 phrases. -->
 
-<!-- END text for Drawing2D.bas-->
+<!-- END text for DibSupport.bas-->
 
 <!-- BEGIN text for Drawing.bas -->
 
 <!-- Drawing.bas contains 0 phrases. -->
 
 <!-- END text for Drawing.bas-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
 
 <!-- BEGIN text for EffectPrep.bas -->
 
@@ -405,49 +399,6 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 
 <!-- END text for Files.bas-->
 
-<!-- BEGIN text for FillTool.bas -->
-
-<phrase>
-<original>Fill tool</original>
-<translation>Herramienta de relleno</translation>
-</phrase>
-
-<phrase>
-<original>Fill layer</original>
-<translation>Capa de relleno</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for FillTool.bas-->
-
-<!-- BEGIN text for Filters_Area.bas -->
-
-<phrase>
-<original>Applying %1 filter</original>
-<translation>La aplicación %1 filtro</translation>
-</phrase>
-
-<phrase>
-<original>Generating grids</original>
-<translation>Generación de redes de</translation>
-</phrase>
-
-<phrase>
-<original>Applying grid blur</original>
-<translation>Aplicando desenfoque rejilla</translation>
-</phrase>
-
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for Filters_Area.bas-->
-
-<!-- BEGIN text for Filters_ByteArray.bas -->
-
-<!-- Filters_ByteArray.bas contains 0 phrases. -->
-
-<!-- END text for Filters_ByteArray.bas-->
-
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
@@ -523,6 +474,33 @@ If el problema persiste, por favor repórtelo a los desarrolladores a través de
 <!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
+
+<!-- BEGIN text for Filters_Area.bas -->
+
+<phrase>
+<original>Applying %1 filter</original>
+<translation>La aplicación %1 filtro</translation>
+</phrase>
+
+<phrase>
+<original>Generating grids</original>
+<translation>Generación de redes de</translation>
+</phrase>
+
+<phrase>
+<original>Applying grid blur</original>
+<translation>Aplicando desenfoque rejilla</translation>
+</phrase>
+
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for Filters_Area.bas-->
+
+<!-- BEGIN text for Filters_ByteArray.bas -->
+
+<!-- Filters_ByteArray.bas contains 0 phrases. -->
+
+<!-- END text for Filters_ByteArray.bas-->
 
 <!-- BEGIN text for Filters_Layers.bas -->
 
@@ -1537,37 +1515,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 
 <!-- END text for Menus.bas-->
 
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>eliminar capa</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Añadir nueva capa</translation>
-</phrase>
-
-<phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Tecla de mayúsculas: la relación de aspecto de capa preservar</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>Capa de destino: %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(ninguno)</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
 <!-- BEGIN text for NavKey.bas -->
 
 <!-- NavKey.bas contains 0 phrases. -->
@@ -1585,22 +1532,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
 
 <!-- END text for FreeImageWrapper.bas-->
-
-<!-- BEGIN text for Paintbrush.bas -->
-
-<phrase>
-<original>Paint stroke</original>
-<translation>Trazo de pintura</translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation>Capa de pintura</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Paintbrush.bas-->
 
 <!-- BEGIN text for Palettes.bas -->
 
@@ -1740,52 +1671,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
-
-<!-- BEGIN text for Plugin_Management.bas -->
-
-<phrase>
-<original>GNU LGPLv2.1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>artistic license</original>
-<translation>licencia artística</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>dominio público</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage public license</original>
-<translation>Licencia pública FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>MIT license</original>
-<translation>Licencia de MIT</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>Licencia BSD</translation>
-</phrase>
-
-<phrase>
-<original>zLib license</original>
-<translation>licencia zLib</translation>
-</phrase>
-
-<phrase>
-<original>GNU GPLv3</original>
-<translation>GNU GPLv3</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
-<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -1967,6 +1852,52 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <!-- Plugin_zstd.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_zstd.bas-->
+
+<!-- BEGIN text for Plugin_Management.bas -->
+
+<phrase>
+<original>GNU LGPLv2.1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>artistic license</original>
+<translation>licencia artística</translation>
+</phrase>
+
+<phrase>
+<original>public domain</original>
+<translation>dominio público</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage public license</original>
+<translation>Licencia pública FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>MIT license</original>
+<translation>Licencia de MIT</translation>
+</phrase>
+
+<phrase>
+<original>BSD license</original>
+<translation>Licencia BSD</translation>
+</phrase>
+
+<phrase>
+<original>zLib license</original>
+<translation>licencia zLib</translation>
+</phrase>
+
+<phrase>
+<original>GNU GPLv3</original>
+<translation>GNU GPLv3</translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for Printing.bas -->
 
@@ -2643,6 +2574,97 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- Tools.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Tools.bas-->
+
+<!-- BEGIN text for ColorPicker.bas -->
+
+<!-- ColorPicker.bas contains 0 phrases. -->
+
+<!-- END text for ColorPicker.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation>Herramienta de relleno</translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation>Capa de relleno</translation>
+</phrase>
+
+<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
+
+<!-- BEGIN text for MeasureTool.bas -->
+
+<phrase>
+<original>Straighten image</original>
+<translation>enderezar imagen</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>enderezar capa</translation>
+</phrase>
+
+<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for MeasureTool.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>eliminar capa</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Añadir nueva capa</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Tecla de mayúsculas: la relación de aspecto de capa preservar</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>Capa de destino: %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(ninguno)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
+
+<!-- BEGIN text for Paintbrush.bas -->
+
+<phrase>
+<original>Paint stroke</original>
+<translation>Trazo de pintura</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>Capa de pintura</translation>
+</phrase>
+
+<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Paintbrush.bas-->
+
+<!-- BEGIN text for UIImages.bas -->
+
+<!-- UIImages.bas contains 0 phrases. -->
+
+<!-- END text for UIImages.bas-->
 
 <!-- BEGIN text for Uniscribe.bas -->
 
@@ -3537,6 +3559,12 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
+<!-- BEGIN text for pdPackager2.cls -->
+
+<!-- pdPackager2.cls contains 0 phrases. -->
+
+<!-- END text for pdPackager2.cls-->
+
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
 <phrase>
@@ -3607,12 +3635,6 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
-
-<!-- BEGIN text for pdPackager2.cls -->
-
-<!-- pdPackager2.cls contains 0 phrases. -->
-
-<!-- END text for pdPackager2.cls-->
 
 <!-- BEGIN text for pdPalette.cls -->
 
@@ -6294,11 +6316,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>Straighten layer</original>
-<translation>enderezar capa</translation>
-</phrase>
-
-<phrase>
 <original>Rotate layer 90 clockwise</original>
 <translation>Gire capa 90 hacia la derecha</translation>
 </phrase>
@@ -6569,11 +6586,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>Straighten image</original>
-<translation>enderezar imagen</translation>
-</phrase>
-
-<phrase>
 <original>Rotate image 90 clockwise</original>
 <translation>Gire la imagen 90 en sentido horario</translation>
 </phrase>
@@ -6648,7 +6660,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 192 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11568,6 +11580,77 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <!-- END text for File_BatchWizard.frm-->
 
+<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
+
+<phrase>
+<original>Palette export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette contents</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>original embedded palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>overwrite</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>append</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Esperando a que el usuario especifique las opciones de exportación</translation>
+</phrase>
+
+<!-- File_Export_Palette.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for File_Export_Palette.frm-->
+
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
@@ -12065,11 +12148,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Esperando a que el usuario especifique las opciones de exportación</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>transparencia de color</translation>
 </phrase>
@@ -12114,7 +12192,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>1-bpp (monocromo)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -13688,6 +13766,37 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 
 <!-- END text for Toolpanel_Fill.frm-->
 
+<!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
+
+<phrase>
+<original>share measurements between images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>swap points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Measure.frm-->
+
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
@@ -14551,6 +14660,52 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- BEGIN text for Tools_Options.frm (FormOptions) -->
 
 <phrase>
@@ -15343,155 +15498,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
-
-<phrase>
-<original>Palette export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>target palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette name</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette color count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette contents</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette to export</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>current palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>original embedded palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>overwrite</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>append</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
-
-<!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
-
-<phrase>
-<original>Create macro from session history</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>first action</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>last action</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>* current image state in the main window</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Invalid macro</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Your final macro will contain %1 action(s).</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
-<!-- END text for Tools_MacroSession.frm-->
-
-<!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
-
-<phrase>
-<original>share measurements between images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>swap points</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>straighten image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>straighten layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>rotate 90</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Measure.frm-->
-
-<!-- BEGIN text for MeasureTool.bas -->
-
-<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for MeasureTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

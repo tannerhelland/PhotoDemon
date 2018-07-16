@@ -197,11 +197,6 @@ Private Type COLORMATRIX
     m(0 To 4, 0 To 4) As Single
 End Type
 
-Private Type MemoDIB
-    hDIB As Long
-    ptr As Long
-End Type
-
 Private Enum ImageLockMode
     ImageLockModeRead = &H1
     ImageLockModeWrite = &H2
@@ -261,6 +256,11 @@ Private m_hWnd As Long
 
 Private m_lWidth As Long
 Private m_lHeight As Long
+
+Private Type MemoDIB
+    hDIB As Long
+    ptr As Long
+End Type
 Private mDIB() As MemoDIB
 Private cColl As Collection
 

@@ -1676,7 +1676,8 @@ Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'showPDDialog vbModal, FormToTest
     
-    Plugin_Cairo.TestOnActiveImage
+    'Plugin_Cairo.TestOnActiveImage
+    'UIImages.TestCacheOnly
     
 End Sub
 

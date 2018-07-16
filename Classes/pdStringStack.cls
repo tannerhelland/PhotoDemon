@@ -62,6 +62,23 @@ Friend Function AddString(ByRef srcString As String) As Long
         
 End Function
 
+'Check the stack for an existing string.  Returns an index >= 0 if the string exists in the stack;
+' returns a negative number if the string does *not* occur.
+Friend Function ContainsString(ByRef srcString As String, Optional ByVal ignoreCase As Boolean = False) As Long
+
+    ContainsString = -1
+    If (m_NumOfStrings = 0) Then Exit Function
+    
+    Dim i As Long
+    For i = 0 To m_NumOfStrings - 1
+        If Strings.StringsEqual(srcString, m_Strings(i), ignoreCase) Then
+            ContainsString = i
+            Exit Function
+        End If
+    Next i
+
+End Function
+
 'Pop the top string off the stack.  Returns TRUE if pop is successful, FALSE if stack is empty.  Caller is responsible for
 ' allocating their own destination string, which this function simply fills.
 '

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.40</langversion>
+<langversion>1.0.41</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -185,12 +185,6 @@
 
 <!-- END text for ColorManagement_ICM.bas-->
 
-<!-- BEGIN text for ColorPicker.bas -->
-
-<!-- ColorPicker.bas contains 0 phrases. -->
-
-<!-- END text for ColorPicker.bas-->
-
 <!-- BEGIN text for Colors.bas -->
 
 <!-- Colors.bas contains 0 phrases. -->
@@ -202,12 +196,6 @@
 <!-- Compression.bas contains 0 phrases. -->
 
 <!-- END text for Compression.bas-->
-
-<!-- BEGIN text for DibSupport.bas -->
-
-<!-- DibSupport.bas contains 0 phrases. -->
-
-<!-- END text for DibSupport.bas-->
 
 <!-- BEGIN text for DialogManager.bas -->
 
@@ -245,17 +233,23 @@
 
 <!-- END text for DialogManager.bas-->
 
-<!-- BEGIN text for Drawing2D.bas -->
+<!-- BEGIN text for DibSupport.bas -->
 
-<!-- Drawing2D.bas contains 0 phrases. -->
+<!-- DibSupport.bas contains 0 phrases. -->
 
-<!-- END text for Drawing2D.bas-->
+<!-- END text for DibSupport.bas-->
 
 <!-- BEGIN text for Drawing.bas -->
 
 <!-- Drawing.bas contains 0 phrases. -->
 
 <!-- END text for Drawing.bas-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
 
 <!-- BEGIN text for EffectPrep.bas -->
 
@@ -404,49 +398,6 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 
 <!-- END text for Files.bas-->
 
-<!-- BEGIN text for FillTool.bas -->
-
-<phrase>
-<original>Fill tool</original>
-<translation>채우기 도구</translation>
-</phrase>
-
-<phrase>
-<original>Fill layer</original>
-<translation>채우기 레이어</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for FillTool.bas-->
-
-<!-- BEGIN text for Filters_Area.bas -->
-
-<phrase>
-<original>Applying %1 filter</original>
-<translation> %1 필터 적용 중</translation>
-</phrase>
-
-<phrase>
-<original>Generating grids</original>
-<translation>그리드 생성하기</translation>
-</phrase>
-
-<phrase>
-<original>Applying grid blur</original>
-<translation>그리드 블러 적용하기</translation>
-</phrase>
-
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for Filters_Area.bas-->
-
-<!-- BEGIN text for Filters_ByteArray.bas -->
-
-<!-- Filters_ByteArray.bas contains 0 phrases. -->
-
-<!-- END text for Filters_ByteArray.bas-->
-
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
@@ -522,6 +473,33 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 <!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
+
+<!-- BEGIN text for Filters_Area.bas -->
+
+<phrase>
+<original>Applying %1 filter</original>
+<translation> %1 필터 적용 중</translation>
+</phrase>
+
+<phrase>
+<original>Generating grids</original>
+<translation>그리드 생성하기</translation>
+</phrase>
+
+<phrase>
+<original>Applying grid blur</original>
+<translation>그리드 블러 적용하기</translation>
+</phrase>
+
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for Filters_Area.bas-->
+
+<!-- BEGIN text for Filters_ByteArray.bas -->
+
+<!-- Filters_ByteArray.bas contains 0 phrases. -->
+
+<!-- END text for Filters_ByteArray.bas-->
 
 <!-- BEGIN text for Filters_Layers.bas -->
 
@@ -1537,37 +1515,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for Menus.bas-->
 
-<!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>레이어 삭제</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>새 레이어 추가</translation>
-</phrase>
-
-<phrase>
-<original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift 키: 레이어 종횡비 유지</translation>
-</phrase>
-
-<phrase>
-<original>Target layer: %1</original>
-<translation>대상 레이어:  %1</translation>
-</phrase>
-
-<phrase>
-<original>(none)</original>
-<translation>(없음)</translation>
-</phrase>
-
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for MoveTool.bas-->
-
 <!-- BEGIN text for NavKey.bas -->
 
 <!-- NavKey.bas contains 0 phrases. -->
@@ -1585,22 +1532,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
 
 <!-- END text for FreeImageWrapper.bas-->
-
-<!-- BEGIN text for Paintbrush.bas -->
-
-<phrase>
-<original>Paint stroke</original>
-<translation>획 그리기</translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation>페인트 레이어</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Paintbrush.bas-->
 
 <!-- BEGIN text for Palettes.bas -->
 
@@ -1740,52 +1671,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- PDMath.bas contains 0 phrases. -->
 
 <!-- END text for PDMath.bas-->
-
-<!-- BEGIN text for Plugin_Management.bas -->
-
-<phrase>
-<original>GNU LGPLv2.1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>artistic license</original>
-<translation>예술적 면허</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>공개 도메인</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage public license</original>
-<translation>FreeImage 공공 라이센스</translation>
-</phrase>
-
-<phrase>
-<original>MIT license</original>
-<translation>MIT 면허</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD 라이센스</translation>
-</phrase>
-
-<phrase>
-<original>zLib license</original>
-<translation>zLib 라이센스</translation>
-</phrase>
-
-<phrase>
-<original>GNU GPLv3</original>
-<translation>GNU GPLv3</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
-<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for Plugin_Cairo.bas -->
 
@@ -1965,6 +1850,52 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- Plugin_zstd.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_zstd.bas-->
+
+<!-- BEGIN text for Plugin_Management.bas -->
+
+<phrase>
+<original>GNU LGPLv2.1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>artistic license</original>
+<translation>예술적 면허</translation>
+</phrase>
+
+<phrase>
+<original>public domain</original>
+<translation>공개 도메인</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage public license</original>
+<translation>FreeImage 공공 라이센스</translation>
+</phrase>
+
+<phrase>
+<original>MIT license</original>
+<translation>MIT 면허</translation>
+</phrase>
+
+<phrase>
+<original>BSD license</original>
+<translation>BSD 라이센스</translation>
+</phrase>
+
+<phrase>
+<original>zLib license</original>
+<translation>zLib 라이센스</translation>
+</phrase>
+
+<phrase>
+<original>GNU GPLv3</original>
+<translation>GNU GPLv3</translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for Printing.bas -->
 
@@ -2641,6 +2572,97 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- Tools.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for Tools.bas-->
+
+<!-- BEGIN text for ColorPicker.bas -->
+
+<!-- ColorPicker.bas contains 0 phrases. -->
+
+<!-- END text for ColorPicker.bas-->
+
+<!-- BEGIN text for FillTool.bas -->
+
+<phrase>
+<original>Fill tool</original>
+<translation>채우기 도구</translation>
+</phrase>
+
+<phrase>
+<original>Fill layer</original>
+<translation>채우기 레이어</translation>
+</phrase>
+
+<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for FillTool.bas-->
+
+<!-- BEGIN text for MeasureTool.bas -->
+
+<phrase>
+<original>Straighten image</original>
+<translation>이미지 직선화</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>레이어 직선화</translation>
+</phrase>
+
+<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for MeasureTool.bas-->
+
+<!-- BEGIN text for MoveTool.bas -->
+
+<phrase>
+<original>Delete layer</original>
+<translation>레이어 삭제</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>새 레이어 추가</translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation>Shift 키: 레이어 종횡비 유지</translation>
+</phrase>
+
+<phrase>
+<original>Target layer: %1</original>
+<translation>대상 레이어:  %1</translation>
+</phrase>
+
+<phrase>
+<original>(none)</original>
+<translation>(없음)</translation>
+</phrase>
+
+<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for MoveTool.bas-->
+
+<!-- BEGIN text for Paintbrush.bas -->
+
+<phrase>
+<original>Paint stroke</original>
+<translation>획 그리기</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>페인트 레이어</translation>
+</phrase>
+
+<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Paintbrush.bas-->
+
+<!-- BEGIN text for UIImages.bas -->
+
+<!-- UIImages.bas contains 0 phrases. -->
+
+<!-- END text for UIImages.bas-->
 
 <!-- BEGIN text for Uniscribe.bas -->
 
@@ -3535,6 +3557,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
+<!-- BEGIN text for pdPackager2.cls -->
+
+<!-- pdPackager2.cls contains 0 phrases. -->
+
+<!-- END text for pdPackager2.cls-->
+
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
 <phrase>
@@ -3605,12 +3633,6 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
-
-<!-- BEGIN text for pdPackager2.cls -->
-
-<!-- pdPackager2.cls contains 0 phrases. -->
-
-<!-- END text for pdPackager2.cls-->
 
 <!-- BEGIN text for pdPalette.cls -->
 
@@ -6290,11 +6312,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>Straighten layer</original>
-<translation>레이어 직선화</translation>
-</phrase>
-
-<phrase>
 <original>Rotate layer 90 clockwise</original>
 <translation>레이어 90을 시계 방향으로 회전합니다.</translation>
 </phrase>
@@ -6565,11 +6582,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>Straighten image</original>
-<translation>이미지 직선화</translation>
-</phrase>
-
-<phrase>
 <original>Rotate image 90 clockwise</original>
 <translation>이미지를 시계 방향으로 90도 회전하십시오.</translation>
 </phrase>
@@ -6644,7 +6656,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>알파 채널 제거</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 190 were duplicates of existing phrases, so only 369 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 192 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11564,6 +11576,77 @@ Would you like to save your batch list before exiting?</original>
 
 <!-- END text for File_BatchWizard.frm-->
 
+<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
+
+<phrase>
+<original>Palette export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette color count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette contents</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette to export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>current palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>original embedded palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>overwrite</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>append</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>사용자가 내보내기 옵션을 지정하기를 기다리는 중입니다.</translation>
+</phrase>
+
+<!-- File_Export_Palette.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for File_Export_Palette.frm-->
+
 <!-- BEGIN text for File_Import_FromInternet.frm (FormInternetImport) -->
 
 <phrase>
@@ -12061,11 +12144,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify export options</original>
-<translation>사용자가 내보내기 옵션을 지정하기를 기다리는 중입니다.</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>색상 투명성</translation>
 </phrase>
@@ -12110,7 +12188,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>1-bpp (단색)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -13684,6 +13762,37 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 
 <!-- END text for Toolpanel_Fill.frm-->
 
+<!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
+
+<phrase>
+<original>share measurements between images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>swap points</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>straighten layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rotate 90</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Measure.frm-->
+
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
@@ -14547,6 +14656,52 @@ To 계속 하시겠습니까? photodemon.org에서 PhotoDemon의 새 복사본�
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
+<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
+
+<phrase>
+<original>Create macro from session history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>first action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>* current image state in the main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your final macro will contain %1 action(s).</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for Tools_MacroSession.frm-->
+
 <!-- BEGIN text for Tools_Options.frm (FormOptions) -->
 
 <phrase>
@@ -15339,155 +15494,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
-
-<phrase>
-<original>Palette export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>target palette file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette name</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette color count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette contents</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette to export</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>current palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>original embedded palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>overwrite</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>append</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
-
-<!-- END text for File_Export_Palette.frm-->
-
-<!-- BEGIN text for Tools_MacroSession.frm (FormMacroSession) -->
-
-<phrase>
-<original>Create macro from session history</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>first action</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>last action</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>* current image state in the main window</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Invalid macro</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Your final macro will contain %1 action(s).</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
-
-<!-- END text for Tools_MacroSession.frm-->
-
-<!-- BEGIN text for Toolpanel_Measure.frm (toolpanel_Measure) -->
-
-<phrase>
-<original>share measurements between images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>swap points</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>straighten image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>straighten layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>rotate 90</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Measure.frm-->
-
-<!-- BEGIN text for MeasureTool.bas -->
-
-<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for MeasureTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 

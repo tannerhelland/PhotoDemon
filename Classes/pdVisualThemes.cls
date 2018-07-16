@@ -402,6 +402,10 @@ Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
         If (LenB(themeName) <> 0) Then UserPrefs.WritePreference "Themes", "CurrentTheme", themeName
         If (LenB(accentName) <> 0) Then UserPrefs.WritePreference "Themes", "CurrentAccent", accentName
     End If
+    
+    'Whenever we apply a new theme, we need to forcibly reset any cached UI images, as they will likely
+    ' need to be redrawn.
+    UIImages.ResetCache
         
 End Function
 
