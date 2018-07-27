@@ -177,7 +177,7 @@ Public Function GetSelectionPath() As String
     GetSelectionPath = m_SelectionPath
 End Function
 
-Public Sub SetSelectionPath(ByVal newSelectionPath As String)
+Public Sub SetSelectionPath(ByRef newSelectionPath As String)
     m_SelectionPath = Files.PathAddBackslash(Files.FileGetPath(newSelectionPath))
     SetPref_String "Paths", "Selections", m_SelectionPath
 End Sub
@@ -249,7 +249,7 @@ Public Function GetMacroPath() As String
 End Function
 
 'Set the current macro directory
-Public Sub SetMacroPath(ByVal newMacroPath As String)
+Public Sub SetMacroPath(ByRef newMacroPath As String)
     m_MacroPath = Files.PathAddBackslash(Files.FileGetPath(newMacroPath))
     SetPref_String "Paths", "Macro", m_MacroPath
 End Sub

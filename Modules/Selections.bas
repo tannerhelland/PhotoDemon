@@ -64,7 +64,7 @@ Public Function DisplaySelectionDialog(ByVal typeOfDialog As PD_SelectionDialog,
 End Function
 
 'Create a new selection using the settings stored in a pdParamXML-compatible string
-Public Sub CreateNewSelection(ByVal paramString As String)
+Public Sub CreateNewSelection(ByRef paramString As String)
     
     'Use the passed parameter string to initialize the selection
     pdImages(g_CurrentImage).MainSelection.InitFromXML paramString
@@ -376,7 +376,7 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
             'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
             If pdImages(srcImageID).MainSelection.IsTransformable Then
                 
-                Dim tmpRectF As RectF, tmpRectFRB As RECTF_RB
+                Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
                 
                 'Different types of selections will display size and position differently
                 Select Case pdImages(srcImageID).MainSelection.GetSelectionShape()

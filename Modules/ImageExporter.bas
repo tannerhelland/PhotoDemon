@@ -569,7 +569,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
 End Function
 
-Private Sub ExportDebugMsg(ByVal debugMsg As String)
+Private Sub ExportDebugMsg(ByRef debugMsg As String)
     PDDebug.LogAction debugMsg
 End Sub
 
@@ -2122,7 +2122,7 @@ ExportTIFFError:
     
 End Function
 
-Private Function GetFreeImageTIFFConstant(ByVal compressionName As String) As Long
+Private Function GetFreeImageTIFFConstant(ByRef compressionName As String) As Long
     If ParamsEqual(compressionName, "LZW") Then
         GetFreeImageTIFFConstant = TIFF_LZW
     ElseIf ParamsEqual(compressionName, "ZIP") Then
@@ -2218,6 +2218,6 @@ Private Sub RaiseFreeImageWarning()
 End Sub
 
 'Basic case-insensitive string comparison function
-Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
+Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean
     ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function

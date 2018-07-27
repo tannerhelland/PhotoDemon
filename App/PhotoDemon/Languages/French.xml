@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.373</langversion>
+<langversion>6.7.374</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -3513,17 +3513,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Intégration de métadonnées</translation>
 </phrase>
 
-<phrase>
-<original>Metadata embedded successfully.</original>
-<translation>Métadonnées intégrées avec succès.</translation>
-</phrase>
-
-<phrase>
-<original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Les métadonnées peuvent ne pas avoir été intégré (image enregistrée mais toujours écrit avec succès).</translation>
-</phrase>
-
-<!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -15503,10 +15493,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4750 phrases. -->
-<!-- 2158 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4748 phrases. -->
+<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12384 total words. -->
 
 </pdData>

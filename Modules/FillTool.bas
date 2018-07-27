@@ -491,7 +491,7 @@ Public Sub SetFillBlendMode(ByVal newBlendMode As PD_BlendMode)
     m_FillBlendMode = newBlendMode
 End Sub
 
-Public Sub SetFillBrush(ByVal newBrush As String)
+Public Sub SetFillBrush(ByRef newBrush As String)
     m_FillBrush = newBrush
 End Sub
 

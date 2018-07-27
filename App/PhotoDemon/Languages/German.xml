@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.641</langversion>
+<langversion>7.2.642</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3516,17 +3516,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Metadaten werden eingebettet</translation>
 </phrase>
 
-<phrase>
-<original>Metadata embedded successfully.</original>
-<translation>Metadaten erfolgreich eingebettet.</translation>
-</phrase>
-
-<phrase>
-<original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Metadaten können möglicherweise nicht eingebettet worden sein (gespeichertes Bild aber trotzdem erfolgreich geschrieben).</translation>
-</phrase>
-
-<!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -15505,10 +15495,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4750 phrases. -->
-<!-- 2158 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4748 phrases. -->
+<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12384 total words. -->
 
 </pdData>

@@ -154,18 +154,14 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             
             'Paint the new DIB into place, and update all target references to reflect the correct index
             With m_ImageCache(targetIndex)
-                
                 GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
                 .NumImages = .NumImages + 1
                 targetID = .NumImages
                 .SpriteNames.AddString uniqueImageName
-                
-                'Debug.Print .numImages, targetRow, targetColumn, newDibRequired
-                    
             End With
             
         Else
-            Debug.Print "duplicate entry found:", targetID, uniqueImageName
+            'Duplicate entry found; that's okay - reuse it as-is!
         End If
             
     'If we didn't find a matching spritesheet, we must create a new one

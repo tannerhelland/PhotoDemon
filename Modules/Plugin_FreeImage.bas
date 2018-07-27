@@ -994,7 +994,7 @@ End Sub
 'See if an image file is actually comprised of multiple files (e.g. animated GIFs, multipage TIFs).
 ' Input: file name to be checked
 ' Returns: 0 if only one image is found.  Page (or frame) count if multiple images are found.
-Public Function IsMultiImage(ByVal srcFilename As String) As Long
+Public Function IsMultiImage(ByRef srcFilename As String) As Long
 
     On Error GoTo isMultiImage_Error
     
@@ -1854,7 +1854,7 @@ End Function
 ' to ensure proper load behavior (e.g. loading can't continue after a failed conversion, because we've forcibly killed the image handle),
 ' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
 ' absolutely necessary).
-Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByVal inputSettings As String) As Long
+Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByRef inputSettings As String) As Long
     
     'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
     Dim fi_BPP As Long

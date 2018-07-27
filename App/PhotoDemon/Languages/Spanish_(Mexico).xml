@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.376</langversion>
+<langversion>6.7.377</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -3512,17 +3512,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation>Incorporación de metadatos</translation>
 </phrase>
 
-<phrase>
-<original>Metadata embedded successfully.</original>
-<translation>Metadatos incrustados con éxito.</translation>
-</phrase>
-
-<phrase>
-<original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Los metadatos no puede haber sido incorporado (pero imagen guardada todavía escrito correctamente).</translation>
-</phrase>
-
-<!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -15501,10 +15491,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4750 phrases. -->
-<!-- 2158 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4748 phrases. -->
+<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12384 total words. -->
 
 </pdData>

@@ -1368,6 +1368,6 @@ Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
 
 End Function
 
-Private Sub InternalMenuWarning(ByVal funcName As String, ByVal errMsg As String)
+Private Sub InternalMenuWarning(ByRef funcName As String, ByRef errMsg As String)
     PDDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg
 End Sub

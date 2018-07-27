@@ -942,7 +942,7 @@ Private Function IsArrayDim(ByVal lpArray As Long) As Boolean
     IsArrayDim = Not (lAddress = 0)
 End Function
 
-Private Function KeyExists(ByVal sKey As String) As Boolean
+Private Function KeyExists(ByRef sKey As String) As Boolean
     On Error GoTo HandleError:
     Dim tVal As String 'Variant
     

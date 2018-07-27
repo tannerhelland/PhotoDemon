@@ -281,7 +281,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
 End Sub
 
 'XML-based wrapper for CropToSelection, below
-Public Sub CropToSelection_XML(ByVal processParameters As String)
+Public Sub CropToSelection_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -955,7 +955,7 @@ Public Function GetInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
 End Function
 
 'XML-param wrapper for MenuFitCanvasToLayer, below
-Public Sub FitCanvasToLayer_XML(ByVal processParameters As String)
+Public Sub FitCanvasToLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters

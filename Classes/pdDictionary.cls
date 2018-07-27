@@ -313,15 +313,13 @@ End Function
 'This helper function is used to retrieve dictionary indices, using the requested key.  If a key cannot be found,
 ' this function will return -1.
 Private Function GetIndexOfEntry(ByRef entryKey As String) As Long
-
-    'Keys are treated as case-insensitive
-    entryKey = LCase(entryKey)
-
+    
     'Search the dictionary array, looking for a match
     Dim i As Long
     For i = 0 To m_NumOfEntries - 1
         
-        If Strings.StringsEqual(entryKey, m_DictEntries(i).dKey, False) Then
+        'Keys are treated as case-insensitive
+        If Strings.StringsEqual(entryKey, m_DictEntries(i).dKey, True) Then
             
             'If we find a match, make sure this entry isn't scheduled for deletion
             If (Not m_DictEntries(i).wasDeleted) Then

@@ -56,11 +56,11 @@ Private m_lastTranslation As String
 ' interact with the m_IE object *unless* this is TRUE.
 Private m_IEAvailable As Boolean
 
-Public Sub SetSrcLanguage(ByVal srcLangID As String)
+Public Sub SetSrcLanguage(ByRef srcLangID As String)
     m_srcLanguage = srcLangID
 End Sub
 
-Public Sub SetDstLanguage(ByVal dstLangID As String)
+Public Sub SetDstLanguage(ByRef dstLangID As String)
     m_dstLanguage = dstLangID
 End Sub
 
@@ -94,7 +94,7 @@ Private Sub Class_Initialize()
 IENotAvailable:
     
     m_IEAvailable = False
-    pdDebug.LogAction "WARNING!  clsGoogleTranslate could not initialize an IE instance.  Last error was #" & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  clsGoogleTranslate could not initialize an IE instance.  Last error was #" & Err.Number & ", " & Err.Description
     
 End Sub
 
@@ -234,7 +234,7 @@ End Function
 ' (mostly) be properly preserved by this function.
 Private Function StripHTMLTags(ByVal srcString As String) As String
     
-    If (Len(srcString) <> 0) Then
+    If (LenB(srcString) <> 0) Then
     
         Dim curPosition As Long
         curPosition = InStr(1, srcString, "<")

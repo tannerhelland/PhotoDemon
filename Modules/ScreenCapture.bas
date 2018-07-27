@@ -61,7 +61,7 @@ Private Const SW_RESTORE As Long = 9&
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 
 'Simple routine for capturing the screen and loading it as an image
-Public Sub CaptureScreen(ByVal screenCaptureParams As String)
+Public Sub CaptureScreen(ByRef screenCaptureParams As String)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML

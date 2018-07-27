@@ -158,7 +158,7 @@ Private m_DelayedRenderingActive As Boolean
 ' Using native clipboard functions guarantees that all programs registering the same format name get the same ID in return.
 '
 'RETURNS: clipboard format ID if successful; 0 otherwise.
-Friend Function AddClipboardFormat(ByVal sName As String) As Long
+Friend Function AddClipboardFormat(ByRef sName As String) As Long
     
     Dim wFormat As Long
     wFormat = RegisterClipboardFormatW(StrPtr(sName))
@@ -269,19 +269,17 @@ End Function
 
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Friend Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Boolean
+Friend Function DoesClipboardHaveFormatName(ByRef srcFormatName As String) As Boolean
     
     DoesClipboardHaveFormatName = False
     
-    If m_NumOfClipboardFormats > 0 Then
+    If (m_NumOfClipboardFormats > 0) Then
     
         'Search for the given name
         Dim i As Long
         For i = 0 To m_NumOfClipboardFormats - 1
-            If Strings.StringsEqual(m_ClipboardNames(i), srcFormatName, True) Then
-                DoesClipboardHaveFormatName = True
-                Exit For
-            End If
+            DoesClipboardHaveFormatName = Strings.StringsEqual(m_ClipboardNames(i), srcFormatName, True)
+            If DoesClipboardHaveFormatName Then Exit For
         Next i
         
     End If
@@ -376,7 +374,7 @@ End Function
 
 'Given a named clipboard format, return the matching ID.
 ' IMPORTANT NOTE: the clipboard must be open for this to work.
-Friend Function GetFormatIDFromName(ByVal sName As String) As Long
+Friend Function GetFormatIDFromName(ByRef sName As String, Optional ByVal ignoreCase As Boolean = True) As Long
     
     GetFormatIDFromName = 0
     
@@ -386,7 +384,7 @@ Friend Function GetFormatIDFromName(ByVal sName As String) As Long
         'Search for a matching format ID
         Dim i As Long
         For i = 0 To m_NumOfClipboardFormats - 1
-            If (sName = m_ClipboardNames(i)) Then
+            If Strings.StringsEqual(sName, m_ClipboardNames(i), ignoreCase) Then
                 GetFormatIDFromName = m_ClipboardIDs(i)
                 Exit For
             End If

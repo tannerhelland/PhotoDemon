@@ -687,7 +687,7 @@ Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDI
     
 End Function
 
-Public Function IsFileSVGCandidate(ByVal imagePath As String) As Boolean
+Public Function IsFileSVGCandidate(ByRef imagePath As String) As Boolean
     IsFileSVGCandidate = Strings.StringsEqual(Right$(imagePath, 3), "svg", True)
     
     'Compressed SVG files are not currently supported.  (For them to work, we'd need to decompress to a temp file, which causes

@@ -406,7 +406,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch.  Incoming parameters must be assembled as XML (via pdParamXML, typically)
-Public Function CreateNewImage(Optional ByVal newImageParameters As String)
+Public Function CreateNewImage(Optional ByRef newImageParameters As String)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML

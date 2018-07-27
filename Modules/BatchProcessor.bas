@@ -306,7 +306,7 @@ Public Sub PlayMacro()
 End Sub
 
 'Given a valid macro file, play back its recorded actions.
-Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
+Public Function PlayMacroFromFile(ByRef srcMacroPath As String) As Boolean
     
     Dim i As Long
     
@@ -315,7 +315,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     Set xmlEngine = New pdXML
     
     'Load the XML file into memory
-    xmlEngine.LoadXMLFile MacroPath
+    xmlEngine.LoadXMLFile srcMacroPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon macro file
     If xmlEngine.IsPDDataType("Macro") And xmlEngine.ValidateLoadedXMLData("pdMacroVersion") Then
@@ -413,7 +413,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     Message "Macro complete!"
     
     'After playing, the macro should be added to the Recent Macros list
-    g_RecentMacros.MRU_AddNewFile MacroPath
+    g_RecentMacros.MRU_AddNewFile srcMacroPath
     
 End Function
 

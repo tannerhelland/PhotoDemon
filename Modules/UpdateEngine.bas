@@ -411,7 +411,7 @@ ProgramPatchingFailure:
 End Function
 
 'Rather than apply updates mid-session, any patches are applied by a separate application, at shutdown time
-Public Sub NotifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
+Public Sub NotifyUpdatePackageAvailable(ByRef tmpUpdateFile As String)
     m_UpdateFilePath = tmpUpdateFile
 End Sub
 

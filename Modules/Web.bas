@@ -19,7 +19,7 @@ Private Declare Function ShellExecuteW Lib "shell32" (ByVal hWnd As Long, ByVal 
 Private Const SW_SHOWNORMAL As Long = 1
 
 'Open a string as a hyperlink in the user's default browser
-Public Sub OpenURL(ByVal targetURL As String)
+Public Sub OpenURL(ByRef targetURL As String)
     Dim targetAction As String: targetAction = "Open"
     ShellExecuteW FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
 End Sub

@@ -347,7 +347,7 @@ Friend Function FileConvertHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstM
 End Function
 
 'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will provide additional failure information.
-Friend Function FileCopyW(ByVal srcFilename As String, ByVal dstFilename As String) As Boolean
+Friend Function FileCopyW(ByRef srcFilename As String, ByRef dstFilename As String) As Boolean
 
     'Failsafe "source file exists" check
     If Me.FileExists(srcFilename) Then
@@ -518,7 +518,7 @@ End Function
 ' to calling this function, it will still return TRUE.)
 '
 'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
-Friend Function FileDelete(ByVal srcFilename As String) As Boolean
+Friend Function FileDelete(ByRef srcFilename As String) As Boolean
     
     'If the file doesn't exist, return TRUE in advance.
     If Me.FileExists(srcFilename) Then
@@ -2064,7 +2064,7 @@ Private Function Win32ToVBTime(ByRef fileTimeUTC As Currency) As Date
         Win32ToVBTime = CDate((fileTimeLocal / MILLISECONDS_PER_DAY) - DAY_ZERO_BIAS)
         
     Else
-        Debug.Print "WARNING!  Files.Win32ToVbTime failed to convert the UTC value it was passed."
+        FSOError "Win32ToVBTime", "Failed to convert the UTC value it was passed."
     End If
     
 End Function
@@ -2073,7 +2073,7 @@ End Function
 
 'Internal error messages should be passed through this function.  Note that individual functions may choose to handle the error
 ' and continue operation; that's fine.  (This function is primarily used for reporting, to reduce the number of internal #ifdefs.)
-Private Sub FSOError(ByVal functionName As String, ByVal errText As String, Optional ByVal errNumber As Long = 0)
+Private Sub FSOError(ByRef functionName As String, ByRef errText As String, Optional ByVal errNumber As Long = 0)
     
     If (LenB(functionName) <> 0) Then
         If (errNumber <> 0) Then
@@ -2092,6 +2092,6 @@ Private Sub FSOError(ByVal functionName As String, ByVal errText As String, Opti
 End Sub
 
 'Non-error messages containing potentially useful nightly build info can be routed here.  Feel free to disregard at your leisure.
-Private Sub FSOFeedback(ByVal functionName As String, ByVal msgFeedback As String)
+Private Sub FSOFeedback(ByRef functionName As String, ByRef msgFeedback As String)
     PDDebug.LogAction "pdFSO." & functionName & " reports: " & msgFeedback
 End Sub

@@ -17,7 +17,7 @@ Attribute VB_Name = "Layers"
 Option Explicit
 
 'XML-based wrapper for AddBlankLayer(), below
-Public Sub AddBlankLayer_XML(ByVal processParameters As String)
+Public Sub AddBlankLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -61,7 +61,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
 End Sub
 
 'XML-based wrapper for AddNewLayer(), below
-Public Sub AddNewLayer_XML(ByVal processParameters As String)
+Public Sub AddNewLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -422,7 +422,7 @@ Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
 End Sub
 
 'XML-based wrapper for DuplicateLayerByIndex(), below
-Public Sub DuplicateLayerByIndex_XML(ByVal processParameters As String)
+Public Sub DuplicateLayerByIndex_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -590,7 +590,7 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
 End Function
 
 'XML-based wrapper to DeleteLayer(), below
-Public Sub DeleteLayer_XML(ByVal processParameters As String)
+Public Sub DeleteLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
@@ -940,7 +940,7 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
 End Sub
 
 'Resize a layer non-destructively, e.g. by only changing its position and on-canvas x/y modifiers
-Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamXML
@@ -973,7 +973,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
 End Sub
 
 'Rotate a layer non-destructively, e.g. by only changing its header angle value
-Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamXML
@@ -994,7 +994,7 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
 End Sub
 
 'Move a layer to a new x/y position on the canvas
-Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByRef resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamXML

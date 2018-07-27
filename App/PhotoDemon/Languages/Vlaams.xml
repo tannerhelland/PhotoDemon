@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.373</langversion>
+<langversion>6.7.374</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3514,17 +3514,7 @@ Geef een numerieke waarde.</translation>
 <translation>Insluiting metagegevens</translation>
 </phrase>
 
-<phrase>
-<original>Metadata embedded successfully.</original>
-<translation>Insluiting metagegevens succesvol.</translation>
-</phrase>
-
-<phrase>
-<original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Metagegevens mogelijk niet ingesloten (maar bewaarde afbeelding succesvol weggeschreven)</translation>
-</phrase>
-
-<!-- pdMetadata.cls contains 123 phrases. 63 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -15504,10 +15494,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4750 phrases. -->
-<!-- 2158 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4748 phrases. -->
+<!-- 2158 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 12384 total words. -->
 
 </pdData>

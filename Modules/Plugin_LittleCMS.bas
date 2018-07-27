@@ -637,7 +637,7 @@ End Function
 
 'Little CMS has its own "load from file" function, but it isn't Unicode-aware, so we just slam the file into a byte array
 ' and use the "load from memory" function instead.
-Public Function LCMS_LoadProfileFromFile(ByVal profilePath As String) As Long
+Public Function LCMS_LoadProfileFromFile(ByRef profilePath As String) As Long
     
     LCMS_LoadProfileFromFile = 0
 
