@@ -232,11 +232,11 @@ End Function
 'TODO: look at adding a possible "rollback" option, where we cache the deleted file contents at module-level, then allow the user
 ' to restore it via a matching RestoreLastDelete() kinda thing.  (For some things, like failed image saves, this is preferable
 ' to deleting the target file, then doing nothing if the export mysteriously fails.)
-Public Sub FileDeleteIfExists(ByRef srcFile As String)
+Public Function FileDeleteIfExists(ByRef srcFile As String) As Boolean
     If InitializeFSO Then
-        If m_FSO.FileExists(srcFile) Then m_FSO.FileDelete srcFile
+        If m_FSO.FileExists(srcFile) Then FileDeleteIfExists = m_FSO.FileDelete(srcFile) Else FileDeleteIfExists = True
     End If
-End Sub
+End Function
 
 Public Function FileExists(ByRef srcFile As String) As Boolean
     If InitializeFSO Then FileExists = m_FSO.FileExists(srcFile)

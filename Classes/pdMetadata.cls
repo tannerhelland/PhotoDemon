@@ -1342,7 +1342,7 @@ End Sub
 ' embed as much or as little metadata as the image's settings specify.
 ' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
 '  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
-Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
+Friend Function WriteAllMetadata(ByRef outputPath As String, ByRef srcImage As pdImage) As Boolean
     
     'XML writing is handled by PD's master XML engine
     Dim xmlEngine As pdXML
@@ -1400,7 +1400,7 @@ Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         If (LenB(newXMLString) <> 0) Then
             
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
-            tmpXMLPath = Files.FileGetPath(outputPath)
+            tmpXMLPath = UserPrefs.GetTempPath()
                     
             'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
             Dim cHash As pdCrypto: Set cHash = New pdCrypto
@@ -1418,9 +1418,14 @@ Friend Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         WriteAllMetadata = ExifTool.WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
         
         If WriteAllMetadata Then
-            Message "Metadata embedded successfully."
+            PDDebug.LogAction "ExifTool initiated: " & tmpXMLPath
         Else
-            Message "Metadata may not have been embedded (but saved image still written successfully)."
+            
+            PDDebug.LogAction "ExifTool embed request failed; temp file is " & tmpXMLPath
+            
+            'If the temp file still exists, kill it before exiting.
+            Files.FileDeleteIfExists tmpXMLPath
+            
         End If
         
     'If metadata export is *not* allowed, we don't have to do a thing!

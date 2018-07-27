@@ -288,8 +288,8 @@ Private m_ICCExtractionSrcImage As String
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
 ' but if we do this, we lose many built-in utilities like automatically removing duplicate tags, and reassigning invalid
 ' tags to preferred categories.)  Because writing out metadata is asynchronous, we have to wait for ExifTool to finish
-' before deleting the temp file, so we keep a copy of the file's path here.  The stopVerificationMode (which is
-' automatically triggered by the newMetadataReceived function as necessary) will remove the file at this location.
+' before deleting the temp file, so we keep a copy of the file's path here.  The StopVerificationMode (which is
+' automatically triggered by the NewMetadataReceived function as necessary) will remove the file at this location.
 Private m_tmpMetadataFilePath As String
 
 'If multiple images are loaded simultaneously, we have to do some tricky handling to parse out their individual bits.  As such, we store
@@ -381,14 +381,18 @@ Private Sub StopVerificationMode()
     
     m_VerificationModeActive = False
     
-    'All file interactions are handled through pdFSO, PhotoDemon's Unicode-compatible file system object
+    'Standard metadata embed requests are easy - we just need to delete our temporary file
     If (Not m_technicalReportModeActive) And (Not m_ICCExtractionModeActive) Then
         
         m_VerificationString = vbNullString
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        Files.FileDeleteIfExists m_tmpMetadataFilePath
-    
+        If Files.FileDeleteIfExists(m_tmpMetadataFilePath) Then
+            PDDebug.LogAction "Metadata embedding finished; temp file deleted: " & m_tmpMetadataFilePath
+        Else
+            PDDebug.LogAction "WARNING: metadata embedding finished, but temp file remains: " & m_tmpMetadataFilePath
+        End If
+        
     Else
         
         If m_technicalReportModeActive Then
@@ -864,7 +868,7 @@ End Function
 
 'Given a path to a valid metadata file, and a second path to a valid image file, use ExifTool to write the contents of
 ' the metadata file into the image file.
-Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal forciblyAnonymize As Boolean = False, Optional ByVal originalMetadataParams As String = vbNullString) As Boolean
+Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal forciblyAnonymize As Boolean = False, Optional ByRef originalMetadataParams As String = vbNullString) As Boolean
     
     'If ExifTool is not running, start it.  If it cannot be started, exit.
     If (Not m_IsExifToolRunning) Then
