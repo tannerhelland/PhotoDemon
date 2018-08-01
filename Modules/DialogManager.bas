@@ -552,9 +552,13 @@ Public Function PromptUITheme() As VbMsgBoxResult
             Drawing.CacheUIPensAndBrushes
             UserControls.NotifyTooltipThemeChange
             IconsAndCursors.LoadMenuIcons False
-            Interface.RedrawEntireUI True
         End If
     End If
+    
+    'Finally, redraw the entire UI.  (Note that this happens *regardless* of dialog cancelation, as the dialog has
+    ' to play some games with the theme engine to properly live-update itself - and we don't want any of those
+    ' intermediate changes "filtering through" to the main UI.)
+    Interface.RedrawEntireUI True
     
 End Function
 

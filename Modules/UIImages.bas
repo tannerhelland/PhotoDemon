@@ -229,11 +229,15 @@ Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
     GetNumRowsColumns targetIndex, imgNumber, targetRow, targetColumn
     
     'Paint the result!
-    With m_ImageCache(targetIndex)
-        .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
-        .ImgSpriteSheet.FreeFromDC
-    End With
-
+    If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
+        With m_ImageCache(targetIndex)
+            .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
+            .ImgSpriteSheet.FreeFromDC
+        End With
+    Else
+        PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & imgNumber & " in spritesheet " & targetIndex
+    End If
+    
 End Function
 
 'Return the row and column location [0-based] of entry (n) in a target cache entry.
