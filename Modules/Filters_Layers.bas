@@ -955,20 +955,22 @@ End Function
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneAmount As Double, ByVal highlightAmount As Double, ByVal shadowWidth As Long, ByVal shadowRadius As Double, ByVal highlightWidth As Long, ByVal highlightRadius As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
-    'As of March 2015, this function has been entirely rewritten, using a system similar to PhotoShop's (I think...
-    ' but it's impossible to know for sure, since I don't have a copy for testing!  Theoretically it should be very close.)
+    'As of March 2015, this function has been entirely rewritten, using a system similar to PhotoShop's
+    ' (I think... but it's impossible to know for sure, since I don't have a copy for testing!
+    '  Theoretically it should be very close.)
     '
-    'This overhaul greatly improved the usefulness of this tool, but because it completed changed the input parameters, ranges, and UI
-    ' of the associated form, it is incompatible with past versions of the tool.  As such, the processor call that wraps this function
-    ' has been changed to prevent conflicts with old macros.
+    'This overhaul greatly improved the usefulness of this tool, but because it completed changed the
+    ' input parameters, ranges, and UI of the associated dialog, it is incompatible with past versions
+    ' of the tool.  As such, the processor call that wraps this function has been changed to prevent
+    ' conflicts with old macros.
         
     'Start by converting input parameters to desired ranges.
-    shadowAmount = shadowAmount / 100
-    highlightAmount = -1 * (highlightAmount / 100)
-    midtoneAmount = -1 * (midtoneAmount / 100)
+    shadowAmount = shadowAmount / 100#
+    highlightAmount = -1 * (highlightAmount * 0.01)
+    midtoneAmount = -1 * (midtoneAmount * 0.01)
     
-    'Also, make absolute-value copies of the amount input.  (This is faster than constantly re-calculating absolute values
-    ' inside the per-pixel adjustment loops.)
+    'Also, make absolute-value copies of the amount input.  (This is faster than constantly re-calculating
+    ' absolute values inside the per-pixel adjustment loops.)
     Dim absShadowAmount As Double, absHighlightAmount As Double, absMidtoneAmount As Double
     absShadowAmount = Abs(shadowAmount)
     absHighlightAmount = Abs(highlightAmount)
@@ -980,13 +982,14 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         SetProgBarVal modifyProgBarOffset
     End If
     
-    'Next we will create shadow, midtone, and highlight lookup tables.  These will simplify the process of identifying luminance regions
-    ' in the base image.
+    'Next we will create shadow, midtone, and highlight lookup tables.  These will simplify the process of
+    ' identifying luminance regions in the base image.
     
-    'These lookup tables will be Single-type, and they will contain a value on the range [0, 1] for each 8-bit channel value [0, 255].
-    ' 0 signifies a lookup entry outside that range, while 1 indicates a value fully within the target range.  Some feathering is
-    ' used to make the transition between ranges appear more natural.  (The feathering used is a place where it would be really
-    ' nice to have PhotoShop for comparisons, as I'm curious how they blend between shadow/midtone/highlight ranges...)
+    'These lookup tables will be Single-type, and they will contain a value on the range [0, 1] for each
+    ' 8-bit channel value [0, 255].  0 signifies a lookup entry outside that range, while 1 indicates a
+    ' value fully within the target range.  Some feathering is used to make the transition between ranges
+    ' appear more natural.  (The feathering used is a place where it would be really nice to have PhotoShop
+    ' for comparisons, as I'm curious how they blend between shadow/midtone/highlight ranges...)
     Dim sLookup() As Single, mLookup() As Single, hLookup() As Single
     ReDim sLookup(0 To 255) As Single
     ReDim mLookup(0 To 255) As Single
@@ -1045,24 +1048,27 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     If (Not suppressMessages) Then SetProgBarVal modifyProgBarOffset + 1
     
-    'First, if the shadow and highlight regions have different radius values, we need to make a backup copy of the current DIB.
+    'First, if the shadow and highlight regions have different radius values, we need to make a backup copy
+    ' of the current DIB.
     Dim backupDIB As pdDIB
     
-    If (shadowRadius <> highlightRadius) Then
+    If (shadowRadius <> highlightRadius) Or (shadowAmount = 0#) Then
         Set backupDIB = New pdDIB
         backupDIB.CreateFromExistingDIB srcDIB
     End If
     
-    'Next, we need to make a duplicate copy of the source image.  To improve output, this copy will be blurred, and we will use it to
-    ' identify shadow/highlight regions.  (The blur naturally creates smoother transitions between light and dark parts of the image.)
+    'Next, we need to make a duplicate copy of the source image.  To improve output, this copy will be blurred,
+    ' and we will use it to identify shadow/highlight regions.  (The blur naturally creates smoother transitions
+    ' between light and dark parts of the image.)
     Dim blurDIB As pdDIB
     Set blurDIB = New pdDIB
     blurDIB.CreateFromExistingDIB srcDIB
     
     'Shadows are handled first.  If the user requested a radius > 0, blur the reference image now.
-    If (shadowAmount <> 0) And (shadowRadius > 0) Then QuickBlurDIB blurDIB, shadowRadius, False
+    If (shadowAmount <> 0#) And (shadowRadius > 0) Then QuickBlurDIB blurDIB, shadowRadius, False
         
-    'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required loop objects now.
+    'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required
+    ' loop objects now.
     If (Not suppressMessages) Then SetProgBarVal modifyProgBarOffset + 2
     
     'Create local arrays and point them at the source DIB and blurred DIB
@@ -1082,7 +1088,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
             
-    'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want
+    ' to handle both cases.)
     Dim quickX As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
@@ -1101,8 +1108,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             quickX = x * qvDepth
         For y = initY To finalY
             
-            'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
-            ' transitions between light and dark regions in the image.)
+            'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance
+            ' detection, to improve transitions between light and dark regions in the image.)
             bBlur = blurImageData(quickX, y)
             gBlur = blurImageData(quickX + 1, y)
             rBlur = blurImageData(quickX + 2, y)
@@ -1112,7 +1119,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             
             'If the luminance of this pixel falls within the shadow range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
-            If sLookup(grayBlur) > 0 Then
+            If (sLookup(grayBlur) > 0!) Then
                 
                 'Invert the blur pixel values, and convert to the range [0, 1]
                 If (shadowAmount > 0) Then
@@ -1179,7 +1186,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
         'Before starting per-pixel processing, see if a highlight radius was specified.  If it was, and the radius differs
         ' from the shadow radius, calculate a new blur DIB now.
-        If (highlightRadius <> shadowRadius) Then
+        If (highlightRadius <> shadowRadius) Or (shadowAmount = 0#) Then
             
             blurDIB.CreateFromExistingDIB backupDIB
             If (highlightRadius <> 0) Then QuickBlurDIB blurDIB, highlightRadius, False
@@ -1214,10 +1221,10 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
-            If (hLookup(grayBlur) > 0) Then
+            If (hLookup(grayBlur) > 0!) Then
                 
                 'Invert the blur pixel values, and convert to the range [0, 1]
-                If (highlightAmount > 0) Then
+                If (highlightAmount > 0#) Then
                     rBlur = 1# - (rBlur * ONE_DIV_255)
                     gBlur = 1# - (gBlur * ONE_DIV_255)
                     bBlur = 1# - (bBlur * ONE_DIV_255)
@@ -1301,7 +1308,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             
             'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
             ' move on to the next pixel.
-            If (mLookup(srcBlur) > 0) Then
+            If (mLookup(srcBlur) > 0!) Then
                 
                 'Convert the source pixel values to the range [0, 1]
                 bSrc = bSrc * ONE_DIV_255
