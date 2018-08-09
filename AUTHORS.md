@@ -58,6 +58,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Jason Bullen](http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1)
 * [Jason Peter Brown](https://github.com/jpbro)
 * [Jerry Huxtable](http://www.jhlabs.com/ip/filters/index.html)
+* [Jian Ma](https://www.cnblogs.com/stronghorse/)
 * Johannes Nendel
 * Joseph Greco
 * [Kroc Camen](http://camendesign.com)
