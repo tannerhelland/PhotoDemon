@@ -285,7 +285,10 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     If (Not srcImage Is Nothing) Then btsMultipage.Visible = (srcImage.GetNumOfLayers > 1) Else btsMultipage.Visible = True
     
     'Synchronize the size of the first panel to match whatever elements are still visible
-    If (srcImage.GetNumOfLayers > 1) Then
+    Dim srcImageIsMultipage As Boolean
+    If (Not srcImage Is Nothing) Then srcImageIsMultipage = (srcImage.GetNumOfLayers > 1) Else srcImageIsMultipage = True
+    
+    If srcImageIsMultipage Then
         picContainer(0).SetHeight btsMultipage.GetTop + btsMultipage.GetHeight + Interface.FixDPI(8)
     Else
         picContainer(0).SetHeight btsCompressionMono.GetTop + btsCompressionMono.GetHeight + Interface.FixDPI(8)
