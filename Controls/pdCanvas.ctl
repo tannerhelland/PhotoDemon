@@ -241,6 +241,9 @@ Private m_InitMouseX As Double, m_InitMouseY As Double
 'Last mouse x/y positions, in canvas coordinates
 Private m_LastCanvasX As Double, m_LastCanvasY As Double
 
+'Last mouse x/y positions, in image coordinates
+Private m_LastImageX As Double, m_LastImageY As Double
+
 'On the canvas's MouseDown event, this control will mark the relevant point of interest index for the active layer (if any).
 ' If a point of interest has not been selected, this value will be reset to poi_Undefined (-1).
 Private m_CurPOI As PD_PointOfInterest
@@ -687,6 +690,11 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
                 
+            'Paint tools redraw cursors under certain conditions
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+        
         End Select
         
     End If
@@ -706,6 +714,11 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
+                
+            'Paint tools redraw cursors under certain conditions
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
         End Select
         
@@ -734,6 +747,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     
     'Note that displayImageCoordinates returns a copy of the displayed coordinates via imgX/Y
     DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    m_LastImageX = imgX
+    m_LastImageY = imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
@@ -834,7 +849,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
@@ -895,6 +910,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     
     'Display the image coordinates under the mouse pointer, and if rulers are active, mirror the coordinates there, also
     Interface.DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    m_LastImageX = imgX
+    m_LastImageY = imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't reuse image coordinates as layer coordinates!)
@@ -937,7 +954,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
@@ -972,7 +989,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
@@ -1112,7 +1129,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             
             'Notify the brush engine of the final result, then permanently commit this round of brush work
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
-                Tools_Paint.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
+                Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 Tools_Paint.CommitBrushResults
                 
             Case PAINT_FILL

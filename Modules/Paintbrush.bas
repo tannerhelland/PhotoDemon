@@ -110,6 +110,9 @@ Private m_BrushCreatedAtLeastOnce As Boolean
 ' special tracking calculations.
 Private m_MouseDown As Boolean
 Private m_MouseX As Single, m_MouseY As Single
+Private m_MouseLastUserX As Single, m_MouseLastUserY As Single
+Private Const MOUSE_OOB As Single = -9.99999E+14!
+Private m_MouseShiftEventOK As Boolean
 
 'Brush dynamics are calculated on-the-fly, and they include things like velocity, distance, angle, and more.
 Private m_DistPixels As Long, m_BrushSizeInt As Long
@@ -239,7 +242,7 @@ Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100#)
 End Sub
 
 Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100#)
-    newHardness = newHardness / 100
+    newHardness = newHardness * 0.01
     If (newHardness <> m_BrushHardness) Then
         m_BrushHardness = newHardness
         m_BrushIsReady = False
@@ -282,7 +285,7 @@ Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
 End Sub
 
 Public Sub SetBrushSpacing(ByVal newSpacing As Single)
-    newSpacing = newSpacing / 100
+    newSpacing = newSpacing * 0.01
     If (newSpacing <> m_BrushSpacing) Then
         m_BrushSpacing = newSpacing
         m_BrushIsReady = False
@@ -736,7 +739,7 @@ End Sub
 
 'Notify the brush engine of the current mouse position.  Coordinates should always be in *image* coordinate space,
 ' not screen space.  (Translation between spaces will be handled internally.)
-Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
+Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
     Dim isFirstStroke As Boolean, isLastStroke As Boolean
     isFirstStroke = (Not m_MouseDown) And mouseButtonDown
@@ -794,6 +797,14 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_NumOfMouseEvents = m_NumOfMouseEvents + 1
     End If
     
+    'Next, determine if the shift key is being pressed.  If it is, and if the user has already committed a
+    ' brush stroke to this image (on a previous paint tool event), we want to draw a smooth line between the
+    ' last paint point and the current one.  Note that this special condition is stored at module level,
+    ' as we render a custom UI on mouse move events if the mouse button is *not* pressed, to help communicate
+    ' what the shift key does.
+    m_MouseShiftEventOK = (Shift = vbShiftMask) And (m_MouseLastUserX <> MOUSE_OOB) And (m_MouseLastUserY <> MOUSE_OOB)
+    m_MouseShiftEventOK = m_MouseShiftEventOK And (m_MouseLastUserX <> srcX) And (m_MouseLastUserY <> srcY)
+    
     Dim startTime As Currency
     
     'If the mouse button is down, perform painting between the old and new points.
@@ -803,8 +814,26 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
         VBHacks.GetHighResTime startTime
         
-        'A separate function handles the actual rendering.
-        ApplyPaintLine srcX, srcY, isFirstStroke
+        'The user wants us to connect the start of this stroke to the end of the previous stroke
+        If m_MouseShiftEventOK Then
+            
+            'Replace the last rendering x/y with the mouse position of the last paint event
+            m_MouseX = m_MouseLastUserX
+            m_MouseY = m_MouseLastUserY
+            
+            'Initialize the paint stroker at the previous mouse position (but importantly, ask it to
+            ' suspend actual graphics operations - this will initialize things like the compositor rect,
+            ' without applying paint to the canvas, and we do it so that the connecting point between
+            ' the two strokes is not painted twice)
+            ApplyPaintLine srcX, srcY, True, True
+            
+            'Paint all subsequent strokes
+            ApplyPaintLine srcX, srcY, False
+            
+        'This is a normal paint stroke
+        Else
+            ApplyPaintLine srcX, srcY, isFirstStroke
+        End If
         
         'See if there are more points in the mouse move queue.  If there are, grab them all and stroke them immediately.
         Dim numPointsRemaining As Long
@@ -834,6 +863,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         'Notify the scratch layer of our updates
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
         
+        'Cache the last x/y position retrieved from the queue
+        m_MouseLastUserX = srcX
+        m_MouseLastUserY = srcY
+    
         'Report paint tool render times, as relevant
         'Debug.Print "Paint tool render timing: " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
     
@@ -859,8 +892,6 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     If isLastStroke Then
         
         Set m_Surface = Nothing
-        'm_MouseX = -1000000#
-        'm_MouseY = -1000000#
         
         'Reset the target canvas's mouse handling behavior
         srcCanvas.SetMouseInput_HighRes False
@@ -972,49 +1003,56 @@ End Sub
 
 'Formally render a line between the old mouse (x, y) coordinate pair and this new pair.  Replacement of the old (x, y) pair
 ' with the new coordinates is handled automatically.
-Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isFirstStroke As Boolean)
+Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isFirstStroke As Boolean, Optional ByVal skipRendering As Boolean = False)
     
     'Calculate new modification rects, e.g. the portion of the paintbrush layer affected by this stroke.
     ' (The central compositor requires this information for its optimized paintbrush renderer.)
     UpdateModifiedRect srcX, srcY, isFirstStroke
     
-    'Next, perform line rendering based on the current brush style.
-    ' (At present, GDI+ is used to render a very basic brush.  More advanced styles are coming soon.)
-    Select Case m_BrushEngine
-            
-        Case BE_GDIPlus
+    'When using the shift-key to link together disparate strokes, we don't want to paint the connecting point twice.
+    ' In that rare circumstance, the caller will request that update our compositor rect, but *skip* actual painting
+    ' of the initial dab.
+    If (Not skipRendering) Then
     
-            'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
-            ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
-            ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
-            ' manually render a dab at the initial starting position.
-            If isFirstStroke Then
-                PD2D.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
-            Else
-                PD2D.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
-            End If
-            
-        Case BE_PhotoDemon
-        
-            'First strokes can just be applied as a single dab; this spares us attempting to calculate things like
-            ' brush dynamics (which don't exist yet, as we have no point history).
-            If isFirstStroke Then
-                ApplyPaintDab srcX, srcY
-            Else
+        'Next, perform line rendering based on the current brush style.
+        ' (At present, GDI+ is used to render a very basic brush.  More advanced styles are coming soon.)
+        Select Case m_BrushEngine
                 
-                'If the target point is identical to the last point we rendered, ignore it (as the line between
-                ' two identical points is "undefined", and not all line rasterizers detect this case successfully).
-                If (srcX <> m_MouseX) Or (srcY <> m_MouseY) Then
-                    ManuallyCalculateBrushPoints srcX, srcY
+            Case BE_GDIPlus
+        
+                'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
+                ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
+                ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
+                ' manually render a dab at the initial starting position.
+                If isFirstStroke Then
+                    PD2D.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
+                Else
+                    PD2D.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
                 End If
                 
-            End If
+            Case BE_PhotoDemon
             
-    End Select
-    
-    'Update the "old" mouse coordinate trackers
-    m_MouseX = srcX
-    m_MouseY = srcY
+                'First strokes can just be applied as a single dab; this spares us attempting to calculate things like
+                ' brush dynamics (which don't exist yet, as we have no point history).
+                If isFirstStroke Then
+                    ApplyPaintDab srcX, srcY
+                Else
+                    
+                    'If the target point is identical to the last point we rendered, ignore it (as the line between
+                    ' two identical points is "undefined", and not all line rasterizers detect this case successfully).
+                    If (srcX <> m_MouseX) Or (srcY <> m_MouseY) Then
+                        ManuallyCalculateBrushPoints srcX, srcY
+                    End If
+                    
+                End If
+                
+        End Select
+        
+        'Update the "old" mouse coordinate trackers
+        m_MouseX = srcX
+        m_MouseY = srcY
+        
+    End If
     
 End Sub
 
@@ -1234,6 +1272,14 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     
 End Sub
 
+'When the active image changes, we need to reset certain brush-related parameters
+Public Sub NotifyActiveImageChanged()
+    m_MouseX = MOUSE_OOB
+    m_MouseY = MOUSE_OOB
+    m_MouseLastUserX = MOUSE_OOB
+    m_MouseLastUserY = MOUSE_OOB
+End Sub
+
 'Return the area of the image modified by the current stroke.  By default, the running modified rect is erased after a call to
 ' this function, but this behavior can be toggled by resetRectAfter.  Also, if you want to get the full modified rect since this
 ' paint stroke began, you can set the GetModifiedRectSinceStrokeBegan parameter to TRUE.  Note that when
@@ -1359,16 +1405,34 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
     
-    'Paint a target cursor - but *only* if the mouse is not currently down!
-    Dim crossLength As Single, outerCrossBorder As Single
-    crossLength = 3#
-    outerCrossBorder = 0.5
-    
-    If (Not m_MouseDown) Then
-        PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-        PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-        PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-        PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+    'If the user is holding down the SHIFT key, paint a line between the end of the previous stroke and the current
+    ' mouse position.  This helps communicate that shift+clicking will string together separate strokes.
+    If m_MouseShiftEventOK Then
+        
+        outerPen.SetPenLineCap P2_LC_Round
+        innerPen.SetPenLineCap P2_LC_Round
+        
+        Dim oldX As Double, oldY As Double
+        Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, pdImages(g_CurrentImage), m_MouseLastUserX, m_MouseLastUserY, oldX, oldY
+        PD2D.DrawLineF cSurface, outerPen, oldX, oldY, cursX, cursY
+        PD2D.DrawLineF cSurface, innerPen, oldX, oldY, cursX, cursY
+        
+    Else
+        
+        'Paint a target cursor - but *only* if the mouse is not currently down!
+        Dim crossLength As Single, outerCrossBorder As Single
+        crossLength = 3#
+        outerCrossBorder = 0.5
+        
+        If (Not m_MouseDown) Then
+            outerPen.SetPenLineCap P2_LC_Round
+            innerPen.SetPenLineCap P2_LC_Round
+            PD2D.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+            PD2D.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+            PD2D.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+            PD2D.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+        End If
+        
     End If
     
     'If size allows, render a transformed brush outline onto the canvas as well
@@ -1399,8 +1463,10 @@ End Function
 Public Sub InitializeBrushEngine()
     m_BrushPreviewQuality = PD_PERF_BALANCED
     m_BrushAntialiasing = P2_AA_HighQuality
-    m_MouseX = -1000000#
-    m_MouseY = -1000000#
+    m_MouseX = MOUSE_OOB
+    m_MouseY = MOUSE_OOB
+    m_MouseLastUserX = MOUSE_OOB
+    m_MouseLastUserY = MOUSE_OOB
     m_BrushIsReady = False
     m_BrushCreatedAtLeastOnce = False
 End Sub

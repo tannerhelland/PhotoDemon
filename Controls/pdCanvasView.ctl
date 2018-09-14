@@ -450,7 +450,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True, True
-    ucSupport.SpecifyRequiredKeys VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
+    ucSupport.SpecifyRequiredKeys VK_SHIFT, VK_ALT, VK_CONTROL, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

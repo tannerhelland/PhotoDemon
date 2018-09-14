@@ -439,13 +439,16 @@ End Function
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
-Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = vbNullString, Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_Everything)
+Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = vbNullString, Optional ByVal refreshScreen As Boolean = True, Optional ByVal associatedUndoType As PD_UndoType = UNDO_Everything, Optional ByVal newImageJustLoaded As Boolean = False)
 
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
-
+    
     'If this form is already the active image, don't waste time re-activating it
-    If (g_CurrentImage <> imageID) Then
+    Dim activeImageChanging As Boolean
+    activeImageChanging = (g_CurrentImage <> imageID) Or newImageJustLoaded
+    
+    If activeImageChanging Then
         
         'Release some temporary resources on the old image, if we can
         pdImages(g_CurrentImage).DeactivateImage
@@ -484,7 +487,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     
     'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
     ' making sure a scratch layer exists, and that it matches the current image's size.)
-    Tools.InitializeToolsDependentOnImage
+    Tools.InitializeToolsDependentOnImage activeImageChanging
     PDDebug.LogAction "CanvasManager.ActivatePDImage says: image #" & g_CurrentImage & " - " & Interface.GetWindowCaption(pdImages(g_CurrentImage), False) & " - was activated because " & reasonForActivation
     PDDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
         

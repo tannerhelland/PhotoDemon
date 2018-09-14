@@ -534,7 +534,7 @@ End Function
 ' for example).  To reduce stuttering on first tool use, we initialize this behavior whenever...
 ' 1) Such a tool is selected, or...
 ' 2) The tool is already selected and the user switches images
-Public Sub InitializeToolsDependentOnImage()
+Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As Boolean = False)
     
     If (g_OpenImageCount > 0) Then
         
@@ -557,6 +557,11 @@ Public Sub InitializeToolsDependentOnImage()
             End If
             
             If scratchLayerResetRequired Then pdImages(g_CurrentImage).ResetScratchLayer True
+            
+            'If the active image has changed, or the image state has changed enough to warrant
+            ' creating a new scratch layer, we also need to reset some other paint tool parameters
+            ' (such as last stroke position tracking)
+            If activeImageChanged Or scratchLayerResetRequired Then Tools_Paint.NotifyActiveImageChanged
             
         Else
             

@@ -56,6 +56,10 @@ Public Const MAX_PATH_LEN = 260
 Public Const UC_HOVER_BRIGHTNESS As Long = 50
 
 'Virtual key constants
+Public Const VK_SHIFT As Long = &H10
+Public Const VK_CONTROL As Long = &H11
+Public Const VK_ALT As Long = &H12
+
 Public Const VK_LEFT As Long = &H25
 Public Const VK_UP As Long = &H26
 Public Const VK_RIGHT As Long = &H27

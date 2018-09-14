@@ -499,7 +499,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
-        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage"
+        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage", , , True
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
