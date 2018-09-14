@@ -376,7 +376,7 @@ Public Sub ConvertPolarToCartesian_Sng(ByVal srcAngle As Single, ByVal srcRadius
 End Sub
 'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
 ' (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
+Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As PointAPI) As Long
 
     Dim curMinDistance As Double, curMinIndex As Long
     curMinDistance = &HFFFFFFF
@@ -800,4 +800,51 @@ Public Function NearestPowerOfTwo(ByVal srcNumber As Long) As Long
     
     NearestPowerOfTwo = curPower
     
+End Function
+
+'Rational erf approximation.  Adapted from the public domain "Handbook of Mathematical Functions", algorithm 7.1.26
+' (link good as of September '18: http://people.math.sfu.ca/~cbm/aands/frameindex.htm).  Technically the accuracy is only
+' appropriate for Singles (e(x) <= 1.5e-7), but input and output are Double due to its prevalence in PD calculations.
+Public Function ERF(ByVal x As Double) As Double
+    
+    'Cache the sign in advance
+    Dim initSgn As Double
+    initSgn = Sgn(x)
+    
+    x = Abs(x)
+    
+    Dim t As Double
+    t = 1# / (1# + 0.3275911 * x)
+    
+    Dim y As Double
+    y = 1# - (((((1.061405429 * t + -1.453152027) * t) + 1.421413741) * t + -0.284496736) * t + 0.254829592) * t * Exp(-(x * x))
+    
+    ERF = initSgn * y
+    
+End Function
+
+Public Function ERFC(ByVal x As Double) As Double
+    ERFC = ERF(1# - x)
+End Function
+
+'Inverse erf() function, as estimated by Sergei Winitzki via https://en.wikipedia.org/wiki/Error_function.
+' (Specific source at the time of this writing was http://sites.google.com/site/winitzki/sergei-winitzkis-files/erf-approx.pdf)
+Public Function ERF_Inv(ByVal x As Double) As Double
+    
+    Dim initSgn As Double
+    initSgn = Sgn(x)
+    
+    Dim a As Double
+    a = (8# / (3 * PI)) * ((PI - 3#) / (4# - PI))
+    
+    Dim t As Double
+    t = 2# / (PI * a) + Log(1# - x * x) * 0.5
+    t = t * t - Log(1# - x * x) / a
+    t = Sqr(t) - (2# / (PI * a) + Log(1# - x * x) * 0.5)
+    ERF_Inv = initSgn * Sqr(t)
+    
+End Function
+
+Public Function ERFC_Inv(ByVal x As Double) As Double
+    ERFC_Inv = ERF_Inv(1# - x)
 End Function
