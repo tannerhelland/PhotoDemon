@@ -1906,7 +1906,8 @@ Public Declare Function FreeImage_GetMetadataCount Lib "FreeImage.dll" Alias "_F
 '--------------------------------------------------------------------------------
 
 ' Rotating and flipping
-Public Declare Function FreeImage_RotateClassic Lib "FreeImage.dll" Alias "_FreeImage_RotateClassic@12" ( _
+' EDIT BY TANNER: this function was deprecated in the 3.18 release
+'Public Declare Function FreeImage_RotateClassic Lib "FreeImage.dll" Alias "_FreeImage_RotateClassic@12" ( _
            ByVal Bitmap As Long, _
            ByVal Angle As Double) As Long
 
