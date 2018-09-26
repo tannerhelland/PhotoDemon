@@ -42,10 +42,10 @@ Begin VB.Form FormSharpen
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "strength"
-      Min             =   0.1
-      SigDigits       =   1
-      Value           =   0.1
-      DefaultValue    =   0.1
+      Min             =   0.01
+      SigDigits       =   2
+      Value           =   0.01
+      DefaultValue    =   0.01
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -92,7 +92,7 @@ Public Sub ApplySharpenFilter(ByVal effectParams As String, Optional ByVal toPre
     cParams.SetParamString effectParams
     
     Dim sStrength As Double
-    sStrength = cParams.GetDouble("strength", 0#)
+    sStrength = cParams.GetDouble("strength", 0.01)
     
     'Sharpening uses a basic 3x3 convolution filter, which we generate dynamically based on the requested strength
     Dim cParamsOut As pdParamXML
