@@ -65,7 +65,7 @@ Public Function Evaluate(ByVal srcExpression As String) As Variant
     If (InStr(1, srcExpression, ChrW$(&H66B&), vbBinaryCompare) <> 0) Then srcExpression = Replace$(srcExpression, ChrW$(&H66B&), ".", , , vbBinaryCompare)
     
     'See if the passed expression is a plain number; if it is, return it immediately
-    If IsNumeric(srcExpression) Then
+    If TextSupport.IsNumberLocaleUnaware(srcExpression) Then
        Evaluate = srcExpression
     
     'The passed string is not a plain number; attempt to evaluate it as an expression
@@ -102,7 +102,7 @@ Private Function Eval(ByVal srcExpression As String) As Variant
     
     'Preprocess any parentheses in the expression
     Do While HandleParentheses(srcExpression): Loop
-
+    
     Dim l As String, r As String
     
     'Check for standard operators.  Note that we silently convert some VB6 patterns
@@ -116,11 +116,11 @@ Private Function Eval(ByVal srcExpression As String) As Variant
     If Spl(srcExpression, "^", l, r) Then:   Eval = Eval(l) ^ Eval(r): Exit Function
     
     'Return numeric characters as-is, with an additional check for duplicate negatives
-    If Len(srcExpression) Then Eval = Val(Replace(srcExpression, "--", ""))
+    If Len(srcExpression) Then Eval = Val(Replace$(srcExpression, "--", ""))
     
     'Check for invalid alpha characters
     If (Trim$(srcExpression) >= "A") Then: Err.Raise 5, , "Invalid expression.": Exit Function
-
+    
     If (LenB(srcExpression) <> 0) Then
 
         'Test for some unevaluatable conditions

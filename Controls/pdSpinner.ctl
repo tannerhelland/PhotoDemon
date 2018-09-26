@@ -617,13 +617,15 @@ Private Sub m_EditBox_Change()
     
     If Me.Enabled Then
     
-        If IsTextEntryValid() Then
+        Dim newValue As Double
+    
+        If IsTextEntryValid(False, newValue) Then
             If m_ErrorState Then
                 m_ErrorState = False
                 RedrawBackBuffer
             End If
             m_textBoxInitiated = True
-            Me.Value = Evaluator.Evaluate(m_EditBox.Text)
+            Me.Value = newValue
             m_textBoxInitiated = False
         Else
             m_ErrorState = True
@@ -1111,14 +1113,6 @@ Private Sub RedrawBackBuffer()
             
         End If
         
-        'Old double-arrow design:
-        'Dim resetAngleStart As Single
-        'resetAngleStart = 20#
-        'cPen.SetPenStartCap P2_LC_ArrowAnchor
-        'cPen.SetPenEndCap P2_LC_Round
-        'PD2D.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
-        'PD2D.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
-        
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
     End If
@@ -1148,17 +1142,21 @@ Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
 End Function
 
 'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
-' numeric, and allow the user to display a warning message if necessary.
-Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
+' numeric, and allow the user to display a warning message if necessary.  (To shortcut subsequent operations,
+' you can request a copy of the "calculated" control value from this function, since we calculate it anyway
+' as part of validation - but IMPORTANTLY, note that this function will NOT return a value if the text is
+' NOT valid.)
+Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False, Optional ByRef dstCalculatedValue As Double) As Boolean
         
     'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
     Dim chkString As String
     chkString = m_EditBox.Text
+    If InStr(1, chkString, ",", vbBinaryCompare) Then chkString = Replace$(chkString, ",", ".", , , vbBinaryCompare)
     
     'Remember the current cursor position, too - we want to restore it after applying formatting to the numeric string
     Dim cursorPos As Long
     cursorPos = m_EditBox.SelStart
-        
+    
     'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
     ' Check for this and fix it as necessary.
     If InStr(1, chkString, "..") Then
@@ -1171,13 +1169,16 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     Dim checkVal As Double
     
     'If the entry is numeric, ensure it lies within the proper range for this control
-    If IsNumeric(chkString) Then
+    If TextSupport.IsNumberLocaleUnaware(chkString) Then
+    
         m_EntryType = set_Numeric
         checkVal = TextSupport.CDblCustom(chkString)
         IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
         If (Not IsTextEntryValid) Then
             m_EntryType = set_NumericButOOB
             If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+        Else
+            dstCalculatedValue = checkVal
         End If
         
     'If the entry is *not* numeric, attempt to evaluate it as a formula
@@ -1185,12 +1186,16 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         
         'Can the text be evaluated as an expression?
         If Evaluator.CanEvaluate(chkString) Then
+        
             m_EntryType = set_Formula
             checkVal = Evaluator.Evaluate(chkString)
             IsTextEntryValid = (checkVal >= m_Min) And (checkVal <= m_Max)
+            
             If (Not IsTextEntryValid) Then
                 m_EntryType = set_FormulaButOOB
                 If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation Or vbOKOnly, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
+            Else
+                dstCalculatedValue = checkVal
             End If
         
         'If the evaluator fails, place the edit box in an error state (and displays a red, chunky outline)
