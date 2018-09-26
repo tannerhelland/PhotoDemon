@@ -3310,15 +3310,15 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
     Dim hOffset As Double, vOffset As Double
-    hOffset = (nWidth - srcDIB.GetDIBWidth) / 2
-    vOffset = (nHeight - srcDIB.GetDIBHeight) / 2
+    hOffset = (nWidth - srcDIB.GetDIBWidth) * 0.5
+    vOffset = (nHeight - srcDIB.GetDIBHeight) * 0.5
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
     Dim i As Long
     For i = 0 To 3
-        listOfPoints(i).x = listOfPoints(i).x + 0.5 + hOffset
-        listOfPoints(i).y = listOfPoints(i).y + 0.5 + vOffset
+        listOfPoints(i).x = listOfPoints(i).x + 0.5! + hOffset
+        listOfPoints(i).y = listOfPoints(i).y + 0.5! + vOffset
     Next i
     
     'If a background color is being applied, "cut out" the target region now
@@ -3337,17 +3337,28 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             cx = cx + tmpPoints(i).x
             cy = cy + tmpPoints(i).y
         Next i
-        cx = cx / 4
-        cy = cy / 4
+        
+        cx = cx * 0.25
+        cy = cy * 0.25
+        
+        'Re-center the points around (0, 0)
+        For i = 0 To 3
+            tmpPoints(i).x = tmpPoints(i).x - cx
+            tmpPoints(i).y = tmpPoints(i).y - cy
+        Next i
         
         'For each corner of the rotated square, convert the point to polar coordinates, then shrink the radius by one.
         Dim tmpAngle As Double, tmpRadius As Double, tmpX As Double, tmpY As Double
         For i = 0 To 3
-            PDMath.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle, cx, cy
+            
+            PDMath.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle
             tmpRadius = tmpRadius - 1#
-            PDMath.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY, cx, cy
-            tmpPoints(i).x = tmpX
-            tmpPoints(i).y = tmpY
+            PDMath.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY
+            
+            'Re-center around the original center point
+            tmpPoints(i).x = tmpX + cx
+            tmpPoints(i).y = tmpY + cy
+            
         Next i
         
         'Paint the selected area transparent
@@ -3368,7 +3379,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     End If
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, rotateQuality, True
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0!, 0!, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1!, rotateQuality, True
     
 End Sub
 

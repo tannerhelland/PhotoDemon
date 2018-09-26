@@ -347,8 +347,10 @@ Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues
 End Function
 
 Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
-    dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
-    dstAngle = PDMath.Atan2_Faster((srcY - centerY), (srcX - centerX))
+    srcX = srcX - centerX
+    srcY = srcY - centerY
+    dstRadius = Sqr(srcX * srcX + srcY * srcY)
+    dstAngle = PDMath.Atan2(srcY, srcX)
 End Sub
 
 Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
@@ -662,7 +664,7 @@ End Sub
 Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As PointFloat, Optional ByVal arrayAlreadyDimmed As Boolean = False)
 
     'Convert the rotation angle to radians
-    rotateAngle = rotateAngle * (PI_DIV_180)
+    rotateAngle = rotateAngle * PI_DIV_180
     
     'Find the cos and sin of this angle and store the values
     Dim cosTheta As Double, sinTheta As Double
