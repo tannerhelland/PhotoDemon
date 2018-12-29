@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3454</langversion>
+<langversion>7.2.681</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -168,17 +168,17 @@
 
 <phrase>
 <original>New color profile</original>
-<translation></translation>
+<translation>新的颜色配置文件</translation>
 </phrase>
 
 <phrase>
 <original>Export color profile</original>
-<translation></translation>
+<translation>导出颜色配置文件</translation>
 </phrase>
 
 <phrase>
 <original>Profile exported successfully.</original>
-<translation></translation>
+<translation>配置文件导出成功.</translation>
 </phrase>
 
 <!-- ColorManagement_ICM.bas contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -201,17 +201,17 @@
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation></translation>
+<translation>您想怎么加载这个图片？</translation>
 </phrase>
 
 <phrase>
 <original>Open it as a standalone image.</original>
-<translation></translation>
+<translation>将其作为独立图像打开。</translation>
 </phrase>
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation></translation>
+<translation>将其作为新图层添加到当前图像。</translation>
 </phrase>
 
 <phrase>
@@ -221,12 +221,12 @@
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation></translation>
+<translation>以后不再询问</translation>
 </phrase>
 
 <phrase>
 <original>Drop as image or layer</original>
-<translation></translation>
+<translation>作为图像或图层删除</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1043,7 +1043,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>color and opacity</original>
-<translation>颜色和不透明度</translation>
+<translation>颜色和透明度</translation>
 </phrase>
 
 <phrase>
@@ -1531,57 +1531,57 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>All supported palettes</original>
-<translation></translation>
+<translation>所有支持的调色板</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Swatch</original>
-<translation></translation>
+<translation>Adobe 颜色色板</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation></translation>
+<translation>Adobe 颜色表</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange</original>
-<translation></translation>
+<translation>Adobe 样本交换</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Palette</original>
-<translation></translation>
+<translation>GIMP调色板</translation>
 </phrase>
 
 <phrase>
 <original>PaintShop Pro Palette</original>
-<translation></translation>
+<translation>PaintShop Pro调色板</translation>
 </phrase>
 
 <phrase>
 <original>Paint.NET Palette</original>
-<translation></translation>
+<translation>Paint.NET调色板</translation>
 </phrase>
 
 <phrase>
 <original>Select a palette</original>
-<translation></translation>
+<translation>选择一个调色板</translation>
 </phrase>
 
 <phrase>
 <original>New palette</original>
-<translation></translation>
+<translation>新的调色板</translation>
 </phrase>
 
 <phrase>
 <original>Export palette</original>
-<translation></translation>
+<translation>导出调色板</translation>
 </phrase>
 
 <phrase>
 <original>Exporting palette</original>
-<translation></translation>
+<translation>正在导出调色板</translation>
 </phrase>
 
 <phrase>
@@ -1601,12 +1601,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Single neighbor</original>
-<translation></translation>
+<translation>单邻</translation>
 </phrase>
 
 <phrase>
 <original>Floyd-Steinberg</original>
-<translation></translation>
+<translation>弗洛伊德 - 斯坦伯格</translation>
 </phrase>
 
 <phrase>
@@ -1676,7 +1676,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>this plugin is not compatible with your version of Windows</original>
-<translation></translation>
+<translation>此插件与您的Windows版本不兼容</translation>
 </phrase>
 
 <!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -1857,7 +1857,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>GNU LGPLv2.1</original>
-<translation></translation>
+<translation>GNU LGPLv2.1</translation>
 </phrase>
 
 <phrase>
@@ -2161,7 +2161,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation>概述</translation>
+<translation>实线效果</translation>
 </phrase>
 
 <phrase>
@@ -2236,7 +2236,7 @@ Description: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation></translation>
+<translation>修改选择</translation>
 </phrase>
 
 <phrase>
@@ -2253,7 +2253,9 @@ Description: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation></translation>
+<translation>PhotoDemon已自动为您打开错误报告网页。 请单击“新建问题”按钮，然后选择“错误报告”。 尽可能回答问题，并在报告中的某处包含以下错误编号：%1
+
+完成后，单击“提交新问题”按钮。 谢谢！</translation>
 </phrase>
 
 <phrase>
@@ -2690,17 +2692,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>mm</original>
-<translation></translation>
+<translation>毫米</translation>
 </phrase>
 
 <phrase>
 <original>pt</original>
-<translation></translation>
+<translation>pt</translation>
 </phrase>
 
 <phrase>
 <original>pc</original>
-<translation></translation>
+<translation>pc</translation>
 </phrase>
 
 <phrase>
@@ -2725,17 +2727,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>millimeters</original>
-<translation></translation>
+<translation>毫米</translation>
 </phrase>
 
 <phrase>
 <original>points</original>
-<translation></translation>
+<translation>点</translation>
 </phrase>
 
 <phrase>
 <original>picas</original>
-<translation></translation>
+<translation>派卡</translation>
 </phrase>
 
 <!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -2751,7 +2753,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>unknown</original>
-<translation></translation>
+<translation>未知</translation>
 </phrase>
 
 <phrase>
@@ -3629,7 +3631,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
-<translation></translation>
+<translation>由PhotoDemon导出的调色板 %1</translation>
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4222,7 +4224,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>last-used settings</original>
-<translation></translation>
+<translation>最后使用的设置</translation>
 </phrase>
 
 <phrase>
@@ -4504,7 +4506,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>index %1</original>
-<translation></translation>
+<translation>索引 %1</translation>
 </phrase>
 
 <!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4545,7 +4547,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Generate a new random number seed.</original>
-<translation></translation>
+<translation>生成一个新的随机数种子。</translation>
 </phrase>
 
 <!-- pdRandomizeUI.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -4721,18 +4723,19 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>%1 = %2</original>
-<translation></translation>
+<translation>%1 = %2</translation>
 </phrase>
 
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation></translation>
+<translation>"%1" 超出范围  (%2).
+最终值必须在 %3 和 %4 之间。</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon doesn't understand the expression: %1</original>
-<translation></translation>
+<translation>PhotoDemon 不能解释这个表达：%1</translation>
 </phrase>
 
 <!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4872,12 +4875,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Color profile</original>
-<translation></translation>
+<translation>颜色配置文件</translation>
 </phrase>
 
 <phrase>
 <original>Palette</original>
-<translation></translation>
+<translation>调色板</translation>
 </phrase>
 
 <phrase>
@@ -5047,7 +5050,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Remove all metadata</original>
-<translation></translation>
+<translation>删除所有元数据</translation>
 </phrase>
 
 <phrase>
@@ -5927,12 +5930,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Create macro</original>
-<translation></translation>
+<translation>创建宏</translation>
 </phrase>
 
 <phrase>
 <original>From session history</original>
-<translation></translation>
+<translation>从会话历史</translation>
 </phrase>
 
 <phrase>
@@ -6007,7 +6010,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Zoom to value</original>
-<translation></translation>
+<translation>缩放到值</translation>
 </phrase>
 
 <phrase>
@@ -6017,12 +6020,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show rulers</original>
-<translation></translation>
+<translation>显示标尺</translation>
 </phrase>
 
 <phrase>
 <original>Show status bar</original>
-<translation></translation>
+<translation>显示状态栏</translation>
 </phrase>
 
 <phrase>
@@ -6102,7 +6105,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Reset all toolboxes</original>
-<translation></translation>
+<translation>重置所有工具箱</translation>
 </phrase>
 
 <phrase>
@@ -6122,12 +6125,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Support us on Patreon</original>
-<translation></translation>
+<translation>在Patreon上支持我们</translation>
 </phrase>
 
 <phrase>
 <original>Support us with a one-time donation</original>
-<translation></translation>
+<translation>用一次性捐款支持我们</translation>
 </phrase>
 
 <phrase>
@@ -6137,7 +6140,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Submit bug report or feedback</original>
-<translation></translation>
+<translation>提交错误报告或反馈</translation>
 </phrase>
 
 <phrase>
@@ -6660,7 +6663,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>dithering amount</original>
-<translation></translation>
+<translation>抖动值</translation>
 </phrase>
 
 <phrase>
@@ -8020,12 +8023,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Attempt to recover</original>
-<translation></translation>
+<translation>尝试恢复</translation>
 </phrase>
 
 <phrase>
 <original>Discard</original>
-<translation></translation>
+<translation>丢弃</translation>
 </phrase>
 
 <phrase>
@@ -8061,27 +8064,27 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Color panel settings</original>
-<translation></translation>
+<translation>颜色面板设置</translation>
 </phrase>
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation></translation>
+<translation>此文件中的调色板(%1)</translation>
 </phrase>
 
 <phrase>
 <original>palette to use</original>
-<translation></translation>
+<translation>要使用的调色板</translation>
 </phrase>
 
 <phrase>
 <original>wheels + history</original>
-<translation></translation>
+<translation>滚动+历史</translation>
 </phrase>
 
 <phrase>
 <original>palette</original>
-<translation></translation>
+<translation>调色板</translation>
 </phrase>
 
 <!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8108,17 +8111,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Saved presets</original>
-<translation></translation>
+<translation>保存预设</translation>
 </phrase>
 
 <phrase>
 <original>delete preset</original>
-<translation></translation>
+<translation>删除预设</translation>
 </phrase>
 
 <phrase>
 <original>saved presets for this tool</original>
-<translation></translation>
+<translation>已保存此工具的预设</translation>
 </phrase>
 
 <phrase>
@@ -8128,7 +8131,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>(no saved presets)</original>
-<translation></translation>
+<translation>（没有保存的预设）</translation>
 </phrase>
 
 <phrase>
@@ -8158,12 +8161,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>add new preset</original>
-<translation></translation>
+<translation>添加新预设</translation>
 </phrase>
 
 <phrase>
 <original>edit existing presets</original>
-<translation></translation>
+<translation>编辑现有预设</translation>
 </phrase>
 
 <!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -8465,7 +8468,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>outline color and opacity</original>
-<translation>轮廓颜色和不透明度</translation>
+<translation>轮廓颜色和透明度</translation>
 </phrase>
 
 <phrase>
@@ -8556,7 +8559,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>tone-mapping operator</original>
-<translation></translation>
+<translation>色调映射操作</translation>
 </phrase>
 
 <phrase>
@@ -8723,7 +8726,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>images with unsaved changes</original>
-<translation></translation>
+<translation>图像更改未保存</translation>
 </phrase>
 
 <phrase>
@@ -8783,7 +8786,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>unnamed image %1</original>
-<translation></translation>
+<translation>未命名图像 %1</translation>
 </phrase>
 
 <phrase>
@@ -9009,7 +9012,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random seed</original>
-<translation></translation>
+<translation>随机种子</translation>
 </phrase>
 
 <phrase>
@@ -10596,22 +10599,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>palettes in this file</original>
-<translation></translation>
+<translation>此文件中的调色板</translation>
 </phrase>
 
 <phrase>
 <original>choose a palette file</original>
-<translation></translation>
+<translation>选择一个调色板文件</translation>
 </phrase>
 
 <phrase>
 <original>optimal</original>
-<translation></translation>
+<translation>最佳</translation>
 </phrase>
 
 <phrase>
 <original>from file</original>
-<translation></translation>
+<translation>从文件</translation>
 </phrase>
 
 <phrase>
@@ -10646,12 +10649,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>%1 (%2 colors)</original>
-<translation></translation>
+<translation>%1 (%2 颜色）</translation>
 </phrase>
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation></translation>
+<translation>警告！ 调色板文件无效。</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -11534,7 +11537,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation></translation>
+<translation>正在处理图像  # %1 / %2</translation>
 </phrase>
 
 <phrase>
@@ -11549,12 +11552,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation></translation>
+<translation>批量转换已取消，在  %1 之前取消处理图像，最后处理的图像是 "%2"。</translation>
 </phrase>
 
 <phrase>
 <original>Estimated time remaining: %1:%2</original>
-<translation></translation>
+<translation>预计剩余时间：%1:%2</translation>
 </phrase>
 
 <phrase>
@@ -11570,62 +11573,62 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Palette export options</original>
-<translation></translation>
+<translation>调色板导出选项</translation>
 </phrase>
 
 <phrase>
 <original>target palette file</original>
-<translation></translation>
+<translation>目标调色板文件</translation>
 </phrase>
 
 <phrase>
 <original>palette name</original>
-<translation></translation>
+<translation>调色板名称</translation>
 </phrase>
 
 <phrase>
 <original>color count</original>
-<translation></translation>
+<translation>颜色数</translation>
 </phrase>
 
 <phrase>
 <original>palette color count</original>
-<translation></translation>
+<translation>调色板颜色数</translation>
 </phrase>
 
 <phrase>
 <original>palette contents</original>
-<translation></translation>
+<translation>调色板内容</translation>
 </phrase>
 
 <phrase>
 <original>palette to export</original>
-<translation></translation>
+<translation>要导出的调色板</translation>
 </phrase>
 
 <phrase>
 <original>current palette</original>
-<translation></translation>
+<translation>当前调色板</translation>
 </phrase>
 
 <phrase>
 <original>original embedded palette</original>
-<translation></translation>
+<translation>原始嵌入调色板</translation>
 </phrase>
 
 <phrase>
 <original>overwrite</original>
-<translation></translation>
+<translation>覆盖</translation>
 </phrase>
 
 <phrase>
 <original>append</original>
-<translation></translation>
+<translation>追加</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation></translation>
+<translation>Adobe Swatch Exchange（ASE）文件可以在单个文件中存储多个调色板。 如果选择“追加”选项，PhotoDemon会将此调色板添加到现有的ASE文件中。 不会修改文件中已有的任何调色板。</translation>
 </phrase>
 
 <phrase>
@@ -12647,12 +12650,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Patrons</original>
-<translation></translation>
+<translation>赞助</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2000-%2 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon Copyright %1 2000-%2 版权属于Tanner Helland和贡献者</translation>
 </phrase>
 
 <phrase>
@@ -12662,22 +12665,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>SUPER PATRONS</original>
-<translation></translation>
+<translation>超级赞助人</translation>
 </phrase>
 
 <phrase>
 <original>PATRONS</original>
-<translation></translation>
+<translation>赞助人</translation>
 </phrase>
 
 <phrase>
 <original>THANK YOU to our wonderful Patreon supporters!</original>
-<translation></translation>
+<translation>感谢我们精彩的支持者！</translation>
 </phrase>
 
 <phrase>
 <original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation></translation>
+<translation>（您也可以成为赞助人！点击此处了解更多信息。）</translation>
 </phrase>
 
 <!-- Help_About.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -12800,7 +12803,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Copy this tag to the clipboard</original>
-<translation></translation>
+<translation>将此标记复制到剪贴板</translation>
 </phrase>
 
 <phrase>
@@ -12815,7 +12818,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Copy all tags in this group to the clipboard</original>
-<translation></translation>
+<translation>将此组中的所有标签复制到剪贴板</translation>
 </phrase>
 
 <phrase>
@@ -12996,7 +12999,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Automatic</original>
-<translation></translation>
+<translation>自动</translation>
 </phrase>
 
 <phrase>
@@ -13011,7 +13014,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Bilinear (optimized for downsizing)</original>
-<translation></translation>
+<translation>双线性（针对缩小尺寸进行了优化）</translation>
 </phrase>
 
 <phrase>
@@ -13021,17 +13024,17 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Bicubic (optimized for downsizing)</original>
-<translation></translation>
+<translation>双立方体（针对缩小尺寸进行了优化）</translation>
 </phrase>
 
 <phrase>
 <original>Mitchell-Netravali</original>
-<translation></translation>
+<translation>Mitchell-Netravali</translation>
 </phrase>
 
 <phrase>
 <original>Catmull-Rom</original>
-<translation></translation>
+<translation>Catmull-Rom</translation>
 </phrase>
 
 <phrase>
@@ -13545,7 +13548,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Measure angles and distances</original>
-<translation></translation>
+<translation>测量角度和距离</translation>
 </phrase>
 
 <phrase>
@@ -13754,27 +13757,27 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>share measurements between images</original>
-<translation></translation>
+<translation>在图像之间共享测量</translation>
 </phrase>
 
 <phrase>
 <original>swap points</original>
-<translation></translation>
+<translation>交换点</translation>
 </phrase>
 
 <phrase>
 <original>straighten image</original>
-<translation></translation>
+<translation>矫正形象</translation>
 </phrase>
 
 <phrase>
 <original>straighten layer</original>
-<translation></translation>
+<translation>矫正层</translation>
 </phrase>
 
 <phrase>
 <original>rotate 90</original>
-<translation></translation>
+<translation>旋转90度</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 15 phrases. 10 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13923,17 +13926,17 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>highlight</original>
-<translation>突出</translation>
+<translation>突出显示</translation>
 </phrase>
 
 <phrase>
 <original>lightbox</original>
-<translation>灯箱特效</translation>
+<translation>光箱效果</translation>
 </phrase>
 
 <phrase>
 <original>ants</original>
-<translation>蚂蚁</translation>
+<translation>虚线效果</translation>
 </phrase>
 
 <phrase>
@@ -13968,7 +13971,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation></translation>
+<translation>锁定此值。（一次只能锁定一个值，如果锁定新值，先前锁定的值将解锁。）</translation>
 </phrase>
 
 <phrase>
@@ -14646,42 +14649,42 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Create macro from session history</original>
-<translation></translation>
+<translation>从会话历史记录中创建宏</translation>
 </phrase>
 
 <phrase>
 <original>first action</original>
-<translation></translation>
+<translation>第一个功能</translation>
 </phrase>
 
 <phrase>
 <original>last action</original>
-<translation></translation>
+<translation>最后一个功能</translation>
 </phrase>
 
 <phrase>
 <original>* current image state in the main window</original>
-<translation></translation>
+<translation>*主窗口中的当前图像状态</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation></translation>
+<translation>警告：这不是一个有效的宏，您必须包括至少一个修改图像的操作。</translation>
 </phrase>
 
 <phrase>
 <original>Invalid macro</original>
-<translation></translation>
+<translation>无效的宏</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation></translation>
+<translation>警告：这不是一个有效的宏。最后一个操作不能在第一个操作之后发生。</translation>
 </phrase>
 
 <phrase>
 <original>Your final macro will contain %1 action(s).</original>
-<translation></translation>
+<translation>您的最终宏将包含 %1 个操作。</translation>
 </phrase>
 
 <!-- Tools_MacroSession.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -14732,7 +14735,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>generate debug logs</original>
-<translation></translation>
+<translation>生成调试日志</translation>
 </phrase>
 
 <phrase>
@@ -14797,7 +14800,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>use black point compensation</original>
-<translation></translation>
+<translation>使用黑点补偿</translation>
 </phrase>
 
 <phrase>
@@ -15075,22 +15078,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation></translation>
+<translation>较旧的相机和照片编辑软件可能无法正确嵌入元数据，从而导致单个文件中的多个元数据副本，PhotoDemon 可以自动为您解决重复的条目。</translation>
 </phrase>
 
 <phrase>
 <original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation></translation>
+<translation>JPEG格式不提供在图像文件中存储JPEG质量设置的方法。 PhotoDemon可以通过推断其他元数据（如量化表）的质量设置来解决这个问题。</translation>
 </phrase>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation></translation>
+<translation>一些相机制造商在图像文件中存储专有元数据标签，这些标签通常对个人无用，但 PhotoDemon 可以尝试提取它们。</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation></translation>
+<translation>默认情况下，不处理大型二进制标记（如图像缩略图）。 相反，PhotoDemon只是报告嵌入数据的大小。 如果您需要此数据，PhotoDemon可以手动将其转换为Base64以进行进一步分析。</translation>
 </phrase>
 
 <phrase>
@@ -15100,7 +15103,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation></translation>
+<translation>默认情况下，当您尝试使用未保存的更改关闭图像时，PhotoDemon将发出警告。</translation>
 </phrase>
 
 <phrase>
@@ -15135,7 +15138,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation></translation>
+<translation>EXIF规范要求程序在导出图像文件时正确地将自己标识为原始软件。 为了增加隐私，您可以暂停此行为。</translation>
 </phrase>
 
 <phrase>
@@ -15160,7 +15163,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation></translation>
+<translation>PhotoDemon 会生成许多缩略图，尤其是当图像包含多层时。缩略图质量可以降低，以提高性能。</translation>
 </phrase>
 
 <phrase>
@@ -15170,7 +15173,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation></translation>
+<translation>低压缩设置需要更多磁盘空间，但撤消/重做操作会更快。 高压缩设置需要较少的磁盘空间，但撤消/重做操作会较慢。 关闭图像时，将删除撤消数据，因此此设置仅在正在编辑图像时影响磁盘空间。</translation>
 </phrase>
 
 <phrase>
@@ -15215,7 +15218,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation></translation>
+<translation>BPC主要与色度渲染意图相关，它有助于保留图像暗（阴影）区域的细节。 对于大多数工作流程，应打开BPC。</translation>
 </phrase>
 
 <phrase>
@@ -15287,7 +15290,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation></translation>
+<translation>在开发人员构建中，调试数据会自动记录到程序的 \Data\Debug 文件夹中。 如果您在稳定版本中遇到错误，请手动激活此设置。 这将有助于开发人员解决您的问题。</translation>
 </phrase>
 
 <phrase>
@@ -15312,12 +15315,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation></translation>
+<translation>单击以选中新的临时文件夹。</translation>
 </phrase>
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation></translation>
+<translation>此按钮可重置所有PhotoDemon设置。 如果程序出现意外行为，则可能会解决问题。</translation>
 </phrase>
 
 <phrase>
