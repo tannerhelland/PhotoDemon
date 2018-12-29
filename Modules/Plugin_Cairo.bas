@@ -244,7 +244,7 @@ Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 
 '        GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
 '
 '        'Report resize time here
-'        'Debug.Print "GDI+ resize time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
+'        'Debug.Print "GDI+ resize time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
 '
 '        'Release our image attributes object
 '        GdipDisposeImageAttributes imgAttributesHandle
@@ -265,7 +265,7 @@ Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 
     If (Not dstDIB Is Nothing) Then dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print "GDI+ wrapper time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
+    'Debug.Print "GDI+ wrapper time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
     
 End Sub
 
@@ -354,11 +354,11 @@ End Sub
 
 Public Sub TestOnActiveImage()
 
-    If (g_OpenImageCount > 0) Then
-        'Plugin_Cairo.TestPainting pdImages(g_CurrentImage).GetActiveDIB
+    If PDImages.IsImageActive() Then
+        'Plugin_Cairo.TestPainting PDImages.GetActiveImage.GetActiveDIB
         Dim x1 As Single, y1 As Single, dstWidth As Single, dstHeight As Single
         Dim x2 As Single, y2 As Single, srcWidth As Single, srcHeight As Single
-        With pdImages(g_CurrentImage).GetActiveDIB
+        With PDImages.GetActiveImage.GetActiveDIB
             x1 = .GetDIBWidth * 0.25
             y1 = .GetDIBHeight * 0.25
             dstWidth = .GetDIBWidth * 0.5
@@ -369,10 +369,10 @@ Public Sub TestOnActiveImage()
             srcHeight = .GetDIBHeight
         End With
         
-        Plugin_Cairo.Cairo_StretchBlt pdImages(g_CurrentImage).GetActiveDIB, x1, y1, dstWidth, dstHeight, pdImages(g_CurrentImage).GetActiveDIB, x2, y2, srcWidth, srcHeight
+        Plugin_Cairo.Cairo_StretchBlt PDImages.GetActiveImage.GetActiveDIB, x1, y1, dstWidth, dstHeight, PDImages.GetActiveImage.GetActiveDIB, x2, y2, srcWidth, srcHeight
         
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, 0
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
         
 End Sub

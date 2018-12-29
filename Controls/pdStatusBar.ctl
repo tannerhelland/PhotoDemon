@@ -289,14 +289,14 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     
     'The position displayed changes based on the current measurement unit (px, in, cm)
     Else
-        If (g_OpenImageCount > 0) Then
+        If PDImages.IsImageActive() Then
             Select Case m_UnitOfMeasurement
                 Case mu_Pixels
                     lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
                 Case mu_Inches, mu_Centimeters
-                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0##") & ")"
+                    lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0##") & ")"
                 Case mu_Millimeters, mu_Points, mu_Picas
-                    If (Not pdImages(g_CurrentImage) Is Nothing) Then lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, pdImages(g_CurrentImage).GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, pdImages(g_CurrentImage).GetDPI()), "0.0#") & ")"
+                    lblCoordinates.Caption = "(" & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & "," & Format$(Units.ConvertPixelToOtherUnit(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI()), "0.0#") & ")"
             End Select
         End If
     End If
@@ -343,13 +343,13 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
                 sizeString = srcImage.Width & " x " & srcImage.Height
                 
             Case mu_Inches
-                sizeString = Format$(unitWidth, "0.0##") & " x " & Format(unitHeight, "0.0##")
+                sizeString = Format$(unitWidth, "0.0##") & " x " & Format$(unitHeight, "0.0##")
             
             Case mu_Centimeters, mu_Millimeters
-                sizeString = Format$(unitWidth, "0.0#") & " x " & Format(unitHeight, "0.0#")
+                sizeString = Format$(unitWidth, "0.0#") & " x " & Format$(unitHeight, "0.0#")
                 
             Case mu_Points, mu_Picas
-                sizeString = Format$(unitWidth, "0.0") & " x " & Format(unitHeight, "0.0")
+                sizeString = Format$(unitWidth, "0.0") & " x " & Format$(unitHeight, "0.0")
             
         End Select
         
@@ -380,7 +380,7 @@ End Function
 
 'Fill the "size units" drop-down.  We must do this relatively late in the load process, as we have to wait for the translation
 ' engine to initialize.
-Public Function PopulateSizeUnits()
+Public Sub PopulateSizeUnits()
     
     cmbSizeUnit.SetAutomaticRedraws False
     cmbSizeUnit.Clear
@@ -394,7 +394,7 @@ Public Function PopulateSizeUnits()
     cmbSizeUnit.ListIndex = 0
     cmbSizeUnit.SetAutomaticRedraws True, True
     
-End Function
+End Sub
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
@@ -406,8 +406,8 @@ End Sub
 
 Private Sub cmbSizeUnit_Click()
     m_UnitOfMeasurement = cmbSizeUnit.ListIndex + 1
-    If (g_OpenImageCount > 0) Then
-        Me.DisplayImageSize pdImages(g_CurrentImage)
+    If PDImages.IsImageActive() Then
+        Me.DisplayImageSize PDImages.GetActiveImage()
         FormMain.MainCanvas(0).NotifyRulerUnitChange cmbSizeUnit.ListIndex + 1
         If (g_CurrentTool = ND_MEASURE) Then Tools_Measure.NotifyUnitChange
     End If
@@ -425,10 +425,10 @@ Private Sub CmbZoom_Click()
         Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
         centerXCanvas = FormMain.MainCanvas(0).GetCanvasWidth * 0.5
         centerYCanvas = FormMain.MainCanvas(0).GetCanvasHeight * 0.5
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
         
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
-        pdImages(g_CurrentImage).SetZoom cmbZoom.ListIndex
+        PDImages.GetActiveImage.SetZoom cmbZoom.ListIndex
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
         cmdZoomIn.Enabled = (cmbZoom.ListIndex <> 0)
@@ -445,9 +445,9 @@ Private Sub CmbZoom_Click()
             ' of updating zoom.  If they have *not* selected this, we want to preserve the current center point
             ' of the viewport.
             If (cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex) Then
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+                ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
             Else
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
+                ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
             End If
         
             'Notify any other relevant UI elements
@@ -788,8 +788,8 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbSizeUnit.ListIndex = backupSizeIndex
         
         'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-        If (g_OpenImageCount > 0) Then
-            DisplayImageSize pdImages(g_CurrentImage), False
+        If PDImages.IsImageActive() Then
+            DisplayImageSize PDImages.GetActiveImage(), False
         Else
             DisplayImageSize Nothing, True
         End If

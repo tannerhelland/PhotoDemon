@@ -236,7 +236,7 @@ Public Sub Randomize()
                 chrCode = cRandom.GetRandomInt_WH()
             Loop
             
-            cString.Append ChrW(chrCode)
+            cString.Append ChrW$(chrCode)
             
         Else
             cString.Append "-"

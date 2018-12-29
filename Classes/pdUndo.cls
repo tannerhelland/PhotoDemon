@@ -460,7 +460,7 @@ Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     Me.WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Image successfully restored."
     
@@ -596,10 +596,10 @@ Friend Sub RestoreUndoData()
             'Now we know that the layer stack has the correct number of layers, in the correct order.
             ' Loop through each layer in the image, searching for more recent diffs for either the layer itself or the
             ' layer header (relevant if the user has made on-canvas changes that don't necessarily affect the layer DIB).
-            For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+            For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
             
                 'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
-                curLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
+                curLayerID = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerID
             
                 'Start by reconstructing a layer DIB using the default UNDO_LAYER type.  (Note that this check will also
                 ' return UNDO_LAYER_VECTORSAFE and UNDO_LAYER_HEADER results.)
@@ -657,7 +657,7 @@ Friend Sub RestoreUndoData()
         End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
     
@@ -945,8 +945,8 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
     
 End Function
 
-'Get the filename of the current Undo file, using the same formula as generateUndoFilename below
-Friend Function GetCurrentUndoFilename()
+'Get the filename of the current Undo file, using the same formula as GenerateUndoFilename() below
+Friend Function GetCurrentUndoFilename() As String
     GetCurrentUndoFilename = GenerateUndoFilename(m_UndoNum)
 End Function
 

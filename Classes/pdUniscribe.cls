@@ -190,9 +190,9 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
 End Function
 
 'Free any/all previously allocated cache structures
-Friend Function FreeUniscribeCaches()
+Friend Sub FreeUniscribeCaches()
     If (m_ScriptCache.p <> 0) Then ScriptFreeCache m_ScriptCache
-End Function
+End Sub
 
 'Uniscribe caches a number of font-specific values (https://msdn.microsoft.com/en-us/library/windows/desktop/dd317726%28v=vs.85%29.aspx),
 ' which can greatly improve performance during glyph retrieval and placement.  It maintains its own reference counts, but we can improve
@@ -260,7 +260,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
             m_LineBreakPositions(m_NumOfLineBreaks) = lfPos
             m_NumOfLineBreaks = m_NumOfLineBreaks + 1
             
-            If m_NumOfLineBreaks > UBound(m_LineBreakPositions) Then ReDim Preserve m_LineBreakPositions(0 To m_NumOfLineBreaks * 2 - 1) As Long
+            If (m_NumOfLineBreaks > UBound(m_LineBreakPositions)) Then ReDim Preserve m_LineBreakPositions(0 To m_NumOfLineBreaks * 2 - 1) As Long
             
             lfPos = InStr(lfPos + 1, m_CurrentString, vbLf, vbBinaryCompare)
         
@@ -273,7 +273,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         
         'Replace all linebreaks with zero-width space chars.  These force Uniscribe to break characters at these positions, and they are
         ' easy to detect later, when it's time to return a glyph array to the actual renderer.
-        m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW(8203), , , vbBinaryCompare)
+        m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW$(8203), , , vbBinaryCompare)
         
     End If
     

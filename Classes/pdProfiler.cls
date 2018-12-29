@@ -182,7 +182,7 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     Set reportString = New pdString
     
     'Give the report a title
-    reportString.AppendLine "-- pdProfiler report for " & Chr(34) & m_Events(0).Name & Chr(34) & " --"
+    reportString.AppendLine "-- pdProfiler report for " & Chr$(34) & m_Events(0).Name & Chr$(34) & " --"
     
     'Note the data as well
     reportString.AppendLine "(Report updated at " & Format$(Now, "hh:mm:ss AM/PM") & " on " & Format$(Now, "dd-mmmm-yy") & ")"
@@ -389,7 +389,7 @@ End Sub
 
 'Once a report's name has been set, use the following two functions to retrieve the report's log filename and database filename,
 ' both of which adhere to strict patterns, which is how we can track them between runs!
-Private Function GetReportFilename()
+Private Function GetReportFilename() As String
 
     'Generate a default filename, using the report title
     Dim dstFilename As String
@@ -410,7 +410,7 @@ Private Function GetReportFilename()
 
 End Function
 
-Private Function GetDatabaseFilename()
+Private Function GetDatabaseFilename() As String
 
     'Generate a default filename, using the report title
     Dim dstFilename As String

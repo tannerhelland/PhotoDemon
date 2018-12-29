@@ -335,6 +335,8 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 
+Option Explicit
+
 Private Enum PD_Resource_Type
     PDRT_Image = 0
     PDRT_Other = 1

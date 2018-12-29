@@ -116,10 +116,10 @@ Private Sub Form_Load()
     'Before loading the form, let's do something strange - grab a small copy of the image, and if it
     ' doesn't contain any transparency, forgo showing the dialog completely.
     Dim abandonLoad As Boolean
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
         
         Dim newWidth As Long, newHeight As Long
-        PDMath.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 256, 256, newWidth, newHeight
+        PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 256, 256, newWidth, newHeight
         
         Dim tmpRectF As RectF
         With tmpRectF
@@ -132,7 +132,7 @@ Private Sub Form_Load()
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.CreateBlank newWidth, newHeight, 32, 0, 0
-        pdImages(g_CurrentImage).RequestThumbnail tmpDIB, 256, False, VarPtr(tmpRectF)
+        PDImages.GetActiveImage.RequestThumbnail tmpDIB, 256, False, VarPtr(tmpRectF)
         
         abandonLoad = (Not DIBs.IsDIBTransparent(tmpDIB))
         

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.52</langversion>
+<langversion>7.0.53</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1656,6 +1656,12 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDImages.bas -->
+
+<!-- PDImages.bas contains 0 phrases. -->
+
+<!-- END text for PDImages.bas-->
 
 <!-- BEGIN text for PDMath.bas -->
 

@@ -891,7 +891,7 @@ Private Function DoesHexLookValid(ByRef hexStringToCheck As String) As Boolean
         If InStr(1, validChars, curChar, vbTextCompare) > 0 Then newText = newText & curChar
     Next i
         
-    newText = LCase(newText)
+    newText = LCase$(newText)
     
     'Make sure the length is 1, 3, or 6.  Each case is handled specially; other lengths are not valid
     Select Case Len(newText)

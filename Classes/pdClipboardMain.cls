@@ -242,10 +242,10 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
     
     If cutMerged Then
         startLayer = 0
-        endLayer = pdImages(g_CurrentImage).GetNumOfLayers - 1
+        endLayer = PDImages.GetActiveImage.GetNumOfLayers - 1
     Else
-        startLayer = pdImages(g_CurrentImage).GetActiveLayerIndex
-        endLayer = pdImages(g_CurrentImage).GetActiveLayerIndex
+        startLayer = PDImages.GetActiveImage.GetActiveLayerIndex
+        endLayer = PDImages.GetActiveImage.GetActiveLayerIndex
     End If
     
     Dim i As Long
@@ -254,11 +254,11 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
         'For "cut merged", ignore transparent layers
         If cutMerged Then
         
-            If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
+            If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
-                If pdImages(g_CurrentImage).IsSelectionActive Then
-                    pdImages(g_CurrentImage).EraseProcessedSelection i
+                If PDImages.GetActiveImage.IsSelectionActive Then
+                    PDImages.GetActiveImage.EraseProcessedSelection i
                 Else
                     Layers.EraseLayerByIndex i
                 End If
@@ -269,8 +269,8 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
         Else
         
             'If a selection is active, erase the selected area.  Otherwise, delete the given layer.
-            If pdImages(g_CurrentImage).IsSelectionActive Then
-                pdImages(g_CurrentImage).EraseProcessedSelection i
+            If PDImages.GetActiveImage.IsSelectionActive Then
+                PDImages.GetActiveImage.EraseProcessedSelection i
             Else
                 Layers.DeleteLayer i
             End If
@@ -283,7 +283,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
     Processor.MarkProgramBusyState False
     
     'Redraw the active viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -620,7 +620,7 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
 End Function
 
 'If one or more files exist on the clipboard, attempt to paste them all.
-Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
+Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean) As Boolean
     
     'Make sure files actually exist on the clipboard
     If m_Clipboard.DoesClipboardHaveFiles() Then
@@ -729,7 +729,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
 End Function
 
 'If the clipboard contains text, try to find an image path or URL that we can use.
-Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
+Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean) As Boolean
     
     ClipboardPaste_TextSource = False
     
@@ -807,7 +807,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         tmpFilename = Files.FileGetName(tmpDownloadFile, True)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-        If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
+        If PDImages.IsImageActive() And srcIsMeantAsLayer Then
             Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
         Else
             LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
@@ -817,15 +817,13 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         Files.FileDeleteIfExists tmpDownloadFile
         
         Message "Image imported successfully "
-            
+        
         'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
         ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
-        ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
-        ' to use this technique for predicting failure.)
-        If (g_CurrentImage <= UBound(pdImages)) Then
-            If (Not pdImages(g_CurrentImage) Is Nothing) Then
-                ClipboardPaste_WellFormedURL = pdImages(g_CurrentImage).IsActive
-            End If
+        ' and subsequently unloads images in an arbitrary order - but given the rarity of that situation,
+        ' I'm content to use this simplified technique for predicting failure.)
+        If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
+            ClipboardPaste_WellFormedURL = PDImages.GetActiveImage.IsActive
         End If
     
     'If the download failed, let the user know that hey, at least we tried.
@@ -1017,7 +1015,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                         
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                    If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
+                    If PDImages.IsImageActive() And srcIsMeantAsLayer Then
                         Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
@@ -1032,12 +1030,10 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     ' to temporarily use this technique for predicting failure.)
                     '
                     'TODO: rewrite PD's central image load functions to return pass/fail status.
-                    If (g_CurrentImage <= UBound(pdImages)) Then
-                        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-                            If pdImages(g_CurrentImage).IsActive Then
-                                Message "Clipboard data imported successfully "
-                                ClipboardPaste_BitmapImage = True
-                            End If
+                    If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
+                        If PDImages.GetActiveImage.IsActive Then
+                            Message "Clipboard data imported successfully "
+                            ClipboardPaste_BitmapImage = True
                         End If
                     End If
                     
@@ -1233,7 +1229,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     
                     DragDrop_FileList = True
                     
-                    If (g_OpenImageCount > 0) And loadAsLayers Then
+                    If PDImages.IsImageActive() And loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
                             Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
                         Next i
@@ -1411,7 +1407,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 
                 DragDrop_ZippedFileList = True
                 
-                If (g_OpenImageCount > 0) And loadAsLayers Then
+                If PDImages.IsImageActive() And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
                         If Files.FileExists(listOfFiles.GetString(i)) Then
                             Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True
@@ -1483,7 +1479,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-    If (g_OpenImageCount > 0) And loadAsLayers Then
+    If PDImages.IsImageActive() And loadAsLayers Then
         Layers.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True
     Else
         LoadFileAsNewImage tmpDragDropFile, sTitle, False
@@ -1498,12 +1494,10 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     ' to temporarily use this technique for predicting failure.)
     '
     'TODO: rewrite PD's central image load functions to return pass/fail status.
-    If (g_CurrentImage <= UBound(pdImages)) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-            If pdImages(g_CurrentImage).IsActive Then
-                Message "Image imported successfully "
-                DragDrop_BitmapData = True
-            End If
+    If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
+        If PDImages.GetActiveImage.IsActive Then
+            Message "Image imported successfully "
+            DragDrop_BitmapData = True
         End If
     End If
     
@@ -1554,7 +1548,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             'If the text (or a trimmed version of the text) matches a local file, try to load it.
             If (LenB(targetFile) <> 0) Then
             
-                If (g_OpenImageCount > 0) And loadAsLayers Then
+                If PDImages.IsImageActive() And loadAsLayers Then
                     Layers.LoadImageAsNewLayer False, targetFile, , True
                 Else
                     LoadFileAsNewImage targetFile
@@ -1587,12 +1581,12 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'The specific data we stash varies according to a few different parameters.
     
     'First, check for an active selection
-    If pdImages(g_CurrentImage).IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive Then
         
         PDDebug.LogAction "Clipboard stash update: generating processed selection area..."
         
         'Fill the temporary DIB with the selected area onlny, with any/all selection processing applied
-        pdImages(g_CurrentImage).RetrieveProcessedSelection m_ClipboardDIB, True, copyMerged
+        PDImages.GetActiveImage.RetrieveProcessedSelection m_ClipboardDIB, True, copyMerged
         
     Else
         
@@ -1600,10 +1594,10 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         
         'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
         If copyMerged Then
-            pdImages(g_CurrentImage).GetCompositedImage m_ClipboardDIB, True
+            PDImages.GetActiveImage.GetCompositedImage m_ClipboardDIB, True
         Else
             If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
-            m_ClipboardDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveLayer.layerDIB
+            m_ClipboardDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveLayer.layerDIB
         End If
         
     End If

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.377</langversion>
+<langversion>6.7.378</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -1665,6 +1665,12 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDImages.bas -->
+
+<!-- PDImages.bas contains 0 phrases. -->
+
+<!-- END text for PDImages.bas-->
 
 <!-- BEGIN text for PDMath.bas -->
 

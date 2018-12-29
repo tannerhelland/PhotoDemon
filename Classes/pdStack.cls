@@ -20,8 +20,8 @@ Attribute VB_Exposed = False
 '
 'Per its name, this class provides a simple interface to a stack comprised of ints.
 '
-'Note that it's not *technically* a stack, by design, as it provides helper functions for retrieving data from
-' the middle of the stack (rather than enforcing a strict push/pop access system).
+'Note that it's not *technically* a stack, by design, as it provides helper functions for retrieving data
+' from the middle of the stack (rather than enforcing a strict push/pop access system).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -30,7 +30,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_Ints() As String
+Private m_Ints() As Long
 Private m_NumOfInts As Long
 Private Const INIT_STACK_SIZE As Long = 16
 
@@ -39,7 +39,7 @@ Private Const INIT_STACK_SIZE As Long = 16
 Friend Function AddInt(ByVal srcInt As Long) As Long
 
     'Resize the stack as necessary
-    If (m_NumOfInts > UBound(m_Ints)) Then ReDim Preserve m_Ints(0 To m_NumOfInts * 2 - 1) As String
+    If (m_NumOfInts > UBound(m_Ints)) Then ReDim Preserve m_Ints(0 To m_NumOfInts * 2 - 1) As Long
     
     'Add the string
     m_Ints(m_NumOfInts) = srcInt
@@ -75,7 +75,7 @@ End Function
 
 'Trim the stack to its exact size.  IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
 Friend Sub TrimStack()
-    ReDim Preserve m_Ints(0 To m_NumOfInts - 1) As String
+    ReDim Preserve m_Ints(0 To m_NumOfInts - 1) As Long
 End Sub
 
 'Retrieve a value from the stack at any arbitrary position
@@ -129,9 +129,9 @@ Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     
     'Reset the array (but only if necessary!)
     If (m_NumOfInts = 0) Then
-        ReDim m_Ints(0 To newStackSize - 1) As String
+        ReDim m_Ints(0 To newStackSize - 1) As Long
     Else
-        If (UBound(m_Ints) <> newStackSize - 1) Then ReDim m_Ints(0 To newStackSize - 1) As String
+        If (UBound(m_Ints) <> newStackSize - 1) Then ReDim m_Ints(0 To newStackSize - 1) As Long
     End If
     
     m_NumOfInts = 0
@@ -140,7 +140,7 @@ Friend Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     
 FailsafeReset:
     If (newStackSize <= 0) Then newStackSize = INIT_STACK_SIZE
-    ReDim m_Ints(0 To newStackSize - 1) As String
+    ReDim m_Ints(0 To newStackSize - 1) As Long
     
 End Sub
 

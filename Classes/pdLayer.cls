@@ -300,10 +300,10 @@ End Function
 
 'Set layer type.  Note that this only sets the layer type flag; changing the actual layer contents to match (e.g. rasterization)
 ' must be handled separately.
-Friend Function SetLayerType(ByVal newLayerType As PD_LayerType)
+Friend Sub SetLayerType(ByVal newLayerType As PD_LayerType)
     myLayerType = newLayerType
     m_VectorDIBSynched = False
-End Function
+End Sub
 
 'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
 ' considered vector layers, because all changes are non-destructive.
@@ -2013,7 +2013,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
+    mouseAccuracy = g_MouseAccuracy * (1# / g_Zoom.GetZoomValue(PDImages.GetActiveImage.GetZoom))
     
     'Find the smallest distance for this mouse position
     Dim minDistance As Double

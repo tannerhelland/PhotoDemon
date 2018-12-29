@@ -140,16 +140,16 @@ Public Sub RemoveLayerTransparency(ByVal processParameters As String)
     newBackColor = cParams.GetLong("backcolor", vbWhite)
     
     'Ask the current DIB to convert itself to 24bpp mode
-    pdImages(g_CurrentImage).GetActiveDIB.CompositeBackgroundColor Colors.ExtractRed(newBackColor), Colors.ExtractGreen(newBackColor), Colors.ExtractBlue(newBackColor)
-    pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
+    PDImages.GetActiveImage.GetActiveDIB.CompositeBackgroundColor Colors.ExtractRed(newBackColor), Colors.ExtractGreen(newBackColor), Colors.ExtractBlue(newBackColor)
+    PDImages.GetActiveImage.GetActiveDIB.SetInitialAlphaPremultiplicationState True
     
     'Notify the parent of the target layer of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
     
     Message "Finished."
     
     'Redraw the main window
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 

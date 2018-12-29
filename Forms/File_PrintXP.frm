@@ -334,7 +334,7 @@ Private Sub Form_Load()
     cbOrientation.ListIndex = 0
     
     Dim imgAspect As Double, paperAspect As Double
-    imgAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
+    imgAspect = PDImages.GetActiveImage.Width / PDImages.GetActiveImage.Height
     paperAspect = 8.5 / 11#
     
     If (imgAspect < paperAspect) Then
@@ -346,13 +346,13 @@ Private Sub Form_Load()
     UpdatePrintPreview
 
     'Temporarily copy the image into an image box
-    picOut.Width = pdImages(g_CurrentImage).Width
-    picOut.Height = pdImages(g_CurrentImage).Height
+    picOut.Width = PDImages.GetActiveImage.Width
+    picOut.Height = PDImages.GetActiveImage.Height
     picOut.ScaleMode = vbPixels
     
     Dim tmpComposite As pdDIB
     Set tmpComposite = New pdDIB
-    pdImages(g_CurrentImage).GetCompositedImage tmpComposite
+    PDImages.GetActiveImage.GetCompositedImage tmpComposite
     tmpComposite.RenderToPictureBox picOut, , , True
     
     picOut.ScaleMode = vbTwips
@@ -494,7 +494,7 @@ Private Sub UpdatePaperSize()
     
     Dim sWidth As String, sHeight As String
     sWidth = Format$(pWidth, "0.0#")
-    sHeight = Format(pHeight, "0.0#")
+    sHeight = Format$(pHeight, "0.0#")
     lblPaperSize.Caption = g_Language.TranslateMessage("paper size") & ": " & sWidth & """ x  " & sHeight & """"
     
     'Now comes the tricky part - we need to resize the preview box to match the aspect ratio of the paper
@@ -545,7 +545,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     Dim srcDIB As pdDIB
-    pdImages(g_CurrentImage).GetCompositedImage srcDIB
+    PDImages.GetActiveImage.GetCompositedImage srcDIB
     srcWidth = srcDIB.GetDIBWidth
     srcHeight = srcDIB.GetDIBHeight
             
@@ -553,7 +553,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     Dim newWidth As Long, newHeight As Long
     ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
-    'Normally this will draw a preview of pdImages(g_CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
+    'Normally this will draw a preview of PDImages.GetActiveImage.containingForm's relevant image.  However, another picture source can be specified.
     If srcDIB.GetDIBColorDepth = 32 Then
         Set tmpDIB = New pdDIB
         tmpDIB.CreateFromExistingDIB srcDIB, newWidth, newHeight, True

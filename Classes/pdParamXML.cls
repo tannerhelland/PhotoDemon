@@ -64,7 +64,7 @@ Friend Sub SetParamString(ByRef srcString As String)
 End Sub
 
 Friend Sub Reset(Optional ByVal paramStringVersion As Double = 1#)
-    m_ParamString.Reset "<version>" & Trim$(Str(paramStringVersion)) & "</version>"
+    m_ParamString.Reset "<version>" & Trim$(Str$(paramStringVersion)) & "</version>"
     m_SearchStart = 1
 End Sub
 
@@ -261,23 +261,23 @@ Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant,
     If VarType(paramValue) = vbString Then
         strParamValue = paramValue
     ElseIf VarType(paramValue) = vbByte Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbInteger Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbLong Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbSingle Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbDouble Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbBoolean Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbDecimal Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbCurrency Then
-        strParamValue = Trim$(Str(paramValue))
+        strParamValue = Trim$(Str$(paramValue))
     ElseIf VarType(paramValue) = vbNull Then
-        strParamValue = Trim$(Str(0))
+        strParamValue = Trim$(Str$(0))
     ElseIf VarType(paramValue) = vbDate Then
         strParamValue = Format$(paramValue, "yyyy-mm-dd h:mm:ss", vbSunday, vbFirstJan1)
     

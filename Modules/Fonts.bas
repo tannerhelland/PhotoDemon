@@ -172,10 +172,10 @@ Public Type OUTLINETEXTMETRIC
     otmMacDescent As Long
     otmMacLineGap As Long
     otmusMinimumPPEM As Long
-    otmptSubscriptSize As POINTAPI
-    otmptSubscriptOffset As POINTAPI
-    otmptSuperscriptSize As POINTAPI
-    otmptSuperscriptOffset As POINTAPI
+    otmptSubscriptSize As PointAPI
+    otmptSubscriptOffset As PointAPI
+    otmptSuperscriptSize As PointAPI
+    otmptSuperscriptOffset As PointAPI
     otmsStrikeoutSize As Long
     otmsStrikeoutPosition As Long
     otmsUnderscoreSize As Long
@@ -643,12 +643,6 @@ Public Sub BuildFontCacheProperties()
     End If
     
 End Sub
-
-'Given a DC with a font selected into it, return the primary charset for that DC
-Public Function GetCharsetOfDC(ByRef srcDC As Long) As FONT_CHARSETS
-    GetTextMetrics srcDC, m_TmpTextMetric
-    GetCharsetOfDC = m_TmpTextMetric.tmCharSet
-End Function
 
 'Given some standard font characteristics (font face, style, etc), fill a corresponding LOGFONTW struct with matching values.
 ' This is helpful as PD stores characteristics in VB-friendly formats (e.g. booleans for styles), while LOGFONTW uses custom

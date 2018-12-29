@@ -315,7 +315,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
         If (i = 3) Then channelName = "rgb"
         
         For x = 0 To 255
-            cHistogram(i, x) = cParams.GetDouble(channelName & Trim$(Str(x)), x / 255) * 255#
+            cHistogram(i, x) = cParams.GetDouble(channelName & Trim$(Str$(x)), x / 255) * 255#
         Next x
         
         For x = 0 To 255
@@ -391,21 +391,21 @@ Private Sub cmdBar_AddCustomPresetData()
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    Dim nodeName As String
+    Dim newNodeName As String
     
     For i = 0 To 3
     
         'Write the number of nodes for this array to file
-        cmdBar.AddPresetData "NodeCount_" & i, Trim$(Str(m_numOfNodes(i)))
+        cmdBar.AddPresetData "NodeCount_" & i, Trim$(Str$(m_numOfNodes(i)))
         
         cParams.Reset
         
         'Compile all nodes into a single string, with coordinate pairs separated by "|" and x/y values separated by ";"
         For j = 1 To m_numOfNodes(i)
-            nodeName = Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x"
-            cParams.AddParam nodeName, Trim$(Str((m_curveNodes(i, j).pX - PREVIEW_BORDER_PX) / nodeBoxWidth))
-            nodeName = Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_y"
-            cParams.AddParam nodeName, Trim$(Str((m_curveNodes(i, j).pY - PREVIEW_BORDER_PX) / nodeBoxHeight))
+            newNodeName = Trim$(Str$(i)) & "_" & Trim$(Str$(j)) & "_x"
+            cParams.AddParam newNodeName, Trim$(Str$((m_curveNodes(i, j).pX - PREVIEW_BORDER_PX) / nodeBoxWidth))
+            newNodeName = Trim$(Str$(i)) & "_" & Trim$(Str$(j)) & "_y"
+            cParams.AddParam newNodeName, Trim$(Str$((m_curveNodes(i, j).pY - PREVIEW_BORDER_PX) / nodeBoxHeight))
         Next j
     
         cmdBar.AddPresetData "NodeData_" & i, cParams.GetParamString()
@@ -503,9 +503,9 @@ Private Sub cmdBar_ReadCustomPresetData()
         For j = 1 To m_numOfNodes(i)
             
             'Retrieve this node's x and y values
-            If cParams.DoesParamExist(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x") Then
-                m_curveNodes(i, j).pX = cParams.GetDouble(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_x")
-                m_curveNodes(i, j).pY = cParams.GetDouble(Trim$(Str(i)) & "_" & Trim$(Str(j)) & "_y")
+            If cParams.DoesParamExist(Trim$(Str$(i)) & "_" & Trim$(Str$(j)) & "_x") Then
+                m_curveNodes(i, j).pX = cParams.GetDouble(Trim$(Str$(i)) & "_" & Trim$(Str$(j)) & "_x")
+                m_curveNodes(i, j).pY = cParams.GetDouble(Trim$(Str$(i)) & "_" & Trim$(Str$(j)) & "_y")
             Else
                 ResetCurvePoints
                 Exit Sub
@@ -1214,7 +1214,7 @@ Private Function GetLocalParamString() As String
         'We now need to convert the histogram array into a "|"-delimited string that can be passed through the
         ' software processor.  Generate it automatically.
         For j = 0 To 255
-            cParams.AddParam channelName & Trim$(Str(j)), cHistogram(j)
+            cParams.AddParam channelName & Trim$(Str$(j)), cHistogram(j)
         Next j
         
     Next i

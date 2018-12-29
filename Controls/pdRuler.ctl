@@ -315,9 +315,8 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
     'From these three things we can construct a valid ruler.
     ' (Similarly, if no image is active, we can't do a damn thing.)
     Dim okToDraw As Boolean
-    okToDraw = (g_OpenImageCount > 0)
-    If okToDraw Then okToDraw = (Not pdImages(g_CurrentImage) Is Nothing)
-    If okToDraw Then okToDraw = pdImages(g_CurrentImage).IsActive
+    okToDraw = PDImages.IsImageActive()
+    If okToDraw Then okToDraw = PDImages.GetActiveImage.IsActive
     If okToDraw Then okToDraw = (Not g_WindowManager Is Nothing)
     
     If okToDraw Then
@@ -335,7 +334,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         'Next, we want to figure out how to convert between ruler positions and *image* positions.  This is very close to
         ' mapping between canvas and image positions; in fact, all we need to modify is adding the offsets we discovered above!
         Dim imgTop As Double, imgLeft As Double
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0 - m_CanvasOffsetX, 0 - m_CanvasOffsetY, imgLeft, imgTop
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), 0 - m_CanvasOffsetX, 0 - m_CanvasOffsetY, imgLeft, imgTop
         
         'For the right and bottom parameters, grab our client rect and the canvas's client rect, and add the difference between
         ' them to the total (including the offset calculated above).  This will tell us what the right/bottom of *our* control
@@ -347,7 +346,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         Dim xOffset As Long, yOffset As Long
         xOffset = (myClientRectL.x2 - canvasClientRectL.x2) - m_CanvasOffsetX
         yOffset = (myClientRectL.y2 - canvasClientRectL.y2) - m_CanvasOffsetY
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), canvasClientRectL.x2 + xOffset, canvasClientRectL.y2 + yOffset, imgRight, imgBottom
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), canvasClientRectL.x2 + xOffset, canvasClientRectL.y2 + yOffset, imgRight, imgBottom
         
         'We now know the rectangle - in image coordinates - represented by the current canvas.  Place this data in a
         ' module-level rect that we can freely use in RedrawBackBuffer.  (Note that we actually store right/bottom
@@ -379,7 +378,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         'If a measurement unit other than "pixels" is used, we need to convert the underlying image coordinate
         ' rectangle from pixels to the relevant unit.
         Dim curImgDPI As Double
-        curImgDPI = pdImages(g_CurrentImage).GetDPI()
+        curImgDPI = PDImages.GetActiveImage.GetDPI()
         If (curImgDPI < 1#) Then curImgDPI = 1#
         
         'Cache the DPI we're using to lay out the ruler.  If RedrawBackBuffer detects DPI changes, it will
@@ -549,8 +548,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     'Rendering is pretty easy - fill a fraction of the control with the current progress level!
     Dim okToRender As Boolean
-    okToRender = PDMain.IsProgramRunning() And ucSupport.AmIVisible() And (g_OpenImageCount > 0)
-    If okToRender Then okToRender = (Not pdImages(g_CurrentImage) Is Nothing)
+    okToRender = PDMain.IsProgramRunning() And ucSupport.AmIVisible()
+    If okToRender Then okToRender = PDImages.IsImageActive()
     If okToRender Then
         
         'Before proceeding with the render, make sure the current image's DPI matches the last DPI
@@ -558,7 +557,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         ' to update our internal settings before proceeding.
         Dim srcImgDPI As Double
         If (m_RulerUnit <> mu_Pixels) Then
-            srcImgDPI = pdImages(g_CurrentImage).GetDPI()
+            srcImgDPI = PDImages.GetActiveImage.GetDPI()
             If (srcImgDPI < 1#) Then srcImgDPI = 1#
             If (m_LastDPI <> srcImgDPI) Then
                 UpdateControlLayout
@@ -607,7 +606,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             For x = m_LoopStart To m_LoopEnd Step m_Step
                 
                 'Convert this "hypothetical" coordinate from image space to canvas coordinate space
-                Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x), 0, xNew, yNew
+                Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), GetConvertedValue(x), 0, xNew, yNew
                 xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                 
                 'Render this line, and position text to the right of it
@@ -620,7 +619,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 If (m_Interval = 10) Then
                     
                     For i = 1 To 9
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.1) * i), 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), GetConvertedValue(x + (m_Step * 0.1) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If ((i And &H1) = 0) Then
                             PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
@@ -634,7 +633,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 ElseIf (m_Interval = 5) Then
                 
                     For i = 1 To 3
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.25) * i), 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), GetConvertedValue(x + (m_Step * 0.25) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         If (i = 2) Then
                             PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - halfSize, xNewInt, bHeight
@@ -647,7 +646,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 ' We want to draw four small notches for intermediary values.
                 ElseIf (m_Interval = 2) Then
                     For i = 1 To 4
-                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), GetConvertedValue(x + (m_Step * 0.2) * i), 0, xNew, yNew
+                        Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), GetConvertedValue(x + (m_Step * 0.2) * i), 0, xNew, yNew
                         xNewInt = Int(xNew + m_CanvasOffsetX + 0.5)
                         PD2D.DrawLineI cSurface, cPen, xNewInt, bHeight - quarterSize, xNewInt, bHeight
                     Next i
@@ -696,7 +695,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                 For y = m_LoopStart To m_LoopEnd Step m_Step
                     
                     'Convert this "hypothetical" coordinate from image space to canvas coordinate space
-                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y), xNew, yNew
+                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), 0, GetConvertedValue(y), xNew, yNew
                     yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                     
                     'Render this line, and position text to the right of it
@@ -709,7 +708,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     If (m_Interval = 10) Then
                         
                         For i = 1 To 9
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.1) * i), xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), 0, GetConvertedValue(y + (m_Step * 0.1) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If ((i And &H1) = 0) Then
                                 PD2D.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
@@ -723,7 +722,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     ElseIf (m_Interval = 5) Then
                     
                         For i = 1 To 3
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.25) * i), xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), 0, GetConvertedValue(y + (m_Step * 0.25) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             If (i = 2) Then
                                 PD2D.DrawLineI cSurface, cPen, bWidth - halfSize, yNewInt, bWidth, yNewInt
@@ -736,7 +735,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     ' We want to draw four small notches for intermediary values.
                     ElseIf (m_Interval = 2) Then
                         For i = 1 To 4
-                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), 0, GetConvertedValue(y + (m_Step * 0.2) * i), xNew, yNew
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), 0, GetConvertedValue(y + (m_Step * 0.2) * i), xNew, yNew
                             yNewInt = Int(yNew + m_CanvasOffsetY + 0.5)
                             PD2D.DrawLineI cSurface, cPen, bWidth - quarterSize, yNewInt, bWidth, yNewInt
                         Next i

@@ -525,7 +525,7 @@ Private Sub MakeNewTooltip()
             targetColor = Colors.ConvertSystemColor(targetColor)
             
             'Construct hex and RGB string representations of the target color
-            hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
+            hexString = "#" & UCase$(Colors.GetHexStringFromRGB(targetColor))
             rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(targetColor), Colors.ExtractGreen(targetColor), Colors.ExtractBlue(targetColor))
             toolString = hexString & vbCrLf & rgbString
             

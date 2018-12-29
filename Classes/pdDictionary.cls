@@ -95,7 +95,7 @@ End Function
 Friend Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) As Long
 
     'Keys are case-insensitive
-    entryKey = LCase(entryKey)
+    entryKey = LCase$(entryKey)
     
     'Look for the requested key in the array
     If (m_NumOfEntries > 0) Then

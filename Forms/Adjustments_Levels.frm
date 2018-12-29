@@ -357,7 +357,7 @@ Private Sub cmdAutoLevels_Click()
     
     'Retrieve the ideal level param string
     Dim pString As String
-    pString = GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
+    pString = GetIdealLevelParamString(PDImages.GetActiveImage.GetActiveDIB)
     
     'Level value parsing will be handled via PD's standard param string parser class
     FillLevelsFromParamString pString, m_LevelValues

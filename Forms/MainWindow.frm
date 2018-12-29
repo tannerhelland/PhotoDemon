@@ -1922,25 +1922,23 @@ Private Sub m_MetadataTimer_Timer()
                     If (startPosition > 0) And ((terminalPosition - startPosition) > 0) Then
                         
                         'Make sure we calculated our curImageID value correctly
-                        If (curImageID >= 0) And (curImageID <= UBound(pdImages)) Then
-                            If (Not pdImages(curImageID) Is Nothing) Then
+                        If PDImages.IsImageActive(curImageID) Then
                             
-                                'Create the imgMetadata object as necessary, and load the selected metadata into it!
-                                If (pdImages(curImageID).ImgMetadata Is Nothing) Then Set pdImages(curImageID).ImgMetadata = New pdMetadata
-                                pdImages(curImageID).ImgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
-                                
-                                'Now comes kind of a weird requirement.  Because metadata is loaded asynchronously, it may
-                                ' arrive after the image import engine has already written our first Undo entry out to file
-                                ' (this happens at image load-time, so we have a backup if the original file disappears).
-                                '
-                                'If this occurs, request a rewrite from the Undo engine, so we can make sure metadata gets
-                                ' added to the Undo/Redo stack.
-                                If pdImages(curImageID).UndoManager.HasFirstUndoWriteOccurred Then
-                                    PDDebug.LogAction "Adding late-arrival metadata to original undo entry..."
-                                    pdImages(curImageID).UndoManager.ForceLastUndoDataToIncludeEverything
-                                End If
-                                
+                            'Create the imgMetadata object as necessary, and load the selected metadata into it!
+                            If (PDImages.GetImageByID(curImageID).ImgMetadata Is Nothing) Then Set PDImages.GetImageByID(curImageID).ImgMetadata = New pdMetadata
+                            PDImages.GetImageByID(curImageID).ImgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+                            
+                            'Now comes kind of a weird requirement.  Because metadata is loaded asynchronously, it may
+                            ' arrive after the image import engine has already written our first Undo entry out to file
+                            ' (this happens at image load-time, so we have a backup if the original file disappears).
+                            '
+                            'If this occurs, request a rewrite from the Undo engine, so we can make sure metadata gets
+                            ' added to the Undo/Redo stack.
+                            If PDImages.GetImageByID(curImageID).UndoManager.HasFirstUndoWriteOccurred Then
+                                PDDebug.LogAction "Adding late-arrival metadata to original undo entry..."
+                                PDImages.GetImageByID(curImageID).UndoManager.ForceLastUndoDataToIncludeEverything
                             End If
+                            
                         End If
                         
                         'Find the next chunk of image metadata, if any
@@ -2135,11 +2133,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image
+            Process "Merge layer up", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image
+            Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
         
         'Order (top-level)
         Case 5
@@ -2191,7 +2189,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         'Delete all hidden layers
         Case 1
@@ -2212,11 +2210,11 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Blank layer
         Case 1
-            Process "Add blank layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Process "Add blank layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         'Duplicate of current layer
         Case 2
-            Process "Duplicate Layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Process "Duplicate Layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         '<separator>
         Case 3
@@ -2244,22 +2242,22 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
         '<separator>
         Case 2
         
         'Raise to top
         Case 3
-            Process "Raise layer to top", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Raise layer to top", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
         'Lower to bottom
         Case 4
-            Process "Lower layer to bottom", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
     End Select
 
@@ -2329,7 +2327,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LayerHeader
+            Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
         
         '<separator>
         Case 1
@@ -2511,7 +2509,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
             
             'If the action requires an open image, check for that first
             If .IsImageRequired(acceleratorIndex) Then
-                If (g_OpenImageCount = 0) Then Exit Sub
+                If (Not PDImages.IsImageActive()) Then Exit Sub
                 If Not (FormLanguageEditor Is Nothing) Then
                     If FormLanguageEditor.Visible Then Exit Sub
                 End If
@@ -2589,7 +2587,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         ' - Accelerators that DO require at least one loaded image
         
         'If no images are loaded, exit immediately
-        If (g_OpenImageCount = 0) Then Exit Sub
+        If (Not PDImages.IsImageActive()) Then Exit Sub
         
         'Fit on screen
         If .HotKeyName(acceleratorIndex) = "FitOnScreen" Then FitOnScreen
@@ -2821,7 +2819,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Cancel = (Not CanvasManager.CloseAllImages())
     If Cancel Then
         g_ProgramShuttingDown = False
-        If (g_OpenImageCount <> 0) Then Message vbNullString
+        If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString
     End If
     
 End Sub
@@ -3399,7 +3397,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
             'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
             ' we must delete the entire layer.  That requires a backup of the full image contents.
-            If pdImages(g_CurrentImage).IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive Then
                 Process "Cut from layer", False, , UNDO_Layer, , True
             Else
                 Process "Cut from layer", False, , UNDO_Image, , True
@@ -3633,7 +3631,7 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Fit canvas to layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
         'Fit canvas around all layers
         Case 7
@@ -3784,13 +3782,13 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Map photo location
         Case 4
             
-            If (Not pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata) Then
+            If (Not PDImages.GetActiveImage.ImgMetadata.HasGPSMetadata) Then
                 PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly Or vbInformation, "No GPS data found"
                 Exit Sub
             End If
             
             Dim gMapsURL As String, latString As String, lonString As String
-            If pdImages(g_CurrentImage).ImgMetadata.FillLatitudeLongitude(latString, lonString) Then
+            If PDImages.GetActiveImage.ImgMetadata.FillLatitudeLongitude(latString, lonString) Then
                 
                 'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
                                 
@@ -4020,7 +4018,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Erase selected area
         Case 10
-            Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
+            Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
         
         '<separator>
         Case 11
@@ -4271,43 +4269,12 @@ End Sub
 Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
 
     'If one (or zero) images are loaded, ignore this option
-    If g_OpenImageCount <= 1 Then Exit Sub
+    If (PDImages.GetNumOpenImages() <= 1) Then Exit Sub
     
-    Dim i As Long
+    Dim newIndex As Long
+    newIndex = PDImages.GetNextImageID(PDImages.GetActiveImageID(), moveForward)
+    If (newIndex >= 0) Then ActivatePDImage newIndex, "user requested next/previous image"
     
-    'Loop through all available images, and when we find one that is not this image, activate it and exit
-    If moveForward Then
-        i = g_CurrentImage + 1
-    Else
-        i = g_CurrentImage - 1
-    End If
-    
-    Do While (i <> g_CurrentImage)
-            
-        'Loop back to the start of the window collection
-        If moveForward Then
-            If (i > g_NumOfImagesLoaded) Then i = 0
-            If (i > UBound(pdImages)) Then i = 0
-        Else
-            If (i < 0) Then i = g_NumOfImagesLoaded
-            If (i > UBound(pdImages)) Then i = UBound(pdImages)
-        End If
-                
-        If Not (pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then
-                ActivatePDImage i, "user requested next/previous image"
-                Exit Do
-            End If
-        End If
-                
-        If moveForward Then
-            i = i + 1
-        Else
-            i = i - 1
-        End If
-                
-    Loop
-
 End Sub
 
 'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable under a variety

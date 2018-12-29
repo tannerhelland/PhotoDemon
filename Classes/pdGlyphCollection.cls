@@ -606,7 +606,7 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Function NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
+Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
     
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing
@@ -620,7 +620,7 @@ Friend Function NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As S
     ' steps if the text is generic.
     m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> 0)
     
-End Function
+End Sub
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.

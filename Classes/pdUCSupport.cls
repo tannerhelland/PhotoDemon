@@ -77,7 +77,7 @@ Private Const SWP_HIDEWINDOW As Long = &H80
 Private Const SWP_SHOWWINDOW As Long = &H40
 
 Private Declare Function CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
@@ -632,7 +632,7 @@ End Function
 'The naming of this function is potentially confusing, but it restores the back buffer to the currently specified back color.
 ' It does not resize the DIB; it just fill it with a single uniform color.  Optionally, a specific erase rect can be supplied.
 ' (If coordinates are *not* supplied, the entire buffer will be wiped.)
-Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional ByVal rpLeft As Single = 0#, Optional ByVal rpTop As Single = 0#, Optional ByVal rpWidth As Single = 0#, Optional ByVal rpHeight As Single = 0#)
+Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional ByVal rpLeft As Single = 0#, Optional ByVal rpTop As Single = 0#, Optional ByVal rpWidth As Single = 0#, Optional ByVal rpHeight As Single = 0#)
     
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
     ' PD's central themer.
@@ -669,7 +669,7 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
         End If
     End If
             
-End Function
+End Sub
 
 'Sync the back buffer to the underlying user control size.  You can call this at any time, because the buffer will only be recreated
 ' as necessary.

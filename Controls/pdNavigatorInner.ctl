@@ -217,7 +217,7 @@ End Sub
 Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
 
     'Make sure the image region has been successfully created, or this is all for naught
-    If (g_OpenImageCount > 0) And (m_ImageRegion.Width <> 0!) And (m_ImageRegion.Height <> 0!) Then
+    If PDImages.IsImageActive() And (m_ImageRegion.Width <> 0!) And (m_ImageRegion.Height <> 0!) Then
     
         'Convert the (x, y) to the [0, 1] range
         Dim xRatio As Double, yRatio As Double
@@ -239,7 +239,7 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         FormMain.MainCanvas(0).SetScrollValue pdo_Vertical, newVscroll
         FormMain.MainCanvas(0).SetRedrawSuspension False
         
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
 
@@ -320,7 +320,7 @@ Private Sub RedrawBackBuffer()
     If PDMain.IsProgramRunning() Then
     
         'If an image has been loaded, determine a centered position for the image's thumbnail
-        If (g_OpenImageCount <= 0) Then
+        If (Not PDImages.IsImageActive()) Then
             With m_ThumbRect
                 .Width = 0
                 .Height = 0
@@ -359,16 +359,16 @@ Private Sub RedrawBackBuffer()
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
             ' in image coordinate space
             Dim viewportRect As RectF
-            If (pdImages(g_CurrentImage).ImgViewport Is Nothing) Then Exit Sub
-            pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage viewportRect
+            If (PDImages.GetActiveImage.ImgViewport Is Nothing) Then Exit Sub
+            PDImages.GetActiveImage.ImgViewport.GetIntersectRectImage viewportRect
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the
             ' viewport dimensions to a 1-based system, relative to the original image's width and height.
-            If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) Then
+            If (PDImages.GetActiveImage.Width > 0) And (PDImages.GetActiveImage.Height > 0) Then
                 
                 Dim widthDivisor As Double, heightDivisor As Double
-                widthDivisor = 1# / pdImages(g_CurrentImage).Width
-                heightDivisor = 1# / pdImages(g_CurrentImage).Height
+                widthDivisor = 1# / PDImages.GetActiveImage.Width
+                heightDivisor = 1# / PDImages.GetActiveImage.Height
                 
                 Dim relativeRect As RectF
                 With relativeRect

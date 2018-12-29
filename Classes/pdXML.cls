@@ -454,10 +454,10 @@ Friend Function CloseTag(ByVal tagName As String) As Boolean
 End Function
 
 'Given a string and a position, split it into two strings at that position
-Private Function SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
+Private Sub SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
     dstFirstHalf = Left$(srcString, splitPosition)
     dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
-End Function
+End Sub
 
 'Once a valid XML file has been loaded, we need to see if it contains valid XML data for the current operation.  The client can
 ' do this by scanning for any number of tags it expects to find in the XML file.  If all are found, return TRUE.
@@ -538,7 +538,7 @@ Private Sub ApplyIndentation(ByRef dstString As String)
     
     'Next, loop through each line, and apply TAB characters to the start of each line as necessary
     Dim curTag As String, tagPosition As Long
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To UBound(xmlArray)
     
         'Trim any existing white space from this line

@@ -126,9 +126,9 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         
         'Unique to this particular import is remembering the full filename + extension (because this method of import
         ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(downloadedFilename, True)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(downloadedFilename)
+        If PDImages.IsImageActive() Then
+            PDImages.GetActiveImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(downloadedFilename, True)
+            PDImages.GetActiveImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(downloadedFilename)
         End If
         
         'Delete the temporary file
@@ -332,7 +332,7 @@ Private Sub cmdBarMini_OKClick()
     Dim fullURL As String
     fullURL = Trim$(txtURL)
     
-    If (LCase(Left$(fullURL, 7)) <> "http://") And (LCase(Left$(fullURL, 8)) <> "https://") And (LCase(Left$(fullURL, 6)) <> "ftp://") Then
+    If (LCase$(Left$(fullURL, 7)) <> "http://") And (LCase$(Left$(fullURL, 8)) <> "https://") And (LCase$(Left$(fullURL, 6)) <> "ftp://") Then
         PDMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbOKOnly Or vbExclamation, "Invalid URL"
         txtURL.SelectAll
         cmdBarMini.DoNotUnloadForm

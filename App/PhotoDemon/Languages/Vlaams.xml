@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.374</langversion>
+<langversion>6.7.375</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1667,6 +1667,12 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDImages.bas -->
+
+<!-- PDImages.bas contains 0 phrases. -->
+
+<!-- END text for PDImages.bas-->
 
 <!-- BEGIN text for PDMath.bas -->
 

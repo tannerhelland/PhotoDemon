@@ -287,7 +287,7 @@ Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
 
-Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
+Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As PointAPI) As Boolean
     
     'MapWindowPoints is preferred over ClientToScreen because it works on BiDi systems.  However,
     ' MapWindowPoints can return 0 as a valid output.  You can work around this using SetLastError
@@ -298,7 +298,7 @@ Friend Function GetClientToScreen(ByVal srcHwnd As Long, ByRef srcPoint As POINT
     
 End Function
 
-Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As POINTAPI) As Boolean
+Friend Function GetScreenToClient(ByVal srcHwnd As Long, ByRef srcPoint As PointAPI) As Boolean
     
     'See the notes for GetClientToScreen, above
     MapWindowPoints 0, srcHwnd, VarPtr(srcPoint), 1&
@@ -646,12 +646,12 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
 End Function
 
 'Reset the XML engine.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
-Private Function ResetXMLData()
+Private Sub ResetXMLData()
     m_XML.PrepareNewXML "Window locations"
     m_XML.WriteBlankLine
     m_XML.WriteComment "Everything past this point is window location data for various PhotoDemon dialogs."
     m_XML.WriteBlankLine
-End Function
+End Sub
 
 'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
 Friend Sub RegisterMainForm(ByRef parentForm As Form)

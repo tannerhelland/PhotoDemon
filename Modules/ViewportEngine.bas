@@ -87,7 +87,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     If allowedToRender Then
     
         'If no images have been loaded, clear the canvas and exit
-        If (g_OpenImageCount <= 0) Then
+        If (Not PDImages.IsImageNonNull()) Then
             dstCanvas.ClearCanvas
         Else
             
@@ -123,7 +123,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = VECTOR_TEXT) Or (g_CurrentTool = VECTOR_FANCYTEXT) Then
                 
-                If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
+                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
                     Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
                     Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
                     Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
@@ -175,7 +175,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         VBHacks.GetHighResTime startTime
             
         'If no images have been loaded, clear the canvas and exit
-        If (g_OpenImageCount <= 0) Then
+        If (Not PDImages.IsImageNonNull()) Then
             
             dstCanvas.ClearCanvas
             
@@ -444,7 +444,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     If ViewportRenderingAllowed(srcImage, dstCanvas) Then
     
         'If rendering is considered valid, but no images have been loaded, render a blank placeholder image and exit.
-        If (g_OpenImageCount = 0) Then
+        If (Not PDImages.IsImageNonNull()) Then
             FormMain.MainCanvas(0).ClearCanvas
         Else
             
@@ -733,10 +733,9 @@ Private Function ViewportRenderingAllowed(ByRef srcImage As pdImage, ByRef dstCa
         'Make sure the source and destination rendering targets are valid
         ViewportRenderingAllowed = (Not dstCanvas Is Nothing) And (Not srcImage Is Nothing)
         
-        'Finally, if the source image is inactive (e.g. it has been unloaded at some point in the past), do not execute a redraw.
-        ' For performance reasons, PD does not shrink its primary pdImages() array unless required due to memory pressure.
-        ' Instead, it just deactivates entries by marking the .IsActive property - so that property must be considered
-        ' *prior* to executing image events.
+        'Finally, if the source image is inactive (e.g. it has been unloaded at some point in the past), do not redraw.
+        ' (For performance reasons, PD may not release unused image sobject right away; their .IsActive flag will always
+        ' be up-to-date, however.)
         If ViewportRenderingAllowed Then ViewportRenderingAllowed = srcImage.IsActive
         
     End If

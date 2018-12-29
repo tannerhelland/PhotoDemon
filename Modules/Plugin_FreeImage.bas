@@ -41,7 +41,7 @@ Private Type BITMAPINFO
 End Type
 
 Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
-Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Long
 
 'DLL handle; if it is zero, FreeImage is not available
 Private m_FreeImageHandle As Long
@@ -2536,7 +2536,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
         fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(tmpDIB)
         
         'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
+        If (fi_DIB <> 0) Then
             
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
@@ -2563,7 +2563,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
     End If
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
 
@@ -2618,7 +2618,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
     dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
 
@@ -2702,7 +2702,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
 
@@ -2729,7 +2729,7 @@ Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean
     listOfFreeImageErrors = listOfFreeImageErrors & """"
     GetFreeImageErrors = listOfFreeImageErrors
     
-    If eraseListUponReturn Then ReDim g_FreeImageErrorMessage(0) As String
+    If eraseListUponReturn Then ReDim g_FreeImageErrorMessages(0) As String
     
 End Function
 
@@ -3425,7 +3425,7 @@ End Function
 '(Note that you could technically pass a bare DIB to this function, but because different dialogs provide varying levels of control
 ' over the source image, it's often easier to let the caller handle that step.  That way, they can cache a FI handle in the most
 ' relevant color depth, shaving previous ms off the actual export+import step.)
-Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PD_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0)
+Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PD_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0) As Boolean
     
     Dim fi_Size As Long
     If FreeImage_SaveToMemoryEx(dstFormat, srcFI_Handle, m_ExportPreviewBytes, fi_SaveFlags, False, fi_Size) Then

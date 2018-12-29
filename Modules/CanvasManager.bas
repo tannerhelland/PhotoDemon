@@ -3,8 +3,9 @@ Attribute VB_Name = "CanvasManager"
 'Image Canvas Handler (formerly Image Window Handler)
 'Copyright 2002-2018 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 04/February/14
-'Last update: rework all code to operate on Canvas user controls instead of standalone forms
+'Last updated: 11/December/18
+'Last update: migrate various PDImage-specific functions to the new PDImage-specific module,
+'             so that this module can focus on UI-related tasks only
 '
 'This module contains functions relating to the creation, sizing, and maintenance of the windows ("canvases") associated
 ' with each image loaded by the user.  At present, PD uses only a single canvas, on the main form.  This could change
@@ -23,55 +24,10 @@ Attribute VB_Name = "CanvasManager"
 
 Option Explicit
 
-'Add an already-created pdImage object to the master pdImages() collection.  Do not pass empty objects!
-Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
-    
-    If (Not srcImage Is Nothing) Then
-        
-        Set pdImages(g_NumOfImagesLoaded) = srcImage
-        
-        'Activate the image and assign it a unique ID.  (IMPORTANT: at present, the ID always correlates to the
-        ' image's position in the collection.  Do not change this behavior.)
-        pdImages(g_NumOfImagesLoaded).ChangeActiveState True
-        pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
-        
-        'Newly loaded images are always auto-activated.
-        g_CurrentImage = g_NumOfImagesLoaded
-    
-        'Track how many images we've loaded and/or currently have open
-        g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
-        g_OpenImageCount = g_OpenImageCount + 1
-        
-        If (g_NumOfImagesLoaded > UBound(pdImages)) Then
-            ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
-        End If
-        
-        AddImageToMasterCollection = True
-        
-    Else
-        AddImageToMasterCollection = False
-    End If
-    
-End Function
-
-'Pass this function to obtain a default pdImage object, instantiated to match current UI settings and user preferences.
-' Note that this function *does not touch* the main pdImages object, and as such, the created image will not yet have
-' an imageID value.  That values is assigned when the object is added to the main pdImages() collection.
-Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
-    If (dstImage Is Nothing) Then Set dstImage = New pdImage
-    dstImage.SetZoom g_Zoom.GetZoom100Index
-End Sub
-
-'When loading an image file, there's a chance we won't be able to load the image correctly.  Because of that, we start
-' with a "provisional" ID value for the image.  If the image fails to load, we can reuse this value on the next image.
-Public Function GetProvisionalImageID() As Long
-    GetProvisionalImageID = g_NumOfImagesLoaded
-End Function
-
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     
-    If (g_OpenImageCount <> 0) Then
+    If PDImages.IsImageActive() Then
     
         ViewportEngine.DisableRendering
             
@@ -79,18 +35,18 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         Dim newZoomIndex As Long
         newZoomIndex = g_Zoom.GetZoomFitAllIndex
         
-        If (g_Zoom.GetZoomValue(newZoomIndex) > 1) Then newZoomIndex = g_Zoom.GetZoom100Index
+        If (g_Zoom.GetZoomValue(newZoomIndex) > 1#) Then newZoomIndex = g_Zoom.GetZoom100Index
         
         'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
         ' the user switches between loaded images).
         FormMain.MainCanvas(0).SetZoomDropDownIndex newZoomIndex
-        pdImages(g_CurrentImage).SetZoom newZoomIndex
+        PDImages.GetActiveImage.SetZoom newZoomIndex
         
         'Re-enable scrolling
         ViewportEngine.EnableRendering
             
         'Now fix scrollbars and everything
-        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
+        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -102,19 +58,19 @@ End Sub
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
     
-    If (g_OpenImageCount <> 0) Then
+    If PDImages.IsImageActive() Then
         
         ViewportEngine.DisableRendering
         
         'Set zoom to the "fit whole" index
         FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
-        pdImages(g_CurrentImage).SetZoom g_Zoom.GetZoomFitAllIndex
+        PDImages.GetActiveImage.SetZoom g_Zoom.GetZoomFitAllIndex
         
         'Re-enable scrolling
         ViewportEngine.EnableRendering
             
         'Now fix scrollbars and everything
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToZero
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToZero
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -126,7 +82,7 @@ End Sub
 'Center the current image onscreen without changing zoom
 Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = False)
     
-    If (g_OpenImageCount <> 0) Then
+    If PDImages.IsImageActive() Then
             
         'Prevent the viewport from auto-updating on scroll bar events
         FormMain.MainCanvas(0).SetRedrawSuspension True
@@ -139,7 +95,7 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
         FormMain.MainCanvas(0).SetRedrawSuspension False
             
         'Now fix scrollbars and everything
-        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'Notify external UI elements of the change
         FormMain.MainCanvas(0).RelayViewportChanges
@@ -162,46 +118,39 @@ Public Function CloseAllImages() As Boolean
     'Note that we are attempting to close all images
     g_ClosingAllImages = True
     
-    Dim i As Long
-    If (g_OpenImageCount > 0) Then
+    Dim listOfOpenImages As pdStack
+    If PDImages.GetListOfActiveImageIDs(listOfOpenImages) Then
         
         'We are now going to close images in a somewhat strange fashion (but one that improves performance).
         
         'First, figure out how many images need to be closed.  (We need this number so that we can display
         ' progress reports to the user.)
         Dim numImagesToClose As Long
-        numImagesToClose = 0
-        For i = LBound(pdImages) To UBound(pdImages)
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then numImagesToClose = numImagesToClose + 1
-            End If
-        Next i
+        numImagesToClose = listOfOpenImages.GetNumOfInts()
         
         Dim numImagesClosed As Long
         numImagesClosed = 0
         
         'Next, unload all images *without* unsaved changes.  These images don't require shutdown prompts,
         ' so we can unload them without consequence or user intervention.
-        For i = LBound(pdImages) To UBound(pdImages)
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive And pdImages(i).GetSaveState(pdSE_AnySave) Then
-                    numImagesClosed = numImagesClosed + 1
-                    Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
-                    CanvasManager.FullPDImageUnload i, False
-                End If
+        Dim i As Long, tmpImageID As Long
+        For i = 0 To listOfOpenImages.GetNumOfInts - 1
+            tmpImageID = listOfOpenImages.GetInt(i)
+            If PDImages.GetImageByID(tmpImageID).GetSaveState(pdSE_AnySave) Then
+                numImagesClosed = numImagesClosed + 1
+                Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
+                CanvasManager.FullPDImageUnload tmpImageID, False
             End If
         Next i
         
-        'The only images still open (if any) are ones with unsaved changes.  Starting with the currently active image,
-        ' unload each one in turn.
-        Do While (g_OpenImageCount > 0)
-            
-                    'If the image has unsaved changes, and it's not already the current image, activate it.
-                    ' (This ensures that the image displayed in the "save image" window matches the one
-                    '  currently visible on-screen.)
-                    'If (i <> g_CurrentImage) Then
-                    '    If (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then CanvasManager.ActivatePDImage allOpenImages.GetInt(i), "program unloading"
-                    'End If
+        'If the above step unloaded one or more images, we need to forcibly redraw the image tabstrip.
+        ' (If we don't, and the user cancels the "unsaved changes" dialog we are about to raise,
+        ' the tabpstrip will display an out-of-date list of open images.)
+        If (numImagesClosed > 0) Then Interface.RequestTabstripRedraw False
+        
+        'The only images still open (if any) are ones with unsaved changes.  Starting with the currently
+        ' active image, unload each remaining image in turn.
+        Do While (PDImages.GetNumOpenImages() > 0)
             
             numImagesClosed = numImagesClosed + 1
             Message "Unloading image %1 of %2", numImagesClosed, numImagesToClose
@@ -209,7 +158,7 @@ Public Function CloseAllImages() As Boolean
             'Attempt to unload the currently active image.
             ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
             '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
-            CanvasManager.FullPDImageUnload g_CurrentImage, False
+            CanvasManager.FullPDImageUnload PDImages.GetActiveImageID(), False
             
             'If the "unsaved changes" prompt canceled shut down for some reason, it will reset the
             ' g_ClosingAllImages variable.  Read that variable and use it to determine whether we
@@ -241,7 +190,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal displayM
         CanvasManager.UnloadPDImage imageID, displayMessages
         
         'If we have just closed the final open image in the program, take additional steps to free memory
-        If (g_OpenImageCount = 0) And (Macros.GetMacroStatus <> MacroBATCH) Then
+        If (PDImages.GetNumOpenImages() = 0) And (Macros.GetMacroStatus <> MacroBATCH) Then
             
             'Unload the backbuffer of the primary canvas
             ViewportEngine.EraseViewportBuffers
@@ -273,19 +222,19 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
     
     'Perform a few failsafe checks to make sure the current image was properly initialized
     Dim okayToQueryUnload As Boolean: okayToQueryUnload = True
-    If (imageID < 0) Then okayToQueryUnload = False
-    If (imageID > UBound(pdImages)) Then okayToQueryUnload = False
-    If (pdImages(imageID) Is Nothing) Then okayToQueryUnload = False
+    If (Not PDImages.IsImageActive(imageID)) Then okayToQueryUnload = False
     
     'Also, disable save prompts during batch processes
-    okayToQueryUnload = Not (Macros.GetMacroStatus = MacroBATCH)
+    If okayToQueryUnload Then okayToQueryUnload = Not (Macros.GetMacroStatus = MacroBATCH)
+    
+    'If we are allowed to present a UI to the user, do so now
     If okayToQueryUnload Then
     
         'If the user wants to be prompted about unsaved images, do it now
-        If (g_ConfirmClosingUnsaved And pdImages(imageID).IsActive) Then
+        If (g_ConfirmClosingUnsaved And PDImages.GetImageByID(imageID).IsActive) Then
         
             'Check the .HasBeenSaved property of the image associated with this form
-            If (Not pdImages(imageID).GetSaveState(pdSE_AnySave)) Then
+            If (Not PDImages.GetImageByID(imageID).GetSaveState(pdSE_AnySave)) Then
                
                 'If we reach this line, the image in question has unsaved changes.
                
@@ -295,25 +244,38 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
                     Dim numOfUnsavedImages As Long
                     numOfUnsavedImages = 0
                     
-                    'We also want to record a list of the unsaved image's IDs
                     Dim imageIndices As pdStack
                     Set imageIndices = New pdStack
-                                   
-                    'Loop through all open images to count how many unsaved images there are in total.
-                    ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
-                    ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
-                    If (g_ProgramShuttingDown Or g_ClosingAllImages) Then
+                    
+                    'We also want to record a list of the unsaved image's ID values.  (This is required
+                    ' to generate an interactive "images with unsaved changes" window, where the user can
+                    ' browse through a list of ALL images with unsaved changes.)
+                    Dim listOfOpenImages As pdStack
+                    If PDImages.GetListOfActiveImageIDs(listOfOpenImages) Then
+                    
+                        'Next, from the list of "open images", we want to we want to pare down the list
+                        ' to remove any images *without* unsaved changes.  (Such images can be blindly
+                        ' closed without consequence.)
                         
-                        Dim i As Long
-                        For i = LBound(pdImages) To UBound(pdImages)
-                            If (Not pdImages(i) Is Nothing) Then
-                                If pdImages(i).IsActive And (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then
+                        'NOTE: we only do this if the entire program is being shut down or if the user has
+                        ' selected "close all"; otherwise, this close request only affects the current image,
+                        ' so we shouldn't present a "repeat this action for all images" dialog option.
+                        If (g_ProgramShuttingDown Or g_ClosingAllImages) Then
+                            
+                            Dim tmpImageID As Long
+                            Do While listOfOpenImages.PopInt(tmpImageID)
+                                If (Not PDImages.GetImageByID(tmpImageID).GetSaveState(pdSE_AnySave)) Then
                                     numOfUnsavedImages = numOfUnsavedImages + 1
-                                    imageIndices.AddInt i
+                                    imageIndices.AddInt tmpImageID
                                 End If
-                            End If
-                        Next i
-                        
+                            Loop
+                            
+                        End If
+                    
+                    'We do not need an (else) branch here, as this block of code requires there to always
+                    ' be at least one image with unsaved changes (the current image); otherwise, we would
+                    ' not be inside this block in the first place.  Said another way, this If() branch is
+                    ' entirely overkill at present.
                     End If
                     
                     'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
@@ -346,7 +308,7 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
                     If FormMain.Enabled Then CanvasManager.ActivatePDImage imageID, "image being saved during shutdown", True
                     
                     'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
-                    QueryUnloadPDImage = FileMenu.MenuSave(pdImages(imageID))
+                    QueryUnloadPDImage = FileMenu.MenuSave(PDImages.GetImageByID(imageID))
                     
                     'If something went wrong, or the user canceled the save dialog, stop the unload process
                     If (Not QueryUnloadPDImage) Then
@@ -369,52 +331,49 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
 
 End Function
 
-'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
-' unload images using this special function.
-Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal displayMessages As Boolean = True)
+'Unload a user image and perform all required UI updates (e.g. selecting a new "active" image if multiple
+' images have been loaded).  Do not call this function directly; instead, call QueryUnloadPDImage(), above,
+' which will prompt the user for things like unsaved changes.
+Public Sub UnloadPDImage(ByVal imageIndex As Long, Optional ByVal displayMessages As Boolean = True)
 
     'Failsafes to make sure the image was properly initialized
-    If (pdImages(imageIndex) Is Nothing) Then Exit Function
-    If (Not pdImages(imageIndex).IsActive) Then Exit Function
+    If (Not PDImages.IsImageActive(imageIndex)) Then Exit Sub
     
     If displayMessages Then Message "Closing image..."
     
-    'Decrease the open image count
-    g_OpenImageCount = g_OpenImageCount - 1
-    
-    'Deactivate this DIB (note that this will take care of additional actions, like clearing the Undo/Redo cache
-    ' for this image)
-    pdImages(imageIndex).FreeAllImageResources
+    'Ask the central image collection to free resources associated with the target image
+    PDImages.RemovePDImageFromCollection imageIndex
     
     'Remove this image from the thumbnail toolbar, and explicitly ask it to *not* repaint itself.  (It will repaint
     ' automatically later in this function.)
     Interface.NotifyImageRemoved imageIndex, False
     
-    'If this image was the active canvas, activate the next image in line (if any exist).
-    If (g_CurrentImage = imageIndex) And (g_OpenImageCount > 0) Then
-    
+    'If this image was also the active canvas, activate the next image in line (if any others exist).
+    If (PDImages.GetNumOpenImages > 0) And (PDImages.GetActiveImageID() = imageIndex) Then
+        
+        Dim imgCollectionSize As Long
+        imgCollectionSize = PDImages.GetImageCollectionSize()
+        
         'Figure out the next image that should receive focus.  If the image we're closing is the last one in line, move to
         ' the next-to-last one in line (instead of advancing forward, which is obviously not possible).
         Dim i As Long
         i = imageIndex + 1
-        If (i > UBound(pdImages)) Then i = i - 2
+        If (i > imgCollectionSize) Then i = i - 2
         
         'Search through the image list until we find a valid image candidate to receive focus
         Dim directionAscending As Boolean
         directionAscending = True
         
-        Do While i >= 0
+        Do While (i >= 0)
         
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive Then
-                    CanvasManager.ActivatePDImage i, "previous image unloaded", True
-                    Exit Do
-                End If
+            If PDImages.IsImageActive(i) Then
+                CanvasManager.ActivatePDImage i, "previous image unloaded", True
+                Exit Do
             End If
             
             If directionAscending Then
                 i = i + 1
-                If (i > UBound(pdImages)) Then
+                If (i > imgCollectionSize) Then
                     directionAscending = False
                     i = imageIndex
                 End If
@@ -435,7 +394,7 @@ Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal displayMe
     
     If displayMessages Then Message "Finished."
     
-End Function
+End Sub
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
@@ -446,15 +405,15 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     
     'If this form is already the active image, don't waste time re-activating it
     Dim activeImageChanging As Boolean
-    activeImageChanging = (g_CurrentImage <> imageID) Or newImageJustLoaded
+    activeImageChanging = (PDImages.GetActiveImageID() <> imageID) Or newImageJustLoaded
     
     If activeImageChanging Then
         
         'Release some temporary resources on the old image, if we can
-        pdImages(g_CurrentImage).DeactivateImage
+        PDImages.GetActiveImage.DeactivateImage
         
         'Update the current form variable
-        g_CurrentImage = imageID
+        PDImages.SetActiveImageID imageID
         
         'Double-check which monitor we are appearing on (for color management reasons)
         ColorManagement.CheckParentMonitor True
@@ -462,33 +421,29 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     End If
     
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-    If (Not pdImages(g_CurrentImage) Is Nothing) And refreshScreen Then
+    If (PDImages.IsImageActive() And refreshScreen) Then
         
-        If pdImages(g_CurrentImage).IsActive Then
-        
-            If (associatedUndoType = UNDO_Everything) Or (associatedUndoType = UNDO_Image) Or (associatedUndoType = UNDO_Image_VectorSafe) Or (associatedUndoType = UNDO_ImageHeader) Then
-                
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
-                
-                'Reflow any image-window-specific chrome (status bar, rulers, etc)
-                FormMain.MainCanvas(0).AlignCanvasView
-                
-            Else
-                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
-            End If
+        If (associatedUndoType = UNDO_Everything) Or (associatedUndoType = UNDO_Image) Or (associatedUndoType = UNDO_Image_VectorSafe) Or (associatedUndoType = UNDO_ImageHeader) Then
             
-            'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image
-            ' (e.g. updating thumbnails, window captions, etc)
-            Interface.NotifyNewActiveImage g_CurrentImage
+            ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0), VSR_ResetToCustom, PDImages.GetActiveImage.ImgViewport.GetHScrollValue, PDImages.GetActiveImage.ImgViewport.GetVScrollValue
             
+            'Reflow any image-window-specific chrome (status bar, rulers, etc)
+            FormMain.MainCanvas(0).AlignCanvasView
+            
+        Else
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
         End If
+        
+        'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image
+        ' (e.g. updating thumbnails, window captions, etc)
+        Interface.NotifyNewActiveImage PDImages.GetActiveImageID()
         
     End If
     
     'Make sure any tool initializations that vary by image are up-to-date.  (This includes things like
     ' making sure a scratch layer exists, and that it matches the current image's size.)
     Tools.InitializeToolsDependentOnImage activeImageChanging
-    PDDebug.LogAction "CanvasManager.ActivatePDImage says: image #" & g_CurrentImage & " - " & Interface.GetWindowCaption(pdImages(g_CurrentImage), False) & " - was activated because " & reasonForActivation
+    PDDebug.LogAction "CanvasManager.ActivatePDImage says: image #" & PDImages.GetActiveImageID() & " - " & Interface.GetWindowCaption(PDImages.GetActiveImage(), False) & " - was activated because " & reasonForActivation
     PDDebug.LogAction "CanvasManager.ActivatePDImage finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
         
 End Sub
@@ -516,26 +471,3 @@ Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcIm
 
 End Function
 
-'Find out whether the mouse pointer is over a given layer in an image
-Public Function IsMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef srcImage As pdImage, ByRef srcLayerIndex As Long) As Boolean
-
-    If srcImage.ImgViewport Is Nothing Then
-        IsMouseOverLayer = False
-        Exit Function
-    End If
-    
-    With srcImage.GetLayerByIndex(srcLayerIndex)
-    
-        If (imgX >= .GetLayerOffsetX) And (imgX <= .GetLayerOffsetX + .GetLayerWidth(False)) Then
-            If (imgY >= .GetLayerOffsetY) And (imgY <= .GetLayerOffsetY + .GetLayerHeight(False)) Then
-                IsMouseOverLayer = True
-                Exit Function
-            Else
-                IsMouseOverLayer = False
-            End If
-            IsMouseOverLayer = False
-        End If
-    
-    End With
-    
-End Function

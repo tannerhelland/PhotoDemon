@@ -355,7 +355,7 @@ Friend Sub AddPreset(ByRef srcPresetName As String, ByRef newPresetXML As String
 End Sub
 
 'Reset the XML engine for this session.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
-Private Function ResetXMLData()
+Private Sub ResetXMLData()
 
     m_XMLEngine.PrepareNewXML "Tool preset"
     m_XMLEngine.WriteBlankLine
@@ -365,7 +365,7 @@ Private Function ResetXMLData()
     m_XMLEngine.WriteComment "Everything past this point is tool preset data.  Presets are sorted in the order they were created."
     m_XMLEngine.WriteBlankLine
 
-End Function
+End Sub
 
 Private Sub Class_Initialize()
     

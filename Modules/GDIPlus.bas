@@ -1317,7 +1317,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format$(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
 
@@ -3183,7 +3183,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
         
         'Report resize time here
-        'Debug.Print "GDI+ resize time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "GDI+ resize time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
         
         'Release our image attributes object
         GdipDisposeImageAttributes imgAttributesHandle
@@ -3663,11 +3663,11 @@ Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrC
     
 End Function
 
-Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
+Private Sub InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
         
     'If the caller passes an error number but no error name, attempt to automatically populate
     ' it based on the error number.
-    If ((Len(errName) = 0) And (errNumber <> GP_OK)) Then
+    If ((LenB(errName) = 0) And (errNumber <> GP_OK)) Then
         
         Select Case errNumber
             Case GP_GenericError
@@ -3726,7 +3726,7 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
     If (LenB(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
     PDDebug.LogAction tmpString, PDM_External_Lib
     
-End Function
+End Sub
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
@@ -4831,6 +4831,7 @@ Public Function GDIPlus_ImageGetProperty(ByVal hImage As Long, ByVal gpPropertyI
         GDIPlus_ImageGetProperty = (propSize > 16)
         If GDIPlus_ImageGetProperty Then
         
+            Dim tmpBuffer() As Byte
             ReDim tmpBuffer(0 To propSize - 1) As Byte
             tmpReturn = GdipGetPropertyItem(hImage, gpPropertyID, propSize, VarPtr(tmpBuffer(0)))
             GDIPlus_ImageGetProperty = (tmpReturn = GP_OK)

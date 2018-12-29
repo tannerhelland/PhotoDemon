@@ -263,7 +263,7 @@ End Sub
 
 'The current anchor must be manually saved as part of preset data
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.AddPresetData "currentAnchor", Trim$(Str(m_CurrentAnchor))
+    cmdBar.AddPresetData "currentAnchor", Trim$(Str$(m_CurrentAnchor))
 End Sub
 
 'OK button
@@ -291,8 +291,8 @@ End Function
 ' present), simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
     ucResize.LockAspectRatio = False
-    ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
+    ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
@@ -310,7 +310,7 @@ Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.UnitOfMeasurement = mu_Pixels
-    ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+    ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
     ucResize.LockAspectRatio = False
         
     'Set the middle position as the anchor
@@ -322,7 +322,7 @@ End Sub
 Private Sub Form_Load()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+    ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
     
     'Update the anchor button layout
     UpdateAnchorButtons
@@ -345,16 +345,16 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     cParams.SetParamString functionParams
     
     With cParams
-        iWidth = .GetDouble("width", pdImages(g_CurrentImage).Width)
-        iHeight = .GetDouble("height", pdImages(g_CurrentImage).Height)
+        iWidth = .GetDouble("width", PDImages.GetActiveImage.Width)
+        iHeight = .GetDouble("height", PDImages.GetActiveImage.Height)
         anchorPosition = .GetLong("anchor", 0&)
         curUnit = .GetLong("unit", mu_Pixels)
-        iDPI = .GetDouble("dpi", pdImages(g_CurrentImage).GetDPI)
+        iDPI = .GetDouble("dpi", PDImages.GetActiveImage.GetDPI)
     End With
     
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = pdImages(g_CurrentImage).Width
-    srcHeight = pdImages(g_CurrentImage).Height
+    srcWidth = PDImages.GetActiveImage.Width
+    srcHeight = PDImages.GetActiveImage.Height
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
@@ -363,9 +363,9 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
+    If PDImages.GetActiveImage.IsSelectionActive Then
+        PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
     End If
     
     'Based on the anchor position, determine x and y locations for the image on the new canvas
@@ -425,9 +425,9 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
     ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
     Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
     
-        With pdImages(g_CurrentImage).GetLayerByIndex(i)
+        With PDImages.GetActiveImage.GetLayerByIndex(i)
             .SetLayerOffsetX .GetLayerOffsetX + dstX
             .SetLayerOffsetY .GetLayerOffsetY + dstY
         End With
@@ -435,15 +435,15 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     Next i
     
     'Finally, update the parent image's size and DPI values
-    pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
-    pdImages(g_CurrentImage).SetDPI iDPI, iDPI
-    DisplaySize pdImages(g_CurrentImage)
+    PDImages.GetActiveImage.UpdateSize False, iWidth, iHeight
+    PDImages.GetActiveImage.SetDPI iDPI, iDPI
+    DisplaySize PDImages.GetActiveImage()
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     Message "Finished."
     

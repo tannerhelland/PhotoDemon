@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3357</langversion>
+<langversion>6.8.3358</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1662,6 +1662,12 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDImages.bas -->
+
+<!-- PDImages.bas contains 0 phrases. -->
+
+<!-- END text for PDImages.bas-->
 
 <!-- BEGIN text for PDMath.bas -->
 

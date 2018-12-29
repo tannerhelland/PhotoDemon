@@ -139,12 +139,12 @@ Private Sub cmdBar_RandomizeClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-            ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+            ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
+            ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
         
         Case PD_AT_SINGLELAYER
-            ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
-            ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
+            ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False))
+            ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False))
     
     End Select
     
@@ -158,10 +158,10 @@ Private Sub cmdBar_ResetClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
         
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
     
     End Select
 
@@ -188,10 +188,10 @@ Private Sub Form_Activate()
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
     
@@ -212,15 +212,15 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
     
     'If the current image has more than one layer, warn the user that this action will flatten the image.
-    If pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
+    If PDImages.GetActiveImage.GetNumOfLayers > 1 Then
         lblFlatten.Visible = True
     Else
         lblFlatten.Visible = False
@@ -258,9 +258,9 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
         
         'If a selection is active, remove it now
-        If pdImages(g_CurrentImage).IsSelectionActive Then
-            pdImages(g_CurrentImage).SetSelectionActive False
-            pdImages(g_CurrentImage).MainSelection.LockRelease
+        If PDImages.GetActiveImage.IsSelectionActive Then
+            PDImages.GetActiveImage.SetSelectionActive False
+            PDImages.GetActiveImage.MainSelection.LockRelease
         End If
                    
         'Flatten the image; note that we route this through the central processor, so that a proper Undo/Redo entry
@@ -272,14 +272,14 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
     If tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
-    imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
+    imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False))
+    imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False))
     
     'Pass the temporary DIB to the master seam carve function
     If Me.SeamCarveDIB(tmpDIB, imgWidth, imgHeight) Then
@@ -288,26 +288,26 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
         If (Not tmpDIB.GetAlphaPremultiplication) Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
-        pdImages(g_CurrentImage).GetActiveLayer.layerDIB.CreateFromExistingDIB tmpDIB
+        PDImages.GetActiveImage.GetActiveLayer.layerDIB.CreateFromExistingDIB tmpDIB
         Set tmpDIB = Nothing
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then
-            pdImages(g_CurrentImage).UpdateSize False, imgWidth, imgHeight
-            pdImages(g_CurrentImage).SetDPI imgDPI, imgDPI
-            DisplaySize pdImages(g_CurrentImage)
+            PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
+            PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
+            DisplaySize PDImages.GetActiveImage()
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     'Failsafe check for seam carving failure; this should never trigger
     Else
-        pdImages(g_CurrentImage).UndoManager.RestoreUndoData
-        Interface.NotifyImageChanged g_CurrentImage
+        PDImages.GetActiveImage.UndoManager.RestoreUndoData
+        Interface.NotifyImageChanged PDImages.GetActiveImageID()
     End If
     
     Message "Finished."

@@ -803,7 +803,7 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     Dim toolString As String, hexString As String, rgbString As String
     
     If (activeIndex >= 0) Then
-        hexString = "#" & UCase(Colors.GetHexStringFromRGB(m_ColorList(activeIndex)))
+        hexString = "#" & UCase$(Colors.GetHexStringFromRGB(m_ColorList(activeIndex)))
         rgbString = Colors.ExtractRed(m_ColorList(activeIndex)) & ", " & Colors.ExtractGreen(m_ColorList(activeIndex)) & ", " & Colors.ExtractBlue(m_ColorList(activeIndex))
         toolString = hexString & vbCrLf & rgbString
         If (activeIndex = CV_Primary) Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")

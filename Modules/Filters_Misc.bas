@@ -95,7 +95,7 @@ Public Sub MenuCountColors()
     
     'Grab a composited copy of the image
     Dim tmpImageComposite As pdDIB
-    pdImages(g_CurrentImage).GetCompositedImage tmpImageComposite, True
+    PDImages.GetActiveImage.GetCompositedImage tmpImageComposite, True
     If (tmpImageComposite Is Nothing) Then Exit Sub
     
     'Create a local array and point it at the pixel data we want to operate on

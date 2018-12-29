@@ -305,7 +305,7 @@ Private Sub cmdBar_OKClick()
                     
                     'Filenames with spaces must be enclosed in quotes
                     If InStr(srcFilename, " ") Then
-                        tmpFilename = Chr(34) & srcFilename & Chr(34)
+                        tmpFilename = Chr$(34) & srcFilename & Chr$(34)
                     Else
                         tmpFilename = srcFilename
                     End If

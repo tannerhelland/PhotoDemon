@@ -525,7 +525,7 @@ Private Function LoadPaletteAdobeSwatch(ByRef srcFile As String, ByRef srcStream
                             Dim tmpChar As Long
                             For j = 1 To colorLen
                                 tmpChar = srcStream.ReadIntUnsigned_BE()
-                                Mid$(srcColorName, j, 1) = ChrW(tmpChar)
+                                Mid$(srcColorName, j, 1) = ChrW$(tmpChar)
                             Next j
                             
                             srcColorName = Strings.TrimNull(srcColorName)
@@ -692,7 +692,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
                                 
                                 For j = 1 To nameLength - 1
                                     tmpChar = srcStream.ReadIntUnsigned_BE()
-                                    Mid$(curColorName, j, 1) = ChrW(tmpChar)
+                                    Mid$(curColorName, j, 1) = ChrW$(tmpChar)
                                 Next j
                                 
                                 curColorName = Trim$(Strings.TrimNull(curColorName))
@@ -831,7 +831,7 @@ Private Function LoadPaletteAdobeSwatchExchange(ByRef srcFile As String, ByRef s
                                 'Retrieve each character in turn, then add it to the string
                                 For j = 1 To nameLength - 1
                                     tmpChar = srcStream.ReadIntUnsigned_BE()
-                                    Mid$(curGroupName, j, 1) = ChrW(tmpChar)
+                                    Mid$(curGroupName, j, 1) = ChrW$(tmpChar)
                                 Next j
                                 
                             End If

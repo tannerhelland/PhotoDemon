@@ -264,11 +264,11 @@ Private Sub Form_Load()
     actualText = g_Language.TranslateMessage("Support us on Patreon")
     
     'Win 7+ supports some helpful symbolic unicode chars
-    If OS.IsWin7OrLater Then actualText = ChrW(&H2665) & Space$(2) & actualText
+    If OS.IsWin7OrLater Then actualText = ChrW$(&H2665) & Space$(2) & actualText
     hypAbout(0).Caption = actualText
     
     actualText = g_Language.TranslateMessage("Donate to PhotoDemon development")
-    If OS.IsWin7OrLater Then actualText = ChrW(&H2665) & Space$(2) & actualText
+    If OS.IsWin7OrLater Then actualText = ChrW$(&H2665) & Space$(2) & actualText
     hypAbout(1).Caption = actualText
     
     'Fill the "Patron" panel text
@@ -282,7 +282,7 @@ Private Sub Form_Load()
     'Super patrons
     actualText = g_Language.TranslateMessage("SUPER PATRONS")
     'If OS.IsWin7OrLater Then
-    '    uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
+    '    uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
     '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
     'Else
     '    GeneratePatron actualText, , True
@@ -295,7 +295,7 @@ Private Sub Form_Load()
     'Regular patrons (TODO someday soon, I hope!)
     actualText = g_Language.TranslateMessage("PATRONS")
     'If OS.IsWin7OrLater Then
-    '    uncSpecial = ChrW(&H2605) & ChrW(&H2605)    'Stars
+    '    uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
     '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
     'Else
     '    GeneratePatron actualText, , True
@@ -305,7 +305,7 @@ Private Sub Form_Load()
     'Thank you text
     actualText = g_Language.TranslateMessage("THANK YOU to our wonderful Patreon supporters!")
     If OS.IsWin7OrLater Then
-        uncSpecial = ChrW(&H2665)    'Hearts
+        uncSpecial = ChrW$(&H2665)    'Hearts
         GeneratePatron uncSpecial & setSpaces & actualText, , True
     Else
         GeneratePatron actualText

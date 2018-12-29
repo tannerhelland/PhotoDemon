@@ -184,7 +184,7 @@ Public Sub ShowDialog(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long
     cmdAnswer(2).AssignImage "edit_undo", , buttonIconSize, buttonIconSize
         
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-    If (LenB(pdImages(m_imageBeingClosed).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
+    If (LenB(PDImages.GetImageByID(m_imageBeingClosed).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
         cmdAnswer(0).AssignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
     Else
         cmdAnswer(0).AssignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
@@ -198,7 +198,7 @@ Public Sub ShowDialog(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long
     
     'Adjust the save message to match this image's name
     Dim imageName As String
-    imageName = pdImages(m_imageBeingClosed).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    imageName = PDImages.GetImageByID(m_imageBeingClosed).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If (LenB(Trim$(imageName)) = 0) Then imageName = g_Language.TranslateMessage("This image")
     lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", """" & imageName & """")
     lblWarning.RequestRefresh
@@ -232,7 +232,7 @@ Public Sub ShowDialog(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long
                 
                 Dim i As Long
                 For i = 0 To m_unsavedImageIDs.GetNumOfInts - 1
-                    tmpImgName = pdImages(m_unsavedImageIDs.GetInt(i)).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+                    tmpImgName = PDImages.GetImageByID(m_unsavedImageIDs.GetInt(i)).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                     If (LenB(tmpImgName) <> 0) Then
                         cboImageNames.AddItem tmpImgName, i
                     Else
@@ -289,8 +289,8 @@ Public Sub ShowDialog(ByVal srcImageID As Long, ByVal numOfUnsavedImages As Long
     
     'Prep the unsaved changes preview
     If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
-    If (Not pdImages(m_imageBeingClosed) Is Nothing) Then
-        pdImages(m_imageBeingClosed).RequestThumbnail m_PreviewDIB, IIf(picPreview.GetWidth > picPreview.GetHeight, picPreview.GetHeight - 2, picPreview.GetWidth - 2), False
+    If PDImages.IsImageActive(m_imageBeingClosed) Then
+        PDImages.GetImageByID(m_imageBeingClosed).RequestThumbnail m_PreviewDIB, IIf(picPreview.GetWidth > picPreview.GetHeight, picPreview.GetHeight - 2, picPreview.GetWidth - 2), False
     End If
     picPreview.RequestRedraw True
     
@@ -308,8 +308,8 @@ End Sub
 Private Sub cboImageNames_Click()
 
     If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
-    If (Not pdImages(m_unsavedImageIDs.GetInt(cboImageNames.ListIndex)) Is Nothing) Then
-        pdImages(m_unsavedImageIDs.GetInt(cboImageNames.ListIndex)).RequestThumbnail m_PreviewDIB, IIf(picPreview.GetWidth > picPreview.GetHeight, picPreview.GetHeight - 2, picPreview.GetWidth - 2), False
+    If PDImages.IsImageActive(m_unsavedImageIDs.GetInt(cboImageNames.ListIndex)) Then
+        PDImages.GetImageByID(m_unsavedImageIDs.GetInt(cboImageNames.ListIndex)).RequestThumbnail m_PreviewDIB, IIf(picPreview.GetWidth > picPreview.GetHeight, picPreview.GetHeight - 2, picPreview.GetWidth - 2), False
     End If
     picPreview.RequestRedraw True
 

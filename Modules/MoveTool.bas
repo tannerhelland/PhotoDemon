@@ -38,7 +38,7 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         canvasUpdateRequired = True
         
         'Apply the offsets
-        With pdImages(g_CurrentImage).GetActiveLayer
+        With PDImages.GetActiveImage.GetActiveLayer
             .SetLayerOffsetX .GetLayerOffsetX + hOffset
             .SetLayerOffsetY .GetLayerOffsetY + vOffset
         End With
@@ -46,16 +46,16 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         'Redraw the viewport if necessary
         If canvasUpdateRequired Then
             markEventHandled = True
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
         
     'Handle non-arrow keys next
     Else
         
         'Delete key: delete the active layer (if allowed)
-        If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
+        If (vkCode = VK_DELETE) And PDImages.GetActiveImage.GetNumOfLayers > 1 Then
             markEventHandled = True
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Process "Delete layer", False, TextSupport.BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         End If
         
         'Insert: raise Add New Layer dialog
@@ -71,16 +71,16 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
             
             'Retrieve the active layer index
             Dim curLayerIndex As Long
-            curLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
+            curLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
             
             'Advance the layer index according to the Shift key
             If ((Shift And vbShiftMask) <> 0) Then curLayerIndex = curLayerIndex + 1 Else curLayerIndex = curLayerIndex - 1
-            If (curLayerIndex < 0) Then curLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
-            If (curLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then curLayerIndex = 0
+            If (curLayerIndex < 0) Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+            If (curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then curLayerIndex = 0
             
             'Activate the new layer, then redraw the viewport and interface to match
-            pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            PDImages.GetActiveImage.SetActiveLayerByIndex curLayerIndex
+            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             SyncInterfaceToCurrentImage
             
         End If
@@ -88,8 +88,8 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, By
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
             markEventHandled = True
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             Interface.SyncInterfaceToCurrentImage
         End If
     
@@ -110,9 +110,9 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, By
         If (layerUnderMouse >= 0) Then
         
             'If the layer under the mouse is not already active, activate it now
-            If (layerUnderMouse <> pdImages(g_CurrentImage).GetActiveLayerIndex) Then
+            If (layerUnderMouse <> PDImages.GetActiveImage.GetActiveLayerIndex) Then
                 Layers.SetActiveLayerByIndex layerUnderMouse, False
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             End If
         
         End If
@@ -120,7 +120,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, By
     End If
                 
     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-    Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+    Tools.SetInitialLayerToolValues PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
             
 End Sub
 
@@ -129,7 +129,7 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
     'Left mouse button down
     If lmbDown Then
         Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
-        Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
+        Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
     
     'Left mouse button *not* down
     Else
@@ -147,16 +147,16 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
                 'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                 ' while in debug mode.
                 If UserPrefs.GenerateDebugLogs Then
-                    Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
+                    Message "Target layer: %1", PDImages.GetActiveImage.GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
                 Else
-                    Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName
+                    Message "Target layer: %1", PDImages.GetActiveImage.GetLayerByIndex(layerUnderMouse).GetLayerName
                 End If
             
             'The mouse is *not* over a layer.  Default to the active layer, which allows the user to interact with the
             ' layer even if it lies off-canvas.
             Else
             
-                NotifyMouseMove = pdImages(g_CurrentImage).GetActiveLayerIndex
+                NotifyMouseMove = PDImages.GetActiveImage.GetActiveLayerIndex
                 
                 If UserPrefs.GenerateDebugLogs Then
                     Message "Target layer: %1", g_Language.TranslateMessage("(none)"), "DONOTLOG"
@@ -170,7 +170,7 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
         ' only affect the active layer!
         Else
             Message vbNullString
-            NotifyMouseMove = pdImages(g_CurrentImage).GetActiveLayerIndex
+            NotifyMouseMove = PDImages.GetActiveImage.GetActiveLayerIndex
         End If
         
     End If
@@ -180,7 +180,7 @@ End Function
 Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfMouseMovements As Long)
 
     'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-    If (numOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
+    If (numOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
     
     'Reset the generic tool mouse tracking function
     Tools.TerminateGenericToolTracking

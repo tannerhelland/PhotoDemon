@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.0.3453</langversion>
+<langversion>7.0.3454</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1659,6 +1659,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- Debug.bas contains 0 phrases. -->
 
 <!-- END text for Debug.bas-->
+
+<!-- BEGIN text for PDImages.bas -->
+
+<!-- PDImages.bas contains 0 phrases. -->
+
+<!-- END text for PDImages.bas-->
 
 <!-- BEGIN text for PDMath.bas -->
 

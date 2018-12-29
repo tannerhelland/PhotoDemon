@@ -205,7 +205,7 @@ Private Sub FillXMLSettings()
 End Sub
 
 'This function is called when the user wants to add new preset data to the current preset
-Friend Function AddPresetData(ByRef presetName As String, ByRef presetData As String)
+Friend Sub AddPresetData(ByRef presetName As String, ByRef presetData As String)
     
     'Increase the array size
     ReDim Preserve m_userPresetNames(0 To m_numUserPresets) As String
@@ -218,7 +218,7 @@ Friend Function AddPresetData(ByRef presetName As String, ByRef presetData As St
     'Increment the custom data count
     m_numUserPresets = m_numUserPresets + 1
     
-End Function
+End Sub
 
 'This function is called when the user wants to read custom preset data from file
 Friend Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = vbNullString) As String

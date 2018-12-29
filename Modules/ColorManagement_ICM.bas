@@ -650,11 +650,11 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         UserControls.PostPDMessage WM_PD_COLOR_MANAGEMENT_CHANGE
         
         'If no images have been loaded, exit
-        If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+        If (Not PDImages.IsImageActive()) Then Exit Sub
         
         'If an image has been loaded, and it is valid, redraw it now
-        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        If (PDImages.GetActiveImage.Width > 0) And (PDImages.GetActiveImage.Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And PDImages.GetActiveImage.IsActive Then
+            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
         
     End If

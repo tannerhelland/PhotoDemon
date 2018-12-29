@@ -21,7 +21,7 @@ Public Sub AddBlankLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Layers.AddBlankLayer cParams.GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), cParams.GetLong("layertype", PDL_IMAGE)
+    Layers.AddBlankLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), cParams.GetLong("layertype", PDL_IMAGE)
 End Sub
 
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
@@ -29,31 +29,31 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
 
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
-    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then dLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer(dLayerIndex)
     
     'Until vector layers are implemented, let's just assign the newly created layer the IMAGE type,
     ' and initialize it to the size of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0, 0
     tmpDIB.SetInitialAlphaPremultiplicationState True
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer newLayerType, g_Language.TranslateMessage("Blank layer"), tmpDIB
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer newLayerType, g_Language.TranslateMessage("Blank layer"), tmpDIB
     
     'Make the blank layer the new active layer
-    pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
@@ -66,7 +66,7 @@ Public Sub AddNewLayer_XML(ByRef processParameters As String)
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
     With cParams
-        Layers.AddNewLayer .GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), .GetLong("layertype", PDL_IMAGE), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
+        Layers.AddNewLayer .GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_IMAGE), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
     End With
 End Sub
 
@@ -75,15 +75,15 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
-    prevActiveLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    prevActiveLayerID = PDImages.GetActiveImage.GetActiveLayerID
     
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
-    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then dLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer(dLayerIndex)
     
     'Assign the newly created layer the IMAGE type, and initialize it to the size of the image
     Dim tmpDIB As pdDIB
@@ -97,19 +97,19 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
             'Transparent (blank)
             Case 0
-                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+                tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0, 0
             
             'Black
             Case 1
-                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
+                tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, vbBlack, 255
             
             'White
             Case 2
-                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
+                tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, vbWhite, 255
             
             'Custom color
             Case 3
-                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
+                tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, dLayerColor, 255
             
         End Select
         
@@ -142,11 +142,11 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     End If
     
     'Assign the newly created DIB and layer name to the layer object
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer dLayerType, dLayerName, tmpDIB
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer dLayerType, dLayerName, tmpDIB
     
     'Apply initial layer offsets
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerOffsetX initialXOffset
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerOffsetY initialYOffset
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetX initialXOffset
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerOffsetY initialYOffset
     
     'Some layer types may require extra initialization steps in the future
     Select Case dLayerType
@@ -155,13 +155,13 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
         'Set an initial width/height of 1x1
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerWidth 1#
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerHeight 1#
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerWidth 1#
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerHeight 1#
         
     End Select
         
     'Activate the new layer
-    pdImages(g_CurrentImage).SetActiveLayerByID prevActiveLayerID
+    PDImages.GetActiveImage.SetActiveLayerByID prevActiveLayerID
     
     'Move the layer into position as necessary.
     If (dLayerPosition <> 0) Then
@@ -170,15 +170,15 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
             'Place below current layer
             Case 1
-                MoveLayerAdjacent pdImages(g_CurrentImage).GetLayerIndexFromID(newLayerID), False, False
+                MoveLayerAdjacent PDImages.GetActiveImage.GetLayerIndexFromID(newLayerID), False, False
             
             'Move to top of stack
             Case 2
-                MoveLayerToEndOfStack pdImages(g_CurrentImage).GetLayerIndexFromID(newLayerID), True, False
+                MoveLayerToEndOfStack PDImages.GetActiveImage.GetLayerIndexFromID(newLayerID), True, False
             
             'Move to bottom of stack
             Case 3
-                MoveLayerToEndOfStack pdImages(g_CurrentImage).GetLayerIndexFromID(newLayerID), False, False
+                MoveLayerToEndOfStack PDImages.GetActiveImage.GetLayerIndexFromID(newLayerID), False, False
         
         End Select
         
@@ -195,12 +195,12 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     End If
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the main viewport (if requested)
     If (Not suspendRedraws) Then
         
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
@@ -214,28 +214,28 @@ Public Sub AddLayerFromVisibleLayers()
 
     'Figure out where the top of the layer stack sits
     Dim topLayerIndex As Long
-    topLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    topLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
     
     'Ask the parent pdImage to create a new layer object at the top of its stack
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(topLayerIndex)
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer(topLayerIndex)
     
     'Retrieve a composite of the current image
     Dim tmpDIB As pdDIB
-    pdImages(g_CurrentImage).GetCompositedImage tmpDIB, True
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Visible"), tmpDIB
+    PDImages.GetActiveImage.GetCompositedImage tmpDIB, True
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Visible"), tmpDIB
     
     'Make the blank layer the new active layer
-    pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
@@ -272,19 +272,19 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
-            newLayerID = pdImages(g_CurrentImage).CreateBlankLayer()
+            newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If Len(customLayerName) = 0 Then
-                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
             Else
-                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
             End If
             
-            Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).GetLayerByID(newLayerID).GetLayerName & ")"
+            Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
             
             'Notify the parent image that the entire image now needs to be recomposited
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
             
             'If the caller wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
@@ -298,12 +298,12 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
                     .pcUndoType = UNDO_Image_VectorSafe
                 End With
                 
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcCall, pdImages(g_CurrentImage).GetActiveLayerID
+                PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcCall, PDImages.GetActiveImage.GetActiveLayerID
                 
             End If
             
             'Render the new image to screen
-            ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
             'Synchronize the interface to the new image
             SyncInterfaceToCurrentImage
@@ -321,28 +321,28 @@ End Sub
 'Make a given layer fully transparent.  This is used by the Edit > Cut menu at present, if the user cuts without first making a selection.
 Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
 
-    If Not pdImages(g_CurrentImage) Is Nothing Then
+    If PDImages.IsImageActive() Then
     
         'How we "clear" the layer varies by layer type
-        Select Case pdImages(g_CurrentImage).GetLayerByIndex(layerIndex).GetLayerType
+        Select Case PDImages.GetActiveImage.GetLayerByIndex(layerIndex).GetLayerType
         
             'For image layers, force the layer DIB to all zeroes
             Case PDL_IMAGE
-                With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+                With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     .layerDIB.CreateBlank .GetLayerWidth(False), .GetLayerHeight(False), 32, 0, 0
                 End With
             
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
             ' while retaining all text settings... I'm not sure of a better solution at present.)
             Case PDL_TEXT, PDL_TYPOGRAPHY
-                With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+                With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     .SetTextLayerProperty ptp_Text, vbNullString
                 End With
         
         End Select
         
         'Notify the parent object of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, layerIndex
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, layerIndex
     
     End If
 
@@ -353,23 +353,23 @@ End Sub
 Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If (pdImages(g_CurrentImage).GetActiveLayerID <> newLayerID) Then
+    If (PDImages.GetActiveImage.GetActiveLayerID <> newLayerID) Then
         
         'Check for any non-destructive property changes to the previously active layer
-        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility, pdImages(g_CurrentImage).GetActiveLayerID
+        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility, PDImages.GetActiveImage.GetActiveLayerID
         
         'Notify the parent PD image of the change
-        pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
         
         'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
-        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllGenericLayerProperties PDImages.GetActiveImage.GetActiveLayer
+        If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties PDImages.GetActiveImage.GetActiveLayer
         
         'Sync the interface to the new layer
         If alsoSyncInterface Then SyncInterfaceToCurrentImage
         
         'Redraw the viewport, but only if requested
-        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
         
@@ -379,23 +379,23 @@ End Sub
 Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If (pdImages(g_CurrentImage).GetActiveLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(newLayerIndex).GetLayerID) Then
+    If (PDImages.GetActiveImage.GetActiveLayerID <> PDImages.GetActiveImage.GetLayerByIndex(newLayerIndex).GetLayerID) Then
         
         'Check for any non-destructive property changes to the previously active layer
-        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility, pdImages(g_CurrentImage).GetActiveLayerID
+        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility, PDImages.GetActiveImage.GetActiveLayerID
         
         'Notify the parent PD image of the change
-        pdImages(g_CurrentImage).SetActiveLayerByIndex newLayerIndex
+        PDImages.GetActiveImage.SetActiveLayerByIndex newLayerIndex
         
         'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
-        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllGenericLayerProperties PDImages.GetActiveImage.GetActiveLayer
+        If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties PDImages.GetActiveImage.GetActiveLayer
         
         'Sync the interface to the new layer
         If alsoSyncInterface Then SyncInterfaceToCurrentImage
             
         'Redraw the viewport, but only if requested
-        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
         
@@ -405,19 +405,19 @@ End Sub
 Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisibility As Boolean, Optional ByVal alsoRedrawViewport As Boolean = False)
     
     'Store the new visibility setting in the parent pdImage object
-    pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).SetLayerVisibility layerVisibility
+    PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).SetLayerVisibility layerVisibility
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, dLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, dLayerIndex
     
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.NotifyLayerChange pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).GetLayerID
+    toolbar_Layers.NotifyLayerChange PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).GetLayerID
     
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -426,7 +426,7 @@ Public Sub DuplicateLayerByIndex_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Layers.DuplicateLayerByIndex cParams.GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex)
+    Layers.DuplicateLayerByIndex cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex)
 End Sub
 
 'Duplicate a given layer (note: it doesn't have to be the active layer)
@@ -434,35 +434,35 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
 
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
-    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then dLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
     
     'Before doing anything else, make a copy of the current active layer ID.  We will use this to restore the same
     ' active layer after the creation is complete.
     Dim activeLayerID As Long
-    activeLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    activeLayerID = PDImages.GetActiveImage.GetActiveLayerID
     
     'Also copy the ID of the layer we are creating.
     Dim dupedLayerID As Long
-    dupedLayerID = pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).GetLayerID
+    dupedLayerID = PDImages.GetActiveImage.GetLayerByIndex(dLayerIndex).GetLayerID
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer(dLayerIndex)
             
     'Ask the new layer to copy the contents of the layer we are duplicating
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).CopyExistingLayer pdImages(g_CurrentImage).GetLayerByID(dupedLayerID)
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).CopyExistingLayer PDImages.GetActiveImage.GetLayerByID(dupedLayerID)
     
     'Make the duplicate layer the active layer
-    pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             
     'Synchronize the interface to the new image
     Interface.SyncInterfaceToCurrentImage
@@ -481,7 +481,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
     
         If mergeDown Then
         
-            With pdImages(g_CurrentImage)
+            With PDImages.GetActiveImage()
                 
                 'Request a merge from the parent pdImage
                 .MergeTwoLayers .GetLayerByIndex(dLayerIndex), .GetLayerByIndex(mergeTarget), False
@@ -499,7 +499,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
             
         Else
         
-            With pdImages(g_CurrentImage)
+            With PDImages.GetActiveImage()
             
                 'Request a merge from the parent pdImage
                 .MergeTwoLayers .GetLayerByIndex(mergeTarget), .GetLayerByIndex(dLayerIndex), False
@@ -521,7 +521,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
 
@@ -541,20 +541,20 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
     Dim i As Long
     
     'First, make sure the layer in question exists
-    If Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex) Is Nothing Then
+    If Not PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex) Is Nothing Then
     
         'Check MERGE DOWN
         If moveDown Then
         
             'As an easy check, make sure this layer is visible, and not already at the bottom.
-            If (srcLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
+            If (srcLayerIndex <= 0) Or (Not PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
                 IsLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
             
             'Search for the nearest valid layer beneath this one.
             For i = srcLayerIndex - 1 To 0 Step -1
-                If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
+                If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
                     IsLayerAllowedToMergeAdjacent = i
                     Exit Function
                 End If
@@ -567,14 +567,14 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
         Else
         
             'As an easy check, make sure this layer isn't already at the top.
-            If (srcLayerIndex >= pdImages(g_CurrentImage).GetNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
+            If (srcLayerIndex >= PDImages.GetActiveImage.GetNumOfLayers - 1) Or (Not PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
                 IsLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
             
             'Search for the nearest valid layer above this one.
-            For i = srcLayerIndex + 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-                If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
+            For i = srcLayerIndex + 1 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
                     IsLayerAllowedToMergeAdjacent = i
                     Exit Function
                 End If
@@ -594,7 +594,7 @@ Public Sub DeleteLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Layers.DeleteLayer cParams.GetLong("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex)
+    Layers.DeleteLayer cParams.GetLong("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex)
 End Sub
 
 'Delete a given layer
@@ -602,23 +602,23 @@ Public Sub DeleteLayer(ByVal dLayerIndex As Long)
 
     'Cache the current layer index
     Dim curLayerIndex As Long
-    curLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex - 1
+    curLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex - 1
 
-    pdImages(g_CurrentImage).DeleteLayerByIndex dLayerIndex
+    PDImages.GetActiveImage.DeleteLayerByIndex dLayerIndex
     
     'Set a new active layer
-    If curLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1 Then curLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1 Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
     If curLayerIndex < 0 Then curLayerIndex = 0
     SetActiveLayerByIndex curLayerIndex, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -629,10 +629,10 @@ Public Sub DeleteHiddenLayers()
     ' against bad requests, but better safe than sorry.
     
     'If there are no hidden layers, exit
-    If pdImages(g_CurrentImage).GetNumOfHiddenLayers = 0 Then Exit Sub
+    If PDImages.GetActiveImage.GetNumOfHiddenLayers = 0 Then Exit Sub
     
     'If all layers are hidden, exit
-    If pdImages(g_CurrentImage).GetNumOfHiddenLayers = pdImages(g_CurrentImage).GetNumOfLayers Then Exit Sub
+    If PDImages.GetActiveImage.GetNumOfHiddenLayers = PDImages.GetActiveImage.GetNumOfLayers Then Exit Sub
     
     'We can now assume that the image in question has at least one visible layer, and at least one hidden layer.
     
@@ -640,18 +640,18 @@ Public Sub DeleteHiddenLayers()
     ' so we must pick a new arbitrary layer (why not the bottom layer?).
     Dim activeLayerID As Long
     
-    If pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility Then
-        activeLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    If PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility Then
+        activeLayerID = PDImages.GetActiveImage.GetActiveLayerID
     Else
         activeLayerID = -1
     End If
     
     'Starting at the top and moving down, delete all hidden layers.
     Dim i As Long
-    For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 0 Step -1
+    For i = PDImages.GetActiveImage.GetNumOfLayers - 1 To 0 Step -1
     
-        If Not pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
-            pdImages(g_CurrentImage).DeleteLayerByIndex i
+        If Not PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
+            PDImages.GetActiveImage.DeleteLayerByIndex i
         End If
     Next i
     
@@ -663,13 +663,13 @@ Public Sub DeleteHiddenLayers()
     End If
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -678,16 +678,16 @@ Public Sub MoveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
 
     'Make a copy of the currently active layer's ID
     Dim curActiveLayerID As Long
-    curActiveLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    curActiveLayerID = PDImages.GetActiveImage.GetActiveLayerID
     
     'Ask the parent pdImage to move the layer for us
-    pdImages(g_CurrentImage).MoveLayerByIndex dLayerIndex, directionIsUp
+    PDImages.GetActiveImage.MoveLayerByIndex dLayerIndex, directionIsUp
     
     'Restore the active layer
     SetActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     If updateInterface Then
         
@@ -695,7 +695,7 @@ Public Sub MoveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
 
@@ -706,17 +706,17 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
 
     'Make a copy of the currently active layer's ID
     Dim curActiveLayerID As Long
-    curActiveLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    curActiveLayerID = PDImages.GetActiveImage.GetActiveLayerID
     
     Dim i As Long
     
     'Until this layer is at the desired end of the stack, ask the parent to keep moving it for us!
     If moveToTopOfStack Then
     
-        For i = dLayerIndex To pdImages(g_CurrentImage).GetNumOfLayers - 1
+        For i = dLayerIndex To PDImages.GetActiveImage.GetNumOfLayers - 1
             
             'Ask the parent pdImage to move the layer up for us
-            pdImages(g_CurrentImage).MoveLayerByIndex i, True
+            PDImages.GetActiveImage.MoveLayerByIndex i, True
             
         Next i
     
@@ -725,7 +725,7 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
         For i = dLayerIndex To 0 Step -1
             
             'Ask the parent pdImage to move the layer up for us
-            pdImages(g_CurrentImage).MoveLayerByIndex i, False
+            PDImages.GetActiveImage.MoveLayerByIndex i, False
             
         Next i
     
@@ -735,7 +735,7 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     SetActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
     
     If updateInterface Then
     
@@ -743,7 +743,7 @@ Public Sub MoveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
         toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
 
@@ -765,42 +765,42 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     Dim compositeDIB As pdDIB
     Set compositeDIB = New pdDIB
     
-    pdImages(g_CurrentImage).GetCompositedImage compositeDIB
+    PDImages.GetActiveImage.GetCompositedImage compositeDIB
     
     'If the caller wants the flattened image to *not* have transparency, remove said transparency now
     If removeTransparency Then compositeDIB.CompositeBackgroundColor Colors.ExtractRed(newBackgroundColor), Colors.ExtractGreen(newBackgroundColor), Colors.ExtractBlue(newBackgroundColor)
     
     'Also, grab the name of the bottom-most layer.  This will be used as the name of our only layer in the flattened image.
     Dim flattenedName As String
-    flattenedName = pdImages(g_CurrentImage).GetLayerByIndex(0).GetLayerName
+    flattenedName = PDImages.GetActiveImage.GetLayerByIndex(0).GetLayerName
     
     'With this information, we can now delete all image layers.
     Do
-        pdImages(g_CurrentImage).DeleteLayerByIndex 0
-    Loop While pdImages(g_CurrentImage).GetNumOfLayers > 1
+        PDImages.GetActiveImage.DeleteLayerByIndex 0
+    Loop While PDImages.GetActiveImage.GetNumOfLayers > 1
     
     'Note that the delete operation does not allow us to delete all layers.  (If there is only one layer present,
     ' it will exit without modifying the image.)  Because of that, the image will still retain one layer, which
     ' we will have to manually overwrite.
         
     'Reset any optional layer parameters to their default state
-    pdImages(g_CurrentImage).GetLayerByIndex(0).ResetLayerParameters
+    PDImages.GetActiveImage.GetLayerByIndex(0).ResetLayerParameters
     
     'Overwrite the final layer with the composite DIB.
-    pdImages(g_CurrentImage).GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, flattenedName, compositeDIB
+    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, flattenedName, compositeDIB
     
     'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
     SetActiveLayerByIndex 0, False
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, 0
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -809,47 +809,47 @@ End Sub
 Public Sub MergeVisibleLayers()
     
     'If there's only one layer, this function should not be called - but just in case, exit in advance.
-    If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then Exit Sub
+    If (PDImages.GetActiveImage.GetNumOfLayers = 1) Then Exit Sub
     
     'Similarly, if there's only one *visible* layer, this function should not be called - but just in case, exit in advance.
-    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers = 1) Then Exit Sub
+    If (PDImages.GetActiveImage.GetNumOfVisibleLayers = 1) Then Exit Sub
     
     'By this point, we can assume there are at least two visible layers in the image.  Rather than deal with the messiness
     ' of finding the lowest base layer and gradually merging everything into it, we're going to just create a new blank
     ' layer at the base of the image, then merge everything with it until finally all visible layers have been merged.
     
     'Insert a new layer at the bottom of the layer stack.
-    pdImages(g_CurrentImage).CreateBlankLayer 0
+    PDImages.GetActiveImage.CreateBlankLayer 0
     
     'Technically, the command above does not actually insert a new layer at the base of the image.  Per convention,
     ' it always inserts the requested layer at the spot one *above* the requested spot.  To work around this, swap
     ' our newly created layer with the layer at position 0.
-    pdImages(g_CurrentImage).SwapTwoLayers 0, 1
+    PDImages.GetActiveImage.SwapTwoLayers 0, 1
     
     'Fill that new layer with a blank DIB at the dimensions of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
+    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0
     tmpDIB.SetAlphaPremultiplication True
-    pdImages(g_CurrentImage).GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
+    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
     ' merging visible layers with the base layer, until all visible layers have been merged.
     Dim i As Long
-    For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+    For i = 1 To PDImages.GetActiveImage.GetNumOfLayers - 1
     
         'If this layer is visible, merge it with the base layer
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
-            pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).GetLayerByIndex(i), pdImages(g_CurrentImage).GetLayerByIndex(0), True
+        If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
+            PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.GetLayerByIndex(i), PDImages.GetActiveImage.GetLayerByIndex(0), True
         End If
     
     Next i
     
     'Now that our base layer contains the result of merging all visible layers, we can now delete all
     ' other visible layers.
-    For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 1 Step -1
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
-            pdImages(g_CurrentImage).DeleteLayerByIndex i
+    For i = PDImages.GetActiveImage.GetNumOfLayers - 1 To 1 Step -1
+        If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
+            PDImages.GetActiveImage.DeleteLayerByIndex i
         End If
     Next i
     
@@ -857,31 +857,31 @@ Public Sub MergeVisibleLayers()
     Layers.SetActiveLayerByIndex 0, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, 0
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, 0
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
 'If a layer has been transformed using the on-canvas tools, this will reset it to its default size.
 Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
 
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier 1
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier 1
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -889,32 +889,32 @@ End Sub
 Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     
     'Layers are capable of making this change internally
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).MakeCanvasTransformsPermanent
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).MakeCanvasTransformsPermanent
     
     'Notify the parent object of this change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, srcLayerIndex
     
     'Re-sync the interface
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
 'If a layer has been rotated using the on-canvas tools, this will reset it to its default orientation.
 Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
 
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerAngle 0
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerAngle 0
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -923,19 +923,19 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
 
     'Reset the shear value we were passed
     If shearDirectionHorizontal Then
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerShearX 0
+        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerShearX 0
     Else
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerShearY 0
+        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).SetLayerShearY 0
     End If
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Re-sync the interface
     Interface.SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -948,7 +948,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizePa
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
-    With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
+    With PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex)
         .SetLayerOffsetX cParams.GetDouble("layer-offsetx")
         .SetLayerOffsetY cParams.GetDouble("layer-offsety")
         
@@ -965,10 +965,10 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizePa
     End With
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -981,15 +981,15 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizePa
     cParams.SetParamString resizeParams
     
     'Apply the passed parameter to the specified layer
-    With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
+    With PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex)
         .SetLayerAngle cParams.GetDouble("layer-angle", 0#)
     End With
     
     'Notify the parent image of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1002,16 +1002,16 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByRef resizeParams As 
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
-    With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
+    With PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex)
         .SetLayerOffsetX cParams.GetDouble("layer-offsetx")
         .SetLayerOffsetY cParams.GetDouble("layer-offsety")
     End With
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, srcLayerIndex
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1056,7 +1056,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal layerX As 
 
     'Before doing anything else, check to see if the x/y coordinate even lies inside the image
     Dim tmpLayerRef As pdLayer
-    Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+    Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
         
     If (layerX >= 0) And (layerY >= 0) And (layerX < tmpLayerRef.layerDIB.GetDIBWidth) And (layerY < tmpLayerRef.layerDIB.GetDIBHeight) Then
     
@@ -1114,15 +1114,15 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     If givePreferenceToCurrentLayer Then
     
         'Convert the passed image (x, y) coordinates into the active layer's coordinate space
-        Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+        Drawing.ConvertImageCoordsToLayerCoords_Full PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, layerX, layerY
     
         'See if the mouse is over a POI for the current layer (which may extend outside a layer's boundaries, because the clickable
         ' nodes have a radius greater than 0).  If the mouse is over a POI, return the active layer index immediately.
-        curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
         If (curPOI <> poi_Undefined) And (curPOI <> poi_Interior) Then
-            GetLayerUnderMouse = pdImages(g_CurrentImage).GetActiveLayerIndex
+            GetLayerUnderMouse = PDImages.GetActiveImage.GetActiveLayerIndex
             Exit Function
         End If
         
@@ -1131,13 +1131,13 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     'With the active layer out of the way, iterate through all image layers in reverse (e.g. top-to-bottom).  If one is located
     ' beneath the mouse, and the hovered image section is non-transparent (pending the user's preference for this), return it.
     Dim i As Long
-    For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 0 Step -1
+    For i = PDImages.GetActiveImage.GetNumOfLayers - 1 To 0 Step -1
     
         'Only evaluate the current layer if it is visible
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
+        If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
         
             'Convert the image (x, y) coordinate into the layer's coordinate space
-            Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetLayerByIndex(i), imgX, imgY, layerX, layerY
+            Drawing.ConvertImageCoordsToLayerCoords_Full PDImages.GetActiveImage(), PDImages.GetActiveImage.GetLayerByIndex(i), imgX, imgY, layerX, layerY
             
             'Only evaluate the current layer if the mouse is over it
             If Layers.GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
@@ -1170,7 +1170,7 @@ End Function
 Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     
     'First, make sure there is an active selection
-    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
+    If (Not PDImages.GetActiveImage.IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -1178,14 +1178,10 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     Message "Cropping layer to selected area..."
     
     'Because PD is awesome, we already have a function capable of doing this!
-    If (g_CurrentImage <= UBound(pdImages)) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-            pdImages(g_CurrentImage).EraseProcessedSelection layerIndex
-        End If
-    End If
-        
+    If PDImages.IsImageActive() Then PDImages.GetActiveImage.EraseProcessedSelection layerIndex
+    
     'Update the viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
@@ -1240,12 +1236,12 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     If (srcLayerIndex = -1) Then
     
         Dim i As Long
-        For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-            If pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
+        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+            If PDImages.GetActiveImage.GetLayerByIndex(i).IsLayerVector Then
             
                 'Rasterize this layer, and notify the parent image of the change
-                pdImages(g_CurrentImage).GetLayerByIndex(i).RasterizeVectorData
-                pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
+                PDImages.GetActiveImage.GetLayerByIndex(i).RasterizeVectorData
+                PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
             
             End If
         Next i
@@ -1253,8 +1249,8 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     Else
         
         'Rasterize just this one layer, and notify the parent image of the change
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).RasterizeVectorData
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, srcLayerIndex
+        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).RasterizeVectorData
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, srcLayerIndex
         
     End If
     
@@ -1262,7 +1258,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     SyncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 

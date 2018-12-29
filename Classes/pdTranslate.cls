@@ -226,7 +226,7 @@ End Function
 
 'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the
 ' current language collection.
-Private Function IsApproximateLanguageMatch(ByRef srcLangID As String)
+Private Function IsApproximateLanguageMatch(ByRef srcLangID As String) As Long
 
     IsApproximateLanguageMatch = -1
     
@@ -243,7 +243,7 @@ Private Function IsApproximateLanguageMatch(ByRef srcLangID As String)
 End Function
 
 'Given a language ID (as a string), try to find an exact match (language AND region) in the current language collection.
-Private Function IsExactLanguageMatch(ByRef srcLangID As String)
+Private Function IsExactLanguageMatch(ByRef srcLangID As String) As Long
 
     IsExactLanguageMatch = -1
     
@@ -685,7 +685,7 @@ End Sub
 ' Returns TRUE if a match is found; FALSE otherwise.
 Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As PDLanguageFile, ByVal languageID As String) As Boolean
     
-    languageID = Trim$(UCase(languageID))
+    languageID = Trim$(UCase$(languageID))
     
     'Find the matching language ID
     Dim i As Long

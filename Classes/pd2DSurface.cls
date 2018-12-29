@@ -281,7 +281,7 @@ End Function
 'Copy the current contents of this surface to some target DC.  (This is a nice shorthand function for flipping backbuffers, for example.)
 ' I know it's weird, but if you don't supply a destination width and height, the surface's current width/height values will be automatically
 ' plugged in.
-Friend Function CopySurfaceToDC(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal dstWidth As Long = 0, Optional ByVal dstHeight As Long = 0, Optional ByVal srcX As Long = 0, Optional ByVal srcY As Long = 0)
+Friend Function CopySurfaceToDC(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal dstWidth As Long = 0, Optional ByVal dstHeight As Long = 0, Optional ByVal srcX As Long = 0, Optional ByVal srcY As Long = 0) As Boolean
     If (dstWidth = 0) Then dstWidth = Me.GetSurfaceWidth
     If (dstHeight = 0) Then dstHeight = Me.GetSurfaceHeight
     CopySurfaceToDC = GDI.BitBltWrapper(dstDC, dstX, dstY, dstWidth, dstHeight, Me.GetSurfaceDC, srcX, srcY)

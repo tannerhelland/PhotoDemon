@@ -166,9 +166,9 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     End If
     
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
+        PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
     End If
     
     Dim tmpDIB As pdDIB
@@ -196,7 +196,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         ' a stand-in progress parameter.
         If (thingToRotate = PD_AT_WHOLEIMAGE) Then
             Message "Rotating image..."
-            SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
+            SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Else
             Message "Rotating layer..."
             SetProgBarMax 1
@@ -214,11 +214,11 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         
             Case PD_AT_WHOLEIMAGE
                 lInit = 0
-                lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
+                lFinal = PDImages.GetActiveImage.GetNumOfLayers - 1
             
             Case PD_AT_SINGLELAYER
-                lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
-                lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
+                lInit = PDImages.GetActiveImage.GetActiveLayerIndex
+                lFinal = PDImages.GetActiveImage.GetActiveLayerIndex
         
         End Select
         
@@ -228,7 +228,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             If (thingToRotate = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
         
             'Retrieve a pointer to the layer of interest
-            Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
+            Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
             
             'If we are only resizing a single layer, make a copy of the layer's current x/y offsets.  We will use these
             ' to re-center the layer after it has been resized.
@@ -236,7 +236,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             origOffsetY = tmpLayerRef.GetLayerOffsetY + (tmpLayerRef.GetLayerHeight(False) \ 2)
             
             'Null-pad the layer
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
             'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
             ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
@@ -251,8 +251,8 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
                 End If
                 
             Else
-                If (tmpDIB.GetDIBWidth <> pdImages(g_CurrentImage).Width) Or (tmpDIB.GetDIBHeight <> pdImages(g_CurrentImage).Height) Then
-                    tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, tmpLayerRef.layerDIB.GetDIBColorDepth, 0, 0
+                If (tmpDIB.GetDIBWidth <> PDImages.GetActiveImage.Width) Or (tmpDIB.GetDIBHeight <> PDImages.GetActiveImage.Height) Then
+                    tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, tmpLayerRef.layerDIB.GetDIBColorDepth, 0, 0
                 Else
                     tmpDIB.ResetDIB 0
                 End If
@@ -279,7 +279,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
             End If
             
             'Notify the parent of the change
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
             
         'Continue with the next layer
         Next i
@@ -289,13 +289,13 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         'Update the image's size
         If (thingToRotate = PD_AT_WHOLEIMAGE) And resizeToFit Then
             Dim newWidth As Double, newHeight As Double
-            PDMath.FindBoundarySizeOfRotatedRect pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, rotationAngle, newWidth, newHeight, False
-            pdImages(g_CurrentImage).UpdateSize False, newWidth, newHeight
-            DisplaySize pdImages(g_CurrentImage)
+            PDMath.FindBoundarySizeOfRotatedRect PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, rotationAngle, newWidth, newHeight, False
+            PDImages.GetActiveImage.UpdateSize False, newWidth, newHeight
+            DisplaySize PDImages.GetActiveImage()
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         Message "Rotation complete."
         SetProgBarVal 0
@@ -408,12 +408,12 @@ Private Sub Form_Load()
     Select Case m_RotateTarget
         
         Case PD_AT_WHOLEIMAGE
-            srcWidth = pdImages(g_CurrentImage).Width
-            srcHeight = pdImages(g_CurrentImage).Height
+            srcWidth = PDImages.GetActiveImage.Width
+            srcHeight = PDImages.GetActiveImage.Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+            srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+            srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -439,14 +439,14 @@ Private Sub Form_Load()
                 With srcRectF
                     .Left = 0#
                     .Top = 0#
-                    .Width = pdImages(g_CurrentImage).Width
-                    .Height = pdImages(g_CurrentImage).Height
+                    .Width = PDImages.GetActiveImage.Width
+                    .Height = PDImages.GetActiveImage.Height
                 End With
                 
-                pdImages(g_CurrentImage).GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
+                PDImages.GetActiveImage.GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
         
@@ -456,10 +456,10 @@ Private Sub Form_Load()
         Select Case m_RotateTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).GetCompositedImage smallDIB
+                PDImages.GetActiveImage.GetCompositedImage smallDIB
             
             Case PD_AT_SINGLELAYER
-                smallDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
+                smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
             
         End Select
         

@@ -567,9 +567,9 @@ Private Sub CreateNewPreferencesFile()
     
         'Write out the "color management" block of preferences:
         .WriteTag "ColorManagement", vbNullString, True
-            .WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
+            .WriteTag "DisplayCMMode", Trim$(Str$(DCM_NoManagement))
             .WriteTag "DisplayBPC", "True"
-            .WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
+            .WriteTag "DisplayRenderingIntent", Trim$(Str$(INTENT_PERCEPTUAL))
         .CloseTag "ColorManagement"
         .WriteBlankLine
         
@@ -680,8 +680,8 @@ Private Sub CreateNewPreferencesFile()
         
         .WriteTag "Transparency", vbNullString, True
             .WriteTag "AlphaCheckMode", "0"
-            .WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
-            .WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
+            .WriteTag "AlphaCheckOne", Trim$(Str$(RGB(255, 255, 255)))
+            .WriteTag "AlphaCheckTwo", Trim$(Str$(RGB(204, 204, 204)))
             .WriteTag "AlphaCheckSize", "1"
         .CloseTag "Transparency"
         .WriteBlankLine
@@ -732,7 +732,7 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     If (LenB(tmpString) = 0) Then
         
         'To prevent future blank results, write out a default value
-        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue))
+        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str$(prefDefaultValue))
         UserPrefs.SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
         GetPref_Boolean = prefDefaultValue
             
@@ -769,7 +769,7 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     If (LenB(tmpString) = 0) Then
     
         'To prevent future blank results, write out a default value
-        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue ))
+        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str$(prefDefaultValue ))
         UserPrefs.SetPref_Long preferenceSection, preferenceName, prefDefaultValue
         GetPref_Long = prefDefaultValue
     
@@ -782,7 +782,7 @@ End Function
 
 'Set a Long-type value to the preferences file.
 Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
-    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
+    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str$(longVal))
 End Sub
 
 'Get a Float-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
@@ -808,7 +808,7 @@ End Function
 
 'Set a Float-type value to the preferences file.
 Public Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal floatVal As Double)
-    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
+    UserPrefs.WritePreference preferenceSection, preferenceName, Trim$(Str$(floatVal))
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)

@@ -593,16 +593,16 @@ Private Sub UserControl_Show()
         ' a preview image - if any - will be loaded via the NotifyNonStandardSource function, which in turn
         ' will modify m_SrcImageWidth/Height.  If those are non-zero, assume a non-standard source, and do not
         ' auto-load dimensions from the active window.
-        If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
-            If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
-                If pdImages(g_CurrentImage).IsSelectionActive Then
+        If PDImages.IsImageActive() And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
+            If (PDImages.GetActiveImage.GetNumOfLayers <> 0) Then
+                If PDImages.GetActiveImage.IsSelectionActive Then
                     Dim selBounds As RectF
-                    selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
+                    selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect
                     m_SrcImageWidth = selBounds.Width
                     m_SrcImageHeight = selBounds.Height
                 Else
-                    m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
-                    m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
+                    m_SrcImageWidth = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+                    m_SrcImageHeight = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
                 End If
             End If
         End If

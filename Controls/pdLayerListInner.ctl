@@ -255,10 +255,10 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         preventFurtherHandling = True
         
         'Set the active layer name, then hide the text box
-        pdImages(g_CurrentImage).GetActiveLayer.SetLayerName txtLayerName.Text
+        PDImages.GetActiveImage.GetActiveLayer.SetLayerName txtLayerName.Text
         
         'If the user changed the name, set an Undo/Redo point now
-        If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.GetLayerName
+        If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, PDImages.GetActiveImage.GetActiveLayer.GetLayerName
         
         'Re-enable hotkeys now that editing is finished
         m_LayerNameEditMode = False
@@ -314,10 +314,10 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
         m_LayerNameEditMode = True
         
         'Fill the text box with the current layer name, and select it
-        txtLayerName.Text = pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName
+        txtLayerName.Text = PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName
         
         'Set an Undo/Redo marker for the existing layer name
-        Processor.FlagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_Name, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, PDImages.GetActiveImage.GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
         
         txtLayerName.SetFocus
     
@@ -338,8 +338,8 @@ End Sub
 Private Sub ucSupport_LostFocusAPI()
     
     'Check for any non-destructive changes that may have been set via this window (e.g. visibility)
-    If (g_OpenImageCount > 0) Then
-        Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
+    If PDImages.IsImageActive() Then
+        Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
     End If
     
     RedrawBackBuffer
@@ -357,7 +357,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     
     If (clickedLayer >= 0) Then
         
-        If (Not pdImages(g_CurrentImage) Is Nothing) And (Button = pdLeftButton) Then
+        If (PDImages.IsImageActive() And (Button = pdLeftButton)) Then
             
             'If the user has initiated an action, this value will be set to TRUE.  We don't currently make use of it,
             ' but it could prove helpful in the future (for optimizing redraws, for example).
@@ -368,7 +368,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             
             'Has the user clicked a visibility rectangle?
             If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
-                Layers.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerVisibility, True
+                Layers.SetLayerVisibilityByIndex clickedLayer, Not PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerVisibility, True
                 actionInitiated = True
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
@@ -376,10 +376,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             Else
             
                 'See if the clicked layer differs from the current active layer
-                If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerID) Then
-                    Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
+                If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
+                    Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
                     Layers.SetActiveLayerByIndex clickedLayer, False
-                    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+                    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 End If
                 
             End If
@@ -407,35 +407,35 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     End If
     
     'Ignore key presses unless an image has been loaded
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If PDImages.IsImageActive() Then
     
         'Up key activates the next layer upward
-        If (vkCode = VK_UP) And (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1) Then
-            Layers.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex + 1, True
+        If (vkCode = VK_UP) And (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1) Then
+            Layers.SetActiveLayerByIndex PDImages.GetActiveImage.GetActiveLayerIndex + 1, True
         End If
         
         'Down key activates the next layer downward
-        If (vkCode = VK_DOWN) And pdImages(g_CurrentImage).GetActiveLayerIndex > 0 Then
-            Layers.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex - 1, True
+        If (vkCode = VK_DOWN) And PDImages.GetActiveImage.GetActiveLayerIndex > 0 Then
+            Layers.SetActiveLayerByIndex PDImages.GetActiveImage.GetActiveLayerIndex - 1, True
         End If
         
         'Right key increases active layer opacity
-        If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility) Then
+        If (vkCode = VK_RIGHT) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
-            'sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity + 10
-            'ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            'sltLayerOpacity.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOpacity + 10
+            'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
         End If
         
         'Left key decreases active layer opacity
-        If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility) Then
+        If (vkCode = VK_LEFT) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
-            'sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity - 10
-            'ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            'sltLayerOpacity.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOpacity - 10
+            'ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.mainCanvas(0)
         End If
         
         'Delete key: delete the active layer (if allowed)
-        If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+        If (vkCode = VK_DELETE) And PDImages.GetActiveImage.GetNumOfLayers > 1 Then
+            Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         End If
         
         'Insert: raise Add New Layer dialog
@@ -449,7 +449,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             
             'Retrieve the active layer index
             Dim curLayerIndex As Long
-            curLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
+            curLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
             
             'Advance the layer index according to the Shift modifier
             If (Shift And vbShiftMask) <> 0 Then
@@ -460,13 +460,13 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             
             'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
             ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
-            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers) Then
+            If (curLayerIndex >= 0) And (curLayerIndex < PDImages.GetActiveImage.GetNumOfLayers) Then
                 
                 'Activate the new layer
-                pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
+                PDImages.GetActiveImage.SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -480,8 +480,8 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
             SyncInterfaceToCurrentImage
         End If
         
@@ -500,10 +500,10 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     clickedLayer = GetLayerAtPosition(x, y)
     
     'Don't proceed unless the user has the mouse over a valid layer
-    If (clickedLayer >= 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (clickedLayer >= 0) And PDImages.IsImageActive() Then
         
         'If the image is a multilayer image, and they're using the left mouse button, initiate drag/drop layer reordering
-        If (pdImages(g_CurrentImage).GetNumOfLayers > 1) And (Button = pdLeftButton) Then
+        If (PDImages.GetActiveImage.GetNumOfLayers > 1) And (Button = pdLeftButton) Then
         
             'Enter layer rearranging mode
             m_LayerRearrangingMode = True
@@ -548,7 +548,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     End If
     
     'Don't process further MouseMove events if no images are loaded
-    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'Store the mouse coords at module-level; the renderer may use these to highlight clickable elements
     m_MouseX = x
@@ -567,7 +567,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
                 
         'Ask the parent pdImage to move the layer for us
-        If pdImages(g_CurrentImage).MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+        If PDImages.GetActiveImage.MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
         
             'Note that the layer currently being moved has changed
             m_LayerIndexToRearrange = layerIndexUnderMouse
@@ -579,7 +579,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             Me.RequestRedraw True
             
             'Redraw the viewport
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         End If
         
@@ -600,7 +600,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
     layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
     
     'Don't proceed further unless an image has been loaded, and the user is not just clicking the layer box
-    If (Not pdImages(g_CurrentImage) Is Nothing) And (Not clickEventAlsoFiring) Then
+    If PDImages.IsImageActive() And (Not clickEventAlsoFiring) Then
         
         'If we're in drag/drop mode, and the left mouse button is pressed, terminate drag/drop layer reordering
         If m_LayerRearrangingMode And (Button = pdLeftButton) Then
@@ -610,7 +610,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
             
             'Ask the parent pdImage to move the layer for us; the MouseMove event has probably taken care of this already.
             ' In that case, this function will return FALSE and we don't have to do anything extra.
-            If pdImages(g_CurrentImage).MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+            If PDImages.GetActiveImage.MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
     
                 'Keep the current layer as the active one
                 SetActiveLayerByIndex layerIndexUnderMouse, False
@@ -619,7 +619,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
                 Me.RequestRedraw True
                 
                 'Redraw the viewport
-                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+                ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 
             End If
             
@@ -765,10 +765,10 @@ End Sub
 Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
 
     'Do not attempt to cache thumbnails if there are no open images
-    If ((Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0)) Then
+    If PDImages.IsImageActive() Then
     
         'Make sure the active image has at least one layer.  (This should always be true, but better safe than sorry.)
-        If (pdImages(g_CurrentImage).GetNumOfLayers > 0) Then
+        If (PDImages.GetActiveImage.GetNumOfLayers > 0) Then
             
             'We now have two options.
             ' - If a valid layerID (>= 0) was specified, we can update just that layer.
@@ -781,7 +781,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
             If (layerID >= 0) And (m_NumOfThumbnails > 0) Then
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
-                        pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                        PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
                         m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         layerUpdateSuccessful = True
                         Exit For
@@ -794,7 +794,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
             If (Not layerUpdateSuccessful) Then
                 
                 'Retrieve the number of layers in the current image and prepare the thumbnail cache
-                m_NumOfThumbnails = pdImages(g_CurrentImage).GetNumOfLayers
+                m_NumOfThumbnails = PDImages.GetActiveImage.GetNumOfLayers
                 If (UBound(m_LayerThumbnails) <> (m_NumOfThumbnails - 1)) Then ReDim m_LayerThumbnails(0 To m_NumOfThumbnails - 1) As LayerThumbDisplay
                 
                 If (m_NumOfThumbnails > 0) Then
@@ -803,9 +803,9 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                         
                         'Note that alongside the thumbnail, we also note each layer's canonical ID; this lets us
                         ' reuse thumbnails if layer order changes.
-                        If (Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing) Then
-                            m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
-                            pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                        If (Not PDImages.GetActiveImage.GetLayerByIndex(i) Is Nothing) Then
+                            m_LayerThumbnails(i).CanonicalLayerID = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerID
+                            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
                             m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         End If
                         
@@ -917,10 +917,10 @@ Private Sub RedrawBackBuffer()
         
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
-        If (pdImages(g_CurrentImage) Is Nothing) Or (g_OpenImageCount <= 0) Then
+        If (Not PDImages.IsImageActive()) Then
             zeroLayers = True
         Else
-            zeroLayers = (pdImages(g_CurrentImage).GetNumOfLayers <= 0)
+            zeroLayers = (PDImages.GetActiveImage.GetNumOfLayers <= 0)
         End If
         
         'If we are not in "zero layers" mode, proceed with drawing the various list items
@@ -958,11 +958,11 @@ Private Sub RedrawBackBuffer()
             
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
-            For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+            For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
             
                 'Because layers are displayed in reverse order (layer 0 is displayed at the bottom of the list, not the top),
                 ' we need to convert our For loop index into a matching layer index
-                layerIndex = (pdImages(g_CurrentImage).GetNumOfLayers - 1) - i
+                layerIndex = (PDImages.GetActiveImage.GetNumOfLayers - 1) - i
                 offsetX = m_ListRect.Left
                 offsetY = m_ListRect.Top + Interface.FixDPI(i * LAYER_BLOCK_HEIGHT) - scrollOffset
                 
@@ -973,13 +973,13 @@ Private Sub RedrawBackBuffer()
                     'For performance reasons, retrieve a local reference to the corresponding pdLayer object.
                     ' We need to pull a *lot* of information from this object.
                     Dim tmpLayerRef As pdLayer
-                    Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+                    Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     
                     If (Not tmpLayerRef Is Nothing) Then
                         
                         layerIsHovered = (layerIndex = m_CurLayerHover)
                         If (layerIsHovered) Then layerHoverIndex = layerIndex
-                        layerIsSelected = (tmpLayerRef.GetLayerID = pdImages(g_CurrentImage).GetActiveLayerID)
+                        layerIsSelected = (tmpLayerRef.GetLayerID = PDImages.GetActiveImage.GetActiveLayerID)
                         If (layerIsSelected) Then layerSelectedIndex = layerIndex
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
@@ -1165,7 +1165,7 @@ End Sub
 ' *above* the top-most layer, and the bottom layer if in the invalid area *beneath* the bottom-most layer.
 Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional ByVal reportNearestLayer As Boolean = False) As Long
     
-    If (pdImages(g_CurrentImage) Is Nothing) Then
+    If (Not PDImages.IsImageActive()) Then
         GetLayerAtPosition = -1
     Else
     
@@ -1179,10 +1179,10 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
         'It's a bit counterintuitive, but we draw the layer box in reverse order: layer 0 (the image's first layer)
         ' is at the BOTTOM of our box, while layer(max) is at the TOP.  Because of this, all layer positioning checks
         ' must be reversed.
-        tmpLayerCheck = (pdImages(g_CurrentImage).GetNumOfLayers - 1) - tmpLayerCheck
+        tmpLayerCheck = (PDImages.GetActiveImage.GetNumOfLayers - 1) - tmpLayerCheck
         
         'Is the mouse over an actual layer, or just dead space in the box?
-        If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).GetNumOfLayers) Then
+        If (tmpLayerCheck >= 0) And (tmpLayerCheck < PDImages.GetActiveImage.GetNumOfLayers) Then
             GetLayerAtPosition = tmpLayerCheck
         Else
         
@@ -1191,7 +1191,7 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
                 If (tmpLayerCheck < 0) Then
                     GetLayerAtPosition = 0
                 Else
-                    GetLayerAtPosition = pdImages(g_CurrentImage).GetNumOfLayers - 1
+                    GetLayerAtPosition = PDImages.GetActiveImage.GetNumOfLayers - 1
                 End If
             Else
                 GetLayerAtPosition = -1

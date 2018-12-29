@@ -49,7 +49,7 @@ Public Sub RenderColorPickerCursor(ByRef targetCanvas As pdCanvas)
     
     'We also want to pinpoint the precise cursor position
     Dim cursX As Double, cursY As Double
-    Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, pdImages(g_CurrentImage), m_MouseX, m_MouseY, cursX, cursY
+    Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY, cursX, cursY
     
     'Borrow a pair of UI pens from the main rendering module
     Dim innerPen As pd2DPen, outerPen As pd2DPen

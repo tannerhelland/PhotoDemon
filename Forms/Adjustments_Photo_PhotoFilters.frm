@@ -141,7 +141,7 @@ Private Const BLOCKHEIGHT As Long = 53
 Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.AddPresetData "CurrentFilter", Trim$(Str(lstFilters.ListIndex))
+    cmdBar.AddPresetData "CurrentFilter", Trim$(Str$(lstFilters.ListIndex))
 End Sub
 
 Private Sub cmdBar_OKClick()

@@ -1829,7 +1829,7 @@ End Sub
 'Interlaced sub-images have varying sizes depending on the iteration pass.  This function returns the
 ' width and height of a given interlaced sub-image; m_Header *must* be populated for this to work, since it
 ' relies on color-mode and bit-depth data.
-Private Function GetSizeInterlaced(ByRef dstX As Long, ByRef dstY As Long, ByVal intPass As Long)
+Private Function GetSizeInterlaced(ByRef dstX As Long, ByRef dstY As Long, ByVal intPass As Long) As Long
 
     'Per the spec, each interlacing pass encodes the following pixels from each 8x8 block in the image:
     ' Offset: 0 1 2 3 4 5 6 7

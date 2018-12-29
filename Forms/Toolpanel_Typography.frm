@@ -811,19 +811,19 @@ Private Sub bsText_BrushChanged()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillBrush, bsText.Brush
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FillBrush, bsText.Brush
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub bsText_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub bsText_LostFocusAPI()
@@ -839,19 +839,19 @@ Private Sub bsTextBackground_BrushChanged()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundBrush, bsTextBackground.Brush
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_BackgroundBrush, bsTextBackground.Brush
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub bsTextBackground_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
@@ -871,19 +871,19 @@ Private Sub btnFontStyles_Click(Index As Integer)
     
         'Bold
         Case 0
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontBold, btnFontStyles(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontBold, btnFontStyles(Index).Value
         
         'Italic
         Case 1
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontItalic, btnFontStyles(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontUnderline, btnFontStyles(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontStrikeout, btnFontStyles(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -891,33 +891,33 @@ Private Sub btnFontStyles_Click(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
 Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
     'Non-destructive effects are obviously not tracked if no images are loaded
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'Set Undo/Redo markers for whichever button was toggled
     Select Case Index
     
         'Bold
         Case 0
-            Processor.FlagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
             
         'Italic
         Case 1
-            Processor.FlagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
         'Underline
         Case 2
-            Processor.FlagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
         'Strikeout
         Case 3
-            Processor.FlagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
     
     End Select
     
@@ -987,19 +987,19 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_HorizontalAlignment, buttonIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_HorizontalAlignment, buttonIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
@@ -1019,19 +1019,19 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_VerticalAlignment, buttonIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_VerticalAlignment, buttonIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
@@ -1047,19 +1047,19 @@ Private Sub cboCharCase_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub cboCharCase_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
@@ -1075,19 +1075,19 @@ Private Sub cboCharMirror_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
 Private Sub cboCharMirror_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
@@ -1103,19 +1103,19 @@ Private Sub cboTextFontFace_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer font size
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
@@ -1131,19 +1131,19 @@ Private Sub cboTextRenderingHint_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
@@ -1159,19 +1159,19 @@ Private Sub cboWordWrap_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_WordWrap, cboWordWrap.ListIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_WordWrap, cboWordWrap.ListIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub cboWordWrap_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
@@ -1187,19 +1187,19 @@ Private Sub chkBackground_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundActive, chkBackground.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_BackgroundActive, chkBackground.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub chkBackground_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, chkBackground.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, chkBackground.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
@@ -1215,19 +1215,19 @@ Private Sub chkBackgroundBorder_Click()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderActive, chkBackgroundBorder.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_BackBorderActive, chkBackgroundBorder.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub chkBackgroundBorder_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, chkBackgroundBorder.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, chkBackgroundBorder.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
@@ -1243,19 +1243,19 @@ Private Sub chkFillText_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillActive, chkFillText.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FillActive, chkFillText.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub chkFillText_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub chkFillText_LostFocusAPI()
@@ -1271,19 +1271,19 @@ Private Sub chkHinting_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextHinting, chkHinting.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_TextHinting, chkHinting.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub chkHinting_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_TextHinting, chkHinting.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_TextHinting, chkHinting.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
@@ -1299,19 +1299,19 @@ Private Sub chkOutlineText_Click()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlineActive, chkOutlineText.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_OutlineActive, chkOutlineText.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub chkOutlineText_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub chkOutlineText_LostFocusAPI()
@@ -1445,12 +1445,12 @@ End Sub
 Private Sub lblConvertLayerConfirm_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
-    pdImages(g_CurrentImage).GetActiveLayer.SetLayerType PDL_TYPOGRAPHY
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TYPOGRAPHY
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     Interface.SyncInterfaceToCurrentImage
     
 End Sub
@@ -1473,19 +1473,19 @@ Private Sub psText_PenChanged()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlinePen, psText.Pen
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_OutlinePen, psText.Pen
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub psText_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub psText_LostFocusAPI()
@@ -1501,19 +1501,19 @@ Private Sub psTextBackground_PenChanged()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderPen, psTextBackground.Pen
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_BackBorderPen, psTextBackground.Pen
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub psTextBackground_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
@@ -1529,19 +1529,19 @@ Private Sub sltCharInflation_Change()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharInflation, sltCharInflation.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharInflation, sltCharInflation.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub sltCharInflation_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
@@ -1557,19 +1557,19 @@ Private Sub sltCharOrientation_Change()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub sltCharOrientation_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
@@ -1585,19 +1585,19 @@ Private Sub sltCharSpacing_Change()
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub sltCharSpacing_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltCharSpacing_LostFocusAPI()
@@ -1613,19 +1613,19 @@ Private Sub tudJitter_Change(Index As Integer)
     Tools.SetToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub tudJitter_GotFocusAPI(Index As Integer)
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub tudJitter_LostFocusAPI(Index As Integer)
@@ -1641,19 +1641,19 @@ Private Sub tudLineSpacing_Change()
     Tools.SetToolBusyState True
     
     'Update the setting
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub tudLineSpacing_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub tudLineSpacing_LostFocusAPI()
@@ -1672,16 +1672,16 @@ Private Sub tudMargin_Change(Index As Integer)
     Select Case Index
     
         Case 0
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_MarginLeft, tudMargin(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_MarginLeft, tudMargin(Index).Value
         
         Case 1
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_MarginRight, tudMargin(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_MarginRight, tudMargin(Index).Value
         
         Case 2
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_MarginTop, tudMargin(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_MarginTop, tudMargin(Index).Value
         
         Case 3
-            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_MarginBottom, tudMargin(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_MarginBottom, tudMargin(Index).Value
     
     End Select
         
@@ -1689,27 +1689,27 @@ Private Sub tudMargin_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub tudMargin_GotFocusAPI(Index As Integer)
 
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     Select Case Index
     
         Case 0
-            Processor.FlagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
         Case 1
-            Processor.FlagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
         Case 2
-            Processor.FlagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
         Case 3
-            Processor.FlagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
         
     End Select
     
@@ -1744,19 +1744,19 @@ Private Sub tudTextFontSize_Change()
     Tools.SetToolBusyState True
     
     'Update the current layer font size
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontSize, tudTextFontSize.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontSize, tudTextFontSize.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
@@ -1772,19 +1772,19 @@ Private Sub txtTextTool_Change()
     Tools.SetToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_Text, txtTextTool.Text
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_Text, txtTextTool.Text
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
@@ -1797,11 +1797,9 @@ Private Function CurrentLayerIsText() As Boolean
     CurrentLayerIsText = False
     
     'Changing UI elements does nothing if no images are loaded
-    If (g_OpenImageCount = 0) Then Exit Function
-    
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
-        If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-            CurrentLayerIsText = pdImages(g_CurrentImage).GetActiveLayer.IsLayerText
+    If PDImages.IsImageActive() Then
+        If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
+            CurrentLayerIsText = PDImages.GetActiveImage.GetActiveLayer.IsLayerText
         End If
     End If
     
@@ -1833,14 +1831,14 @@ Public Sub UpdateAgainstCurrentLayer()
         
     End If
     
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
     
-        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
+        If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
         
             'Check for non-typography layers.
-            If pdImages(g_CurrentImage).GetActiveLayer.GetLayerType <> PDL_TYPOGRAPHY Then
+            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerType <> PDL_TYPOGRAPHY) Then
             
-                Select Case pdImages(g_CurrentImage).GetActiveLayer.GetLayerType
+                Select Case PDImages.GetActiveImage.GetActiveLayer.GetLayerType
                 
                     Case PDL_TEXT
                         Dim newMessage As String

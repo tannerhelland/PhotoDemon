@@ -119,9 +119,9 @@ Friend Function GetCompareMode() As PD_FloodCompare
     GetCompareMode = m_CompareMode
 End Function
 
-Friend Function SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
+Friend Sub SetCompareMode(ByVal newCompareMode As PD_FloodCompare)
     m_CompareMode = newCompareMode
-End Function
+End Sub
 
 Friend Function GetInitialPoint() As PointAPI
     GetInitialPoint = m_InitPoint

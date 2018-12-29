@@ -517,11 +517,11 @@ Private Sub cmdBarMini_OKClick()
             curMetadata = m_AllTags(i, j)
             
             'Find the matching tag entry in the parent image's metadata collection
-            For k = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
-                targetMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(k)
+            For k = 0 To PDImages.GetActiveImage.ImgMetadata.GetMetadataCount - 1
+                targetMetadata = PDImages.GetActiveImage.ImgMetadata.GetMetadataEntry(k)
                 If Strings.StringsEqual(m_MDCategories(i).Name, targetMetadata.TagGroupFriendly, False) Then
                     If Strings.StringsEqual(curMetadata.TagNameFriendly, targetMetadata.TagNameFriendly, False) Then
-                        pdImages(g_CurrentImage).ImgMetadata.SetMetadataEntryByIndex k, curMetadata
+                        PDImages.GetActiveImage.ImgMetadata.SetMetadataEntryByIndex k, curMetadata
                         Exit For
                     End If
                 End If
@@ -552,7 +552,7 @@ Private Sub cmdMarkPrivateTags_Click()
 End Sub
 
 Private Sub cmdTechnicalReport_Click()
-    ExifTool.CreateTechnicalMetadataReport pdImages(g_CurrentImage)
+    ExifTool.CreateTechnicalMetadataReport PDImages.GetActiveImage()
 End Sub
 
 Private Sub Form_Activate()
@@ -561,7 +561,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    lstMetadata.ListItemHeight = FixDPI(BLOCKHEIGHT)
+    lstMetadata.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -591,12 +591,12 @@ Private Sub Form_Load()
     Dim categoryFound As Boolean
     
     Dim i As Long, j As Long
-    For i = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
+    For i = 0 To PDImages.GetActiveImage.ImgMetadata.GetMetadataCount - 1
     
         categoryFound = False
     
         'Retrieve the next metadata entry
-        curMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(i)
+        curMetadata = PDImages.GetActiveImage.ImgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
         
         If (Not curMetadata.InternalUseOnly) Then
@@ -644,11 +644,11 @@ Private Sub Form_Load()
     Dim curTagCount() As Long
     ReDim curTagCount(0 To m_NumOfCategories - 1) As Long
     
-    For i = 0 To pdImages(g_CurrentImage).ImgMetadata.GetMetadataCount - 1
+    For i = 0 To PDImages.GetActiveImage.ImgMetadata.GetMetadataCount - 1
         
         'As above, retrieve the next metadata entry, and this time, reset any per-session trackers
         curMetadata.UserModifiedThisSession = False
-        curMetadata = pdImages(g_CurrentImage).ImgMetadata.GetMetadataEntry(i)
+        curMetadata = PDImages.GetActiveImage.ImgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
         
         'By default, PD only grabs as much metadata information as it needs to successfully write the metadata out to file.
@@ -708,7 +708,7 @@ Private Sub Form_Load()
     btnGroupOptions(MDTB_Reset).AssignTooltip "Reset entire group to its original values"
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
-    If (LenB(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
+    If (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
         lblTechnicalReport.Visible = True
         cmdTechnicalReport.Visible = True
     Else

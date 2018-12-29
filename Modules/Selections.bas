@@ -67,15 +67,15 @@ End Function
 Public Sub CreateNewSelection(ByRef paramString As String)
     
     'Use the passed parameter string to initialize the selection
-    pdImages(g_CurrentImage).MainSelection.InitFromXML paramString
-    pdImages(g_CurrentImage).MainSelection.LockIn
-    pdImages(g_CurrentImage).SetSelectionActive True
+    PDImages.GetActiveImage.MainSelection.InitFromXML paramString
+    PDImages.GetActiveImage.MainSelection.LockIn
+    PDImages.GetActiveImage.SetSelectionActive True
     
     'For lasso selections, mark the lasso as closed if the selection is being created anew
-    If (pdImages(g_CurrentImage).MainSelection.GetSelectionShape() = ss_Lasso) Then pdImages(g_CurrentImage).MainSelection.SetLassoClosedState True
+    If (PDImages.GetActiveImage.MainSelection.GetSelectionShape() = ss_Lasso) Then PDImages.GetActiveImage.MainSelection.SetLassoClosedState True
     
     'Synchronize all user-facing controls to match
-    Selections.SyncTextToCurrentSelection g_CurrentImage
+    Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     
 End Sub
 
@@ -83,17 +83,17 @@ End Sub
 Public Sub RemoveCurrentSelection(Optional ByVal updateUIToo As Boolean = True)
     
     'Release the selection object and mark it as inactive
-    pdImages(g_CurrentImage).MainSelection.LockRelease
-    pdImages(g_CurrentImage).SetSelectionActive False
+    PDImages.GetActiveImage.MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive False
     
     'Reset any internal selection state trackers
-    pdImages(g_CurrentImage).MainSelection.EraseCustomTrackers
+    PDImages.GetActiveImage.MainSelection.EraseCustomTrackers
     
     'Free as many unneeded caches as we can
-    pdImages(g_CurrentImage).MainSelection.FreeNonEssentialResources
+    PDImages.GetActiveImage.MainSelection.FreeNonEssentialResources
     
     'Synchronize all user-facing controls to match
-    If updateUIToo Then Selections.SyncTextToCurrentSelection g_CurrentImage
+    If updateUIToo Then Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     
 End Sub
 
@@ -101,18 +101,18 @@ End Sub
 Public Sub SelectWholeImage()
     
     'Unselect any existing selection
-    pdImages(g_CurrentImage).MainSelection.LockRelease
-    pdImages(g_CurrentImage).SetSelectionActive False
+    PDImages.GetActiveImage.MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive False
     
     'Create a new selection at the size of the image
-    pdImages(g_CurrentImage).MainSelection.SelectAll
+    PDImages.GetActiveImage.MainSelection.SelectAll
     
     'Lock in this selection
-    pdImages(g_CurrentImage).MainSelection.LockIn
-    pdImages(g_CurrentImage).SetSelectionActive True
+    PDImages.GetActiveImage.MainSelection.LockIn
+    PDImages.GetActiveImage.SetSelectionActive True
     
     'Synchronize all user-facing controls to match
-    SyncTextToCurrentSelection g_CurrentImage
+    SyncTextToCurrentSelection PDImages.GetActiveImageID()
     
 End Sub
 
@@ -142,7 +142,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
             Set tmpSelection = New pdSelection
-            tmpSelection.SetParentReference pdImages(g_CurrentImage)
+            tmpSelection.SetParentReference PDImages.GetActiveImage()
             
             If tmpSelection.ReadSelectionFromFile(sFile, True) Then
                 
@@ -172,14 +172,14 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         cParams.SetParamString loadSettings
         
         Message "Loading selection..."
-        pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile cParams.GetString("selectionpath")
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.ReadSelectionFromFile cParams.GetString("selectionpath")
+        PDImages.GetActiveImage.SetSelectionActive True
         
         'Synchronize all user-facing controls to match
-        SyncTextToCurrentSelection g_CurrentImage
+        SyncTextToCurrentSelection PDImages.GetActiveImageID()
                 
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         Message "Selection loaded successfully"
     
     End If
@@ -209,7 +209,7 @@ Public Sub SaveSelectionToFile()
         'Write out the selection file
         Dim cmpLevel As Long
         cmpLevel = Compression.GetMaxCompressionLevel(PD_CE_Zstd)
-        If pdImages(g_CurrentImage).MainSelection.WriteSelectionToFile(sFile, PD_CE_Zstd, cmpLevel, PD_CE_Zstd, cmpLevel) Then
+        If PDImages.GetActiveImage.MainSelection.WriteSelectionToFile(sFile, PD_CE_Zstd, cmpLevel, PD_CE_Zstd, cmpLevel) Then
             Message "Selection saved."
         Else
             Message "Unknown error occurred.  Selection was not saved.  Please try again."
@@ -225,7 +225,7 @@ End Sub
 Public Function ExportSelectedAreaAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
+    If (Not PDImages.GetActiveImage.IsSelectionActive) Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectedAreaAsImage = False
         Exit Function
@@ -238,7 +238,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'Copy the current selection DIB into a temporary DIB.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, True, True
+    PDImages.GetActiveImage.RetrieveProcessedSelection tmpDIB, True, True
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -292,7 +292,7 @@ End Function
 Public Function ExportSelectionMaskAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not pdImages(g_CurrentImage).IsSelectionActive Then
+    If Not PDImages.GetActiveImage.IsSelectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsImage = False
         Exit Function
@@ -305,7 +305,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Create a temporary DIB, then retrieve the current selection into it
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).MainSelection.GetMaskDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.MainSelection.GetMaskDIB
     
     'Selections use a "white = selected, transparent = unselected" strategy.  Composite against a black background now
     ' (but leave the DIB in 32-bpp format)
@@ -363,146 +363,150 @@ Public Sub SyncTextToCurrentSelection(ByVal srcImageID As Long)
     'Only synchronize the text boxes if a selection is active
     If Selections.SelectionsAllowed(False) Then
         
-        pdImages(srcImageID).MainSelection.SuspendAutoRefresh True
+        If PDImages.IsImageActive(srcImageID) Then
         
-        'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
-        ' To access their indicies properly, we must calculate an offset.
-        Dim subpanelOffset As Long, subpanelCtlOffset As Long
-        subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(srcImageID))
-        subpanelCtlOffset = subpanelOffset * 2
+            PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh True
         
-        If Tools.IsSelectionToolActive Then
-        
-            'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
-            If pdImages(srcImageID).MainSelection.IsTransformable Then
-                
-                Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
-                
-                'Different types of selections will display size and position differently
-                Select Case pdImages(srcImageID).MainSelection.GetSelectionShape()
+            'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
+            ' To access their indicies properly, we must calculate an offset.
+            Dim subpanelOffset As Long, subpanelCtlOffset As Long
+            subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))
+            subpanelCtlOffset = subpanelOffset * 2
+            
+            If Tools.IsSelectionToolActive Then
+            
+                'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
+                If PDImages.GetImageByID(srcImageID).MainSelection.IsTransformable Then
                     
-                    'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
-                    Case ss_Rectangle, ss_Circle
+                    Dim tmpRectF As RectF, tmpRectFRB As RectF_RB
+                    
+                    'Different types of selections will display size and position differently
+                    Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape()
                         
-                        Dim sizeIndex As Long
-                        sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
-                        
-                        'Coordinates are allowed to be <= 0, but size and aspect ratio are not
-                        Dim allowedMin As Long
-                        If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
-                        If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
-                        End If
-                        
-                        tmpRectF = pdImages(srcImageID).MainSelection.GetCornersLockedRect()
-                        If (sizeIndex = 0) Then
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
-                        ElseIf (sizeIndex = 1) Then
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
-                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
-                        ElseIf (sizeIndex = 2) Then
+                        'Rectangular and elliptical selections display left, top, width, height, and aspect ratio (in the form X:Y)
+                        Case ss_Rectangle, ss_Circle
                             
-                            'Failsafe DBZ check
-                            If (tmpRectF.Height > 0) Then
+                            Dim sizeIndex As Long
+                            sizeIndex = toolpanel_Selections.cboSize(subpanelOffset).ListIndex
                             
-                                Dim fracNumerator As Long, fracDenominator As Long
-                                PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
+                            'Coordinates are allowed to be <= 0, but size and aspect ratio are not
+                            Dim allowedMin As Long
+                            If (sizeIndex = 0) Then allowedMin = -32000 Else allowedMin = 1
+                            If (toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min <> allowedMin) Then
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Min = allowedMin
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Min = allowedMin
+                            End If
+                            
+                            tmpRectF = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersLockedRect()
+                            If (sizeIndex = 0) Then
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Left
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Top
+                            ElseIf (sizeIndex = 1) Then
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectF.Width
+                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectF.Height
+                            ElseIf (sizeIndex = 2) Then
                                 
-                                'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-                                If (fracDenominator = 5) Then
-                                    fracNumerator = fracNumerator * 2
-                                    fracDenominator = fracDenominator * 2
+                                'Failsafe DBZ check
+                                If (tmpRectF.Height > 0) Then
+                                
+                                    Dim fracNumerator As Long, fracDenominator As Long
+                                    PDMath.ConvertToFraction tmpRectF.Width / tmpRectF.Height, fracNumerator, fracDenominator, 0.005
+                                    
+                                    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                                    If (fracDenominator = 5) Then
+                                        fracNumerator = fracNumerator * 2
+                                        fracDenominator = fracDenominator * 2
+                                    End If
+                                    
+                                    toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
+                                    toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
+                                    
                                 End If
-                                
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = fracNumerator
-                                toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = fracDenominator
                                 
                             End If
                             
-                        End If
-                        
-                        '"Lock" button visibility is a little complicated - basically, we only want to make it visible
-                        ' for width, height, and aspect ratio options.
-                        If (sizeIndex = 0) Then
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
-                            toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                        ElseIf (sizeIndex = 1) Then
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                            toolpanel_Selections.lblColon(subpanelOffset).Visible = False
-                        Else
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
-                            toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
-                            toolpanel_Selections.lblColon(subpanelOffset).Visible = True
-                        End If
-                        
-                        'Also make sure the "lock" icon matches the current lock state
-                        If (sizeIndex = 1) Then
-                            toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
-                            toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
-                        ElseIf (sizeIndex = 2) Then
-                            toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = pdImages(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
-                        End If
-                        
-                    'Line selections display x1, y1, x2, y2
+                            '"Lock" button visibility is a little complicated - basically, we only want to make it visible
+                            ' for width, height, and aspect ratio options.
+                            If (sizeIndex = 0) Then
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = False
+                                toolpanel_Selections.lblColon(subpanelOffset).Visible = False
+                            ElseIf (sizeIndex = 1) Then
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = True
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                                toolpanel_Selections.lblColon(subpanelOffset).Visible = False
+                            Else
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2).Visible = False
+                                toolpanel_Selections.cmdLock(subpanelOffset * 2 + 1).Visible = True
+                                toolpanel_Selections.lblColon(subpanelOffset).Visible = True
+                            End If
+                            
+                            'Also make sure the "lock" icon matches the current lock state
+                            If (sizeIndex = 1) Then
+                                toolpanel_Selections.cmdLock(subpanelCtlOffset).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Width)
+                                toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_Height)
+                            ElseIf (sizeIndex = 2) Then
+                                toolpanel_Selections.cmdLock(subpanelCtlOffset + 1).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetPropertyLockedState(pdsl_AspectRatio)
+                            End If
+                            
+                        'Line selections display x1, y1, x2, y2
+                        Case ss_Line
+                            tmpRectFRB = PDImages.GetImageByID(srcImageID).MainSelection.GetCornersUnlockedRect()
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
+                            toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
+                
+                    End Select
+                    
+                Else
+                
+                    For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                        If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+                    Next i
+                    
+                End If
+                
+                'Next, sync all non-coordinate information
+                If (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Raster) And (PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape <> ss_Wand) Then
+                    toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Area)
+                    toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetImageByID(srcImageID))).Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
+                End If
+                
+                If toolpanel_Selections.cboSelSmoothing.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing) Then toolpanel_Selections.cboSelSmoothing.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
+                If toolpanel_Selections.sltSelectionFeathering.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius) Then toolpanel_Selections.sltSelectionFeathering.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
+                
+                'Finally, sync any shape-specific information
+                Select Case PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionShape
+                
+                    Case ss_Rectangle
+                        If (toolpanel_Selections.sltCornerRounding.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)) Then toolpanel_Selections.sltCornerRounding.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)
+                    
+                    Case ss_Circle
+                    
                     Case ss_Line
-                        tmpRectFRB = pdImages(srcImageID).MainSelection.GetCornersUnlockedRect()
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 0).Value = tmpRectFRB.Left
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 1).Value = tmpRectFRB.Top
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 2).Value = tmpRectFRB.Right
-                        toolpanel_Selections.tudSel(subpanelCtlOffset + 3).Value = tmpRectFRB.Bottom
-            
+                        If toolpanel_Selections.sltSelectionLineWidth.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth) Then toolpanel_Selections.sltSelectionLineWidth.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth)
+                        
+                    Case ss_Lasso
+                        If toolpanel_Selections.sltSmoothStroke.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke) Then toolpanel_Selections.sltSmoothStroke.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke)
+                        
+                    Case ss_Polygon
+                        If toolpanel_Selections.sltPolygonCurvature.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature) Then toolpanel_Selections.sltPolygonCurvature.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature)
+                        
+                    Case ss_Wand
+                        If toolpanel_Selections.btsWandArea.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode) Then toolpanel_Selections.btsWandArea.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode)
+                        If toolpanel_Selections.btsWandMerge.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged) Then toolpanel_Selections.btsWandMerge.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged)
+                        If toolpanel_Selections.sltWandTolerance.Value <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance) Then toolpanel_Selections.sltWandTolerance.Value = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance)
+                        If toolpanel_Selections.cboWandCompare.ListIndex <> PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod) Then toolpanel_Selections.cboWandCompare.ListIndex = PDImages.GetImageByID(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod)
+                
                 End Select
                 
-            Else
-            
-                For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                    If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
-                Next i
-                
             End If
             
-            'Next, sync all non-coordinate information
-            If (pdImages(srcImageID).MainSelection.GetSelectionShape <> ss_Raster) And (pdImages(srcImageID).MainSelection.GetSelectionShape <> ss_Wand) Then
-                toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromSelectionShape(pdImages(srcImageID))).ListIndex = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Area)
-                toolpanel_Selections.sltSelectionBorder(Selections.GetSelectionSubPanelFromSelectionShape(pdImages(srcImageID))).Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_BorderWidth)
-            End If
-            
-            If toolpanel_Selections.cboSelSmoothing.ListIndex <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing) Then toolpanel_Selections.cboSelSmoothing.ListIndex = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_Smoothing)
-            If toolpanel_Selections.sltSelectionFeathering.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius) Then toolpanel_Selections.sltSelectionFeathering.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_FeatheringRadius)
-            
-            'Finally, sync any shape-specific information
-            Select Case pdImages(srcImageID).MainSelection.GetSelectionShape
-            
-                Case ss_Rectangle
-                    If (toolpanel_Selections.sltCornerRounding.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)) Then toolpanel_Selections.sltCornerRounding.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_RoundedCornerRadius)
-                
-                Case ss_Circle
-                
-                Case ss_Line
-                    If toolpanel_Selections.sltSelectionLineWidth.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth) Then toolpanel_Selections.sltSelectionLineWidth.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_LineWidth)
-                    
-                Case ss_Lasso
-                    If toolpanel_Selections.sltSmoothStroke.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke) Then toolpanel_Selections.sltSmoothStroke.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_SmoothStroke)
-                    
-                Case ss_Polygon
-                    If toolpanel_Selections.sltPolygonCurvature.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature) Then toolpanel_Selections.sltPolygonCurvature.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_PolygonCurvature)
-                    
-                Case ss_Wand
-                    If toolpanel_Selections.btsWandArea.ListIndex <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode) Then toolpanel_Selections.btsWandArea.ListIndex = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSearchMode)
-                    If toolpanel_Selections.btsWandMerge.ListIndex <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged) Then toolpanel_Selections.btsWandMerge.ListIndex = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandSampleMerged)
-                    If toolpanel_Selections.sltWandTolerance.Value <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance) Then toolpanel_Selections.sltWandTolerance.Value = pdImages(srcImageID).MainSelection.GetSelectionProperty_Float(sp_WandTolerance)
-                    If toolpanel_Selections.cboWandCompare.ListIndex <> pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod) Then toolpanel_Selections.cboWandCompare.ListIndex = pdImages(srcImageID).MainSelection.GetSelectionProperty_Long(sp_WandCompareMethod)
-            
-            End Select
+            PDImages.GetImageByID(srcImageID).MainSelection.SuspendAutoRefresh False
             
         End If
-        
-        pdImages(srcImageID).MainSelection.SuspendAutoRefresh False
-        
+            
     Else
         
         Interface.SetUIGroupState PDUI_Selections, False
@@ -693,7 +697,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Case ss_Polygon
         
             'First, we want to check all polygon points for a hit.
-            pdImages(g_CurrentImage).MainSelection.GetPolygonPoints poiListFloat()
+            PDImages.GetActiveImage.MainSelection.GetPolygonPoints poiListFloat()
             
             'Used the generalized point comparison function to see if one of the points matches
             closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
@@ -707,7 +711,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             Else
                 
                 'Create a GDI+ region from the current selection points
-                gdipRegionHandle = pdImages(g_CurrentImage).MainSelection.GetGdipRegionForSelection()
+                gdipRegionHandle = PDImages.GetActiveImage.MainSelection.GetGdipRegionForSelection()
                 
                 'Check the point for a hit
                 gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
@@ -722,7 +726,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Case ss_Lasso
         
             'Create a GDI+ region from the current selection points
-            gdipRegionHandle = pdImages(g_CurrentImage).MainSelection.GetGdipRegionForSelection()
+            gdipRegionHandle = PDImages.GetActiveImage.MainSelection.GetGdipRegionForSelection()
             
             'Check the point for a hit
             gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
@@ -754,8 +758,8 @@ End Function
 Public Sub InvertCurrentSelection()
 
     'Unselect any existing selection
-    pdImages(g_CurrentImage).MainSelection.LockRelease
-    pdImages(g_CurrentImage).SetSelectionActive False
+    PDImages.GetActiveImage.MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive False
         
     Message "Inverting selection..."
     
@@ -764,8 +768,8 @@ Public Sub InvertCurrentSelection()
     Dim selMaskData() As Long, selMaskSA As SafeArray1D
     
     Dim maskWidth As Long, maskHeight As Long
-    maskWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1
-    maskHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight - 1
+    maskWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1
+    maskHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -774,35 +778,35 @@ Public Sub InvertCurrentSelection()
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim selMaskDepth As Long
-    selMaskDepth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
+    selMaskDepth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
     
     'After all that work, the Invert code itself is very small and unexciting!
     For y = 0 To maskHeight
-        pdImages(g_CurrentImage).MainSelection.GetMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
+        PDImages.GetActiveImage.MainSelection.GetMaskDIB.WrapLongArrayAroundScanline selMaskData, selMaskSA, y
     For x = 0 To maskWidth
         selMaskData(x) = Not selMaskData(x)
     Next x
         If (y And progBarCheck) = 0 Then SetProgBarVal y
     Next y
     
-    pdImages(g_CurrentImage).MainSelection.GetMaskDIB.UnwrapLongArrayFromDIB selMaskData
+    PDImages.GetActiveImage.MainSelection.GetMaskDIB.UnwrapLongArrayFromDIB selMaskData
     
     'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
     ' being non-transformable)
-    pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Raster
-    pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-    pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+    PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Raster
+    PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+    PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
     
     SetProgBarVal 0
     ReleaseProgressBar
     Message "Selection inversion complete."
     
     'Lock in this selection
-    pdImages(g_CurrentImage).MainSelection.LockIn
-    pdImages(g_CurrentImage).SetSelectionActive True
+    PDImages.GetActiveImage.MainSelection.LockIn
+    PDImages.GetActiveImage.SetSelectionActive True
         
     'Draw the new selection to the screen
-    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -822,31 +826,31 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Feathering selection..."
     
         'Unselect any existing selection
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
+        PDImages.GetActiveImage.SetSelectionActive False
         
         'Retrieve just the alpha channel of the current selection
         Dim tmpArray() As Byte
-        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         
         'Blur that temporary array
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         Filters_ByteArray.HorizontalBlur_ByteArray tmpArray, arrWidth, arrHeight, featherRadius, featherRadius
         Filters_ByteArray.VerticalBlur_ByteArray tmpArray, arrWidth, arrHeight, featherRadius, featherRadius
         
         'Reconstruct the DIB from the transparency table
-        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-        pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
         
         'Lock in this selection
-        pdImages(g_CurrentImage).MainSelection.LockIn
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -854,7 +858,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
 
@@ -876,27 +880,27 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Sharpening selection..."
     
         'Unselect any existing selection
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
+        PDImages.GetActiveImage.SetSelectionActive False
                 
         'Retrieve just the alpha channel of the current selection, and clone it so that we have two copies
         Dim tmpArray() As Byte
-        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         
         Dim tmpDstArray() As Byte
-        ReDim tmpDstArray(0 To pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1, pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight - 1) As Byte
-        CopyMemory ByVal VarPtr(tmpDstArray(0, 0)), ByVal VarPtr(tmpArray(0, 0)), pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth * pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        ReDim tmpDstArray(0 To PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1) As Byte
+        CopyMemory ByVal VarPtr(tmpDstArray(0, 0)), ByVal VarPtr(tmpArray(0, 0)), PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         
         'Blur the first temporary array
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         Filters_ByteArray.HorizontalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
         Filters_ByteArray.VerticalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
         
         'We're now going to perform an "unsharp mask" effect, but because we're using a single channel, it goes a bit faster
         Dim progBarCheck As Long
-        SetProgBarMax pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        SetProgBarMax PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         progBarCheck = ProgressBars.FindBestProgBarValue()
         
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10
@@ -906,8 +910,8 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         invScaleFactor = 1# - scaleFactor
         
         Dim iWidth As Long, iHeight As Long
-        iWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth - 1
-        iHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight - 1
+        iWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth - 1
+        iHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight - 1
         
         Dim lOrig As Long, lBlur As Long, lDelta As Single, lFull As Single, lNew As Long
         Dim x As Long, y As Long
@@ -944,16 +948,16 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Next y
         
         'Reconstruct the DIB from the finished transparency table
-        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpDstArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpDstArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-        pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
         
         'Lock in this selection
-        pdImages(g_CurrentImage).MainSelection.LockIn
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -961,7 +965,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
 
@@ -983,32 +987,32 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         Message "Growing selection..."
     
         'Unselect any existing selection
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
+        PDImages.GetActiveImage.SetSelectionActive False
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         
         Dim tmpArray() As Byte
         ReDim tmpArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
         
         Dim srcBytes() As Byte
-        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).MainSelection.GetMaskDIB, srcBytes
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcBytes
         
         If Filters_ByteArray.Dilate_ByteArray(growSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight) Then
-            DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpArray
+            DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         End If
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-        pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
         
         'Lock in this selection
-        pdImages(g_CurrentImage).MainSelection.LockIn
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -1016,7 +1020,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
     
@@ -1038,32 +1042,32 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Shrinking selection..."
     
         'Unselect any existing selection
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
+        PDImages.GetActiveImage.SetSelectionActive False
         
         'Use PD's built-in Median function to dilate the selected area
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         
         Dim tmpArray() As Byte
         ReDim tmpArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
         
         Dim srcBytes() As Byte
-        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).MainSelection.GetMaskDIB, srcBytes
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcBytes
         
         Filters_ByteArray.Erode_ByteArray shrinkSize, PDPRS_Circle, srcBytes, tmpArray, arrWidth, arrHeight
         
-        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).MainSelection.GetMaskDIB, tmpArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, tmpArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-        pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
         
         'Lock in this selection
-        pdImages(g_CurrentImage).MainSelection.LockIn
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -1071,7 +1075,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
     
@@ -1093,29 +1097,29 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Finding selection border..."
     
         'Unselect any existing selection
-        pdImages(g_CurrentImage).MainSelection.LockRelease
-        pdImages(g_CurrentImage).SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
+        PDImages.GetActiveImage.SetSelectionActive False
         
         'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
         ' to create the final bordered selection.
         
         'First, extract selection data into a byte array so we can use optimized analysis functions
         Dim arrWidth As Long, arrHeight As Long
-        arrWidth = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
-        arrHeight = pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBHeight
+        arrWidth = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBHeight
         
         Dim srcArray() As Byte
-        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).MainSelection.GetMaskDIB, srcArray
+        DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcArray
         
         'Next, generate a shrink (erode) pass
         Dim shrinkBytes() As Byte
         ReDim shrinkBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth * 2
+        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 2
         
         'Generate a grow (dilate) pass
         Dim growBytes() As Byte
         ReDim growBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth * 2, pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBWidth
+        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth * 2, PDImages.GetActiveImage.MainSelection.GetMaskDIB.GetDIBWidth
         
         'Finally, XOR those results together: that's our border!
         Dim x As Long, y As Long
@@ -1126,16 +1130,16 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Next y
         
         'Reconstruct the target DIB from our final array
-        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).MainSelection.GetMaskDIB, srcArray
+        DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetMaskDIB, srcArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
-        pdImages(g_CurrentImage).MainSelection.NotifyRasterDataChanged
-        pdImages(g_CurrentImage).MainSelection.FindNewBoundsManually
+        PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+        PDImages.GetActiveImage.MainSelection.FindNewBoundsManually
                 
         'Lock in this selection
-        pdImages(g_CurrentImage).MainSelection.LockIn
-        pdImages(g_CurrentImage).SetSelectionActive True
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -1143,7 +1147,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     End If
     
@@ -1152,10 +1156,10 @@ End Sub
 'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way.
 Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)
 
-    pdImages(g_CurrentImage).EraseProcessedSelection targetLayerIndex
+    PDImages.GetActiveImage.EraseProcessedSelection targetLayerIndex
     
     'Redraw the active viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
 End Sub
 
@@ -1195,11 +1199,11 @@ End Function
 'The inverse of "getSelectionShapeFromCurrentTool", above
 Public Function GetRelevantToolFromSelectShape() As PDTools
 
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
 
-        If (Not pdImages(g_CurrentImage).MainSelection Is Nothing) Then
+        If (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
 
-            Select Case pdImages(g_CurrentImage).MainSelection.GetSelectionShape
+            Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
             
                 Case ss_Rectangle
                     GetRelevantToolFromSelectShape = SELECT_RECT
@@ -1299,14 +1303,14 @@ End Function
 Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
     'Activate the attached image's primary selection
-    pdImages(g_CurrentImage).SetSelectionActive True
-    pdImages(g_CurrentImage).MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive True
+    PDImages.GetActiveImage.MainSelection.LockRelease
     
     'Reflect all current selection tool settings to the active selection object
     Dim curShape As PD_SelectionShape
     curShape = Selections.GetSelectionShapeFromCurrentTool()
     
-    With pdImages(g_CurrentImage).MainSelection
+    With PDImages.GetActiveImage.MainSelection
         .SetSelectionShape curShape
         If (curShape <> ss_Wand) Then .SetSelectionProperty sp_Area, toolpanel_Selections.cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex Else .SetSelectionProperty sp_Area, sa_Interior
         .SetSelectionProperty sp_Smoothing, toolpanel_Selections.cboSelSmoothing.ListIndex
@@ -1325,16 +1329,16 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     End With
     
     'Set the first two coordinates of this selection to this mouseclick's location
-    pdImages(g_CurrentImage).MainSelection.SetInitialCoordinates x, y
-    SyncTextToCurrentSelection g_CurrentImage
-    pdImages(g_CurrentImage).MainSelection.RequestNewMask
+    PDImages.GetActiveImage.MainSelection.SetInitialCoordinates x, y
+    SyncTextToCurrentSelection PDImages.GetActiveImageID()
+    PDImages.GetActiveImage.MainSelection.RequestNewMask
     
     'Make the selection tools visible
     SetUIGroupState PDUI_Selections, True
     SetUIGroupState PDUI_SelectionTransforms, True
     
     'Redraw the screen
-    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                         
 End Sub
 
@@ -1343,11 +1347,11 @@ End Sub
 ' transformable-type selection (squares, etc) to the evaluation list.
 Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
 
-    If (g_OpenImageCount > 0) Then
-        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).MainSelection Is Nothing) Then
-            If (Not pdImages(g_CurrentImage).MainSelection.GetAutoRefreshSuspend()) Then
+    If PDImages.IsImageActive() Then
+        If PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
+            If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend()) Then
                 If transformableMatters Then
-                    SelectionsAllowed = pdImages(g_CurrentImage).MainSelection.IsTransformable
+                    SelectionsAllowed = PDImages.GetActiveImage.MainSelection.IsTransformable
                 Else
                     SelectionsAllowed = True
                 End If
@@ -1445,7 +1449,7 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
 
         'If a selection is active, nudge it using the arrow keys
-        If (pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> ss_Raster)) Then
+        If (PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster)) Then
             
             Dim canvasUpdateRequired As Boolean
             canvasUpdateRequired = False
@@ -1472,7 +1476,7 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             'Redraw the viewport if necessary
             If canvasUpdateRequired Then
                 markEventHandled = True
-                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas
             End If
             
         End If
@@ -1488,39 +1492,39 @@ End Sub
 Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 
     'Delete key: if a selection is active, erase the selected area
-    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).IsSelectionActive Then
+    If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive Then
         markEventHandled = True
-        Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
+        Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
     End If
     
     'Escape key: if a selection is active, clear it
-    If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).IsSelectionActive Then
+    If (vkCode = VK_ESCAPE) And PDImages.GetActiveImage.IsSelectionActive Then
         markEventHandled = True
         Process "Remove selection", , , UNDO_Selection
     End If
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
-    If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
+    If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
         
         markEventHandled = True
         
         'Polygons: do not allow point removal if the polygon has already been successfully closed.
         If (g_CurrentTool = SELECT_POLYGON) Then
-            If (Not pdImages(g_CurrentImage).MainSelection.GetPolygonClosedState) Then pdImages(g_CurrentImage).MainSelection.RemoveLastPolygonPoint
+            If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) Then PDImages.GetActiveImage.MainSelection.RemoveLastPolygonPoint
         
         'Lassos: do not allow point removal if the lasso has already been successfully closed.
         Else
         
-            If (Not pdImages(g_CurrentImage).MainSelection.GetLassoClosedState) Then
+            If (Not PDImages.GetActiveImage.MainSelection.GetLassoClosedState) Then
         
                 'Ask the selection object to retreat its position
                 Dim newImageX As Double, newImageY As Double
-                pdImages(g_CurrentImage).MainSelection.RetreatLassoPosition newImageX, newImageY
+                PDImages.GetActiveImage.MainSelection.RetreatLassoPosition newImageX, newImageY
                 
                 'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
                 Dim newCanvasX As Double, newCanvasY As Double
-                Drawing.ConvertImageCoordsToCanvasCoords srcCanvas, pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
+                Drawing.ConvertImageCoordsToCanvasCoords srcCanvas, PDImages.GetActiveImage(), newImageX, newImageY, newCanvasX, newCanvasY
                 
                 'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
                 srcCanvas.SetCursorToCanvasPosition newCanvasX, newCanvasY
@@ -1530,7 +1534,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         End If
         
         'Redraw the screen to reflect this new change.
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
     
     End If
                 
@@ -1540,10 +1544,10 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
         
     'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
     ' does *not* match the current selection tool, invalidate the old selection and apply the new type before proceeding.
-    If pdImages(g_CurrentImage).IsSelectionActive Then
-        If (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> Selections.GetSelectionShapeFromCurrentTool()) Then
-            pdImages(g_CurrentImage).SetSelectionActive False
-            pdImages(g_CurrentImage).MainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool()
+    If PDImages.GetActiveImage.IsSelectionActive Then
+        If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> Selections.GetSelectionShapeFromCurrentTool()) Then
+            PDImages.GetActiveImage.SetSelectionActive False
+            PDImages.GetActiveImage.MainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool()
         End If
     End If
         
@@ -1552,23 +1556,23 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
     
         'Magic wand selections never transform - they only generate anew
         Selections.InitSelectionByPoint imgX, imgY
-        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
         
     Else
         
         'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
-        If pdImages(g_CurrentImage).IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive Then
         
             'Check the mouse coordinates of this click.
             Dim sCheck As PD_PointOfInterest
-            sCheck = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
+            sCheck = Selections.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
             
             'If a point of interest was clicked, initiate a transform
-            If (sCheck <> poi_Undefined) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> ss_Polygon) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> ss_Raster) Then
+            If (sCheck <> poi_Undefined) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Polygon) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
                 
                 'Initialize a selection transformation
-                pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI sCheck
-                pdImages(g_CurrentImage).MainSelection.SetInitialTransformCoordinates imgX, imgY
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
                                 
             'If a point of interest was *not* clicked, erase any existing selection and start a new one
             Else
@@ -1579,45 +1583,45 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
                 If (g_CurrentTool = SELECT_POLYGON) Then
                     
                     'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
-                    If pdImages(g_CurrentImage).MainSelection.IsLockedIn Then
-                        pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI sCheck
-                        pdImages(g_CurrentImage).MainSelection.SetInitialTransformCoordinates imgX, imgY
+                    If PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+                        PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
+                        PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
                     
                     'Selection is not locked in, meaning the user is still constructing it.
                     Else
                     
                         'If the user clicked on the initial polygon point, attempt to close the polygon
-                        If (sCheck = 0) And (pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints > 2) Then
-                            pdImages(g_CurrentImage).MainSelection.SetPolygonClosedState True
-                            pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI 0
+                        If (sCheck = 0) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
+                            PDImages.GetActiveImage.MainSelection.SetPolygonClosedState True
+                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI 0
                         
                         'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
                         Else
                             
                             'Remove the current transformation mode (if any)
-                            pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI poi_Undefined
-                            pdImages(g_CurrentImage).MainSelection.OverrideTransformMode False
+                            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI poi_Undefined
+                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode False
                             
                             'Add the new point
-                            If (pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints = 0) Then
+                            If (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints = 0) Then
                                 Selections.InitSelectionByPoint imgX, imgY
                             Else
                                 
                                 If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
-                                    pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                                    pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints - 1
+                                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
                                 Else
-                                    pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI sCheck
+                                    PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI sCheck
                                 End If
                                 
                             End If
                             
                             'Reinstate transformation mode, using the index of the new point as the transform ID
-                            pdImages(g_CurrentImage).MainSelection.SetInitialTransformCoordinates imgX, imgY
-                            pdImages(g_CurrentImage).MainSelection.OverrideTransformMode True
+                            PDImages.GetActiveImage.MainSelection.SetInitialTransformCoordinates imgX, imgY
+                            PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
                             
                             'Redraw the screen
-                            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
                             
                         End If
                     
@@ -1637,8 +1641,8 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
             'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
             ' transform mode, because dragging the mouse will simply move the newly created point.
             If (g_CurrentTool = SELECT_POLYGON) Then
-                pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints - 1
-                pdImages(g_CurrentImage).MainSelection.OverrideTransformMode True
+                PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints - 1
+                PDImages.GetActiveImage.MainSelection.OverrideTransformMode True
             End If
             
         End If
@@ -1658,28 +1662,28 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
                 
                 'First, check to see if a selection is both active and transformable.
-                If pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> ss_Raster) Then
+                If PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
-                    pdImages(g_CurrentImage).MainSelection.RequestSquare (Shift And vbShiftMask)
+                    PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
                     
                     'Pass new points to the active selection
-                    pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                    Selections.SyncTextToCurrentSelection g_CurrentImage
+                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                    Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
                                         
                 End If
                 
                 'Force a redraw of the viewport
-                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
             
             'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
             
                 'First, check to see if a selection is active
-                If pdImages(g_CurrentImage).IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive Then
                     
                     'Pass new points to the active selection
-                    pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
+                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                                         
                 End If
                 
@@ -1692,13 +1696,13 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
                 End If
                 
                 'Force a redraw of the viewport
-                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
             
             'Wand selections are easier than other selection types, because they don't support any special transforms
             Case SELECT_WAND
-                If pdImages(g_CurrentImage).IsSelectionActive Then
-                    pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                If PDImages.GetActiveImage.IsSelectionActive Then
+                    PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
                 End If
         
         End Select
@@ -1708,11 +1712,11 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
         
         'Notify the selection of the currently hovered point of interest, if any
         Dim selPOI As PD_PointOfInterest
-        selPOI = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
+        selPOI = Selections.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
         
-        If (selPOI <> pdImages(g_CurrentImage).MainSelection.GetActiveSelectionPOI(False)) Then
-            pdImages(g_CurrentImage).MainSelection.SetActiveSelectionPOI selPOI
-            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+        If (selPOI <> PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI(False)) Then
+            PDImages.GetActiveImage.MainSelection.SetActiveSelectionPOI selPOI
+            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
         End If
         
     End If
@@ -1729,14 +1733,14 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
-            If pdImages(g_CurrentImage).IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive Then
                 
                 'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                 ' point falls outside the selection, clear the selection from the image.
                 Dim selBounds As RectF
-                selBounds = pdImages(g_CurrentImage).MainSelection.GetCornersLockedRect
+                selBounds = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect
                 
-                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1))
+                eraseThisSelection = (clickEventAlsoFiring And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
@@ -1746,14 +1750,14 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Else
                 
                     'If the selection is not raster-type, pass these final mouse coordinates to it
-                    If (pdImages(g_CurrentImage).MainSelection.GetSelectionShape <> ss_Raster) Then
-                        pdImages(g_CurrentImage).MainSelection.RequestSquare (Shift And vbShiftMask)
-                        pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                        SyncTextToCurrentSelection g_CurrentImage
+                    If (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
+                        PDImages.GetActiveImage.MainSelection.RequestSquare (Shift And vbShiftMask)
+                        PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                        SyncTextToCurrentSelection PDImages.GetActiveImageID()
                     End If
                 
                     'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
-                    If pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid Then
+                    If PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid Then
                         Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                     Else
                         
@@ -1762,31 +1766,31 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                         If (g_CurrentTool = SELECT_LASSO) Then
                         
                             'Creating a new selection
-                            If (pdImages(g_CurrentImage).MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                            If (PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI = poi_Undefined) Then
+                                Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
                             Else
-                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Move selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                         
                         'All other selection types use identical transform identifiers
                         Else
                         
                             Dim transformType As PD_PointOfInterest
-                            transformType = pdImages(g_CurrentImage).MainSelection.GetActiveSelectionPOI
+                            transformType = PDImages.GetActiveImage.MainSelection.GetActiveSelectionPOI
                             
                             'Creating a new selection
                             If (transformType = poi_Undefined) Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             
                             'Moving an existing selection
                             ElseIf (transformType = 8) Then
-                                Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Move selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                                 
                             'Anything else is assumed to be resizing an existing selection
                             Else
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                                         
                             End If
                         
@@ -1797,26 +1801,26 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 End If
                 
                 'Creating a brand new selection always necessitates a redraw of the current canvas
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
                 
             'If the selection is not active, make sure it stays that way
             Else
-                pdImages(g_CurrentImage).MainSelection.LockRelease
+                PDImages.GetActiveImage.MainSelection.LockRelease
             End If
             
             'Synchronize the selection text box values with the final selection
-            Selections.SyncTextToCurrentSelection g_CurrentImage
+            Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
             
         
         'As usual, polygon selections have some special considerations.
         Case SELECT_POLYGON
         
             'If a selection was being drawn, lock it into place
-            If pdImages(g_CurrentImage).IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive Then
             
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
-                eraseThisSelection = pdImages(g_CurrentImage).MainSelection.GetPolygonClosedState And clickEventAlsoFiring
-                eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1)
+                eraseThisSelection = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState And clickEventAlsoFiring
+                eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage()) = -1)
                 
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
@@ -1824,24 +1828,24 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 Else
                     
                     'If the polygon is already closed, we want to lock in the newly modified polygon
-                    If pdImages(g_CurrentImage).MainSelection.GetPolygonClosedState Then
+                    If PDImages.GetActiveImage.MainSelection.GetPolygonClosedState Then
                         
                         'Polygons use a different transform numbering convention than other selection tools, because the number
                         ' of points involved aren't fixed.
                         Dim polyPoint As Long
-                        polyPoint = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
+                        polyPoint = Selections.IsCoordSelectionPOI(imgX, imgY, PDImages.GetActiveImage())
                         
                         'Move selection
-                        If (polyPoint = pdImages(g_CurrentImage).MainSelection.GetNumOfPolygonPoints) Then
-                            Process "Move selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                        If (polyPoint = PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints) Then
+                            Process "Move selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                         
                         'Create OR resize, depending on whether the initial point is being clicked for the first time, or whether
                         ' it's being click-moved
                         ElseIf (polyPoint = 0) Then
                             If clickEventAlsoFiring Then
-                                Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             Else
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                                 
                         'No point of interest means this click lies off-image; this could be a "clear selection" event (if a Click
@@ -1855,26 +1859,26 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                             'If they haven't clicked, this could simply indicate that they dragged a polygon point off the polygon
                             ' and into some new region of the image.
                             Else
-                                pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
-                                Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                                PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
+                                Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                             End If
                             
                         'Anything else is a resize
                         Else
-                            Process "Resize selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                            Process "Resize selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                         End If
                         
                         'After all that work, we want to perform one final check to see if all selection coordinates are invalid
                         ' (e.g. if they all lie off-image, which can happen if the user drags all polygon points off-image).
                         ' If they are, we're going to erase this selection, as it's invalid.
-                        eraseThisSelection = pdImages(g_CurrentImage).MainSelection.IsLockedIn And pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid
+                        eraseThisSelection = PDImages.GetActiveImage.MainSelection.IsLockedIn And PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid
                         If eraseThisSelection Then Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                         
                     'If the polygon is *not* closed, we want to add this as a new polygon point
                     Else
                     
                         'Pass these final mouse coordinates to the selection engine
-                        pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
+                        PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                         
                         'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                         ' while in debug mode.
@@ -1892,38 +1896,38 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
                 End If
                 
                 'After all selection settings have been applied, forcibly redraw the source canvas
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
             
             '(Failsafe check) - if a selection is not active, make sure it stays that way
             Else
-                pdImages(g_CurrentImage).MainSelection.LockRelease
+                PDImages.GetActiveImage.MainSelection.LockRelease
             End If
             
         'Magic wand selections are actually the easiest to handle, as they don't really support post-creation transforms
         Case SELECT_WAND
             
             'Failsafe check for active selections
-            If pdImages(g_CurrentImage).IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive Then
                 
                 'Supply the final coordinates to the selection engine (as the user may be dragging around the active point)
-                pdImages(g_CurrentImage).MainSelection.SetAdditionalCoordinates imgX, imgY
+                PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                 
                 'Check to see if all selection coordinates are invalid (e.g. off-image).
                 ' - If they are, forget about this selection.
                 ' - If they are not, commit this selection permanently
-                eraseThisSelection = pdImages(g_CurrentImage).MainSelection.AreAllCoordinatesInvalid
+                eraseThisSelection = PDImages.GetActiveImage.MainSelection.AreAllCoordinatesInvalid
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_Selection, UNDO_Nothing), g_CurrentTool
                 Else
-                    Process "Create selection", , pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
+                    Process "Create selection", , PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, UNDO_Selection, g_CurrentTool
                 End If
                 
                 'Force a redraw of the screen
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
                 
             'Failsafe check for inactive selections
             Else
-                pdImages(g_CurrentImage).MainSelection.LockRelease
+                PDImages.GetActiveImage.MainSelection.LockRelease
             End If
             
     End Select

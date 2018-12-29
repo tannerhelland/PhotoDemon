@@ -127,14 +127,14 @@ End Sub
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.
 Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
     
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
         
         'The thumbDIB passed to this function will always be sized to the largest size the navigator can physically support.
         ' Our job is to place a composited copy of the current image inside that DIB, automatically centered as necessary.
         Dim thumbImageWidth As Long, thumbImageHeight As Long
         
         'Start by determining proper dimensions for the resized thumbnail image.
-        PDMath.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
+        PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
         
         'From there, solve for the top-left corner of the centered image
         If (thumbImageWidth < thumbDIB.GetDIBWidth) Then
@@ -158,7 +158,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
         End With
         
         'Request a copy of the current image thumbnail, at the size and offset we've calculated
-        pdImages(g_CurrentImage).RequestThumbnail thumbDIB, , False, VarPtr(dstRectF)
+        PDImages.GetActiveImage.RequestThumbnail thumbDIB, , False, VarPtr(dstRectF)
         
     Else
         thumbX = 0!

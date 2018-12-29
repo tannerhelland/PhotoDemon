@@ -730,17 +730,17 @@ End Function
 
 'Retrieve PD's current version witout any appended tags (e.g. "beta"), and with a "0" automatically plugged in for build.
 Public Function GetPhotoDemonVersionCanonical() As String
-    GetPhotoDemonVersionCanonical = Trim$(Str(App.Major)) & "." & Trim$(Str(App.Minor)) & ".0." & Trim$(Str(App.Revision))
+    GetPhotoDemonVersionCanonical = Trim$(Str$(App.Major)) & "." & Trim$(Str$(App.Minor)) & ".0." & Trim$(Str$(App.Revision))
 End Function
 
 'Retrieve PD's current version (not revision!) as a pure major/minor string.  This is not generally recommended for displaying
 ' to the user, but it's helpful for things like update checks.
 Public Function GetPhotoDemonVersionMajorMinorOnly() As String
-    GetPhotoDemonVersionMajorMinorOnly = Trim$(Str(App.Major)) & "." & Trim$(Str(App.Minor))
+    GetPhotoDemonVersionMajorMinorOnly = Trim$(Str$(App.Major)) & "." & Trim$(Str$(App.Minor))
 End Function
 
 Public Function GetPhotoDemonVersionRevisionOnly() As String
-    GetPhotoDemonVersionRevisionOnly = Trim$(Str(App.Revision))
+    GetPhotoDemonVersionRevisionOnly = Trim$(Str$(App.Revision))
 End Function
 
 'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return a canonical major/minor string, e.g. "6.0"

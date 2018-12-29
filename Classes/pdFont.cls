@@ -122,7 +122,7 @@ Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirec
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As DT_Flags) As Long
 Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
+Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As PointAPI) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As GDI_TextAlign) As Long
@@ -227,7 +227,7 @@ Friend Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     Dim srcStringLen As Long
     srcStringLen = Len(srcString)
     
-    If useEllipses Then srcString = srcString & String$(4, ChrW(0))
+    If useEllipses Then srcString = srcString & String$(4, ChrW$(0))
     
     Dim tmpRect As RECT
     tmpRect.Left = dstX
@@ -504,7 +504,7 @@ End Sub
 ' object, as the DC's font settings are used to determine the string's dimensions.
 Friend Function GetWidthOfString(ByRef srcString As String) As Long
     
-    Dim txtSize As POINTAPI
+    Dim txtSize As PointAPI
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
@@ -543,7 +543,7 @@ Friend Function GetHeightOfString(ByRef srcString As String) As Long
     End If
     
     'Retrieve the string's dimensions
-    Dim txtSize As POINTAPI
+    Dim txtSize As PointAPI
     GetTextExtentPoint32 targetDC, StrPtr(srcString), Len(srcString), txtSize
     GetHeightOfString = txtSize.y
     

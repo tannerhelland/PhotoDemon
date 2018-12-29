@@ -280,7 +280,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         ' ID, and the second is a layer setting value.
         ElseIf Strings.StringsEqual(processID, "Modify layer", True) Then
             If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+                PDImages.GetActiveImage.GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
             End If
             processFound = True
         
@@ -289,7 +289,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
         ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
             If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
+                If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
             End If
             processFound = True
                     
@@ -314,7 +314,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If the current image has been modified, notify the interface manager of the change.  It will handle things like generating
     ' new thumbnail icons.  (Note that we disable non-essential UI updates while performing batch conversions, to improve performance.)
-    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged g_CurrentImage
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged PDImages.GetActiveImageID()
     
     Dim procUndoStartTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStartTime
@@ -333,7 +333,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_Nothing) Then
-        If (g_OpenImageCount > 0) Then CanvasManager.ActivatePDImage g_CurrentImage, "processor call complete", True, createUndo
+        If PDImages.IsImageActive() Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "processor call complete", True, createUndo
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
     ' ActivatePDImage function, above).  If an undo-related action was *not* applied, it's harder to know if an interface
@@ -480,7 +480,7 @@ Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PD_LayerGenericPro
     'Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) '& ": " & layerSettingValue
     
     'Ignore all requests if no images are loaded
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'See if the new setting value differs.  If it does, we need to issue a Process.Processor request to ensure the Undo/Redo chain
     ' is properly updated.  (As a side-effect, this also allows non-destructive actions to be tagged during macro recording.)
@@ -522,12 +522,11 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
     'Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) '& ": " & textSettingValue
     
     'Ignore all requests if no images are loaded
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If PDImages.IsImageActive() Then
     
-    'Ignore requests if the affected layer is not a text layer
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
-        If (Not pdImages(g_CurrentImage).GetLayerByID(prevTextLayerID) Is Nothing) Then
-            If pdImages(g_CurrentImage).GetLayerByID(prevTextLayerID).IsLayerText Then
+        'Ignore requests if the affected layer is not a text layer
+        If (Not PDImages.GetActiveImage.GetLayerByID(prevTextLayerID) Is Nothing) Then
+            If PDImages.GetActiveImage.GetLayerByID(prevTextLayerID).IsLayerText Then
     
                 'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
                 ' (if they're currently being recorded, obviously)
@@ -558,7 +557,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     If (Not raiseDialog) Then m_Processing = True
     
     'If no layer is specified, assume we're operating on the currently active layer
-    If (targetLayerID = -1) Then targetLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    If (targetLayerID = -1) Then targetLayerID = PDImages.GetActiveImage.GetActiveLayerID
     
     'Notify the macro recorder that something interesting has happened
     Dim tmpProcData As PD_ProcessCall
@@ -602,9 +601,9 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
-    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And PDImages.IsImageActive() Then
         Interface.NotifyImageChanged
-        IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+        IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
@@ -613,11 +612,11 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
     ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
     '     during macro playback)
-    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And PDImages.IsImageActive() Then
         
         'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
         ' processID requests.
-        pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcData, targetLayerID
+        PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcData, targetLayerID
         
     End If
     
@@ -633,16 +632,15 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
 End Sub
 
 Public Sub NDFXUiUpdate()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If PDImages.IsImageActive() Then
         
         'Notify all relevant parties of the changes.  (This must be done first, so that things like thumbnail caches
         ' can be marked as dirty.)
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer_VectorSafe, pdImages(g_CurrentImage).GetActiveLayerIndex
-        Interface.NotifyImageChanged g_CurrentImage
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer_VectorSafe, PDImages.GetActiveImage.GetActiveLayerIndex
+        Interface.NotifyImageChanged PDImages.GetActiveImageID()
         
         'Redraw any relevant UI elements
-        IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+        IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
         toolbar_Layers.NotifyLayerChange
         
     End If
@@ -909,20 +907,20 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
     On Error GoTo CheckForCanvasModifyFail
 
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If PDImages.IsImageActive() Then
     
-        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
+        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
         
             'Ask the Undo engine to return the last selection param string it has on file
             Dim lastSelParamString As String
-            lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_Selection)
+            lastSelParamString = PDImages.GetActiveImage.UndoManager.GetLastParamString(UNDO_Selection)
             
             'If such a param string exists, compare it against the current selection param string
             If (LenB(lastSelParamString) <> 0) Then
                 
                 'If the last selection Undo param string does not match the current selection param string, the user has
                 ' modified the selection in some way since the last Undo was created.  Create a new entry now.
-                If Strings.StringsNotEqual(lastSelParamString, pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, True) Then
+                If Strings.StringsNotEqual(lastSelParamString, PDImages.GetActiveImage.MainSelection.GetSelectionAsXML, True) Then
                     
                     'Ensure "modify selection" is available to the translation engine
                     Dim tmpString As String
@@ -931,13 +929,13 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
                     Dim tmpProcData As PD_ProcessCall
                     With tmpProcData
                         .pcID = "Modify selection"
-                        .pcParameters = pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML()
+                        .pcParameters = PDImages.GetActiveImage.MainSelection.GetSelectionAsXML()
                         .pcRaiseDialog = False
                         .pcRecorded = True
                         .pcUndoType = UNDO_Selection
                     End With
                     
-                    pdImages(g_CurrentImage).UndoManager.CreateUndoData tmpProcData
+                    PDImages.GetActiveImage.UndoManager.CreateUndoData tmpProcData
                     
                 End If
             
@@ -958,10 +956,10 @@ End Sub
 ' in the future, but at present, we simply remove the selection before proceeding.
 Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing)
 
-    If (Not raiseDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (Not raiseDialog) And PDImages.IsImageActive() Then
     
         'Only worry about this step if a selection is currently active
-        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_Selection) Then
+        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) Then
     
             Dim removeSelectionInAdvance As Boolean
             removeSelectionInAdvance = False
@@ -1004,7 +1002,7 @@ Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raise
             ' no dialog is shown.  It does this to trigger some diagnostic functions that determine whether a non-destructive crop can
             ' be applied; anyway, because of this, we only need to forcibly modify the previous Undo entry if raiseDialog is FALSE.)
             If (Strings.StringsEqual("Crop", processID, True) And (Not raiseDialog) And (Macros.GetMacroStatus <> MacroBATCH)) Then
-                pdImages(g_CurrentImage).UndoManager.ForceLastUndoDataToIncludeEverything
+                PDImages.GetActiveImage.UndoManager.ForceLastUndoDataToIncludeEverything
             End If
             
         End If
@@ -1036,7 +1034,7 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
     ' rasterization prompts.)
     
     'Start with obvious "this check is pointless" states, like no images being loaded
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
         
         Dim i As Long
         
@@ -1050,7 +1048,7 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
         '    affect vector layers in a destructive manner.
         Dim rasterizeImagePromptNeeded As Boolean
         rasterizeImagePromptNeeded = (Not raiseDialog)
-        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
         rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_Image) Or (createUndo = UNDO_Everything))
         
         'If this action requires rasterization, let's now check for a few exceptions.
@@ -1066,22 +1064,22 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
             ' (These checks must be handled manually, as the layers potentially involved vary by action - e.g. "Merge layer down"
             '  affects different layers than "Merge visible layers".)
             If Strings.StringsEqual(processID, "Merge layer down", True) Then
-                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerRaster Then
+                If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerRaster Then
                     rasterizeImagePromptNeeded = False
                 End If
                 
             ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
-                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerRaster Then
+                If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerRaster Then
                     rasterizeImagePromptNeeded = False
                 End If
             
             ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
                 
                 rasterizeImagePromptNeeded = False
-                For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+                For i = 1 To PDImages.GetActiveImage.GetNumOfLayers - 1
                     
                     'If a vector layer is found, restore rasterizeImagePromptNeeded and exit the loop
-                    If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
+                    If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility And PDImages.GetActiveImage.GetLayerByIndex(i).IsLayerVector Then
                         rasterizeImagePromptNeeded = True
                         Exit For
                     End If
@@ -1095,22 +1093,22 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
         'If we need to do a "special-case whole-image" rasterization, do so now.
         If rasterizeImagePromptNeeded Then
             
-            okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType, , True)
+            okayToRasterize = Layers.AskIfOkayToRasterizeLayer(PDImages.GetActiveImage.GetActiveLayer.GetLayerType, , True)
             If (okayToRasterize = vbYes) Then
                 
                 'When merging layers, only the merged layers need to be rasterized.  (We want to perform as few rasterizations
                 ' as possible, so we manually handle each merge case specially.)
                 If Strings.StringsEqual(processID, "Merge layer down", True) Then
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") - 1
+                    If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
+                    If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") - 1
                     
                 ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") + 1
+                    If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
+                    If PDImages.GetActiveImage.GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") + 1
                     
                 ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
-                    For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-                        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
+                    For i = 1 To PDImages.GetActiveImage.GetNumOfLayers - 1
+                        If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility And PDImages.GetActiveImage.GetLayerByIndex(i).IsLayerVector Then
                             Layers.RasterizeLayer i
                         End If
                     Next i
@@ -1133,17 +1131,17 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
         If CheckRasterizeRequirements And (Not rasterizeImagePromptNeeded) Then
             
             rasterizeImagePromptNeeded = (Not raiseDialog)
-            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
             rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (createUndo = UNDO_Layer)
             
             'As before, display a "do you want to rasterize?" prompt as necessary
             If rasterizeImagePromptNeeded Then
                 
-                okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType)
+                okayToRasterize = Layers.AskIfOkayToRasterizeLayer(PDImages.GetActiveImage.GetActiveLayer.GetLayerType)
                 
                 'If rasterization is okay, apply it immediately
                 If (okayToRasterize = vbYes) Then
-                    Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+                    Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
                 
                 'If the user doesn't want rasterization, bail immediately.
                 Else
@@ -1218,7 +1216,7 @@ Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
         ' 3) If we are in the midst of playing back a recorded macro.  (Undo/Redo entries take time and memory to process,
         '     so we ignore them during macro playback)
         If (srcProcData.pcUndoType <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And srcProcData.pcRecorded Then
-            If (Not pdImages(g_CurrentImage) Is Nothing) Then
+            If PDImages.IsImageActive() Then
                 
                 'In most cases, the Undo/Redo engine can automatically figure out what layer is affected by the current action.
                 ' In some rare cases, however, the affected portion of the image may not be obvious.
@@ -1228,7 +1226,7 @@ Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
                 If (srcProcData.pcUndoType = UNDO_Selection) Then
                     affectedLayerID = -1
                 Else
-                    affectedLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+                    affectedLayerID = PDImages.GetActiveImage.GetActiveLayerID
                 End If
                 
                 'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
@@ -1236,11 +1234,11 @@ Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
                 ' before calling the Undo engine.
                 If Strings.StringsEqual(srcProcData.pcID, "Fade", True) Then
                     Dim tmpDIB As pdDIB
-                    pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
+                    PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
                 End If
             
                 'Create the Undo data
-                pdImages(g_CurrentImage).UndoManager.CreateUndoData srcProcData, affectedLayerID
+                PDImages.GetActiveImage.UndoManager.CreateUndoData srcProcData, affectedLayerID
             
             End If
         End If
@@ -1282,30 +1280,30 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Save", True) Then
-        FileMenu.MenuSave pdImages(g_CurrentImage)
+        FileMenu.MenuSave PDImages.GetActiveImage()
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Save as", True) Then
-        FileMenu.MenuSaveAs pdImages(g_CurrentImage)
+        FileMenu.MenuSaveAs PDImages.GetActiveImage()
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Save copy", True) Then
-        FileMenu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
+        FileMenu.MenuSaveLosslessCopy PDImages.GetActiveImage()
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Revert", True) Then
         If FormMain.MnuFile(9).Enabled Then
-            pdImages(g_CurrentImage).UndoManager.RevertToLastSavedState
-            Interface.NotifyImageChanged g_CurrentImage
+            PDImages.GetActiveImage.UndoManager.RevertToLastSavedState
+            Interface.NotifyImageChanged PDImages.GetActiveImageID()
         End If
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
-        ColorManagement.SaveImageProfileToFile pdImages(g_CurrentImage), raiseDialog, processParameters
+        ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage(), raiseDialog, processParameters
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export palette", True) Then
-        Palettes.ExportCurrentImagePalette pdImages(g_CurrentImage)
+        Palettes.ExportCurrentImagePalette PDImages.GetActiveImage()
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Batch wizard", True) Then
@@ -1371,8 +1369,8 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         VBHacks.GetHighResTime startTime
         If FormMain.MnuEdit(0).Enabled Then
             
-            pdImages(g_CurrentImage).UndoManager.RestoreUndoData
-            Interface.NotifyImageChanged g_CurrentImage
+            PDImages.GetActiveImage.UndoManager.RestoreUndoData
+            Interface.NotifyImageChanged PDImages.GetActiveImageID()
             
             'Because Undo/Redo can involve image size changes (e.g. "Undo Resize Image"), we need to send a forcible
             ' UI notification to ensure that elements like rulers are correctly updated.
@@ -1387,8 +1385,8 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
             
     ElseIf Strings.StringsEqual(processID, "Redo", True) Then
         If FormMain.MnuEdit(1).Enabled Then
-            pdImages(g_CurrentImage).UndoManager.RestoreRedoData
-            Interface.NotifyImageChanged g_CurrentImage
+            PDImages.GetActiveImage.UndoManager.RestoreRedoData
+            Interface.NotifyImageChanged PDImages.GetActiveImageID()
             FormMain.MainCanvas(0).RelayViewportChanges
             undoOrRedoUsed = True
         End If
@@ -1398,8 +1396,8 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         If raiseDialog Then
             ShowPDDialog vbModal, FormUndoHistory
         Else
-            pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
-            Interface.NotifyImageChanged g_CurrentImage
+            PDImages.GetActiveImage.UndoManager.MoveToSpecificUndoPoint_XML processParameters
+            Interface.NotifyImageChanged PDImages.GetActiveImageID()
             FormMain.MainCanvas(0).RelayViewportChanges
             undoOrRedoUsed = True
         End If
@@ -1431,7 +1429,7 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         
     ElseIf Strings.StringsEqual(processID, "Paste as new layer", True) Then
         'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
-        g_Clipboard.ClipboardPaste (g_OpenImageCount > 0)
+        g_Clipboard.ClipboardPaste PDImages.IsImageActive()
         Process_EditMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
@@ -1443,8 +1441,8 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
     If undoOrRedoUsed Then
         
         'Synchronize any non-destructive settings to the currently active layer
-        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllGenericLayerProperties PDImages.GetActiveImage.GetActiveLayer
+        Processor.SyncAllTextLayerProperties PDImages.GetActiveImage.GetActiveLayer
         
     End If
     
@@ -1835,7 +1833,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         Process_AdjustmentsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Auto correct lighting", True) Then
-        FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
+        FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(PDImages.GetActiveImage.GetActiveDIB)
         Unload FormLevels
         Process_AdjustmentsMenu = True
         
@@ -2085,11 +2083,11 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Edit metadata", True) Then
         
         'Note that there is no "Else" block here; the "Else" block does nothing but notify the processor to create an Undo entry
-        If raiseDialog Then ExifTool.ShowMetadataDialog pdImages(g_CurrentImage)
+        If raiseDialog Then ExifTool.ShowMetadataDialog PDImages.GetActiveImage()
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Remove all metadata", True) Then
-        ExifTool.RemoveAllMetadata pdImages(g_CurrentImage)
+        ExifTool.RemoveAllMetadata PDImages.GetActiveImage()
         Process_ImageMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Count image colors", True) Then
@@ -2146,18 +2144,18 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
             
             'Start by creating a new layer
             If Strings.StringsEqual(processID, "New text layer", True) Then
-                Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, 0#, 0#, True
+                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, 0#, 0#, True
             Else
-                Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, 0#, 0#, True
+                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, 0#, 0#, True
             End If
             
             'Text layer parameters can be precisely recreated in two steps:
             
             '1) Initialize the standard layer header
-            pdImages(g_CurrentImage).GetActiveLayer.CreateNewLayerFromXML cParams.GetString("layerheader")
+            PDImages.GetActiveImage.GetActiveLayer.CreateNewLayerFromXML cParams.GetString("layerheader")
             
             '2) Initialize the text-layer-specific bits
-            pdImages(g_CurrentImage).GetActiveLayer.CreateVectorDataFromXML cParams.GetString("layerdata")
+            PDImages.GetActiveImage.GetActiveLayer.CreateVectorDataFromXML cParams.GetString("layerdata")
             
         End If
         
@@ -2227,15 +2225,15 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Rotate layer 90 clockwise", True) Then
-        Filters_Transform.MenuRotate90Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.MenuRotate90Clockwise PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Rotate layer 180", True) Then
-        Filters_Transform.MenuRotate180 pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.MenuRotate180 PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Rotate layer 90 counter-clockwise", True) Then
-        Filters_Transform.MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.MenuRotate270Clockwise PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Arbitrary layer rotation", True) Then
@@ -2243,11 +2241,11 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Flip layer horizontally", True) Then
-        Filters_Transform.MenuMirror pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.MenuMirror PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Flip layer vertically", True) Then
-        Filters_Transform.MenuFlip pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.MenuFlip PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
             
     'Destructive layer size changes
@@ -2260,7 +2258,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Crop layer to selection", True) Then
-        Filters_Transform.CropToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
+        Filters_Transform.CropToSelection PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
         
     'Change layer alpha
@@ -2274,7 +2272,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     'Rasterizing
     ElseIf Strings.StringsEqual(processID, "Rasterize layer", True) Then
-        Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+        Layers.RasterizeLayer PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Rasterize all layers", True) Then
@@ -2293,15 +2291,15 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     'On-canvas layer modifications (moving, non-destructive resizing, etc)
     ElseIf Strings.StringsEqual(processID, "Resize layer (on-canvas)", True) Then
-        Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Layers.ResizeLayerNonDestructive PDImages.GetActiveImage.GetActiveLayerIndex, processParameters
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Rotate layer (on-canvas)", True) Then
-        Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Layers.RotateLayerNonDestructive PDImages.GetActiveImage.GetActiveLayerIndex, processParameters
         Process_LayerMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Move layer", True) Then
-        Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Layers.MoveLayerOnCanvas PDImages.GetActiveImage.GetActiveLayerIndex, processParameters
         Process_LayerMenu = True
     
     '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry

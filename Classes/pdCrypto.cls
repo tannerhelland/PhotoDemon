@@ -399,7 +399,7 @@ Private Sub InternalCryptError(ByVal funcName As String, ByVal errName As String
     If (LenB(errDescription) <> 0) Then
         errString = errString & " - " & errDescription
     Else
-        errString = errString & " (FYI, last DLL error is #" & Hex(Err.LastDllError) & ")"
+        errString = errString & " (FYI, last DLL error is #" & Hex$(Err.LastDllError) & ")"
     End If
     PDDebug.LogAction errString
     

@@ -116,8 +116,8 @@ Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UndoType, Optional 
             newText = vbNullString
             
         Case UNDO_Layer, UNDO_Layer_VectorSafe, UNDO_LayerHeader
-            If Not (pdImages(g_CurrentImage).GetLayerByID(layerID) Is Nothing) Then
-                newText = g_Language.TranslateMessage("layer: %1", pdImages(g_CurrentImage).GetLayerByID(layerID).GetLayerName())
+            If Not (PDImages.GetActiveImage.GetLayerByID(layerID) Is Nothing) Then
+                newText = g_Language.TranslateMessage("layer: %1", PDImages.GetActiveImage.GetLayerByID(layerID).GetLayerName())
             Else
                 newText = vbNullString
             End If
@@ -157,7 +157,7 @@ Private Sub Form_Load()
     m_DescriptionFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
-    pdImages(g_CurrentImage).UndoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
+    PDImages.GetActiveImage.UndoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
     
     'Populate the owner-drawn listbox with the retrieved Undo data (including thumbnails)
     lstUndo.ListItemHeight = FixDPI(BLOCKHEIGHT)

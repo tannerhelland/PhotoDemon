@@ -556,7 +556,7 @@ Public Sub DrawHistogram()
     'Last but not least, generate the statistics at the bottom of the form
     
     'Total number of pixels
-    lblTotalPixels.Caption = strTotalPixels & (pdImages(g_CurrentImage).Width * pdImages(g_CurrentImage).Height)
+    lblTotalPixels.Caption = strTotalPixels & (PDImages.GetActiveImage.Width * PDImages.GetActiveImage.Height)
     
     'Maximum value; if a color channel is enabled, use that
     If chkChannel(0).Value Or chkChannel(1).Value Or chkChannel(2).Value Then

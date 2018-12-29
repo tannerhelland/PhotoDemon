@@ -505,17 +505,17 @@ Private Function CreateNewDib() As Long
 
 End Function
 
-Friend Function Clear()
+Friend Sub Clear()
 
     Dim i As Long
     
     For i = 0 To m_NumOfDIBs - 1
-        If (mDIB(i).hDIB <> 0) Then Call DeleteObject(mDIB(i).hDIB)
+        If (mDIB(i).hDIB <> 0) Then DeleteObject mDIB(i).hDIB
     Next
     
     m_NumOfDIBs = 0
     
-End Function
+End Sub
 
 Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByVal Index As Long, Disabled As Boolean)
 

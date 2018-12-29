@@ -201,7 +201,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         If (Macros.GetMacroStatus <> MacroBATCH) Then
             g_RecentFiles.AddFileToList dstPath, srcImage
             Interface.SyncInterfaceToCurrentImage
-            Interface.NotifyImageChanged g_CurrentImage
+            Interface.NotifyImageChanged PDImages.GetActiveImageID()
         End If
         
         'At this point, it's safe to re-enable the main form and restore the default cursor
@@ -241,7 +241,7 @@ End Function
 ' It should *only* be used during Batch Process operations, where there is no possibility of user interaction.
 ' Note that the input parameters are different, as the batch processor requires the user to set most export
 ' settings in advance (since we can't raise export dialogs mid-batch).
-Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, ByVal saveFormat As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
+Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, ByVal saveFormat As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
     
     'The important thing to note about this function is that it *requires* the image to be immediately unloaded
     ' after the save operation finishes.  To improve performance, the source pdImage object is not updated against
@@ -610,7 +610,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     'Start by creating the node entry; if successful, this will return the index of the node, which we can use
     ' to supply the actual header and DIB data.
     Dim nodeIndex As Long
-    nodeIndex = m_PdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.GetLayerID))
+    nodeIndex = m_PdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, PDImages.GetActiveImage.GetLayerIndexFromID(srcLayer.GetLayerID))
     
     'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
     Dim dataString As String

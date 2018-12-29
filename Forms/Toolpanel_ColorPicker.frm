@@ -333,13 +333,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     sampleRadius = sldRadius.Value
     
     'First, make sure we have a valid image to check!
-    If (g_OpenImageCount = 0) Then
-        m_NoColorAvailable = True
-    ElseIf (pdImages(g_CurrentImage) Is Nothing) Then
-        m_NoColorAvailable = True
-    Else
-        m_NoColorAvailable = False
-    End If
+    m_NoColorAvailable = Not PDImages.IsImageActive()
     
     'Next, ignore color retrieval if these coordinates match our last ones
     If (imgX = m_ImgX) And (imgY = m_ImgY) And (Not mouseButtonDown) Then Exit Sub
@@ -353,10 +347,10 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
     If (Not m_NoColorAvailable) Then
     
         'Grab a color from the correct source.
-        If chkSampleMerged.Value And (pdImages(g_CurrentImage).GetNumOfLayers > 1) Then
+        If chkSampleMerged.Value And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
             
             'Before proceeding, ensure the mouse pointer lies within the image.
-            If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > pdImages(g_CurrentImage).Width) Or (m_ImgY > pdImages(g_CurrentImage).Height) Then
+            If (m_ImgX < 0) Or (m_ImgY < 0) Or (m_ImgX > PDImages.GetActiveImage.Width) Or (m_ImgY > PDImages.GetActiveImage.Height) Then
                 m_NoColorAvailable = True
             Else
                 
@@ -371,8 +365,8 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
                 
                 sampleRight = Int(imgX) + sampleRadius
                 sampleBottom = Int(imgY) + sampleRadius
-                If (sampleRight > pdImages(g_CurrentImage).Width) Then sampleRight = pdImages(g_CurrentImage).Width
-                If (sampleBottom > pdImages(g_CurrentImage).Height) Then sampleBottom = pdImages(g_CurrentImage).Height
+                If (sampleRight > PDImages.GetActiveImage.Width) Then sampleRight = PDImages.GetActiveImage.Width
+                If (sampleBottom > PDImages.GetActiveImage.Height) Then sampleBottom = PDImages.GetActiveImage.Height
                 
                 'Cover the special case of "sample radius = 0"
                 If (sampleRight < sampleLeft + 1) Then sampleRight = sampleLeft + 1
@@ -400,7 +394,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
                     .Height = sampleHeight
                 End With
                 
-                pdImages(g_CurrentImage).GetCompositedRect m_SampleDIB, dstRectF, srcRectF, GP_IM_NearestNeighbor, False, CLC_ColorSample
+                PDImages.GetActiveImage.GetCompositedRect m_SampleDIB, dstRectF, srcRectF, GP_IM_NearestNeighbor, False, CLC_ColorSample
                 
                 'Find an average!
                 FindAverageValues
@@ -411,10 +405,10 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
         Else
         
             Dim layerX As Single, layerY As Single
-            Drawing.ConvertImageCoordsToLayerCoords_Full pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
+            Drawing.ConvertImageCoordsToLayerCoords_Full PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, imgX, imgY, layerX, layerY
             
             Dim srcRGBA As RGBQuad
-            If Layers.GetRGBAPixelFromLayer(pdImages(g_CurrentImage).GetActiveLayerIndex, Int(layerX), Int(layerY), srcRGBA) Then
+            If Layers.GetRGBAPixelFromLayer(PDImages.GetActiveImage.GetActiveLayerIndex, Int(layerX), Int(layerY), srcRGBA) Then
             
                 'A valid color was found!  Fill our module-level color values.
                 Dim unPremult As Single
@@ -443,8 +437,8 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
                     
                     sampleRight = Int(layerX) + sampleRadius
                     sampleBottom = Int(layerY) + sampleRadius
-                    If (sampleRight > pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)) Then sampleRight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-                    If (sampleBottom > pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)) Then sampleBottom = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+                    If (sampleRight > PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)) Then sampleRight = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+                    If (sampleBottom > PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)) Then sampleBottom = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
                     
                     sampleWidth = sampleRight - sampleLeft
                     sampleHeight = sampleBottom - sampleTop
@@ -452,7 +446,7 @@ Public Sub NotifyCanvasXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single
                     'Make a local copy of the pixel data
                     If (m_SampleDIB Is Nothing) Then Set m_SampleDIB = New pdDIB
                     m_SampleDIB.CreateBlank sampleWidth, sampleHeight, 32, 0, 0
-                    GDI.BitBltWrapper m_SampleDIB.GetDIBDC, 0, 0, sampleWidth, sampleHeight, pdImages(g_CurrentImage).GetActiveDIB.GetDIBDC, sampleLeft, sampleTop, vbSrcCopy
+                    GDI.BitBltWrapper m_SampleDIB.GetDIBDC, 0, 0, sampleWidth, sampleHeight, PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, sampleLeft, sampleTop, vbSrcCopy
                     
                     'Find an average!
                     FindAverageValues
@@ -581,7 +575,7 @@ Private Sub UpdateUIText()
                     Dim cHue As Double, cSat As Double, cVal As Double
                     Colors.fRGBtoHSV m_Red / 255#, m_Green / 255#, m_Blue / 255#, cHue, cSat, cVal
                     
-                    lblValue(i * 4).Caption = Format$((cHue * 360#), "##0.0") & ChrW(&HB0&)
+                    lblValue(i * 4).Caption = Format$((cHue * 360#), "##0.0") & ChrW$(&HB0&)
                     lblValue(i * 4 + 1).Caption = Format$(cSat, "00.0%")
                     lblValue(i * 4 + 2).Caption = Format$(cVal, "00.0%")
                     lblValue(i * 4 + 3).Caption = Format$(m_Alpha / 255#, "00.0%")

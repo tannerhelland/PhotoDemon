@@ -323,9 +323,9 @@ End Function
 ' Said another way, round negative numbers down, and positive numbers up.  This is often relevant in PD when performing
 ' coordinate conversions that are ultimately mapped to pixel locations, and we need to bounds-check corner coordinates
 ' in advance and push them away from 0, so any partially-covered pixels are converted to fully-covered ones.
-Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
+Public Sub ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
     
-    If UBound(listOfValues) >= LBound(listOfValues) Then
+    If (UBound(listOfValues) >= LBound(listOfValues)) Then
         
         Dim i As Long
         For i = LBound(listOfValues) To UBound(listOfValues)
@@ -341,10 +341,10 @@ Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues
         Next i
         
     Else
-        Debug.Print "No points provided - convertArbitraryFListToRoundedInt() function failed!"
+        PDDebug.LogAction "No points provided - ConvertArbitraryListToFurthestRoundedInt() function failed!"
     End If
 
-End Function
+End Sub
 
 Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
     srcX = srcX - centerX
@@ -726,7 +726,7 @@ Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
 End Function
 
 'Helper function to rotate one arbitrary point around another arbitrary point.
-Public Function RotatePointAroundPoint(ByVal rotateX As Single, ByVal rotateY As Single, ByVal centerX As Single, ByVal centerY As Single, ByVal angleInRadians As Single, ByRef newX As Single, ByRef newY As Single)
+Public Sub RotatePointAroundPoint(ByVal rotateX As Single, ByVal rotateY As Single, ByVal centerX As Single, ByVal centerY As Single, ByVal angleInRadians As Single, ByRef newX As Single, ByRef newY As Single)
 
     'For performance reasons, it's easier to cache the cos and sin of the angle in question
     Dim sinAngle As Double, cosAngle As Double
@@ -738,7 +738,7 @@ Public Function RotatePointAroundPoint(ByVal rotateX As Single, ByVal rotateY As
     newX = cosAngle * (rotateX - centerX) - sinAngle * (rotateY - centerY) + centerX
     newY = cosAngle * (rotateY - centerY) + sinAngle * (rotateX - centerX) + centerY
     
-End Function
+End Sub
 
 'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed
 ' to encompass the entire original rect.  (Said another way, the modified rect will *never* be smaller

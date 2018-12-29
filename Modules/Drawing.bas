@@ -540,15 +540,15 @@ Public Sub GetCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
 
     Dim tmpX As Double, tmpY As Double
     
-    With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+    With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
         
         'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
         dstRect.Right = Int(tmpX + 0.99)
@@ -563,15 +563,15 @@ Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As Rec
 
     Dim tmpX As Double, tmpY As Double
     
-    With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
+    With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX, .GetLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), pdImages(g_CurrentImage), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers), .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers), tmpX, tmpY
         dstRect.Width = tmpX - dstRect.Left
         dstRect.Height = tmpY - dstRect.Top
         

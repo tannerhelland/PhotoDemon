@@ -18,17 +18,17 @@ Attribute VB_Exposed = False
 'Last updated: 13/September/15
 'Last update: convert imgStorage to pdDictionary, so we can drop the run-time scrrun.dll requirement
 '
-'The pdImage class is used to store information on each image loaded by the user.  As such, one instance of this class
-' exists for each loaded image.  These instances are stored in the public pdImages() array.
+'The pdImage class is used to store information on each image loaded by the user.  One instance of this class
+' exists for each loaded image.
 '
-'This class doesn't do a lot of its own processing.  At present, it's mainly just a container for key image properties,
-' e.g. size, name, file path, format, Undo/Redo tracking - as well as the all-important array of pdLayer objects that
-' comprise the image's actual bitmap data.
+'This class doesn't do much its own processing.  At present, it's mainly just a container for key image properties,
+' like size, name, file path, format, Undo/Redo tracking - as well as the all-important array of pdLayer objects
+' that comprise the image's actual bitmap data.
 '
-'Generally speaking, this class should not be used separate from its parent pdImages() array.  If you need access to
-' a temporary image, use pdDIB, or if layer interactions are required, a single pdLayer instance (and its corresponding
-' layerDIB).  This class is quite heavy as it must track things like metadata, undo/redo handling, and other items,
-' so avoid using it for any temporary image operations.
+'Generally speaking, this class should rarely be instantiated directly.  If you need a temporary image, use pdDIB,
+' or if layer interactions are required, a single pdLayer instance (and its corresponding layerDIB).  This class
+' is quite heavy as it must track things like metadata, undo/redo handling, and other items, so avoid using it for
+' things like temporary image operations.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -42,7 +42,8 @@ Option Explicit
 'Each active image in the program exists within one of these pdImage objects.  This class stores all relevant information
 ' about the image, including references to its layers, metadata, Undo/Redo, and much more.
 
-'Canonical image ID value.  This matches the image's position in the main pdImages array.
+'Canonical image ID value.  (This currently matches the image's index in the main pdImages array, but this
+' behavior is *not* guaranteed forever.)
 Public imageID As Long
 
 'The main pdImages array isn't resized when images are deleted (unless *all* images are deleted).  Images that have
@@ -192,7 +193,7 @@ Friend Sub SetCurrentFileFormat(ByVal newFormat As PD_IMAGE_FORMAT)
     m_currentFileFormat = newFormat
 End Sub
 
-Friend Function GetImageIcon(ByVal getLargeIcon As Boolean)
+Friend Function GetImageIcon(ByVal getLargeIcon As Boolean) As Long
     If getLargeIcon Then
         GetImageIcon = m_curFormIcon32
     Else
@@ -1168,7 +1169,7 @@ End Sub
 'If this is another type of resize action, such as a canvas resize, the caller must supply the new width/height values desired.
 '
 'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
-Friend Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Friend Sub UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then
         Me.Width = imgLayers(0).GetLayerWidth(False)
@@ -1181,7 +1182,7 @@ Friend Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Option
     'Changes to image size require a rebuild of our composited image cache
     Me.NotifyImageChanged UNDO_Image
     
-End Function
+End Sub
 
 'INITIALIZE class
 Private Sub Class_Initialize()
@@ -1535,7 +1536,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     imgLayers(targetLayerIndex).CropNullPaddedLayer
     
     'Notify ourselves of the change
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, targetLayerIndex
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, targetLayerIndex
     
     EraseProcessedSelection = True
 

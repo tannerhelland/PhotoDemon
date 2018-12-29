@@ -182,7 +182,7 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
                 'Add the gradient point list; for convenience, RGB and opacity are manually separated.
                 Dim i As Long, iString As String
                 For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str(i))
+                    iString = Trim$(Str$(i))
                     .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
                     .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
                     .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
@@ -243,7 +243,7 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
                 Else
                 
                     For i = 0 To m_NumOfPoints - 1
-                        iString = Trim$(Str(i))
+                        iString = Trim$(Str$(i))
                         m_GradientPoints(i).PointRGB = .GetLong("GP_RGB_" & iString, vbBlack)
                         m_GradientPoints(i).PointOpacity = .GetDouble("GP_Opacity_" & iString, 100#)
                         m_GradientPoints(i).PointPosition = .GetDouble("GP_Position_" & iString, 0#)
@@ -254,7 +254,7 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
             Else
                 
                 For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str(i))
+                    iString = Trim$(Str$(i))
                     m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
                     m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
                     m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
@@ -334,7 +334,7 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
                 
                 Dim i As Long, iString As String
                 For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str(i))
+                    iString = Trim$(Str$(i))
                     m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
                     m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 100#)
                     m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)

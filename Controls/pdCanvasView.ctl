@@ -198,7 +198,7 @@ Public Sub ClearCanvas()
     bHeight = ucSupport.GetBackBufferHeight
         
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
-    If (g_OpenImageCount = 0) And PDMain.IsProgramRunning() Then
+    If (Not PDImages.IsImageActive()) And PDMain.IsProgramRunning() Then
         
         Dim placeholderImageSize As Long
         placeholderImageSize = 256
@@ -277,7 +277,7 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     If g_DisableUserInput And (Not m_ManualMouseMode) Then IsCanvasInteractionAllowed = False
     
     'If no images have been loaded, exit
-    If (g_OpenImageCount = 0) Then IsCanvasInteractionAllowed = False
+    If (Not PDImages.IsImageActive()) Then IsCanvasInteractionAllowed = False
     
     'If our own internal redraw suspension flag is set, exit
     If m_SuspendRedraws Then IsCanvasInteractionAllowed = False
@@ -286,11 +286,11 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     If (Not IsCanvasInteractionAllowed) Then Exit Function
     
     'If there is no active images or valid layers, canvas interactions are also disallowed.  (This is primarily a failsafe check.)
-    If (pdImages(g_CurrentImage) Is Nothing) Then
+    If (Not PDImages.IsImageActive) Then
         IsCanvasInteractionAllowed = False
     Else
-        If (Not pdImages(g_CurrentImage).IsActive) Then IsCanvasInteractionAllowed = False
-        If (pdImages(g_CurrentImage).GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
+        If (Not PDImages.GetActiveImage.IsActive) Then IsCanvasInteractionAllowed = False
+        If (PDImages.GetActiveImage.GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
     End If
     
     'If the central processor is active, exit - but *only* if our internal notification flags have not been triggered.
@@ -388,7 +388,7 @@ End Sub
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If no images have been loaded, reset the cursor
-    If (g_OpenImageCount = 0) Then ucSupport.RequestCursor IDC_DEFAULT
+    If (PDImages.GetNumOpenImages() = 0) Then ucSupport.RequestCursor IDC_DEFAULT
     RaiseEvent MouseEnter(Button, Shift, x, y)
     
 End Sub
@@ -426,7 +426,7 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     
     'If no images are loaded, repaint ourselves automatically
-    If (g_OpenImageCount = 0) And PDMain.IsProgramRunning() Then
+    If (PDImages.GetNumOpenImages() = 0) And PDMain.IsProgramRunning() Then
         Me.ClearCanvas
     Else
     
@@ -434,7 +434,7 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
         ' is slower than the automatic repaints requested by our parent pdUCSupport instance.  As such,
         ' we manually disable repaints until the viewport buffer is ready.
         ucSupport.SuspendAutoRepaintBehavior True
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         ucSupport.SuspendAutoRepaintBehavior False
         
         'Because we suspended auto-repaints, we must manually request a final paint-to-screen
@@ -517,7 +517,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
         UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-        If (g_OpenImageCount = 0) Then Me.ClearCanvas
+        If (PDImages.GetNumOpenImages() = 0) Then Me.ClearCanvas
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If

@@ -784,22 +784,22 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     selectionDataLoaded = False
     
     'Regardless of outcome, notify the parent image of this change
-    pdImages(g_CurrentImage).NotifyImageChanged undoTypeOfAction, targetLayerID
+    PDImages.GetActiveImage.NotifyImageChanged undoTypeOfAction, targetLayerID
     
     'Depending on the Undo data requested, we may end up loading one or more diff files at this location
     Select Case undoTypeOfAction
     
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
         Case UNDO_Everything
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
-            pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
+            PDImages.GetActiveImage.MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
         'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
         '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE/_VECTORSAFE, we
         '             don't have to do any special processing to the file - just load the whole damn thing.
         Case UNDO_Image, UNDO_Image_VectorSafe
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -813,7 +813,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             required, due to the messy business of non-destructively aligning the current layer stack with
         '             the layer stack described by the file.
         Case UNDO_ImageHeader
-            ImageImporter.LoadPhotoDemonImageHeaderOnly undoFile, pdImages(g_CurrentImage)
+            ImageImporter.LoadPhotoDemonImageHeaderOnly undoFile, PDImages.GetActiveImage()
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -829,7 +829,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             
             'New as of 11 July '14 is the ability for the caller to supply their own destination layer for layer-specific Undo data.
             ' Check this optional parameter, and if it is NOT supplied, point it at the relevant layer in the parent pdImage object.
-            If (customLayerDestination Is Nothing) Then Set customLayerDestination = pdImages(g_CurrentImage).GetLayerByID(targetLayerID)
+            If (customLayerDestination Is Nothing) Then Set customLayerDestination = PDImages.GetActiveImage.GetLayerByID(targetLayerID)
             
             'Layer data can appear in multiple types of Undo files
             Select Case undoTypeOfFile
@@ -856,11 +856,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
                 ' header data from this file.
                 Case UNDO_Layer, UNDO_Layer_VectorSafe, UNDO_LayerHeader
-                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).GetLayerByID(targetLayerID), True
+                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", PDImages.GetActiveImage.GetLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_Everything, UNDO_Image, UNDO_Image_VectorSafe, UNDO_ImageHeader
-                    ImageImporter.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).GetLayerByID(targetLayerID), targetLayerID, True
+                    ImageImporter.LoadSingleLayerFromPDI undoFile, PDImages.GetActiveImage.GetLayerByID(targetLayerID), targetLayerID, True
                 
             End Select
         
@@ -868,14 +868,14 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
         '                 any special processing.
         Case UNDO_Selection
-            pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
+            PDImages.GetActiveImage.MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
             
         'For now, any unhandled Undo types result in a request for the full pdImage stack.  This line can be removed when
         ' all Undo types finally have their own custom handling implemented.
         Case Else
-            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, PDImages.GetActiveImage(), True
             
         
     End Select
@@ -884,20 +884,20 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If selectionDataLoaded Then
     
         'Activate the selection as necessary
-        pdImages(g_CurrentImage).SetSelectionActive pdImages(g_CurrentImage).MainSelection.IsLockedIn
+        PDImages.GetActiveImage.SetSelectionActive PDImages.GetActiveImage.MainSelection.IsLockedIn
         
         'Synchronize the text boxes as necessary
-        Selections.SyncTextToCurrentSelection g_CurrentImage
+        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     
     End If
     
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).MainSelection.RequestNewMask
+    If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
-    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 

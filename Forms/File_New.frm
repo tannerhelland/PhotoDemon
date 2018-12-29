@@ -199,10 +199,10 @@ Private Sub CalculateDefaultSize()
     ucResize.UnitOfMeasurement = mu_Pixels
     
     'Is another image loaded?
-    If (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
         
         'Default to the dimensions of the currently active image
-        ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+        ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
         
     Else
     

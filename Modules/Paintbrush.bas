@@ -771,9 +771,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         
         'Make sure the current scratch layer is properly initialized
         Tools.InitializeToolsDependentOnImage
-        pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
-        pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_BrushBlendmode
-        pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
+        PDImages.GetActiveImage.ScratchLayer.SetLayerOpacity m_BrushOpacity
+        PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_BrushBlendmode
+        PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
         
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX
@@ -783,7 +783,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         If (m_BrushSource = BS_Color) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
         
         'Initialize any relevant GDI+ objects for the current brush
-        Drawing2D.QuickCreateSurfaceFromDC m_Surface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
+        Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, (m_BrushAntialiasing = P2_AA_HighQuality)
         
         'If we're directly using GDI+ for painting (by calling various GDI+ line commands), we need to explicitly set
         ' half-pixel offsets, so each pixel "coordinate" is treated as the *center* of the pixel instead of the top-left corner.
@@ -848,7 +848,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
                 
                 'The (x, y) points returned by this request are in the *hWnd's* coordinate space.  We must manually convert them
                 ' to the image coordinate space.
-                If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, pdImages(g_CurrentImage), tmpMMP.x, tmpMMP.y, imgX, imgY) Then
+                If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, PDImages.GetActiveImage(), tmpMMP.x, tmpMMP.y, imgX, imgY) Then
                 
                     'The paint layer is always full-size, so we don't need to perform a separate "image space to layer space"
                     ' coordinate conversion here.
@@ -861,14 +861,14 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         End If
         
         'Notify the scratch layer of our updates
-        pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
+        PDImages.GetActiveImage.ScratchLayer.NotifyOfDestructiveChanges
         
         'Cache the last x/y position retrieved from the queue
         m_MouseLastUserX = srcX
         m_MouseLastUserY = srcY
     
         'Report paint tool render times, as relevant
-        'Debug.Print "Paint tool render timing: " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "Paint tool render timing: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
     
     'The previous x/y coordinate trackers are updated automatically when the mouse is DOWN.  When the mouse is UP, we must manually
     ' modify those values.
@@ -988,11 +988,11 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
         'Reset the frame drop counter and the "time since last viewport render" tracker
         m_FramesDropped = 0
         VBHacks.GetHighResTime m_TimeSinceLastRender
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , pdImages(g_CurrentImage).GetActiveLayerIndex
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, , PDImages.GetActiveImage.GetActiveLayerIndex
     
     'If not enough time has passed since the last redraw, simply update the cursor
     Else
-        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), srcCanvas
     End If
     
     'Update our running "time to render" tracker
@@ -1206,7 +1206,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         
         'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
         ' for a performance boost, however.
-        m_SrcPenDIB.AlphaBlendToDCEx pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize), Int(m_BrushSize), 0, 0, Int(m_BrushSize), Int(m_BrushSize), dabOpacity * 255
+        m_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize), Int(m_BrushSize), 0, 0, Int(m_BrushSize), Int(m_BrushSize), dabOpacity * 255
         'PD2D.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
         
     End If
@@ -1310,57 +1310,57 @@ Public Sub CommitBrushResults()
     With tmpRectF
         If (.Left < 0) Then .Left = 0
         If (.Top < 0) Then .Top = 0
-        If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
-        If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
+        If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
+        If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
     End With
     
     'Committing brush results is actually pretty easy!
     
     'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
     ' layer onto it.
-    If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
+    If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
         
         Dim bottomLayerFullSize As Boolean
-        With pdImages(g_CurrentImage).GetActiveLayer
-            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height))
+        With PDImages.GetActiveImage.GetActiveLayer
+            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
         End With
         
-        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetActiveLayerIndex
+        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
         Processor.Process "Paint stroke", , , UNDO_Layer, g_CurrentTool
         
         'Reset the scratch layer
-        pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
+        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
     
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
     Else
         
         'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
         ' the paint layer against it.
-        If pdImages(g_CurrentImage).IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
             Dim cBlender As pdPixelBlender
             Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB pdImages(g_CurrentImage).ScratchLayer.layerDIB, pdImages(g_CurrentImage).MainSelection.GetMaskDIB, VarPtr(tmpRectF)
+            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(tmpRectF)
             
         End If
         
         Dim newLayerID As Long
-        newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(pdImages(g_CurrentImage).GetActiveLayerIndex)
+        newLayerID = PDImages.GetActiveImage.CreateBlankLayer(PDImages.GetActiveImage.GetActiveLayerIndex)
         
         'Point the new layer index at our scratch layer
-        pdImages(g_CurrentImage).PointLayerAtNewObject newLayerID, pdImages(g_CurrentImage).ScratchLayer
-        pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Paint layer")
-        Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+        PDImages.GetActiveImage.PointLayerAtNewObject newLayerID, PDImages.GetActiveImage.ScratchLayer
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Paint layer")
+        Set PDImages.GetActiveImage.ScratchLayer = Nothing
         
         'Activate the new layer
-        pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
         
         'Notify the parent image of the new layer
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Image_VectorSafe
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
@@ -1383,16 +1383,16 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     
     'Start by creating a transformation from the image space to the canvas space
     Dim canvasMatrix As pd2DTransform
-    Drawing.GetTransformFromImageToCanvas canvasMatrix, targetCanvas, pdImages(g_CurrentImage), m_MouseX, m_MouseY
+    Drawing.GetTransformFromImageToCanvas canvasMatrix, targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY
     
     'We also want to pinpoint the precise cursor position
     Dim cursX As Double, cursY As Double
-    Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, pdImages(g_CurrentImage), m_MouseX, m_MouseY, cursX, cursY
+    Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY, cursX, cursY
     
     'If the on-screen brush size is above a certain threshold, we'll paint a full brush outline.
     ' If it's too small, we'll only paint a cross in the current brush position.
     Dim onScreenSize As Double
-    onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushSize, pdImages(g_CurrentImage))
+    onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushSize, PDImages.GetActiveImage())
     
     Dim brushTooSmall As Boolean
     brushTooSmall = (onScreenSize < 7#)
@@ -1413,7 +1413,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         innerPen.SetPenLineCap P2_LC_Round
         
         Dim oldX As Double, oldY As Double
-        Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, pdImages(g_CurrentImage), m_MouseLastUserX, m_MouseLastUserY, oldX, oldY
+        Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseLastUserX, m_MouseLastUserY, oldX, oldY
         PD2D.DrawLineF cSurface, outerPen, oldX, oldY, cursX, cursY
         PD2D.DrawLineF cSurface, innerPen, oldX, oldY, cursX, cursY
         

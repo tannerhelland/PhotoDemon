@@ -72,7 +72,7 @@ Private Const GDI_OBJ_BITMAP As Long = 7&
 Private Const GDI_CBM_INIT As Long = &H4
 Private Const GDI_DIB_RGB_COLORS As Long = &H0
 
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Long
 Private Declare Function StretchBlt Lib "gdi32" (ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBitmap Lib "gdi32" (ByVal hDC As Long, ByRef lpInfoHeader As GDI_BitmapInfoHeader, ByVal dwUsage As Long, ByVal ptrToInitBits As Long, ByVal ptrToInitBitmapInfo As Long, ByVal wUsage As Long) As Long

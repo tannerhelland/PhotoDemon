@@ -382,14 +382,14 @@ Private Sub Form_Load()
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
     Dim iWidth As Long, iHeight As Long
-    If pdImages(g_CurrentImage).IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive Then
         Dim selBounds As RectF
-        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
+        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
         iWidth = selBounds.Width
         iHeight = selBounds.Height
     Else
-        iWidth = pdImages(g_CurrentImage).Width
-        iHeight = pdImages(g_CurrentImage).Height
+        iWidth = PDImages.GetActiveImage.Width
+        iHeight = PDImages.GetActiveImage.Height
     End If
         
     sltHorizontal.Min = -1 * (iWidth \ 2)

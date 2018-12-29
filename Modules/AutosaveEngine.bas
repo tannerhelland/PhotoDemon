@@ -386,10 +386,11 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
     For i = 0 To UBound(fullXMLList)
     
         'Before doing anything else, we are going to rename the Undo files associated with this Autosave entry.
-        ' PD assigns image IDs sequentially in each session, starting with image ID #1.  Because the image ID is immutable
-        ' (it corresponds to the image's location in the master pdImages() array), we cannot simply change it to match
-        ' the ID of the Undo files - instead, we must rename the Undo files to match the new image ID.
-        newImageID = CanvasManager.GetProvisionalImageID()
+        ' PD currently assigns image IDs sequentially in each session, starting with image ID #1.  Because image
+        ' IDs are immutable (they correspond to each image's location in the master image array), we cannot
+        ' simply change it to match the ID of the Undo files - instead, we must rename the Undo files to match
+        ' the new image ID of *this* session.
+        newImageID = PDImages.GetProvisionalImageID()
         oldImageID = fullXMLList(i).parentImageID
         
         RenameAllUndoFiles fullXMLList(i), newImageID, oldImageID
@@ -405,35 +406,35 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
         ' a portable drive containing Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
         ' object being freed prematurely.
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        If PDImages.IsImageNonNull() Then
         
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its
             ' temporary file location!)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(fullXMLList(i).friendlyName, True)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(fullXMLList(i).friendlyName)
+            PDImages.GetActiveImage.ImgStorage.AddEntry "CurrentLocationOnDisk", vbNullString
+            PDImages.GetActiveImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(fullXMLList(i).friendlyName, True)
+            PDImages.GetActiveImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(fullXMLList(i).friendlyName)
             
             'Attempt to set its filetype.  (We rely on the file extension for this.)
-            pdImages(g_CurrentImage).SetOriginalFileFormat fullXMLList(i).originalFormat
-            pdImages(g_CurrentImage).SetCurrentFileFormat fullXMLList(i).currentFormat
+            PDImages.GetActiveImage.SetOriginalFileFormat fullXMLList(i).originalFormat
+            PDImages.GetActiveImage.SetCurrentFileFormat fullXMLList(i).currentFormat
             
             'Mark the image as unsaved
-            pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
+            PDImages.GetActiveImage.SetSaveState False, pdSE_AnySave
             
             'Reset all save dialog flags (as they should be re-displayed after autosave recovery)
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "hasSeenJPEGPrompt", False
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "hasSeenJP2Prompt", False
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "hasSeenWebPPrompt", False
-            pdImages(g_CurrentImage).ImgStorage.AddEntry "hasSeenJXRPrompt", False
+            PDImages.GetActiveImage.ImgStorage.AddEntry "hasSeenJPEGPrompt", False
+            PDImages.GetActiveImage.ImgStorage.AddEntry "hasSeenJP2Prompt", False
+            PDImages.GetActiveImage.ImgStorage.AddEntry "hasSeenWebPPrompt", False
+            PDImages.GetActiveImage.ImgStorage.AddEntry "hasSeenJXRPrompt", False
             
             'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
             ' The Undo engine itself handles this step.
-            If pdImages(g_CurrentImage).UndoManager.ReconstructStackFromExternalSource(xmlEngine.ReturnCurrentXMLString) Then
+            If PDImages.GetActiveImage.UndoManager.ReconstructStackFromExternalSource(xmlEngine.ReturnCurrentXMLString) Then
             
                 'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
                 ' the last session.
-                pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint fullXMLList(i).undoStackPointer
+                PDImages.GetActiveImage.UndoManager.MoveToSpecificUndoPoint fullXMLList(i).undoStackPointer
                 Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
             
             Else

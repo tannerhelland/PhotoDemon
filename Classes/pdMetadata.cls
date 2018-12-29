@@ -514,8 +514,8 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
     ' (For TIFFs, which may have multiple pages, we handle this differently.)
-    If (Not (pdImages(parentImageID) Is Nothing)) Then
-        If (pdImages(parentImageID).GetOriginalFileFormat <> PDIF_TIFF) Then
+    If PDImages.IsImageNonNull(parentImageID) Then
+        If (PDImages.GetImageByID(parentImageID).GetOriginalFileFormat <> PDIF_TIFF) Then
             If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
                 dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
             ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
@@ -692,8 +692,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     Dim ppMayBeNeeded As Boolean: ppMayBeNeeded = False
     
     ppMayBeNeeded = (m_NumOfTags <> 0)
-    If ppMayBeNeeded Then ppMayBeNeeded = (parentImageID <= UBound(pdImages))
-    If ppMayBeNeeded Then ppMayBeNeeded = Not (pdImages(parentImageID) Is Nothing)
+    If ppMayBeNeeded Then ppMayBeNeeded = PDImages.IsImageNonNull(parentImageID)
     
     Dim relevantTagIndex As Long
         
@@ -713,20 +712,20 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         
         'Knock DPI out first
         Dim xResolution As Double, yResolution As Double
-        If Me.GetResolution(xResolution, yResolution) Then pdImages(parentImageID).SetDPI xResolution, yResolution
+        If Me.GetResolution(xResolution, yResolution) Then PDImages.GetImageByID(parentImageID).SetDPI xResolution, yResolution
         
         'Check for 8-bpp, non-PNG images.  (PD's internal PNG decoder handles palettes correctly, but images coming from
         ' FreeImage or GDI+ may not.)
-        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).HasOriginalPalette()) And (pdImages(parentImageID).GetOriginalFileFormat <> PDIF_PNG)
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (PDImages.GetImageByID(parentImageID).HasOriginalPalette()) And (PDImages.GetImageByID(parentImageID).GetOriginalFileFormat <> PDIF_PNG)
         
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
-        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = (PDImages.GetImageByID(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (PDImages.GetImageByID(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
         'If this file contains an ICC profile, but our various load engines were unable to retrieve it
         ' (as is possible with some esoteric formats), we may be able to use ExifTool to manually retrieve
         ' the full profile data.
         If (Not ppMayBeNeeded) Then
-            If (LenB(pdImages(parentImageID).GetColorProfile_Original) = 0) Then ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
+            If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) Then ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
         End If
         
     End If
@@ -734,13 +733,13 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then
         
         'TIFF-specific tags:
-        If (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) Then
+        If (PDImages.GetImageByID(parentImageID).GetOriginalFileFormat = PDIF_TIFF) Then
         
             'Look for page name tags.  If found, assign them to their matching image layers.
             Dim i As Long
-            For i = 0 To pdImages(parentImageID).GetNumOfLayers - 1
+            For i = 0 To PDImages.GetImageByID(parentImageID).GetNumOfLayers - 1
                 If DoesTagExistFullName("IFD" & i & ":PageName", relevantTagIndex, vbBinaryCompare) Then
-                    pdImages(parentImageID).GetLayerByIndex(i).SetLayerName GetTagValue("IFD" & i & ":PageName", vbBinaryCompare)
+                    PDImages.GetImageByID(parentImageID).GetLayerByIndex(i).SetLayerName GetTagValue("IFD" & i & ":PageName", vbBinaryCompare)
                     ApplyMetadataPostProcessing = True
                 End If
             Next i
@@ -749,7 +748,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         End If
         
         'NON-FORMAT-SPECIFIC tags:
-        If (LenB(pdImages(parentImageID).GetColorProfile_Original) = 0) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And (Not pdImages(parentImageID).ImgStorage.DoesKeyExist("Tone-mapping")) Then
+        If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And (Not PDImages.GetImageByID(parentImageID).ImgStorage.DoesKeyExist("Tone-mapping")) Then
             
             'ExifTool pulled an ICC profile from this image file, but our original image load function
             ' did not.  This may be an esoteric format or one with broken formatting.  Let's see if we
@@ -757,7 +756,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             ' to something like CMYK, and we have already converted it to RGB - but we can still try.)
             
             'Ask ExifTool to extract the ICC profile to a standalone temp file
-            If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
+            If ExifTool.ExtractICCMetadataToFile(PDImages.GetImageByID(parentImageID)) Then
                 
                 PDDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
                 
@@ -781,18 +780,18 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                     If tmpProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
                         
                         PDDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
-                        If ColorManagement.ConvertDIBToSRGB(pdImages(parentImageID).GetActiveDIB, tmpProfile) Then
+                        If ColorManagement.ConvertDIBToSRGB(PDImages.GetImageByID(parentImageID).GetActiveDIB, tmpProfile) Then
                         
                             'The conversion worked!  Add this profile to our central cache, and flag the parent image accordingly
                             Dim profHash As String
                             profHash = ColorManagement.AddProfileToCache(tmpProfile)
-                            pdImages(parentImageID).SetColorProfile_Original profHash
-                            pdImages(parentImageID).GetActiveDIB.SetColorManagementState cms_ProfileConverted
-                            pdImages(parentImageID).GetActiveDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
+                            PDImages.GetImageByID(parentImageID).SetColorProfile_Original profHash
+                            PDImages.GetImageByID(parentImageID).GetActiveDIB.SetColorManagementState cms_ProfileConverted
+                            PDImages.GetImageByID(parentImageID).GetActiveDIB.SetColorProfileHash ColorManagement.GetSRGBProfileHash()
                             
                             'If the image is active, redraw the display to reflect the new colors
-                            If (parentImageID = g_CurrentImage) Then
-                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.MainCanvas(0)
+                            If (parentImageID = PDImages.GetActiveImageID()) Then
+                                ViewportEngine.Stage1_InitializeBuffer PDImages.GetImageByID(parentImageID), FormMain.MainCanvas(0)
                                 Interface.NotifyImageChanged parentImageID
                             End If
                         

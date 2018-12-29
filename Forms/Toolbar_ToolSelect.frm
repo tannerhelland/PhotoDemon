@@ -809,29 +809,29 @@ Private Sub NewToolSelected()
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).MainSelection.IsTransformable
+                    SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable
 
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
 
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Rectangle) Then
-                        pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Circle
+                    If (g_CurrentTool = SELECT_CIRC) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Rectangle) Then
+                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Circle
                         
                         'Because the current selection is *still active*, we need to refresh the newly loaded subpanel
                         ' against the current selection's settings.
-                        Selections.SyncTextToCurrentSelection g_CurrentImage
+                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
                         
-                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Circle) Then
-                        pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Rectangle
-                        Selections.SyncTextToCurrentSelection g_CurrentImage
+                    ElseIf (g_CurrentTool = SELECT_RECT) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape = ss_Circle) Then
+                        PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Rectangle
+                        Selections.SyncTextToCurrentSelection PDImages.GetActiveImageID()
 
                     End If
                     
                     'Release any locked properties (e.g. locked aspect ratio)
-                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Width
-                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Height
-                    pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_AspectRatio
+                    PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Width
+                    PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Height
+                    PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_AspectRatio
                     
                 End If
                 
@@ -858,7 +858,7 @@ Private Sub NewToolSelected()
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    If (g_OpenImageCount > 0) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If PDImages.IsImageActive() Then ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage
@@ -1001,9 +1001,9 @@ Public Sub ResetToolButtonStates()
         
         'When switching tools, we also unlock all locked selection attributes.
         If Selections.SelectionsAllowed(False) Then
-            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Width
-            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_Height
-            pdImages(g_CurrentImage).MainSelection.UnlockProperty pdsl_AspectRatio
+            PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Width
+            PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_Height
+            PDImages.GetActiveImage.MainSelection.UnlockProperty pdsl_AspectRatio
         End If
         
     End If

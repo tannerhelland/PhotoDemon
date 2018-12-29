@@ -337,19 +337,19 @@ Private Sub cboLayerResizeQuality_Click()
     Tools.SetToolBusyState True
     
     'Apply the new quality mode
-    pdImages(g_CurrentImage).GetActiveLayer.SetLayerResizeQuality cboLayerResizeQuality.ListIndex
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerResizeQuality cboLayerResizeQuality.ListIndex
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
 
 Private Sub cboLayerResizeQuality_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboLayerResizeQuality_LostFocusAPI()
@@ -364,34 +364,34 @@ End Sub
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
     Tools_Move.SetDrawLayerBorders chkLayerBorder.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
     Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
     
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     
     Select Case Index
     
         'Make non-destructive resize permanent
         Case 0
-            Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Layer
+            Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
     
     End Select
     
@@ -455,17 +455,17 @@ Private Sub sltLayerAngle_Change()
     Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.SetLayerAngle sltLayerAngle.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerAngle sltLayerAngle.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -474,8 +474,8 @@ Private Sub sltLayerAngle_FinalChange()
 End Sub
 
 Private Sub sltLayerAngle_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltLayerAngle_LostFocusAPI()
@@ -492,17 +492,17 @@ Private Sub sltLayerShearX_Change()
     Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearX sltLayerShearX.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerShearX sltLayerShearX.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -511,8 +511,8 @@ Private Sub sltLayerShearX_FinalChange()
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearX_LostFocusAPI()
@@ -529,17 +529,17 @@ Private Sub sltLayerShearY_Change()
     Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearY sltLayerShearY.Value
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerShearY sltLayerShearY.Value
     
     'Free the tool engine
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -548,8 +548,8 @@ Private Sub sltLayerShearY_FinalChange()
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearY_LostFocusAPI()
@@ -569,19 +569,19 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
         'Layer position (x)
         Case 0
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetX tudLayerMove(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX tudLayerMove(Index).Value
         
         'Layer position (y)
         Case 1
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetY tudLayerMove(Index).Value
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY tudLayerMove(Index).Value
         
         'Layer width
         Case 2
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
             
         'Layer height
         Case 3
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -589,11 +589,11 @@ Private Sub tudLayerMove_Change(Index As Integer)
     Tools.SetToolBusyState False
     
     'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
 
 End Sub
 
@@ -604,15 +604,15 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
 End Sub
 
 Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     If (Index = 0) Then
-        Processor.FlagInitialNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
     ElseIf (Index = 1) Then
-        Processor.FlagInitialNDFXState_Generic pgp_OffsetY, tudLayerMove(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_OffsetY, tudLayerMove(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
     ElseIf (Index = 2) Then
-        Processor.FlagInitialNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayerID
     ElseIf (Index = 3) Then
-        Processor.FlagInitialNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetActiveLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetActiveLayerID
     End If
 End Sub
 
@@ -622,9 +622,9 @@ Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
     ElseIf (Index = 1) Then
         Processor.FlagFinalNDFXState_Generic pgp_OffsetY, tudLayerMove(Index).Value
     ElseIf (Index = 2) Then
-        Processor.FlagFinalNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+        Processor.FlagFinalNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
     ElseIf (Index = 3) Then
-        Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+        Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
     End If
 End Sub
 

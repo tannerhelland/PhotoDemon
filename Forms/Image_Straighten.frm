@@ -108,9 +108,9 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     End With
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
+        PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
     End If
 
     'Many 2D libraries use positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
@@ -135,11 +135,11 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     Else
         Select Case thingToRotate
             Case PD_AT_WHOLEIMAGE
-                srcWidth = pdImages(g_CurrentImage).Width
-                srcHeight = pdImages(g_CurrentImage).Height
+                srcWidth = PDImages.GetActiveImage.Width
+                srcHeight = PDImages.GetActiveImage.Height
             Case PD_AT_SINGLELAYER
-                srcWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
-                srcHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
+                srcWidth = PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth
+                srcHeight = PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight
         End Select
     End If
     
@@ -214,7 +214,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         'When rotating the entire image, we can use the number of layers as a stand-in progress parameter.
         If (thingToRotate = PD_AT_WHOLEIMAGE) Then
             Message "Straightening image..."
-            SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
+            SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Else
             Message "Straightening layer..."
             SetProgBarMax 1
@@ -228,10 +228,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         Select Case thingToRotate
             Case PD_AT_WHOLEIMAGE
                 lInit = 0
-                lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
+                lFinal = PDImages.GetActiveImage.GetNumOfLayers - 1
             Case PD_AT_SINGLELAYER
-                lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
-                lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
+                lInit = PDImages.GetActiveImage.GetActiveLayerIndex
+                lFinal = PDImages.GetActiveImage.GetActiveLayerIndex
         End Select
         
         Dim i As Long
@@ -240,10 +240,10 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             If (thingToRotate = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
         
             'Retrieve a pointer to the layer of interest
-            Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
+            Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
             
             'Null-pad the layer
-            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
             
             'Calculating the corner points of the layer, when rotated at the specified angle.
             PDMath.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
@@ -288,7 +288,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
             If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
             
             'Notify the parent of the change
-            pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
                             
         'Continue with the next layer
         Next i
@@ -296,13 +296,13 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
         'All layers have been rotated successfully!
         
         'Update the image's size (not technically necessary, but this triggers some other backend notifications that are relevant)
-        If thingToRotate = PD_AT_WHOLEIMAGE Then
-            pdImages(g_CurrentImage).UpdateSize False, srcWidth, srcHeight
-            DisplaySize pdImages(g_CurrentImage)
+        If (thingToRotate = PD_AT_WHOLEIMAGE) Then
+            PDImages.GetActiveImage.UpdateSize False, srcWidth, srcHeight
+            DisplaySize PDImages.GetActiveImage()
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         Message "Straighten complete."
         SetProgBarVal 0
@@ -355,12 +355,12 @@ Private Sub Form_Load()
     Select Case m_StraightenTarget
         
         Case PD_AT_WHOLEIMAGE
-            srcWidth = pdImages(g_CurrentImage).Width
-            srcHeight = pdImages(g_CurrentImage).Height
+            srcWidth = PDImages.GetActiveImage.Width
+            srcHeight = PDImages.GetActiveImage.Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+            srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+            srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -386,14 +386,14 @@ Private Sub Form_Load()
                 With srcRectF
                     .Left = 0#
                     .Top = 0#
-                    .Width = pdImages(g_CurrentImage).Width
-                    .Height = pdImages(g_CurrentImage).Height
+                    .Width = PDImages.GetActiveImage.Width
+                    .Height = PDImages.GetActiveImage.Height
                 End With
                 
-                pdImages(g_CurrentImage).GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
+                PDImages.GetActiveImage.GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, PDImages.GetActiveImage.GetActiveDIB, 0, 0, PDImages.GetActiveImage.GetActiveDIB.GetDIBWidth, PDImages.GetActiveImage.GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
         
@@ -403,10 +403,10 @@ Private Sub Form_Load()
         Select Case m_StraightenTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).GetCompositedImage smallDIB
+                PDImages.GetActiveImage.GetCompositedImage smallDIB
             
             Case PD_AT_SINGLELAYER
-                smallDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
+                smallDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
             
         End Select
         

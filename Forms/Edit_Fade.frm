@@ -131,7 +131,7 @@ Private Sub Form_Load()
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB
     
-    If (Not pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False)) Then
+    If (Not PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False)) Then
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
@@ -142,7 +142,7 @@ Private Sub Form_Load()
     'Also retrieve a copy of the layer being operated on, as it appears right now; this is faster than re-retrieving a copy
     ' every time we need to redraw the preview box.
     Set m_curLayerDIB = New pdDIB
-    m_curLayerDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB
+    m_curLayerDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).layerDIB
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -214,13 +214,13 @@ Public Sub fxFadeLastAction(ByVal effectParams As String, Optional ByVal toPrevi
     'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else
         
-        pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
+        PDImages.GetActiveImage.GetLayerByID(m_relevantLayerID).layerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         ProgressBars.SetProgBarVal 0
         ReleaseProgressBar

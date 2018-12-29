@@ -105,7 +105,7 @@ Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
-Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Boolean, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Boolean
+Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Boolean
 
 'Primary menu collection
 Private m_Menus() As PD_MenuEntry
@@ -1346,7 +1346,7 @@ Private Function GetHMenuIndex(ByVal mnuIndex As Long) As Long
 End Function
 
 'Update a given menu's text caption.  By design, this function does *not* trigger a DrawMenuBar call.
-Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
+Private Sub UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
 
     'Get an hMenu for the specified index
     Dim hMenu As Long
@@ -1366,7 +1366,7 @@ Private Function UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
         InternalMenuWarning "UpdateMenuText_ByIndex", "null hMenu (" & mnuIndex & ")"
     End If
 
-End Function
+End Sub
 
 Private Sub InternalMenuWarning(ByRef funcName As String, ByRef errMsg As String)
     PDDebug.LogAction "WARNING!  Menus." & funcName & " reported: " & errMsg

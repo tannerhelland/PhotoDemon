@@ -1342,7 +1342,7 @@ Private Function SaveCurrentBatchList() As Boolean
         Set outputText = New pdString
         
         outputText.AppendLine "<PHOTODEMON BATCH CONVERSION LIST>"
-        outputText.AppendLine Trim$(Str(lstFiles.ListCount))
+        outputText.AppendLine Trim$(Str$(lstFiles.ListCount))
         
         Dim i As Long
         For i = 0 To lstFiles.ListCount - 1
@@ -1791,24 +1791,24 @@ Private Sub PrepareForBatchConversion()
                 If optFormat(0).Value Then
                     
                     'See if this image's file format is supported by the export engine
-                    If (g_ImageFormats.GetIndexOfOutputPDIF(pdImages(g_CurrentImage).GetCurrentFileFormat) = -1) Then
+                    If (g_ImageFormats.GetIndexOfOutputPDIF(PDImages.GetActiveImage.GetCurrentFileFormat) = -1) Then
                         
                         'The current format isn't supported.  Use PNG as it's the best compromise of
                         ' lossless, well-supported, and reasonably well-compressed.
                         tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
-                        pdImages(g_CurrentImage).SetCurrentFileFormat PDIF_PNG
+                        PDImages.GetActiveImage.SetCurrentFileFormat PDIF_PNG
                         
                     Else
                         
                         'This format IS supported, so use the default extension
-                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(pdImages(g_CurrentImage).GetCurrentFileFormat)
+                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(PDImages.GetActiveImage.GetCurrentFileFormat)
                     
                     End If
                     
                 'Possibility 2: force all images to a single file format
                 Else
                     tmpFileExtension = g_ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
-                    pdImages(g_CurrentImage).SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+                    PDImages.GetActiveImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
                 End If
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well
@@ -1824,10 +1824,10 @@ Private Sub PrepareForBatchConversion()
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
                 ' on the matching wizard panel.
                 ' TODO: track success/fail results and collate any failures into a list that we can report to the user
-                Saving.PhotoDemon_BatchSaveImage pdImages(g_CurrentImage), tmpFilename, pdImages(g_CurrentImage).GetCurrentFileFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
+                Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), tmpFilename, PDImages.GetActiveImage.GetCurrentFileFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
                 
                 'Unload the finished image
-                CanvasManager.FullPDImageUnload g_CurrentImage
+                CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()
             
             End If
             

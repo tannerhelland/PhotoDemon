@@ -565,7 +565,7 @@ Private Function GetLocalParamString() As String
         ' of weights.
         Dim tmpString As String, i As Long
         For i = 0 To 24
-            tmpString = tmpString & Trim$(Str(tudF(i).Value))
+            tmpString = tmpString & Trim$(Str$(tudF(i).Value))
             If (i < 24) Then tmpString = tmpString & "|"
         Next i
         

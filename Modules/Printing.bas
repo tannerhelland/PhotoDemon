@@ -122,7 +122,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     'Create a temporary copy of the currently active image, composited against a white background
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).GetCompositedImage tmpDIB, False
+    PDImages.GetActiveImage.GetCompositedImage tmpDIB, False
     If tmpDIB.GetDIBColorDepth <> 24 Then tmpDIB.ConvertTo24bpp
     
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
@@ -150,7 +150,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
 End Sub
 
 'Use the API to retrieve all supported paper sizes for the current printer
-Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames() As String, ByRef paperIDs() As Integer, ByRef exactPaperSizes() As POINTAPI) As Boolean
+Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames() As String, ByRef paperIDs() As Integer, ByRef exactPaperSizes() As PointAPI) As Boolean
 
     'We're going to use the printer name and port frequently, so cache their names in advance
     Dim pName As String, pPort As String
@@ -164,7 +164,7 @@ Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames()
     'Prep the various size-related arrays
     ReDim paperSizeNames(0 To numOfPaperSizes - 1) As String
     ReDim paperIDs(0 To numOfPaperSizes - 1) As Integer
-    ReDim exactPaperSizes(0 To numOfPaperSizes - 1) As POINTAPI
+    ReDim exactPaperSizes(0 To numOfPaperSizes - 1) As PointAPI
     
     'Paper size names are returned as one giant-ass string.  Each individual name occupies 64 characters, and each
     ' is null-terminated (unless it consumes all 64 characters, in which case we have to terminate it manually).

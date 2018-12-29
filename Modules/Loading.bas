@@ -142,12 +142,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Retrieve an empty, default pdImage object.  Note that this object does not yet exist inside the main pdImages collection,
     ' so we cannot refer to it by ordinal.
     Dim targetImage As pdImage
-    CanvasManager.GetDefaultPDImageObject targetImage
+    PDImages.GetDefaultPDImageObject targetImage
     
     'Normally, we don't assign an ID value to an image until we actually add it to the master pdImages collection.  However, some tasks
     ' (like retrieving metadata asynchronously) require an ID so we can synchronize incoming data post-load.  Give the target image
     ' a provisional image ID; this ID will become its formal ID only if it's loaded successfully.
-    targetImage.imageID = CanvasManager.GetProvisionalImageID()
+    targetImage.imageID = PDImages.GetProvisionalImageID()
     
     'Next, create a blank target layer and target DIB.  If all of these are loaded correctly, we'll eventually assemble them
     ' into the targetImage object.
@@ -279,8 +279,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         PDDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
-        PDDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
-        PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
+        PDDebug.LogAction vbTab & "Image size (original file): " & Format$(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
+        PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format$(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
         PDDebug.LogAction vbTab & "ICC profile embedded: " & (LenB(targetImage.GetColorProfile_Original) <> 0), , True
         PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
@@ -310,8 +310,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction "Finalizing image details..."
         
         'The finalized pdImage object is finally worthy of being added to the master PD collection.  Note that this function will
-        ' automatically update g_CurrentImage to point to the new image.
-        CanvasManager.AddImageToMasterCollection targetImage
+        ' automatically update PDImages.GetActiveImageID() to point to the new image.
+        PDImages.AddImageToMasterCollection targetImage
         
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
@@ -457,7 +457,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
         ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
-        PDDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
+        PDDebug.LogAction "(FYI, expected delta was approximately " & Format$(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
         
     'This ELSE block is hit when the image fails post-load verification checks.  Treat the load as unsuccessful.
     Else
@@ -483,8 +483,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Synchronize any non-destructive settings to the currently active layer
     If (handleUIDisabling And loadSuccessful) Then
-        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllGenericLayerProperties PDImages.GetActiveImage.GetActiveLayer
+        Processor.SyncAllTextLayerProperties PDImages.GetActiveImage.GetActiveLayer
     End If
     
     '*************************************************************************************************************************************
@@ -492,14 +492,14 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     
     'Restore the screen cursor if necessary
-    If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (g_OpenImageCount > 1)
+    If handleUIDisabling Then Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages > 1)
     
     'Report success/failure back to the user
     LoadFileAsNewImage = (loadSuccessful And (Not targetImage Is Nothing))
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
-        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage", , , True
+        CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", , , True
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
@@ -707,7 +707,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         LoadMultipleImageFiles = (numSuccesses > 0)
         
         SyncInterfaceToCurrentImage
-        Processor.MarkProgramBusyState False, True, (g_OpenImageCount > 1)
+        Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages() > 1)
         
         'Even if returning TRUE, we still want to notify the user of any failed files
         If (numFailures > 0) Then
@@ -750,11 +750,11 @@ Public Sub DuplicateCurrentImage()
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
     tmpDuplicationFile = UserPrefs.GetTempPath & "PDDuplicate.pdi"
-    SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, PD_CE_Lz4, PD_CE_Lz4, False
+    SavePhotoDemonImage PDImages.GetActiveImage(), tmpDuplicationFile, True, PD_CE_Lz4, PD_CE_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
-    sTitle = pdImages(g_CurrentImage).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    sTitle = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If Len(sTitle) = 0 Then sTitle = g_Language.TranslateMessage("[untitled image]")
     sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
     

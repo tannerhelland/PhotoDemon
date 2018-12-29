@@ -149,8 +149,8 @@ Public Function ContinueLoadingProgram() As Boolean
     ' With the debugger initialized, prep a few crucial variables
     '*************************************************************************************************************************************
     
-    'Most importantly, we need to create a default pdImages() array, as some initialization functions may attempt to access that array
-    ReDim pdImages(0 To 3) As pdImage
+    'Most importantly, we need to create a default image array, as some initialization functions may attempt to access that array
+    PDImages.ResetPDImageCollection
     
     
     '*************************************************************************************************************************************
@@ -207,15 +207,6 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Mark the Macro recorder as "not recording"
     Macros.SetMacroStatus MacroSTOP
-    
-    'Note that no images have been loaded yet
-    g_NumOfImagesLoaded = 0
-    
-    'Set the default active image index to 0
-    g_CurrentImage = 0
-    
-    'Set the number of open image windows to 0
-    g_OpenImageCount = 0
     
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
@@ -604,13 +595,8 @@ Public Sub FinalShutdown()
     Set g_Zoom = Nothing
     Set g_WindowManager = Nothing
     
-    Dim i As Long
-    For i = LBound(pdImages) To UBound(pdImages)
-        If (Not pdImages(i) Is Nothing) Then
-            pdImages(i).FreeAllImageResources
-            Set pdImages(i) = Nothing
-        End If
-    Next i
+    'Release any remaining data associated with user-loaded images
+    PDImages.ReleaseAllPDImageResources
     
     'Report final profiling data
     ViewportEngine.ReportViewportProfilingData

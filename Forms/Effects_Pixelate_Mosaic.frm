@@ -341,14 +341,14 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(g_CurrentImage).IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive Then
         Dim selBounds As RectF
-        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect()
+        selBounds = PDImages.GetActiveImage.MainSelection.GetBoundaryRect()
         sltWidth.Max = selBounds.Width
         sltHeight.Max = selBounds.Height
     Else
-        sltWidth.Max = pdImages(g_CurrentImage).Width
-        sltHeight.Max = pdImages(g_CurrentImage).Height
+        sltWidth.Max = PDImages.GetActiveImage.Width
+        sltHeight.Max = PDImages.GetActiveImage.Height
     End If
     
     'Apply translations and visual themes

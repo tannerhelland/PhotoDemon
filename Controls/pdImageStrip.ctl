@@ -499,8 +499,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 strKeyLocation = "CurrentLocationOnDisk"
                 strKeyName = "OriginalFileName"
                 
-                If (Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation)) <> 0) Then
-                    Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation), pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyName)
+                If (Len(PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation)) <> 0) Then
+                    Me.AssignTooltip PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyLocation), PDImages.GetImageByID(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String(strKeyName)
                 Else
                     Me.AssignTooltip "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
                 End If
@@ -599,15 +599,15 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     
 End Sub
 
-'New images are currently added by their master pdImages() index; at some point it might be nice to modify this to
-' accept any arbitrary image, but for the primary canvas, this method spares us a lot of unnecessary "glue" code.
+'New images are currently added by their master ID value; at some point it might be nice to modify this to
+' accept any arbitrary image, but for the primary canvas, this method avoids a lot of unnecessary "glue" code.
 Public Sub AddNewThumb(ByVal pdImageIndex As Long)
 
     'Request a thumbnail from the relevant pdImage object
     If m_VerticalLayout Then
-        pdImages(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
+        PDImages.GetImageByID(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
     Else
-        pdImages(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
+        PDImages.GetImageByID(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
     End If
     
     'Make a note of this thumbnail's index in the main pdImages array
@@ -703,7 +703,7 @@ Private Function GetThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     End If
 End Function
 
-'Images in PD are referenced by their ordinal position in the master pdImages() array.  That index *may not* correlate
+'Images in PD are referenced by an unchangeable "ID" value.  That value *may not* correlate
 ' with an image's index in our current thumbnail collection.  Use this function to correlate the two.
 Private Function GetThumbIndexFromPDIndex(ByVal pdImageIndex As Long) As Long
     
@@ -805,9 +805,7 @@ Public Sub NotifyUpdatedImage(ByVal pdImageIndex As Long)
     
     'Since we'll be interacting with the passed pdImages object, perform a quick failsafe check to make sure we don't crash
     Dim okayToUpdate As Boolean
-    If (Not pdImages(pdImageIndex) Is Nothing) Then
-        okayToUpdate = (g_OpenImageCount > 0) And pdImages(pdImageIndex).IsActive
-    End If
+    okayToUpdate = PDImages.IsImageActive(pdImageIndex)
     
     If okayToUpdate Then
     
@@ -817,9 +815,9 @@ Public Sub NotifyUpdatedImage(ByVal pdImageIndex As Long)
         If (thumbIndex >= 0) Then
         
             If m_VerticalLayout Then
-                pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
+                PDImages.GetImageByID(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
             Else
-                pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
+                PDImages.GetImageByID(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
             End If
             
             RedrawBackBuffer
@@ -1056,7 +1054,7 @@ Private Sub UpdateControlLayout(Optional ByVal thumbsMustBeUpdated As Boolean = 
         
             Dim i As Long
             For i = 0 To m_NumOfThumbs - 1
-                pdImages(m_Thumbs(i).indexInPDImages).RequestThumbnail m_Thumbs(i).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
+                PDImages.GetImageByID(m_Thumbs(i).indexInPDImages).RequestThumbnail m_Thumbs(i).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
             Next i
             
         End If
@@ -1213,8 +1211,8 @@ Private Sub RenderThumbTab(ByVal thumbIndex As Long, ByRef thumbRectF As RectF, 
     m_Thumbs(thumbIndex).thumbDIB.FreeFromDC
     
     '...then paint an asterisk in the bottom-left if the parent image has unsaved changes...
-    If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
-        If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave)) Then
+    If PDImages.IsImageActive(m_Thumbs(thumbIndex).indexInPDImages) Then
+        If (Not PDImages.GetImageByID(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave)) Then
             If (m_ModifiedIcon Is Nothing) Then GetChangedImageResources
             m_ModifiedIcon.AlphaBlendToDC dstSurface.GetSurfaceDC(), 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
             m_ModifiedIcon.FreeFromDC

@@ -65,7 +65,7 @@ Public Event LostFocusAPI()
 
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
-Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Boolean
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -675,8 +675,8 @@ Private Sub UserControl_Initialize()
     'Create demo strings, to be rendered in the drop-down using the current font face
     m_Text_Default = "AaBbCc 123"
     m_Text_EN = "Sample"
-    m_Text_Arabic = ChrW(&H639) & ChrW(&H64A) & ChrW(&H646) & ChrW(&H629)
-    m_Text_Hebrew = ChrW(&H5D3) & ChrW(&H5D5) & ChrW(&H5BC) & ChrW(&H5D2) & ChrW(&H5DE) & ChrW(&H5B8) & ChrW(&H5D4)
+    m_Text_Arabic = ChrW$(&H639) & ChrW$(&H64A) & ChrW$(&H646) & ChrW$(&H629)
+    m_Text_Hebrew = ChrW$(&H5D3) & ChrW$(&H5D5) & ChrW$(&H5BC) & ChrW$(&H5D2) & ChrW$(&H5DE) & ChrW$(&H5B8) & ChrW$(&H5D4)
     
     'CJK char previews are handled specially, in UpdateAgainstCurrentTheme - look there for details.
     
@@ -1155,7 +1155,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         'For CJK chars (which are one shared group in OpenType), we try to customize the sample indicator
         ' to the currently active language.  Default to Simplified Chinese if the language engine is unavailable.
         If (g_Language Is Nothing) Then
-            m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
+            m_Text_CJK = ChrW$(&H6837) & ChrW$(&H672C)
         Else
             
             'Retrieve the user's current language setting, and use that to guide our sample chars
@@ -1165,17 +1165,17 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
             Select Case LCase$(curLocale)
                 
                 Case "ja-jp"
-                    m_Text_CJK = ChrW(&H8A66) & ChrW(&H6599)
+                    m_Text_CJK = ChrW$(&H8A66) & ChrW$(&H6599)
                     
                 Case "ko-kr"
-                    m_Text_CJK = ChrW(&HACAC) & ChrW(&HBCF8)
+                    m_Text_CJK = ChrW$(&HACAC) & ChrW$(&HBCF8)
                     
                 Case "zh-tw"
-                    m_Text_CJK = ChrW(&H7BC4) & ChrW(&H4F8B)
+                    m_Text_CJK = ChrW$(&H7BC4) & ChrW$(&H4F8B)
                     
                 'All others default to simplified Chinese
                 Case Else
-                    m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
+                    m_Text_CJK = ChrW$(&H6837) & ChrW$(&H672C)
                     
             End Select
             

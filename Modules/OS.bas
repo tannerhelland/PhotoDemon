@@ -295,7 +295,7 @@ Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (ByRef dstTime As Cur
 Private Declare Function GetTempPathW Lib "kernel32" (ByVal nBufferLength As Long, ByVal lpStrBuffer As Long) As Long
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExW" (ByVal lpVersionInformation As Long) As Long
 Private Declare Function GlobalMemoryStatusEx Lib "kernel32" (ByRef lpBuffer As OS_MemoryStatusEx) As Long
-Private Declare Function IsProcessorFeaturePresent Lib "kernel32" (ByVal procFeature As Long) As Boolean
+Private Declare Function IsProcessorFeaturePresent Lib "kernel32" (ByVal procFeature As Long) As Long
 Private Declare Function LocalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As Long, ByVal bInheritHandle As Long, ByVal dwProcId As Long) As Long
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32FirstW" (ByVal hSnapShot As Long, ByVal ptrToUProcess As Long) As Long
@@ -846,16 +846,16 @@ End Function
 Public Function ProcessorFeatures() As String
 
     Dim listFeatures As String
-    If IsProcessorFeaturePresent(PF_3DNOW_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "3DNow!" & ", "
-    If IsProcessorFeaturePresent(PF_MMX_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "MMX" & ", "
-    If IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE" & ", "
-    If IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE2" & ", "
-    If IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE3" & ", "
-    If IsProcessorFeaturePresent(PF_NX_ENABLED) Then listFeatures = listFeatures & "DEP" & ", "
-    If IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) Then listFeatures = listFeatures & "Virtualization" & ", "
+    If (IsProcessorFeaturePresent(PF_3DNOW_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "3DNow!" & ", "
+    If (IsProcessorFeaturePresent(PF_MMX_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "MMX" & ", "
+    If (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE" & ", "
+    If (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE2" & ", "
+    If (IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) <> 0) Then listFeatures = listFeatures & "SSE3" & ", "
+    If (IsProcessorFeaturePresent(PF_NX_ENABLED) <> 0) Then listFeatures = listFeatures & "DEP" & ", "
+    If (IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) <> 0) Then listFeatures = listFeatures & "Virtualization" & ", "
     
     'Trim the trailing comma and blank space before returning
-    If (Len(listFeatures) <> 0) Then
+    If (LenB(listFeatures) <> 0) Then
         ProcessorFeatures = Left$(listFeatures, Len(listFeatures) - 2)
     Else
         'NOTE: normally we would apply a translation here, but since this is meant for internal debugging
@@ -873,9 +873,9 @@ Public Function RAM_Available() As String
     If (GlobalMemoryStatusEx(memStatus) <> 0) Then
     
         Dim tmpString As String
-        tmpString = Trim$(Str(Int(CDbl(memStatus.ullTotalVirtual / 1024#) * 10#))) & " MB"
+        tmpString = Trim$(Str$(Int(CDbl(memStatus.ullTotalVirtual / 1024#) * 10#))) & " MB"
         tmpString = tmpString & " (real), "
-        tmpString = tmpString & Trim$(Str(Int(CDbl(memStatus.ullAvailPageFile / 1024#) * 10#))) & " MB"
+        tmpString = tmpString & Trim$(Str$(Int(CDbl(memStatus.ullAvailPageFile / 1024#) * 10#))) & " MB"
         tmpString = tmpString & " (hypothetical)"
         
         RAM_Available = tmpString
@@ -898,7 +898,7 @@ Public Function RAM_SystemTotal() As String
     Dim memStatus As OS_MemoryStatusEx
     memStatus.dwLength = LenB(memStatus)
     If (GlobalMemoryStatusEx(memStatus) <> 0) Then
-        RAM_SystemTotal = Trim$(Str(Int(CDbl(memStatus.ullTotalPhys / 1024#) * 10#))) & " MB"
+        RAM_SystemTotal = Trim$(Str$(Int(CDbl(memStatus.ullTotalPhys / 1024#) * 10#))) & " MB"
     End If
     
 End Function

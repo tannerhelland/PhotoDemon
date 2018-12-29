@@ -189,7 +189,7 @@ Public Sub SyncInterfaceToCurrentImage()
     'Start by breaking our interface decisions into two broad categories: "no images are loaded" and "one or more images are loaded".
     
     'If no images are loaded, we can disable a whole swath of controls
-    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then
+    If (Not PDImages.IsImageActive()) Then
     
         'Because this set of UI changes is immutable, there is no reason to repeat it if it was the last synchronization we performed.
         If Not (m_LastUISync_HadNoImages = PD_BOOL_TRUE) Then
@@ -221,7 +221,7 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
         ' are visible, and other criteria.
-        If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+        If (PDImages.GetActiveImage.GetNumOfLayers > 0) And (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
             
             'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
             If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
@@ -236,7 +236,7 @@ Public Sub SyncInterfaceToCurrentImage()
             ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
             
             'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
-            If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then
+            If (PDImages.GetActiveImage.GetNumOfLayers = 1) Then
             
                 If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
                     SetUIMode_OnlyOneLayer
@@ -269,10 +269,10 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'TODO: move selection settings into the tool handler; they're too low-level for this function
         'If a selection is active on this image, update the text boxes to match
-        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).MainSelection Is Nothing) Then
+        If PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
-            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).MainSelection.IsTransformable()
-            SyncTextToCurrentSelection g_CurrentImage
+            SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable()
+            SyncTextToCurrentSelection PDImages.GetActiveImageID()
         Else
             SetUIGroupState PDUI_Selections, False
             SetUIGroupState PDUI_SelectionTransforms, False
@@ -286,8 +286,8 @@ Public Sub SyncInterfaceToCurrentImage()
         
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
-    FormMain.MnuWindow(7).Enabled = (g_OpenImageCount > 1)
-    FormMain.MnuWindow(8).Enabled = (g_OpenImageCount > 1)
+    FormMain.MnuWindow(7).Enabled = (PDImages.GetNumOpenImages() > 1)
+    FormMain.MnuWindow(8).Enabled = (PDImages.GetNumOpenImages() > 1)
         
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
@@ -303,25 +303,25 @@ End Sub
 Private Sub SyncUI_MultipleLayerSettings()
     
     'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-    FormMain.MnuLayerDelete(1).Enabled = (pdImages(g_CurrentImage).GetNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).GetNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers)
+    FormMain.MnuLayerDelete(1).Enabled = (PDImages.GetActiveImage.GetNumOfHiddenLayers > 0) And (PDImages.GetActiveImage.GetNumOfHiddenLayers < PDImages.GetActiveImage.GetNumOfLayers)
     
     'Merge up/down are not available for layers at the top and bottom of the image
-    FormMain.MnuLayer(3).Enabled = (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1)
-    FormMain.MnuLayer(4).Enabled = (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1)
+    FormMain.MnuLayer(3).Enabled = (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, False) <> -1)
+    FormMain.MnuLayer(4).Enabled = (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
     
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
-    FormMain.MnuLayerOrder(0).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1)
+    FormMain.MnuLayerOrder(0).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
     FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled   '"raise to top" mirrors "raise layer"
-    FormMain.MnuLayerOrder(1).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex > 0)
+    FormMain.MnuLayerOrder(1).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
     FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled   '"lower to bottom" mirrors "lower layer"
     
     'Flatten is only available if one or more layers are actually *visible*
-    FormMain.MnuLayer(15).Enabled = (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0)
+    FormMain.MnuLayer(15).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
     
     'Merge visible is only available if *two* or more layers are visible
-    FormMain.MnuLayer(16).Enabled = (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1)
+    FormMain.MnuLayer(16).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 1)
     
 End Sub
 
@@ -333,19 +333,19 @@ Private Sub SyncUI_CurrentLayerSettings()
     
     'First, determine if the current layer is using any form of non-destructive resizing
     Dim nonDestructiveResizeActive As Boolean
-    nonDestructiveResizeActive = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasYModifier <> 1#)
+    nonDestructiveResizeActive = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier <> 1#)
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
     If (FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive) Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
     
     If (g_CurrentTool = NAV_MOVE) Then
-        toolpanel_MoveSize.cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-        toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+        toolpanel_MoveSize.cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
+        toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     End If
     
     'Layer rasterization depends on the current layer type
-    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
-    FormMain.MnuLayerRasterize(1).Enabled = (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
+    FormMain.MnuLayerRasterize(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
+    FormMain.MnuLayerRasterize(1).Enabled = (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -363,35 +363,35 @@ Private Sub SyncUI_CurrentImageSettings()
     IconsAndCursors.ResetMenuIcons
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    If (Not pdImages(g_CurrentImage).ImgMetadata Is Nothing) Then
-        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).ImgMetadata.HasMetadata
-        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata()
+    If (Not PDImages.GetActiveImage.ImgMetadata Is Nothing) Then
+        SetUIGroupState PDUI_Metadata, PDImages.GetActiveImage.ImgMetadata.HasMetadata
+        SetUIGroupState PDUI_GPSMetadata, PDImages.GetActiveImage.ImgMetadata.HasGPSMetadata()
     Else
         SetUIGroupState PDUI_Metadata, False
         SetUIGroupState PDUI_GPSMetadata, False
     End If
     
     'If the image has an embedded ICC profile, expose the File > Export > ICC profile menu
-    SetUIGroupState PDUI_ICCProfile, (LenB(pdImages(g_CurrentImage).GetColorProfile_Original()) <> 0)
+    SetUIGroupState PDUI_ICCProfile, (LenB(PDImages.GetActiveImage.GetColorProfile_Original()) <> 0)
     
     'Display the image's path in the title bar.
     If (Not g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(pdImages(g_CurrentImage))
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(PDImages.GetActiveImage())
     Else
-        FormMain.Caption = Interface.GetWindowCaption(pdImages(g_CurrentImage))
+        FormMain.Caption = Interface.GetWindowCaption(PDImages.GetActiveImage())
     End If
             
     'Display the image's size in the status bar
-    If (pdImages(g_CurrentImage).Width <> 0) Then DisplaySize pdImages(g_CurrentImage)
+    If (PDImages.GetActiveImage.Width <> 0) Then Interface.DisplaySize PDImages.GetActiveImage()
             
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-    If (pdImages(g_CurrentImage).GetImageIcon(False) = 0) Or (pdImages(g_CurrentImage).GetImageIcon(True) = 0) Then IconsAndCursors.CreateCustomFormIcons pdImages(g_CurrentImage)
-    IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+    If (PDImages.GetActiveImage.GetImageIcon(False) = 0) Or (PDImages.GetActiveImage.GetImageIcon(True) = 0) Then IconsAndCursors.CreateCustomFormIcons PDImages.GetActiveImage()
+    IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If (pdImages(g_CurrentImage).Width <> 0) Then
+    If (PDImages.GetActiveImage.Width <> 0) Then
         ViewportEngine.DisableRendering
-        FormMain.MainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).GetZoom
+        FormMain.MainCanvas(0).SetZoomDropDownIndex PDImages.GetActiveImage.GetZoom
         ViewportEngine.EnableRendering
     End If
     
@@ -497,23 +497,7 @@ Private Sub SetUIMode_NoImages()
         
     'If no images are currently open, but images were previously opened during this session, release any memory associated
     ' with those images.  This helps minimize PD's memory usage at idle.
-    If (g_NumOfImagesLoaded >= 1) Then
-    
-        'Loop through all pdImage objects and make sure they've been deactivated
-        Dim i As Long
-        For i = 0 To UBound(pdImages)
-            If (Not pdImages(i) Is Nothing) Then
-                pdImages(i).FreeAllImageResources
-                Set pdImages(i) = Nothing
-            End If
-        Next i
-        
-        'Reset all window tracking variables
-        g_NumOfImagesLoaded = 0
-        g_CurrentImage = 0
-        g_OpenImageCount = 0
-        
-    End If
+    If (PDImages.GetNumSessionImages >= 1) Then PDImages.ReleaseAllPDImageResources
     
     'Forcibly blank out the current message if no images are loaded
     Message vbNullString
@@ -537,29 +521,30 @@ Private Sub SetUIMode_AtLeastOneImage()
     
 End Sub
 
-'Some non-destructive actions need to synchronize *only* Undo/Redo buttons and menus (and their related counterparts, e.g. "Fade").
-' To make these actions snappier, I have pulled all Undo/Redo UI sync code out of syncInterfaceToImage, and into this separate sub,
-' which can be called on-demand as necessary.
+'Some non-destructive actions need to synchronize *only* Undo/Redo buttons and menus (and their
+' related counterparts, e.g. "Fade").  To make these actions snappier, I have pulled all Undo/Redo
+' UI sync code into this separate sub, which can be called on-demand as necessary.
 '
-'If the caller will be calling ResetMenuIcons() after using this function, make sure to pass the optional suspendAssociatedRedraws as TRUE
-' to prevent unnecessary redraws.
+'If the caller will be calling ResetMenuIcons() after using this function, make sure to pass the
+' optional suspendAssociatedRedraws as TRUE to prevent unnecessary menu redraws.
 '
-'Finally, if no images are loaded, this function does absolutely nothing.  Refer to SetUIMode_NoImages(), above, for details.
+'Finally, if no images are loaded, this function does absolutely nothing.  Refer to SetUIMode_NoImages(),
+' above, for additional details.
 Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
 
-    If (g_OpenImageCount <> 0) Then
+    If PDImages.IsImageActive() Then
     
         'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-        SetUIGroupState PDUI_Save, Not pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave)
+        SetUIGroupState PDUI_Save, Not PDImages.GetActiveImage.GetSaveState(pdSE_AnySave)
         
         'Undo, Redo, Repeat and Fade are all closely related
-        If Not (pdImages(g_CurrentImage).UndoManager Is Nothing) Then
+        If Not (PDImages.GetActiveImage.UndoManager Is Nothing) Then
         
-            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).UndoManager.GetUndoState
-            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).UndoManager.GetRedoState
+            SetUIGroupState PDUI_Undo, PDImages.GetActiveImage.UndoManager.GetUndoState
+            SetUIGroupState PDUI_Redo, PDImages.GetActiveImage.UndoManager.GetRedoState
             
             'Undo history is enabled if either Undo or Redo is active
-            FormMain.MnuEdit(2).Enabled = (pdImages(g_CurrentImage).UndoManager.GetUndoState Or pdImages(g_CurrentImage).UndoManager.GetRedoState)
+            FormMain.MnuEdit(2).Enabled = (PDImages.GetActiveImage.UndoManager.GetUndoState Or PDImages.GetActiveImage.UndoManager.GetRedoState)
             
             '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
             ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
@@ -567,7 +552,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
-            If pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+            If PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName)), True
                 FormMain.MnuEdit(5).Enabled = True
             Else
@@ -577,7 +562,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             
             'Repeat the above steps, but use the "Repeat" detection algorithm (which uses slightly different criteria;
             ' e.g. "Rotate Whole Image" cannot be faded, but it can be repeated)
-            If pdImages(g_CurrentImage).UndoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
+            If PDImages.GetActiveImage.UndoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
                 Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName)), True
                 FormMain.MnuEdit(4).Enabled = True
             Else
@@ -640,8 +625,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetUndoProcessID, "Undo"
-                Menus.RequestCaptionChange_ByName "edit_undo", g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetUndoProcessID), True
+                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip PDImages.GetActiveImage.UndoManager.GetUndoProcessID, "Undo"
+                Menus.RequestCaptionChange_ByName "edit_undo", g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(PDImages.GetActiveImage.UndoManager.GetUndoProcessID), True
             Else
                 toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip "Undo last action"
                 Menus.RequestCaptionChange_ByName "edit_undo", g_Language.TranslateMessage("Undo"), True
@@ -659,8 +644,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetRedoProcessID, "Redo"
-                Menus.RequestCaptionChange_ByName "edit_redo", g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetRedoProcessID), True
+                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip PDImages.GetActiveImage.UndoManager.GetRedoProcessID, "Redo"
+                Menus.RequestCaptionChange_ByName "edit_redo", g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(PDImages.GetActiveImage.UndoManager.GetRedoProcessID), True
             Else
                 toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip "Redo previous action"
                 Menus.RequestCaptionChange_ByName "edit_redo", g_Language.TranslateMessage("Redo"), True
@@ -794,8 +779,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             Dim minLayerUIValue_Height As Long, maxLayerUIValue_Height As Long
             
             If newState Then
-                maxLayerUIValue_Width = pdImages(g_CurrentImage).Width * 3
-                maxLayerUIValue_Height = pdImages(g_CurrentImage).Height * 3
+                maxLayerUIValue_Width = PDImages.GetActiveImage.Width * 3
+                maxLayerUIValue_Height = PDImages.GetActiveImage.Height * 3
             Else
                 maxLayerUIValue_Width = 0
                 maxLayerUIValue_Height = 0
@@ -837,20 +822,20 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                     Next i
                     
                     'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                    toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX
-                    toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
-                    toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth
-                    toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight
-                    toolpanel_MoveSize.tudLayerMove(2).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-                    toolpanel_MoveSize.tudLayerMove(3).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+                    toolpanel_MoveSize.tudLayerMove(0).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetX
+                    toolpanel_MoveSize.tudLayerMove(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerOffsetY
+                    toolpanel_MoveSize.tudLayerMove(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth
+                    toolpanel_MoveSize.tudLayerMove(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight
+                    toolpanel_MoveSize.tudLayerMove(2).DefaultValue = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+                    toolpanel_MoveSize.tudLayerMove(3).DefaultValue = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
                     
                     'The layer resize quality combo box also needs to be synched
-                    toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerResizeQuality
+                    toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetLayerResizeQuality
                     
                     'Layer angle and shear are newly available as of 7.0
-                    toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle
-                    toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX
-                    toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY
+                    toolpanel_MoveSize.sltLayerAngle.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerAngle
+                    toolpanel_MoveSize.sltLayerShearX.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerShearX
+                    toolpanel_MoveSize.sltLayerShearY.Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerShearY
                     
                 End If
                 
@@ -1349,7 +1334,7 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
         
             'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
             If appendFileFormat And (Len(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
-                captionBase = captionBase & " [" & UCase(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
+                captionBase = captionBase & " [" & UCase$(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
             End If
         
         Else
@@ -1548,9 +1533,7 @@ Public Sub DisableUserInput()
     g_AllowDragAndDrop = False
     
     'Suspend any active UI animations
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed False
-    End If
+    If PDImages.IsImageActive() Then PDImages.GetActiveImage.NotifyAnimationsAllowed False
     
     'Forcibly disable the main form
     FormMain.Enabled = False
@@ -1576,9 +1559,7 @@ Public Sub EnableUserInput()
     g_AllowDragAndDrop = True
     
     'Restore any active UI animations
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
-    End If
+    If PDImages.IsImageActive() Then PDImages.GetActiveImage.NotifyAnimationsAllowed True
     
     'Because PD is fully synchronous (yay, VB6), we now need to perform some message queue shenanigans.
     
@@ -1601,7 +1582,7 @@ Public Sub EnableUserInput()
     If mouseMustBeFaked Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
         FormMain.MainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
-        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
+        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
     End If
     
 End Sub
@@ -1851,7 +1832,7 @@ Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
         
         'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
-        If (g_OpenImageCount > 0) Then srcCanvas.DisplayCanvasCoordinates copyX, copyY
+        If PDImages.IsImageActive() Then srcCanvas.DisplayCanvasCoordinates copyX, copyY
         
     End If
     
@@ -1865,12 +1846,12 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1)
     VBHacks.GetHighResTime startTime
     
     'If an image is *not* specified, assume this is in reference to the currently active image
-    If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
+    If (affectedImageIndex < 0) Then affectedImageIndex = PDImages.GetActiveImageID()
     
-    If (Not pdImages(affectedImageIndex) Is Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then
+    If PDImages.IsImageActive(affectedImageIndex) And (Macros.GetMacroStatus <> MacroBATCH) Then
         
         'Generate new taskbar and titlebar icons for the affected image
-        IconsAndCursors.CreateCustomFormIcons pdImages(affectedImageIndex)
+        IconsAndCursors.CreateCustomFormIcons PDImages.GetImageByID(affectedImageIndex)
         
         'Notify the image tabstrip of any changes
         FormMain.MainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
@@ -1888,10 +1869,10 @@ End Sub
 Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
 
     'If an image is *not* specified, assume this is in reference to the currently active image
-    If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
+    If (newImageIndex < 0) Then newImageIndex = PDImages.GetActiveImageID()
     
     'Generate an initial set of taskbar and titlebar icons
-    IconsAndCursors.CreateCustomFormIcons pdImages(newImageIndex)
+    IconsAndCursors.CreateCustomFormIcons PDImages.GetImageByID(newImageIndex)
     
     'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
     FormMain.MainCanvas(0).NotifyTabstripAddNewThumb newImageIndex
@@ -1905,7 +1886,7 @@ End Sub
 Public Sub NotifyImageRemoved(Optional ByVal oldImageIndex As Long = -1, Optional ByVal redrawImmediately As Boolean = True)
 
     'If an image is *not* specified, assume this is in reference to the currently active image
-    If (oldImageIndex < 0) Then oldImageIndex = g_CurrentImage
+    If (oldImageIndex < 0) Then oldImageIndex = PDImages.GetActiveImageID()
     
     'The image tabstrip has to recalculate internal metrics whenever an image is unloaded
     FormMain.MainCanvas(0).NotifyTabstripRemoveThumb oldImageIndex, redrawImmediately
@@ -1916,7 +1897,7 @@ End Sub
 Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     
     'If an image is *not* specified, assume this is in reference to the currently active image
-    If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
+    If (newImageIndex < 0) Then newImageIndex = PDImages.GetActiveImageID()
     
     'The toolbar must redraw itself to match the newly activated image
     FormMain.MainCanvas(0).NotifyTabstripNewActiveImage newImageIndex

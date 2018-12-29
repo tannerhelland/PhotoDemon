@@ -82,7 +82,7 @@ End Enum
 #End If
 
 'This m_vPoints() array will store the coordinates of each point in the Voronoi diagram
-Private m_vPoints() As POINTAPI
+Private m_vPoints() As PointAPI
 
 'The m_vPointsMaxDistance() array will store the maximum value of the shade calculation for a given cell, during the nearest
 ' point search stage.  This allows us to later return shade on the scale [0, 1] regardless of shading method, without having
@@ -139,7 +139,7 @@ Friend Sub InitPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     If (m_numColumns < 1) Then m_numColumns = 1
     
     'Resize all arrays to match
-    ReDim m_vPoints(0 To m_numColumns - 1, 0 To m_numRows - 1) As POINTAPI
+    ReDim m_vPoints(0 To m_numColumns - 1, 0 To m_numRows - 1) As PointAPI
     ReDim m_vPointsMaxDistance(0 To GetTotalNumOfVoronoiPoints() - 1) As Single
     
     'So that each point is centered nicely inside a cell, we'll make use of half width and height values
@@ -332,7 +332,7 @@ End Function
 Friend Function GetDistance(ByVal srcX As Long, ByVal srcY As Long, ByVal vPointIndex As Long) As Single
 
     'Start by finding the (x, y) coordinates of the relevant cell
-    Dim cellCoords As POINTAPI
+    Dim cellCoords As PointAPI
     cellCoords = GetVoronoiCoordinates(vPointIndex)
     
     'Find the distance to this point, using the method requested by the user
@@ -382,7 +382,7 @@ Private Function GetShadingDistance(Optional ByVal nearestDistance As Single, Op
 End Function
 
 'Given a 2D coordinate in the master point array, return a unique 1-D index for that point
-Private Function GetCellIndex(ByVal cellX As Long, ByVal cellY As Long)
+Private Function GetCellIndex(ByVal cellX As Long, ByVal cellY As Long) As Long
     GetCellIndex = cellX + (cellY * m_numColumns)
 End Function
 
@@ -460,7 +460,7 @@ Friend Function GetShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
 End Function
 
 'If external functions need the coordinates of a given Voronoi points, they can use this function
-Friend Function GetVoronoiCoordinates(ByVal pointIndex As Long) As POINTAPI
+Friend Function GetVoronoiCoordinates(ByVal pointIndex As Long) As PointAPI
     
     If (pointIndex < GetTotalNumOfVoronoiPoints()) Then
         

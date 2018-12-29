@@ -352,7 +352,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByRef quest
         PromptGenericYesNoDialog = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
-        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
+        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str$(PromptGenericYesNoDialog))
         
         Unload dialog_GenericMemory
         Set dialog_GenericMemory = Nothing
@@ -386,7 +386,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
         PromptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
-        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
+        If dialog_GenericMemory.GetRememberAnswerState Then UserPrefs.WritePreference "Dialogs", questionID, Trim$(Str$(choiceAllowedToRemember))
         
         'Release the dialog form
         Unload dialog_GenericMemory
@@ -579,7 +579,7 @@ End Function
 '  Note that CANCEL is also a viable return, one which the user needs to respect.)
 Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
 
-    If (g_OpenImageCount = 0) Then
+    If (PDImages.GetNumOpenImages() = 0) Then
         PromptForDropAsNewLayer = vbNo
     Else
         

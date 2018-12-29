@@ -686,8 +686,8 @@ Public Sub ChangeWindowIcon(ByVal targetHWnd As Long, ByVal hIconSmall As Long, 
 End Sub
 
 Public Sub MirrorCurrentIconsToWindow(ByVal targetHWnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
-    If (g_OpenImageCount > 0) Then
-        ChangeWindowIcon targetHWnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).GetImageIcon(False)), pdImages(g_CurrentImage).GetImageIcon(True), dstSmallIcon, dstLargeIcon
+    If PDImages.IsImageActive() Then
+        ChangeWindowIcon targetHWnd, IIf(setLargeIconOnly, 0&, PDImages.GetActiveImage.GetImageIcon(False)), PDImages.GetActiveImage.GetImageIcon(True), dstSmallIcon, dstLargeIcon
     Else
         ChangeWindowIcon targetHWnd, IIf(setLargeIconOnly, 0&, m_DefaultIconSmall), m_DefaultIconLarge, dstSmallIcon, dstLargeIcon
     End If

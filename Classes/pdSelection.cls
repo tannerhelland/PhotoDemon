@@ -1734,7 +1734,7 @@ Friend Sub UpdateViaTextBox(Optional ByVal indexOfSrcControl As Long = -1)
     m_RejectRefreshRequests = True
     
     Dim subpanelOffset As Long, subpanelCtlOffset As Long
-    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage))
+    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(PDImages.GetActiveImage())
     subpanelCtlOffset = subpanelOffset * 2
     
     'Check all text box entries for validity, then update the corresponding selection values.
@@ -3749,13 +3749,13 @@ Private Sub m_AntTimer_Timer()
         okayToRender = Me.IsLockedIn
         
         If okayToRender And (Not m_parentPDImage Is Nothing) Then
-            okayToRender = (m_parentPDImage.imageID = g_CurrentImage)
+            okayToRender = (m_parentPDImage.imageID = PDImages.GetActiveImageID())
         Else
             okayToRender = False
         End If
         
         If okayToRender Then
-            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.MainCanvas(0), poi_ReuseLast
+            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
         Else
             m_AntTimer.StopTimer
         End If

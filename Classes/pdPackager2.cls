@@ -1739,20 +1739,6 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
 
 End Function
 
-'Are two byte arrays equal?
-Private Function CheckArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2() As Byte) As Boolean
-    
-    'Check bounds first
-    If (UBound(srcArray1) <> UBound(srcArray2)) Then
-        CheckArrayEquality = False
-    
-    'Array bounds are equal, so an actual per-element test is required
-    Else
-        CheckArrayEquality = VBHacks.MemCmp(VarPtr(srcArray1(0)), VarPtr(srcArray2(0)), UBound(srcArray1) + 1)
-    End If
-
-End Function
-
 'Node data access functions.  These functions fill a byte array with the requested data, and they will return TRUE if successful.
 ' (FALSE generally only occurs if the requested node cannot be found in the source data.)
 '

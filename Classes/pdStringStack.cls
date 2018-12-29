@@ -128,7 +128,7 @@ Friend Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInv
             testString = m_Strings(strIndex)
             
             If IsNumberLocaleUnaware(testString) Then
-                GetString = Trim$(Str(Val(testString)))
+                GetString = Trim$(Str$(Val(testString)))
             Else
                 GetString = testString
             End If

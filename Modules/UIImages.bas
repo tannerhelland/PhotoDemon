@@ -6,9 +6,9 @@ Attribute VB_Name = "UIImages"
 'Last updated: 13/July/18
 'Last update: initial build
 '
-'PhotoDemon uses a *lot* of UI images.  The sheer amount of GDI objects required for these surfaces
-' is substantial, and we can greatly reduce our requirements by using something akin to "sprite sheets",
-' e.g. shared image storage when images have similar dimensions.
+'PhotoDemon uses a *lot* of UI images.  The amount of GDI objects required for these surfaces is
+' substantial, and we can greatly reduce requirements by using something akin to "sprite sheets",
+' e.g. shared image storage for images with similar dimensions.
 '
 'At present, this module accepts images of any size, but it only provides a benefit when images are
 ' the *same* size - this allows it to automatically "coalesce" images into shared sheets, which callers
@@ -18,8 +18,8 @@ Attribute VB_Name = "UIImages"
 ' One-off images (e.g. temp images) should *not* be used, as it is non-trivial to release shared images
 ' in a performance-friendly manner.
 '
-'At present, PD limits usage of this cache to pdButtonToolbox images.  (They are basically the perfect
-' use-case for shared caching.)
+'At present, PD limits usage of this cache to pdButtonToolbox images.  (They are the perfect use-case
+' for shared caching.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -55,10 +55,10 @@ Private m_NumOfCacheObjects As Long
 ' as it's the only way to access the image again!
 '
 'When adding images to the cache, you must also pass a unique image name.  This ensures that cache
-' entries are never duplicated, which is important as some images are reused throughout PD (and if
-' each place the images are used attempts to add them to the cache, we waste time and memory).
-' Note that the name is only required when *adding* images, so that we can perform a duplicate check.
-' Once added, an image's handle is all that's required to retrieve it.
+' entries are never duplicated, which is important as some images are reused throughout PD (for example,
+' if every usage instance attempted to add that image to the cache, we would waste a lot of time and
+' memory).  Note that the name is only required when *adding* images, so that we can perform a
+' duplication check.  Once added, an image's handle is all that's required to retrieve it.
 '
 'RETURNS: non-zero value if successful; zero if the function fails.
 Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String) As Long
@@ -254,7 +254,7 @@ Public Sub ResetCache()
 End Sub
 
 Public Sub TestCacheOnly()
-    GDI.BitBltWrapper pdImages(g_CurrentImage).GetActiveDIB.GetDIBDC, 0, 0, m_ImageCache(0).ImgSpriteSheet.GetDIBWidth, m_ImageCache(0).ImgSpriteSheet.GetDIBHeight, m_ImageCache(0).ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
-    pdImages(g_CurrentImage).NotifyImageChanged UNDO_Everything
-    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, 0, 0, m_ImageCache(0).ImgSpriteSheet.GetDIBWidth, m_ImageCache(0).ImgSpriteSheet.GetDIBHeight, m_ImageCache(0).ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Everything
+    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub

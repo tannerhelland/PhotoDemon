@@ -1711,7 +1711,7 @@ End Sub
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
 ' from the source coordinate space to the destination coordinate space.
-Private Function GetDstRectFromSrcRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
+Private Sub GetDstRectFromSrcRectF(ByRef dstRect As RectF, ByRef srcRect As RectF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
     
     If (srcWidth <> 0#) And (srcHeight <> 0#) Then
         
@@ -1728,7 +1728,7 @@ Private Function GetDstRectFromSrcRectF(ByRef dstRect As RectF, ByRef srcRect As
         
     End If
 
-End Function
+End Sub
 
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
 ' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects

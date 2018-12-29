@@ -495,7 +495,7 @@ Private Sub UpdatePluginLabels()
     
     If pluginStatus Then
         lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
-        lblPluginStatus.Caption = UCase(g_Language.TranslateMessage("GOOD"))
+        lblPluginStatus.Caption = UCase$(g_Language.TranslateMessage("GOOD"))
     Else
         lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
         lblPluginStatus.Caption = g_Language.TranslateMessage("problems detected")

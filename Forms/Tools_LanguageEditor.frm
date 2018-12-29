@@ -1259,8 +1259,6 @@ End Sub
 'Fill the first panel ("select a language file") with all available language files on this system
 Private Sub PopulateAvailableLanguages()
     
-    ReDim m_langListIndexes(0 To 15) As Long
-    
     'Retrieve a list of available languages from the translation engine
     g_Language.CopyListOfLanguages m_ListOfLanguages
     
@@ -1356,7 +1354,7 @@ Private Sub PopulateAvailableLanguages()
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
                 listEntry = listEntry & " "
-                listEntry = listEntry & Format(FileDateTime(m_ListOfLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
+                listEntry = listEntry & Format$(FileDateTime(m_ListOfLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
                 listEntry = listEntry & ") "
             
             End If

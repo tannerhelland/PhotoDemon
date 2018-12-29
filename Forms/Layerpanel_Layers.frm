@@ -215,21 +215,21 @@ Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, O
     
     'Sync opacity, blend mode, and other controls to the currently active layer
     m_DisableRedraws = True
-    If (g_OpenImageCount > 0) Then
-        
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-            If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+    If PDImages.IsImageActive() Then
+        If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
+            
+            With PDImages.GetActiveImage.GetActiveLayer
             
                 'Synchronize the opacity scroll bar to the active layer
-                If (sltLayerOpacity.Value <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity) Then sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity
+                If (sltLayerOpacity.Value <> .GetLayerOpacity) Then sltLayerOpacity.Value = .GetLayerOpacity
                 
                 'Synchronize the blend and alpha modes to the active layer
-                If (cboBlendMode.ListIndex <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerBlendMode) Then cboBlendMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerBlendMode
-                If (cboAlphaMode.ListIndex <> pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode) Then cboAlphaMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAlphaMode
+                If (cboBlendMode.ListIndex <> .GetLayerBlendMode) Then cboBlendMode.ListIndex = .GetLayerBlendMode
+                If (cboAlphaMode.ListIndex <> .GetLayerAlphaMode) Then cboAlphaMode.ListIndex = .GetLayerAlphaMode
             
-            End If
-        End If
+            End With
         
+        End If
     End If
     
     m_DisableRedraws = False
@@ -247,19 +247,19 @@ End Sub
 Private Sub CheckButtonEnablement()
     
     'Make sure at least one image has been loaded
-    If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
+    If PDImages.IsImageActive() Then
 
         'Add layer is always allowed
         cmdLayerAction(LYR_BTN_ADD).Enabled = True
         
         'Merge down is only allowed for layer indexes > 0
-        cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex > 0)
+        cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
         
         'Merge up is only allowed for layer indexes < NUM_OF_LAYERS
-        cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1)
+        cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
         
         'Delete layer is only allowed if there are multiple layers present
-        cmdLayerAction(LYR_BTN_DELETE).Enabled = (pdImages(g_CurrentImage).GetNumOfLayers > 1)
+        cmdLayerAction(LYR_BTN_DELETE).Enabled = (PDImages.GetActiveImage.GetNumOfLayers > 1)
         
     'If no images are loaded, disable all layer action buttons
     Else
@@ -280,18 +280,18 @@ Private Sub cboAlphaMode_Click()
     ' will be redrawn.  When changing the alpha mode programmatically, set m_DisableRedraws to TRUE to prevent cylical redraws.
     If m_DisableRedraws Then Exit Sub
 
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerAlphaMode cboAlphaMode.ListIndex
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If PDImages.IsImageActive() Then
+        If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerAlphaMode cboAlphaMode.ListIndex
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 
 End Sub
 
 Private Sub cboAlphaMode_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboAlphaMode_LostFocusAPI()
@@ -305,18 +305,18 @@ Private Sub cboBlendMode_Click()
     ' will be redrawn.  When changing the blend mode programmatically, set m_DisableRedraws to TRUE to prevent cylical redraws.
     If m_DisableRedraws Then Exit Sub
 
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerBlendMode cboBlendMode.ListIndex
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If PDImages.IsImageActive() Then
+        If (Not PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerBlendMode cboBlendMode.ListIndex
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 
 End Sub
 
 Private Sub cboBlendMode_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub cboBlendMode_LostFocusAPI()
@@ -327,7 +327,7 @@ End Sub
 Private Sub cmdLayerAction_Click(Index As Integer)
 
     Dim copyOfCurLayerID As Long
-    copyOfCurLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    copyOfCurLayerID = PDImages.GetActiveImage.GetActiveLayerID
 
     Select Case Index
     
@@ -335,13 +335,13 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Process "Add new layer", True
         
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
         
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_ImageHeader
+            Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
             
     End Select
     
@@ -389,18 +389,18 @@ Private Sub sltLayerOpacity_Change()
     ' to prevent cylical redraws.
     If m_DisableRedraws Then Exit Sub
 
-    If (g_OpenImageCount > 0) Then
-        If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
-            pdImages(g_CurrentImage).GetActiveLayer.SetLayerOpacity sltLayerOpacity.Value
-            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    If PDImages.IsImageActive() Then
+        If Not (PDImages.GetActiveImage.GetActiveLayer Is Nothing) Then
+            PDImages.GetActiveImage.GetActiveLayer.SetLayerOpacity sltLayerOpacity.Value
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         End If
     End If
 
 End Sub
 
 Private Sub sltLayerOpacity_GotFocusAPI()
-    If (g_OpenImageCount = 0) Then Exit Sub
-    Processor.FlagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, PDImages.GetActiveImage.GetActiveLayerID
 End Sub
 
 Private Sub sltLayerOpacity_LostFocusAPI()

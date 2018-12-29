@@ -268,7 +268,7 @@ Private Function CalculateOptimalThreshold() As Long
     Dim r As Long, g As Long, b As Long
     
     'Histogram tables
-    Dim lLookup(0 To 255)
+    Dim lLookup(0 To 255) As Long
     Dim pLuminance As Long
     Dim numOfPixels As Long
     

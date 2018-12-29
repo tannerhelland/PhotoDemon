@@ -164,8 +164,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
 End Function
 
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
-' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
-' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
+' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As.
 Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
     
     'Certain criteria make is impossible to blindly save an image to disk (such as the image being loaded from a
@@ -383,7 +382,7 @@ End Function
 
 'Close the active image
 Public Sub MenuClose()
-    CanvasManager.FullPDImageUnload g_CurrentImage
+    CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()
 End Sub
 
 'Close all active images
@@ -406,7 +405,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch.  Incoming parameters must be assembled as XML (via pdParamXML, typically)
-Public Function CreateNewImage(Optional ByRef newImageParameters As String)
+Public Function CreateNewImage(Optional ByRef newImageParameters As String) As Boolean
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -426,12 +425,12 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String)
     'Display a busy cursor and disable user input
     Processor.MarkProgramBusyState True, True
     
-    'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
+    'Create a new pdImage object.
     Dim newImage As pdImage
-    CanvasManager.GetDefaultPDImageObject newImage
-    newImage.imageID = CanvasManager.GetProvisionalImageID()
+    PDImages.GetDefaultPDImageObject newImage
+    newImage.imageID = PDImages.GetProvisionalImageID()
     
-    'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
+    'We can now address our new image via PDImages.GetActiveImage.  Create a blank layer.
     Dim newLayerID As Long
     newLayerID = newImage.CreateBlankLayer()
     
@@ -493,7 +492,7 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String)
         newImage.SetSaveState False, pdSE_AnySave
         
         'Add the finished image to the master collection, and ensure that the newly created layer is the active layer
-        CanvasManager.AddImageToMasterCollection newImage
+        PDImages.AddImageToMasterCollection newImage
         Layers.SetActiveLayerByID newLayerID, False, False
         
         'Use the Image Importer engine to prepare a bunch of default viewport settings for us.  (Because this new image
@@ -517,12 +516,12 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String)
         
         'Synchronize all interface elements to match the newly loaded image(s), including various layer-specific settings
         Interface.SyncInterfaceToCurrentImage
-        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
-        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllGenericLayerProperties PDImages.GetActiveImage.GetActiveLayer
+        Processor.SyncAllTextLayerProperties PDImages.GetActiveImage.GetActiveLayer
         
         'Unlock the program's UI and activate the finished image
         Processor.MarkProgramBusyState False, True
-        CanvasManager.ActivatePDImage g_CurrentImage, "LoadFileAsNewImage"
+        CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage"
         
         'Report success!
         CreateNewImage = True

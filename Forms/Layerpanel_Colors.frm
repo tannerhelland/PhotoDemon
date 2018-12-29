@@ -260,7 +260,7 @@ Private Sub clrHistory_HistoryItemMouseOver(ByVal histIndex As Long, ByVal histV
         
         'Construct hex and RGB string representations of the target color
         Dim hexString As String, rgbString As String
-        hexString = "#" & UCase(Colors.GetHexStringFromRGB(hoverColor))
+        hexString = "#" & UCase$(Colors.GetHexStringFromRGB(hoverColor))
         rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(hoverColor), Colors.ExtractGreen(hoverColor), Colors.ExtractBlue(hoverColor))
         clrHistory.AssignTooltip hexString & vbCrLf & rgbString, , True
         
@@ -515,7 +515,7 @@ Private Sub Form_Resize()
     End If
 End Sub
 
-Public Function GetCurrentColor()
+Public Function GetCurrentColor() As Long
     If (m_RenderMode = cpm_Wheels) Then
         GetCurrentColor = clrVariants.Color
     ElseIf (m_RenderMode = cpm_Palette) Then

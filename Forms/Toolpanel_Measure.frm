@@ -298,10 +298,10 @@ Public Sub UpdateUIText()
         
         'Save the current point positions to the active image.  (This lets us preserve measurements
         ' across images.)
-        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-x1", firstPoint.x
-        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-y1", firstPoint.y
-        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-x2", secondPoint.x
-        pdImages(g_CurrentImage).ImgStorage.AddEntry "measure-tool-y2", secondPoint.y
+        PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-x1", firstPoint.x
+        PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-y1", firstPoint.y
+        PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-x2", secondPoint.x
+        PDImages.GetActiveImage.ImgStorage.AddEntry "measure-tool-y2", secondPoint.y
         
         'Allow point swapping and rotation
         cmdAction(0).Enabled = True
@@ -321,7 +321,7 @@ Public Sub UpdateUIText()
             cmdAction(1).Enabled = (measureValue > 0.001)
             cmdAction(2).Enabled = (measureValue > 0.001)
             If (measureValue > 90#) Then measureValue = (180# - measureValue)
-            lblValue(1).Caption = Format$(measureValue, "#.00") & " " & ChrW(&HB0)
+            lblValue(1).Caption = Format$(measureValue, "#.00") & " " & ChrW$(&HB0)
         Else
             cmdAction(1).Enabled = False
             cmdAction(2).Enabled = False
@@ -353,7 +353,7 @@ Public Sub UpdateUIText()
             'Repeat the same steps that we used for pixels, but this time, perform an additional conversion
             ' into the target unit space
             If Tools_Measure.GetDistanceInPx(measureValue) Then
-                lblValue(4).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, measureValue, pdImages(g_CurrentImage).GetDPI), "#.0##") & " " & measurementUnitText
+                lblValue(4).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, measureValue, PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
             Else
                 lblValue(4).Caption = m_NullTextString
             End If
@@ -362,16 +362,16 @@ Public Sub UpdateUIText()
             If Tools_Measure.GetAngleInDegrees(measureValue) Then
                 measureValue = Abs(measureValue)
                 If (measureValue > 90#) Then measureValue = (180# - measureValue)
-                lblValue(5).Caption = Format$(measureValue, "#.00") & " " & ChrW(&HB0)
+                lblValue(5).Caption = Format$(measureValue, "#.00") & " " & ChrW$(&HB0)
             Else
                 lblValue(5).Caption = m_NullTextString
             End If
             
             'Width
-            lblValue(6).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.x - secondPoint.x), pdImages(g_CurrentImage).GetDPI), "#.0##") & " " & measurementUnitText
+            lblValue(6).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.x - secondPoint.x), PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
             
             'Height
-            lblValue(7).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.y - secondPoint.y), pdImages(g_CurrentImage).GetDPI), "#.0##") & " " & measurementUnitText
+            lblValue(7).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.y - secondPoint.y), PDImages.GetActiveImage.GetDPI), "#.0##") & " " & measurementUnitText
         
         'If the current unit is "pixels", hide the extra info area
         Else
@@ -420,10 +420,10 @@ Public Sub NotifyActiveImageChanged()
     Else
     
         'Relay this image's measurements (if any) to the measurement handler
-        If pdImages(g_CurrentImage).ImgStorage.DoesKeyExist("measure-tool-x1") Then
+        If PDImages.GetActiveImage.ImgStorage.DoesKeyExist("measure-tool-x1") Then
         
             'Send the updated points over
-            With pdImages(g_CurrentImage).ImgStorage
+            With PDImages.GetActiveImage.ImgStorage
                 Tools_Measure.SetPointsManually .GetEntry_Double("measure-tool-x1"), .GetEntry_Double("measure-tool-y1"), .GetEntry_Double("measure-tool-x2"), .GetEntry_Double("measure-tool-y2")
             End With
             

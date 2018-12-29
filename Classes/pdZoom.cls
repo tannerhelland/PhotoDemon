@@ -57,12 +57,12 @@ Friend Function GetZoomValue(ByVal zoomIndex As Long) As Double
     Else
     
         'Make sure a valid image is loaded and ready
-        If (g_OpenImageCount > 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+        If PDImages.IsImageActive() Then
         
             'Retrieve the current image's width and height
             Dim imgWidth As Double, imgHeight As Double
-            imgWidth = pdImages(g_CurrentImage).Width
-            imgHeight = pdImages(g_CurrentImage).Height
+            imgWidth = PDImages.GetActiveImage.Width
+            imgHeight = PDImages.GetActiveImage.Height
             
             'Retrieve the current viewport's width and height
             Dim viewportWidth As Double, viewportHeight As Double

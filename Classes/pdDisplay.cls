@@ -177,15 +177,15 @@ Friend Function HasSerialNo() As Boolean
     HasSerialNo = (LenB(m_EDIDSerialNumber) <> 0)
 End Function
 
-Friend Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boolean = True)
+Friend Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boolean = True) As String
     If uniqueAcrossSessions Then
         
         'Some display manufacturers don't provide any form of serial number.  This makes it really unpleasant to try
         ' and identify a monitor uniquely.  In this worst-case scenario, fall back to the monitor's handle, as it's at
         ' least guaranteed to be unique for this session (and likely unique across multiple sessions, if the user doesn't
         ' plug in other monitors).
-        If (Len(m_EDIDSerialNumber) = 0) And (m_EDIDSerialNumberMini = 0) Then
-            GetUniqueDescriptor = Me.GetHandle
+        If (LenB(m_EDIDSerialNumber) = 0) And (m_EDIDSerialNumberMini = 0) Then
+            GetUniqueDescriptor = Trim$(Str$(Me.GetHandle))
         Else
             GetUniqueDescriptor = Me.GetMonitorSerialNo(False, True)
         End If

@@ -516,8 +516,8 @@ Private Sub cmdBar_AddCustomPresetData()
     
     Dim i As Long
     For i = 0 To 3
-        cParams.AddParam "x" & Trim$(Str(i)), m_nPoints(i).x
-        cParams.AddParam "y" & Trim$(Str(i)), m_nPoints(i).y
+        cParams.AddParam "x" & Trim$(Str$(i)), m_nPoints(i).x
+        cParams.AddParam "y" & Trim$(Str$(i)), m_nPoints(i).y
     Next i
     
     cmdBar.AddPresetData "NodeLocations", cParams.GetParamString()
@@ -552,9 +552,9 @@ Private Sub cmdBar_ReadCustomPresetData()
     For i = 0 To 3
         
         'Retrieve this node's x and y values (but only if it exists; otherwise, leave the points where they are)
-        If cParams.DoesParamExist("x" & Trim$(Str(i))) Then
-            m_nPoints(i).x = cParams.GetDouble("x" & Trim$(Str(i)))
-            m_nPoints(i).y = cParams.GetDouble("y" & Trim$(Str(i)))
+        If cParams.DoesParamExist("x" & Trim$(Str$(i))) Then
+            m_nPoints(i).x = cParams.GetDouble("x" & Trim$(Str$(i)))
+            m_nPoints(i).y = cParams.GetDouble("y" & Trim$(Str$(i)))
         End If
         
     Next i

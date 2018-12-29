@@ -188,13 +188,13 @@ Public Function GetScrollValue() As Long
     If vScroll.Visible Then GetScrollValue = vScroll.Value Else GetScrollValue = 0
 End Function
 
-Public Function SetScrollValue(ByVal newValue As Long)
+Public Sub SetScrollValue(ByVal newValue As Long)
     If vScroll.Visible Then
         If (newValue < vScroll.Min) Then newValue = vScroll.Min
         If (newValue > vScroll.Max) Then newValue = vScroll.Max
         vScroll.Value = newValue
     End If
-End Function
+End Sub
 
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long

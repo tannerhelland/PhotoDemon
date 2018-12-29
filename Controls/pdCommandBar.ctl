@@ -1069,7 +1069,7 @@ Private Function GetPresetParamString(Optional ByVal srcPresetName As String = "
 End Function
 
 'This function is called when the user wants to add new preset data to the current preset
-Public Function AddPresetData(ByVal presetName As String, ByVal presetData As String)
+Public Sub AddPresetData(ByVal presetName As String, ByVal presetData As String)
     
     'Increase the array size
     ReDim Preserve m_customPresetNames(0 To m_numCustomPresetEntries) As String
@@ -1082,7 +1082,7 @@ Public Function AddPresetData(ByVal presetName As String, ByVal presetData As St
     'Increment the custom data count
     m_numCustomPresetEntries = m_numCustomPresetEntries + 1
     
-End Function
+End Sub
 
 'Inside the ReadCustomPresetData event, the caller can call this function to retrieve any custom preset data from
 ' the active preset.

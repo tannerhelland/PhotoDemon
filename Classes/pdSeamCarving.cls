@@ -240,7 +240,7 @@ Friend Sub GetVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
 End Sub
 
 'Given a valid seam map, remove one horizontal seam (which will result in a 1px smaller vertical image)
-Private Function ShrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
+Private Sub ShrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
 
     'Start by finding the smallest energy value in the final column of the seam map
     Dim x As Long, y As Long
@@ -325,10 +325,10 @@ Private Function ShrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long,
     
     Next x
 
-End Function
+End Sub
 
 'Given a valid seam map, add n horizontal seams (which will result in an n-px larger vertical image)
-Private Function GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long, ByRef progBarOffset As Long)
+Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long, ByRef progBarOffset As Long)
 
     'Due to limitations of the seam carving algorithm, this function can only add [imageheight] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
@@ -507,7 +507,7 @@ Private Function GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     ReDim m_Energy(0 To finalX, 0 To finalY + numOfAddedSeams) As Byte
     CopyMemory ByVal VarPtr(m_Energy(0, 0)), ByVal VarPtr(newEnergyMap(0, 0)), (finalX + 1) * (finalY + 1 + numOfAddedSeams)
     
-End Function
+End Sub
 
 'Generate a horizontal seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
@@ -621,7 +621,7 @@ Friend Sub GetHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, B
 End Sub
 
 'Given a valid seam map, remove one vertical seam (which will result in a 1px smaller horizontal image)
-Private Function ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
+Private Sub ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Start by finding the smallest energy value in the final row of the seam map
     Dim y As Long
@@ -707,10 +707,10 @@ Private Function ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
     
     Next y
 
-End Function
+End Sub
 
 'Given a valid seam map, add n vertical seams (which will result in an n-px larger horizontal image)
-Private Function GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
+Private Sub GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Due to limitations of the seam carving algorithm, this function can only add [imagewidth] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
@@ -888,7 +888,7 @@ Private Function GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     ReDim m_Energy(0 To finalX + numOfAddedSeams, 0 To finalY) As Byte
     CopyMemory ByVal VarPtr(m_Energy(0, 0)), ByVal VarPtr(newEnergyMap(0, 0)), (finalX + 1 + numOfAddedSeams) * (finalY + 1)
 
-End Function
+End Sub
 
 'Though they share some similar elements, shrinking and enlarging an image in either direction are handled separately.
 Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean

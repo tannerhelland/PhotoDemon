@@ -150,8 +150,8 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
     ucResize.LockAspectRatio = False
-    ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.ResizeWidthInPixels = (PDImages.GetActiveImage.Width / 2) + (Rnd * PDImages.GetActiveImage.Width)
+    ucResize.ResizeHeightInPixels = (PDImages.GetActiveImage.Height / 2) + (Rnd * PDImages.GetActiveImage.Height)
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -162,10 +162,10 @@ Private Sub cmdBar_ResetClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
     
@@ -189,10 +189,10 @@ Private Sub Form_Activate()
     ' and also set the width/height text boxes to match.
     If (m_ResizeTarget = PD_AT_WHOLEIMAGE) Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize image")
-        ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+        ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
     ElseIf (m_ResizeTarget = PD_AT_SINGLELAYER) Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Resize layer")
-        ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+        ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
     End If
     
     ucResize.LockAspectRatio = True
@@ -237,10 +237,10 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
+            ucResize.SetInitialDimensions PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False), PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False), PDImages.GetActiveImage.GetDPI
         
     End Select
     
@@ -365,12 +365,12 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     Select Case thingToResize
     
         Case PD_AT_WHOLEIMAGE
-            srcWidth = pdImages(g_CurrentImage).Width
-            srcHeight = pdImages(g_CurrentImage).Height
+            srcWidth = PDImages.GetActiveImage.Width
+            srcHeight = PDImages.GetActiveImage.Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+            srcWidth = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+            srcHeight = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -398,9 +398,9 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     End Select
     
     'If the image contains an active selection, automatically deactivate it
-    If pdImages(g_CurrentImage).IsSelectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
-        pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).MainSelection.LockRelease
+    If PDImages.GetActiveImage.IsSelectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
+        PDImages.GetActiveImage.SetSelectionActive False
+        PDImages.GetActiveImage.MainSelection.LockRelease
     End If
 
     'Because most resize methods require a temporary DIB, create one here
@@ -427,7 +427,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     ' detailed progress of the actions.  Instead, let the user know when a layer has been resized by using
     ' the number of layers as our progress guide.
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
-        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
+        SetProgBarMax PDImages.GetActiveImage.GetNumOfLayers
         Message "Resizing image..."
     Else
         SetProgBarMax 1
@@ -450,11 +450,11 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     
         Case PD_AT_WHOLEIMAGE
             firstLayerIndex = 0
-            lastLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+            lastLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
         
         Case PD_AT_SINGLELAYER
-            firstLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
-            lastLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
+            firstLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+            lastLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
     
     End Select
     
@@ -464,10 +464,10 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         If (thingToResize = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
+        Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
         
         'Null-pad the layer
-        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
+        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
@@ -587,7 +587,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_Layer, i
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
         
     'Move on to the next layer
     Next i
@@ -597,13 +597,13 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     
     'Update the main image's size and DPI values
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
-        pdImages(g_CurrentImage).UpdateSize False, imgWidth, imgHeight
-        pdImages(g_CurrentImage).SetDPI imgDPI, imgDPI
-        DisplaySize pdImages(g_CurrentImage)
+        PDImages.GetActiveImage.UpdateSize False, imgWidth, imgHeight
+        PDImages.GetActiveImage.SetDPI imgDPI, imgDPI
+        DisplaySize PDImages.GetActiveImage()
     End If
         
     'Fit the new image on-screen and redraw its viewport
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.MainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'Release the progress bar
     SetProgBarVal 0
