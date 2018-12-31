@@ -1244,12 +1244,12 @@ End Sub
 Private Sub PerformAutosave()
 
     'We keep two autosaves at all times; simply alternate between them each time a save is requested
-    If m_curBackupFile = 1 Then m_curBackupFile = 0 Else m_curBackupFile = 1
+    If (m_curBackupFile = 1) Then m_curBackupFile = 0 Else m_curBackupFile = 1
     
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str(m_curBackupFile) & ".tmpxml"
+    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str$(m_curBackupFile) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
     m_XMLEngine.WriteXMLToFile backupFile, True

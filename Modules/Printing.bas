@@ -169,7 +169,7 @@ Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames()
     'Paper size names are returned as one giant-ass string.  Each individual name occupies 64 characters, and each
     ' is null-terminated (unless it consumes all 64 characters, in which case we have to terminate it manually).
     Dim giantPaperNameList As String
-    giantPaperNameList = String(numOfPaperSizes * 64, 0)
+    giantPaperNameList = String$(numOfPaperSizes * 64, 0)
     
     DeviceCapabilities pName, pPort, DC_PAPERNAMES, ByVal giantPaperNameList, 0
     

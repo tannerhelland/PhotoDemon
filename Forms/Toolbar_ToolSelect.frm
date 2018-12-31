@@ -441,7 +441,6 @@ End Type
 
 Private m_NumOfPanels As Long
 Private m_Panels() As ToolPanelTracker
-Private Const NUM_OF_TOOL_PANELS As Long = 9
 
 'Each individual tool panel must have a unique entry inside *this* enum.  Note that a number of
 ' tools share panels, so this number has no meaningful relation to the net number of tools available.
@@ -458,6 +457,8 @@ Private Enum PD_ToolPanels
     TP_Eraser = 8
     TP_Fill = 9
 End Enum
+
+Private Const NUM_OF_TOOL_PANELS As Long = 10
 
 #If False Then
     Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Selections = 3

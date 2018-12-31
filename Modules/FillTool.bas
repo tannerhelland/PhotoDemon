@@ -50,6 +50,10 @@ Private m_FillSource As PD_FillToolSource, m_FillBrush As String, m_FillColor As
 'Bucket cursor; this is loaded as an on-demand resource, and cached after first use.
 Private m_FillCursor As pdDIB
 
+'Flood-filling vector layers requires use of a temporary fill DIB (as we can't apply the fill directly
+' onto the target vector layer).  This value is set during mouse_down, and reset on mouse_up.
+Private m_TempDIBInUse As Boolean
+
 'Before attempting to set flood fill properties, call this sub to ensure the m_FloodFill object exists.
 ' (It returns TRUE if m_FloodFill exists.)
 Private Function EnsureFillerExists() As Boolean
@@ -85,8 +89,8 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         
     End If
     
-    'If this is an initial click, apply the fill.
-    If mouseButtonDown And (Not oldMouseState) Then
+    'If the mouse button is down, generate a new fill area
+    If mouseButtonDown Then
         
         'Before proceeding, validate the click position.  Unlike paintbrush strokes, fill start points must lie on the
         ' underlying image/layer (depending on the current sampling mode).
@@ -214,29 +218,26 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
         'Render the final fill.  Note that when we are just filling the current layer, we potentially render the result
         ' differently, if the layer is smaller than the active image (or if it has non-destructive transforms active or
         ' is a vector layer).
-        '
-        '(At present, selections don't work with this accelerated technique, but that is due to be fixed shortly.)
-        Dim useCustomDIB As Boolean
         With PDImages.GetActiveImage.GetActiveLayer
-            
-            useCustomDIB = (Not .IsLayerVector)
+        
+            m_TempDIBInUse = (Not .IsLayerVector)
             
             'If the current layer is the same size as the image (very common during photo editing sessions, as the
             ' user is probably just loading standlone JPEGs), we don't need to use a custom code path.
-            If useCustomDIB Then
+            If m_TempDIBInUse Then
                 If (.GetLayerOffsetX = 0#) And (.GetLayerOffsetY = 0#) And _
                    (.GetLayerWidth(True) = PDImages.GetActiveImage.Width) And _
                    (.GetLayerHeight(True) = PDImages.GetActiveImage.Height) And _
                    (Not .AffineTransformsActive) Then
                    
-                   useCustomDIB = False
+                   m_TempDIBInUse = False
                    
                 End If
             End If
             
         End With
         
-        If m_FillSampleMerged Or (Not useCustomDIB) Then
+        If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
             
             'A scratch layer should always be guaranteed to exist, so this exists purely as a paranoid failsafe.
             If (PDImages.GetActiveImage.ScratchLayer Is Nothing) Then
@@ -258,16 +259,15 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             'Free all finished pd2D objects
             Set tmpSurface = Nothing: Set tmpBrush = Nothing
             
-            'Relay the correct blend and alpha settings to the scratch layer, then permanently commit the results
+            'Relay the correct blend and alpha settings to the scratch layer
             PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_FillBlendMode
             PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_FillAlphaMode
-            Tools_Fill.CommitFillResults False
             
         Else
         
             'If we are only operating on the currently active layer, and that layer is not the same size as the image,
             ' let's take a smarter approach.  Instead of using the full scratch layer (which is always image-sized),
-            ' we'll use a temporary DIB at the same size as the image, and paint to that instead.
+            ' we'll use a temporary DIB at the same size as the current layer, and paint to that instead.
             '
             '(Note that such a temporary DIB was already created in a previous step - see earlier in this function.)
             tmpSurface.WrapSurfaceAroundPDDIB m_FillImage
@@ -279,10 +279,26 @@ Public Sub NotifyMouseXY(ByVal mouseButtonDown As Boolean, ByVal imgX As Single,
             'Free all finished pd2D objects
             Set tmpSurface = Nothing: Set tmpBrush = Nothing
             
-            'Commit the results permanently
+            'Note that the fill image is already premultiplied
             m_FillImage.SetInitialAlphaPremultiplicationState True
-            Tools_Fill.CommitFillResults True, m_FillImage
             
+        End If
+        
+        'In the future, a "live preview" could be displayed here.  This would be nice as the user could move the mouse
+        ' to see how it affects rendering, or perhaps use the mousewheel to dynamically change fill tolerance
+        ' (and see immediate results).  However, the rendering nuances of doing this in real-time are complicated
+        ' (largely due to things like real-time affine transforms on the target layer), and it would require more
+        ' testing than I can perform at present.  Consider this a low-priority TODO.
+        
+    End If
+    
+    'If the user is releasing the mouse, commit the fill results permanently
+    If (Not mouseButtonDown) And oldMouseState Then
+        
+        If m_FillSampleMerged Or (Not m_TempDIBInUse) Then
+            Tools_Fill.CommitFillResults False
+        Else
+            Tools_Fill.CommitFillResults True, m_FillImage
         End If
         
     End If

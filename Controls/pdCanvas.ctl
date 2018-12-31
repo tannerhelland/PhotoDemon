@@ -958,6 +958,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
+                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+        
                 
         End Select
     
@@ -1946,9 +1948,14 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         'Paint tools are a little weird, because we custom-draw the current brush outline - but *only*
         ' if no mouse button is down.  (If a button *is* down, the paint operation will automatically
         ' request a viewport refresh.)
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
             CanvasView.RequestCursor_System IDC_ICON
             If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            
+        'The fill tool needs to manually render a custom "paint bucket" icon regardless of mouse button state
+        Case PAINT_FILL
+        CanvasView.RequestCursor_System IDC_ICON
+            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             
         Case Else
             CanvasView.RequestCursor_System IDC_ARROW
