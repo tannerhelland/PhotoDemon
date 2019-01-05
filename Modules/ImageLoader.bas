@@ -965,6 +965,10 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         Dim tryGDIPlusFirst As Boolean
         tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "tif", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "tiff", True)
         
+        'On modern Windows builds (8+) FreeImage is markedly slower than GDI+ at loading JPEG images, so let's also default
+        ' to GDI+ for JPEGs.
+        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
+        
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             freeImage_Return = PD_FAILURE_GENERIC

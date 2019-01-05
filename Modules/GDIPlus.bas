@@ -2002,8 +2002,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
             'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values affect
             ' the way GDI+ reports metafile size.
-            If (imgHResolution <> 0) Then imgWidth = imgWidth * CDbl(96 / imgHResolution) Else imgHResolution = 96
-            If (imgVResolution <> 0) Then imgHeight = imgHeight * CDbl(96 / imgVResolution) Else imgVResolution = 96
+            If (imgHResolution <> 0!) Then imgWidth = imgWidth * CSng(96! / imgHResolution) Else imgHResolution = 96
+            If (imgVResolution <> 0!) Then imgHeight = imgHeight * CSng(96! / imgVResolution) Else imgVResolution = 96
             
         End If
         
@@ -2266,7 +2266,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
     ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
-    If (Not isCMYK) And imgHasIccProfile Then
+    If (Not isCMYK) And (Not imgHasIccProfile) Then
         
         PDDebug.LogAction "Applying color management to GDI+ image..."
         
@@ -2282,8 +2282,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 Set cTransform = New pdLCMSTransform
                 If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcFormat, srcFormat, INTENT_PERCEPTUAL) Then
                     
+                    '32-bpp images need to be unpremultiplied, but if the source image didn't contain any alpha
+                    ' (e.g. JPEGs), then this step is pointless as the target image has all-255 for its alpha channel.
+                    If (dstDIB.GetAlphaPremultiplication And imgHasAlpha) Then dstDIB.SetAlphaPremultiplication False
+                    
                     Set srcProfile = Nothing: Set dstProfile = Nothing
-                    If dstDIB.GetAlphaPremultiplication Then dstDIB.SetAlphaPremultiplication False
                     cmSuccessful = cTransform.ApplyTransformToPDDib(dstDIB)
                     
                     If cmSuccessful Then
@@ -2314,11 +2317,11 @@ End Function
 ' 3) we successfully apply said orientation data to the underlying image
 '
 'If you don't want orientation data applied, *don't call this function*!
-Private Function AutoCorrectImageOrientation(ByRef hImage As Long) As Boolean
+Private Function AutoCorrectImageOrientation(ByVal hImage As Long) As Boolean
     
     Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
     If GDIPlus_ImageGetProperty(hImage, GP_PT_Orientation, tmpPropHeader, tmpPropBuffer) Then
-                
+        
         'The returned buffer should only ever be two bytes, as this property is an integer.
         If (tmpPropHeader.propLength = 2) Then
             
