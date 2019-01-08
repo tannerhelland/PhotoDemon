@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Fill"
 'PhotoDemon Bucket Fill Manager
 'Copyright 2017-2018 by Tanner Helland
 'Created: 30/August/17
-'Last updated: 04/September/17
-'Last update: continued work on initial build
+'Last updated: 31/December/18
+'Last update: rework rendering code to make live previews feasible in the (near?) future
 '
 'This module interfaces between the bucket fill UI and pdFloodFill backend.  Look in the relevant tool panel
 ' form for more details on how the UI relays relevant fill data here.
@@ -453,11 +453,7 @@ End Sub
 'Render a relevant fill cursor outline to the canvas, using the stored mouse coordinates as the cursor's position
 Public Sub RenderFillCursor(ByRef targetCanvas As pdCanvas)
     
-    'Start by creating a transformation from the image space to the canvas space
-    Dim canvasMatrix As pd2DTransform
-    Drawing.GetTransformFromImageToCanvas canvasMatrix, targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY
-    
-    'We also want to pinpoint the precise cursor position
+    'Convert the current stored mouse coordinates from image coordinate space to viewport coordinate space
     Dim cursX As Double, cursY As Double
     Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY, cursX, cursY
     

@@ -823,6 +823,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyB, , "tool_activate_brush", , , , False
         .AddAccelerator vbKeyE, , "tool_activate_eraser", , , , False
         .AddAccelerator vbKeyF, , "tool_activate_fill", , , , False
+        .AddAccelerator vbKeyG, , "tool_activate_gradient", , , , False
         
         'File menu
         .AddAccelerator vbKeyN, vbCtrlMask, "New image", "file_new", True, False, True, UNDO_Nothing

@@ -1,28 +1,23 @@
 Attribute VB_Name = "Plugin_Cairo"
 '***************************************************************************
 'Cairo library interface
-'Copyright 2018-2018 by Tanner Helland
+'Copyright 2018-2019 by Tanner Helland
 'Created: 21/June/18
-'Last updated: 25/June/18
-'Last update: continued work on initial build
+'Last updated: 03/January/19
+'Last update: start serious expansion for required gradient features
 '
 'While PhotoDemon provides manual implementations of just about every required graphics op in the program,
 ' it is sometimes much faster (and/or easier) to lean on 3rd-party libraries.  Cairo in particular has
 ' excellent support for masking - a feature that GDI+ lacks, which is an unfortunate headache for us.
 '
-'As part of the 7.2 release, I've started custom-building cairo and shipping it alongside PD as an
-' optional implementation for certain features.  Because Cairo itself is LGPL/MPL-licensed, I'm not
-' making any special changes to the library - just compiling it as stdcall with name-mangling resolved.
+'As part of the 7.2 release, I've started shipping a community-built stdcall cairo library with PD.
+' (https://github.com/VBForumsCommunity/VbCairo).  Because Cairo itself is LGPL/MPL-licensed, no special
+' changes have been made to the library - it is simply compiled as stdcall with name-mangling resolved.
 ' At present, any version of the library from the past decade or so should work, provided it meets those
 ' criteria.  Feel free to drop in your own version of the library, or to drop in any other stdcall-based
 ' wrapper, like Olaf Schmidt's popular version at http://www.vbrichclient.com/#/en/Downloads.htm
 ' (but note that you'll need to either rename his DLL, or rename this module's function declares to
 ' "vb_cairo_sqlite.dll" for his version to work).
-'
-'I've had trouble with cairo crashing on XP (but not Win 7 on identical hardware), and rather than spend
-' an inordinate amount of time debugging the problem, I've simply disabled cairo integration on XP and Vista.
-' If you encounter problems with the wrapper on a newer version of Windows, please let me know and I'll
-' investigate further.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -30,6 +25,33 @@ Attribute VB_Name = "Plugin_Cairo"
 '***************************************************************************
 
 Option Explicit
+
+'Antialias behavior; note that subpixel shading does not work for anything but explicit text objects
+Public Enum Cairo_Antialias
+    ca_DEFAULT = 0
+    ca_NONE = 1
+    ca_GRAY = 2
+    ca_SUBPIXEL = 3
+    ca_FAST = 4
+    ca_GOOD = 5
+    ca_BEST = 6
+End Enum
+
+#If False Then
+    Private Const ca_DEFAULT = 0, ca_NONE = 1, ca_GRAY = 2, ca_SUBPIXEL = 3, ca_FAST = 4, ca_GOOD = 5, ca_BEST = 6
+#End If
+
+'Wrap behavior for things like gradient patterns
+Public Enum Cairo_Extend
+    ce_ExtendNone = 0
+    ce_ExtendRepeat = 1
+    ce_ExtendReflect = 2
+    ce_ExtendPad = 3
+End Enum
+
+#If False Then
+    Private Const ce_ExtendNone = 0, ce_ExtendRepeat = 1, ce_ExtendReflect = 2, ce_ExtendPad = 3
+#End If
 
 'Pixel formats for cairo surfaces.  Note that PD exclusively uses ARGB32 surfaces; other surface formats
 ' are *not* currently well-tested.
@@ -48,7 +70,7 @@ End Enum
 #End If
 
 'Cairo blend operators
-Private Enum Cairo_Operator
+Public Enum Cairo_Operator
     co_Clear = 0
     co_Source = 1
     co_Over = 2
@@ -99,14 +121,23 @@ End Enum
 #End If
 
 'Exported cairo functions
-Private Declare Sub cairo_clip_extents Lib "cairo" (ByVal dstContext As Long, ByRef x1 As Double, ByRef y1 As Double, ByRef x2 As Double, ByRef y2 As Double)
 Private Declare Function cairo_create Lib "cairo" (ByVal dstSurface As Long) As Long
 Private Declare Sub cairo_destroy Lib "cairo" (ByVal srcContext As Long)
+
+Private Declare Sub cairo_clip_extents Lib "cairo" (ByVal dstContext As Long, ByRef x1 As Double, ByRef y1 As Double, ByRef x2 As Double, ByRef y2 As Double)
+Private Declare Sub cairo_fill Lib "cairo" (ByVal dstContext As Long)
+Private Declare Sub cairo_fill_preserve Lib "cairo" (ByVal dstContext As Long)
 Private Declare Function cairo_image_surface_create_for_data Lib "cairo" (ByVal ptrToPixels As Long, ByVal pxFormat As Cairo_Format, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgStride As Long) As Long
 Private Declare Sub cairo_paint Lib "cairo" (ByVal dstContext As Long)
+Private Declare Sub cairo_pattern_add_color_stop_rgb Lib "cairo" (ByVal dstPattern As Long, ByVal srcOffset As Double, ByVal srcRed As Double, ByVal srcGreen As Double, ByVal srcBlue As Double)
+Private Declare Sub cairo_pattern_add_color_stop_rgba Lib "cairo" (ByVal dstPattern As Long, ByVal srcOffset As Double, ByVal srcRed As Double, ByVal srcGreen As Double, ByVal srcBlue As Double, ByVal srcAlpha As Double)
 Private Declare Function cairo_pattern_create_for_surface Lib "cairo" (ByVal srcSurface As Long) As Long
+Private Declare Function cairo_pattern_create_linear Lib "cairo" (ByVal x0 As Double, ByVal y0 As Double, ByVal x1 As Double, ByVal y1 As Double) As Long
+Private Declare Function cairo_pattern_create_radial Lib "cairo" (ByVal cx0 As Double, ByVal cy0 As Double, ByVal radius0 As Double, ByVal cx1 As Double, ByVal cy1 As Double, ByVal radius1 As Double) As Long
 Private Declare Sub cairo_pattern_destroy Lib "cairo" (ByVal srcPattern As Long)
+Private Declare Sub cairo_pattern_set_extend Lib "cairo" (ByVal dstPattern As Long, ByVal newExtend As Cairo_Extend)
 Private Declare Sub cairo_pattern_set_filter Lib "cairo" (ByVal dstPattern As Long, ByVal newFilter As Cairo_Filter)
+Private Declare Sub cairo_rectangle Lib "cairo" (ByVal dstContext As Long, ByVal rX As Double, ByVal rY As Double, ByVal rWidth As Double, ByVal rHeight As Double)
 Private Declare Sub cairo_scale Lib "cairo" (ByVal dstContext As Long, ByVal scaleX As Double, ByVal scaleY As Double)
 Private Declare Sub cairo_set_operator Lib "cairo" (ByVal dstContext As Long, ByVal newOperator As Cairo_Operator)
 Private Declare Sub cairo_set_source Lib "cairo" (ByVal dstContext As Long, ByVal srcPattern As Long)
@@ -124,30 +155,21 @@ Private m_hLibCairo As Long
 'Initialize Cairo.  Do not call this until you have verified the dll's existence (typically via the PluginManager module)
 Public Function InitializeCairo() As Boolean
     
-    'Due to current null-pointer crashes on XP (which I have tried and failed to resolve),
-    ' Cairo support is limited to Win 7+.  It's possible that the library will also run fine on Vista,
-    ' but without an active test rig, I'm not going to risk it.
-    If OS.IsWin7OrLater Then
+    If (m_hLibCairo = 0) Then
+    
+        'Manually load the DLL from the plugin folder (should be App.Path\App\PhotoDemon\Plugins)
+        Dim cairoPath As String
+        cairoPath = PluginManager.GetPluginPath & "cairo.dll"
+        m_hLibCairo = VBHacks.LoadLib(cairoPath)
+        InitializeCairo = (m_hLibCairo <> 0)
         
-        If (m_hLibCairo = 0) Then
-        
-            'Manually load the DLL from the plugin folder (should be App.Path\App\PhotoDemon\Plugins)
-            Dim cairoPath As String
-            cairoPath = PluginManager.GetPluginPath & "cairo.dll"
-            m_hLibCairo = VBHacks.LoadLib(cairoPath)
-            InitializeCairo = (m_hLibCairo <> 0)
-            
-            If (Not InitializeCairo) Then
-                PDDebug.LogAction "WARNING!  LoadLibrary failed to load cairo.  Last DLL error: " & Err.LastDllError
-                PDDebug.LogAction "(FYI, the attempted path was: " & cairoPath & ")"
-            End If
-            
-        Else
-            InitializeCairo = True
+        If (Not InitializeCairo) Then
+            PDDebug.LogAction "WARNING!  LoadLibrary failed to load cairo.  Last DLL error: " & Err.LastDllError
+            PDDebug.LogAction "(FYI, the attempted path was: " & cairoPath & ")"
         End If
         
     Else
-        InitializeCairo = False
+        InitializeCairo = True
     End If
     
 End Function
@@ -164,15 +186,15 @@ End Function
 'Cairo-based StretchBlt.  IMPORTANTLY, this function does not work if the source and destination
 ' DIBs are identical - the intermediary results of the Blt will be copied as the function proceeds!
 ' I don't currently know an easy workaround for this.
-Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal filterType As Cairo_Filter = cf_Best, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False)
+Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal filterType As Cairo_Filter = cf_Good, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False)
     
     If (dstDIB Is Nothing) And (useThisDestinationDCInstead = 0) Then Exit Sub
     
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
     ' have timing reports sent to the debug window.
-    'Dim profileTime As Currency
-    'VBHacks.GetHighResTime profileTime
+    Dim profileTime As Currency, lastTime As Currency
+    VBHacks.GetHighResTime profileTime
     
     'Create a cairo surface object that points to the destination DIB's DC
     Dim dstSurface As Long, dstContext As Long
@@ -181,6 +203,9 @@ Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 
     Else
         dstSurface = Plugin_Cairo.GetCairoSurfaceFromPDDib(dstDIB, dstContext)
     End If
+    
+    'Debug.Print "Time required for surface creation: " & VBHacks.GetTimeDiffNowAsString(profileTime)
+    'VBHacks.GetHighResTime lastTime
     
     'Set the offset for the destination
     cairo_surface_set_device_offset dstSurface, x1, y1
@@ -203,8 +228,13 @@ Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 
     'Set the pattern; note that this locks-in all current transform settings
     cairo_set_source dstContext, srcPattern
     
+    'Debug.Print "Time required for pattern assembly: " & VBHacks.GetTimeDiffNowAsString(lastTime)
+    'VBHacks.GetHighResTime lastTime
+    
     'Paint the pattern
     cairo_paint dstContext
+    
+    'Debug.Print "Time required for paint: " & VBHacks.GetTimeDiffNowAsString(lastTime)
     
     'Delete everything
     cairo_pattern_destroy srcPattern
@@ -212,60 +242,11 @@ Public Sub Cairo_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 
     cairo_surface_destroy dstSurface
     cairo_destroy dstContext
     
-'    'We now need to create a transform that describes the StretchBlt parameters
-'
-'        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
-'        ' algorithm from drawing semi-transparent lines randomly around image borders.
-'        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
-'        Dim imgAttributesHandle As Long
-'        GdipCreateImageAttributes imgAttributesHandle
-'
-'        'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
-'        ' pixel offsets (on pixel borders, instead of center points)
-'        If (Not disableEdgeFix) Then GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0, 0
-'        GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
-'        If isZoomedIn Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
-'
-'        'If modified alpha is requested, pass the new value to this image container
-'        If (newAlpha < 1!) Then
-'            m_AttributesMatrix(3, 3) = newAlpha
-'            GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, GP_CMF_Default
-'        End If
-'
-'        'If the caller doesn't care about source blending (e.g. they're painting to a known transparent destination),
-'        ' copy mode can improve performance.
-'        If dstCopyIsOkay Then GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
-'
-'        'Because the resize step is the most cumbersome one, it can be helpful to track it
-'        'Dim resizeTime As Currency
-'        'VBHacks.GetHighResTime resizeTime
-'
-'        'Perform the resize
-'        GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
-'
-'        'Report resize time here
-'        'Debug.Print "GDI+ resize time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
-'
-'        'Release our image attributes object
-'        GdipDisposeImageAttributes imgAttributesHandle
-'
-'        'Reset alpha in the master identity matrix
-'        If (newAlpha < 1!) Then m_AttributesMatrix(3, 3) = 1!
-'
-'        'Update premultiplication status in the target
-'        If (Not dstDIB Is Nothing) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
-'
-'    End If
-'
-'    'Release both the destination graphics object and the source bitmap object
-'    GdipDisposeImage hBitmap
-'    GdipDeleteGraphics hGraphics
-    
     'To keep resources low, free the destination DIB from its DC
     If (Not dstDIB Is Nothing) Then dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print "GDI+ wrapper time: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
+    'Debug.Print "Total cairo wrapper time: " & VBHacks.GetTimeDiffNowAsString(profileTime)
     
 End Sub
 
@@ -296,14 +277,60 @@ Public Function WrapCairoSurfaceAroundDC(ByVal dstDC As Long, ByRef dstContext A
     If (WrapCairoSurfaceAroundDC <> 0) Then dstContext = cairo_create(WrapCairoSurfaceAroundDC)
 End Function
 
+Public Function Context_Fill(ByVal dstContext As Long)
+    cairo_fill dstContext
+End Function
+
+Public Function Context_FillPreserve(ByVal dstContext As Long)
+    cairo_fill_preserve dstContext
+End Function
+
+Public Function Context_Rectangle(ByVal dstContext As Long, ByVal dstX As Double, ByVal dstY As Double, ByVal dstWidth As Double, ByVal dstHeight As Double)
+    cairo_rectangle dstContext, dstX, dstY, dstWidth, dstHeight
+End Function
+
+Public Function Context_SetAntialias(ByVal dstContext As Long, ByVal newAA As Cairo_Antialias)
+    cairo_set_operator dstContext, newAA
+End Function
+
+Public Function Context_SetOperator(ByVal dstContext As Long, ByVal newOperator As Cairo_Operator)
+    cairo_set_operator dstContext, newOperator
+End Function
+
+Public Function Context_SetSourcePattern(ByVal dstContext As Long, ByVal srcPattern As Long)
+    cairo_set_source dstContext, srcPattern
+End Function
+
+Public Function Pattern_CreateLinearGradient(ByVal x0 As Double, ByVal y0 As Double, ByVal x1 As Double, ByVal y1 As Double) As Long
+    Pattern_CreateLinearGradient = cairo_pattern_create_linear(x0, y0, x1, y1)
+End Function
+
+Public Function Pattern_CreateRadialGradient(ByVal cx0 As Double, ByVal cy0 As Double, ByVal radius0 As Double, ByVal cx1 As Double, ByVal cy1 As Double, ByVal radius1 As Double) As Long
+    Pattern_CreateRadialGradient = cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1)
+End Function
+
 'Return a pattern handle to a cairo surface; this pattern can subsequently be used for painting,
 ' including tasks like resizing.
 Public Function Pattern_GetFromSurface(ByVal srcSurface As Long) As Long
     Pattern_GetFromSurface = cairo_pattern_create_for_surface(srcSurface)
 End Function
 
+Public Sub Pattern_SetExtend(ByVal dstPattern As Long, ByVal newExtend As Cairo_Extend)
+    cairo_pattern_set_extend dstPattern, newExtend
+End Sub
+
 Public Sub Pattern_SetResampleFilter(ByVal dstPattern As Long, ByVal srcFilter As Cairo_Filter)
     cairo_pattern_set_filter dstPattern, srcFilter
+End Sub
+
+Public Sub Pattern_SetStopRGB(ByVal dstPattern As Long, ByVal srcOffset As Double, ByVal srcR As Double, ByVal srcG As Double, ByVal srcB As Double)
+    Const ONE_DIV_255 As Single = 1! / 255!
+    cairo_pattern_add_color_stop_rgb dstPattern, srcOffset, CSng(srcR) * ONE_DIV_255, CSng(srcG) * ONE_DIV_255, CSng(srcB) * ONE_DIV_255
+End Sub
+
+Public Sub Pattern_SetStopRGBA(ByVal dstPattern As Long, ByVal srcOffset As Double, ByVal srcR As Double, ByVal srcG As Double, ByVal srcB As Double, ByVal srcA As Double)
+    Const ONE_DIV_255 As Single = 1! / 255!
+    cairo_pattern_add_color_stop_rgba dstPattern, srcOffset, CSng(srcR) * ONE_DIV_255, CSng(srcG) * ONE_DIV_255, CSng(srcB) * ONE_DIV_255, CSng(srcA) * ONE_DIV_255
 End Sub
 
 Public Sub FreeCairoContext(ByRef srcContext As Long)
@@ -338,12 +365,12 @@ Public Sub TestPainting(ByRef srcDIB As pdDIB)
         
         'Test full-image rendering:
         PDDebug.LogAction "cairo_set_source_surface"
-        cairo_set_source_surface dstSurface.GetCairoContextHandle(), dstSurface.GetCairoSurfaceHandle(), 0#, 0#
-        cairo_set_operator dstSurface.GetCairoContextHandle(), co_Multiply
+        cairo_set_source_surface dstSurface.GetContextHandle(), dstSurface.GetSurfaceHandle(), 0#, 0#
+        cairo_set_operator dstSurface.GetContextHandle(), co_Multiply
         
         'Paint
         PDDebug.LogAction "cairo_paint"
-        cairo_paint dstSurface.GetCairoContextHandle()
+        cairo_paint dstSurface.GetContextHandle()
         
         'Free resources
         Set dstSurface = Nothing
@@ -369,7 +396,12 @@ Public Sub TestOnActiveImage()
             srcHeight = .GetDIBHeight
         End With
         
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
         Plugin_Cairo.Cairo_StretchBlt PDImages.GetActiveImage.GetActiveDIB, x1, y1, dstWidth, dstHeight, PDImages.GetActiveImage.GetActiveDIB, x2, y2, srcWidth, srcHeight
+        
+        Debug.Print VBHacks.GetTimeDiffNowAsString(startTime)
         
         PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, 0
         ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)

@@ -393,6 +393,9 @@ Public Enum PD_2D_WrapMode
     P2_WM_TileFlipX = 1
     P2_WM_TileFlipY = 2
     P2_WM_TileFlipXY = 3
+    
+    'IMPORTANT NOTE: clamp wrap mode does not work on all GDI+ calls; for example, it fails miserably
+    ' on linear gradients for unknown reasons.  (See https://stackoverflow.com/questions/33225410/why-does-setting-lineargradientbrush-wrapmode-to-clamp-fail-with-argumentexcepti)
     P2_WM_Clamp = 4
 End Enum
 

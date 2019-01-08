@@ -2554,6 +2554,8 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
             toolbar_Toolbox.SelectNewTool PAINT_ERASER
         ElseIf Strings.StringsEqual(keyName, "tool_activate_fill", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_FILL
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_gradient", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
             
         'Menus
         ElseIf Strings.StringsEqual(keyName, "Preferences", True) Then
@@ -2958,6 +2960,10 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_Fill.hWnd
         Unload toolpanel_Fill
         Set toolpanel_Fill = Nothing
+    ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Gradient.hWnd
+        Unload toolpanel_Gradient
+        Set toolpanel_Gradient = Nothing
     End If
     
     'With all tool panels unloaded, unload all toolboxes as well

@@ -269,6 +269,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         ElseIf Strings.StringsEqual(processID, "Fill tool", True) Then
             processFound = True
             
+        ElseIf Strings.StringsEqual(processID, "Gradient tool", True) Then
+            processFound = True
+            
         'A "secret" action is used internally by PD when we need some response from the processor engine - like checking for
         ' non-destructive layer changes - but the user is not actually modifying the image.
         ElseIf Strings.StringsEqual(processID, "Do nothing", True) Then

@@ -73,20 +73,20 @@ Begin VB.Form dialog_GradientEditor
          AutoRedraw      =   -1  'True
          BackColor       =   &H00FFFFFF&
          ForeColor       =   &H00000000&
-         Height          =   1950
+         Height          =   2070
          Left            =   240
-         ScaleHeight     =   128
+         ScaleHeight     =   136
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   807
          TabIndex        =   10
-         Top             =   480
+         Top             =   360
          Width           =   12135
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   1
          Left            =   120
-         Top             =   120
+         Top             =   0
          Width           =   9255
          _ExtentX        =   16536
          _ExtentY        =   556

@@ -137,6 +137,9 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             ElseIf (g_CurrentTool = PAINT_FILL) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Fill.RenderFillCursor dstCanvas
                 
+            ElseIf (g_CurrentTool = PAINT_GRADIENT) Then
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Gradient.RenderGradientUI dstCanvas
+                
             End If
             
             'With all rendering complete, we are finally ready to request a screen refresh

@@ -544,7 +544,12 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
         If (g_CurrentTool = ND_MEASURE) Then toolpanel_Measure.NotifyActiveImageChanged
         
         'Paint tools are handled as a special case
-        If (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL) Then
+        Dim toolIsPaint As Boolean
+        toolIsPaint = (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH)
+        toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
+        toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_GRADIENT)
+        
+        If toolIsPaint Then
             
             'A couple things require us to reset the scratch layer...
             ' 1) If it hasn't been initialized at all

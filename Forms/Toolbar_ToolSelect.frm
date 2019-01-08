@@ -354,6 +354,16 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   16
+      Left            =   840
+      TabIndex        =   30
+      Top             =   7680
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
 End
 Attribute VB_Name = "toolbar_Toolbox"
 Attribute VB_GlobalNameSpace = False
@@ -456,14 +466,15 @@ Private Enum PD_ToolPanels
     TP_Paintbrush = 7
     TP_Eraser = 8
     TP_Fill = 9
+    TP_Gradient = 10
 End Enum
 
-Private Const NUM_OF_TOOL_PANELS As Long = 10
+Private Const NUM_OF_TOOL_PANELS As Long = 11
 
 #If False Then
     Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Selections = 3
     Private Const TP_Text = 4, TP_Typography = 5, TP_Pencil = 6, TP_Paintbrush = 7, TP_Eraser = 8
-    Private Const TP_Fill = 9
+    Private Const TP_Fill = 9, TP_Gradient = 10
 #End If
 
 'The currently active tool panel will be mirrored to this value
@@ -533,7 +544,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
     ' for DPI variance (e.g. 7 pixels at 96 dpi)
     Dim resizeBorderAllowance As Long
-    resizeBorderAllowance = FixDPI(7)
+    resizeBorderAllowance = Interface.FixDPI(7)
     
     Dim hitCode As Long
     
@@ -712,7 +723,7 @@ Private Sub ReflowToolboxLayout()
     
     'Paint group
     PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
-    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_FILL, hOffset, vOffset
+    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_GRADIENT, hOffset, vOffset
     
     'Macro recording message
     If (vOffset < cmdTools(cmdTools.UBound).GetTop + cmdTools(cmdTools.UBound).GetHeight) Then
@@ -855,9 +866,12 @@ Private Sub NewToolSelected()
         Case PAINT_FILL
             toolpanel_Fill.SyncAllFillSettingsToUI
             
+        Case PAINT_GRADIENT
+            toolpanel_Gradient.SyncAllGradientSettingsToUI
+            
     End Select
     
-    'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
+    'Because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
     If PDImages.IsImageActive() Then ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
                 
@@ -975,6 +989,12 @@ Public Sub ResetToolButtonStates()
             toolpanel_Fill.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Fill
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Fill.hWnd
+            
+        Case PAINT_GRADIENT
+            Load toolpanel_Gradient
+            toolpanel_Gradient.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_Gradient
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Gradient.hWnd
         
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
@@ -1110,6 +1130,10 @@ Public Sub ResetToolButtonStates()
                     Case TP_Fill
                         Unload toolpanel_Fill
                         Set toolpanel_Fill = Nothing
+                        
+                    Case TP_Gradient
+                        Unload toolpanel_Gradient
+                        Set toolpanel_Gradient = Nothing
                         
                 End Select
                 
@@ -1276,6 +1300,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_ERASER).AssignImage "paint_erase", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_FILL).AssignImage "paint_fill", , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_GRADIENT).AssignImage "nd_gradient", , buttonImageSize, buttonImageSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -1350,6 +1375,8 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_ERASER).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
     cmdTools(PAINT_FILL).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
+    cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
 End Sub
 

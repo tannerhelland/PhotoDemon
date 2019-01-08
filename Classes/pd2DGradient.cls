@@ -234,9 +234,9 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
                     strBase64 = .GetString("GradientNodesBase64")
                     
                     'Translate the result directly into the target gradient points array
-                    Dim bufferSize As Long
-                    bufferSize = m_NumOfPoints * LenB(m_GradientPoints(0))
-                    Strings.BytesFromBase64Ex VarPtr(m_GradientPoints(0)), bufferSize, strBase64
+                    Dim dstBufferSize As Long
+                    dstBufferSize = m_NumOfPoints * LenB(m_GradientPoints(0))
+                    Strings.BytesFromBase64Ex VarPtr(m_GradientPoints(0)), dstBufferSize, strBase64
                     
                 'Base64 was not used, meaning gradient nodes are encoded as a (potentially large) set of
                 ' individual tags.  Parse each tag in turn.
@@ -671,7 +671,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
     
         'Create a default linear gradient brush.  Note that GDI+ only allows you to supply two colors, so we'll just supply
         ' two dummy colors.
-        gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 1, P2_WM_TileFlipXY)
+        gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 0, P2_WM_TileFlipXY)
         If (gdipBrush = 0) Then
             Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
         Else
@@ -686,10 +686,10 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
         Select Case m_GradientShape
         
             Case P2_GS_Linear, P2_GS_Reflection
-                gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 1, m_GradientWrapMode)
+                gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 0, m_GradientWrapMode)
                 If (gdipBrush = 0) Then
                     Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
-                    Debug.Print "Debug info: " & Me.GetGradientAsString(False)
+                    'Debug.Print "Debug info: " & Me.GetGradientAsString(False)
                 Else
                     If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
                 End If

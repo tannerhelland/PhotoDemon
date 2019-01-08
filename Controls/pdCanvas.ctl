@@ -854,6 +854,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                
             'In the future, other tools can be handled here
             Case Else
             
@@ -884,7 +887,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, COLOR_PICKER
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
     End Select
     
@@ -959,6 +962,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
                 SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
+                
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
         
                 
         End Select
@@ -995,6 +1001,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
+                
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case Else
             
@@ -1136,6 +1145,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
+            
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                Tools_Gradient.CommitGradientResults
                 
             Case Else
                     
@@ -1404,8 +1417,8 @@ End Function
 ' with the tabstrip's dimensions.
 Private Sub FillTabstripRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
     
-    Dim cSize As Long
-    cSize = ImageStrip.ConstrainingSize
+    Dim conSize As Long
+    conSize = ImageStrip.ConstrainingSize
     
     With dstRect
 
@@ -1415,31 +1428,31 @@ Private Sub FillTabstripRect(ByRef ucRect As RectF, ByRef dstRect As RectF)
                 .Left = ucRect.Left
                 .Top = ucRect.Top
                 .Width = ucRect.Width
-                .Height = cSize
-                ucRect.Top = ucRect.Top + cSize
-                ucRect.Height = ucRect.Height - cSize
+                .Height = conSize
+                ucRect.Top = ucRect.Top + conSize
+                ucRect.Height = ucRect.Height - conSize
             
             Case vbAlignBottom
                 .Left = ucRect.Left
-                .Top = (ucRect.Top + ucRect.Height) - cSize
+                .Top = (ucRect.Top + ucRect.Height) - conSize
                 .Width = ucRect.Width
-                .Height = cSize
-                ucRect.Height = ucRect.Height - cSize
+                .Height = conSize
+                ucRect.Height = ucRect.Height - conSize
             
             Case vbAlignLeft
                 .Left = ucRect.Left
                 .Top = ucRect.Top
-                .Width = cSize
+                .Width = conSize
                 .Height = ucRect.Height
-                ucRect.Left = ucRect.Left + cSize
-                ucRect.Width = ucRect.Width - cSize
+                ucRect.Left = ucRect.Left + conSize
+                ucRect.Width = ucRect.Width - conSize
             
             Case vbAlignRight
-                .Left = (ucRect.Left + ucRect.Width) - cSize
+                .Left = (ucRect.Left + ucRect.Width) - conSize
                 .Top = ucRect.Top
-                .Width = cSize
+                .Width = conSize
                 .Height = ucRect.Height
-                ucRect.Width = ucRect.Width - cSize
+                ucRect.Width = ucRect.Width - conSize
         
         End Select
         
@@ -1954,7 +1967,11 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
         'The fill tool needs to manually render a custom "paint bucket" icon regardless of mouse button state
         Case PAINT_FILL
-        CanvasView.RequestCursor_System IDC_ICON
+            CanvasView.RequestCursor_System IDC_ICON
+            ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
+            
+        Case PAINT_GRADIENT
+            CanvasView.RequestCursor_System IDC_ICON
             ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             
         Case Else
