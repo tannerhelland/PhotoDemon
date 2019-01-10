@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2018 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 23/April/18
-'Last update: handle cHRM chunks (with the final corrections applied via LittleCMS)
+'Last updated: 09/January/19
+'Last update: added support for loading PNGs directly from memory; this is used by the new OpenRaster parser
+'             to quickly decompress PNG streams coming from the ORA's zip container.
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -74,8 +75,11 @@ Private m_Warnings As pdStringStack
 Private m_Stream As pdStream
 
 'At present, we require the caller to pass an identical source file path to every load function.
-' (This is a cheap and easy way to ensure no funny business.)
+' (This is a cheap and easy way to ensure no funny business.)  If the PNG is loaded directly from memory,
+' we flag this with a special name.
 Private m_SourceFilename As String
+Private Const PNG_LOADED_FROM_MEMORY As String = "LoadFromPtr*"
+Private m_SourcePtr As Long, m_SourcePtrLen As Long
 
 'In interlaced images, the number of pixels-per-reduced image is non-obvious.  We calculate these
 ' line lengths as part of the decompression pass, and rather than re-calculate them on subsequent passes,
@@ -92,7 +96,18 @@ Private m_NumOfChunks As Long
 Private m_Chunks() As pdPNGChunk
 
 'Simplified wrapper to load a PNG automatically.
-Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False) As PD_PNGResult
+Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0) As PD_PNGResult
+    
+    'We want to support PNG loading from both file and memory; if the passed loadFromPtr value is non-zero,
+    ' treat it as a pointer and we'll wrap our stream around it instead.
+    If (loadFromPtr <> 0) And (loadFromPtrLen <> 0) Then
+        srcFile = PNG_LOADED_FROM_MEMORY
+        m_SourcePtr = loadFromPtr
+        m_SourcePtrLen = loadFromPtrLen
+    Else
+        m_SourcePtr = 0
+        m_SourcePtrLen = 0
+    End If
     
     'Try to validate the source file
     Dim keepLoading As PD_PNGResult
@@ -142,28 +157,46 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
     okToProceed = png_Success
     
     'We always check the file extension.  If the user has *asked* us to check it, we treat extension
-    ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)
-    If Strings.StringsNotEqual(Right$(srcFile, 3), "png", True) Then
-        m_Warnings.AddString "File extension doesn't match PNG"
-        If checkExtension Then okToProceed = png_FileNotPNG Else okToProceed = png_Warning
+    ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)  This step is skipped
+    ' if the PNG is loaded directly from memory
+    If (srcFile <> PNG_LOADED_FROM_MEMORY) Then
+        If Strings.StringsNotEqual(Right$(srcFile, 3), "png", True) Then
+            m_Warnings.AddString "File extension doesn't match PNG"
+            If checkExtension Then okToProceed = png_FileNotPNG Else okToProceed = png_Warning
+        End If
     End If
     
     'PNG files must have a certain minimum size (comprising a valid magic number - 8 bytes - and at least
     ' three valid chunks (IHDR, IDAT, IEND); 8 + 12 * 3 = 44).  An empty IDAT chunk would still mean a
     ' broken image, but that's okay; this is just a minor failsafe.
     If (okToProceed < png_Failure) Then
-        If (Files.FileLenW(srcFile) < 44) Then
-            m_Warnings.AddString "File size is too small to contain valid PNG data"
-            okToProceed = png_Failure
+        If (srcFile = PNG_LOADED_FROM_MEMORY) Then
+            If (m_SourcePtrLen < 44) Then
+                m_Warnings.AddString "File size is too small to contain valid PNG data"
+                okToProceed = png_Failure
+            End If
+        Else
+            If (Files.FileLenW(srcFile) < 44) Then
+                m_Warnings.AddString "File size is too small to contain valid PNG data"
+                okToProceed = png_Failure
+            End If
         End If
     End If
     
     'If all pre-checks passed, open a stream.  (For performance reasons, we cache the entire stream
     ' in-memory instead of streaming it in pieces.)
     If (okToProceed < png_Failure) Then
-        If (Not Files.FileLoadAsPDStream(srcFile, m_Stream)) Then
-            m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
-            okToProceed = png_Failure
+        If (srcFile = PNG_LOADED_FROM_MEMORY) Then
+            Set m_Stream = New pdStream
+            If Not m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_SourcePtrLen, m_SourcePtr) Then
+                m_Warnings.AddString "Couldn't start in-memory stream against passed pointer: " & m_SourcePtr
+                okToProceed = png_Failure
+            End If
+        Else
+            If (Not Files.FileLoadAsPDStream(srcFile, m_Stream)) Then
+                m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
+                okToProceed = png_Failure
+            End If
         End If
     End If
     
@@ -577,7 +610,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     
     'Because the tRNS chunk may update the contents of the palette (because it can store a table of
     ' transparency values), only *now* can we notify the parent image of the original palette contents.
-    If hasPalette Then dstImage.SetOriginalPalette srcColors, numColors
+    If hasPalette And (Not dstImage Is Nothing) Then dstImage.SetOriginalPalette srcColors, numColors
     
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
@@ -589,10 +622,10 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         Dim tmpProfile As pdICCProfile
         Set tmpProfile = New pdICCProfile
         If tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0)) Then
-        
+            
             Dim profHash As String
             profHash = ColorManagement.AddProfileToCache(tmpProfile, True, False, False)
-            dstImage.SetColorProfile_Original profHash
+            If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
             
             'IMPORTANT NOTE: at preset, the destination DIB - by the time we're done with it - will have been
             ' hard-converted to sRGB, so we don't want to associate the destination DIB with it's source profile.
@@ -1148,7 +1181,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
                     dstDIB.SetColorProfileHash profHash
                     dstDIB.SetColorManagementState cms_ProfileConverted
                     
-                    dstImage.SetColorProfile_Original profHash
+                    If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
                     
                 End If
                 
