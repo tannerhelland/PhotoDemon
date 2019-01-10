@@ -44,6 +44,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Even the PNG designers admit that their CRC validation is "overkill"
+' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
+' As such, PD does not enable it by default.  For strict CRC validation, set this compile-time constant to TRUE.
+Private Const REQUIRE_CRC_VALIDATION As Boolean = False
+
 'PNG loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
 ' "Failure" returns are unrecoverable and processing *must* be abandoned.  (As a convenience, you can treat
@@ -271,7 +276,7 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         'Because the PNG format is dumb, CRCs are calculated over the chunk type *and* data portion.
         ' Before proceeding, calculate a CRC using zLib.  (Nonsense like this is why we cache the
         ' entire source file in memory; it's a hell of a lot faster that way.)
-        testCRC = Plugin_zLib.ZLib_GetCRC32(m_Stream.Peek_PointerOnly(), chunkSize + 4)
+        If REQUIRE_CRC_VALIDATION Then testCRC = Plugin_zLib.ZLib_GetCRC32(m_Stream.Peek_PointerOnly(), chunkSize + 4)
         
         'With the CRC calculated, grab the chunk type next.  (Note that the CRC calculation only used
         ' a pointer peek - it didn't actually move the stream pointer!)
@@ -302,11 +307,14 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         'Finally, grab the embedded CRC, make sure it matches our internal one, then pass *both* CRCs
         ' to the chunk class.
         embeddedCRC = m_Stream.ReadLong_BE()
-        m_Chunks(m_NumOfChunks).NotifyCRCs testCRC, embeddedCRC
         
-        If (embeddedCRC <> testCRC) Then
-            Step2_PreLoadChunks = png_Warning
-            m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (0x" & Hex$(embeddedCRC) & " expected, 0x" & Hex$(testCRC) & " found)"
+        If REQUIRE_CRC_VALIDATION Then
+            m_Chunks(m_NumOfChunks).NotifyCRCs testCRC, embeddedCRC
+        
+            If (embeddedCRC <> testCRC) Then
+                Step2_PreLoadChunks = png_Warning
+                m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (0x" & Hex$(embeddedCRC) & " expected, 0x" & Hex$(testCRC) & " found)"
+            End If
         End If
         
         'For debug purposes, it can be helpful to see what's inside a file - this will tell you about
