@@ -950,18 +950,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     'PD's internal PNG parser is preferred for all PNG images.  For backwards compatibility reasons, it does *not* rely
     ' on the .png extension.  (Instead, it will manually verify the PNG signature, then work from there.)
-    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB)
-    If CascadeLoadGenericImage Then
-        decoderUsed = id_PNGParser
-        dstImage.SetOriginalFileFormat PDIF_PNG
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then
+        CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_PNGParser
+            dstImage.SetOriginalFileFormat PDIF_PNG
+        End If
     End If
     
     'OpenRaster support was added in v7.2.  OpenRaster is similar to ODF, basically a .zip wrapper around an XML file
     ' and a bunch of PNGs - easy enough to support!
-    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ORA Then CascadeLoadGenericImage = LoadOpenRaster(srcFile, dstImage, dstDIB)
-    If CascadeLoadGenericImage Then
-        decoderUsed = id_ORAParser
-        dstImage.SetOriginalFileFormat PDIF_ORA
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ORA Then
+        CascadeLoadGenericImage = LoadOpenRaster(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_ORAParser
+            dstImage.SetOriginalFileFormat PDIF_ORA
+        End If
     End If
     
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
