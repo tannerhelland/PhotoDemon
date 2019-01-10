@@ -24,8 +24,6 @@ Attribute VB_Exposed = False
 'Original code follows.
 
 
-'https://github.com/wqweto/ZipArchive
-
 '=========================================================================
 '
 ' cZipArchive (c) 2017-2018 by wqweto@gmail.com
@@ -135,9 +133,9 @@ Private Const STD_OUTPUT_HANDLE             As Long = -11&
 Private Const STD_ERROR_HANDLE              As Long = -12&
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
-Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Long
+Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileW" (ByVal lpFileName As Long, ByVal lpFindFileData As Long) As Long
 Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
-Private Declare Function CreateFile Lib "kernel32" Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal NoSecurity As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function CreateFile Lib "kernel32" Alias "CreateFileW" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal NoSecurity As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToWrite As Long, lpNumberOfBytesWritten As Long, ByVal lpOverlapped As Long) As Long
@@ -158,7 +156,7 @@ Private Declare Function GetStdHandle Lib "kernel32" (ByVal nStdHandle As Long) 
 #If ImplCompress Then
     Private Declare Function FileTimeToDosDateTime Lib "kernel32" (lpFileTime As FILETIME, ByVal lpFatDate As Long, ByVal lpFatTime As Long) As Long
     Private Declare Function ApiEmptyByteArray Lib "oleaut32" Alias "SafeArrayCreateVector" (Optional ByVal VarType As VbVarType = vbByte, Optional ByVal Low As Long = 0, Optional ByVal Count As Long = 0) As Byte()
-    Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileA" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
+    Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileW" (ByVal hFindFile As Long, ByVal lpFindFileData As Long) As Long
 #End If ' ImplCompress
 #If ImplDecompress Then
     Private Declare Function DosDateTimeToFileTime Lib "kernel32" (ByVal wFatDate As Long, ByVal wFatTime As Long, lpFileTime As FILETIME) As Long
@@ -180,8 +178,8 @@ Private Declare Function GetStdHandle Lib "kernel32" (ByVal nStdHandle As Long) 
 #End If ' ImplCrypto
 #If ImplUseShared = 0 Then
     Private Declare Function FormatMessage Lib "kernel32" Alias "FormatMessageA" (ByVal dwFlags As Long, lpSource As Long, ByVal dwMessageId As Long, ByVal dwLanguageId As Long, ByVal lpBuffer As String, ByVal nSize As Long, Args As Any) As Long
-    Private Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttributesA" (ByVal lpFileName As String) As Long
-    Private Declare Function CreateDirectory Lib "kernel32" Alias "CreateDirectoryA" (ByVal lpPathName As String, ByVal lpSecurityAttributes As Long) As Long
+    Private Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttributesW" (ByVal lpFileName As Long) As Long
+    Private Declare Function CreateDirectory Lib "kernel32" Alias "CreateDirectoryW" (ByVal lpPathName As Long, ByVal lpSecurityAttributes As Long) As Long
     Private Declare Function CryptStringToBinary Lib "crypt32" Alias "CryptStringToBinaryW" (ByVal pszString As Long, ByVal cchString As Long, ByVal dwFlags As Long, ByVal pbBinary As Long, ByRef pcbBinary As Long, ByRef pdwSkip As Long, ByRef pdwFlags As Long) As Long
 #End If ' Not ImplUseShared
 
@@ -942,7 +940,7 @@ Private Function pvEnumFiles(sFolder As String, sMask As String, ByVal eAttrib A
     On Error GoTo EH
     Set pvEnumFiles = New Collection
     sFile = PathCombine(sFolder, sMask)
-    hFind = FindFirstFile(sFile, uData)
+    hFind = FindFirstFile(StrPtr(sFile), VarPtr(uData))
     If hFind = INVALID_HANDLE_VALUE Then
         If Err.LastDllError <> 2 Then
             On Error GoTo 0
@@ -957,7 +955,7 @@ Private Function pvEnumFiles(sFolder As String, sMask As String, ByVal eAttrib A
                     pvEnumFiles.Add PathCombine(sFolder, sFile)
                 End If
             End If
-        Loop While FindNextFile(hFind, uData) <> 0
+        Loop While FindNextFile(hFind, VarPtr(uData)) <> 0
         Call FindClose(hFind)
         hFind = 0
     End If
@@ -1836,9 +1834,9 @@ Private Function pvVfsOpen(File As Variant) As UcsVfsFileType
             pvVfsOpen.Data.dwFileAttributes = vbArchive
             pvVfsOpen.Data.ftLastWriteTime = pvToFileTime(Now)
         ElseIf Right$(File, 1) <> "\" Then
-            hFind = FindFirstFile(File, pvVfsOpen.Data)
+            hFind = FindFirstFile(StrPtr(File), VarPtr(pvVfsOpen.Data))
         Else
-            hFind = FindFirstFile(Left$(File, Len(File) - 1), pvVfsOpen.Data)
+            hFind = FindFirstFile(StrPtr(Left$(File, Len(File) - 1)), VarPtr(pvVfsOpen.Data))
         End If
         If hFind <> INVALID_HANDLE_VALUE Then
             Call FindClose(hFind)
@@ -1857,7 +1855,7 @@ Private Function pvCreateFile(ByVal lpFileName As String, ByVal dwDesiredAccess 
     Case "stderr:"
         pvCreateFile = GetStdHandle(STD_ERROR_HANDLE)
     Case Else
-        pvCreateFile = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, NoSecurity, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile)
+        pvCreateFile = CreateFile(StrPtr(lpFileName), dwDesiredAccess, dwShareMode, NoSecurity, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile)
     End Select
 End Function
 
@@ -2172,14 +2170,14 @@ End Function
 Private Function MkPath(sPath As String, sError As String) As Boolean
     Dim lAttrib         As Long
     
-    lAttrib = GetFileAttributes(sPath)
+    lAttrib = GetFileAttributes(StrPtr(sPath))
     If lAttrib = -1 Then
         If InStrRev(sPath, "\") > 0 Then
             If Not MkPath(Left$(sPath, InStrRev(sPath, "\") - 1), sError) Then
                 Exit Function
             End If
         End If
-        If CreateDirectory(sPath, 0) = 0 Then
+        If CreateDirectory(StrPtr(sPath), 0) = 0 Then
             sError = GetSystemMessage(Err.LastDllError) & " (" & sPath & ")"
             Exit Function
         End If
@@ -2318,3 +2316,5 @@ End Sub
         pvCryptoTerminate
     End Sub
 #End If
+
+
