@@ -301,29 +301,29 @@ Public Sub EnableHighResolutionTimers()
     If (m_TimerFrequency = 0) Then m_TimerFrequency = 1 Else m_TimerFrequency = 1# / m_TimerFrequency
 End Sub
 
-Public Function GetTimerDifference(ByRef startTime As Currency, ByRef stopTime As Currency) As Double
+Public Function GetTimerDifference(ByVal startTime As Currency, ByVal stopTime As Currency) As Double
     GetTimerDifference = (stopTime - startTime) * m_TimerFrequency
 End Function
 
-Public Function GetTimeDiffAsString(ByRef startTime As Currency, ByRef stopTime As Currency) As String
+Public Function GetTimeDiffAsString(ByVal startTime As Currency, ByVal stopTime As Currency) As String
     Dim tmpDouble As Double
     tmpDouble = (stopTime - startTime) * m_TimerFrequency
     GetTimeDiffAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"
 End Function
 
-Public Function GetTimerDifferenceNow(ByRef startTime As Currency) As Double
+Public Function GetTimerDifferenceNow(ByVal startTime As Currency) As Double
     Dim tmpTime As Currency
     QueryPerformanceCounter tmpTime
     GetTimerDifferenceNow = (tmpTime - startTime) * m_TimerFrequency
 End Function
 
-Public Function GetTimeDiffNowAsString(ByRef startTime As Currency) As String
+Public Function GetTimeDiffNowAsString(ByVal startTime As Currency) As String
     Dim tmpTime As Currency:    QueryPerformanceCounter tmpTime
     Dim tmpDouble As Double:    tmpDouble = (tmpTime - startTime) * m_TimerFrequency
     GetTimeDiffNowAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"
 End Function
 
-Public Function GetTotalTimeAsString(ByRef netTime As Currency) As String
+Public Function GetTotalTimeAsString(ByVal netTime As Currency) As String
     Dim tmpDouble As Double
     tmpDouble = netTime * m_TimerFrequency
     GetTotalTimeAsString = Format$(tmpDouble * 1000#, "0.0") & " ms"

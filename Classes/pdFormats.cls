@@ -203,7 +203,10 @@ End Function
 'Generate a list of available import formats
 Friend Sub GenerateInputFormats()
 
-    'Prepare a list of possible INPUT formats based on the plugins available to us
+    'Prepare a list of possible INPUT formats based on the plugins available to us.
+    ' (These format lists are automatically trimmed after plugin status has been assessed;
+    '  the arbitrary upper limit of "50" would only need to be revisited if we greatly
+    '  expand format support in the future.)
     ReDim inputExtensions(0 To 50) As String
     ReDim inputDescriptions(0 To 50) As String
     ReDim inputPDIFs(0 To 50) As PD_IMAGE_FORMAT
@@ -253,6 +256,11 @@ Friend Sub GenerateInputFormats()
         AddInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", PDIF_KOALA
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
         AddInputFormat "MNG - Multiple Network Graphics", "*.mng", PDIF_MNG
+    End If
+    
+    AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
+    
+    If FreeImageEnabled Then
         AddInputFormat "PBM - Portable Bitmap", "*.pbm", PDIF_PBM
         AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
         AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
@@ -468,6 +476,8 @@ Friend Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "lbm"
         Case PDIF_MNG
             GetExtensionFromPDIF = "mng"
+        Case PDIF_ORA
+            GetExtensionFromPDIF = "ora"
         'Case PDIF_PBM                      'NOTE: for simplicity, all PPM extensions are condensed to PNM
         '    GetExtensionFromPDIF = "pbm"
         'Case PDIF_PBMRAW

@@ -23,6 +23,10 @@ Option Explicit
 ' back to the old FreeImage and GDI+ interface, you can set this to FALSE.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 
+'OpenRaster support was added in the 7.2 release cycle.  I know of no reason to disable it at present, but you can use
+' this constant to deactivate parsing support if necessary.
+Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
+
 Private m_JpegObeyEXIFOrientation As PD_BOOL
 
 'Some user preferences control how image importing behaves.  Because these preferences are accessed frequently, we cache them
@@ -952,6 +956,14 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         dstImage.SetOriginalFileFormat PDIF_PNG
     End If
     
+    'OpenRaster support was added in v7.2.  OpenRaster is similar to ODF, basically a .zip wrapper around an XML file
+    ' and a bunch of PNGs - easy enough to support!
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_ORA Then CascadeLoadGenericImage = LoadOpenRaster(srcFile, dstImage, dstDIB)
+    If CascadeLoadGenericImage Then
+        decoderUsed = id_ORAParser
+        dstImage.SetOriginalFileFormat PDIF_ORA
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v7.2, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to a
     ' lot of bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now more selective about
@@ -1038,7 +1050,8 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
         
         Case PDIF_PDI
         
-            'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
+            'PDI images require various compression plugins to be present, and are only loaded via a custom routine
+            ' (obviously, since they are PhotoDemon's native format)
             CascadeLoadInternalImage = LoadPhotoDemonImage(srcFile, dstDIB, dstImage)
             
             dstImage.SetOriginalFileFormat PDIF_PDI
@@ -1070,6 +1083,38 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             
     End Select
+    
+End Function
+
+Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadOpenRaster = False
+    
+    'pdOpenRaster handles all the dirty work for us
+    Dim cOpenRaster As pdOpenRaster
+    Set cOpenRaster = New pdOpenRaster
+    
+    'Validate the potential OpenRaster file
+    LoadOpenRaster = cOpenRaster.IsFileORA(srcFile, True)
+    
+    'If validation passes, attempt a full load
+    If LoadOpenRaster Then LoadOpenRaster = cOpenRaster.LoadORA(srcFile, dstImage)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadOpenRaster Then
+        
+        dstImage.SetOriginalFileFormat PDIF_ORA
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        
+    End If
     
 End Function
 

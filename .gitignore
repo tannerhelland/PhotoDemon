@@ -71,6 +71,7 @@ PhotoDemon.exe
 README_PSC-version.txt
 *.7z
 /App/PhotoDemon/Themes/Core_Icons.pdr
+/App/PhotoDemon/Plugins/Experimental
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe
@@ -96,11 +97,3 @@ bfg.jar
 /Resources/Assets/RCDLL.DLL
 /Resources/Assets/*.pdrc
 /Resources/Assets/*.xml
-
-##############
-## Added for PhotoDemon compatibility testing
-##  I keep one or more renamed PhotoDemon exe files, 
-##  basically older builds to do before and after
-##  testing, in the output directory.
-##############
-PhotoDemon-*.exe

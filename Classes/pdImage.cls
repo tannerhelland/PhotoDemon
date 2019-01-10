@@ -297,9 +297,9 @@ End Sub
 ' new layer; e.g. if zero is passed, the layer will be placed at the bottom of the stack.  If no position is requested,
 ' the layer will be created above the currently active layer.
 '
-'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be pointless,
-' as the calling function likely knows that in advance.)  Note that layers can be accessed by either ID or index; after
-' calling this function, make sure to use the CANONICAL ID function with the returned value.
+'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be
+' pointless, as the calling function likely knows that in advance.)  Note that layers can be accessed by either ID
+' or index; after calling this function, make sure to use the CANONICAL ID function with the returned value.
 Friend Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
@@ -553,9 +553,11 @@ Friend Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
-        If (imgLayers(i).GetLayerID = requestedID) Then
-            Set GetLayerByID = imgLayers(i)
-            Exit Function
+        If (Not imgLayers(i) Is Nothing) Then
+            If (imgLayers(i).GetLayerID = requestedID) Then
+                Set GetLayerByID = imgLayers(i)
+                Exit Function
+            End If
         End If
     Next i
     
@@ -847,7 +849,7 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         
         'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
         ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
-        If Not loadNonDestructively Then
+        If (Not loadNonDestructively) Then
         
             'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
             ' fill each layer with usable data, because we can't do that here!)

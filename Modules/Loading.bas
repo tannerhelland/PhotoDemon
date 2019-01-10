@@ -149,11 +149,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' a provisional image ID; this ID will become its formal ID only if it's loaded successfully.
     targetImage.imageID = PDImages.GetProvisionalImageID()
     
-    'Next, create a blank target layer and target DIB.  If all of these are loaded correctly, we'll eventually assemble them
-    ' into the targetImage object.
-    Dim newLayerID As Long
-    newLayerID = targetImage.CreateBlankLayer
-    
+    'Next, create a blank target DIB.  Image loaders need a place to stick their decoded image data, and we'll use this
+    ' same target DIB regardless of actual parser.
     Dim targetDIB As pdDIB
     Set targetDIB = New pdDIB
     
@@ -236,14 +233,21 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             '*************************************************************************************************************************************
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
             '*************************************************************************************************************************************
-                
-            'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
-            Dim newLayerName As String
-            newLayerName = Layers.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
             
-            'Create the new layer in the target image, and pass our created name to it
-            targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, imageHasMultiplePages
-            targetImage.UpdateSize
+            'If the source file was already designed as a multi-layer format (e.g. OpenRaster), this step is unnecessary.
+            If (targetImage.GetCurrentFileFormat <> PDIF_ORA) Then
+                
+                'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
+                Dim newLayerName As String
+                newLayerName = Layers.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
+                
+                'Create the new layer in the target image, and pass our created name to it
+                Dim newLayerID As Long
+                newLayerID = targetImage.CreateBlankLayer
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, imageHasMultiplePages
+                targetImage.UpdateSize
+                
+            End If
             
             If (ExifTool.IsMetadataPipeActive) Then VBHacks.DoEventsTimersOnly
             
@@ -269,6 +273,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             Case id_PNGParser
                 PDDebug.LogAction vbTab & "Load engine: Internal PNG parser", , True
             
+            Case id_ORAParser
+                PDDebug.LogAction vbTab & "Load engine: Internal OpenRaster parser", , True
+                
             Case id_GDIPlus
                 PDDebug.LogAction vbTab & "Load engine: GDI+", , True
             

@@ -388,8 +388,8 @@ Friend Function GetLayerOpacity() As Single
 End Function
 
 Friend Sub SetLayerOpacity(ByVal newLayerOpacity As Single)
-    If (newLayerOpacity > 100#) Then newLayerOpacity = 100#
-    If (newLayerOpacity < 0#) Then newLayerOpacity = 0#
+    If (newLayerOpacity > 100!) Then newLayerOpacity = 100!
+    If (newLayerOpacity < 0!) Then newLayerOpacity = 0!
     myLayerData.l_Opacity = newLayerOpacity
 End Sub
 
