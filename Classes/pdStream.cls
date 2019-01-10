@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2018 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 17/April/18
-'Last update: allow callers to wrap their own arrays around the stream, for faster processing in some scenarios
+'Last updated: 09/January/19
+'Last update: add new option for wrapping a stream instance around an arbitrary pointer; this is used by pdPNG
+'             to load PNG files directly from memory
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -57,10 +58,11 @@ Private Declare Function ntohs Lib "Ws2_32" (ByVal srcShort As Integer) As Integ
 Public Enum PD_STREAM_MODE
     PD_SM_MemoryBacked = 0
     PD_SM_FileBacked = 1
+    PD_SM_ExternalPtrBacked = 2
 End Enum
 
 #If False Then
-    Private Const PD_SM_MemoryBacked = 0, PD_SM_FileBacked = 1
+    Private Const PD_SM_MemoryBacked = 0, PD_SM_FileBacked = 1, PD_SM_ExternalPtrBacked = 2
 #End If
 
 Public Enum PD_STREAM_ACCESS
@@ -81,6 +83,10 @@ Private m_StreamAccess As PD_STREAM_ACCESS
 
 'For in-memory streams, this array stores the actual stream data.
 Private m_MemBuffer() As Byte
+
+'If an in-memory stream is constructed as READ-ONLY around an EXTERNAL POINTER, we use this SafeArray to store
+' our "artificially" constructed array header.  It should be freed manually before the class goes out of scope.
+Private m_TemporarySA As SafeArray1D
 
 'For file-backed streams, pdFSO is used for file interactions
 Private m_FSO As pdFSO
@@ -109,6 +115,11 @@ Private m_FileHandle As Long
 '
 'NOTE: at present, only memory-backed streams support this function
 Friend Sub DeleteFromStart(ByVal numBytesToDelete As Long)
+    
+    If (m_StreamAccess = PD_SA_ReadOnly) Then
+        InternalStreamError "DeleteFromStart() cannot operate on read-only streams."
+        Exit Sub
+    End If
     
     'Ensure the number of bytes to delete is valid
     If (numBytesToDelete > m_BufferSize) Then numBytesToDelete = m_BufferSize
@@ -155,6 +166,8 @@ End Sub
 Friend Function GetPosition() As Long
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         GetPosition = m_Pointer
+    ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+        GetPosition = m_Pointer
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
         If (m_FileHandle <> 0) And (Not m_FSO Is Nothing) Then GetPosition = m_FSO.FileGetCurrentPointer(m_FileHandle) - m_FilePointerOffset
     End If
@@ -166,7 +179,7 @@ End Function
 Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
     
     'In memory-backed mode, we must manually handle the different "move method" options.
-    If (m_StreamMode = PD_SM_MemoryBacked) Then
+    If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
         If (startingPosition = FILE_BEGIN) Then
             'Do nothing; newPosition is an absolute value
         ElseIf (startingPosition = FILE_CURRENT) Then
@@ -184,7 +197,7 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
     'Now we can actually apply the new position
     If (newPosition >= 0) And (newPosition <= m_BufferSize) Then
         
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             m_Pointer = newPosition
             SetPosition = True
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -254,7 +267,8 @@ End Sub
 
 'Start a new stream.  The stream type *must* be specified.  If this is a file stream, a valid filename *must* be provided.
 ' Read/write access does not need to be specified, but if you only need a read-only buffer, specifying as much will yield
-' improved performance, particularly for file streams.
+' improved performance, particularly for file streams.  (Similarly, when wrapping an external pointer, read-only access
+' will be forcibly set.)
 '
 'Optionally, when creating a writable buffer, you can also specify a starting buffer size.  If you have some notion of the
 ' stream's net size in advance, an initial memory allocation that comes close to your required value can spare us intermediate
@@ -262,9 +276,13 @@ End Sub
 ' you can mark the "reuseExistingBuffer" parameter as TRUE; this will leave the stream in its current state instead of
 ' reallocating memory, potentially reducing memory thrashing.
 '
+'When wrapping an external pointer, use the optional startingBufferSize and baseFilePointerOffset values to the source
+' data's length and base pointer, respectively.
+'
 'Returns TRUE if successful; FALSE otherwise.  FALSE should only occur if...
 ' 1) This is a file-backed stream and you supplied an invalid or inaccessible filename, or...
 ' 2) This is a memory-backed stream and the initial starting size is ridiculously huge.
+' 3) This is an external pointer-backed stream and the initial size and/or pointer value is zero.
 '
 'If this stream object is already open, the existing stream will be closed and a new one will be started.
 Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone, Optional ByVal reuseExistingBuffer As Boolean = False) As Boolean
@@ -317,6 +335,34 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
         
         End If
         
+    ElseIf (streamType = PD_SM_ExternalPtrBacked) Then
+    
+        m_StreamAccess = PD_SA_ReadOnly
+        m_BufferSize = startingBufferSize
+        
+        If (m_BufferSize <> 0) And (baseFilePointerOffset <> 0) Then
+            
+            'Populate a replacement sa header, and use it to "initialize" our internal memory buffer
+            With m_TemporarySA
+                .cbElements = 1
+                .cDims = 1
+                .cLocks = 1
+                .lBound = 0
+                .cElements = m_BufferSize
+                .pvData = baseFilePointerOffset
+            End With
+            
+            Erase m_MemBuffer
+            CopyMemory ByVal VarPtrArray(m_MemBuffer()), VarPtr(m_TemporarySA), 4&
+            
+            m_Open = True
+            
+        Else
+            
+            InternalStreamError "External pointer-backed streams require a non-zero buffer size and pointer."
+            m_Open = False
+        End If
+        
     End If
     
     StartStream = m_Open
@@ -340,6 +386,8 @@ Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileCloseHandle m_FileHandle
             m_FileHandle = 0
+        ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+            PutMem4 VarPtrArray(m_MemBuffer), 0&
         End If
         
     End If
@@ -365,8 +413,9 @@ Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition 
         If (startPosition < m_BufferSize) Then
             
             'Memory mode is a hell of a lot faster!
-            If (m_StreamMode = PD_SM_MemoryBacked) Then
+            If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
                 
+                'TODO: look at wrapping an API for this; it'd be faster
                 Do
                     If (m_MemBuffer(startPosition) = targetByte) Then Exit Do
                     startPosition = startPosition + 1
@@ -468,7 +517,7 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
         End If
         
         'Copy the relevant amount of bytes into position
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             CopyMemoryStrict dstPointer, VarPtr(m_MemBuffer(m_Pointer)), readLength
             
             'In memory mode, we must manually move the pointer to match the new position
@@ -504,7 +553,7 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
     
     If m_Open Then
         
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
         
             'Return a pointer to the current buffer position
             ReadBytes_PointerOnly = VarPtr(m_MemBuffer(m_Pointer))
@@ -517,7 +566,7 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
             
             'As a failsafe, check for invalid pointer positions
             If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
-            
+        
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             
             ReadBytes_PointerOnly = 0
@@ -534,7 +583,7 @@ End Function
 ' so you will need to manually validate things like stream position vs length when using this.
 Friend Function ReadByte() As Byte
     If m_Open And (Me.GetPosition() + 1& <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             GetMem1 VarPtr(m_MemBuffer(m_Pointer)), ReadByte
             m_Pointer = m_Pointer + 1&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -547,7 +596,7 @@ End Function
 ' so you will need to manually validate things like stream position vs length when using this.
 Friend Function ReadInt() As Integer
     If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             GetMem2 VarPtr(m_MemBuffer(m_Pointer)), ReadInt
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -568,7 +617,7 @@ End Function
 ' things like stream position vs length.
 Friend Function ReadIntUnsigned() As Long
     If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             CopyMemoryStrict VarPtr(ReadIntUnsigned) + 2&, VarPtr(m_MemBuffer(m_Pointer)), 2&
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -587,7 +636,7 @@ End Function
 
 Friend Function ReadLong() As Long
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             GetMem4 VarPtr(m_MemBuffer(m_Pointer)), ReadLong
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -605,7 +654,7 @@ End Function
 
 Friend Function ReadFloat() As Single
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             GetMem4 VarPtr(m_MemBuffer(m_Pointer)), ByVal VarPtr(ReadFloat)
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -627,7 +676,7 @@ End Function
 Friend Function ReadString_ASCII(ByVal numOfChars As Long) As String
 
     If m_Open And (Me.GetPosition() + numOfChars <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), False, numOfChars)
             m_Pointer = m_Pointer + numOfChars
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -648,7 +697,7 @@ End Function
 Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
 
     If m_Open And (Me.GetPosition() + numOfChars * 2 <= m_BufferSize) Then
-        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), True, numOfChars)
             m_Pointer = m_Pointer + numOfChars * 2
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -692,7 +741,14 @@ End Function
 '
 'Returns: exact size of stream if successful; zero otherwise.
 Friend Function TrimStream() As Long
+    
     If m_Open Then
+    
+        If (m_StreamAccess = PD_SA_ReadOnly) Then
+            InternalStreamError "TrimStream() cannot operate on read-only streams."
+            Exit Function
+        End If
+    
         If (m_StreamMode = PD_SM_MemoryBacked) Then
             ReDim Preserve m_MemBuffer(0 To m_BufferSize - 1) As Byte
             TrimStream = m_BufferSize
@@ -701,7 +757,9 @@ Friend Function TrimStream() As Long
                 m_FSO.FileSetLength m_FileHandle, m_BufferSize + m_FilePointerOffset
             End If
         End If
+    
     End If
+    
 End Function
 
 'Write data from any arbitrary byte array, with an optional length parameter.  If the length parameter is not supplied,
@@ -737,6 +795,11 @@ End Function
 Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
     
     If m_Open Then
+        
+        If (m_StreamAccess = PD_SA_ReadOnly) Then
+            InternalStreamError "Write() functions cannot operate on read-only streams."
+            Exit Function
+        End If
     
         If (m_StreamMode = PD_SM_MemoryBacked) Then
         
@@ -879,7 +942,7 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1) As Lo
 
     If (peekPosition < 0) Then peekPosition = Me.GetPosition()
     
-    If (m_StreamMode = PD_SM_MemoryBacked) Then
+    If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
         Peek_PointerOnly = VarPtr(m_MemBuffer(peekPosition))
         
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -911,7 +974,7 @@ End Function
 Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Optional ByVal exactAllocationWanted As Boolean = False) As Boolean
     
     If m_Open Then
-    
+        
         Dim needAtLeastBytes As Long, bufferLimit As Long, newSize As Long
         
         If (m_StreamMode = PD_SM_MemoryBacked) Then
@@ -982,6 +1045,9 @@ Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Opt
             'TODO?  I'm not really sure there's anything *to* do here, honestly, besides maybe check for available file space
             ' (but even that is unreliable, as Windows may not be able to write a file that consumes all that space).
         
+        ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+            InternalStreamError "EnsureBufferSpaceAvailable is not allowed on pointer-wrapped streams!"
+            EnsureBufferSpaceAvailable = False
         End If
         
         EnsureBufferSpaceAvailable = True
