@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 14/March/16
-'Last update: migrate various functions out of the high-level "Saving" module and into this new, format-specific module
+'Last updated: 10/January/18
+'Last update: add export support for OpenRaster (ORA) files
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.  You will not generally
 ' want to interface with this module directly; instead, rely on the high-level functions in the "Saving" module.
@@ -126,6 +126,11 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                         End If
                     End If
                 End If
+            
+            'OpenRaster files are just embedded PNGs; for simplicity and interop purposes, we write all layers
+            ' as 32-bit
+            Case PDIF_ORA
+                AutoDetectOutputColorDepth = 32
             
             'PDI files should not technically be passed to this function, as it's a big fat waste of time.  They always
             ' recommend 32-bpp output.
@@ -1177,6 +1182,63 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportHDRError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportHDR = False
+    
+End Function
+
+Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+
+    On Error GoTo ExportORAError
+
+    ExportORA = False
+    Dim sFileType As String: sFileType = "ORA"
+    
+    'OpenRaster has a straightforward spec based on a zip file container:
+    ' https://www.openraster.org/
+    
+    'Most of the heavy lifting for the save will be performed by our pdOpenRaster class
+    Dim cORA As pdOpenRaster
+    Set cORA = New pdOpenRaster
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    If cORA.SaveORA(srcPDImage, tmpFilename) Then
+    
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportORA = True
+        
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
+        
+            ExportORA = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            
+            If (Not ExportORA) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite OpenRaster file; original file is likely open elsewhere."
+            End If
+            
+        End If
+    
+    Else
+        ExportORA = False
+        ExportDebugMsg "WARNING!  pdOpenRaster.SaveORA() failed for reasons unknown; check the debug log for additional details"
+    End If
+    
+    Exit Function
+    
+ExportORAError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportORA = False
     
 End Function
 

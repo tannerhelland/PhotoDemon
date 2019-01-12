@@ -376,7 +376,8 @@ Friend Sub GenerateOutputFormats()
     If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
         
     If FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
-        
+    
+    AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     
     If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
@@ -541,7 +542,7 @@ Friend Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_
 
     Select Case outputPDIF
     
-        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG
+        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG, PDIF_ORA
             DoesPDIFSupportMultipleColorDepths = False
             
         Case Else
@@ -632,7 +633,7 @@ Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredCol
                         IsColorDepthSupported = False
                         
                 End Select
-                
+            
             'PNG
             Case PDIF_PNG
         
@@ -802,11 +803,13 @@ Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredCol
     
     End If
     
-    'Finally, if FreeImage can't be found, and GDI+ can't be found, the user better like outputting BMP files, because that's all they get.
-    If outputPDIF = PDIF_BMP Then
-    
-        If (desiredColorDepth = 24) Or (desiredColorDepth = 32) Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+    'Finally, cover some export formats that are handled by internal engines
+    If (outputPDIF = PDIF_BMP) Then
+        IsColorDepthSupported = (desiredColorDepth = 24) Or (desiredColorDepth = 32)
         
+    ElseIf (outputPDIF = PDIF_ORA) Then
+        IsColorDepthSupported = (desiredColorDepth = 32)
+                
     End If
 
 End Function
@@ -889,6 +892,9 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
                 GetClosestColorDepth = 32
             End If
         
+        Case PDIF_ORA
+            GetClosestColorDepth = 32
+            
         'PNG supports all available color depths
         Case PDIF_PNG
         
@@ -1036,6 +1042,9 @@ Friend Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
         Case PDIF_JXR
             IsExifAllowedForPDIF = True
         
+        Case PDIF_ORA
+            IsExifAllowedForPDIF = False
+            
         Case PDIF_PDI
             IsExifAllowedForPDIF = True
         
@@ -1086,6 +1095,9 @@ Friend Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         
         Case PDIF_JXR
             IsExportDialogSupported = True
+        
+        Case PDIF_ORA
+            IsExportDialogSupported = False
         
         Case PDIF_PDI
             IsExportDialogSupported = False

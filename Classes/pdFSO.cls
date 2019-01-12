@@ -1021,7 +1021,7 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
     If Me.FileExists(oldFile) Then
     
         'Consider forcibly specifying a backup path if the user didn't provide their own
-        If (Len(customBackupFile) = 0) Then
+        If (LenB(customBackupFile) = 0) Then
         
             'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
             ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
@@ -1163,18 +1163,17 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
     'The file-to-be-replaced does *not* exist.  Use MoveFile instead of ReplaceFile.
     Else
     
-        'Use the API to attempt a move.  (Note that a backup file isn't required in this case, as nothing will be deleted unless the
-        ' operation is successful.)
+        'Use the API to attempt a move.  (Note that a backup file isn't required in this case, as nothing will be
+        ' deleted unless the operation is successful.)
         mfReturn = MoveFileExW(StrPtr(oldFile), StrPtr(newFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
         
         'The move succeeded!  Exit immediately.
         If (mfReturn <> 0) Then
-            
             FileReplace = FPR_SUCCESS
             Exit Function
         
-        'The move failed.  This should not happen (as the target file is known to not exist), but if it does, no harm is done as we haven't
-        ' changed the filesystem at all.
+        'The move failed.  This should not happen (as the target file is known to not exist), but if it does,
+        ' no harm is done as we haven't changed the filesystem at all.
         Else
             FSOError "FileReplace", "Impossible outcome 10 occurred in FileReplace.  Please investigate."
             FileReplace = FPR_FAIL_NOTHING_CHANGED

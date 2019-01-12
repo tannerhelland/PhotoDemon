@@ -4910,9 +4910,8 @@ Public Function GDIPlus_ImageRotateFlip(ByVal hImage As Long, ByVal typeOfRotate
 End Function
 
 'Save a surface to a VB byte array.  The destination array *must* be dynamic, and does not need to be dimensionsed.
-' (It will be auto-dimensioned correctly by thsi function.)
-' As with saving to file, note that the only export property currently supported is JPEG quality; other properties
-' are set automatically by GDI+.
+' (It will be auto-dimensioned correctly by this function.)  As with saving to file, note that the only export property
+' currently supported is JPEG quality; other properties (like PNG compression level) are not exposed by GDI+.
 Public Function GDIPlus_ImageSaveToArray(ByVal hImage As Long, ByRef dstArray() As Byte, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 85) As Boolean
         
     On Error GoTo GDIPlusSaveError

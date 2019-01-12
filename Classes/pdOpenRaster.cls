@@ -83,7 +83,9 @@ Private m_Filename As String
 'Validate a source filename as ORA format.  Validation *does* touch the file - we actually open the first
 ' file in the archive to make sure it meets the required mimetype descriptor.
 Friend Function IsFileORA(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True) As Boolean
-
+    
+    If (m_ZipArchive Is Nothing) Then Set m_ZipArchive = New cZipArchive
+    
     Dim potentiallyORA As Boolean
     potentiallyORA = True
     
@@ -155,7 +157,11 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
         VBHacks.GetHighResTime startTime
     End If
     
-    'The validator will have already loaded the target file, so we can proceed with extraction.
+    'The validator will have already loaded the target file, so this exists only as a failsafe.
+    If (m_ZipArchive Is Nothing) Then
+        Set m_ZipArchive = New cZipArchive
+        m_ZipArchive.OpenArchive srcFilename
+    End If
     
     'The first thing we want to do is extract the stack.xml file.  This contains crucial attributes like
     ' the image's width and height, which we need to know before we start parsing individual layers.
@@ -163,18 +169,22 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
     If m_ZipArchive.Extract(utf8Bytes, "stack.xml") Then
         
         'Validate and load the XML
-        Dim xmlEngine As MSXML2.DOMDocument
-        Set xmlEngine = New MSXML2.DOMDocument
+        Dim xmlEngine As Object 'MSXML2.DOMDocument
+        Set xmlEngine = CreateObject("MSXML2.DOMDocument")
         xmlEngine.async = False
         xmlEngine.validateOnParse = True
         
         Dim srcXML As String
         srcXML = Strings.StringFromUTF8(utf8Bytes)
         
+        'Want to know what the source XML looks like?  MyPaint XML in particular contains a load of non-spec data,
+        ' and in the future, we could potentially expand support for some of their more esoteric features.
+        'Debug.Print srcXML
+        
         If xmlEngine.loadXML(srcXML) Then
         
             'The root node should be <image>.
-            Dim xmlRoot As MSXML2.IXMLDOMNode
+            Dim xmlRoot As Object 'MSXML2.IXMLDOMNode
             Set xmlRoot = xmlEngine.documentElement
             If (xmlRoot.Attributes.Length > 0) Then
                 
@@ -235,7 +245,7 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                     
                     'Because of this, instead of traversing the DOM we can simply grab a list of layer nodes.
                     ' Without grouping support, the only thing we really care about is order, not nesting.
-                    Dim listOfLayers As MSXML2.IXMLDOMNodeList
+                    Dim listOfLayers As Object 'MSXML2.IXMLDOMNodeList
                     Set listOfLayers = xmlEngine.getElementsByTagName("layer")
                     
                     'Traverse the list of layers in *reverse* order, as the last layer in the file is the base layer,
@@ -257,11 +267,11 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                                     
                                     'Spec-defined attributes follow
                                     Case "name"
-                                        .orlName = curNodeValue
+                                        .orlName = Strings.UnEscapeXMLString(curNodeValue)
                                     Case "opacity"
                                         .orlOpacity = TextSupport.CDblCustom(curNodeValue) * 100#
                                     Case "src"
-                                        .orlSourceFile = curNodeValue
+                                        .orlSourceFile = Strings.UnEscapeXMLString(curNodeValue)
                                     Case "visibility"
                                         .orlVisibility = Strings.StringsEqual(curNodeValue, "visible", True)
                                     Case "x"
@@ -300,7 +310,8 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                     ' only allows individual layers to be embedded PNG images, but some software (MyPaint) may also embed SVG layers.
                     ' We can't parse SVGs at present, so we're SOL on such layers.
                     Dim cPNG As pdPNG, tmpPngBytes() As Byte
-                    Dim tmpDIB As pdDIB, tmpLayer As pdLayer, newLayerID As Long, selLayerIndex As Long
+                    Dim tmpDIB As pdDIB, tmpLayer As pdLayer, newLayerID As Long, selLayerID As Long
+                    selLayerID = -1
                     For i = listOfLayers.Length - 1 To 0 Step -1
                         
                         If GENERATE_PERF_REPORTS Then VBHacks.GetHighResTime startTime
@@ -338,7 +349,7 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                                     tmpLayer.SetLayerOffsetX .orlX
                                     tmpLayer.SetLayerOffsetY .orlY
                                     tmpLayer.SetLayerVisibility .orlVisibility
-                                    If .orlSelected Then selLayerIndex = i
+                                    If .orlSelected Then selLayerID = newLayerID
                                 End With
                                 
                                 'Notify the layer of new changes, so it knows to regenerate internal caches on next access
@@ -359,7 +370,8 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                     'All layers have been iterated.  If the target image contains at least one valid layer,
                     ' consider this a successful load.
                     LoadORA = (dstImage.GetNumOfLayers > 0)
-                
+                    If LoadORA And (selLayerID <> -1) Then dstImage.SetActiveLayerByID selLayerID
+                    
                 Else
                     InternalError "LoadORA", "Image width and/or height invalid (" & m_Header.orWidth & "x" & m_Header.orHeight & ")"
                 End If
@@ -392,6 +404,194 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
 CouldNotLoadFile:
     InternalError "LoadORA", "Internal VB error #" & Err.Number & ": " & Err.Description
     LoadORA = False
+
+End Function
+
+'Save a new OpenRaster file to disk.  (With minor modifications, this could also be used to save to a memory stream,
+' but this is *not* currently implemented.)
+Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As Boolean
+    
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcPDImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError "SaveORA", "invalid function parameters"
+        SaveORA = False
+        Exit Function
+    End If
+    
+    'Reset the archiver
+    Set m_ZipArchive = New cZipArchive
+    
+    'The first entry in the archive must always be a file named "mimetype", stored without compression,
+    ' with string content "image/openraster"
+    Dim strUtf8() As Byte, lenInBytes As Long
+    Strings.UTF8FromString "image/openraster", strUtf8, lenInBytes, , True
+    If Not m_ZipArchive.AddFile(strUtf8, "mimetype", , , , 0) Then InternalError "SaveORA", "could not write mimetype"
+    
+    'Next comes a file called "stack.xml".  This XML file contains all layer attribute data.
+    ' Rather than use a full-blown XML manager, let's just use a lightweight stringbuilder to construct the file.
+    Dim cString As pdString
+    Set cString = New pdString
+    cString.AppendLine "<?xml version='1.0' encoding='UTF-8'?>"
+    
+    'The root tag is an <image> tag; it defines the underlying image's dimensions and DPI, as well as a
+    ' (currently meaningless) OpenRaster version number.
+    cString.Append "<image version=""0.0.5"" w="""
+    cString.Append CStr(srcPDImage.Width)
+    cString.Append """ h="""
+    cString.Append CStr(srcPDImage.Height)
+    cString.Append """ xres="""
+    cString.Append CStr(srcPDImage.GetDPI)
+    cString.Append """ yres="""
+    cString.Append CStr(srcPDImage.GetDPI)
+    cString.AppendLine """>"""
+    cString.AppendLine vbTab & "<stack>"
+    
+    'Next, we need to write out a header for each layer entry.  Note that we weirdly write these in
+    ' *reverse* order, as the spec requires you to list layers in top-down order.  (While at it,
+    ' we also invent a PNG "file path" identifier for each layer, based on its index.)
+    Dim xOffset As Long, yOffset As Long
+    Dim tmpDIB As pdDIB, pathInsideZip As String
+    
+    Dim i As Long, numLayersBound As Long
+    numLayersBound = srcPDImage.GetNumOfLayers - 1
+    For i = numLayersBound To 0 Step -1
+        
+        If Not (srcPDImage.GetLayerByIndex(i) Is Nothing) Then
+            With srcPDImage.GetLayerByIndex(i)
+                
+                'It sounds funny, but if the target layer has non-destructive transformations active,
+                ' we actually need to grab a copy of its image data before writing it out to file.
+                ' The reason for this is that most other software does not support non-destructive editing,
+                ' which means we need to make temporary destructive copies of this layer, which are likely
+                ' to be offset to a different (x, y) position.
+                If .AffineTransformsActive(True) Then
+                    .GetAffineTransformedDIB tmpDIB, xOffset, yOffset
+                Else
+                    Set tmpDIB = New pdDIB
+                    tmpDIB.CreateFromExistingDIB .layerDIB
+                    xOffset = .GetLayerOffsetX
+                    yOffset = .GetLayerOffsetY
+                End If
+                
+                'Saved PNGs must (obviously) contain un-premultiplied alpha
+                tmpDIB.SetAlphaPremultiplication False
+                
+                'Add the PNG stream to the zip file
+                pathInsideZip = "data/" & Format$(i, "000") & ".png"
+                If AddImageToZipAsPNG(tmpDIB, pathInsideZip) Then
+                
+                    'The PNG was added successfully.  Add its header to the stack XML.
+                    cString.Append String$(2, vbTab) & "<layer src="""
+                    cString.Append pathInsideZip
+                    cString.Append """ name="""
+                    cString.Append Strings.EscapeXMLString(.GetLayerName)
+                    cString.Append """ visibility="""
+                    cString.Append IIf(.GetLayerVisibility, "visible", "hidden")
+                    cString.Append """ opacity="""
+                    cString.Append Format$((.GetLayerOpacity * 0.01), "0.0###")
+                    cString.Append """ x="""
+                    cString.Append Trim$(Str$(xOffset))
+                    cString.Append """ y="""
+                    cString.Append Trim$(Str$(yOffset))
+                    cString.Append """ composite-op="""
+                    cString.Append GetSVGOpFromBlendMode(.GetLayerBlendMode)
+                    If (srcPDImage.GetActiveLayerIndex = i) Then cString.Append """ selected=""true"
+                    cString.AppendLine """/>"
+                    
+                Else
+                    InternalError "SaveORA", "Couldn't add layer """ & .GetLayerName & """ to zip file; omitting layer from stack.xml to match."
+                End If
+                
+            End With
+        End If
+        
+    Next i
+    
+    'Close all remaining tags
+    cString.AppendLine vbTab & "</stack>"
+    cString.AppendLine "</image>"
+    
+    'Convert the string to UTF-8 (in case there are Unicode chars in places like layer names) and add it to the zip
+    Strings.UTF8FromString cString.ToString(), strUtf8, lenInBytes, , True
+    If Not m_ZipArchive.AddFile(strUtf8, "stack.xml") Then InternalError "SaveORA", "WARNING!  ExportORA could not write stack.xml."
+    
+    'Next, we need to add a thumbnail image to the zip.  This is basically identical to the previous step
+    ' of adding individual layers to the zip file as PNGs: generate a thumbnail DIB, save it to a PNG bytestream,
+    ' and add the bytestream to the file at a hard-coded location.
+    srcPDImage.RequestThumbnail tmpDIB, 256, False
+    tmpDIB.SetAlphaPremultiplication False
+    AddImageToZipAsPNG tmpDIB, "Thumbnails/thumbnail.png"
+    
+    'Finally, we need to add a fully composited copy of the image.
+    srcPDImage.GetCompositedImage tmpDIB, False
+    AddImageToZipAsPNG tmpDIB, "mergedimage.png"
+    
+    'And we're done!  Write the finished archive out to disk.
+    SaveORA = m_ZipArchive.CompressArchive(dstFile, , , vbTrue)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError "SaveORA", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SaveORA = False
+    
+End Function
+
+Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip As String) As Boolean
+
+    AddImageToZipAsPNG = False
+    
+    Dim pngBytes() As Byte
+    
+    'There are currently two ways to save an in-memory PNG: FreeImage, or GDI+.  GDI+ adds a bunch of
+    ' unwanted PNG chunks (sRGB, cHRM) which fuck up the subsequent PNG's display on color-managed software.
+    ' FreeImage doesn't do this, so we preferentially use it if available.
+    If g_ImageFormats.FreeImageEnabled() Then
+    
+        Dim hFICopy As Long, savedSize As Long
+        hFICopy = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
+        If (hFICopy <> 0) Then
+            If Outside_FreeImageV3.FreeImage_SaveToMemoryEx(FIF_PNG, hFICopy, pngBytes, FISO_PNG_Z_DEFAULT_COMPRESSION, True, savedSize) Then
+                
+                If (savedSize <> UBound(pngBytes) + 1) Then ReDim Preserve pngBytes(0 To savedSize - 1) As Byte
+                
+                'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
+                ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
+                ' additional compression atop that gains little, but eats up a ton of time.
+                AddImageToZipAsPNG = m_ZipArchive.AddFile(pngBytes, pathInsideZip, , , , 0)
+                If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
+                
+            Else
+                InternalError "AddImageToZipAsPNG", "Couldn't use FreeImage to save """ & pathInsideZip & """ as PNG"
+            End If
+        Else
+            InternalError "AddImageToZipAsPNG", "Couldn't generate FreeImage handle for """ & pathInsideZip & """"
+        End If
+        
+    Else
+    
+        Dim hGdipImage As Long
+        If GDI_Plus.GetGdipBitmapHandleFromDIB(hGdipImage, srcDIB) Then
+            If GDI_Plus.GDIPlus_ImageSaveToArray(hGdipImage, pngBytes, P2_FFE_PNG) Then
+            
+                'Free the temporary GDI+ handle
+                GDI_Plus.ReleaseGDIPlusImage hGdipImage
+                
+                'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
+                ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
+                ' additional compression atop that gains little, but eats up a ton of time.
+                AddImageToZipAsPNG = m_ZipArchive.AddFile(pngBytes, pathInsideZip, , , , 0)
+                If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
+                
+            Else
+                InternalError "AddImageToZipAsPNG", "Couldn't generate PNG for """ & pathInsideZip & """"
+            End If
+        Else
+            InternalError "AddImageToZipAsPNG", "Couldn't acquire GDI+ handle for """ & pathInsideZip & """"
+        End If
+        
+    End If
 
 End Function
 
@@ -492,6 +692,54 @@ Private Function GetBlendModeFromSVGOp(ByRef srcString As String) As PD_BlendMod
 
 End Function
 
+Private Function GetSVGOpFromBlendMode(ByVal srcBlendMode As PD_BlendMode) As String
+    Select Case srcBlendMode
+        Case BL_NORMAL
+            GetSVGOpFromBlendMode = "svg:src-over"
+        Case BL_MULTIPLY
+            GetSVGOpFromBlendMode = "svg:multiply"
+        Case BL_SCREEN
+            GetSVGOpFromBlendMode = "svg:screen"
+        Case BL_OVERLAY
+            GetSVGOpFromBlendMode = "svg:overlay"
+        Case BL_DARKEN
+            GetSVGOpFromBlendMode = "svg:darken"
+        Case BL_LIGHTEN
+            GetSVGOpFromBlendMode = "svg:lighten"
+        Case BL_COLORDODGE
+            GetSVGOpFromBlendMode = "svg:color-dodge"
+        Case BL_COLORBURN
+            GetSVGOpFromBlendMode = "svg:color-burn"
+        Case BL_HARDLIGHT
+            GetSVGOpFromBlendMode = "svg:hard-light"
+        Case BL_SOFTLIGHT
+            GetSVGOpFromBlendMode = "svg:soft-light"
+        Case BL_DIFFERENCE
+            GetSVGOpFromBlendMode = "svg:difference"
+        Case BL_COLOR
+            GetSVGOpFromBlendMode = "svg:color"
+        Case BL_LUMINOSITY
+            GetSVGOpFromBlendMode = "svg:luminosity"
+        Case BL_HUE
+            GetSVGOpFromBlendMode = "svg:hue"
+        Case BL_SATURATION
+            GetSVGOpFromBlendMode = "svg:saturation"
+        
+        'TODO:
+        'Case "svg:plus"
+        'Case "svg:dst-in"
+        'Case "svg:dst-out"
+        'Case "svg:src-atop"
+        'Case "svg:dst-atop"
+        
+        Case Else
+            InternalError "GetSVGOpFromBlendMode", "unknown blend mode: " & srcBlendMode
+            GetSVGOpFromBlendMode = "svg:src-over"
+    
+    End Select
+
+End Function
+
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
         If writeDebugLog Then PDDebug.LogAction "pdOpenRaster." & funcName & "() reported an error on file """ & m_Filename & """: " & errDescription
@@ -508,6 +756,3 @@ Private Sub InternalWarning(ByRef funcName As String, ByRef warnText As String, 
     End If
 End Sub
 
-Private Sub Class_Initialize()
-    Set m_ZipArchive = New cZipArchive
-End Sub

@@ -1749,7 +1749,7 @@ End Function
 'Paint a FreeImage DIB to an arbitrary clipping rect on some target pdDIB.  This does not free or otherwise modify the source FreeImage object
 Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As Boolean
     
-    If (Not (dstDIB Is Nothing)) And (fi_Handle <> 0) Then
+    If (Not dstDIB Is Nothing) And (fi_Handle <> 0) Then
         
         Dim bmpInfo As BITMAPINFO
         Outside_FreeImageV3.FreeImage_GetInfoHeaderEx fi_Handle, VarPtr(bmpInfo.bmiHeader)

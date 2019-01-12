@@ -3022,7 +3022,7 @@ Dim lSizeInBytes As Long
    ' The function returns True on success and False otherwise.
    
    
-   If (Bitmap) Then
+   If Bitmap Then
    
       If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
@@ -3030,11 +3030,12 @@ Dim lSizeInBytes As Long
       End If
    
       hStream = FreeImage_OpenMemory()
-      If (hStream) Then
+      If hStream Then
          FreeImage_SaveToMemoryEx = FreeImage_SaveToMemory(Format, Bitmap, hStream, Flags)
          
-         If (FreeImage_SaveToMemoryEx) Then
-            If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
+         If FreeImage_SaveToMemoryEx Then
+            If FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes) Then
+                
                 On Error Resume Next
                 
                 'Change by Tanner: return the size in bytes, and only allocate new memory as necessary.
@@ -3058,18 +3059,16 @@ Dim lSizeInBytes As Long
             End If
          
          Else
-         
-            
-         
+            Debug.Print "FreeImage_SaveToMemoryEx failed."
          End If
          
-         
          Call FreeImage_CloseMemory(hStream)
+         
       Else
          FreeImage_SaveToMemoryEx = False
       End If
       
-      If (UnloadSource) Then Call FreeImage_Unload(Bitmap)
+      If UnloadSource Then Call FreeImage_Unload(Bitmap)
       
    End If
 

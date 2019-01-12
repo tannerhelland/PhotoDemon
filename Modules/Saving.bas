@@ -400,6 +400,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         Case PDIF_JXR
             ExportToSpecificFormat = ImageExporter.ExportJXR(srcImage, dstPath, saveParameters, metadataParameters)
+            
+        Case PDIF_ORA
+            ExportToSpecificFormat = ImageExporter.ExportORA(srcImage, dstPath, saveParameters, metadataParameters)
         
         'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
         Case PDIF_PDI

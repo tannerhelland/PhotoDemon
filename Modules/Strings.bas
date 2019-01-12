@@ -254,6 +254,19 @@ Public Function BytesFromBase64Ex(ByVal dstPtr As Long, ByRef dstBufferSize As L
     BytesFromBase64Ex = (CryptStringToBinary(StrPtr(srcBase64), Len(srcBase64), CRYPT_STRING_BASE64, dstPtr, dstBufferSize, 0&, dwActualUsed) <> 0)
 End Function
 
+'XML escaping is easier than HTML escaping, as only five chars must be handled ("'<>&).  While these five
+' chars don't *always* need to be escaped (and in fact, they specifically shouldn't be escaped in comments),
+' this function *always* escapes the chars, if found.  For a more comprehensive solution, use MSXML.
+' (Also, this function is not optimized at all; sorry.)
+Public Function EscapeXMLString(ByRef srcString As String) As String
+    EscapeXMLString = srcString
+    If (InStr(1, srcString, """", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, """", "&quot;")
+    If (InStr(1, srcString, "'", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "'", "&apos;")
+    If (InStr(1, srcString, "<", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "<", "&lt;")
+    If (InStr(1, srcString, ">", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, ">", "&gt;")
+    If (InStr(1, srcString, "&", vbBinaryCompare) <> 0) Then EscapeXMLString = Replace$(EscapeXMLString, "&", "&amp;")
+End Function
+
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
 ' into a VB string.
 '
@@ -792,16 +805,34 @@ Public Function TrimNull(ByRef origString As String) As String
   
 End Function
 
+'Sister function to EscapeXMLString(), above.  See there for additional implementation details.
+' (Also, this function is not optimized at all; sorry.)
+Public Function UnEscapeXMLString(ByRef srcString As String) As String
+    UnEscapeXMLString = srcString
+    If (InStr(1, srcString, "&quot;", vbBinaryCompare) <> 0) Then UnEscapeXMLString = Replace$(UnEscapeXMLString, "&quot;", """")
+    If (InStr(1, srcString, "&apos;", vbBinaryCompare) <> 0) Then UnEscapeXMLString = Replace$(UnEscapeXMLString, "&apos;", "'")
+    If (InStr(1, srcString, "&lt;", vbBinaryCompare) <> 0) Then UnEscapeXMLString = Replace$(UnEscapeXMLString, "&lt;", "<")
+    If (InStr(1, srcString, "&gt;", vbBinaryCompare) <> 0) Then UnEscapeXMLString = Replace$(UnEscapeXMLString, "&gt;", ">")
+    If (InStr(1, srcString, "&amp;", vbBinaryCompare) <> 0) Then UnEscapeXMLString = Replace$(UnEscapeXMLString, "&amp;", "&")
+End Function
+
 'Given a VB string, fill a byte array with matching UTF-8 data.  Null-termination of the source string is
 ' (obviously) assumed, which allows us to pass -1 for length; note that we must then remove a null char from
-' the return value length, to ensure correct output.  (This also means that unless you *want* the null char,
+' the return value length, to ensure correct output.  (This also means that unless you *want* trailing null chars,
 ' you can't use the size of the return array to infer the length of the written bytes.  This is by design.
 ' Be a good developer and use the lenUTF8 value, as intended.)
 '
+'If you want a perfectly-sized return array for some reason, set the "trimTrailingNulls" parameter to TRUE.
+' This will remove ALL trailing nulls, so do not use this if the UTF8 string must be passed to e.g. an external
+' API that requires *char or similar.
+'
 'RETURNS: TRUE if successful; FALSE otherwise
-Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, ByRef lenUTF8 As Long, Optional ByVal baseArrIndexToWrite As Long = 0) As Boolean
+Public Function UTF8FromString(ByRef srcString As String, ByRef dstUtf8() As Byte, ByRef lenUTF8 As Long, Optional ByVal baseArrIndexToWrite As Long = 0, Optional ByVal trimTrailingNulls As Boolean = False) As Boolean
     UTF8FromString = Strings.UTF8FromStrPtr(StrPtr(srcString), -1, dstUtf8, lenUTF8, baseArrIndexToWrite)
     If (lenUTF8 > 0) Then lenUTF8 = lenUTF8 - 1
+    If trimTrailingNulls Then
+        If (UBound(dstUtf8) + baseArrIndexToWrite) > (lenUTF8 - 1) Then ReDim Preserve dstUtf8(0 To lenUTF8 - 1) As Byte
+    End If
 End Function
 
 'Given a pointer to a VB string, fill a byte array with matching UTF-8 data.  Note that you can pass -1
@@ -853,8 +884,8 @@ Public Function UTF8FromStrPtr(ByVal srcPtr As Long, ByVal srcLenInChars As Long
         Dim finalResult As Long
         finalResult = WideCharToMultiByte(CP_UTF8, 0, srcPtr, srcLenInChars, VarPtr(dstUtf8(baseArrIndexToWrite)), lenUTF8, 0, 0)
         
-        'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
-        ' fail here, but better safe than sorry.)
+        'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating
+        ' a buffer length, only to fail here, but better safe than sorry.)
         UTF8FromStrPtr = (finalResult <> 0)
         If (Not UTF8FromStrPtr) Then InternalError "Strings.UTF8FromStrPtr() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
         
