@@ -427,13 +427,13 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         
     End If
     
-    If (Not g_ImageFormats.FreeImageEnabled) Then
+    If (Not ImageFormats.IsFreeImageEnabled()) Then
         btsCompression.Enabled = False
         btsSubsampling.Enabled = False
         btsDepth.Enabled = False
     End If
     
-    If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    If (Not ImageFormats.IsFreeImageEnabled()) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Update the preview
     UpdatePreviewSource
@@ -487,7 +487,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled And (Not m_SrcImage Is Nothing)) Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

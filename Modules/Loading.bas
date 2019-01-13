@@ -284,7 +284,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         End Select
             
-        PDDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
+        PDDebug.LogAction vbTab & "Detected format: " & ImageFormats.GetInputFormatDescription(ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
         PDDebug.LogAction vbTab & "Image size (original file): " & Format$(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format$(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
@@ -578,8 +578,8 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'TMP files are internal PD temp files generated from a wide variety of use-cases (Clipboard is one example).  These are
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
-            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
-            If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+            If ImageFormats.IsFreeImageEnabled() Then loadSuccessful = (FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
+            If (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
             
         'PDTMP files are custom PD-format files saved ONLY during Undo/Redo or Autosaving.  As such, they have some weirdly specific
@@ -592,13 +592,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case Else
             
             'If FreeImage is available, use it to try and load the image.
-            If g_ImageFormats.FreeImageEnabled Then
+            If ImageFormats.IsFreeImageEnabled() Then
                 freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, , suppressDebugData)
                 loadSuccessful = (freeImageReturn = PD_SUCCESS)
             End If
                 
             'If FreeImage fails for some reason, offload the image to GDI+
-            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
+            If (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB, tmpPDImage)
                     
     End Select
     

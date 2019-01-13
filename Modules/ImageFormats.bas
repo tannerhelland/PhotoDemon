@@ -1,38 +1,21 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-  Persistable = 0  'NotPersistable
-  DataBindingBehavior = 0  'vbNone
-  DataSourceBehavior  = 0  'vbNone
-  MTSTransactionMode  = 0  'NotAnMTSObject
-END
-Attribute VB_Name = "pdFormats"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
+Attribute VB_Name = "ImageFormats"
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 02/May/16
-'Last update: expand PNM variant support
+'Last updated: 13/January/19
+'Last update: add support for OpenRaster images
 '
-'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
-' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
-' or adjust PhotoDemon's support for individual formats.  To remedy this problem, this class was created.
+'This module determines run-time read/write support for various image formats.
 '
-'Based on the available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
-' and reading.  These format lists are separately maintained, and the presence of a format in e.g. the Import category
+'Based on available plugins, this class generates a list of file formats that PhotoDemon is capable of writing
+' and reading.  These format lists are separately maintained, and the presence of a format in the Import category
 ' does not guarantee a similar presence in the Export category.
 '
-'Most non-standard formats rely on FreeImage for loading and/or saving, and they can additionally be tested against
-' individual FreeImage version numbers if necessary.  (Thus far, this has *not* proven necessary.)
-'
-'GDI+ is optionally used as a fallback if FreeImage is not present, but it should be noted that GDI+ interoperability
-' is not as well-tested as FreeImage.  In some cases, however, it IS faster to use GDI+ due to the need to make a
-' specialized copy of DIB data for FreeImage's internal handling - so in the case of batch processing, GDI+ may be
-' used preferentially over FreeImage for reading and writing certain filetypes.
+'Many esoteric formats rely on FreeImage.dll for loading and/or saving.  In some cases, GDI+ is used preferentially
+' over FreeImage (e.g. loading JPEGs; FreeImage has better coverage of non-standard JPEG encodings, but GDI+ is
+' significantly faster).  From this module alone, it won't be clear which plugin, if any, is used to load a given
+' file - for that, you'd need to consult the relevant debug log after loading an image file.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -42,13 +25,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Is the FreeImage DLL available?
-Public FreeImageEnabled As Boolean
-
-'Is GDI+ available?
-Public GDIPlusEnabled As Boolean
+Private m_FreeImageEnabled As Boolean
 
 'Is pngQuant available?
-Public pngQuantEnabled As Boolean
+Private m_pngQuantEnabled As Boolean
 
 'Number of available input, output formats
 Private numOfInputFormats As Long, numOfOutputFormats As Long
@@ -77,7 +57,7 @@ Private m_cdOutputDefaultExtensions As String
 Private m_curFormatIndex As Long
 
 'Return the index of given input PDIF
-Friend Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
+Public Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfInputFormats
@@ -93,7 +73,7 @@ Friend Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
 End Function
 
 'Return the PDIF ("PD image format" constant) at a given index
-Friend Function GetInputPDIF(ByVal dIndex As Long) As Long
+Public Function GetInputPDIF(ByVal dIndex As Long) As Long
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputPDIF = inputPDIFs(dIndex)
     Else
@@ -102,7 +82,7 @@ Friend Function GetInputPDIF(ByVal dIndex As Long) As Long
 End Function
 
 'Return the friendly input format description at a given index
-Friend Function GetInputFormatDescription(ByVal dIndex As Long) As String
+Public Function GetInputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatDescription = inputDescriptions(dIndex)
     Else
@@ -111,7 +91,7 @@ Friend Function GetInputFormatDescription(ByVal dIndex As Long) As String
 End Function
 
 'Return the input format extension at a given index
-Friend Function GetInputFormatExtensions(ByVal dIndex As Long) As String
+Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetInputFormatExtensions = inputExtensions(dIndex)
     Else
@@ -121,7 +101,7 @@ End Function
 
 'Return a list of all input formats supported by the current session.  By default, the list is delimited with commas,
 ' and each extension is listed as "*.abc".
-Friend Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
+Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
     
     'The first entry in the extensions collection is used for the "All supported formats" common dialog option;
     ' as such, it already contains a full list of valid extensions.
@@ -133,17 +113,17 @@ Friend Function GetListOfInputFormats(Optional ByVal listDelimiter As String = "
 End Function
 
 'Return the number of available input format types
-Friend Function GetNumOfInputFormats() As Long
+Public Function GetNumOfInputFormats() As Long
     GetNumOfInputFormats = numOfInputFormats
 End Function
 
 'Return a list of input filetypes formatted for use with a common dialog box
-Friend Function GetCommonDialogInputFormats() As String
+Public Function GetCommonDialogInputFormats() As String
     GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
 'Return the index of given output FIF
-Friend Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
+Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfOutputFormats
@@ -159,7 +139,7 @@ Friend Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
 End Function
 
 'Return the FIF (image format constant) at a given index
-Friend Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
+Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
@@ -168,7 +148,7 @@ Friend Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
 End Function
 
 'Return the friendly output format description at a given index
-Friend Function GetOutputFormatDescription(ByVal dIndex As Long) As String
+Public Function GetOutputFormatDescription(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatDescription = outputDescriptions(dIndex)
     Else
@@ -177,7 +157,7 @@ Friend Function GetOutputFormatDescription(ByVal dIndex As Long) As String
 End Function
 
 'Return the output format extension at a given index
-Friend Function GetOutputFormatExtension(ByVal dIndex As Long) As String
+Public Function GetOutputFormatExtension(ByVal dIndex As Long) As String
     If (dIndex >= 0) And (dIndex <= numOfOutputFormats) Then
         GetOutputFormatExtension = outputExtensions(dIndex)
     Else
@@ -186,22 +166,22 @@ Friend Function GetOutputFormatExtension(ByVal dIndex As Long) As String
 End Function
 
 'Return the number of available output format types
-Friend Function GetNumOfOutputFormats() As Long
+Public Function GetNumOfOutputFormats() As Long
     GetNumOfOutputFormats = numOfOutputFormats
 End Function
 
 'Return a list of output filetypes formatted for use with a common dialog box
-Friend Function GetCommonDialogOutputFormats() As String
+Public Function GetCommonDialogOutputFormats() As String
     GetCommonDialogOutputFormats = m_CommonDialogOutputs
 End Function
 
 'Return a list of output default extensions formatted for use with a common dialog box
-Friend Function GetCommonDialogDefaultExtensions() As String
+Public Function GetCommonDialogDefaultExtensions() As String
     GetCommonDialogDefaultExtensions = m_cdOutputDefaultExtensions
 End Function
 
 'Generate a list of available import formats
-Friend Sub GenerateInputFormats()
+Public Sub GenerateInputFormats()
 
     'Prepare a list of possible INPUT formats based on the plugins available to us.
     ' (These format lists are automatically trimmed after plugin status has been assessed;
@@ -225,25 +205,26 @@ Friend Sub GenerateInputFormats()
     'Bitmap files require no plugins; they are always supported.
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "DDS - DirectDraw Surface", "*.dds", PDIF_DDS
         AddInputFormat "DNG - Adobe Digital Negative", "*.dng", PDIF_RAW
     End If
     
-    If GDIPlusEnabled Then AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
+    'EMFs will be loaded via GDI+ for improved rendering and feature compatibility
+    AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "EXR - Industrial Light and Magic", "*.exr", PDIF_EXR
         AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
     End If
     
     AddInputFormat "GIF - Compuserve", "*.gif", PDIF_GIF
     
-    If FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
+    If m_FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
     
     AddInputFormat "ICO - Windows Icon", "*.ico", PDIF_ICO
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
         AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
         AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", PDIF_JP2
@@ -251,7 +232,7 @@ Friend Sub GenerateInputFormats()
     
     AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "JXR/HDP - JPEG XR (HD Photo)", "*.jxr;*.hdp;*.wdp", PDIF_JXR
         AddInputFormat "KOA/KOALA - Commodore 64", "*.koa;*.koala", PDIF_KOALA
         AddInputFormat "LBM - Deluxe Paint", "*.lbm", PDIF_LBM
@@ -260,7 +241,7 @@ Friend Sub GenerateInputFormats()
     
     AddInputFormat "ORA - OpenRaster", "*.ora", PDIF_ORA
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "PBM - Portable Bitmap", "*.pbm", PDIF_PBM
         AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
         AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
@@ -269,16 +250,16 @@ Friend Sub GenerateInputFormats()
     'PDI (PhotoDemon's native file format) is always available!
     AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
         
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "PFM - Portable Floatmap", "*.pfm", PDIF_PFM
         AddInputFormat "PGM - Portable Graymap", "*.pgm", PDIF_PGM
         AddInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", PDIF_PICT
     End If
     
-    'FreeImage or GDI+ works for loading PNGs
-    If FreeImageEnabled Or GDIPlusEnabled Then AddInputFormat "PNG - Portable Network Graphic", "*.png", PDIF_PNG
+    'We actually have three PNG decoders: an internal one (preferred), FreeImage, and GDI+
+    AddInputFormat "PNG - Portable Network Graphic", "*.png", PDIF_PNG
         
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "PNM - Portable Anymap", "*.pnm", PDIF_PPM
         AddInputFormat "PPM - Portable Pixmap", "*.ppm", PDIF_PPM
         AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
@@ -289,14 +270,15 @@ Friend Sub GenerateInputFormats()
     End If
     
     'FreeImage or GDI+ works for loading TIFFs
-    If FreeImageEnabled Or GDIPlusEnabled Then AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
+    AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
         
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
         AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     End If
     
-    If GDIPlusEnabled Then AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
+    'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
+    AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
     
     'Finish out the list with an obligatory "All files" option
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
@@ -353,7 +335,7 @@ Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionLis
 End Sub
 
 'Generate a list of available export formats
-Friend Sub GenerateOutputFormats()
+Public Sub GenerateOutputFormats()
 
     ReDim outputExtensions(0 To 50) As String
     ReDim outputDescriptions(0 To 50) As String
@@ -366,31 +348,35 @@ Friend Sub GenerateOutputFormats()
 
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     
-    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
+    'FreeImage or GDI+ can write GIFs for us
+    AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
         AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     End If
         
-    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
+    'FreeImage or GDI+ can write JPEGs for us
+    AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
         
-    If FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
+    If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     
-    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
+    'FreeImage or GDI+ can write PNGs for us
+    AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
     
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
         AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
         AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     End If
     
-    If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
+    'FreeImage or GDI+ can write TIFFs for us
+    AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
     
-    If FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    If m_FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
     numOfOutputFormats = m_curFormatIndex
@@ -437,7 +423,7 @@ Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionLi
 End Sub
 
 'Given a PDIF (PhotoDemon image format constant), return the default extension.
-Friend Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
+Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
     Select Case srcPDIF
     
@@ -538,7 +524,7 @@ Friend Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 End Function
 
 'This can be used to see if an output format supports multiple color depths.
-Friend Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -553,19 +539,30 @@ Friend Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_
 End Function
 
 'Given a file format and color depth, are the two compatible?  (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
+Public Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Boolean
+    
+    'Internal engines are covered first; in the absence of these, we'll rely on feature sets in
+    ' either FreeImage (if available) or GDI+
     
     'Check the special case of PDI (internal PhotoDemon images)
     If (outputPDIF = PDIF_PDI) Then
         IsColorDepthSupported = True
         Exit Function
     End If
+    
+    'OpenRaster support uses an internal engine
+    If (outputPDIF = PDIF_ORA) Then
+        IsColorDepthSupported = (desiredColorDepth = 32)
+        Exit Function
+    End If
+    
+    'All subsequent checks rely on FreeImage or GDI+
 
     'By default, report that a given color depth is NOT supported
     IsColorDepthSupported = False
     
     'First, address formats handled only by FreeImage
-    If FreeImageEnabled Then
+    If m_FreeImageEnabled Then
         
         Select Case outputPDIF
         
@@ -737,24 +734,18 @@ Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredCol
         'Because FreeImage covers every available file type, we can now exit the function with whatever value has been set
         Exit Function
         
-    End If
-    
-    'If we have reached this line of code, FreeImage is not available.
-    
-    'So check to see what color depths GDI+ can offer
-    If GDIPlusEnabled Then
+    'If FreeImage isn't available, fall back to GDI+ features
+    Else
     
         Select Case outputPDIF
         
             'GIF
             Case PDIF_GIF
-            
-                If desiredColorDepth = 8 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+                IsColorDepthSupported = (desiredColorDepth = 8)
                 
             'JPEG
             Case PDIF_JPEG
-            
-                If desiredColorDepth = 24 Then IsColorDepthSupported = True Else IsColorDepthSupported = False
+                IsColorDepthSupported = (desiredColorDepth = 24)
                 
             'PNG
             Case PDIF_PNG
@@ -797,73 +788,54 @@ Friend Function IsColorDepthSupported(ByVal outputPDIF As Long, ByVal desiredCol
                 End Select
         
         End Select
-        
-        'Because GDI+ covers every available file type (if FreeImage can't be found), we can now exit the function with whatever value has been set
-        Exit Function
-    
-    End If
-    
-    'Finally, cover some export formats that are handled by internal engines
-    If (outputPDIF = PDIF_BMP) Then
-        IsColorDepthSupported = (desiredColorDepth = 24) Or (desiredColorDepth = 32)
-        
-    ElseIf (outputPDIF = PDIF_ORA) Then
-        IsColorDepthSupported = (desiredColorDepth = 32)
-                
+     
     End If
 
 End Function
 
 'Given a file format and desired color depth, return the next-best color depth that can be used (assuming the desired one is not available)
 ' (NOTE: this function takes into account the availability of FreeImage and/or GDI+)
-Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColorDepth As Long) As Long
+Public Function GetClosestColorDepth(ByVal outputPDIF As PD_IMAGE_FORMAT, ByVal desiredColorDepth As Long) As Long
     
-    'Check the special case of PDI (internal PhotoDemon images)
+    'Internal export engines are handled first, as they tend to have the most comprehensive
+    ' (and reliable) color depth coverage
     If (outputPDIF = PDIF_PDI) Then
         GetClosestColorDepth = desiredColorDepth
         Exit Function
     End If
+    
+    If (outputPDIF = PDIF_ORA) Then
+        GetClosestColorDepth = 32
+        Exit Function
+    End If
+    
+    'Subsequent formats are covered by either FreeImage or GDI+
 
     'By default, report that 24bpp is the preferred alternative
     GetClosestColorDepth = 24
-
+    
     'Certain file formats only support one output color depth, so they are easily handled (e.g. GIF)
     
     'Some file formats support many color depths (PNG, for example, can handle 1/4/8/24/32)
     
-    'Some file formats offer different color depths based on what encoders are available (BMP, for example, has access to 1/4/8 bpp
-    ' if either of FreeImage or GDI+ is enabled)
-    
-    'Based on all these factors, return the nearest color depth to the one the user would like to use (but can't, presumably)
+    'This function attempts to return the color depth nearest to the one the user has requested
     Select Case outputPDIF
     
         'BMP support changes based on the available encoder
         Case PDIF_BMP
         
-            'FreeImage and GDI+ offer identical bpp support
-            If FreeImageEnabled Or GDIPlusEnabled Then
-            
-                If desiredColorDepth <= 1 Then
-                    GetClosestColorDepth = 1
-                ElseIf desiredColorDepth <= 4 Then
-                    GetClosestColorDepth = 4
-                ElseIf desiredColorDepth <= 8 Then
-                    GetClosestColorDepth = 8
-                ElseIf desiredColorDepth <= 24 Then
-                    GetClosestColorDepth = 24
-                Else
-                    GetClosestColorDepth = 32
-                End If
-            
-            'If both FreeImage and GDI+ are missing, we can only write 24 and 32bpp bitmaps
+            If desiredColorDepth <= 1 Then
+                GetClosestColorDepth = 1
+            ElseIf desiredColorDepth <= 4 Then
+                GetClosestColorDepth = 4
+            ElseIf desiredColorDepth <= 8 Then
+                GetClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                GetClosestColorDepth = 24
             Else
-                If desiredColorDepth <= 24 Then
-                    GetClosestColorDepth = 24
-                Else
-                    GetClosestColorDepth = 32
-                End If
+                GetClosestColorDepth = 32
             End If
-        
+            
         'GIF only supports 8bpp
         Case PDIF_GIF
             GetClosestColorDepth = 8
@@ -874,19 +846,19 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
             
         'JP2 (JPEG 2000) supports 24/32bpp
         Case PDIF_JP2
-            If desiredColorDepth <= 24 Then
+            If (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
             End If
         
-        'JPEG only supports 24bpp (8bpp grayscale is not currently handled)
+        'JPEG only supports 24bpp (8bpp grayscale is currently handled automatically by the encoder)
         Case PDIF_JPEG
             GetClosestColorDepth = 24
         
         'JXR (JPEG XR) supports 24/32bpp
         Case PDIF_JXR
-            If desiredColorDepth <= 24 Then
+            If (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -898,13 +870,13 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
         'PNG supports all available color depths
         Case PDIF_PNG
         
-            If desiredColorDepth <= 1 Then
+            If (desiredColorDepth <= 1) Then
                 GetClosestColorDepth = 1
-            ElseIf desiredColorDepth <= 4 Then
+            ElseIf (desiredColorDepth <= 4) Then
                 GetClosestColorDepth = 4
-            ElseIf desiredColorDepth <= 8 Then
+            ElseIf (desiredColorDepth <= 8) Then
                 GetClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
+            ElseIf (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -917,13 +889,13 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
         'PSD supports all available color depths
         Case PDIF_PSD
         
-            If desiredColorDepth <= 1 Then
+            If (desiredColorDepth <= 1) Then
                 GetClosestColorDepth = 1
-            ElseIf desiredColorDepth <= 4 Then
+            ElseIf (desiredColorDepth <= 4) Then
                 GetClosestColorDepth = 4
-            ElseIf desiredColorDepth <= 8 Then
+            ElseIf (desiredColorDepth <= 8) Then
                 GetClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
+            ElseIf (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -931,9 +903,9 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
         
         'TGA supports 8/24/32
         Case PDIF_TARGA
-            If desiredColorDepth <= 8 Then
+            If (desiredColorDepth <= 8) Then
                 GetClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
+            ElseIf (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -941,14 +913,13 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
         
         'TIFF supports all available color depths
         Case PDIF_TIFF
-            
-            If desiredColorDepth <= 1 Then
+            If (desiredColorDepth <= 1) Then
                 GetClosestColorDepth = 1
-            ElseIf desiredColorDepth <= 4 Then
+            ElseIf (desiredColorDepth <= 4) Then
                 GetClosestColorDepth = 4
-            ElseIf desiredColorDepth <= 8 Then
+            ElseIf (desiredColorDepth <= 8) Then
                 GetClosestColorDepth = 8
-            ElseIf desiredColorDepth <= 24 Then
+            ElseIf (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -956,7 +927,7 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
             
         'WebP supports 24/32bpp
         Case PDIF_WEBP
-            If desiredColorDepth <= 24 Then
+            If (desiredColorDepth <= 24) Then
                 GetClosestColorDepth = 24
             Else
                 GetClosestColorDepth = 32
@@ -967,7 +938,7 @@ Friend Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
 End Function
 
 'Given an output PDIF, return the ideal metadata format for that image format.
-Friend Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
+Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
 
     Select Case outputPDIF
     
@@ -1020,7 +991,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
 ' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
 '  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
-Friend Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -1074,7 +1045,7 @@ Friend Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boo
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether PD has implemented an export dialog for that image format.
-Friend Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
+Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -1126,3 +1097,36 @@ Friend Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
     End Select
     
 End Function
+
+Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolean
+
+    Select Case srcFormat
+    
+        Case PDIF_PDI
+            IsExifToolRelevant = False
+            
+        Case PDIF_ORA
+            IsExifToolRelevant = False
+            
+        Case Else
+            IsExifToolRelevant = True
+    
+    End Select
+
+End Function
+
+Public Function IsFreeImageEnabled() As Boolean
+    m_FreeImageEnabled = m_FreeImageEnabled
+End Function
+
+Public Sub SetFreeImageEnabled(ByVal newState As Boolean)
+    m_FreeImageEnabled = newState
+End Sub
+
+Public Function IsPngQuantEnabled() As Boolean
+    IsPngQuantEnabled = m_pngQuantEnabled
+End Function
+
+Public Sub SetPngQuantEnabled(ByVal newState As Boolean)
+    m_pngQuantEnabled = newState
+End Sub

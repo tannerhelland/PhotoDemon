@@ -255,7 +255,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         m_ImageHasTransparency = DIBs.IsDIBTransparent(m_CompositedImage)
         
     End If
-    If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    If (Not ImageFormats.IsFreeImageEnabled()) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Update the preview
     UpdateAllVisibility
@@ -637,7 +637,7 @@ End Sub
 
 Private Sub UpdatePreview()
 
-    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
+    If (cmdBar.PreviewsAllowed And ImageFormats.IsFreeImageEnabled() And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

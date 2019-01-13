@@ -288,7 +288,7 @@ Private Sub cmdBar_OKClick()
                 If Loading.QuickLoadImageToDIB(srcFilename, tmpDIB, False, False) Then
                     
                     'This is a valid image file.  Determine the file's correct extension.
-                    newExtension = g_ImageFormats.GetExtensionFromPDIF(tmpDIB.GetOriginalFormat())
+                    newExtension = ImageFormats.GetExtensionFromPDIF(tmpDIB.GetOriginalFormat())
                     fileWasRepaired = True
                     Set tmpDIB = Nothing
                     

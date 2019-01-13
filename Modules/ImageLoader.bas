@@ -988,12 +988,12 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             freeImage_Return = PD_FAILURE_GENERIC
-            If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             
         'For other formats, let FreeImage have a go at it, and we'll try GDI+ if it fails
         Else
             freeImage_Return = PD_FAILURE_GENERIC
-            If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
         End If
         
@@ -1029,19 +1029,15 @@ End Function
 
 Private Function AttemptGDIPlusLoad(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
 
-    If g_ImageFormats.GDIPlusEnabled Then
-        
-        PDDebug.LogAction "Attempting to load via GDI+..."
-        AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
-        
-        If AttemptGDIPlusLoad Then
-            decoderUsed = id_GDIPlus
-            dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
-            dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
-            dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
-            imageHasMultiplePages = (numOfPages > 1)
-        End If
-            
+    PDDebug.LogAction "Attempting to load via GDI+..."
+    AttemptGDIPlusLoad = LoadGDIPlusImage(srcFile, dstDIB, dstImage, numOfPages)
+    
+    If AttemptGDIPlusLoad Then
+        decoderUsed = id_GDIPlus
+        dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
+        dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
+        dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
+        imageHasMultiplePages = (numOfPages > 1)
     End If
         
 End Function

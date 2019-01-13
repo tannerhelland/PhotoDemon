@@ -67,7 +67,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     
     'Retrieve a string representation as well; settings related to this format may be stored inside the pdImage's settings dictionary
     Dim saveExtension As String
-    saveExtension = UCase$(g_ImageFormats.GetExtensionFromPDIF(saveFormat))
+    saveExtension = UCase$(ImageFormats.GetExtensionFromPDIF(saveFormat))
     
     Dim dictEntry As String
     
@@ -88,7 +88,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     If (Macros.GetMacroStatus <> MacroBATCH) Then
         
         'See if this format even supports dialogs...
-        If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
+        If ImageFormats.IsExportDialogSupported(saveFormat) Then
         
             'If the caller did *not* specifically request a dialog, run some heuristics to see if we need one anyway
             ' (e.g. if this the first time saving a JPEG file, we need to query the user for a Quality value)
@@ -192,8 +192,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) And (Not (saveFormat = PDIF_PDI)) Then
-            srcImage.ImgMetadata.WriteAllMetadata dstPath, srcImage
+        If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
+            
+            'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
+            If ImageFormats.IsExifToolRelevant(saveFormat) Then srcImage.ImgMetadata.WriteAllMetadata dstPath, srcImage
+            
         End If
         
         'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
@@ -330,7 +333,7 @@ End Sub
 Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String) As Boolean
     
     'As a failsafe, make sure the requested format even *has* an export dialog!
-    If g_ImageFormats.IsExportDialogSupported(outputPDIF) Then
+    If ImageFormats.IsExportDialogSupported(outputPDIF) Then
         
         Select Case outputPDIF
             
@@ -755,7 +758,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
     End If
 
     'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
         
         'PD exclusively uses premultiplied alpha for internal DIBs (unless image processing math dictates otherwise).
         ' Saved files always use non-premultiplied alpha.  If the source image is premultiplied, we want to create a

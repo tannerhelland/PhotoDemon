@@ -213,7 +213,7 @@ Private Sub Form_Load()
     cboResample.AddItem "Bicubic (optimized for downsizing)"
     
     'Some resample algorithms currently lean on the FreeImage library
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
         cboResample.AddItem "Mitchell-Netravali"
         cboResample.AddItem "Catmull-Rom"
         cboResample.AddItem "Sinc (Lanczos 3-lobe)"
@@ -263,7 +263,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Double-check that FreeImage exists
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
         
         'If srcDIB.GetAlphaPremultiplication Then srcDIB.SetAlphaPremultiplication False
         
@@ -415,7 +415,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         If (fitWidth < srcWidth) Then
             resampleMethod = pdrc_BicubicShrink
         Else
-            If g_ImageFormats.FreeImageEnabled Then
+            If ImageFormats.IsFreeImageEnabled() Then
                 resampleMethod = pdrc_Sinc
             Else
                 resampleMethod = pdrc_BicubicNormal
@@ -489,7 +489,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
             
             'Note that FreeImage provides a bilinear filter, which we do not use at present:
-            'If g_ImageFormats.FreeImageEnabled Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BILINEAR
+            'If ImageFormats.IsFreeImageEnabled() Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BILINEAR
             
         'Bicubic sampling
         ElseIf (resampleMethod = pdrc_BicubicNormal) Then
@@ -501,10 +501,10 @@ Public Sub ResizeImage(ByVal resizeParams As String)
             GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
             
             'Note that FreeImage provides a bspline bicubic filter, which we do not use at present:
-            'If g_ImageFormats.FreeImageEnabled Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
+            'If ImageFormats.IsFreeImageEnabled Then FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
             
         'All subsequent methods require (and assume presence of) the FreeImage plugin
-        ElseIf g_ImageFormats.FreeImageEnabled Then
+        ElseIf ImageFormats.IsFreeImageEnabled Then
                 
             If (resampleMethod = pdrc_Mitchell) Then
                 FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC

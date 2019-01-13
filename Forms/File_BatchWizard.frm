@@ -798,7 +798,7 @@ End Sub
 Private Sub cmbOutputFormat_Click()
     
     'If this format doesn't support export settings, hide the "set export settings" button
-    If g_ImageFormats.IsExportDialogSupported(g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)) Then
+    If ImageFormats.IsExportDialogSupported(ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)) Then
         m_ExportSettingsSet = False
         m_ExportSettingsFormat = vbNullString
         m_ExportSettingsMetadata = vbNullString
@@ -880,7 +880,7 @@ Private Sub cmdAddFolders_Click()
     If (LenB(folderPath) <> 0) Then
         
         Dim listOfFiles As pdStringStack
-        If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, chkAddSubfoldersToo.Value, False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
+        If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, chkAddSubfoldersToo.Value, False, ImageFormats.GetListOfInputFormats("|", False)) Then
                 
             lstFiles.SetAutomaticRedraws False
             
@@ -963,10 +963,10 @@ Private Sub cmdExportSettings_Click()
     
     'Convert the current dropdown index into a PD format constant
     Dim saveFormat As PD_IMAGE_FORMAT
-    saveFormat = g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+    saveFormat = ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
     
     'See if this format even supports dialogs...
-    If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
+    If ImageFormats.IsExportDialogSupported(saveFormat) Then
         
         'The saving module will now raise a dialog specific to the selected format.  If successful, it will fill
         ' the passed settings and metadata strings with XML data describing the user's settings.
@@ -1503,13 +1503,13 @@ Private Sub Form_Load()
                 
     'Populate all file-format-related combo boxes, tooltips, and options
         m_ExportSettingsSet = False
-        For i = 0 To g_ImageFormats.GetNumOfOutputFormats()
-            cmbOutputFormat.AddItem g_ImageFormats.GetOutputFormatDescription(i), i
+        For i = 0 To ImageFormats.GetNumOfOutputFormats()
+            cmbOutputFormat.AddItem ImageFormats.GetOutputFormatDescription(i), i
         Next i
         
         'Save JPEGs by default
         For i = 0 To cmbOutputFormat.ListCount
-            If (StrComp(LCase$(g_ImageFormats.GetOutputFormatExtension(i)), "jpg", vbBinaryCompare) = 0) Then
+            If (StrComp(LCase$(ImageFormats.GetOutputFormatExtension(i)), "jpg", vbBinaryCompare) = 0) Then
                 cmbOutputFormat.ListIndex = i
                 Exit For
             End If
@@ -1791,24 +1791,24 @@ Private Sub PrepareForBatchConversion()
                 If optFormat(0).Value Then
                     
                     'See if this image's file format is supported by the export engine
-                    If (g_ImageFormats.GetIndexOfOutputPDIF(PDImages.GetActiveImage.GetCurrentFileFormat) = -1) Then
+                    If (ImageFormats.GetIndexOfOutputPDIF(PDImages.GetActiveImage.GetCurrentFileFormat) = -1) Then
                         
                         'The current format isn't supported.  Use PNG as it's the best compromise of
                         ' lossless, well-supported, and reasonably well-compressed.
-                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
+                        tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
                         PDImages.GetActiveImage.SetCurrentFileFormat PDIF_PNG
                         
                     Else
                         
                         'This format IS supported, so use the default extension
-                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(PDImages.GetActiveImage.GetCurrentFileFormat)
+                        tmpFileExtension = ImageFormats.GetExtensionFromPDIF(PDImages.GetActiveImage.GetCurrentFileFormat)
                     
                     End If
                     
                 'Possibility 2: force all images to a single file format
                 Else
-                    tmpFileExtension = g_ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
-                    PDImages.GetActiveImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+                    tmpFileExtension = ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
+                    PDImages.GetActiveImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
                 End If
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well

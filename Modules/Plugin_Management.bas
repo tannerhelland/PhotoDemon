@@ -349,7 +349,7 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
         Case CCP_EZTwain
             IsPluginCurrentlyEnabled = Plugin_EZTwain.IsScannerAvailable
         Case CCP_FreeImage
-            IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
+            IsPluginCurrentlyEnabled = ImageFormats.IsFreeImageEnabled()
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
@@ -357,7 +357,7 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
         Case CCP_OptiPNG
             IsPluginCurrentlyEnabled = m_OptiPNGEnabled
         Case CCP_PNGQuant
-            IsPluginCurrentlyEnabled = g_ImageFormats.pngQuantEnabled
+            IsPluginCurrentlyEnabled = ImageFormats.IsPngQuantEnabled()
         Case CCP_zLib
             IsPluginCurrentlyEnabled = m_ZlibEnabled
         Case CCP_zstd
@@ -377,7 +377,7 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
         Case CCP_EZTwain
             Plugin_EZTwain.ForciblySetScannerAvailability newEnabledState
         Case CCP_FreeImage
-            g_ImageFormats.FreeImageEnabled = newEnabledState
+            ImageFormats.SetFreeImageEnabled newEnabledState
         Case CCP_LittleCMS
             m_LCMSEnabled = newEnabledState
         Case CCP_lz4
@@ -385,7 +385,7 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
         Case CCP_OptiPNG
             m_OptiPNGEnabled = newEnabledState
         Case CCP_PNGQuant
-            g_ImageFormats.pngQuantEnabled = newEnabledState
+            ImageFormats.SetPngQuantEnabled newEnabledState
         Case CCP_zLib
             m_ZlibEnabled = newEnabledState
         Case CCP_zstd
@@ -618,7 +618,7 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             Plugin_EZTwain.ForciblySetScannerAvailability pluginState
         
         Case CCP_FreeImage
-            g_ImageFormats.FreeImageEnabled = pluginState
+            ImageFormats.SetFreeImageEnabled pluginState
         
         Case CCP_LittleCMS
             m_LCMSEnabled = pluginState
@@ -630,7 +630,7 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             m_OptiPNGEnabled = pluginState
         
         Case CCP_PNGQuant
-            g_ImageFormats.pngQuantEnabled = pluginState
+            ImageFormats.SetPngQuantEnabled pluginState
         
         Case CCP_zLib
             m_ZlibEnabled = pluginState
@@ -757,7 +757,7 @@ Public Sub TerminateAllPlugins()
     PDDebug.LogAction "EZTwain released"
     
     Plugin_FreeImage.ReleaseFreeImage
-    g_ImageFormats.FreeImageEnabled = False
+    ImageFormats.SetFreeImageEnabled False
     PDDebug.LogAction "FreeImage released"
     
     LittleCMS.ReleaseLCMS

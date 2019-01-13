@@ -485,7 +485,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     
     'Some quantization methods require FreeImage.  If FreeImage doesn't exist, fall back to internal PD methods.
     If (quantMethod <> PDCQ_MedianCut) Then
-        If (Not g_ImageFormats.FreeImageEnabled) Then quantMethod = PDCQ_MedianCut
+        If (Not ImageFormats.IsFreeImageEnabled()) Then quantMethod = PDCQ_MedianCut
     End If
     
     'If the caller doesn't want transparency, composite the image against the specified backcolor *in advance*.

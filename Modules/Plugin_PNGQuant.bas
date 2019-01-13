@@ -62,7 +62,7 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
     
     ApplyPNGQuantToFile_Synchronous = False
     
-    If g_ImageFormats.pngQuantEnabled Then
+    If ImageFormats.IsPngQuantEnabled() Then
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String

@@ -1413,8 +1413,8 @@ Private Sub LoadAllPreferences()
     
         'START tone-mapping HDR images at load time
             chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
-            chkToneMapping.Enabled = g_ImageFormats.FreeImageEnabled
-            If (Not g_ImageFormats.FreeImageEnabled) Then chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
+            chkToneMapping.Enabled = ImageFormats.IsFreeImageEnabled
+            If (Not ImageFormats.IsFreeImageEnabled) Then chkToneMapping.Caption = g_Language.TranslateMessage("feature disabled due to missing plugin")
             chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
         'END tone-mapping HDR images at load time
         

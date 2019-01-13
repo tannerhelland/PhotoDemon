@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.318</langversion>
+<langversion>6.6.319</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -750,9 +750,25 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Menyimpan Tidak Dapat Di Selesaikan Tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
+
+<!-- BEGIN text for ImageFormats.bas -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>Semua Imej Serasi</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>semua berkas</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for ImageFormats.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
@@ -1405,11 +1421,6 @@ Pastikan bahwa gambar ini ada, dan mereka menggunakan format gambar yang didukun
 </phrase>
 
 <phrase>
-<original>All files</original>
-<translation>semua berkas</translation>
-</phrase>
-
-<phrase>
 <original>Open Macro File</original>
 <translation>Buka berkas Makro</translation>
 </phrase>
@@ -1457,7 +1468,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Memproses data makro</translation>
 </phrase>
 
-<!-- BatchProcessor.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for BatchProcessor.bas-->
 
@@ -2887,6 +2898,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
+<!-- BEGIN text for cZipArchive.cls -->
+
+<!-- cZipArchive.cls contains 0 phrases. -->
+
+<!-- END text for cZipArchive.cls-->
+
 <!-- BEGIN text for IMRUList.cls -->
 
 <!-- IMRUList.cls contains 0 phrases. -->
@@ -2916,6 +2933,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pd2DGradient.cls contains 0 phrases. -->
 
 <!-- END text for pd2DGradient.cls-->
+
+<!-- BEGIN text for pd2DGradientCairo.cls -->
+
+<!-- pd2DGradientCairo.cls contains 0 phrases. -->
+
+<!-- END text for pd2DGradientCairo.cls-->
 
 <!-- BEGIN text for pd2DPath.cls -->
 
@@ -3132,17 +3155,6 @@ Please masukkan nilai berangka.</translation>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
-
-<!-- BEGIN text for pdFormats.cls -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>Semua Imej Serasi</translation>
-</phrase>
-
-<!-- pdFormats.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdFormats.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -3551,6 +3563,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdObjectList.cls contains 0 phrases. -->
 
 <!-- END text for pdObjectList.cls-->
+
+<!-- BEGIN text for pdOpenRaster.cls -->
+
+<!-- pdOpenRaster.cls contains 0 phrases. -->
+
+<!-- END text for pdOpenRaster.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -15530,30 +15548,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pd2DGradientCairo.cls -->
-
-<!-- pd2DGradientCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DGradientCairo.cls-->
-
-<!-- BEGIN text for cZipArchive.cls -->
-
-<!-- cZipArchive.cls contains 0 phrases. -->
-
-<!-- END text for cZipArchive.cls-->
-
-<!-- BEGIN text for pdOpenRaster.cls -->
-
-<!-- pdOpenRaster.cls contains 0 phrases. -->
-
-<!-- END text for pdOpenRaster.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4757 phrases. -->
-<!-- 2164 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4755 phrases. -->
+<!-- 2162 are duplicates, so only 2593 unique phrases have been written to file. -->
 <!-- These 2593 phrases contain approximately 12389 total words. -->
 
 </pdData>

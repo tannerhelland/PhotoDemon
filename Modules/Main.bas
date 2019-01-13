@@ -209,7 +209,6 @@ Public Function ContinueLoadingProgram() As Boolean
     Macros.SetMacroStatus MacroSTOP
     
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
-    Set g_ImageFormats = New pdFormats
     ImageImporter.ResetImageImportPreferenceCache
     
     
@@ -355,14 +354,9 @@ Public Function ContinueLoadingProgram() As Boolean
     perfCheck.MarkEvent "Load import and export libraries"
     LoadMessage "Loading import/export libraries..."
     
-    'The FreeImage.dll plugin provides most of PD's advanced image format support, but we can also fall back on GDI+.
-    ' Prior to generating a list of supported formats, notify the image format class of GDI+ availability
-    ' (which was determined earlier in this function, prior to loading the splash screen).
-    g_ImageFormats.GDIPlusEnabled = Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)
-    
     'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
-    g_ImageFormats.GenerateInputFormats
-    g_ImageFormats.GenerateOutputFormats
+    ImageFormats.GenerateInputFormats
+    ImageFormats.GenerateOutputFormats
     
     
     '*************************************************************************************************************************************

@@ -658,12 +658,12 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     'If both GDI+ and FreeImage are missing, use our own internal methods to save the BMP file in its current state.
     ' (This is a measure of last resort, as the saved image is unlikely to match the requested output depth.)
-    If (Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled) Then
+    If (Not Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) And (Not ImageFormats.IsFreeImageEnabled) Then
         tmpImageCopy.WriteToBitmapFile dstFile
         ExportBMP = True
     Else
     
-        If g_ImageFormats.FreeImageEnabled Then
+        If ImageFormats.IsFreeImageEnabled Then
             
             Dim fi_DIB As Long
             fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, , bmpBackgroundColor, isGrayscale Or bmpForceGrayscale, bmpCustomColors, Not bmp16bpp_555Mode)
@@ -747,7 +747,7 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     srcPDImage.GetCompositedImage tmpImageCopy, False
         
     'FreeImage provides the most comprehensive GIF encoder, so we prefer it whenever possible
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
             
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 8, desiredAlphaStatus, PDAS_ComplicatedAlpha, gifAlphaCutoff, gifBackgroundColor, gifForceGrayscale, gifColorCount)
@@ -768,12 +768,10 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
             ExportGIF = False
         End If
-        
-    ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_GIF, 8)
+    
+    'If FreeImage is unavailable, fall back to GDI+
     Else
-        ExportGIF = False
-        Message "No %1 encoder found. Save aborted.", "JPEG"
+        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_GIF, 8)
     End If
     
     
@@ -793,7 +791,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportJP2 = False
     Dim sFileType As String: sFileType = "JP2"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming JP2 parameters
         Dim cParams As pdParamXML
@@ -932,8 +930,8 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         If outputColorDepth = 8 Then forceGrayscale = True
     End If
     
-    'FreeImage is our preferred export engine, but we can use GDI+ if we have to
-    If g_ImageFormats.FreeImageEnabled Then
+    'FreeImage is our preferred export engine
+    If ImageFormats.IsFreeImageEnabled Then
         
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , vbWhite, isGrayscale Or forceGrayscale)
@@ -974,12 +972,10 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
             ExportJPEG = False
         End If
-        
-    ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_JPEG, outputColorDepth, jpegQuality)
+    
+    'If FreeImage is unavailable, fall back to GDI+
     Else
-        ExportJPEG = False
-        Message "No %1 encoder found. Save aborted.", "JPEG"
+        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_JPEG, outputColorDepth, jpegQuality)
     End If
     
     Exit Function
@@ -998,7 +994,7 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportJXR = False
     Dim sFileType As String: sFileType = "JXR"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming JXR parameters
         Dim cParams As pdParamXML
@@ -1073,7 +1069,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportHDR = False
     Dim sFileType As String: sFileType = "HDR"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
         
         'TODO: parse incoming HDR parameters.  (FreeImage doesn't support any HDR export parameters at present, but we could still provide
         ' options for things like gamma correction, background color for 32-bpp images, etc.)
@@ -1269,7 +1265,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     useWebOptimizedPath = cParams.GetBool("PNGCreateWebOptimized", False)
     
     'Web-optimized PNGs use their own path, and they supply their own special variables
-    If useWebOptimizedPath And (g_ImageFormats.pngQuantEnabled Or PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG)) Then
+    If useWebOptimizedPath And (ImageFormats.IsPngQuantEnabled() Or PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG)) Then
     
         Dim pngLossyEnabled As Boolean, pngLossyQuality As Long
         pngLossyEnabled = cParams.GetBool("PNGOptimizeLossy", True)
@@ -1462,7 +1458,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
         ' so the FreeImage path is definitely preferred!
-        If g_ImageFormats.FreeImageEnabled Then
+        If ImageFormats.IsFreeImageEnabled Then
             
             fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
             
@@ -1607,7 +1603,7 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     If (outputColorDepth = 1) Then finalColorDepth = 1
     
     'FreeImage is required for pixmap writing
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
         
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, finalColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , pnmBackColor, isGrayscale Or forceGrayscale)
@@ -1673,7 +1669,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportPSD = False
     Dim sFileType As String: sFileType = "PSD"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
     
         'TODO: parse incoming PSD parameters.  (This requires a PSD export dialog, which I haven't constructed yet...)
         Dim cParams As pdParamXML
@@ -1744,7 +1740,7 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportTGA = False
     Dim sFileType As String: sFileType = "TGA"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
     
         'TODO: parse incoming TGA parameters.  (This requires a TGA export dialog, which I haven't constructed yet...)
         Dim cParams As pdParamXML
@@ -1900,7 +1896,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     writeMultipage = cParams.GetBool("TIFFMultipage", False)
     
     'Multipage TIFFs use their own custom path (this is due to the way the FreeImage API works; it's convoluted!)
-    If writeMultipage And g_ImageFormats.FreeImageEnabled And (srcPDImage.GetNumOfVisibleLayers > 1) Then
+    If writeMultipage And ImageFormats.IsFreeImageEnabled And (srcPDImage.GetNumOfVisibleLayers > 1) Then
         
         'Multipage files use a fairly simple format:
         ' 1) Iterate through each visible layer
@@ -2143,7 +2139,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         'The TIFF export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
         ' so the FreeImage path is absolutely preferred.
-        If g_ImageFormats.FreeImageEnabled Then
+        If ImageFormats.IsFreeImageEnabled Then
             
             Dim fi_DIB As Long
             fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTiffCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
@@ -2206,7 +2202,7 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     ExportWebP = False
     Dim sFileType As String: sFileType = "WebP"
     
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled Then
     
         'Parse incoming WebP parameters
         Dim cParams As pdParamXML

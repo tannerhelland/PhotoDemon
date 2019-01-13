@@ -341,8 +341,8 @@ Private Sub cmdBarMini_OKClick()
         PluginManager.LoadPluginGroup False
         IconsAndCursors.ApplyAllMenuIcons
         IconsAndCursors.ResetMenuIcons
-        g_ImageFormats.GenerateInputFormats
-        g_ImageFormats.GenerateOutputFormats
+        ImageFormats.GenerateInputFormats
+        ImageFormats.GenerateOutputFormats
     End If
     
     'Because plugin data is stored in the core user prefs file, force a write-to-file op now

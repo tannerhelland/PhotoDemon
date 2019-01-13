@@ -157,7 +157,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     'Ensure that a FreeImage instance is available
-    If (Not g_ImageFormats.FreeImageEnabled) Then
+    If (Not ImageFormats.IsFreeImageEnabled()) Then
         FI_LoadImage_V5 = PD_FAILURE_GENERIC
         Exit Function
     End If
@@ -999,7 +999,7 @@ Public Function IsMultiImage(ByRef srcFilename As String) As Long
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
-    If (Not g_ImageFormats.FreeImageEnabled) Then
+    If (Not ImageFormats.IsFreeImageEnabled()) Then
         IsMultiImage = 0
         Exit Function
     End If
@@ -2521,7 +2521,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
     FreeImageResizeDIB = True
 
     'Double-check that FreeImage exists
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
                 
         'Create a temporary DIB at the size of the source image
         Dim tmpDIB As pdDIB
@@ -2580,7 +2580,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
     FreeImageResizeDIBFast = True
 
     'Double-check that FreeImage exists
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
         
         'Create a FreeImage copy of the source DIB
         Dim fi_DIB As Long
@@ -2630,7 +2630,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     'profileTime = Timer
     
     'Double-check that FreeImage exists
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
     
         'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
         ' unintuitive for casual users.  PD reverses the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
@@ -2754,7 +2754,7 @@ End Function
 Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal finalBackColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, Optional ByRef srcPalette As pdPalette = Nothing) As Long
     
     'If FreeImage is not enabled, exit immediately
-    If (Not g_ImageFormats.FreeImageEnabled) Then
+    If (Not ImageFormats.IsFreeImageEnabled()) Then
         GetFIDib_SpecificColorMode = 0
         Exit Function
     End If

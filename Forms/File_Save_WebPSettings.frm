@@ -276,7 +276,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
     Set m_SrcImage = srcImage
-    If ((m_SrcImage Is Nothing) Or (Not g_ImageFormats.FreeImageEnabled)) Then
+    If ((m_SrcImage Is Nothing) Or (Not ImageFormats.IsFreeImageEnabled())) Then
         Interface.ShowDisabledPreviewImage pdFxPreview
     Else
         m_SrcImage.GetCompositedImage m_CompositedImage, True
@@ -317,7 +317,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled And (Not m_SrcImage Is Nothing)) Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

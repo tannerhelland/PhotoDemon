@@ -547,7 +547,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
     'There are currently two ways to save an in-memory PNG: FreeImage, or GDI+.  GDI+ adds a bunch of
     ' unwanted PNG chunks (sRGB, cHRM) which fuck up the subsequent PNG's display on color-managed software.
     ' FreeImage doesn't do this, so we preferentially use it if available.
-    If g_ImageFormats.FreeImageEnabled() Then
+    If ImageFormats.IsFreeImageEnabled() Then
     
         Dim hFICopy As Long, savedSize As Long
         hFICopy = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)

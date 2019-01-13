@@ -1782,7 +1782,7 @@ Private Sub RenderClipboard_PNG()
     If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
     
     'FreeImage is used to perform the PNG transformation.  (We could use GDI+, but FreeImage is easier.)
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
         
         PDDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
         

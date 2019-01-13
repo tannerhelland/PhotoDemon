@@ -9,9 +9,6 @@ Option Explicit
 'Main resource handler
 Public g_Resources As pdResources
 
-'Main file format compatibility handler
-Public g_ImageFormats As pdFormats
-
 'Main language and translation handler
 Public g_Language As pdTranslate
 

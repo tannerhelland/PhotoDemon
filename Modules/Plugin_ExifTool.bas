@@ -882,7 +882,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     'See if the output file format supports metadata.  If it doesn't, exit now.
     ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
     Dim outputMetadataFormat As PD_METADATA_FORMAT
-    outputMetadataFormat = g_ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.GetCurrentFileFormat)
+    outputMetadataFormat = ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.GetCurrentFileFormat)
     
     If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
@@ -1132,7 +1132,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining
     ' Exif tags. (This includes any tags it was unable to convert to XMP or IPTC format.)
-    If (Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.GetCurrentFileFormat)) And srcFileAvailable Then
+    If (Not ImageFormats.IsExifAllowedForPDIF(srcPDImage.GetCurrentFileFormat)) And srcFileAvailable Then
         cmdParams.AppendLine "-exif:all="
     End If
     

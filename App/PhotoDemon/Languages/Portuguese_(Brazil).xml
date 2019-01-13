@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3359</langversion>
+<langversion>6.8.3360</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -750,9 +750,25 @@ To ativar o suporte para esse formato de imagem, copie o arquivo FreeImage.dll (
 <translation>Salvar não pode ser concluída sem biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
+
+<!-- BEGIN text for ImageFormats.bas -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>Todas as imagens compatíveis</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>Todos os arquivos</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for ImageFormats.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
@@ -1404,11 +1420,6 @@ Please verificar que estes imagem (s) existe, e que eles usam um formato de imag
 </phrase>
 
 <phrase>
-<original>All files</original>
-<translation>Todos os arquivos</translation>
-</phrase>
-
-<phrase>
 <original>Open Macro File</original>
 <translation>Open File Macro</translation>
 </phrase>
@@ -1456,7 +1467,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation>Processamento de dados macro</translation>
 </phrase>
 
-<!-- BatchProcessor.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for BatchProcessor.bas-->
 
@@ -2886,6 +2897,12 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
+<!-- BEGIN text for cZipArchive.cls -->
+
+<!-- cZipArchive.cls contains 0 phrases. -->
+
+<!-- END text for cZipArchive.cls-->
+
 <!-- BEGIN text for IMRUList.cls -->
 
 <!-- IMRUList.cls contains 0 phrases. -->
@@ -2915,6 +2932,12 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pd2DGradient.cls contains 0 phrases. -->
 
 <!-- END text for pd2DGradient.cls-->
+
+<!-- BEGIN text for pd2DGradientCairo.cls -->
+
+<!-- pd2DGradientCairo.cls contains 0 phrases. -->
+
+<!-- END text for pd2DGradientCairo.cls-->
 
 <!-- BEGIN text for pd2DPath.cls -->
 
@@ -3131,17 +3154,6 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
-
-<!-- BEGIN text for pdFormats.cls -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>Todas as imagens compatíveis</translation>
-</phrase>
-
-<!-- pdFormats.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdFormats.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -3550,6 +3562,12 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pdObjectList.cls contains 0 phrases. -->
 
 <!-- END text for pdObjectList.cls-->
+
+<!-- BEGIN text for pdOpenRaster.cls -->
+
+<!-- pdOpenRaster.cls contains 0 phrases. -->
+
+<!-- END text for pdOpenRaster.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -15523,30 +15541,12 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pd2DGradientCairo.cls -->
-
-<!-- pd2DGradientCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DGradientCairo.cls-->
-
-<!-- BEGIN text for cZipArchive.cls -->
-
-<!-- cZipArchive.cls contains 0 phrases. -->
-
-<!-- END text for cZipArchive.cls-->
-
-<!-- BEGIN text for pdOpenRaster.cls -->
-
-<!-- pdOpenRaster.cls contains 0 phrases. -->
-
-<!-- END text for pdOpenRaster.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4757 phrases. -->
-<!-- 2164 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4755 phrases. -->
+<!-- 2162 are duplicates, so only 2593 unique phrases have been written to file. -->
 <!-- These 2593 phrases contain approximately 12389 total words. -->
 
 </pdData>

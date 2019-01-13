@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.67</langversion>
+<langversion>1.0.68</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -749,9 +749,25 @@ Toこの画像フォーマットのサポートを有効にするには、FreeIm
 <translation>FreeImageライブラリなしで保存することはできません。</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
+
+<!-- BEGIN text for ImageFormats.bas -->
+
+<phrase>
+<original>All Compatible Images</original>
+<translation>すべての互換性のある画像</translation>
+</phrase>
+
+<phrase>
+<original>All files</original>
+<translation>すべてのファイル</translation>
+</phrase>
+
+<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for ImageFormats.bas-->
 
 <!-- BEGIN text for ImageLoader.bas -->
 
@@ -1404,11 +1420,6 @@ Pこれらのイメージが存在し、サポートされているイメージ�
 </phrase>
 
 <phrase>
-<original>All files</original>
-<translation>すべてのファイル</translation>
-</phrase>
-
-<phrase>
 <original>Open Macro File</original>
 <translation>マクロファイルを開く</translation>
 </phrase>
@@ -1456,7 +1467,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>マクロデータの処理</translation>
 </phrase>
 
-<!-- BatchProcessor.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for BatchProcessor.bas-->
 
@@ -2884,6 +2895,12 @@ P数値を入力してください。</translation>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
+<!-- BEGIN text for cZipArchive.cls -->
+
+<!-- cZipArchive.cls contains 0 phrases. -->
+
+<!-- END text for cZipArchive.cls-->
+
 <!-- BEGIN text for IMRUList.cls -->
 
 <!-- IMRUList.cls contains 0 phrases. -->
@@ -2913,6 +2930,12 @@ P数値を入力してください。</translation>
 <!-- pd2DGradient.cls contains 0 phrases. -->
 
 <!-- END text for pd2DGradient.cls-->
+
+<!-- BEGIN text for pd2DGradientCairo.cls -->
+
+<!-- pd2DGradientCairo.cls contains 0 phrases. -->
+
+<!-- END text for pd2DGradientCairo.cls-->
 
 <!-- BEGIN text for pd2DPath.cls -->
 
@@ -3129,17 +3152,6 @@ P数値を入力してください。</translation>
 <!-- pdFontCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdFontCollection.cls-->
-
-<!-- BEGIN text for pdFormats.cls -->
-
-<phrase>
-<original>All Compatible Images</original>
-<translation>すべての互換性のある画像</translation>
-</phrase>
-
-<!-- pdFormats.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdFormats.cls-->
 
 <!-- BEGIN text for pdGlyphCollection.cls -->
 
@@ -3548,6 +3560,12 @@ P数値を入力してください。</translation>
 <!-- pdObjectList.cls contains 0 phrases. -->
 
 <!-- END text for pdObjectList.cls-->
+
+<!-- BEGIN text for pdOpenRaster.cls -->
+
+<!-- pdOpenRaster.cls contains 0 phrases. -->
+
+<!-- END text for pdOpenRaster.cls-->
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
@@ -15519,30 +15537,12 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pd2DGradientCairo.cls -->
-
-<!-- pd2DGradientCairo.cls contains 0 phrases. -->
-
-<!-- END text for pd2DGradientCairo.cls-->
-
-<!-- BEGIN text for cZipArchive.cls -->
-
-<!-- cZipArchive.cls contains 0 phrases. -->
-
-<!-- END text for cZipArchive.cls-->
-
-<!-- BEGIN text for pdOpenRaster.cls -->
-
-<!-- pdOpenRaster.cls contains 0 phrases. -->
-
-<!-- END text for pdOpenRaster.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2593</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4757 phrases. -->
-<!-- 2164 are duplicates, so only 2593 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4755 phrases. -->
+<!-- 2162 are duplicates, so only 2593 unique phrases have been written to file. -->
 <!-- These 2593 phrases contain approximately 12389 total words. -->
 
 </pdData>

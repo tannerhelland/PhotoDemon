@@ -299,7 +299,7 @@ Private Sub Form_Load()
     'Though it's not really necessary, I'm only enabling print preview if FreeImage is Enabled (we use FreeImage to perform
     ' fast, high-quality rotations of images).  I anticipate that pretty much no one will ever use this printing option, so
     ' I don't mind ignoring a VB-only fallback for such a peripheral feature.
-    If g_ImageFormats.FreeImageEnabled = True Then
+    If ImageFormats.IsFreeImageEnabled() Then
         RebuildPreview
         lblWarning.Visible = False
     Else
@@ -423,7 +423,7 @@ Private Sub UpdatePrintPreview()
     
     On Error GoTo PrintPreviewError
     
-    If (Not g_ImageFormats.FreeImageEnabled) Then Exit Sub
+    If (Not ImageFormats.IsFreeImageEnabled()) Then Exit Sub
     
     'If the fit-to-page option is selected (which it is by default) this routine is very simple:
     If (cbOrientation.ListIndex = 0) Then
@@ -442,7 +442,7 @@ End Sub
 Private Sub RebuildPreview()
     
     'FreeImage is used to rotate the image; if it's not installed, previewing is automatically disabled
-    If g_ImageFormats.FreeImageEnabled Then
+    If ImageFormats.IsFreeImageEnabled() Then
     
         'We're now going to create two temporary buffers; one contains the image resized to fit the "sheet of paper" preview
         ' on the left.  This is portrait mode.  The second buffer will contain the same thing, but rotated 90 degrees -

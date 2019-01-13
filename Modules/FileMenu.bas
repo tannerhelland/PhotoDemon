@@ -51,7 +51,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     Dim sFileList As String
         
     'Retrieve one (or more) files to open
-    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
+    If openDialog.GetOpenFileName(sFileList, , True, True, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
         
         'Message "Preparing to load image..."
         
@@ -139,7 +139,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     tempPathString = UserPrefs.GetPref_String("Paths", "Open Image", vbNullString)
         
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
+    If openDialog.GetOpenFileName(userImagePath, , True, False, ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = Files.FileGetPath(userImagePath)
@@ -238,8 +238,8 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     If (UserPrefs.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
         cdFormatIndex = g_LastSaveFilter
-        suggestedSaveFormat = g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
-        suggestedFileExtension = g_ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)
+        suggestedSaveFormat = ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        suggestedFileExtension = ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)
         
     'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest a Save As format based
     ' on the current image contents.  This is a fairly complex process, so we offload it to a separate function.
@@ -248,7 +248,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         
         'Now that we have a suggested save format, we need to convert that into its matching Common Dialog filter index.
         ' (Note that the common dialog filter is 1-based, so we manually increment the retrieved index.)
-        cdFormatIndex = g_ImageFormats.GetIndexOfOutputPDIF(suggestedSaveFormat) + 1
+        cdFormatIndex = ImageFormats.GetIndexOfOutputPDIF(suggestedSaveFormat) + 1
     End If
     
     '3) What filename to suggest.  This value is pulled from the image storage object; if this file came from a non-file location
@@ -267,14 +267,14 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     sFile = initialSaveFolder & IncrementFilename(initialSaveFolder, suggestedFilename, suggestedFileExtension)
     
     'With all our inputs complete, we can finally raise the damn common dialog
-    If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, cdFormatIndex, initialSaveFolder, g_Language.TranslateMessage("Save an image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveFileDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, cdFormatIndex, initialSaveFolder, g_Language.TranslateMessage("Save an image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
         
         'The common dialog results affect two different objects:
         ' 1) the current image (which needs to store things like the format the user chose)
         ' 2) the global user preferences manager (which needs to remember things like the output folder, so we can remember it)
         
         'Store all image-level attributes
-        srcImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        srcImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         
         'Store all global-preference attributes
         g_LastSaveFilter = cdFormatIndex
@@ -314,13 +314,13 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         End If
         
         'Also return a proper extension that matches the selected format
-        dstSuggestedExtension = g_ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+        dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
         
     'If the image already has a format, let's reuse its existing file extension instead of suggesting a new one.  This is relevant
     ' for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
     Else
         dstSuggestedExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension")
-        If Len(dstSuggestedExtension) = 0 Then dstSuggestedExtension = g_ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+        If (LenB(dstSuggestedExtension) = 0) Then dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
     End If
             
 End Function
