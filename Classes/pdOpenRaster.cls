@@ -424,9 +424,9 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     
     'The first entry in the archive must always be a file named "mimetype", stored without compression,
     ' with string content "image/openraster"
-    Dim strUtf8() As Byte, lenInBytes As Long
-    Strings.UTF8FromString "image/openraster", strUtf8, lenInBytes, , True
-    If Not m_ZipArchive.AddFile(strUtf8, "mimetype", , , , 0) Then InternalError "SaveORA", "could not write mimetype"
+    Dim utf8Bytes() As Byte, lenInBytes As Long
+    Strings.UTF8FromString "image/openraster", utf8Bytes, lenInBytes, , True
+    If Not m_ZipArchive.AddFile(File:=utf8Bytes, Name:="mimetype", Level:=0&) Then InternalError "SaveORA", "could not write mimetype"
     
     'Next comes a file called "stack.xml".  This XML file contains all layer attribute data.
     ' Rather than use a full-blown XML manager, let's just use a lightweight stringbuilder to construct the file.
@@ -513,8 +513,8 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     cString.AppendLine "</image>"
     
     'Convert the string to UTF-8 (in case there are Unicode chars in places like layer names) and add it to the zip
-    Strings.UTF8FromString cString.ToString(), strUtf8, lenInBytes, , True
-    If Not m_ZipArchive.AddFile(strUtf8, "stack.xml") Then InternalError "SaveORA", "WARNING!  ExportORA could not write stack.xml."
+    Strings.UTF8FromString cString.ToString(), utf8Bytes, lenInBytes, , True
+    If Not m_ZipArchive.AddFile(File:=utf8Bytes, Name:="stack.xml") Then InternalError "SaveORA", "WARNING!  ExportORA could not write stack.xml."
     
     'Next, we need to add a thumbnail image to the zip.  This is basically identical to the previous step
     ' of adding individual layers to the zip file as PNGs: generate a thumbnail DIB, save it to a PNG bytestream,
@@ -528,7 +528,7 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     AddImageToZipAsPNG tmpDIB, "mergedimage.png"
     
     'And we're done!  Write the finished archive out to disk.
-    SaveORA = m_ZipArchive.CompressArchive(dstFile, , , vbTrue)
+    SaveORA = m_ZipArchive.CompressArchive(ArchiveFile:=dstFile, useUTF8:=vbTrue)
     
     Exit Function
     
@@ -548,7 +548,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
     ' unwanted PNG chunks (sRGB, cHRM) which fuck up the subsequent PNG's display on color-managed software.
     ' FreeImage doesn't do this, so we preferentially use it if available.
     If ImageFormats.IsFreeImageEnabled() Then
-    
+        
         Dim hFICopy As Long, savedSize As Long
         hFICopy = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
         If (hFICopy <> 0) Then
@@ -559,7 +559,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
                 'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
                 ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
                 ' additional compression atop that gains little, but eats up a ton of time.
-                AddImageToZipAsPNG = m_ZipArchive.AddFile(pngBytes, pathInsideZip, , , , 0)
+                AddImageToZipAsPNG = m_ZipArchive.AddFile(File:=pngBytes, Name:=pathInsideZip, Level:=0&)
                 If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
                 
             Else
@@ -570,7 +570,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
         End If
         
     Else
-    
+        
         Dim hGdipImage As Long
         If GDI_Plus.GetGdipBitmapHandleFromDIB(hGdipImage, srcDIB) Then
             If GDI_Plus.GDIPlus_ImageSaveToArray(hGdipImage, pngBytes, P2_FFE_PNG) Then
