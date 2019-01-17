@@ -700,10 +700,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     ' 1) DPI information (as a failsafe, because FreeImage doesn't have a way to report that
     '    "this image lacks DPI information"; instead, it always reports 72 DPI.  ExifTool
     '    will give us a more precise report, and it will can resolve conflicting entries.)
-    ' 1) Precise palette color count of 8-bpp non-PNG images (because FreeImage always
+    ' 2) Precise palette color count of 8-bpp non-PNG images (because FreeImage always
     '    assumes palettes have 256 colors, which is both stupid and obnoxious).
-    ' 2) Multipage TIFFs that may have per-page information stored (like page names)
-    ' 3) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can).  This is
+    ' 3) Multipage TIFFs that may have per-page information stored (like page names)
+    ' 4) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can).  This is
     '    limited to esoteric ICC+format combinations like GIF.
     
     

@@ -157,7 +157,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         'For special message types, populate their contents now
         If (debugMsgType = PDM_Mem_Report) Then
             
-            If (Len(actionString) > 0) Then
+            If (LenB(actionString) > 0) Then
                 m_LogString.AppendLineBreak
                 m_LogString.Append Space$(22)
             End If

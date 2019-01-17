@@ -1116,7 +1116,7 @@ Public Function IsExifToolRelevant(ByVal srcFormat As PD_IMAGE_FORMAT) As Boolea
 End Function
 
 Public Function IsFreeImageEnabled() As Boolean
-    m_FreeImageEnabled = m_FreeImageEnabled
+    IsFreeImageEnabled = m_FreeImageEnabled
 End Function
 
 Public Sub SetFreeImageEnabled(ByVal newState As Boolean)

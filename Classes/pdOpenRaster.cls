@@ -89,11 +89,6 @@ Friend Function IsFileORA(ByRef srcFilename As String, Optional ByVal requireVal
     Dim potentiallyORA As Boolean
     potentiallyORA = True
     
-    'Perf reports are optional, and they rely on some PD-specific timing components.  Feel free to
-    ' comment these lines out as necessary.
-    Dim startTime As Currency
-    If GENERATE_PERF_REPORTS Then VBHacks.GetHighResTime startTime
-    
     'Check extension up front, if requested
     If requireValidFileExtension Then potentiallyORA = Strings.StringsEqual(Files.FileGetExtension(srcFilename), "ora", True)
     
@@ -127,8 +122,6 @@ Friend Function IsFileORA(ByRef srcFilename As String, Optional ByVal requireVal
         End If
         
     End If
-    
-    If GENERATE_PERF_REPORTS Then InternalWarning "IsFileORA", "file validation timing report: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     IsFileORA = potentiallyORA
     

@@ -1,0 +1,871 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
+END
+Attribute VB_Name = "pdPSD"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon PSD (PhotoShop Image) Container and Parser
+'Copyright 2019-2019 by Tanner Helland
+'Created: 13/January/19
+'Last updated: 16/January/19
+'Last update: continued work on initial build
+'
+'At present, this class exists purely as a curiosity, to see what kind of data I can pull out of PSD files.
+' I make no promises as to this class ever reaching "usable" status in PhotoDemon, let alone any kind of
+' comprehensive coverage.  I include it in the current builds simply to encourage me to keep poking away
+' at it.
+'
+'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
+' "official" Adobe spec at this URL (link good as of January 2019):
+' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'
+'***************************************************************************
+
+Option Explicit
+
+'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
+' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
+' "Failure" returns are unrecoverable and processing *must* be abandoned.  (As a convenience, you can treat
+' the "warning" and "failure" values as flags; specific warning/failure states in each category will share
+' the same high flag bit.)
+'
+'As I get deeper into this class, I may expand this enum to include more detailed states.
+Public Enum PD_PSDResult
+    psd_Success = 0
+    psd_Warning = 256
+    psd_Failure = 65536
+    psd_FileNotPSD = 16777217
+End Enum
+
+#If False Then
+    Private Const psd_Success = 0, psd_Warning = 256, psd_Failure = 65536, psd_FileNotPSD = 16777217
+#End If
+
+'PSDs support many different color modes.  Some color modes (e.g. Duotone) are proprietary and not
+' publicly documented; we follow Adobe's recommendation and simply load the data as grayscale in that case.
+Public Enum PSD_ColorMode
+    cm_Bitmap = 0
+    cm_Grayscale = 1
+    cm_Indexed = 2
+    cm_RGB = 3
+    cm_CMYK = 4
+    cm_Multichannel = 7
+    cm_Duotone = 8
+    cm_Lab = 9
+End Enum
+
+#If False Then
+    Private Const cm_Bitmap = 0, cm_Grayscale = 1, cm_Indexed = 2, cm_RGB = 3, cm_CMYK = 4, cm_Multichannel = 7, cm_Duotone = 8, cm_Lab = 9
+#End If
+
+'The list of potential resource IDs is enormous:
+' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_38034
+' Most of these are irrelevant to PD, so for now, I've only listed ones that look potentially useful.
+Private Enum PSD_ResourceID
+    rid_ResolutionInfo = 1005
+    rid_Caption = 1008
+    rid_BackgroundColor = 1010  'Old PS versions required a background layer, if any, to be opaque
+    rid_QuickMaskInfo = 1022    'Not sure if this needs to be used during compositing
+    rid_LayerStateInfo = 1024   'Could be useful for determining auto-selected layer
+    rid_LayersGroupInfo = 1026  'Could be useful for IDing and removing group-specific blank layers
+    rid_IptcMetadata = 1028     'Compare against ExifTool's results?
+    rid_JpegQuality = 1030      'We could auto-suggest this if saving as a JPEG from PD?
+    rid_GridAndGuidesInfo = 1032   'Guides are on my to-do list
+    rid_IccProfile = 1039
+    rid_IccUntagged = 1041      'Spec is unclear on what this means; I'd need to see it "in the wild" to know how to handle in PD
+    rid_IndexedColorTableCount = 1046   'Number of used colors - important!
+    rid_TransparentIndex = 1047 'Need to test against an indexed image PSD
+    rid_AlphaIdentifiers = 1053 'No idea what this does, but we should check it against alpha channels
+    rid_VersionInfo = 1057      'Lets us know if PS was the actual image source; will need to write when saving
+    rid_EXIFData1 = 1058        'Check integration w/ ExifTool
+    rid_EXIFData3 = 1059        'Check integration w/ ExifTool
+    rid_XMPMetadata = 1060      'Check integration w/ ExifTool
+    rid_PixelAspectRatio = 1064 'Could theoretically correct for this
+    rid_LayerSelectionIDs = 1069    'Possibly useful if understood
+    rid_LayerGroupsEnabledID = 1072 'Probably need this to decode layer group behavior
+    rid_MeasurementScale = 1074     'Could potentially auto-adjust rulers against this? idk
+    rid_DisplayInfo = 1077  '"DisplayInfo structure to support floating point colors. See Appendix A in Photoshop API Guide.pdf"
+    rid_PathInfo = 2000 'Actually comprises 2000-2997; could be useful in the future
+    rid_ClippingPathName = 2999 'We could potentially support this, if found
+End Enum
+
+#If False Then
+    Private Const rid_ResolutionInfo = 1005, rid_Caption = 1008, rid_BackgroundColor = 1010, rid_QuickMaskInfo = 1022, rid_LayerStateInfo = 1024, rid_LayersGroupInfo = 1026, rid_IptcMetadata = 1028, rid_JpegQuality = 1030, rid_GridAndGuidesInfo = 1032, rid_IccProfile = 1039, rid_IccUntagged = 1041, rid_IndexedColorTableCount = 1046, rid_TransparentIndex = 1047, rid_AlphaIdentifiers = 1053, rid_VersionInfo = 1057, rid_EXIFData1 = 1058, rid_EXIFData3 = 1059, rid_XMPMetadata = 1060, rid_PixelAspectRatio = 1064, rid_LayerSelectionIDs = 1069, rid_LayerGroupsEnabledID = 1072, rid_MeasurementScale = 1074, rid_DisplayInfo = 1077, rid_PathInfo = 2000, rid_ClippingPathName = 2999
+#End If
+
+'Standard PSD header.  At load-time, only populated if the target PSD validates
+Private Type PSD_Header
+    Signature As String * 4
+    version As Integer
+    Reserved(0 To 5) As Byte
+    NumChannels As Integer
+    ImageHeightPx As Long
+    ImageWidthPx As Long
+    BitsPerChannel As Integer
+    ColorMode As PSD_ColorMode
+End Type
+
+Private m_Header As PSD_Header
+
+'If the header defines a PSB file instead of a PSD file, this value will be set to TRUE early in the parse process.
+' Subsequent functions should use this value to modify behavior according to PSD/PSB differences.
+Private m_PSDisPSB As Boolean
+
+'If the PSD file uses indexed color mode, its palette will be initialized into this array
+Private m_ColorTable() As RGBQuad, m_ColorTableCount As Long
+
+'If the PSD file contains layers (null-layer images *are* technically possible), each layer's contents
+' will be accessible from this array.  If m_NumOfLayers is non-zero, this array is guaranteed to be sized
+' as (0 to Abs(m_NumOfLayers) - 1).
+Private m_Layers() As pdPSDLayer
+
+'Per the spec, the number of layers *CAN BE NEGATIVE*.  A negative count has special meaning; see Step4  for details.
+Private m_numOfLayers As Long
+
+'Embedded ICC profiles are read and used by PD.  (These can be found in the "image resource" segment.)
+Private m_Profile As pdICCProfile
+
+'Byte-by-byte access is provided, as always, by a pdStream instance
+Private m_Stream As pdStream
+
+'At present, we require the caller to pass an identical source file path to every load function.
+' (This is a cheap and easy way to ensure no funny business.)  If the PSD is loaded directly from memory,
+' we flag this with a special name.
+Private m_SourceFilename As String
+Private Const PSD_LOADED_FROM_MEMORY As String = "LoadFromPtr*"
+Private m_SourcePtr As Long, m_SourcePtrLen As Long
+
+'If warnings are encountered during processing, I push their messages onto a string stack.  (I may
+' decide to report these to the user... but haven't decided yet.  Either way, it's very helpful
+' while debugging; see associated Warnings_XYZ functions for details.)
+Private m_Warnings As pdStringStack
+
+'Perform basic validation on a potential PSD file.  For strict file extension matching (e.g. only
+' PSD or PSB extension allowed), set checkExtension to TRUE.
+Friend Function IsFilePSD(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As Boolean
+    IsFilePSD = (Step1_ValidateHeader(srcFile, checkExtension) < psd_Failure)
+End Function
+
+'Simplified wrapper to load a PSD automatically.
+Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0) As PD_PSDResult
+    
+    'We support PSD loading from both file and memory; if the passed loadFromPtr value is non-zero,
+    ' treat it as a pointer and we'll wrap our stream around it instead.
+    If (loadFromPtr <> 0) And (loadFromPtrLen <> 0) Then
+        srcFile = PSD_LOADED_FROM_MEMORY
+        m_SourcePtr = loadFromPtr
+        m_SourcePtrLen = loadFromPtrLen
+    Else
+        m_SourcePtr = 0
+        m_SourcePtrLen = 0
+    End If
+    
+    'Try to validate the source file
+    Dim keepLoading As PD_PSDResult
+    keepLoading = Step1_ValidateHeader(srcFile, checkExtension)
+    
+    If (keepLoading < psd_Failure) Then
+        
+        'The file validated well enough to continue (e.g. any warnings were considered non-fatal).
+        ' Further processing is handled on a block-by-block basis, and a critical error at any step
+        ' causes the entire file to be abandoned.
+        PDDebug.LogAction "PSD file detected. Size is " & m_Header.ImageWidthPx & "x" & m_Header.ImageHeightPx & ", color mode is " & GetColorModeName(m_Header.ColorMode) & ", " & m_Header.BitsPerChannel & " bits per channel."
+        keepLoading = Step2_RetrieveColorModeData(srcFile)
+        PDDebug.LogAction "Step 2 complete."
+        'The color table, if any, has been retrieved.  The next segment of the file is a massive chunk
+        ' called "Image Resources".  Much of the data in this section is specific to Photoshop, but we will
+        ' attempt to retrieve what we can from it.
+        If (keepLoading < psd_Failure) Then
+            keepLoading = Step3_GatherImageResources(srcFile, dstImage)
+            PDDebug.LogAction "Step 3 complete."
+        End If
+        
+        'Image resources have been retrieved.  The next segment of the file is layer data!
+        If (keepLoading < psd_Failure) Then
+            keepLoading = Step4_GatherLayersAndMasks(srcFile)
+            PDDebug.LogAction "Step 4 complete."
+        End If
+        
+        'If we made it this far successfully, we have enough data to construct a pdImage object!
+        ' Free the source stream object (as we no longer need it and it may have cached a bunch
+        ' of memory), assemble the final image, then exit.
+        If (keepLoading < psd_Failure) Then
+            Set m_Stream = Nothing
+            keepLoading = Step5_AssemblePDImage(srcFile, dstImage)
+            PDDebug.LogAction "Step 5 complete."
+        End If
+        
+        LoadPSD = keepLoading
+        
+    End If
+    
+    'Current results may not be usable; always fall back to FreeImage's PSD support until
+    ' this class matures.
+    If (Me.Warnings_GetCount() > 0) Then Me.Warnings_DumpToDebugger
+
+End Function
+
+Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage As pdImage) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    Step5_AssemblePDImage = psd_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step5_AssemblePDImage", "filename has changed since original validation!"
+        Step5_AssemblePDImage = psd_Failure
+        Exit Function
+    End If
+    
+    'Set basic image attributes
+    dstImage.Width = m_Header.ImageWidthPx
+    dstImage.Height = m_Header.ImageHeightPx
+    
+    'TODO:
+    'dstImage.SetDPI .orXRes, .orYRes
+    
+    Dim tmpLayer As pdLayer, numUsableLayers As Long, newLayerID As Long
+    numUsableLayers = 0
+    
+    'Now we need to iterate through layers and convert their data from PSD format to PD format
+    Dim i As Long
+    For i = 0 To Abs(m_numOfLayers) - 1
+        
+        If m_Layers(i).DoesLayerHaveUsableData() Then
+        
+            'Prep a new layer object and initialize it with the image bits we've retrieved
+            newLayerID = dstImage.CreateBlankLayer()
+            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+            tmpLayer.InitializeNewLayer PDL_IMAGE, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+            
+            'Fill in any remaining layer properties
+            With m_Layers(i)
+                tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
+                tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
+                tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
+                tmpLayer.SetLayerVisibility .GetLayerVisibility()
+            End With
+            
+            numUsableLayers = numUsableLayers + 1
+            
+        End If
+        
+    Next i
+    
+    'Make sure we were able to generate at least one usable layer.
+    If (numUsableLayers <= 0) Or (dstImage.GetNumOfLayers <= 0) Then
+        m_Warnings.AddString "unable to create any usable layers.  Abandoning load."
+        Step5_AssemblePDImage = psd_Failure
+    End If
+    
+    Exit Function
+
+InternalVBError:
+    InternalError "Step5_AssemblePDImage", "internal VB error #" & Err.Number & ": " & Err.Description
+    m_Warnings.AddString "Internal error in step 5, #" & Err.Number & ": " & Err.Description
+    Step5_AssemblePDImage = psd_Failure
+    
+End Function
+
+Private Function Step4B_SingleLayerImage() As PD_PSDResult
+
+    'If a PSD only contains one layer, the layer's data will be saved at the end of the file,
+    ' in the "image data" section.  Step4_GatherLayersAndMasks() will defer to us in this case,
+    ' so we can manually load the remaining layer data.
+    m_numOfLayers = 1
+    ReDim m_Layers(0) As pdPSDLayer
+    Set m_Layers(0) = New pdPSDLayer
+    Step4B_SingleLayerImage = m_Layers(0).NotifySingleLayerImage(m_Stream, m_Header.NumChannels, m_Header.ImageWidthPx, m_Header.ImageHeightPx, m_Header.BitsPerChannel, m_Header.ColorMode)
+    
+    'If image data was parsed successfully, proceed with decoding
+    If (Step4B_SingleLayerImage < psd_Failure) Then
+        If (Not m_Layers(0).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile) < psd_Failure) Then
+            InternalError "Step4B_SingleLayerImage", "pdPSDLayer.DecodeChannels() failed catastrophically"
+            Step4B_SingleLayerImage = psd_Failure
+            Exit Function
+        End If
+    End If
+    
+End Function
+
+Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    Step4_GatherLayersAndMasks = psd_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step4_GatherLayersAndMasks", "filename has changed since original validation!"
+        Step4_GatherLayersAndMasks = psd_Failure
+        Exit Function
+    End If
+    
+    'The layer and mask section of a PSD is extremely complicated.  Almost all records are variable-length,
+    ' and values within records can also be variable-length.  Individual bits often need to be read to know
+    ' how many more bytes to read.  It's all very, very ugly.
+    
+    'For now, our primary goal is retrieving layer channel data.  Other (optional) attributes can be extracted
+    ' in the future.
+    
+    'First up is the length of the entire layer/mask section.  This is 4-bytes in PSDs and 8-bytes in PSBs.
+    ' (While we handle both cases, note that PD is unlikely to work with PSBs on account of being 32-bit.)
+    Dim lenOfSection As Long, finalPointerPosition As Long
+    lenOfSection = m_Stream.ReadLong_BE()
+    If m_PSDisPSB Then lenOfSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
+    finalPointerPosition = m_Stream.GetPosition() + lenOfSection
+    
+    'If a PSD only contains one layer, it can be written at the end of the file (in the
+    ' "image data" segment), bypassing this section completely.  To cover this special case,
+    ' we hand off control to a separate function (as the data layout differs in subtle,
+    ' obnoxious ways).
+    If (lenOfSection = 0) Then
+        Debug.Print "Single-layer PSD found.  Retrieving layer data from image segment..."
+        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
+        Exit Function
+    End If
+    
+    'The remainder of the chunk is comprised of three subsections:
+    ' 1) Layer info
+    ' 2) Global layer mask info
+    ' 3) Tagged blocks with miscellaneous layer/mask data (PS4 or later, only)
+    
+    'The layer info section has its own length marker, and per the spec, it is
+    ' "rounded up to a multiple of 2".
+    Dim lenOfLayerInfoSection As Long, finalLayerInfoPosition As Long
+    lenOfLayerInfoSection = m_Stream.ReadLong_BE()
+    If m_PSDisPSB Then lenOfLayerInfoSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
+    finalLayerInfoPosition = m_Stream.GetPosition() + finalLayerInfoPosition
+    
+    'I don't believe the layer info section can have zero-length, but just in case...
+    If (lenOfLayerInfoSection > 0) Then
+        
+        Dim i As Long
+        
+        'Next comes a two-byte "layer count", which is actually a signed integer.  Per the spec:
+        ' "If it is a negative number, its absolute value is the number of layers and the first
+        '  alpha channel contains the transparency data for the merged result."
+        Dim numOfLayers As Integer
+        numOfLayers = m_Stream.ReadInt_BE()
+        
+        'Again, not sure if the layer count can be zero-length, but just in case...
+        If (numOfLayers <> 0) Then
+            
+            PDDebug.LogAction Abs(numOfLayers) & " layers found.  Parsing layer data now..."
+            'The "layer records" section comes next.  Layer records describe everything needed to perfectly
+            ' re-create a Photoshop layer.  As you can imagine, these records are massive, and most of the
+            ' information is useful only to Adobe.
+            
+            'Because these records are so complex, they are parsed by a child class, and that class stores
+            ' whatever relevant information we are able to extract.
+            
+            'Start by initializing a collection of layer child objects
+            m_numOfLayers = numOfLayers
+            ReDim m_Layers(0 To Abs(m_numOfLayers) - 1) As pdPSDLayer
+            
+            'We now rely on the child class to handle further processing.  Iterate through each layer
+            ' in turn and hand it off to a new child class instance.
+            For i = 0 To Abs(m_numOfLayers) - 1
+                Set m_Layers(i) = New pdPSDLayer
+                If (Not m_Layers(i).ParseLayer(m_Stream, m_Warnings, m_PSDisPSB) < psd_Failure) Then
+                    InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.ParseLayer() failed catastrophically"
+                    Step4_GatherLayersAndMasks = psd_Failure
+                    Exit Function
+                End If
+            Next i
+            
+        '/end null layer count check
+        End If
+        
+        'With each layer loaded, we can now proceed with loading channel data (eek).  Because Adobe stores
+        ' channel data in planar order (not interleaved, e.g. RRRGGGBBB instead of RGBRGBRGB) this step
+        ' consumes a lot of memory, as we can't easily stream in chunks of the data at a time - instead,
+        ' we have to allocate the full memory and populate it as-we-go.
+        For i = 0 To Abs(m_numOfLayers) - 1
+            If (Not m_Layers(i).LoadChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode) < psd_Failure) Then
+                InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.LoadChannels() failed catastrophically"
+                Step4_GatherLayersAndMasks = psd_Failure
+                Exit Function
+            End If
+        Next i
+        
+        'With all channels loaded, we can now ask each layer to generate a relevant pdDIB for its
+        ' channel data. This comprehensive stage decodes individual channels (as necessary),
+        ' translates them to required 8-bpc, converts the resulting channel collection from planar to
+        ' 32-bpp interleaved RGBA, and color-manages the results.  The end result is a PD-compatible
+        ' image buffer that can be placed directly into a pdLayer object.
+        For i = 0 To Abs(m_numOfLayers) - 1
+            If (Not m_Layers(i).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile) < psd_Failure) Then
+                InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.DecodeChannels() failed catastrophically"
+                Step4_GatherLayersAndMasks = psd_Failure
+                Exit Function
+            End If
+        Next i
+        
+    '/end null-length layer info section check
+    Else
+        InternalError "Step4_GatherLayersAndMasks", "Zero-length layer info section encountered.  PSD is malformed?"
+    End If
+    
+    Exit Function
+
+InternalVBError:
+    InternalError "Step4_GatherLayersAndMasks", "internal VB error #" & Err.Number & ": " & Err.Description
+    If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 4, #" & Err.Number & ": " & Err.Description
+    Step4_GatherLayersAndMasks = psd_Failure
+    
+End Function
+
+'From the spec: "Image resource blocks are the basic building unit of several file formats, including Photoshop's
+' native file format, JPEG, and TIFF. Image resources are used to store non-pixel data associated with images,
+' such as pen tool paths. They are referred to as resource blocks because they hold data that was stored in the
+' Macintosh's resource fork in early versions of Photoshop.
+Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstImage As pdImage) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    Step3_GatherImageResources = psd_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step3_GatherImageResources", "filename has changed since original validation!"
+        Step3_GatherImageResources = psd_Failure
+        Exit Function
+    End If
+    
+    'Remember that m_Stream has already been forcibly advanced past the file header (step 1)
+    ' and color mode data (step 2).  It now points at the image resources section.
+    
+    'As before, the first marker in this section is the length of the ENTIRE section.  As a failsafe
+    ' against parse errors, we want to make a note of the segment end pointer; after iterating through
+    ' all resource blocks, we will double-check this value against wherever the pointer naturally
+    ' ended up.
+    Dim resSectionLength As Long
+    resSectionLength = m_Stream.ReadLong_BE()
+    
+    If (resSectionLength > 0) Then
+        
+        'Calculate a final position for this segment; we'll continue iterating blocks until we hit this
+        Dim finalPosition As Long
+        finalPosition = m_Stream.GetPosition() + resSectionLength
+        
+        Dim resID As PSD_ResourceID, resNameLength As Byte, resName As String, resSize As Long
+        
+        'In the future, we will likely want to separate and store the various resource blocks we encounter.
+        ' Ideally, these blocks could even be preserved if a PSD is saved back out to file during a session.
+        ' For this first prototype, however, we simply want to iterate all blocks and ensure that our
+        ' pointer math works out correctly.
+        Do
+        
+            'Blocks *must* start with a unique '8BIM' identifier
+            If (m_Stream.ReadString_ASCII(4) = "8BIM") Then
+            
+                'Resource ID is a Photoshop-specific identifier.  There are 100+ possible values here;
+                ' we do not currently attempt to validate these.
+                resID = m_Stream.ReadInt_BE()
+                
+                'The ID is followed by a Pascal ShortString.  This is a one-byte length value, followed by a
+                ' string of chars (current system codepage) of length 0-255.  Adobe forcibly pads these to be
+                ' a length with a multiple of two, *including* the length bit (e.g. per the spec, "a null name
+                ' consists of two bytes of zero").
+                resNameLength = m_Stream.ReadByte()
+                If (resNameLength = 0) Then
+                    m_Stream.SetPosition 1, FILE_CURRENT   'Forcibly advance the pointer by 1 more byte
+                Else
+                    'Retrieve the string, and advance by an additional byte if the string length is even.
+                    resName = m_Stream.ReadString_ASCII(resNameLength)
+                    If ((resNameLength And 1) = 0) Then m_Stream.SetPosition 1, FILE_CURRENT
+                End If
+                
+                'Next, read the length of the resource data.  Again, note that this is padded to make the
+                ' size even, if the resource data itself is *not* even.
+                resSize = m_Stream.ReadLong_BE()
+                'Debug.Print "resource: " & Hex$(resId) & ", " & resSize
+                
+                'Before touching the actual resource data, calculate a final pointer position.
+                ' This is important as...
+                '  1) we may not actually retrieve resource data because it's useless to us, or
+                '  2) we may retrieve only a portion of the data, and
+                '  3) resource data is padded to even numbers, so the useful size of the data may
+                '     not be the amount we actually need to move the pointer.
+                '
+                'By calculating a final position in advance, we can forcibly set the stream pointer to
+                ' this value, regardless of what we do with the actual resource data.
+                Dim finalResPosition As Long
+                finalResPosition = m_Stream.GetPosition() + resSize
+                If ((resSize And 1) = 1) Then finalResPosition = finalResPosition + 1
+                
+                'If this resource is something useful to PD, retrieve it now.
+                
+                'ICC profiles are critical, especially if the source is CMYK
+                If (resID = rid_IccProfile) And (resSize > 0) Then
+                    
+                    Set m_Profile = New pdICCProfile
+                    If (m_Stream.GetStreamMode() = PD_SM_MemoryBacked) Then
+                        m_Profile.LoadICCFromPtr resSize, m_Stream.ReadBytes_PointerOnly(resSize)
+                    Else
+                        Dim tmpProfileBytes() As Byte
+                        m_Stream.ReadBytes tmpProfileBytes, resSize
+                        m_Profile.LoadICCFromPtr resSize, VarPtr(tmpProfileBytes(0))
+                        Erase tmpProfileBytes
+                    End If
+                    
+                    Debug.Print "ICC profile found (" & CStr(resSize) & " bytes)"
+                    
+                    'Add the retrieved profile to PD's central cache, and tag the destination image
+                    ' to note that the image is color-managed
+                    Dim colorProfileHash As String
+                    colorProfileHash = ColorManagement.AddProfileToCache(m_Profile)
+                    dstImage.SetColorProfile_Original colorProfileHash
+                    
+                End If
+                
+                'Regardless of how the resource's data was handled, realign the pointer to match
+                ' the previously calculated "end-of-resource" position.
+                m_Stream.SetPosition finalResPosition, FILE_BEGIN
+                
+            Else
+                m_Warnings.AddString "Block starts with invalid identifier!!"
+            End If
+        
+        Loop While (m_Stream.GetPosition() < finalPosition)
+        
+    'I don't believe files coming from PD will ever have a zero-length resource segment, but 3rd-party implementations
+    ' may not use this section at all.  In that case, the stream pointer will already be pointing at the next segment.
+    Else
+        Step3_GatherImageResources = psd_Success
+    End If
+    
+    Exit Function
+
+InternalVBError:
+    InternalError "Step3_GatherImageResources", "internal VB error #" & Err.Number & ": " & Err.Description
+    If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 3, #" & Err.Number & ": " & Err.Description
+    Step3_GatherImageResources = psd_Failure
+    
+End Function
+
+Private Function Step2_RetrieveColorModeData(ByRef srcFile As String) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    Step2_RetrieveColorModeData = psd_Success
+    
+    'Failsafe check
+    If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
+        InternalError "Step2_RetrieveColorModeData", "filename has changed since original validation!"
+        Step2_RetrieveColorModeData = psd_Failure
+        Exit Function
+    End If
+    
+    'Remember that m_Stream has already been forcibly advanced past the file header in Step 1.
+    
+    'We now want to retrieve the PSD's color mode data section, if it exists.  Per the spec,
+    ' "Only indexed color and duotone have color mode data. For all other modes, this section is just
+    '  the 4-byte length field, which is set to zero."
+    Dim cmLength As Long
+    cmLength = m_Stream.ReadLong_BE()
+    If (cmLength > 0) Then
+    
+        'Ensure the file is indexed or duotone.
+        If (m_Header.ColorMode = cm_Indexed) Then
+        
+            'Indexed mode images used a fixed-size color table.  From the spec:
+            ' "Indexed color images: length is 768; color data contains the color table for the image,
+            ' in non-interleaved order."
+            
+            'Retrieve the color table and assemble it into a usable palette.
+            m_ColorTableCount = 256
+            ReDim m_ColorTable(0 To 255) As RGBQuad
+            
+            Dim i As Long
+            For i = 0 To 255
+                m_ColorTable(i).Red = m_Stream.ReadByte()
+            Next i
+            For i = 0 To 255
+                m_ColorTable(i).Green = m_Stream.ReadByte()
+            Next i
+            For i = 0 To 255
+                m_ColorTable(i).Blue = m_Stream.ReadByte()
+            Next i
+            For i = 0 To 255
+                m_ColorTable(i).Alpha = 255
+            Next i
+            
+            'The stream pointer will now be pointing at the start of the next segment.
+            Step2_RetrieveColorModeData = psd_Success
+        
+        ElseIf (m_Header.ColorMode = cm_Duotone) Then
+        
+            'Duotone data is not actually retrievable.  It is a proprietary Adobe format.
+            ' Per the spec, "Duotone images: color data contains the duotone specification (the format of
+            ' which is not documented). Other applications that read Photoshop files can treat a duotone
+            ' image as a gray image, and just preserve the contents of the duotone information when reading
+            ' and writing the file."
+            m_Warnings.AddString "Color mode is duotone.  Color table will be ignored."
+            m_Stream.SetPosition cmLength, FILE_CURRENT
+            Step2_RetrieveColorModeData = psd_Warning
+        
+        'Other color modes should not write a color table.  Advance the stream pointer accordingly,
+        ' but also raise a warning.
+        Else
+            m_Warnings.AddString "Color mode data exists, but color mode isn't indexed or duotone."
+            m_Stream.SetPosition cmLength, FILE_CURRENT
+            Step2_RetrieveColorModeData = psd_Warning
+        End If
+    
+    'If the data length is zero, the stream already points at the next section.  Carry on!
+    Else
+        Step2_RetrieveColorModeData = psd_Success
+    End If
+    
+    Exit Function
+
+InternalVBError:
+    InternalError "Step2_RetrieveColorModeData", "internal VB error #" & Err.Number & ": " & Err.Description
+    If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 2, #" & Err.Number & ": " & Err.Description
+    Step2_RetrieveColorModeData = psd_Failure
+
+End Function
+
+Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    'If the passed path is zero, assume the caller is loading the PSD from memory.
+    If (LenB(srcFile) = 0) Then m_SourceFilename = PSD_LOADED_FROM_MEMORY Else m_SourceFilename = srcFile
+    
+    Dim okToProceed As PD_PSDResult
+    okToProceed = psd_Success
+    
+    'We always check the file extension.  If the user has *asked* us to check it, we treat extension
+    ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)  This step is skipped
+    ' if the PSD is loaded directly from memory
+    If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) Then
+        If (Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "psd", True) And Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "psb", True)) Then
+            m_Warnings.AddString "File extension doesn't match PSD"
+            If checkExtension Then okToProceed = psd_FileNotPSD Else okToProceed = psd_Warning
+        End If
+    End If
+    
+    'TODO: potentially validate minimum file size?  Unfortunately I don't know the spec well enough to
+    ' determine a safe "minimum" file size at present, so let's skip this step.
+    
+    'If all pre-checks passed, open a stream.  (For performance reasons during testing, I currently cache
+    ' the entire stream in-memory instead of streaming it in pieces - this will likely be undesirable in
+    ' production code, so I've marked a revisit of this as TODO 7.2.)
+    If (okToProceed < psd_Failure) Then
+        If (m_SourceFilename = PSD_LOADED_FROM_MEMORY) Then
+            Set m_Stream = New pdStream
+            If Not m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_SourcePtrLen, m_SourcePtr) Then
+                m_Warnings.AddString "Couldn't start in-memory stream against passed pointer: " & m_SourcePtr
+                okToProceed = psd_Failure
+            End If
+        Else
+        
+            'For validation purposes, simply wrap a stream around the file; if it validates,
+            ' we'll cache the file in-memory and continue loading from there.
+            Set m_Stream = New pdStream
+            If Not m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
+                m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
+                okToProceed = psd_Failure
+            End If
+            
+        End If
+    End If
+    
+    'The stream is open; validate both the PSD's ASCII identifier and its version; if either is mismatched,
+    ' abandon ship.
+    If (okToProceed < psd_Failure) Then
+        
+        Dim asciiID As String
+        asciiID = m_Stream.ReadString_ASCII(4)
+        
+        Dim psdVersion As Integer
+        psdVersion = m_Stream.ReadInt_BE()
+        m_PSDisPSB = (psdVersion = 2)
+        
+        'Validate the asciiID; this value is immutable
+        If (asciiID = "8BPS") Then
+            
+            'Version can only be 1 (for PSD) or 2 (for PSB)
+            If (psdVersion = 1) Or (psdVersion = 2) Then okToProceed = psd_Success Else okToProceed = psd_Failure
+            If (okToProceed < psd_Failure) Then
+            
+                'This appears to be a valid PSD file.  If streaming from the HDD, attempt to pre-cache the
+                ' file in memory to improve load time.  (This may not be feasible with very large PSDs;
+                ' if pre-caching fails, we'll continue round-tripping out to the HDD as we go.)
+                If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) Then
+                    
+                    m_Stream.StopStream
+                    Set m_Stream = Nothing
+                    
+                    Dim streamOK As Boolean
+                    streamOK = Files.FileLoadAsPDStream(m_SourceFilename, m_Stream)
+                    If (Not streamOK) Then
+                        Set m_Stream = New pdStream
+                        streamOK = m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess)
+                    End If
+                    
+                    'Advance the stream pointer by 6 bytes (to bypass the fields we've already validated)
+                    If streamOK Then
+                        m_Stream.SetPosition 6&, FILE_BEGIN
+                    Else
+                        m_Warnings.AddString "Lost file access after initial validation; file may be locked or in an inaccessible location."
+                        okToProceed = psd_Failure
+                    End If
+                End If
+                
+                'Confirm our stream is still attached to the PSD data and finish validating the header segment
+                If (okToProceed < psd_Failure) Then
+                    
+                    With m_Header
+                    
+                        .version = psdVersion
+                    
+                        'After the signature and version come 6 reserved bytes
+                        m_Stream.SetPosition 6&, FILE_CURRENT
+                    
+                        'Number of channels in the image, including alpha channels, comes next
+                        .NumChannels = m_Stream.ReadInt_BE()
+                    
+                        'Height/width come next (IN THAT ORDER, don't ask me why)
+                        .ImageHeightPx = m_Stream.ReadLong_BE()
+                        .ImageWidthPx = m_Stream.ReadLong_BE()
+                    
+                        'Color depth
+                        .BitsPerChannel = m_Stream.ReadInt_BE()
+                        
+                        'Color mode
+                        .ColorMode = m_Stream.ReadInt_BE()
+                    
+                        'Validate all header data; if any of it doesn't conform, reject the file.
+                        ' (Validation values come from Adobe's spec, hence their arbitrary nature.)
+                        If (.NumChannels < 1) Or (.NumChannels > 56) Then
+                            m_Warnings.AddString "Unsupported number of channels: " & CStr(.NumChannels) & ". Load canceled."
+                            okToProceed = psd_Failure
+                        ElseIf (.ImageHeightPx <= 0) Or (.ImageWidthPx <= 0) Then
+                            m_Warnings.AddString "Width and/or height is invalid (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                            okToProceed = psd_Failure
+                        ElseIf (Not m_PSDisPSB) And ((.ImageHeightPx > 30000) Or (.ImageWidthPx > 30000)) Then
+                            m_Warnings.AddString "PSD width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                            okToProceed = psd_Failure
+                        ElseIf m_PSDisPSB And ((.ImageHeightPx > 300000) Or (.ImageWidthPx > 300000)) Then
+                            m_Warnings.AddString "PSB width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                            okToProceed = psd_Failure
+                        ElseIf ((.BitsPerChannel <> 1) And (.BitsPerChannel <> 8) And (.BitsPerChannel <> 16) And (.BitsPerChannel <> 32)) Then
+                            m_Warnings.AddString "Invalid depth/bpc (" & CStr(.BitsPerChannel) & "). Load canceled."
+                            okToProceed = psd_Failure
+                        ElseIf ((.ColorMode < cm_Bitmap) Or (.ColorMode > cm_Lab)) Then
+                            m_Warnings.AddString "Unknown color mode (" & CStr(.ColorMode) & "). Load canceled."
+                            okToProceed = psd_Failure
+                        End If
+                        
+                    End With
+                
+                End If
+                
+            Else
+                m_Warnings.AddString "PSD header provided unknown version #" & CStr(psdVersion) & ". Load canceled."
+                okToProceed = psd_FileNotPSD
+            End If
+            
+        Else
+            m_Warnings.AddString "PSD header failed basic validation.  (This is not a PSD file.)"
+            okToProceed = psd_FileNotPSD
+        End If
+        
+    End If
+    
+    'Validation complete.  If the file validated successfully, this function guarantees that m_Stream
+    ' points at the first byte PAST the valid PSD/PSB header.
+    Step1_ValidateHeader = okToProceed
+    
+    Exit Function
+    
+'Internal VB errors are always treated as catastrophic failures.
+InternalVBError:
+    InternalError "IsFilePSD", "internal VB error #" & Err.Number & ": " & Err.Description
+    If (Not m_Stream Is Nothing) Then If m_Stream.IsOpen Then m_Stream.StopStream True
+    
+    m_Warnings.AddString "Internal error in step 1, #" & Err.Number & ": " & Err.Description
+    Step1_ValidateHeader = psd_Failure
+
+End Function
+
+Private Function GetColorModeName(ByVal srcMode As PSD_ColorMode) As String
+    Select Case srcMode
+        Case cm_Bitmap
+            GetColorModeName = "Bitmap"
+        Case cm_Grayscale
+            GetColorModeName = "Grayscale"
+        Case cm_Indexed
+            GetColorModeName = "Indexed"
+        Case cm_RGB
+            GetColorModeName = "RGB"
+        Case cm_CMYK
+            GetColorModeName = "CMYK"
+        Case cm_Multichannel
+            GetColorModeName = "Multichannel"
+        Case cm_Duotone
+            GetColorModeName = "Duotone"
+        Case cm_Lab
+            GetColorModeName = "Lab"
+    End Select
+End Function
+
+Private Sub Class_Initialize()
+    Set m_Stream = New pdStream
+    Set m_Warnings = New pdStringStack
+End Sub
+
+Private Sub Class_Terminate()
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen() Then m_Stream.StopStream True
+    End If
+End Sub
+
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
+    If UserPrefs.GenerateDebugLogs Then
+        If writeDebugLog Then PDDebug.LogAction "pdPSD." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+    Else
+        Debug.Print "pdPSD." & funcName & "() reported an error on file """ & m_SourceFilename & """: " & errDescription
+    End If
+End Sub
+
+'Want data on warnings?  Use these helper functions.
+Friend Function Warnings_GetCount() As Long
+    Warnings_GetCount = m_Warnings.GetNumOfStrings()
+End Function
+
+Friend Sub Warnings_CopyList(ByRef dstStack As pdStringStack)
+    Set dstStack = m_Warnings
+End Sub
+
+Friend Sub Warnings_DumpToDebugger()
+    If (m_Warnings.GetNumOfStrings() > 0) Then
+        Dim i As Long
+        For i = 0 To m_Warnings.GetNumOfStrings() - 1
+            PDDebug.LogAction "WARNING: pdPSD reported: " & m_Warnings.GetString(i)
+        Next i
+    End If
+End Sub

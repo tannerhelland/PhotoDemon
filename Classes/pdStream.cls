@@ -210,6 +210,10 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
     
 End Function
 
+Friend Function GetStreamMode() As PD_STREAM_MODE
+    GetStreamMode = m_StreamMode
+End Function
+
 'Return the number of bytes in the current stream.  Note that this is *not* necessarily the size of the in-memory buffer;
 ' rather, it is the number of bytes the caller has written.
 ' (Conversely, for a read-only stream, this is always the full size of the stream.)

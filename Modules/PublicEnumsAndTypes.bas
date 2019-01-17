@@ -289,10 +289,11 @@ Public Enum PD_ImageDecoder
     id_SVGParser = 4
     id_PNGParser = 5
     id_ORAParser = 6
+    id_PSDParser = 7
 End Enum
 
 #If False Then
-    Private Const id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_OLELoadPicture = 3, id_SVGParser = 4, id_PNGParser = 5
+    Private Const id_Internal = 0, id_FreeImage = 1, id_GDIPlus = 2, id_OLELoadPicture = 3, id_SVGParser = 4, id_PNGParser = 5, id_PSDParser = 7
     Private Const id_ORAParser = 6
 #End If
 

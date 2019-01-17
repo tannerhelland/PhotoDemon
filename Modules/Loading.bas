@@ -234,8 +234,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
             '*************************************************************************************************************************************
             
-            'If the source file was already designed as a multi-layer format (e.g. OpenRaster), this step is unnecessary.
-            If (targetImage.GetCurrentFileFormat <> PDIF_ORA) Then
+            'If the source file was already designed as a multi-layer format (e.g. OpenRaster, PSD), this step is unnecessary.
+            If (targetImage.GetCurrentFileFormat <> PDIF_ORA) And ((targetImage.GetCurrentFileFormat <> PDIF_PSD) Or (decoderUsed <> id_PSDParser)) Then
                 
                 'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
                 Dim newLayerName As String
@@ -275,6 +275,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             Case id_ORAParser
                 PDDebug.LogAction vbTab & "Load engine: Internal OpenRaster parser", , True
+                
+            Case id_PSDParser
+                PDDebug.LogAction vbTab & "Load engine: Internal PSD parser", , True
                 
             Case id_GDIPlus
                 PDDebug.LogAction vbTab & "Load engine: GDI+", , True
