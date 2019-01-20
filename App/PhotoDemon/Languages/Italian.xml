@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.377</langversion>
+<langversion>6.7.378</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -15538,6 +15538,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

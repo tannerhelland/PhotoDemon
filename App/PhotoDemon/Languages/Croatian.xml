@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3360</langversion>
+<langversion>6.8.3361</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15537,6 +15537,18 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

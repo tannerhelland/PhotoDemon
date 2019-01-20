@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.80</langversion>
+<langversion>1.0.81</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15538,6 +15538,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

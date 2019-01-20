@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.319</langversion>
+<langversion>6.6.320</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -15547,6 +15547,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

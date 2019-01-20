@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.645</langversion>
+<langversion>7.2.646</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -15543,6 +15543,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

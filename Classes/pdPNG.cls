@@ -1751,7 +1751,7 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
             bitFlags(5) = 4
             bitFlags(6) = 2
             bitFlags(7) = 1
-                    
+            
             'We want to focus on the bytes relevant to the current scanline only
             For y = 0 To yFinal
             

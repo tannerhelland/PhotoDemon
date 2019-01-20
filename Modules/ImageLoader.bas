@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2018 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 20/April/18
-'Last update: add a compile-time constant that controls PD's internal PNG loader; it is now active by default!
+'Last updated: 20/January/19
+'Last update: integrate our now homebrew PSD decoder
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
@@ -28,8 +28,10 @@ Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 ' but you can use this constant to deactivate parsing support if necessary.
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 
-'PD's internal PSD parser is EXPERIMENTAL.  If it fails, we still fall back to FreeImage's primitive PSD
-' support (e.g. no layer, just a composite image), so there is currently no harm in enabling this.
+'PD's internal PSD parser is still under heavy construction.  If it fails, PD will fall back to
+' FreeImage's rudimentary PSD support (e.g. no layer, just a composite image).  If you try to
+' load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.  I don't have a modern
+' copy of Photoshop for testing, so outside help is necessary for fixing esoteric PSD bugs!
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL

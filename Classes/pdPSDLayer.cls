@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 15/January/19
+'Last updated: 20/January/19
 'Last update: continued work on initial build
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
@@ -31,6 +31,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'PSD files contain a *lot* of information.  To aid debugging, you can set output to "verbose"; this will
+' dump all kinds of diagnostic information to the debug log.  (Note that the parent pdPSD class has its
+' own version of this constant.)
+Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'Various rects; these have been translated to the proper order (Adobe uses top/left/bottom/right order)
 Private m_Rect As RectL, m_MaskRect As RectL, m_RealMaskRect As RectL
@@ -50,6 +55,7 @@ Public Enum PSD_ChannelID
     cidMagenta = 1
     cidYellow = 2
     cidKey = 3
+    cidIndexed = 0
 End Enum
 
 #If False Then
@@ -76,6 +82,11 @@ Private Type PSD_ChannelInfo
     ' segment of the file)
     ciCompression As PSD_ChannelCompression
     ciDataLength As Long
+    
+    'If PD can successfully decode a channel's data (this is not guaranteed until all compression
+    ' formats are implemented), this value will be set to TRUE
+    ciDecodedOK As Boolean
+    ciUnusedPadding As Boolean
     
     'The interpretation of ciData() depends on the value of ciCompression (above). It is relatively common
     ' for PSD data to be stored as raw-encoded, in which case ciData() provides relevant raw pixel values.
@@ -113,7 +124,7 @@ Private m_LayerNameANSI As String, m_LayerNameUnicode As String
 Private m_LayerDIB As pdDIB
 
 Friend Function DoesLayerHaveUsableData() As Boolean
-    DoesLayerHaveUsableData = (m_ChannelCount > 0) And (Not m_LayerDIB Is Nothing)
+    DoesLayerHaveUsableData = (m_ChannelCount > 0) And (Not m_LayerDIB Is Nothing) And ((m_Rect.Right - m_Rect.Left) <> 0) And ((m_Rect.Bottom - m_Rect.Top) <> 0)
 End Function
 
 Friend Function GetLayerName() As String
@@ -144,79 +155,353 @@ Friend Function GetLayerVisibility() As Boolean
     GetLayerVisibility = m_Visible
 End Function
 
-'After channel data has been retrieved from the PSD, we must decode it into something usable by PD.
-' That's what this function handles.  If the underlying data is irrelevant to PD (e.g. adjustment or effect layers),
-' this function simply frees the associated layer data to cut down on memory requirements.  Layers with relevant
-' image data, however, will produce a usable pdDIB object from this step.
-Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile) As PD_PSDResult
-    Debug.Print "here"
-    DecodeChannels = psd_Success
-    
-    'Support for additional formats are being added all the time.  Reject any unwanted combinations for now.
-    If (bitsPC <> 8) Or (imgColorMode <> cm_RGB) Then
-        warningStack.AddString "The current color mode (" & imgColorMode & " ) and bpc (" & bitsPC & " is still under construction."
-        Debug.Print "abandoning load"
-        Set m_LayerDIB = Nothing
-        DecodeChannels = psd_Failure
-        Exit Function
-    Else
-        Debug.Print "attempting load"
-    End If
+'After channel data has been decoded (decompressed), it needs to be assembled into a final usable image.
+' At present, this step is limited to certain color modes and bit-depths, although I am actively expanding coverage.
+' If you have a PSD file that doesn't work, this step is likely the culprit - attach the PSD file to a new Issue
+' at GitHub and I will investigate further.
+'
+'(Also note: if the DecodeChannels step fails for a given channel, don't waste time calling this step; it won't
+' work if the underlying channel data hasn't been decoded properly!)
+Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage = psd_Success
     
     On Error GoTo InternalVBError
     
-    'All channels in a layer are typically stored using the same compression format.
-    ' However, this is not guaranteed, so we must load and process each channel independently from the others.
+    'Support for additional formats are being added all the time.  Reject any unwanted combinations for now.
+    Dim mustCancel As Boolean
+    mustCancel = False
+    If (Not mustCancel) Then mustCancel = (bitsPC > 8)
+    If (Not mustCancel) Then mustCancel = (imgColorMode = cm_CMYK)
+    If (Not mustCancel) Then mustCancel = (imgColorMode = cm_Lab)
+    If (Not mustCancel) Then mustCancel = (imgColorMode = cm_Multichannel)
+    If mustCancel Then
+        warningStack.AddString "The current color mode (" & imgColorMode & ") and bpc (" & bitsPC & ") is still under construction."
+        Set m_LayerDIB = Nothing
+        ConstructImage = psd_Failure
+        Exit Function
+    Else
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Bit-depth and color mode are supported; attempting to decode now..."
+    End If
     
     'Start by preparing a pdDIB object.  This will ultimately hold the results of our parsing, although the
     ' data may get convolved through a number of intermediary formats first.
-    Set m_LayerDIB = New pdDIB
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    Set m_LayerDIB = New pdDIB
     m_LayerDIB.CreateBlank layerWidth, layerHeight, 32, vbWhite, 255
     
-    Dim bytesPerChannel As Long
-    bytesPerChannel = (bitsPC \ 8)
+    'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
+    ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
+    ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
+    ' are reset as each channel is loaded, so that changes to one of them does not affect any
+    ' other layers in the image.
+    Dim chnColorMode As Long, chnBitDepth As Long
     
-    ' data is stored in planar format (e.g. not interleaved - RRRGGGBBB instead of RGBRGBRGB).
+    'Channel data is stored in planar format (e.g. not interleaved - RRRGGGBBB instead of RGBRGBRGB).
     ' As such, each channel must be loaded independent of other channels in the image.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
         
-        'If the target layer DIB was freed by a previous channel, exit immediately
+        'If the target layer DIB was freed by a previous step, exit immediately
         If (m_LayerDIB Is Nothing) Then Exit For
         
-        With m_Channels(i)
+        'Reset any on-the-fly changes we've made to color mode or bit-depth
+        chnColorMode = imgColorMode
+        chnBitDepth = bitsPC
         
+        'Interpretation of the underlying data depends on bit-depth, obviously
+        Dim bytesPerChannel As Long
+        bytesPerChannel = (chnBitDepth \ 8)
+    
+        With m_Channels(i)
+            
+            'If channel data wasn't decoded properly, skip this channel entirely
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            
             'Some channels contribute nothing to the final image (and are zero-length).  Ignore them.
-            If (.ciDataLength = 0) Then
-                Debug.Print "Zero-length channel found."
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            
+            'Layer masks represent a significant complication; we will deal with them in the future
+            If (.ciID < cidAlpha) Then
+                
+                'TODO: calculate special decoding rect, as it is *not* the same as the regular rect.  We also have to
+                ' deal with crap like "default color" which determines whether the encoded data represents hiding
+                ' or showing the layer beneath.
+                'Debug.Print .ciID
+                'If .ciID = cidUserLayerMask Then
+                '    Debug.Print m_MaskRect.Left, m_MaskRect.Top, m_MaskRect.Right - m_MaskRect.Left, m_MaskRect.Bottom - m_MaskRect.Top
+                '    Debug.Print m_RealMaskRect.Left, m_RealMaskRect.Top, m_RealMaskRect.Right - m_RealMaskRect.Left, m_RealMaskRect.Bottom - m_RealMaskRect.Top
+                'End If
+                
                 GoTo SkipChannel
+                
             End If
             
-            'Our first goal is to translate the PSD channel stream into a standalone byte array
-            ' at its native bit-per-channel size.  The amount of work required to do this varies based
-            ' on the compression technique used.
+            'Monochrome layers are a special case.  If encountered, it's easiest to expand them to an 8-bit stream
+            ' and treat the results as grayscale.  (This allows us to reuse the grayscale code "as-is".)
+            If (chnBitDepth = 1) Then
+                ExpandMonochrome m_Channels(i), layerHeight, layerWidth
+                chnColorMode = cm_Grayscale
+                chnBitDepth = 8
+                bytesPerChannel = 1
+            End If
             
-            'We know the size of the finished channel data from the image's dimensions and current bit-depth.
+            'For color channels, we can calculate the size of the finished channel data from the image's dimensions
+            ' and current bit-depth.
             Dim numPixels As Long
             numPixels = layerWidth * layerHeight
             
             Dim finalArraySize As Long
             finalArraySize = numPixels * bytesPerChannel
             
+            'Monochrome layers are the only sub-8-bit channel depth that PSDs support.
+            ' They also need to be handled separately as their alignment requires specialized handling.
+            If (finalArraySize > 0) Then
+                
+                Dim x As Long, y As Long
+                
+                Dim tmpBytes() As Byte, tmpSA As SafeArray1D
+                Dim scanWidth As Long, scanStart As Long, srcIndex As Long
+                scanStart = m_LayerDIB.GetDIBPointer()
+                scanWidth = m_LayerDIB.GetDIBStride()
+                
+                'Separate "painting" steps by bit-depth
+                
+                '8-bit channel (most common case)
+                If (bytesPerChannel = 1) Then
+                    
+                    'RGB color space
+                    If (chnColorMode = cm_RGB) Then
+                        
+                        'Channel order is not necessarily guaranteed
+                        Dim cOffset As Long
+                        If (.ciID = cidBlue) Then
+                            cOffset = 0
+                        ElseIf (.ciID = cidGreen) Then
+                            cOffset = 1
+                        ElseIf (.ciID = cidRed) Then
+                            cOffset = 2
+                        ElseIf (.ciID = cidAlpha) Then
+                            cOffset = 3
+                        End If
+                        
+                        'TODO: handle masks here, if present; we can simply merge their results with the existing
+                        ' alpha channel data, as premultiplication will sort out the rest.
+                        
+                        'NOTE!  masks represent a more complex problem; Photoshop only stores a sub-portion of the
+                        ' mask in the file.  The rect and default mask color setting need to be read to know how
+                        ' to paint areas outside said rect, and the number of scanlines is likely to be very different
+                        ' (in both width and height) than the layer itself.  Handling this will be potentially complex.
+                        
+                        'Actually painting the color channel data is extremely simple; just copy the byte into its
+                        ' relevant position in the target DIB.
+                        m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                        
+                        For y = 0 To layerHeight - 1
+                            tmpSA.pvData = scanStart + (scanWidth * y)
+                        For x = 0 To layerWidth - 1
+                            tmpBytes(x * 4 + cOffset) = .ciDataDecoded(y * layerWidth + x)
+                        Next x
+                        Next y
+                        
+                        m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                            
+                    '256-color, duotone, and grayscale images are handled very similarly
+                    ElseIf (chnColorMode = cm_Indexed) Or (chnColorMode = cm_Grayscale) Or (chnColorMode = cm_Duotone) Then
+                        
+                        'Indexed color images can still have masks, so we need to check channel IDs.
+                        ' (Note that the "indexed" channel ID is simply 0; this refers to the pixel data
+                        ' channel of indexed, grayscale, and duotone color modes.)
+                        If (.ciID = cidIndexed) Then
+                            
+                            'Next step is to construct a palette for the image; this step varies
+                            ' based on channel type.
+                            Dim imgPalette() As RGBQuad, palSize As Long, trnsIndex As Long
+                            trnsIndex = -1
+                            
+                            'In indexed images, we can simply read the color table information from the parent image
+                            If (chnColorMode = cm_Indexed) Then
+                                
+                                parentPSD.GetColorTableData imgPalette, palSize, trnsIndex
+                                If (palSize > 0) Then
+                                    If (trnsIndex >= 0) And (trnsIndex <= 255) Then imgPalette(trnsIndex).Alpha = 0
+                                Else
+                                    ReDim imgPalette(0 To 255) As RGBQuad
+                                End If
+                                
+                            'For grayscale or duotone we manually construct a standard grayscale palette
+                            Else
+                                ReDim imgPalette(0 To 255) As RGBQuad
+                                palSize = 256
+                                For x = 0 To 255
+                                    imgPalette(x).Blue = x
+                                    imgPalette(x).Green = x
+                                    imgPalette(x).Red = x
+                                    If (x = trnsIndex) Then imgPalette(x).Alpha = 0 Else imgPalette(x).Alpha = 255
+                                Next x
+                            End If
+                            
+                            'Now we can simply paint the palette into the destination 32-bpp DIB.
+                            ' (TODO: accelerate this using a Long array; painting individual bytes is stupid.)
+                            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                            
+                            For y = 0 To layerHeight - 1
+                                tmpSA.pvData = scanStart + (scanWidth * y)
+                            For x = 0 To layerWidth - 1
+                                srcIndex = .ciDataDecoded(y * layerWidth + x)
+                                tmpBytes(x * 4) = imgPalette(srcIndex).Blue
+                                tmpBytes(x * 4 + 1) = imgPalette(srcIndex).Green
+                                tmpBytes(x * 4 + 2) = imgPalette(srcIndex).Red
+                                tmpBytes(x * 4 + 3) = imgPalette(srcIndex).Alpha
+                            Next x
+                            Next y
+                            
+                            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                        
+                        'Any other channels in an indexed image, if they exist, are treated as alpha data.
+                        ' TODO: sort out mask handling into a separate function.
+                        Else
+                        
+                            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                            
+                            For y = 0 To layerHeight - 1
+                                tmpSA.pvData = scanStart + (scanWidth * y)
+                            For x = 0 To layerWidth - 1
+                                tmpBytes(x * 4 + 3) = CSng(tmpBytes(x * 4 + 3)) * (CSng(.ciDataDecoded(y * layerWidth + x)) / 255!)
+                            Next x
+                            Next y
+                            
+                            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                            
+                        End If
+                    
+                    'Other color spaces can be handled here in the future
+                    'ElseIf (chnColorMode = cm_CMYK) Then    'etc
+                        
+                    End If
+                
+                'BPC other than 1 are still under construction.
+                Else
+                    warningStack.AddString "BPC is currently unsupported; abandoning decode."
+                    ConstructImage = psd_Failure
+                End If
+                
+            
+            'Failsafe final array size (non zero-length); this layer does not contain usable data
+            Else
+                ConstructImage = psd_Warning
+            End If
+            
+        End With
+    
+SkipChannel:
+    Next i
+    
+    'If a full layer image was constructed successfully, premultiply it before exiting
+    If (Not m_LayerDIB Is Nothing) Then m_LayerDIB.SetAlphaPremultiplication True
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage, #" & Err.Number & ": " & Err.Description
+    ConstructImage = psd_Failure
+    
+End Function
+
+'After channel data has been retrieved from the PSD, we must decode it into something usable by PD.
+' That's what this function handles.  If the underlying data is irrelevant to PD (e.g. adjustment or effect layers),
+' this function simply frees the associated layer data to cut down on memory requirements.  Layers with relevant
+' image data, however, will produce a usable pdDIB object from this step.
+Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+    
+    DecodeChannels = psd_Success
+    
+    On Error GoTo InternalVBError
+    
+    'Decoded data size is contingent on the layer's rectangle
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
+    ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
+    ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
+    ' are reset as each channel is loaded, so that changes to one of them does not affect any
+    ' other layers in the image.
+    Dim chnColorMode As Long, chnBitDepth As Long
+    
+    'Channel data is stored in planar format (e.g. not interleaved - RRRGGGBBB instead of RGBRGBRGB).
+    ' As such, each channel must be loaded independent of other channels in the image.
+    Dim i As Long
+    For i = 0 To Abs(m_ChannelCount) - 1
+        
+        'Reset any on-the-fly changes we've made to color mode or bit-depth
+        chnColorMode = imgColorMode
+        chnBitDepth = bitsPC
+        
+        With m_Channels(i)
+            
+            'Failsafe reset of decoding results; this tells subsequent steps to ignore this layer's data
+            .ciDecodedOK = False
+            
+            'Some channels contribute nothing to the final image (and are zero-length).  Ignore them.
+            If (.ciDataLength = 0) Then
+                .ciDecodedOK = False
+                GoTo SkipChannel
+            End If
+            
+            'Layer masks represent a significant complication; we will deal with them in the future
+            If (.ciID < cidAlpha) Then
+                
+                'TODO: calculate special decoding rect, as it is *not* the same as the regular rect.  We also have to
+                ' deal with crap like "default color" which determines whether the encoded data represents hiding
+                ' or showing the layer beneath.
+                'Debug.Print .ciID
+                'If .ciID = cidUserLayerMask Then
+                '    Debug.Print m_MaskRect.Left, m_MaskRect.Top, m_MaskRect.Right - m_MaskRect.Left, m_MaskRect.Bottom - m_MaskRect.Top
+                '    Debug.Print m_RealMaskRect.Left, m_RealMaskRect.Top, m_RealMaskRect.Right - m_RealMaskRect.Left, m_RealMaskRect.Bottom - m_RealMaskRect.Top
+                'End If
+                .ciDecodedOK = False
+                GoTo SkipChannel
+                
+            End If
+            
+            'Our goal in this step is to translate the PSD channel stream into a standalone byte array
+            ' at its native bit-per-channel size.  The amount of work required to do this varies based
+            ' on the compression technique used.
+            Dim bytesPerChannel As Long
+            bytesPerChannel = (chnBitDepth \ 8)
+            
+            'For color channels, we can calculate the size of the finished channel data from the image's dimensions
+            ' and current bit-depth.
+            Dim numPixels As Long
+            numPixels = layerWidth * layerHeight
+            
+            Dim finalArraySize As Long
+            
+            'Monochrome is a special case.
+            If (bytesPerChannel = 0) Then
+            
+                layerWidth = (layerWidth + 7) \ 8
+                If (layerWidth = 0) Then layerWidth = 1
+                numPixels = layerWidth * layerHeight
+                finalArraySize = numPixels
+            
+            Else
+                finalArraySize = numPixels * bytesPerChannel
+            End If
+            
             'Monochrome layers will need to be handled separately
             If (finalArraySize > 0) Then
                 
                 'Prep a temporary output buffer
-                Dim tmpBytes() As Byte
-                Dim x As Long, y As Long, tmpSA As SafeArray1D
-                Dim scanWidth As Long, scanStart As Long
-                scanStart = m_LayerDIB.GetDIBPointer()
-                scanWidth = m_LayerDIB.GetDIBStride()
+                Dim x As Long, y As Long
                 
-                Debug.Print "Compression type: " & .ciCompression
+                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Channel #" & i & " (ID=" & .ciID & ") has compression type: " & .ciCompression
                 
                 Select Case .ciCompression
                 
@@ -228,6 +513,7 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                         ' subsequent code simple.
                         ReDim .ciDataDecoded(0 To .ciDataLength - 1) As Byte
                         CopyMemoryStrict VarPtr(.ciDataDecoded(0)), VarPtr(.ciData(0)), .ciDataLength
+                        .ciDecodedOK = True
                         
                     'PackBits = RLE compression.  Data must be decoded before transferring it to the image.
                     Case ccPackBits
@@ -271,14 +557,19 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                 ' (signed) byte in each stream as a code.
                                 rleCode = rleStream.ReadByte()
                                 If (rleCode > 127) Then rleCode = rleCode - 256
+                                bytesReadLine = bytesReadLine + 1
                                 
                                 'If the code is >= 0, the next (code) bytes should be copied to the destination
                                 ' buffer as-is.
-                                If (rleCode >= 0) Then
+                                If (rleCode > 0) Then
                                     rleCode = rleCode + 1
                                     tmpVal = rleStream.ReadBytes_PointerOnly(rleCode)
+                                    bytesReadLine = bytesReadLine + rleCode
+                                    'If (bytesReadLine > lineLengths(y)) Then
+                                    '    Debug.Print "WARNING RLE OVERFLOW (1)! " & lineLengths(y), y, rleCode
+                                    '    Exit Do
+                                    'End If
                                     CopyMemoryStrict VarPtr(.ciDataDecoded(bytesReadTotal)), tmpVal, rleCode
-                                    bytesReadLine = bytesReadLine + rleCode + 1
                                     bytesReadTotal = bytesReadTotal + rleCode
                                     
                                 'If the code is on the range [-127,-1], inclusive, the next byte should be
@@ -286,12 +577,16 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                 ElseIf (rleCode > -128) Then
                                     rleCode = 1 - rleCode
                                     tmpVal = rleStream.ReadByte()
+                                    bytesReadLine = bytesReadLine + 1
+                                    'If (bytesReadLine > lineLengths(y)) Then
+                                    '    Debug.Print "WARNING RLE OVERFLOW (2)! " & lineLengths(y), y, rleCode
+                                    '    Exit Do
+                                    'End If
                                     FillMemory VarPtr(.ciDataDecoded(bytesReadTotal)), rleCode, tmpVal
                                     bytesReadTotal = bytesReadTotal + rleCode
-                                    bytesReadLine = bytesReadLine + 2
-                                
+                                    
                                 '-128 means do nothing (nop).  I'm not sure why an encoder would set this, but if it does,
-                                ' we'll simply move to the next byte.
+                                ' the decoder will continue normally.
                                 'Else
                                     
                                 End If
@@ -306,66 +601,33 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                         
                         'Manually free our temporary stream object, as it unsafely wraps a local array
                         Set rleStream = Nothing
+                        .ciDecodedOK = True
                         DecodeChannels = psd_Success
                         
                     Case ccZip
+                        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ZIP compression isn't supported yet."
+                        .ciDecodedOK = False
                         DecodeChannels = psd_Failure
-                        Set m_LayerDIB = Nothing
-                    
+                        
                     Case ccZipWithPrediction
+                        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ZIP w/prediction compression isn't supported yet."
+                        .ciDecodedOK = False
                         DecodeChannels = psd_Failure
-                        Set m_LayerDIB = Nothing
-                
+                        
                 End Select
-                
-                'The source scanline has been successfully decoded.  "Paint" its contents into the destination DIB.
-                If (Not m_LayerDIB Is Nothing) Then
-                
-                    'If this buffer is uncompressed, we can load it directly into our target DIB, depending on
-                    ' the image's color-depth.  (Because 8-bpc is so prevalent, it's worth accelerating manually.)
-                    If (bytesPerChannel = 1) Then
-                        
-                        Debug.Print "Transferring channel #" & .ciID & " to DIB..."
-                        
-                        m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                        
-                        For y = 0 To layerHeight - 1
-                            tmpSA.pvData = scanStart + (scanWidth * y)
-                        For x = 0 To layerWidth - 1
-                            If (.ciID = cidBlue) Then
-                                tmpBytes(x * 4) = .ciDataDecoded(y * layerWidth + x)
-                            ElseIf (.ciID = cidGreen) Then
-                                tmpBytes(x * 4 + 1) = .ciDataDecoded(y * layerWidth + x)
-                            ElseIf (.ciID = cidRed) Then
-                                tmpBytes(x * 4 + 2) = .ciDataDecoded(y * layerWidth + x)
-                            ElseIf (.ciID = cidAlpha) Then
-                                tmpBytes(x * 4 + 3) = .ciDataDecoded(y * layerWidth + x)
-                            End If
-                        Next x
-                        Next y
-                        
-                        m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                        
-                    Else
-                        warningStack.AddString "BPC is currently unsupported; abandoning decode."
-                        DecodeChannels = psd_Failure
-                    End If
-                    
-                End If
                 
             'Raw data is zero-length; this layer does not contain usable data
             Else
-                Debug.Print "erasing layer DIB"
-                Set m_LayerDIB = Nothing
+                DecodeChannels = psd_Warning
             End If
+            
+            'Before moving to the next channel, free the encoded data; we no longer require it
+            Erase .ciData
             
         End With
     
 SkipChannel:
     Next i
-    
-    'If a full layer image was constructed successfully, premultiply it before exiting
-    If (Not m_LayerDIB Is Nothing) Then m_LayerDIB.SetAlphaPremultiplication True
     
     Exit Function
     
@@ -373,6 +635,74 @@ InternalVBError:
     InternalError "DecodeChannels", "internal VB error #" & Err.Number & ": " & Err.Description
     warningStack.AddString "Internal error in DecodeChannels, #" & Err.Number & ": " & Err.Description
     DecodeChannels = psd_Failure
+End Function
+
+'1-bit-per-channel images are internally expanded to 8-bit grayscale to simplify rendering
+Private Function ExpandMonochrome(ByRef srcChannel As PSD_ChannelInfo, ByVal numScanlines As Long, ByVal numBitsInScanline As Long) As Boolean
+    
+    'By the time this function is called, the monochrome data stream has been expanded to raw pixel data.
+    ' We want to expand it a second time, to full grayscale data, to simplify rendering a composite image.
+    
+    'We'll use pdStream to generate a new, 8-bpp version of the image; this simplifies the process of
+    ' collecting individual bytes into a contiguous stream.
+    Dim tmpStream As pdStream
+    Set tmpStream = New pdStream
+    tmpStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
+    
+    Dim srcStream As pdStream
+    Set srcStream = New pdStream
+    srcStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , UBound(srcChannel.ciDataDecoded) + 1, VarPtr(srcChannel.ciDataDecoded(0))
+    
+    Dim numPixelsProcessed As Long
+    
+    'There's not a performance-friendly way to mask flags in VB, so let's just use a byte array for clarity
+    Dim bitFlags() As Byte
+    ReDim bitFlags(0 To 7) As Byte
+    bitFlags(0) = 128
+    bitFlags(1) = 64
+    bitFlags(2) = 32
+    bitFlags(3) = 16
+    bitFlags(4) = 8
+    bitFlags(5) = 4
+    bitFlags(6) = 2
+    bitFlags(7) = 1
+    
+    'Bytes are in scanline order
+    Dim x As Long, y As Long, i As Long, curByte As Byte, xStride As Long
+    xStride = (numBitsInScanline + 7) \ 8
+    If (xStride = 0) Then xStride = 1
+    
+    For y = 0 To numScanlines - 1
+    
+        'Reset pixel count on each scanline
+        numPixelsProcessed = 0
+                
+        'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
+        For x = 0 To xStride - 1
+        
+            curByte = srcStream.ReadByte()
+            
+            'Parse each bit in turn
+            For i = 0 To 7
+                
+                'Ignore empty bytes at the end of each scanline
+                If (numPixelsProcessed <= numBitsInScanline) Then
+                    If (bitFlags(i) = (curByte And bitFlags(i))) Then tmpStream.WriteByte 0 Else tmpStream.WriteByte 255
+                    numPixelsProcessed = numPixelsProcessed + 1
+                End If
+                
+            Next i
+        Next x
+        
+    Next y
+    
+    'With a new grayscale stream assembled, overwrite the decoded data stream with the new grayscale stream
+    Set srcStream = Nothing
+    srcChannel.ciDataLength = tmpStream.GetStreamSize()
+    ReDim srcChannel.ciDataDecoded(0 To tmpStream.GetStreamSize() - 1) As Byte
+    CopyMemoryStrict VarPtr(srcChannel.ciDataDecoded(0)), tmpStream.Peek_PointerOnly(0), tmpStream.GetStreamSize()
+    Set tmpStream = Nothing
+    
 End Function
 
 'After *all* layer headers have been successfully parsed, the next chunk of the PSD contains image channel data.
@@ -394,7 +724,7 @@ Friend Function LoadChannels(ByRef srcStream As pdStream, ByRef warningStack As 
             ' To avoid confusion, calculate a bare "size of pixel data" by subtracting two from
             ' the net chunk size.
             .ciDataLength = .ciSizeL - 2
-            Debug.Print "loading channel of length " & .ciDataLength
+            
             'It *is* possible to have zero-length layer data (for example, adjustment or effect layers
             ' may do this).  As such, it's critical to check channel size before attempting to read.
             If (.ciDataLength > 0) Then srcStream.ReadBytes .ciData, .ciDataLength, True
@@ -440,6 +770,8 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByVal imgNum
     'Retrieve compression method; this is identical to the compression IDs used in multilayer images
     Dim cmpMethod As PSD_ChannelCompression
     cmpMethod = srcStream.ReadInt_BE()
+    
+    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer image compression method: " & cmpMethod
     
     Select Case cmpMethod
     
@@ -517,19 +849,13 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByVal imgNum
             
         'TODO!
         Case ccZip
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ZIP compression is not yet supported."
+            
         Case ccZipWithPrediction
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ZIP w/prediction compression is not yet supported."
         
     End Select
     
-    'Channel size is not known in advance, alas!  Instead, we have to decode *all* data in the image,
-    ' inferring channel sizes from other factors.  This makes decompression noticeably more obnoxious compared to
-    ' multi-layer images (backward, I know).
-    
-    
-    
-'Channel count can vary on a per-layer basis
-'Private m_ChannelCount
-
 End Function
 
 'Given a stream object *THAT ALREADY POINTS TO A LAYER RECORD*, parse out whatever meaningful
@@ -664,7 +990,7 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     
     'And finally, the length of "extra data field", or as the spec clarifies,
     ' "the total length of the next five fields".  I don't know what those five fields are,
-    ' actually, as the spec only shows three:
+    ' actually, as the spec only shows three, with a fourth mentioned in an entirely different section:
     ' 1) Layer mask data
     ' 2) Layer blending range data
     ' 3) Layer name
@@ -682,7 +1008,7 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     
     'Next, layer blending ranges data.  No idea what this does, but we still perform
     ' a correct parse.
-    If (ParseLayer < psd_Failure) Then ParseLayer = ParseLayerMaskAdjustmentData(srcStream, warningStack, imageIsPSB)
+    If (ParseLayer < psd_Failure) Then ParseLayer = ParseLayerBlendingRanges(srcStream, warningStack, imageIsPSB)
     
     If (ParseLayer < psd_Failure) Then
     
@@ -702,7 +1028,7 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
             Dim reqPadding As Long
             reqPadding = ((layerNameLength + 1) Mod 4)
             If (reqPadding <> 0) Then srcStream.SetPosition 4 - reqPadding, FILE_CURRENT
-            Debug.Print "layer name: " & m_LayerNameANSI
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Layer name (ANSI): " & m_LayerNameANSI
             
         End If
         
@@ -726,7 +1052,6 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
             sigCheck = srcStream.ReadString_ASCII(4)
             
             If (sigCheck <> "8BIM") And (sigCheck <> "8B64") Then
-                Debug.Print "Unknown signature: " & sigCheck
                 warningStack.AddString "ParseLayer found an unknown additional segment signature: " & sigCheck
                 ParseLayer = psd_Warning
             Else
@@ -735,7 +1060,7 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
                 With m_AdditionalInfo(m_AdditionalInfoCount)
                     .aiKey = srcStream.ReadString_ASCII(4)
                     .aiDataLength = srcStream.ReadLong_BE()
-                    'Debug.Print "Additional layer info found: " & .Key & " - " & .DataLength & " bytes"
+                    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Additional layer info found: " & .aiKey & " - " & .aiDataLength & " bytes"
                     If (.aiDataLength > 0) Then srcStream.ReadBytes .aiDataBytes, .aiDataLength, True
                 End With
                 
@@ -745,13 +1070,50 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
             
         Loop
         
-        'Debug.Print "Found " & m_AdditionalInfoCount & " additional layer info records"
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Layer contained " & m_AdditionalInfoCount & " additional info records"
     
+    'Layers are not required to have additional info records; this is okay
     Else
-        'Debug.Print "No additional layer info records."
+        
     End If
     
-    'TODO: do something useful with additional info chunks that are relevant to PD features
+    'Search additional info chunks for settings useful to PD
+    If (m_AdditionalInfoCount > 0) Then
+        
+        'Additional info structs may be large and complicated; pdStream simplifies traversal
+        Dim tmpStream As pdStream
+        Set tmpStream = New pdStream
+                    
+        For i = 0 To m_AdditionalInfoCount - 1
+        
+            Select Case m_AdditionalInfo(i).aiKey
+            
+                'Unicode layer names are important; they supercede the (required) ANSI layer name, if any
+                Case "luni"
+                
+                    'Data chunk is a 4-byte string length (chars, not bytes), followed by [length] wchars
+                    tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , m_AdditionalInfo(i).aiDataLength, VarPtr(m_AdditionalInfo(i).aiDataBytes(0))
+                    
+                    Dim layerNameLengthChars As Long
+                    layerNameLengthChars = tmpStream.ReadLong_BE()
+                    
+                    If (layerNameLengthChars <= ((m_AdditionalInfo(i).aiDataLength - 4) \ 2)) And (layerNameLengthChars > 0) Then
+                        m_LayerNameUnicode = tmpStream.ReadString_Unicode_BE(layerNameLengthChars)
+                        m_LayerNameUnicode = Strings.TrimNull(m_LayerNameUnicode)
+                    End If
+                    
+                    'Important to free stream, as it unsafely wraps the underlying chunk data
+                    tmpStream.StopStream
+                    
+                    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Layer name (Unicode): " & m_LayerNameUnicode
+            
+            End Select
+        
+        Next i
+        
+        Set tmpStream = Nothing
+    
+    End If
     
     'Failsafe check to ensure our stream pointer is still aligned
     If (srcStream.GetPosition() <> finalPointerPos) Then
@@ -779,10 +1141,16 @@ Private Function ParseLayerBlendingRanges(ByRef srcStream As pdStream, ByRef war
     ' the segment is skippable.
     Dim segmentLength As Long
     segmentLength = srcStream.ReadLong_BE()
+    
     If (segmentLength = 0) Then
         ParseLayerBlendingRanges = psd_Success
         Exit Function
+    Else
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Found layer blending range data: " & segmentLength & " bytes."
     End If
+    
+    Dim expectedFinalPointer As Long
+    expectedFinalPointer = srcStream.GetPosition() + segmentLength
     
     'I don't actually know what layer blending ranges do, but the parser does correctly retrieve them
     ' (in case we find a use for them in the future).
@@ -797,20 +1165,16 @@ Private Function ParseLayerBlendingRanges(ByRef srcStream As pdStream, ByRef war
     'The remaining segment bytes consist of...
     ' (4 bytes) Nth channel source range
     ' (4 bytes) Nth channel destination range
-    Dim i As Long
-    For i = 0 To Abs(m_ChannelCount) - 1
+    Do While srcStream.GetPosition() < expectedFinalPointer
         srcStream.ReadLong_BE
         srcStream.ReadLong_BE
-    Next i
+    Loop
     
     'Before exiting, do a failsafe check for pointer correctness
-    Dim expectedFinalPointer As Long
-    expectedFinalPointer = srcStream.GetPosition() + segmentLength
-    
-    'Perform a failsafe check for stream pointer correctness
     If (expectedFinalPointer <> srcStream.GetPosition()) Then
         warningStack.AddString "ParseLayerBlendingRanges() may have misaligned stream pointer!"
         ParseLayerBlendingRanges = psd_Warning
+        srcStream.SetPosition expectedFinalPointer, FILE_BEGIN
     End If
     
     Exit Function
@@ -837,6 +1201,8 @@ Private Function ParseLayerMaskAdjustmentData(ByRef srcStream As pdStream, ByRef
     If (segmentLength = 0) Then
         ParseLayerMaskAdjustmentData = psd_Success
         Exit Function
+    Else
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Layer mask/adjustment data section found: " & segmentLength & " bytes."
     End If
     
     'Before exiting, we'll do a failsafe check for pointer correctness

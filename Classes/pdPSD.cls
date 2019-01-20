@@ -15,13 +15,13 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 16/January/19
+'Last updated: 20/January/19
 'Last update: continued work on initial build
 '
-'At present, this class exists purely as a curiosity, to see what kind of data I can pull out of PSD files.
-' I make no promises as to this class ever reaching "usable" status in PhotoDemon, let alone any kind of
-' comprehensive coverage.  I include it in the current builds simply to encourage me to keep poking away
-' at it.
+'Proper explanation coming, but the short version is: this class is currently under heavy construction.
+' That said, it should handle all non-HDR PSD images correctly.  Layers will be preserved and details
+' like layer names will be imported correctly.  HDR PSD images and expanded features (like layers masks)
+' are still under construction.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" Adobe spec at this URL (link good as of January 2019):
@@ -33,6 +33,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'PSD files contain a *lot* of information.  To aid debugging, you can set output to "verbose"; this will
+' dump all kinds of diagnostic information to the debug log.  (Note that the child pdPSDLayer class has its
+' own version of this constant.)
+Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -122,8 +127,57 @@ Private m_Header As PSD_Header
 ' Subsequent functions should use this value to modify behavior according to PSD/PSB differences.
 Private m_PSDisPSB As Boolean
 
+'PhotoShop uses a detailed struct for resolution info; the spec tells you to dive into the separate
+' SDK guide for this info, which is obtainable from https://www.adobe.com/devnet/photoshop/sdk.html
+Private Enum PSD_ResolutionUnit
+    ruInches = 1
+    ruCentimeters = 2
+    ruPoints = 3
+    ruPicas = 4
+    ruColumns = 5
+End Enum
+
+#If False Then
+    Private Const ruInches = 1, ruCentimeters = 2, ruPoints = 3, ruPicas = 4, ruColumns = 5
+#End If
+
+'Per the spec:
+' 1=display [sic] horitzontal resolution in pixels per inch; 2=display [sic] horitzontal resolution in pixels per cm.
+Private Enum PSD_ResolutionUnitDisplay
+    rudPPI = 0
+    rudPPCm = 1
+End Enum
+
+#If False Then
+    Private Const rudPPI = 0, rudPPCm = 1
+#End If
+
+Private Type PSD_ResolutionInfo
+    riHRes As Single                        'Fixed32 in the file
+    riHResUnit As PSD_ResolutionUnitDisplay 'Integer in the file
+    riWidthUnit As PSD_ResolutionUnit       'Integer in the file
+    riVRes As Single                        'Fixed32 in the file
+    riVResUnit As PSD_ResolutionUnitDisplay 'Integer in the file
+    riHeightUnit As PSD_ResolutionUnit      'Integer in the file
+End Type
+
+Private m_ResolutionInfo As PSD_ResolutionInfo
+
 'If the PSD file uses indexed color mode, its palette will be initialized into this array
-Private m_ColorTable() As RGBQuad, m_ColorTableCount As Long
+Private m_ColorTable() As RGBQuad, m_ColorTableCount As Long, m_TransparentIndex As Long
+
+'Any stored image resources are retrieved as-is.  Some of these may be parsed further
+' and stored in specialized (more usable) types.
+Private Type PSD_ImageResource
+    'irSignature As String * 4  'Always '8BIM', so we don't waste bytes storing it
+    irID As PSD_ResourceID      '2-byte hex ID
+    irName As String            'Pascal string, rarely relevant
+    irDataLength As Long        'Size of data array
+    irDataBytes() As Byte       '"Padded to make the size even"; PD will *not* retrieve padding bytes if they occur
+End Type
+
+Private m_ImageResources() As PSD_ImageResource
+Private m_NumImageResources As Long
 
 'If the PSD file contains layers (null-layer images *are* technically possible), each layer's contents
 ' will be accessible from this array.  If m_NumOfLayers is non-zero, this array is guaranteed to be sized
@@ -182,19 +236,20 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         ' causes the entire file to be abandoned.
         PDDebug.LogAction "PSD file detected. Size is " & m_Header.ImageWidthPx & "x" & m_Header.ImageHeightPx & ", color mode is " & GetColorModeName(m_Header.ColorMode) & ", " & m_Header.BitsPerChannel & " bits per channel."
         keepLoading = Step2_RetrieveColorModeData(srcFile)
-        PDDebug.LogAction "Step 2 complete."
+        If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 2 successful." Else PDDebug.LogAction "PSD parsing step 2 unsuccessful."
+        
         'The color table, if any, has been retrieved.  The next segment of the file is a massive chunk
         ' called "Image Resources".  Much of the data in this section is specific to Photoshop, but we will
         ' attempt to retrieve what we can from it.
         If (keepLoading < psd_Failure) Then
             keepLoading = Step3_GatherImageResources(srcFile, dstImage)
-            PDDebug.LogAction "Step 3 complete."
+            If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 3 successful." Else PDDebug.LogAction "PSD parsing step 3 unsuccessful."
         End If
         
         'Image resources have been retrieved.  The next segment of the file is layer data!
         If (keepLoading < psd_Failure) Then
             keepLoading = Step4_GatherLayersAndMasks(srcFile)
-            PDDebug.LogAction "Step 4 complete."
+            If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 4 successful." Else PDDebug.LogAction "PSD parsing step 4 unsuccessful."
         End If
         
         'If we made it this far successfully, we have enough data to construct a pdImage object!
@@ -203,7 +258,7 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         If (keepLoading < psd_Failure) Then
             Set m_Stream = Nothing
             keepLoading = Step5_AssemblePDImage(srcFile, dstImage)
-            PDDebug.LogAction "Step 5 complete."
+            If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 5 successful." Else PDDebug.LogAction "PSD parsing step 5 unsuccessful."
         End If
         
         LoadPSD = keepLoading
@@ -212,8 +267,34 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Current results may not be usable; always fall back to FreeImage's PSD support until
     ' this class matures.
-    If (Me.Warnings_GetCount() > 0) Then Me.Warnings_DumpToDebugger
+    If (Me.Warnings_GetCount() > 0) Then
+        PDDebug.LogAction "The PSD parser generated one or more warnings.  Here is a full list:"
+        Me.Warnings_DumpToDebugger
+    End If
 
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Sub GetColorTableData(ByRef dstColors() As RGBQuad, ByRef dstColorCount As Long, ByRef dstTransparentIndex As Long)
+    ReDim dstColors(0 To 255) As RGBQuad
+    If (m_ColorTableCount > 0) Then
+        CopyMemoryStrict VarPtr(dstColors(0)), VarPtr(m_ColorTable(0)), 256 * 4
+        dstColorCount = m_ColorTableCount
+        dstTransparentIndex = m_TransparentIndex
+    Else
+        dstColorCount = 0
+        dstTransparentIndex = -1
+    End If
+End Sub
+
+'Only valid after LoadPSD has been called
+Friend Function GetHResolution() As Single
+    GetHResolution = m_ResolutionInfo.riHRes
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Function GetVResolution() As Single
+    GetVResolution = m_ResolutionInfo.riVRes
 End Function
 
 Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage As pdImage) As PD_PSDResult
@@ -233,8 +314,13 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     dstImage.Width = m_Header.ImageWidthPx
     dstImage.Height = m_Header.ImageHeightPx
     
-    'TODO:
-    'dstImage.SetDPI .orXRes, .orYRes
+    'Use retrieved DPI, if available, but if not, note that PSDs default to 72 ppi
+    Dim hDPI As Single, vDPI As Single
+    hDPI = Me.GetHResolution()
+    vDPI = Me.GetVResolution()
+    If (hDPI <= 0!) Then hDPI = 72!
+    If (vDPI <= 0!) Then vDPI = 72!
+    dstImage.SetDPI hDPI, vDPI
     
     Dim tmpLayer As pdLayer, numUsableLayers As Long, newLayerID As Long
     numUsableLayers = 0
@@ -292,7 +378,9 @@ Private Function Step4B_SingleLayerImage() As PD_PSDResult
     
     'If image data was parsed successfully, proceed with decoding
     If (Step4B_SingleLayerImage < psd_Failure) Then
-        If (Not m_Layers(0).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile) < psd_Failure) Then
+        If (m_Layers(0).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+            Step4B_SingleLayerImage = m_Layers(0).ConstructImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me)
+        Else
             InternalError "Step4B_SingleLayerImage", "pdPSDLayer.DecodeChannels() failed catastrophically"
             Step4B_SingleLayerImage = psd_Failure
             Exit Function
@@ -333,7 +421,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     ' we hand off control to a separate function (as the data layout differs in subtle,
     ' obnoxious ways).
     If (lenOfSection = 0) Then
-        Debug.Print "Single-layer PSD found.  Retrieving layer data from image segment..."
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Retrieving layer data from image segment instead..."
         Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
         Exit Function
     End If
@@ -364,7 +452,8 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         'Again, not sure if the layer count can be zero-length, but just in case...
         If (numOfLayers <> 0) Then
             
-            PDDebug.LogAction Abs(numOfLayers) & " layers found.  Parsing layer data now..."
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction Abs(numOfLayers) & " layers found.  Parsing layer data now..."
+            
             'The "layer records" section comes next.  Layer records describe everything needed to perfectly
             ' re-create a Photoshop layer.  As you can imagine, these records are massive, and most of the
             ' information is useful only to Adobe.
@@ -402,13 +491,24 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
             End If
         Next i
         
-        'With all channels loaded, we can now ask each layer to generate a relevant pdDIB for its
-        ' channel data. This comprehensive stage decodes individual channels (as necessary),
-        ' translates them to required 8-bpc, converts the resulting channel collection from planar to
-        ' 32-bpp interleaved RGBA, and color-manages the results.  The end result is a PD-compatible
-        ' image buffer that can be placed directly into a pdLayer object.
+        'With all channels loaded, we can now ask each layer to decode the channel data into a
+        ' format we can actually interpret.  The amount of work involved varies by channel
+        ' type (e.g. layer masks differ from color channels) and compression type.
         For i = 0 To Abs(m_numOfLayers) - 1
-            If (Not m_Layers(i).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile) < psd_Failure) Then
+            If (m_Layers(i).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+            
+                'If the channel decoded successfully, convert it from a bare byte/int/float stream
+                ' into usable pixel data. This comprehensive stage translates channel data to
+                ' 8-bpc, converts the resulting channel collection from planar to 32-bpp interleaved
+                ' RGBA, and color-manages the results.  The end result is a PD-compatible image buffer
+                ' that can be directly associated with a pdLayer object.
+                If (Not m_Layers(i).ConstructImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+                    InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.ConstructImage() failed catastrophically"
+                    Step4_GatherLayersAndMasks = psd_Failure
+                    Exit Function
+                End If
+                
+            Else
                 InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.DecodeChannels() failed catastrophically"
                 Step4_GatherLayersAndMasks = psd_Failure
                 Exit Function
@@ -457,6 +557,7 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
     ' ended up.
     Dim resSectionLength As Long
     resSectionLength = m_Stream.ReadLong_BE()
+    m_NumImageResources = 0
     
     If (resSectionLength > 0) Then
         
@@ -464,20 +565,28 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
         Dim finalPosition As Long
         finalPosition = m_Stream.GetPosition() + resSectionLength
         
-        Dim resID As PSD_ResourceID, resNameLength As Byte, resName As String, resSize As Long
+        'Initialize our resources collection
+        ReDim m_ImageResources(0 To 3) As PSD_ImageResource
+        
+        Dim resNameLength As Byte, resSize As Long
         
         'In the future, we will likely want to separate and store the various resource blocks we encounter.
         ' Ideally, these blocks could even be preserved if a PSD is saved back out to file during a session.
         ' For this first prototype, however, we simply want to iterate all blocks and ensure that our
         ' pointer math works out correctly.
         Do
-        
-            'Blocks *must* start with a unique '8BIM' identifier
-            If (m_Stream.ReadString_ASCII(4) = "8BIM") Then
             
+            Const IMAGE_RESOURCE_ID As String = "8BIM"
+            
+            'Blocks *must* start with a unique '8BIM' identifier
+            If (m_Stream.ReadString_ASCII(4) = IMAGE_RESOURCE_ID) Then
+            
+                'Prep storage
+                If (m_NumImageResources > UBound(m_ImageResources)) Then ReDim Preserve m_ImageResources(0 To m_NumImageResources * 2 - 1) As PSD_ImageResource
+                
                 'Resource ID is a Photoshop-specific identifier.  There are 100+ possible values here;
                 ' we do not currently attempt to validate these.
-                resID = m_Stream.ReadInt_BE()
+                m_ImageResources(m_NumImageResources).irID = m_Stream.ReadInt_BE()
                 
                 'The ID is followed by a Pascal ShortString.  This is a one-byte length value, followed by a
                 ' string of chars (current system codepage) of length 0-255.  Adobe forcibly pads these to be
@@ -488,14 +597,19 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                     m_Stream.SetPosition 1, FILE_CURRENT   'Forcibly advance the pointer by 1 more byte
                 Else
                     'Retrieve the string, and advance by an additional byte if the string length is even.
-                    resName = m_Stream.ReadString_ASCII(resNameLength)
+                    m_ImageResources(m_NumImageResources).irName = Strings.TrimNull(m_Stream.ReadString_ASCII(resNameLength))
                     If ((resNameLength And 1) = 0) Then m_Stream.SetPosition 1, FILE_CURRENT
                 End If
                 
                 'Next, read the length of the resource data.  Again, note that this is padded to make the
                 ' size even, if the resource data itself is *not* even.
                 resSize = m_Stream.ReadLong_BE()
-                'Debug.Print "resource: " & Hex$(resId) & ", " & resSize
+                m_ImageResources(m_NumImageResources).irDataLength = resSize
+                If PSD_DEBUG_VERBOSE Then
+                    With m_ImageResources(m_NumImageResources)
+                        PDDebug.LogAction "Image resource: 0x" & Hex$(.irID) & ", " & .irDataLength & " bytes, name: " & .irName
+                    End With
+                End If
                 
                 'Before touching the actual resource data, calculate a final pointer position.
                 ' This is important as...
@@ -510,40 +624,96 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                 finalResPosition = m_Stream.GetPosition() + resSize
                 If ((resSize And 1) = 1) Then finalResPosition = finalResPosition + 1
                 
-                'If this resource is something useful to PD, retrieve it now.
+                'Retrieve the resource
+                m_Stream.ReadBytes m_ImageResources(m_NumImageResources).irDataBytes, resSize, True
                 
-                'ICC profiles are critical, especially if the source is CMYK
-                If (resID = rid_IccProfile) And (resSize > 0) Then
-                    
-                    Set m_Profile = New pdICCProfile
-                    If (m_Stream.GetStreamMode() = PD_SM_MemoryBacked) Then
-                        m_Profile.LoadICCFromPtr resSize, m_Stream.ReadBytes_PointerOnly(resSize)
-                    Else
-                        Dim tmpProfileBytes() As Byte
-                        m_Stream.ReadBytes tmpProfileBytes, resSize
-                        m_Profile.LoadICCFromPtr resSize, VarPtr(tmpProfileBytes(0))
-                        Erase tmpProfileBytes
-                    End If
-                    
-                    Debug.Print "ICC profile found (" & CStr(resSize) & " bytes)"
-                    
-                    'Add the retrieved profile to PD's central cache, and tag the destination image
-                    ' to note that the image is color-managed
-                    Dim colorProfileHash As String
-                    colorProfileHash = ColorManagement.AddProfileToCache(m_Profile)
-                    dstImage.SetColorProfile_Original colorProfileHash
-                    
-                End If
-                
-                'Regardless of how the resource's data was handled, realign the pointer to match
-                ' the previously calculated "end-of-resource" position.
+                'Realign the pointer to match the previously calculated "end-of-resource" position.
                 m_Stream.SetPosition finalResPosition, FILE_BEGIN
                 
+                m_NumImageResources = m_NumImageResources + 1
+                
             Else
-                m_Warnings.AddString "Block starts with invalid identifier!!"
+                m_Warnings.AddString "Image resource block starts with invalid identifier!"
             End If
         
         Loop While (m_Stream.GetPosition() < finalPosition)
+        
+        'Iterate the completed resource collection, looking for resources useful to PD
+        If (m_NumImageResources > 0) Then
+            
+            'Temporary stream objects are useful for iterating complex resource data streams
+            Dim tmpStream As pdStream
+            
+            Dim i As Long
+            For i = 0 To m_NumImageResources - 1
+                
+                With m_ImageResources(i)
+                    
+                    Select Case .irID
+                    
+                        'ICC profiles are critical, especially if the source is CMYK
+                        Case rid_IccProfile
+                            
+                            If (.irDataLength > 0) Then
+                            
+                                Set m_Profile = New pdICCProfile
+                                m_Profile.LoadICCFromPtr .irDataLength, VarPtr(.irDataBytes(0))
+                                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "ICC profile detected (" & CStr(.irDataLength) & " bytes)"
+                                
+                                'Add the retrieved profile to PD's central cache, and tag the destination image
+                                ' to note that the image is color-managed
+                                Dim colorProfileHash As String
+                                colorProfileHash = ColorManagement.AddProfileToCache(m_Profile)
+                                dstImage.SetColorProfile_Original colorProfileHash
+                        
+                            End If
+                            
+                        'Resolution info must be preserved
+                        Case rid_ResolutionInfo
+                        
+                            If (.irDataLength > 0) Then
+                            
+                                Set tmpStream = New pdStream
+                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+                                
+                                'Resolutions are stored as PPI in 32-bit fixed-point, while all other indicators
+                                ' are ushorts.
+                                m_ResolutionInfo.riHRes = tmpStream.ReadFixed32_BE()
+                                m_ResolutionInfo.riHResUnit = tmpStream.ReadInt_BE()
+                                m_ResolutionInfo.riWidthUnit = tmpStream.ReadInt_BE()
+                                m_ResolutionInfo.riVRes = tmpStream.ReadFixed32_BE()
+                                m_ResolutionInfo.riVResUnit = tmpStream.ReadInt_BE()
+                                m_ResolutionInfo.riHeightUnit = tmpStream.ReadInt_BE()
+                                
+                                Set tmpStream = Nothing
+                                
+                            End If
+                            
+                        'In indexed images, we are interested in both the indexed table color count
+                        ' and transparency index, if any
+                        Case rid_IndexedColorTableCount
+                            If (.irDataLength > 0) Then
+                                Set tmpStream = New pdStream
+                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+                                m_ColorTableCount = tmpStream.ReadInt_BE()
+                                Set tmpStream = Nothing
+                            End If
+                            
+                        Case rid_TransparentIndex
+                            If (.irDataLength > 0) Then
+                                Set tmpStream = New pdStream
+                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+                                m_TransparentIndex = tmpStream.ReadInt_BE()
+                                Set tmpStream = Nothing
+                            End If
+                            
+                    End Select
+                    
+                End With
+            
+            Next i
+        
+        End If
         
     'I don't believe files coming from PD will ever have a zero-length resource segment, but 3rd-party implementations
     ' may not use this section at all.  In that case, the stream pointer will already be pointing at the next segment.
@@ -586,13 +756,16 @@ Private Function Step2_RetrieveColorModeData(ByRef srcFile As String) As PD_PSDR
     
         'Ensure the file is indexed or duotone.
         If (m_Header.ColorMode = cm_Indexed) Then
-        
+            
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Color table found; extracting now..."
+            
             'Indexed mode images used a fixed-size color table.  From the spec:
             ' "Indexed color images: length is 768; color data contains the color table for the image,
             ' in non-interleaved order."
             
             'Retrieve the color table and assemble it into a usable palette.
             m_ColorTableCount = 256
+            m_TransparentIndex = -1
             ReDim m_ColorTable(0 To 255) As RGBQuad
             
             Dim i As Long
@@ -865,7 +1038,7 @@ Friend Sub Warnings_DumpToDebugger()
     If (m_Warnings.GetNumOfStrings() > 0) Then
         Dim i As Long
         For i = 0 To m_Warnings.GetNumOfStrings() - 1
-            PDDebug.LogAction "WARNING: pdPSD reported: " & m_Warnings.GetString(i)
+            PDDebug.LogAction "(" & CStr(i + 1) & ") WARNING: pdPSD reported: " & m_Warnings.GetString(i)
         Next i
     End If
 End Sub

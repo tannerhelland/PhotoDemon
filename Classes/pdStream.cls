@@ -656,6 +656,25 @@ Friend Function ReadLong_BE() As Long
     ReadLong_BE = ntohl(tmpLong)
 End Function
 
+'Adobe files used fixed-point floats in some places.
+Friend Function ReadFixed32() As Single
+    If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
+        Dim intPart As Long, floatPart As Long
+        intPart = Me.ReadInt()
+        floatPart = Me.ReadInt()
+        ReadFixed32 = CSng(intPart) + CSng(floatPart) / 65535!
+    End If
+End Function
+
+Friend Function ReadFixed32_BE() As Single
+    If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
+        Dim intPart As Long, floatPart As Long
+        intPart = Me.ReadInt_BE()
+        floatPart = Me.ReadInt_BE()
+        ReadFixed32_BE = CSng(intPart) + CSng(floatPart) / 65535!
+    End If
+End Function
+
 Friend Function ReadFloat() As Single
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
@@ -712,6 +731,31 @@ Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
                 ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), True, numOfChars)
             End If
         End If
+    End If
+
+End Function
+
+'Read a series of two-byte values from the stream, and treat each 16-bit word as a big-endian UTF-16 code.
+Friend Function ReadString_Unicode_BE(ByVal numOfChars As Long) As String
+
+    If m_Open And (Me.GetPosition() + numOfChars * 2 <= m_BufferSize) Then
+        
+        'Retrieve the string normally
+        Dim tmpString As String
+        tmpString = Me.ReadString_Unicode(numOfChars)
+        
+        'If string is not null-length, manually reverse endianness of all chars
+        If (Len(tmpString) <> 0) Then
+            
+            ReadString_Unicode_BE = String$(Len(tmpString), 0)
+            Dim i As Long, tmpInt As Integer
+            For i = 0 To numOfChars - 1
+                GetMem2 StrPtr(tmpString) + (i * 2), tmpInt
+                PutMem2 StrPtr(ReadString_Unicode_BE) + (i * 2), ntohs(tmpInt)
+            Next i
+            
+        End If
+        
     End If
 
 End Function
