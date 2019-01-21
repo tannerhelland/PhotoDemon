@@ -77,6 +77,18 @@ Begin VB.Form toolpanel_Gradient
       _ExtentY        =   661
       FontSizeCaption =   10
    End
+   Begin PhotoDemon.pdDropDown cboSetting 
+      Height          =   735
+      Index           =   2
+      Left            =   7920
+      TabIndex        =   4
+      Top             =   0
+      Width           =   2295
+      _ExtentX        =   4048
+      _ExtentY        =   1296
+      Caption         =   "repeat"
+      FontSizeCaption =   10
+   End
 End
 Attribute VB_Name = "toolpanel_Gradient"
 Attribute VB_GlobalNameSpace = False
@@ -115,6 +127,9 @@ Private Sub cboSetting_Click(Index As Integer)
         Case 1
             Tools_Gradient.SetGradientAlphaMode cboSetting(Index).ListIndex
             
+        Case 2
+            Tools_Gradient.SetGradientRepeat cboSetting(Index).ListIndex
+            
     End Select
     
 End Sub
@@ -124,7 +139,15 @@ Private Sub Form_Load()
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboSetting(0), BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboSetting(1), LA_NORMAL
-        
+    
+    'Populate any custom dropdowns
+    cboSetting(2).SetAutomaticRedraws False
+    cboSetting(2).Clear
+    cboSetting(2).AddItem "none", 0
+    cboSetting(2).AddItem "wrap", 1
+    cboSetting(2).AddItem "reflect", 2
+    cboSetting(2).SetAutomaticRedraws True, True
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.SetParentForm Me
@@ -173,6 +196,7 @@ Public Sub SyncAllGradientSettingsToUI()
     Tools_Gradient.SetGradientOpacity sldSetting(0).Value
     Tools_Gradient.SetGradientBlendMode cboSetting(0).ListIndex
     Tools_Gradient.SetGradientAlphaMode cboSetting(1).ListIndex
+    Tools_Gradient.SetGradientRepeat cboSetting(2).ListIndex
     'If chkAntialiasing.Value Then tools_gradient.SetgradientAntialiasing P2_AA_HighQuality Else tools_gradient.SetgradientAntialiasing P2_AA_None
 End Sub
 
@@ -181,5 +205,6 @@ Public Sub SyncUIToAllGradientSettings()
     sldSetting(0).Value = Tools_Gradient.GetGradientOpacity
     cboSetting(0).ListIndex = Tools_Gradient.GetGradientBlendMode()
     cboSetting(1).ListIndex = Tools_Gradient.GetGradientAlphaMode()
+    cboSetting(2).ListIndex = Tools_Gradient.GetGradientRepeat()
     'chkAntialiasing.Value = (tools_gradient.GetgradientAntialiasing = P2_AA_HighQuality)
 End Sub

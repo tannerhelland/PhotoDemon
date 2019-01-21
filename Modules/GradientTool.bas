@@ -24,10 +24,21 @@ Public Enum PD_GradientAttributes
     GA_BlendMode = 1
     GA_AlphaMode = 2
     GA_Antialiasing = 3
+    GA_Repeat = 4
 End Enum
 
 #If False Then
-    Private Const GA_Opacity = 0, GA_BlendMode = 1, GA_AlphaMode = 2, GA_Antialiasing = 3
+    Private Const GA_Opacity = 0, GA_BlendMode = 1, GA_AlphaMode = 2, GA_Antialiasing = 3, GA_Repeat = 4
+#End If
+
+Public Enum PD_GradientRepeat
+    gr_None = 0
+    gr_Wrap = 1
+    gr_Reflect = 2
+End Enum
+
+#If False Then
+    Private Const gr_None = 0, gr_Wrap = 1, gr_Reflect = 2
 #End If
 
 'Gradient attributes are stored in these variables
@@ -35,6 +46,7 @@ Private m_GradientOpacity As Single
 Private m_GradientBlendmode As PD_BlendMode
 Private m_GradientAlphamode As PD_AlphaMode
 Private m_GradientAntialiasing As PD_2D_Antialiasing
+Private m_GradientRepeat As PD_GradientRepeat
 
 'Uninitialized mouse points (i.e. if the user hasn't clicked the mouse yet) are initialized to an
 ' "impossible" UI value.
@@ -73,6 +85,10 @@ Public Function GetGradientOpacity() As Single
     GetGradientOpacity = m_GradientOpacity
 End Function
 
+Public Function GetGradientRepeat() As PD_GradientRepeat
+    GetGradientRepeat = m_GradientRepeat
+End Function
+
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
 Public Sub SetGradientAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
@@ -91,6 +107,10 @@ Public Sub SetGradientOpacity(ByVal newOpacity As Single)
     If (newOpacity <> m_GradientOpacity) Then m_GradientOpacity = newOpacity
 End Sub
 
+Public Sub SetGradientRepeat(ByVal newRepeat As PD_GradientRepeat)
+    If (newRepeat <> m_GradientRepeat) Then m_GradientRepeat = newRepeat
+End Sub
+
 Public Function GetGradientProperty(ByVal bProperty As PD_GradientAttributes) As Variant
     
     Select Case bProperty
@@ -102,6 +122,8 @@ Public Function GetGradientProperty(ByVal bProperty As PD_GradientAttributes) As
             GetGradientProperty = GetGradientBlendMode()
         Case GA_Opacity
             GetGradientProperty = GetGradientOpacity()
+        Case GA_Repeat
+            GetGradientProperty = GetGradientRepeat()
     End Select
     
 End Function
@@ -117,6 +139,8 @@ Public Sub SetBrushProperty(ByVal bProperty As PD_BrushAttributes, ByVal newProp
             SetGradientBlendMode newPropValue
         Case GA_Opacity
             SetGradientOpacity newPropValue
+        Case GA_Repeat
+            SetGradientRepeat newPropValue
     End Select
     
 End Sub
@@ -148,15 +172,37 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_GradientAlphamode
         
         If USE_CAIRO_RENDERER Then
+        
             Set m_GradientCairo = New pd2DGradientCairo
             m_GradientCairo.CreateGradientFromGdipGradientString toolpanel_Gradient.grdPrimary.Gradient()
             m_GradientCairo.SetGradientShape P2_GS_Linear
-            m_GradientCairo.SetGradientExtend ce_ExtendNone
+            
+            Select Case m_GradientRepeat
+                Case gr_None
+                    m_GradientCairo.SetGradientExtend ce_ExtendPad
+                Case gr_Wrap
+                    m_GradientCairo.SetGradientExtend ce_ExtendRepeat
+                Case gr_Reflect
+                    m_GradientCairo.SetGradientExtend ce_ExtendReflect
+            End Select
+            
         Else
             Set m_GradientGdip = New pd2DGradient
             m_GradientGdip.CreateGradientFromString toolpanel_Gradient.grdPrimary.Gradient()
             m_GradientGdip.SetGradientShape P2_GS_Linear
-            m_GradientGdip.SetGradientWrapMode P2_WM_Clamp
+            
+            Select Case m_GradientRepeat
+                Case gr_None
+                    'Clamp mode is not supported by GDI+, so we lie and set a functional mode
+                    ' and simply overwrite the results later
+                    'm_GradientGdip.SetGradientWrapMode P2_WM_Clamp
+                    m_GradientGdip.SetGradientWrapMode P2_WM_TileFlipXY
+                Case gr_Wrap
+                    m_GradientGdip.SetGradientWrapMode P2_WM_Tile
+                Case gr_Reflect
+                    m_GradientGdip.SetGradientWrapMode P2_WM_TileFlipXY
+            End Select
+            
         End If
         
     End If
@@ -209,9 +255,8 @@ Private Sub CairoRenderer()
     'Populate any remaining gradient properties
     m_GradientCairo.SetGradientPoint1 m_Points(0)
     m_GradientCairo.SetGradientPoint2 m_Points(1)
-    'm_GradientCairo.SetGradientRadii 0!, PDMath.DistanceTwoPoints(m_Points(0).x, m_Points(0).y, m_Points(1).x, m_Points(1).y)
     m_GradientCairo.SetGradientShape P2_GS_Linear
-    m_GradientCairo.SetGradientExtend ce_ExtendRepeat
+    'm_GradientCairo.SetGradientRadii 0!, PDMath.DistanceTwoPoints(m_Points(0).x, m_Points(0).y, m_Points(1).x, m_Points(1).y)
     
     'Select the pattern into the destination source
     Dim hPattern As Long
@@ -246,7 +291,6 @@ Private Sub GdipRenderer()
     
     'Populate any remaining gradient properties
     m_GradientGdip.SetGradientShape P2_GS_Linear
-    m_GradientGdip.SetGradientWrapMode P2_WM_TileFlipXY
     
     Dim gradAngle As Double
     gradAngle = PDMath.Atan2(m_Points(1).y - m_Points(0).y, m_Points(1).x - m_Points(0).x)
@@ -289,8 +333,7 @@ Private Sub GdipRenderer()
     
     'If the wrap mode is a mode unsupported by GDI+ (e.g. "extend/clamp"), we now need to manually
     ' overwrite the gradient in certain areas.
-    m_GradientGdip.SetGradientWrapMode P2_WM_Clamp
-    If (m_GradientGdip.GetGradientWrapMode() = P2_WM_Clamp) Then
+    If (m_GradientRepeat = gr_None) Then
     
         'To overwrite the ends of the gradient (which have been forcibly tiled by GDI+),
         ' we need to perform some manual calculations.

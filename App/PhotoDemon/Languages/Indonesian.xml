@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.320</langversion>
+<langversion>6.6.321</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -3720,6 +3720,18 @@ Please masukkan nilai berangka.</translation>
 <!-- pdProfiler.cls contains 0 phrases. -->
 
 <!-- END text for pdProfiler.cls-->
+
+<!-- BEGIN text for pdPSD.cls -->
+
+<!-- pdPSD.cls contains 0 phrases. -->
+
+<!-- END text for pdPSD.cls-->
+
+<!-- BEGIN text for pdPSDLayer.cls -->
+
+<!-- pdPSDLayer.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayer.cls-->
 
 <!-- BEGIN text for pdRandomize.cls -->
 
@@ -13810,7 +13822,22 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
-<!-- Toolpanel_Gradient.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reflect</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15548,24 +15575,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPSD.cls -->
-
-<!-- pdPSD.cls contains 0 phrases. -->
-
-<!-- END text for pdPSD.cls-->
-
-<!-- BEGIN text for pdPSDLayer.cls -->
-
-<!-- pdPSDLayer.cls contains 0 phrases. -->
-
-<!-- END text for pdPSDLayer.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2593</phrasecount>
+<phrasecount>2596</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4755 phrases. -->
-<!-- 2162 are duplicates, so only 2593 unique phrases have been written to file. -->
-<!-- These 2593 phrases contain approximately 12389 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
+<!-- These 2596 phrases contain approximately 12392 total words. -->
 
 </pdData>

@@ -15,17 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager (Cairo-based)
 'Copyright 2019-2019 by Tanner Helland
 'Created: 03/January/19
-'Last updated: 03/January/19
-'Last update: split off from pd2DGradient and rework against Cairo-specific features
+'Last updated: 21/January/19
+'Last update: correctly apply extend mode when generating a pattern handle
 '
-'This class manages a single PD gradient instance.
-'
-'At present, it is primarily based on the capabilities of GDI+ gradient brushes.  This will likely expand in the future,
-' but GDI+ provides a nice baseline feature set.
-'
-'Also, note that unlike other pd2D classes, this class does not expose a "debug mode" parameter.  While you can use this class
-' to create and edit gradients directly, I *strongly* recommend handling actual gradient brush creation through the pd2DBrush class.
-' It is equipped to properly create and destroy brush handles automatically, so you don't have to worry about leaks.
+'This class manages a single PD gradient instance, with Cairo as the backend renderer.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -503,6 +496,9 @@ Friend Function GetPatternHandle(Optional ByVal forceToLinearMode As Boolean = F
     ElseIf (m_GradientShape = P2_GS_Diamond) Then
         'todo
     End If
+    
+    'Set repeat behavior
+    Plugin_Cairo.Pattern_SetExtend GetPatternHandle, m_GradientExtend
     
     'Cairo needs us to submit each point in the gradient as a separate function call, and it doesn't care about order.
     
