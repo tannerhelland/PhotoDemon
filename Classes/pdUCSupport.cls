@@ -808,8 +808,8 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     'Track button state persistently, so the control can easily query it outside of events
     m_MouseButtonState = m_MouseButtonState Or Button
     
-    'Ensure that a focus event has been raised, if it wasn't already
-    If (Not m_FocusDetector.HasFocus) Then m_FocusDetector.SetFocusManually
+    'On left-clicks, Ensure that a focus event has been raised, if it wasn't already
+    If (Not m_FocusDetector.HasFocus) And ((Button And pdLeftButton) = pdLeftButton) Then m_FocusDetector.SetFocusManually
     RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
     
 End Sub

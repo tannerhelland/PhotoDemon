@@ -540,7 +540,9 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click.
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-
+    
+    If ((Button And pdLeftButton) <> pdLeftButton) Then Exit Sub
+    
     If Me.Enabled Then
         
         'Sticky toggle allows the button to operate as a checkbox
@@ -578,6 +580,7 @@ End Sub
 
 'If toggle mode is active, remove the button's TRUE state and redraw it
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    If ((Button And pdLeftButton) <> pdLeftButton) Then Exit Sub
     If m_AutoToggle And Value Then Value = False
     RedrawBackBuffer
 End Sub
