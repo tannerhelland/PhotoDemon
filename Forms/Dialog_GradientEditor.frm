@@ -50,6 +50,141 @@ Begin VB.Form dialog_GradientEditor
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   5895
+      Index           =   0
+      Left            =   0
+      TabIndex        =   2
+      Top             =   1200
+      Width           =   12615
+      _ExtentX        =   22251
+      _ExtentY        =   10398
+      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   9
+         Top             =   5280
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   582
+         Caption         =   "automatically distribute nodes evenly"
+         Value           =   0   'False
+      End
+      Begin VB.PictureBox picInteract 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   330
+         Left            =   0
+         ScaleHeight     =   22
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   841
+         TabIndex        =   8
+         Top             =   2400
+         Width           =   12615
+      End
+      Begin VB.PictureBox picNodePreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00FFFFFF&
+         ForeColor       =   &H00000000&
+         Height          =   1950
+         Left            =   240
+         ScaleHeight     =   128
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   807
+         TabIndex        =   7
+         Top             =   360
+         Width           =   12135
+      End
+      Begin PhotoDemon.pdSlider sltNodeOpacity 
+         Height          =   705
+         Left            =   4320
+         TabIndex        =   5
+         Top             =   3660
+         Width           =   3750
+         _ExtentX        =   6615
+         _ExtentY        =   1270
+         Caption         =   "opacity"
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdColorSelector csNode 
+         Height          =   855
+         Left            =   240
+         TabIndex        =   4
+         Top             =   3660
+         Width           =   3870
+         _ExtentX        =   6826
+         _ExtentY        =   1508
+         Caption         =   "color"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   0
+         Left            =   120
+         Top             =   3240
+         Width           =   12135
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "current node settings"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdSlider sltNodePosition 
+         Height          =   705
+         Left            =   8280
+         TabIndex        =   6
+         Top             =   3660
+         Width           =   3750
+         _ExtentX        =   6615
+         _ExtentY        =   1270
+         Caption         =   "position"
+         Max             =   100
+         SigDigits       =   2
+         SliderTrackStyle=   1
+         Value           =   50
+         NotchPosition   =   1
+         NotchValueCustom=   50
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   2
+         Left            =   120
+         Top             =   0
+         Width           =   9255
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "node editor"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblInstructions 
+         Height          =   285
+         Left            =   0
+         Top             =   2880
+         Width           =   12660
+         _ExtentX        =   22331
+         _ExtentY        =   503
+         Alignment       =   2
+         Caption         =   "yes"
+         FontSize        =   9
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   4
+         Left            =   120
+         Top             =   4800
+         Width           =   12135
+         _ExtentX        =   21405
+         _ExtentY        =   556
+         Caption         =   "additional tools"
+         FontSize        =   12
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   5895
       Index           =   1
       Left            =   0
       TabIndex        =   3
@@ -218,141 +353,6 @@ Begin VB.Form dialog_GradientEditor
          ScaleStyle      =   1
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
-      Index           =   0
-      Left            =   0
-      TabIndex        =   2
-      Top             =   1200
-      Width           =   12615
-      _ExtentX        =   22251
-      _ExtentY        =   10398
-      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   9
-         Top             =   5280
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   582
-         Caption         =   "automatically distribute nodes evenly"
-         Value           =   0   'False
-      End
-      Begin VB.PictureBox picInteract 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   330
-         Left            =   0
-         ScaleHeight     =   22
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   841
-         TabIndex        =   8
-         Top             =   2400
-         Width           =   12615
-      End
-      Begin VB.PictureBox picNodePreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00FFFFFF&
-         ForeColor       =   &H00000000&
-         Height          =   1950
-         Left            =   240
-         ScaleHeight     =   128
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   807
-         TabIndex        =   7
-         Top             =   360
-         Width           =   12135
-      End
-      Begin PhotoDemon.pdSlider sltNodeOpacity 
-         Height          =   705
-         Left            =   4320
-         TabIndex        =   5
-         Top             =   3660
-         Width           =   3750
-         _ExtentX        =   6615
-         _ExtentY        =   1270
-         Caption         =   "opacity"
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.pdColorSelector csNode 
-         Height          =   855
-         Left            =   240
-         TabIndex        =   4
-         Top             =   3660
-         Width           =   3870
-         _ExtentX        =   6826
-         _ExtentY        =   1508
-         Caption         =   "color"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   0
-         Left            =   120
-         Top             =   3240
-         Width           =   12135
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "current node settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdSlider sltNodePosition 
-         Height          =   705
-         Left            =   8280
-         TabIndex        =   6
-         Top             =   3660
-         Width           =   3750
-         _ExtentX        =   6615
-         _ExtentY        =   1270
-         Caption         =   "position"
-         Max             =   100
-         SigDigits       =   2
-         SliderTrackStyle=   1
-         Value           =   50
-         NotchPosition   =   1
-         NotchValueCustom=   50
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   2
-         Left            =   120
-         Top             =   0
-         Width           =   9255
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "node editor"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblInstructions 
-         Height          =   285
-         Left            =   0
-         Top             =   2880
-         Width           =   12660
-         _ExtentX        =   22331
-         _ExtentY        =   503
-         Alignment       =   2
-         Caption         =   "yes"
-         FontSize        =   9
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   4
-         Left            =   120
-         Top             =   4800
-         Width           =   12135
-         _ExtentX        =   21405
-         _ExtentY        =   556
-         Caption         =   "additional tools"
-         FontSize        =   12
-      End
-   End
 End
 Attribute VB_Name = "dialog_GradientEditor"
 Attribute VB_GlobalNameSpace = False
@@ -417,6 +417,9 @@ Private m_GradientPoints() As GradientPoint
 
 'The current gradient point (index) selected and/or hovered by the mouse.  -1 if no point is currently selected/hovered.
 Private m_CurPoint As Long, m_CurHoverPoint As Long
+
+'Similarly, the current mouse hover position over the interactive picture box. -1 if unhovered.
+Private m_CurHoverX As Long
 
 'Size of gradient "nodes" in the interactive UI.
 Private Const GRADIENT_NODE_WIDTH As Single = 12#
@@ -484,7 +487,7 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     
     'If the dialog is being initialized for the first time, there will be no "initial gradient".  In this case, the gradient class
     ' will initialize a placeholder gradient.  We make a copy of it, and use that as the basis of the editor's initial settings.
-    If Len(m_OldGradient) = 0 Then m_OldGradient = m_NodePreview.GetGradientAsString
+    If (LenB(m_OldGradient) = 0) Then m_OldGradient = m_NodePreview.GetGradientAsString
     
     'Sync all controls to the initial pen parameters
     SyncControlsToGradientObject
@@ -800,6 +803,7 @@ Private Sub UpdateGradientObjects()
             
             m_CurPoint = -1
             m_CurHoverPoint = -1
+            m_CurHoverX = -1
             
             SyncUIToActiveNode
             
@@ -910,6 +914,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
+    m_CurHoverX = -1
     m_MouseEvents.SetCursor_System IDC_DEFAULT
     DrawGradientNodes
 End Sub
@@ -918,7 +923,9 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
     'First, separate our handling by mouse button state
     If (Button And pdLeftButton) <> 0 Then
-    
+        
+        m_CurHoverX = -1
+        
         'The left mouse button is down.  Assign the new position to the active node.
         If (m_CurPoint >= 0) Then
             If chkDistributeEvenly.Value Then chkDistributeEvenly.Value = False
@@ -938,10 +945,14 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         tmpPoint = GetPointAtPosition(x, y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
-        If tmpPoint <> m_CurHoverPoint Then
+        If (tmpPoint <> m_CurHoverPoint) Then
             m_CurHoverPoint = tmpPoint
-            DrawGradientNodes
+            m_CurHoverX = -1
+        Else
+            m_CurHoverX = x
         End If
+        
+        DrawGradientNodes
     
     End If
     
@@ -1111,6 +1122,52 @@ Private Sub DrawGradientNodes()
         Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
         PD2D.FillRectangleF cSurface, cBrush, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight
         cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        
+        'To help the user understand where the interactive area lies, paint a light textured background
+        Dim edgePadding As Single
+        edgePadding = Interface.FixDPIFloat(10)
+        
+        Dim patBrush As pd2DBrush
+        Set patBrush = New pd2DBrush
+        patBrush.SetBrushMode P2_BM_Pattern
+        patBrush.SetBrushPattern1Color g_Themer.GetGenericUIColor(UI_GrayLight)
+        patBrush.SetBrushPattern1Opacity 50!
+        patBrush.SetBrushPattern2Color g_Themer.GetGenericUIColor(UI_Background)
+        patBrush.SetBrushPattern2Opacity 100!
+        patBrush.SetBrushPatternStyle P2_PS_Weave
+        PD2D.FillRectangleF cSurface, patBrush, edgePadding, 0!, m_InteractiveDIB.GetDIBWidth - edgePadding * 2!, m_InteractiveDIB.GetDIBHeight
+        
+        'Similarly, outline the interactive area
+        Dim cOutlinePen As pd2DPen
+        Drawing2D.QuickCreateSolidPen cOutlinePen, 1, g_Themer.GetGenericUIColor(UI_GrayLight)
+        PD2D.DrawRectangleF cSurface, cOutlinePen, edgePadding, 0!, (m_InteractiveDIB.GetDIBWidth - 1) - edgePadding * 2!, (m_InteractiveDIB.GetDIBHeight - 1)
+        
+        'If a gradient node is *not* currently hovered, but the mouse lies over the interactive area,
+        ' paint a circle to help the user know that interesting stuff happens here.
+        If (m_CurHoverPoint < 0) And (m_CurHoverX >= 0) Then
+            
+            'Limit the hover positioning to the artifical "edges" of the interactive area
+            Dim hovIconRadius As Single
+            hovIconRadius = Interface.FixDPIFloat(5)
+            
+            Dim hovLeftBound As Single, hovRightBound As Single
+            hovLeftBound = edgePadding + hovIconRadius + Interface.FixDPIFloat(2)
+            hovRightBound = (m_InteractiveDIB.GetDIBWidth - 1) - edgePadding - hovIconRadius - Interface.FixDPIFloat(2)
+            
+            Dim hovRenderX As Single
+            If (m_CurHoverX < hovLeftBound) Then
+                hovRenderX = hovLeftBound
+            ElseIf (m_CurHoverX > hovRightBound) Then
+                hovRenderX = hovRightBound
+            Else
+                hovRenderX = m_CurHoverX
+            End If
+            
+            Dim cBrushAccent As pd2DBrush
+            Drawing2D.QuickCreateSolidBrush cBrushAccent, g_Themer.GetGenericUIColor(UI_Accent)
+            PD2D.FillCircleF cSurface, cBrushAccent, hovRenderX, m_InteractiveDIB.GetDIBHeight \ 2, hovIconRadius
+        
+        End If
         
         'Now all we do is use those to draw all the nodes in turn
         Dim i As Long
