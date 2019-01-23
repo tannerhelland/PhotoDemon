@@ -15,11 +15,12 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 20/January/19
-'Last update: continued work on initial build
+'Last updated: 23/January/19
+'Last update: implement CMYK support
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
-' pdPSD instance.  It is not usable outside of a PSD parsing context.
+' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside PhotoDemon,
+' refer to the pdLayer class.
 '
 'All code in this class is my original work.  It is based off the "official" Adobe spec at this URL
 ' (link good as of January 2019):
@@ -172,11 +173,11 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     Dim mustCancel As Boolean
     mustCancel = False
     If (Not mustCancel) Then mustCancel = (bitsPC > 8)
-    If (Not mustCancel) Then mustCancel = (imgColorMode = cm_CMYK)
+    'If (Not mustCancel) Then mustCancel = (imgColorMode = cm_CMYK)
     If (Not mustCancel) Then mustCancel = (imgColorMode = cm_Lab)
     If (Not mustCancel) Then mustCancel = (imgColorMode = cm_Multichannel)
     If mustCancel Then
-        warningStack.AddString "The current color mode (" & imgColorMode & ") and bpc (" & bitsPC & ") is still under construction."
+        warningStack.AddString "The current color mode (" & GetNameOfColorMode(imgColorMode) & ") and bpc (" & bitsPC & ") combination is still under construction."
         Set m_LayerDIB = Nothing
         ConstructImage = psd_Failure
         Exit Function
@@ -184,8 +185,27 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
         If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Bit-depth and color mode are supported; attempting to decode now..."
     End If
     
+    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
+    ' so we need to reference it early (and often).
+    Dim iccAvailable As Boolean
+    iccAvailable = (Not srcProfile Is Nothing)
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    
+    Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
+    If iccAvailable Then
+        
+        Set lcmsSrcProfile = New pdLCMSProfile
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        
+        'Destination profile and transform parameters depend on what we find inside the image; they will be
+        ' constructed on-the-fly when appropriate.
+        Set lcmsDstProfile = New pdLCMSProfile
+        Set lcmsTransform = New pdLCMSTransform
+        
+    End If
+                                    
     'Start by preparing a pdDIB object.  This will ultimately hold the results of our parsing, although the
-    ' data may get convolved through a number of intermediary formats first.
+    ' data may get convolved through various intermediary formats first.
     Dim layerWidth As Long, layerHeight As Long
     layerWidth = m_Rect.Right - m_Rect.Left
     layerHeight = m_Rect.Bottom - m_Rect.Top
@@ -193,12 +213,28 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     Set m_LayerDIB = New pdDIB
     m_LayerDIB.CreateBlank layerWidth, layerHeight, 32, vbWhite, 255
     
+    'When loading CMYK data, we need to use a different intermediary format: a CMYKA buffer that can
+    ' hold five channels worth of data.  (This data will then be color-managed into an RGBA buffer.)
+    Dim cmykaBuffer8() As Byte, cmykaBuffer16() As Integer
+    If (imgColorMode = cm_CMYK) Then
+        
+        If (bitsPC = 8) Then
+            ReDim cmykaBuffer8(0 To (layerWidth * 5) - 1, 0 To layerHeight - 1) As Byte
+            FillMemory VarPtr(cmykaBuffer8(0, 0)), (layerWidth * 5) * layerHeight, 255
+            
+        'TODO
+        ElseIf (bitsPC = 16) Then
+        
+        End If
+        
+    End If
+    
     'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
     ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
     ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
     ' are reset as each channel is loaded, so that changes to one of them does not affect any
     ' other layers in the image.
-    Dim chnColorMode As Long, chnBitDepth As Long
+    Dim chnColorMode As PSD_ColorMode, chnBitDepth As Long
     
     'Channel data is stored in planar format (e.g. not interleaved - RRRGGGBBB instead of RGBRGBRGB).
     ' As such, each channel must be loaded independent of other channels in the image.
@@ -215,7 +251,7 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
         'Interpretation of the underlying data depends on bit-depth, obviously
         Dim bytesPerChannel As Long
         bytesPerChannel = (chnBitDepth \ 8)
-    
+        
         With m_Channels(i)
             
             'If channel data wasn't decoded properly, skip this channel entirely
@@ -268,6 +304,8 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
                 scanStart = m_LayerDIB.GetDIBPointer()
                 scanWidth = m_LayerDIB.GetDIBStride()
                 
+                Dim cOffset As Long
+                
                 'Separate "painting" steps by bit-depth
                 
                 '8-bit channel (most common case)
@@ -276,8 +314,8 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
                     'RGB color space
                     If (chnColorMode = cm_RGB) Then
                         
-                        'Channel order is not necessarily guaranteed
-                        Dim cOffset As Long
+                        'Channel order in the file is likely to be RGB, not BGR, so we need to manually
+                        ' swizzle order as we go.
                         If (.ciID = cidBlue) Then
                             cOffset = 0
                         ElseIf (.ciID = cidGreen) Then
@@ -308,7 +346,28 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
                         Next y
                         
                         m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                            
+                    
+                    'CMYK is passed into an intermediary buffer, then color-managed into an RGBA container.
+                    ElseIf (chnColorMode = cm_CMYK) Then
+                    
+                        If (.ciID = cidCyan) Then
+                            cOffset = 0
+                        ElseIf (.ciID = cidMagenta) Then
+                            cOffset = 1
+                        ElseIf (.ciID = cidYellow) Then
+                            cOffset = 2
+                        ElseIf (.ciID = cidKey) Then
+                            cOffset = 3
+                        ElseIf (.ciID = cidAlpha) Then
+                            cOffset = 4
+                        End If
+                        
+                        For y = 0 To layerHeight - 1
+                        For x = 0 To layerWidth - 1
+                            cmykaBuffer8(x * 5 + cOffset, y) = .ciDataDecoded(y * layerWidth + x)
+                        Next x
+                        Next y
+                        
                     '256-color, duotone, and grayscale images are handled very similarly
                     ElseIf (chnColorMode = cm_Indexed) Or (chnColorMode = cm_Grayscale) Or (chnColorMode = cm_Duotone) Then
                         
@@ -334,6 +393,7 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
                                 
                             'For grayscale or duotone we manually construct a standard grayscale palette
                             Else
+                            
                                 ReDim imgPalette(0 To 255) As RGBQuad
                                 palSize = 256
                                 For x = 0 To 255
@@ -342,6 +402,21 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
                                     imgPalette(x).Red = x
                                     If (x = trnsIndex) Then imgPalette(x).Alpha = 0 Else imgPalette(x).Alpha = 255
                                 Next x
+                                
+                                'While here, if a color profile exists, we want to apply color management prior to
+                                ' applying the palette to the image.  We can do this in-place over the decoded
+                                ' grayscale pixel data.
+                                If iccAvailable Then
+                                    
+                                    'Build a destination lcms profile and relevant transform
+                                    lcmsDstProfile.CreateGenericGrayscaleProfile
+                                    lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_GRAY_8, TYPE_GRAY_8, INTENT_PERCEPTUAL
+                                    
+                                    'Apply the transform in-place to the existing grayscale data
+                                    lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(.ciDataDecoded(0)), VarPtr(.ciDataDecoded(0)), layerWidth, layerWidth, layerHeight, layerWidth, False
+                                    
+                                End If
+                                
                             End If
                             
                             'Now we can simply paint the palette into the destination 32-bpp DIB.
@@ -400,8 +475,36 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
 SkipChannel:
     Next i
     
-    'If a full layer image was constructed successfully, premultiply it before exiting
-    If (Not m_LayerDIB Is Nothing) Then m_LayerDIB.SetAlphaPremultiplication True
+    'If a full layer image was constructed successfully, apply any relevant post-processing before exiting
+    If (Not m_LayerDIB Is Nothing) Then
+        
+        'With all color channels assembled, 8-bit RGBA images can now be color-managed in-place
+        If (imgColorMode = cm_RGB) Then
+            If (bitsPC = 8) And iccAvailable Then
+                lcmsDstProfile.CreateSRGBProfile
+                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile
+                lcmsTransform.ApplyTransformToPDDib m_LayerDIB
+            End If
+        
+        'CMYK data needs to be converted to RGBA for use in PD.
+        ElseIf (imgColorMode = cm_CMYK) Then
+            
+            'TODO: failsafe CMYK path if an ICC profile is not embedded.  This will *never* happen if the PSD
+            ' came from Photoshop (and in fact, it should never happen period unless a writer is broken), but
+            ' I imagine there are plenty of broken PSDs in the wild...
+            If (bitsPC = 8) And iccAvailable Then
+                lcmsDstProfile.CreateSRGBProfile
+                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_CMYKA_8, TYPE_BGRA_8
+                lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(cmykaBuffer8(0, 0)), m_LayerDIB.GetDIBPointer, layerWidth * 5, layerWidth * 4, layerHeight, layerWidth
+                Erase cmykaBuffer8
+            End If
+        End If
+        
+        'TODO: only premultiply if an alpha channel was found in the image; otherwise, we can guarantee full opacity
+        'Premultiply alpha before exiting
+        m_LayerDIB.SetAlphaPremultiplication True
+    
+    End If
     
     Exit Function
     
@@ -781,6 +884,16 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByVal imgNum
             Dim fixedChSize As Long
             fixedChSize = slSize * imgHeightPx
             
+            'Ensure the remaining size of the data chunk is *at least* as large as our internally calculated size.
+            Dim failsafeChSize As Long
+            failsafeChSize = (srcStream.GetStreamSize() - srcStream.GetPosition())
+            If (fixedChSize * m_ChannelCount > failsafeChSize) Then
+                InternalError "NotifySingleLayerImage", "stream size is smaller than required image size (" & CStr(fixedChSize * m_ChannelCount) & " vs " & CStr(failsafeChSize) & ")"
+                fixedChSize = failsafeChSize
+                NotifySingleLayerImage = psd_Failure
+                Exit Function
+            End If
+            
             For i = 0 To m_ChannelCount - 1
                 With m_Channels(i)
                     .ciCompression = cmpMethod
@@ -1117,8 +1230,9 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     
     'Failsafe check to ensure our stream pointer is still aligned
     If (srcStream.GetPosition() <> finalPointerPos) Then
-        warningStack.AddString "ParseLayer() may have misaligned stream pointer!"
-        ParseLayer = psd_Failure
+        warningStack.AddString "ParseLayer() may have misaligned stream pointer!  Forcibly realigning..."
+        srcStream.SetPosition finalPointerPos, FILE_BEGIN
+        ParseLayer = psd_Warning
     End If
     
     Exit Function
@@ -1275,6 +1389,56 @@ InternalVBError:
     
 End Function
 
+'PD can successfully parse the layer global mask, but the data is currently unused.
+Friend Function ParseGlobalLayerMaskInfo(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean) As PD_PSDResult
+
+    On Error GoTo InternalVBError
+    
+    ParseGlobalLayerMaskInfo = psd_Success
+    
+    'This segment provides its own length check.  This value can be zero, in which case the segment
+    ' is skippable.
+    Dim segmentLength As Long
+    segmentLength = srcStream.ReadLong_BE()
+    If (segmentLength = 0) Then
+        ParseGlobalLayerMaskInfo = psd_Success
+        Exit Function
+    Else
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Global layer mask section found: " & segmentLength & " bytes."
+    End If
+    
+    'Before exiting, we'll do a failsafe check for pointer correctness
+    Dim expectedFinalPointer As Long
+    expectedFinalPointer = srcStream.GetPosition() + segmentLength
+    
+    'Overlay color space (undocumented)
+    srcStream.ReadInt_BE
+    
+    '4 * 2 byte color components
+    Dim i As Long
+    For i = 0 To 3
+        srcStream.ReadInt_BE
+    Next i
+    
+    'Opacity; 0 = transparent, 100 = opaque
+    srcStream.ReadInt_BE
+    
+    '"Kind. 0 = Color selected--i.e. inverted; 1 = Color protected;128 = use value stored per layer.
+    ' This value is preferred. The others are for backward compatibility with beta versions."
+    srcStream.ReadByte
+    
+    'Variable amounts of padding; ignore this and simply align the pointer manually
+    If (expectedFinalPointer <> srcStream.GetPosition()) Then srcStream.SetPosition expectedFinalPointer, FILE_BEGIN
+    
+    Exit Function
+
+InternalVBError:
+    InternalError "ParseGlobalLayerMaskInfo", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ParseGlobalLayerMaskInfo, #" & Err.Number & ": " & Err.Description
+    ParseGlobalLayerMaskInfo = psd_Failure
+    
+End Function
+
 'Given a bit-depth and image width, figure out how "long" a scanline is for a single color channel.
 Private Function CalculateBytesPerRow(ByVal channelBitDepth As Long, ByVal imgWidth As Long) As Long
     
@@ -1285,6 +1449,30 @@ Private Function CalculateBytesPerRow(ByVal channelBitDepth As Long, ByVal imgWi
         CalculateBytesPerRow = imgWidth * (channelBitDepth \ 8)
     End If
     
+End Function
+
+'These names are for debug purposes only, and should *NOT* be localized!
+Private Function GetNameOfColorMode(ByVal cMode As PSD_ColorMode) As String
+    Select Case cMode
+        Case cm_Bitmap
+            GetNameOfColorMode = "Bitmap/monochrome"
+        Case cm_Grayscale
+            GetNameOfColorMode = "Grayscale"
+        Case cm_Indexed
+            GetNameOfColorMode = "Indexed"
+        Case cm_RGB
+            GetNameOfColorMode = "RGB"
+        Case cm_CMYK
+            GetNameOfColorMode = "CMYK"
+        Case cm_Multichannel
+            GetNameOfColorMode = "Multichannel"
+        Case cm_Duotone
+            GetNameOfColorMode = "Duotone"
+        Case cm_Lab
+            GetNameOfColorMode = "Lab"
+        Case Else
+            GetNameOfColorMode = "unknown (" & CStr(cMode) & ")"
+    End Select
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)

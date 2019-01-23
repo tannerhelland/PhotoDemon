@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 20/January/19
-'Last update: continued work on initial build
+'Last updated: 23/January/19
+'Last update: implement CMYK support
 '
 'Proper explanation coming, but the short version is: this class is currently under heavy construction.
 ' That said, it should handle all non-HDR PSD images correctly.  Layers will be preserved and details
@@ -214,6 +214,10 @@ End Function
 'Simplified wrapper to load a PSD automatically.
 Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0) As PD_PSDResult
     
+    'Reset some internal parameters to ensure subsequent reads are accurate.  (This is critical if multiple PSDs
+    ' are read back-to-back.)
+    Me.Reset
+    
     'We support PSD loading from both file and memory; if the passed loadFromPtr value is non-zero,
     ' treat it as a pointer and we'll wrap our stream around it instead.
     If (loadFromPtr <> 0) And (loadFromPtrLen <> 0) Then
@@ -366,7 +370,7 @@ InternalVBError:
     
 End Function
 
-Private Function Step4B_SingleLayerImage() As PD_PSDResult
+Private Function Step4B_SingleLayerImage(ByVal chkPointerPosition As Long) As PD_PSDResult
 
     'If a PSD only contains one layer, the layer's data will be saved at the end of the file,
     ' in the "image data" section.  Step4_GatherLayersAndMasks() will defer to us in this case,
@@ -374,6 +378,24 @@ Private Function Step4B_SingleLayerImage() As PD_PSDResult
     m_numOfLayers = 1
     ReDim m_Layers(0) As pdPSDLayer
     Set m_Layers(0) = New pdPSDLayer
+    
+    'Before attempting to load image data, we need to double-check the presence of (optional)
+    ' global layer mask info and/or additional tagged info blocks.  We may deal with these in
+    ' future releases, but for now, we just want to skip over them to get to the actual
+    ' image pixel data.
+    If (m_Stream.GetPosition < chkPointerPosition) Then
+    
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Checking for global mask data..."
+        Step4B_SingleLayerImage = m_Layers(0).ParseGlobalLayerMaskInfo(m_Stream, m_Warnings, m_PSDisPSB)
+        
+        'Finally, if the stream pointer is *still* not at the end of the section, it means optional
+        ' additional tagged blocks are present.  PD does not currently have use for these, so simply
+        ' skip over them for now.
+        If (m_Stream.GetPosition < chkPointerPosition) Then m_Stream.SetPosition chkPointerPosition, FILE_BEGIN
+        
+    End If
+    
+    'With the pointer now correctly aligned, we can proceed with gathering pixel data
     Step4B_SingleLayerImage = m_Layers(0).NotifySingleLayerImage(m_Stream, m_Header.NumChannels, m_Header.ImageWidthPx, m_Header.ImageHeightPx, m_Header.BitsPerChannel, m_Header.ColorMode)
     
     'If image data was parsed successfully, proceed with decoding
@@ -416,13 +438,15 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     If m_PSDisPSB Then lenOfSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
     finalPointerPosition = m_Stream.GetPosition() + lenOfSection
     
+    PDDebug.LogAction "Length of layer and mask section is: " & lenOfSection
+    
     'If a PSD only contains one layer, it can be written at the end of the file (in the
     ' "image data" segment), bypassing this section completely.  To cover this special case,
     ' we hand off control to a separate function (as the data layout differs in subtle,
     ' obnoxious ways).
-    If (lenOfSection = 0) Then
+    If (lenOfSection <= 0) Then
         If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Retrieving layer data from image segment instead..."
-        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
+        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(m_Stream.GetPosition())
         Exit Function
     End If
     
@@ -438,7 +462,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     If m_PSDisPSB Then lenOfLayerInfoSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
     finalLayerInfoPosition = m_Stream.GetPosition() + finalLayerInfoPosition
     
-    'I don't believe the layer info section can have zero-length, but just in case...
+    'The layer info section *can* have zero-length; see psd-tools assortment of test images for this case
     If (lenOfLayerInfoSection > 0) Then
         
         Dim i As Long
@@ -484,12 +508,23 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         ' consumes a lot of memory, as we can't easily stream in chunks of the data at a time - instead,
         ' we have to allocate the full memory and populate it as-we-go.
         For i = 0 To Abs(m_numOfLayers) - 1
-            If (Not m_Layers(i).LoadChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode) < psd_Failure) Then
+            If (m_Layers(i).LoadChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode) >= psd_Failure) Then
                 InternalError "Step4_GatherLayersAndMasks", "pdPSDLayer.LoadChannels() failed catastrophically"
                 Step4_GatherLayersAndMasks = psd_Failure
                 Exit Function
             End If
         Next i
+        
+        'If global mask data is present, parse it now.
+        If (Step4_GatherLayersAndMasks < psd_Failure) Then Step4_GatherLayersAndMasks = m_Layers(0).ParseGlobalLayerMaskInfo(m_Stream, m_Warnings, m_PSDisPSB)
+        
+        'Finally, an additional set of additional layer information (that's not confusing at all)
+        ' may follow the global mask.  This section is entirely optional.
+        If (Step4_GatherLayersAndMasks < psd_Failure) Then
+        
+            
+        
+        End If
         
         'With all channels loaded, we can now ask each layer to decode the channel data into a
         ' format we can actually interpret.  The amount of work involved varies by channel
@@ -517,7 +552,11 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         
     '/end null-length layer info section check
     Else
-        InternalError "Step4_GatherLayersAndMasks", "Zero-length layer info section encountered.  PSD is malformed?"
+        
+        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Activating alternate parse strategy..."
+        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(finalPointerPosition)
+        Exit Function
+        
     End If
     
     Exit Function
@@ -638,6 +677,10 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
         
         Loop While (m_Stream.GetPosition() < finalPosition)
         
+        'In case image resource blocks have added padding, forcibly set the stream position
+        ' to our calculated final value.
+        m_Stream.SetPosition finalPosition, FILE_BEGIN
+        
         'Iterate the completed resource collection, looking for resources useful to PD
         If (m_NumImageResources > 0) Then
             
@@ -752,6 +795,10 @@ Private Function Step2_RetrieveColorModeData(ByRef srcFile As String) As PD_PSDR
     '  the 4-byte length field, which is set to zero."
     Dim cmLength As Long
     cmLength = m_Stream.ReadLong_BE()
+    
+    Dim finalPosition As Long
+    finalPosition = m_Stream.GetPosition() + cmLength
+    
     If (cmLength > 0) Then
     
         'Ensure the file is indexed or duotone.
@@ -793,16 +840,17 @@ Private Function Step2_RetrieveColorModeData(ByRef srcFile As String) As PD_PSDR
             ' image as a gray image, and just preserve the contents of the duotone information when reading
             ' and writing the file."
             m_Warnings.AddString "Color mode is duotone.  Color table will be ignored."
-            m_Stream.SetPosition cmLength, FILE_CURRENT
             Step2_RetrieveColorModeData = psd_Warning
         
         'Other color modes should not write a color table.  Advance the stream pointer accordingly,
         ' but also raise a warning.
         Else
-            m_Warnings.AddString "Color mode data exists, but color mode isn't indexed or duotone."
-            m_Stream.SetPosition cmLength, FILE_CURRENT
+            m_Warnings.AddString "Non-zero color mode segment exists, but image color mode isn't indexed or duotone."
             Step2_RetrieveColorModeData = psd_Warning
         End If
+        
+        'Forcibly set the stream pointer to the correct position
+        m_Stream.SetPosition finalPosition, FILE_BEGIN
     
     'If the data length is zero, the stream already points at the next section.  Carry on!
     Else
@@ -1006,9 +1054,14 @@ Private Function GetColorModeName(ByVal srcMode As PSD_ColorMode) As String
     End Select
 End Function
 
+Friend Sub Reset()
+    Set m_Profile = Nothing
+    Set m_Warnings = New pdStringStack
+End Sub
+
 Private Sub Class_Initialize()
     Set m_Stream = New pdStream
-    Set m_Warnings = New pdStringStack
+    Me.Reset
 End Sub
 
 Private Sub Class_Terminate()
