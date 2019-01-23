@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'PSD files contain a *lot* of information.  To aid debugging, you can set output to "verbose"; this will
+'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that the child pdPSDLayer class has its
 ' own version of this constant.)
 Private Const PSD_DEBUG_VERBOSE As Boolean = True
