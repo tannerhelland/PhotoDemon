@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.647</langversion>
-<langstatus>Fertiggestellt</langstatus>
+<langversion>7.2.757</langversion>
+<langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -52,7 +52,7 @@
 
 <phrase>
 <original>Analyzing current monitor setup</original>
-<translation>Aktuelles Monitorsetup wird analysiert</translation>
+<translation>Aktuelles Monitor-Setup wird analysiert</translation>
 </phrase>
 
 <phrase>
@@ -126,7 +126,7 @@
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>Autosave-Rekonstruktion fertiggestellt für %1</translation>
+<translation>Autosave-Rekonstruktion abgeschlossen für %1</translation>
 </phrase>
 
 <phrase>
@@ -302,12 +302,12 @@
 
 <phrase>
 <original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Start des Plugin-Dienstes ist fehlgeschlagen (Pipe konnte nicht erstellt werden).</translation>
+<translation>Plug-in-Dienst konnte nicht gestartet werden (Pipe konnte nicht erstellt werden).</translation>
 </phrase>
 
 <phrase>
 <original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Start des Plugin-Dienstes ist fehlgeschlagen (Prozess konnte nicht erstellt werden: %1).</translation>
+<translation>Plug-in-Dienst konnte nicht gestartet werden (Prozess konnte nicht erstellt werden: %1).</translation>
 </phrase>
 
 <!-- Plugin_ExifTool.bas contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -647,7 +647,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>Bildleinwand wird um Layer herum angepasst</translation>
+<translation>Bildleinwand wird rundum Layer angepasst</translation>
 </phrase>
 
 <phrase>
@@ -695,7 +695,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Save complete.</original>
-<translation>Speichern fertiggestellt.</translation>
+<translation>Speichern abgeschlossen.</translation>
 </phrase>
 
 <!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -718,12 +718,12 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 ist fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 ist fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -735,9 +735,9 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Das FreeImage Interface-Plugin (FreeImage.dll) wurde nach Programminitialisierung als fehlend markiert oder deaktiviert.
+<translation>Das FreeImage Interface-Plug-in (FreeImage.dll) wurde nach Programminitialisierung als fehlend markiert oder deaktiviert.
 
-Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (Download unter http://freeimage.sourceforge.net/download.html) in das Plugin-Verzeichnis und laden das Programm neu.</translation>
+Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Datei FreeImage.dll (Download unter http://freeimage.sourceforge.net/download.html) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -774,12 +774,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>The PDI file "%1" contains compressed data, but the required plugin is missing or disabled.</original>
-<translation>Die PDI-Datei "%1" enthält komprimierte Daten, aber das erforderliche Plugin fehlt oder ist deaktiviert.</translation>
+<translation>Die PDI-Datei "%1" enthält komprimierte Daten, aber das erforderliche Plug-in fehlt oder ist deaktiviert.</translation>
 </phrase>
 
 <phrase>
 <original>Compression plugin missing</original>
-<translation>Kompression-Plugin fehlt</translation>
+<translation>Kompression-Plug-in fehlt</translation>
 </phrase>
 
 <phrase>
@@ -850,37 +850,37 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>[untitled image]</original>
-<translation>[unbetiteltes Bild]</translation>
+<translation>[unbetiteltes Image]</translation>
 </phrase>
 
 <phrase>
 <original>Recording</original>
-<translation>Aufnahme</translation>
+<translation>Aufzeichnung</translation>
 </phrase>
 
 <phrase>
 <original>clamp them to the nearest available pixel</original>
-<translation>Diese an den nächsten verfügbaren Pixel heften</translation>
+<translation>Sie an den nächsten verfügbaren Pixel heften</translation>
 </phrase>
 
 <phrase>
 <original>reflect them across the nearest edge</original>
-<translation>Diese über die nächstgelegene Kante reflektieren</translation>
+<translation>Sie über die nächstgelegene Kante reflektieren</translation>
 </phrase>
 
 <phrase>
 <original>wrap them around the image</original>
-<translation>Diese um das Bild herum wickeln</translation>
+<translation>Sie rundum das Bild wickeln</translation>
 </phrase>
 
 <phrase>
 <original>erase them</original>
-<translation>Diese löschen</translation>
+<translation>Sie löschen</translation>
 </phrase>
 
 <phrase>
 <original>ignore them</original>
-<translation>Diese ignorieren</translation>
+<translation>Sie ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -1276,7 +1276,7 @@ Schließen Sie bitte diese Datei in allen anderen laufenden Programmen, dann ver
 
 <phrase>
 <original>Failed to load %1</original>
-<translation>Laden von %1 ist fehlgeschlagen</translation>
+<translation>%1 konnte nicht geladen werden</translation>
 </phrase>
 
 <phrase>
@@ -1294,7 +1294,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 
 <phrase>
 <original>Image import failed</original>
-<translation>Bildimport ist fehlgeschlagen</translation>
+<translation>Bildimport fehlgeschlagen</translation>
 </phrase>
 
 <phrase>
@@ -1312,12 +1312,12 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 
 <phrase>
 <original>Image Import Failed</original>
-<translation>Bildimport ist fehlgeschlagen</translation>
+<translation>Bildimport fehlgeschlagen</translation>
 </phrase>
 
 <phrase>
 <original>Layer import canceled.</original>
-<translation>Import des Layers abgebrochen.</translation>
+<translation>Layer-Import abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -1353,7 +1353,7 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Image duplication complete.</original>
-<translation>Bildduplizierung fertiggestellt.</translation>
+<translation>Bildduplikation abgeschlossen.</translation>
 </phrase>
 
 <!-- Loading.bas contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -1366,9 +1366,9 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
 
 (Press No to continue recording.)</original>
-<translation>Dieses Makro enthält keine beschreibbaren Aktionen. Wollen Sie die Aufnahme wirklich stoppen? 
+<translation>Dieses Makro enthält keine beschreibbaren Aktionen. Wollen Sie die Aufzeichnung wirklich stoppen? 
 
-(Drücken Sie "Nein", um die Aufnahme fortzusetzen.)</translation>
+(Drücken Sie "Nein", um die Aufzeichnung fortzusetzen.)</translation>
 </phrase>
 
 <phrase>
@@ -1390,7 +1390,7 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Wenn Sie dieses Makro nicht speichern, gehen alle während dieser Sit- zung aufgenommenen Aktionen permanent verloren. Wollen Sie wirklich abbrechen?
+<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sit- zung aufgezeichneten Aktionen permanent verloren sein. Wollen Sie wirklich abbrechen?
 
 (Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukeh- ren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
@@ -1412,12 +1412,12 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Macro recording started.</original>
-<translation>Makroaufnahme gestartet.</translation>
+<translation>Makroaufzeichnung gestartet.</translation>
 </phrase>
 
 <phrase>
 <original>Macro recording stopped.</original>
-<translation>Makroaufnahme gestoppt.</translation>
+<translation>Makroaufzeichnung gestoppt.</translation>
 </phrase>
 
 <phrase>
@@ -1437,7 +1437,7 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Macro complete!</original>
-<translation>Makro fertiggestellt!</translation>
+<translation>Makro abgeschlossen!</translation>
 </phrase>
 
 <phrase>
@@ -1451,9 +1451,9 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
 
 (Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Leider wird diese Makrodatei nicht mehr durch die aktuelle Version von PhotoDemon unterstützt.
+<translation>Leider wird diese Makrodatei nicht mehr von der aktuellen Version von PhotoDemon unterstützt.
 
-In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgenommene Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufnehmen müssen.
+In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgezeichnete Makros nicht mehr kompatibel sind. Sie werden diese Makros von Grund auf neu aufzeichnen müssen.
 
 (Hinweis: Beliebige alte Makrodateien werden trotzdem in alten Versionen von PhotoDemon funktionieren, wenn Sie unbedingt auf diese zugreifen müssen.)</translation>
 </phrase>
@@ -1695,7 +1695,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>this plugin is not compatible with your version of Windows</original>
-<translation>Dieses Plugin ist nicht mit Ihrer Windows-Version kompatibel</translation>
+<translation>Dieses Plug-in ist nicht mit Ihrer Version von Windows kompatibel</translation>
 </phrase>
 
 <!-- Plugin_Cairo.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -1732,9 +1732,9 @@ Stellen Sie bitte sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit 
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
-<translation>Das Interface-Plugin (EZTW32.dll) für Scanner/Digitalkamera wurde nach Programminitialisierung als fehlend markiert.
+<translation>Das Interface-Plug-in (EZTW32.dll) für Scanner/Digitalkamera wurde nach Programminitialisierung als fehlend markiert.
 
-Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plugin-Verzeichnis und laden das Programm neu.</translation>
+Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.dll (verfügbar zum Download unter: http://eztwain.com/ezt1_download.htm) in das Plug-in-Verzeichnis und laden das Programm neu.</translation>
 </phrase>
 
 <phrase>
@@ -1769,7 +1769,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?</original>
-<translation>Scan erfolgreich, aber temporäres Speichern der Datei ist fehlgeschlagen. Ist es möglich, dass Ihr Festplattenlaufwerk voll (oder fast voll) ist?</translation>
+<translation>Scan erfolgreich, temporäre Dateispeicherung aber fehlgeschlagen. Ist es möglich, dass Ihr Festplattenlaufwerk voll ist (oder fast voll)?</translation>
 </phrase>
 
 <phrase>
@@ -1805,7 +1805,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
-<translation>Import via FreeImage ist fehlgeschlagen (Fehler # %1)</translation>
+<translation>Import via FreeImage fehlgeschlagen (Fehler # %1)</translation>
 </phrase>
 
 <phrase>
@@ -2175,7 +2175,7 @@ Beschreibung: %2
 
 <phrase>
 <original>fill style</original>
-<translation>Füllungsstil</translation>
+<translation>Füllstil</translation>
 </phrase>
 
 <phrase>
@@ -2305,7 +2305,7 @@ Wenn fertig, klicken Sie auf den Button "Neues Problem einreichen". Vielen Dank!
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Beim Versuch dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plugin meldete die folgenden Fehlerdetails:
+<translation>Beim Versuch dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plug-in meldete die folgenden Fehlerdetails:
 
 %1
 
@@ -2324,7 +2324,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>%1 save complete.</original>
-<translation>Speichern von %1 fertiggestellt.</translation>
+<translation>Speichern von %1 abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -2340,7 +2340,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Capturing screen</original>
-<translation>Bildschirm wird aufgenommen</translation>
+<translation>Bildschirm wird erfasst</translation>
 </phrase>
 
 <phrase>
@@ -2350,12 +2350,12 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Screen Capture</original>
-<translation>Bildschirmaufnahme</translation>
+<translation>Screen-Capture</translation>
 </phrase>
 
 <phrase>
 <original>Screen capture complete.</original>
-<translation>Bildschirmaufnahme fertiggestellt.</translation>
+<translation>Screen-Capture abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -2441,7 +2441,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Selection inversion complete.</original>
-<translation>Auswahl-Inversion fertiggestellt.</translation>
+<translation>Auswahl-Inversion abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -2456,7 +2456,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Weiche Auswahlkante fertiggestellt.</translation>
+<translation>Weiche Auswahlkante abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -2471,17 +2471,17 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Grow selection</original>
-<translation>Auswahl vergrößern</translation>
+<translation>Auswahl erweitern</translation>
 </phrase>
 
 <phrase>
 <original>Growing selection</original>
-<translation>Auswahl wird vergrößert</translation>
+<translation>Auswahl wird erweitert</translation>
 </phrase>
 
 <phrase>
 <original>Selection resize complete.</original>
-<translation>Auswahl-Größenänderung fertiggestellt.</translation>
+<translation>Auswahl-Größenänderung abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -2606,12 +2606,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Fill tool</original>
-<translation>Füllungstool</translation>
+<translation>Füll-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Fill layer</original>
-<translation>Füllungs-Layer</translation>
+<translation>Füll-Layer</translation>
 </phrase>
 
 <!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2622,12 +2622,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Gradient tool</original>
-<translation></translation>
+<translation>Gradient-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Gradient layer</original>
-<translation></translation>
+<translation>Gradient-Layer</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3024,7 +3024,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation>Download des Bildes ist fehlgeschlagen. Kopieren Sie bitte eine gültige Bild-URL und versuchen es erneut.</translation>
+<translation>Download des Bildes fehlgeschlagen. Kopieren Sie bitte eine gültige Bild-URL und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3064,7 +3064,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Failed to load embedded image; invalid header found.</original>
-<translation>Laden des eingebetteten Bildes ist fehlgeschlagen; ungültigen Header gefunden.</translation>
+<translation>Eingebettetes Bild konnte nicht geladen werden; ungültigen Header gefunden.</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3262,7 +3262,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
-<translation>ExifTool-Plugin fehlt. Import der Metadaten abgebrochen.</translation>
+<translation>ExifTool-Plug-in fehlt. Import der Metadaten abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3576,7 +3576,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider kann Windows® die Anzahl der von Ihnen ausgewählten Bilder nicht gleichzeitig laden. Versuchen Sie es bitte erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Versuchen Sie es bitte erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -3623,37 +3623,37 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>WARNUNG!  Dekomprimierte Verzeichnisfragment-Größe zeigt möglichen CRC-Fehler.</translation>
+<translation>WARNUNG!  Dekomprimierte Verzeichnisstück-Größe zeigt möglichen CRC-Fehler.</translation>
 </phrase>
 
 <phrase>
 <original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Verzeichnis ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Verzeichnis ist komprimiert, zLib konnte es aber nicht dekomprimieren. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Verzeichnisfragment ist komprimiert, aber zLib fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
+<translation>Verzeichnisstück ist komprimiert, aber zLib fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datenfragment ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datenblock ist komprimiert, zLib konnte ihn aber nicht dekomprimieren. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Datenfragment ist komprimiert, aber zLib-Plugin fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
+<translation>Datenblock ist komprimiert, aber zLib fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datei-Node ist komprimiert, aber dekomprimieren seitens zLib ist fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datei-Node ist komprimiert, zLib konnte ihn aber nicht dekomprimieren. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Datei-Node ist komprimiert, aber zLib-Plugin fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
+<translation>Datei-Node ist komprimiert, aber fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3663,7 +3663,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Checksum failed for node #</original>
-<translation>Prüfsumme ist fehlgeschlagen für Node #</translation>
+<translation>Prüfsumme fehlgeschlagen für Node #</translation>
 </phrase>
 
 <!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -4493,7 +4493,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>review metadata before saving</original>
-<translation>Metadaten vor dem Speichern nochmals durchsehen</translation>
+<translation>Metadaten vor dem Speichern einsehen</translation>
 </phrase>
 
 <phrase>
@@ -4981,7 +4981,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Undo history</original>
-<translation>Verlauf rückgängig machen</translation>
+<translation>Historie rückgängig machen</translation>
 </phrase>
 
 <phrase>
@@ -5046,7 +5046,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Fit canvas around all layers</original>
-<translation>Leinwand um alle Layer herum anpassen</translation>
+<translation>Leinwand rundum alle Layer anpassen</translation>
 </phrase>
 
 <phrase>
@@ -5286,7 +5286,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Grow</original>
-<translation>Vergrößern</translation>
+<translation>Erweitern</translation>
 </phrase>
 
 <phrase>
@@ -5466,12 +5466,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Equalize</original>
-<translation>Ausgleichen</translation>
+<translation>Abgleichen</translation>
 </phrase>
 
 <phrase>
 <original>Stretch</original>
-<translation>Strecken</translation>
+<translation>Dehnen</translation>
 </phrase>
 
 <phrase>
@@ -5651,7 +5651,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation>Vorhandene Verzeichnung korrigieren</translation>
+<translation>Vorhandene Verzerrung korrigieren</translation>
 </phrase>
 
 <phrase>
@@ -5666,17 +5666,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>Kneifen und Wirbeln</translation>
+<translation>Drücken und Wirbeln</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation>Schlagen</translation>
+<translation>Stoßen</translation>
 </phrase>
 
 <phrase>
 <original>Ripple</original>
-<translation>Kräuseln</translation>
+<translation>Kleine Welle</translation>
 </phrase>
 
 <phrase>
@@ -5756,7 +5756,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Dilate</original>
-<translation>Weiten</translation>
+<translation>Erweitern</translation>
 </phrase>
 
 <phrase>
@@ -5956,7 +5956,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Custom filter</original>
-<translation>Benutzerdefinierter Filter</translation>
+<translation>Benutzerdef. Filter</translation>
 </phrase>
 
 <phrase>
@@ -5991,17 +5991,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>From session history</original>
-<translation>Aus Sitzungsverlauf</translation>
+<translation>Aus Sitzungshistorie</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation>Aufnahme starten</translation>
+<translation>Aufzeichnung starten</translation>
 </phrase>
 
 <phrase>
 <original>Stop recording</original>
-<translation>Aufnahme stoppen</translation>
+<translation>Aufzeichnung stoppen</translation>
 </phrase>
 
 <phrase>
@@ -6021,7 +6021,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Plugin manager</original>
-<translation>Plugin-Manager</translation>
+<translation>Plug-in-Manager</translation>
 </phrase>
 
 <phrase>
@@ -6221,12 +6221,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Start macro recording</original>
-<translation>Makroaufnahme starten</translation>
+<translation>Makroaufzeichnung starten</translation>
 </phrase>
 
 <phrase>
 <original>Stop macro recording</original>
-<translation>Makroaufnahme stoppen</translation>
+<translation>Makroaufzeichnung stoppen</translation>
 </phrase>
 
 <phrase>
@@ -6264,7 +6264,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchrone Metadaten-Prüfung fertiggestellt! Aktualisierung der Metadaten-Sammlung</translation>
+<translation>Asynchrone Metadaten-Prüfung abgeschlossen! Aktualisierung der Metadaten-Sammlung</translation>
 </phrase>
 
 <phrase>
@@ -6419,12 +6419,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation>Weiten (max. Stufe)</translation>
+<translation>Erweitern (Rangordnung Maximum)</translation>
 </phrase>
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>Erodieren (Min. Stufe)</translation>
+<translation>Erodieren (Rangordnung Minimum)</translation>
 </phrase>
 
 <phrase>
@@ -6474,7 +6474,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>Verschiedene Verzerrungen</translation>
+<translation>Sonstiges Verzerren</translation>
 </phrase>
 
 <phrase>
@@ -6539,7 +6539,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Stretch histogram</original>
-<translation>Histogramm strecken</translation>
+<translation>Histogramm dehnen</translation>
 </phrase>
 
 <phrase>
@@ -6659,7 +6659,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Screen capture</original>
-<translation>Bildschirmaufnahme</translation>
+<translation>Screen-Capture</translation>
 </phrase>
 
 <phrase>
@@ -7338,7 +7338,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Stretching histogram</original>
-<translation>Histogramm wird gestreckt</translation>
+<translation>Histogramm wird gedehnt</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -7349,7 +7349,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Equalize Histogram</original>
-<translation>Histogramm ausgleichen</translation>
+<translation>Histogramm abgleichen</translation>
 </phrase>
 
 <phrase>
@@ -7374,12 +7374,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Analyzing image histogram</original>
-<translation>Bildhistogramm analysieren</translation>
+<translation>Bildhistogramm wird analysiert</translation>
 </phrase>
 
 <phrase>
 <original>Equalizing image</original>
-<translation>Bild wird ausgeglichen</translation>
+<translation>Bild wird abgeglichen</translation>
 </phrase>
 
 <phrase>
@@ -8100,7 +8100,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Wenn Sie jetzt beenden, werden diese Autosave-Daten für immer verloren gehen. Wollen Sie wirklich beenden?</translation>
+<translation>Wenn Sie jetzt beenden, werden diese Autosave-Daten für immer verloren sein. Wollen Sie wirklich beenden?</translation>
 </phrase>
 
 <phrase>
@@ -8136,7 +8136,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>wheels + history</original>
-<translation>Räder + Verlauf</translation>
+<translation>Räder + Historie</translation>
 </phrase>
 
 <phrase>
@@ -8234,7 +8234,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Fill settings</original>
-<translation>Füllungseinstellungen</translation>
+<translation>Füll-Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -8244,7 +8244,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>fill opacity</original>
-<translation>Füllungsopazität</translation>
+<translation>Füll-Opazität</translation>
 </phrase>
 
 <phrase>
@@ -8822,7 +8822,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you do not save this image, any changes you have made will be permanently lost.</original>
-<translation>Wenn Sie dieses Bild nicht speichern, gehen alle von Ihnen vorgenommenen Änderungen permanent verloren.</translation>
+<translation>Wenn Sie dieses Bild nicht speichern, werden jegliche von Ihnen vorgenommene Änderungen permanent verloren sein.</translation>
 </phrase>
 
 <phrase>
@@ -8903,7 +8903,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation>Starten Sie nun neu, um auf die neueste Version des Programms zuzugreifen.</translation>
+<translation>Starten Sie jetzt neu, um auf die neueste Version des Programms zuzugreifen.</translation>
 </phrase>
 
 <phrase>
@@ -8934,7 +8934,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fade complete.</original>
-<translation>Überblenden fertiggestellt.</translation>
+<translation>Überblenden abgeschlossen.</translation>
 </phrase>
 
 <!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9058,7 +9058,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scale</original>
-<translation>Skalieren</translation>
+<translation>Skalierung</translation>
 </phrase>
 
 <phrase>
@@ -9244,7 +9244,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation>Bild wird in Plastik eingewickelt</translation>
+<translation>Bild wird in Plastik gewickelt</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -9583,7 +9583,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(c) whole image</original>
-<translation>(c) Gesamtes Bild</translation>
+<translation>(c) Ganzes Bild</translation>
 </phrase>
 
 <phrase>
@@ -9650,7 +9650,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Miscellaneous Distort Tools</original>
-<translation>Sonstige Verzerrungstools</translation>
+<translation>Sonstige Verzerren-Tools</translation>
 </phrase>
 
 <phrase>
@@ -9675,7 +9675,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>inside-out</original>
-<translation>Umgestülpt</translation>
+<translation>Von innen nach außen</translation>
 </phrase>
 
 <phrase>
@@ -9711,17 +9711,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>whirl angle</original>
-<translation>Drallwinkel</translation>
+<translation>Wirbelwinkel</translation>
 </phrase>
 
 <phrase>
 <original>pinch amount</original>
-<translation>Anzahl von Abschnürungen</translation>
+<translation>Drücken-Menge</translation>
 </phrase>
 
 <phrase>
 <original>Pinching and whirling image</original>
-<translation>Bild abschnüren und verwirbeln</translation>
+<translation>Bild wird gedrückt und gewirbelt</translation>
 </phrase>
 
 <!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9732,7 +9732,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Poking image</original>
-<translation>Im Bild herumstochern</translation>
+<translation>Bild wird gestoßen</translation>
 </phrase>
 
 <!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9743,12 +9743,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>height of ripples (amplitude)</original>
-<translation>Höhe der Wellen (Amplitude)</translation>
+<translation>Höhe kleiner Wellen (Amplitude)</translation>
 </phrase>
 
 <phrase>
 <original>length of ripples (wavelength)</original>
-<translation>Länge der Wellen (Wellenlänge)</translation>
+<translation>Länge kleiner Wellen (Wellenlänge)</translation>
 </phrase>
 
 <phrase>
@@ -9758,7 +9758,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Simulating ripples across image surface</original>
-<translation>Wellen werden über Bildoberfläche simuliert</translation>
+<translation>Kleine Wellen werden über Bildoberfläche simuliert</translation>
 </phrase>
 
 <!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9769,7 +9769,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Squeezing image</original>
-<translation>Bild quetschen</translation>
+<translation>Bild wird gequetscht</translation>
 </phrase>
 
 <!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9780,7 +9780,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Swirling image round and round</original>
-<translation>Bild wird Runde für Runde verwirbelt</translation>
+<translation>Bild wird Runde um Runde verwirbelt</translation>
 </phrase>
 
 <!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10028,7 +10028,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>spokes</original>
-<translation>Strahlen</translation>
+<translation>Speichen</translation>
 </phrase>
 
 <phrase>
@@ -10342,7 +10342,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation>Harmonischer Mittelwert-Filter wird angewendet</translation>
+<translation>Harmonischer Mittelwertfilter wird angewendet</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10353,7 +10353,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying mean shift filter</original>
-<translation>Mittelwertverschiebungs-Filter wird angewendet</translation>
+<translation>Mittelwertverschiebungsfilter wird angewendet</translation>
 </phrase>
 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10374,12 +10374,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying erode (minimum rank) filter</original>
-<translation>Erodierenfilter (min. Rang) wird angewendet</translation>
+<translation>Erodieren- (Rangordnung Minimum) Filter wird angewendet</translation>
 </phrase>
 
 <phrase>
 <original>Applying dilate (maximum rank) filter</original>
-<translation>Erweiterungsfilter (max. Rang) wird angewendet</translation>
+<translation>Erweitern- (Rangordnung Maximum) Filter wird angewendet</translation>
 </phrase>
 
 <phrase>
@@ -10389,12 +10389,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Erode (Minimum rank filter)</original>
-<translation>Erodieren (min. Rang Filter)</translation>
+<translation>Erodieren (Rangordnungsfilter Minimum)</translation>
 </phrase>
 
 <phrase>
 <original>Dilate (Maximum rank filter)</original>
-<translation>Erweitern (max. Rang Filter)</translation>
+<translation>Erweitern (Rangordnungsfilter Maximum)</translation>
 </phrase>
 
 <phrase>
@@ -10598,7 +10598,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>wrap edge values</original>
-<translation>Kantenwerte einwickeln</translation>
+<translation>Kantenwerte umwickeln</translation>
 </phrase>
 
 <phrase>
@@ -10975,7 +10975,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>Bild wird um Kugel herum gewickelt</translation>
+<translation>Bild wird rundum Kugel gewickelt</translation>
 </phrase>
 
 <phrase>
@@ -11061,7 +11061,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation>Reparaturen fertiggestellt. %1 Datei(en) repariert.</translation>
+<translation>Reparaturen abgeschlossen. %1 Datei(en) repariert.</translation>
 </phrase>
 
 <phrase>
@@ -11073,7 +11073,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Repairs complete</original>
-<translation>Reparaturen fertiggestellt</translation>
+<translation>Reparaturen abgeschlossen</translation>
 </phrase>
 
 <phrase>
@@ -11306,7 +11306,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verlorengehen. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
+<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbeitenden Bilder) verloren sein. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
 
 Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
@@ -11413,7 +11413,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Tools > Makros > Neues Makro aufnehmen" verwenden.</translation>
+<translation>Hinweis: Ein "Makro" ist einfach eine Liste von Fotobearbeitungsaktionen. Dies kann eine Anpassung, ein Filter oder Effekt im Hauptprogramm beinhalten. Sie können ein neues Makro erstellen, indem Sie im Hauptfenster von PhotoDemon im Menü "Tools > Makros > Neues Makro aufzeichnen" verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -11498,7 +11498,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Batch processing is now underway.</original>
-<translation>Batchverarbeitung ist nun im Gange.</translation>
+<translation>Batchverarbeitung ist jetzt im Gange.</translation>
 </phrase>
 
 <phrase>
@@ -11538,7 +11538,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>stretching to fit</original>
-<translation>Zum Anpassen strecken bzw. stauchen</translation>
+<translation>Zum Anpassen dehnen bzw. stauchen</translation>
 </phrase>
 
 <phrase>
@@ -11720,7 +11720,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Image download complete.</original>
-<translation>Download des Bildes fertiggestellt.</translation>
+<translation>Download des Bildes abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -11770,7 +11770,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Download complete. Verifying file integrity</original>
-<translation>Download fertiggestellt. Dateiintegrität wird verifiziert</translation>
+<translation>Download abgeschlossen. Dateiintegrität wird verifiziert</translation>
 </phrase>
 
 <phrase>
@@ -11930,7 +11930,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon vor Aufnehmen minimieren</translation>
+<translation>PhotoDemon vor Erfassen (Capture) minimieren</translation>
 </phrase>
 
 <phrase>
@@ -11940,7 +11940,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation>Wählen Sie bitte ein Fenster zum Aufnehmen aus.</translation>
+<translation>Wählen Sie bitte ein Fenster zum Erfassen (Capture) aus.</translation>
 </phrase>
 
 <phrase>
@@ -11965,12 +11965,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Einige Programme (einschließlich Apps aus dem Windows Store) erlauben keine direkten Bildschirmerfassungen. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
+<translation>Einige Programme (einschließlich Apps aus dem Windows-Store) erlauben kein direktes Screen-Capture. Wenn eine Anwendungsvorschau als schwarzes Quadrat erscheint, müssen Sie einen Screenshot des ganzen Desktops aufnehmen und dann die gewünschte Fensterregion manuell zuschneiden.</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, that program has exited.</original>
-<translation>Leider wurde das Programm beendet.</translation>
+<translation>Leider ist das Programm beendet worden.</translation>
 </phrase>
 
 <phrase>
@@ -12128,7 +12128,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plugins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plug-in, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Nach fehlenden Plug-ins beim Programmstart suchen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plug-ins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -12469,7 +12469,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>floating-point</original>
-<translation>Fließkomma</translation>
+<translation>Gleitkomma</translation>
 </phrase>
 
 <phrase>
@@ -12515,7 +12515,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation>Hintergrundfarbe einbetten (bKGD-Fragment)</translation>
+<translation>Hintergrundfarbe einbetten (bKGD chunk)</translation>
 </phrase>
 
 <phrase>
@@ -12688,7 +12688,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation>Sehen Sie Programm- und Pluginlizenzen nochmals durch</translation>
+<translation>Sehen Sie Programm- und Plug-in-Lizenzen ein</translation>
 </phrase>
 
 <phrase>
@@ -12718,7 +12718,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation>Spenden Sie für die Entwicklung von PhotoDemon</translation>
+<translation>Spenden Sie für die PhotoDemon-Entwicklung</translation>
 </phrase>
 
 <phrase>
@@ -13102,7 +13102,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>Strecken auf neue Größe (Default)</translation>
+<translation>Dehnung auf neue Größe (Default)</translation>
 </phrase>
 
 <phrase>
@@ -13122,7 +13122,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Streckung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Zuschneidung verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem stattdessen leere Rahmungen oder Zuschneidung verwendet werden.</translation>
 </phrase>
 
 <phrase>
@@ -13158,7 +13158,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Rotation complete.</original>
-<translation>Rotation fertiggestellt.</translation>
+<translation>Rotation abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -13219,7 +13219,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Straighten complete.</original>
-<translation>Gerade ausrichten fertiggestellt.</translation>
+<translation>Gerade ausrichten abgeschlossen.</translation>
 </phrase>
 
 <!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13377,7 +13377,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>grow radius</original>
-<translation>Radius vergrößern</translation>
+<translation>Radius erweitern</translation>
 </phrase>
 
 <phrase>
@@ -13481,7 +13481,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>macro recording in progress</original>
-<translation>Makroaufnahme im Gange</translation>
+<translation>Makroaufzeichnung im Gange</translation>
 </phrase>
 
 <phrase>
@@ -13651,12 +13651,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation>Bleistift (harte Spitze)</translation>
+<translation>Bleistift (mit harter Spitze)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>Malpinsel (weiche Spitze)</translation>
+<translation>Malpinsel (mit weicher Spitze)</translation>
 </phrase>
 
 <phrase>
@@ -13671,7 +13671,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Gradient</original>
-<translation></translation>
+<translation>Gradient</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 71 phrases. 26 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
@@ -13734,7 +13734,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>fill source</original>
-<translation>Füllungsquelle</translation>
+<translation>Füllquelle</translation>
 </phrase>
 
 <phrase>
@@ -13799,7 +13799,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation>Normalerweise analysieren Füllungsoperationen das gesamte Bild. Sie können auch nur den aktiven Layer analysieren.</translation>
+<translation>Normalerweise analysieren Füll-Operationen das gesamte Bild. Sie können auch nur den aktiven Layer analysieren.</translation>
 </phrase>
 
 <phrase>
@@ -13820,17 +13820,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>repeat</original>
-<translation></translation>
+<translation>Wiederholen</translation>
 </phrase>
 
 <phrase>
 <original>wrap</original>
-<translation></translation>
+<translation>Umwickeln</translation>
 </phrase>
 
 <phrase>
 <original>reflect</original>
-<translation></translation>
+<translation>Reflektieren</translation>
 </phrase>
 
 <!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -14105,7 +14105,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation>Toleranz steuert, wie ähnlich sich zwei Pixel sein müssen, bevor sie zu einer Zauberstab-Auswahl hinzugefügt werden.</translation>
+<translation>Toleranz steuert, wie ähnlich sich zwei Pixel sein müssen, bevor diese zu einer Zauberstab-Auswahl hinzugefügt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14222,7 +14222,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>line wrap</original>
-<translation>Zeilenumbruch </translation>
+<translation>Zeilenumbruch</translation>
 </phrase>
 
 <phrase>
@@ -14468,7 +14468,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Automatic translation complete!</original>
-<translation>Automatische Übersetzung fertiggestellt!</translation>
+<translation>Automatische Übersetzung abgeschlossen!</translation>
 </phrase>
 
 <phrase>
@@ -14543,7 +14543,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, aber möglicherweise in Entwickler- oder Beta-Builds.
+<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Entwicklungs- oder Beta-Builds.
 
 Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
@@ -14704,7 +14704,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>translation failed!</original>
-<translation>Übersetzung ist fehlgeschlagen!</translation>
+<translation>Übersetzung fehlgeschlagen!</translation>
 </phrase>
 
 <phrase>
@@ -14735,7 +14735,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>Makro aus Sitzungsverlauf erstellen</translation>
+<translation>Makro aus Sitzungshistorie erstellen</translation>
 </phrase>
 
 <phrase>
@@ -15155,7 +15155,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>feature disabled due to missing plugin</original>
-<translation>Feature deaktiviert aufgrund fehlendem Plugin</translation>
+<translation>Feature deaktiviert aufgrund fehlendem Plug-in</translation>
 </phrase>
 
 <phrase>
@@ -15371,7 +15371,7 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
@@ -15464,12 +15464,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon Plugin-Manager</translation>
+<translation>PhotoDemon Plug-in-Manager</translation>
 </phrase>
 
 <phrase>
 <original>Reset all plugin options</original>
-<translation>Alle Plugin-Optionen zurücksetzen</translation>
+<translation>Alle Plug-in-Optionen zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -15504,7 +15504,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>current plugin status</original>
-<translation>Aktueller Plugin-Status</translation>
+<translation>Aktueller Plug-in-Status</translation>
 </phrase>
 
 <phrase>
@@ -15524,12 +15524,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Saving plugin options</original>
-<translation>Plugin-Optionen speichern</translation>
+<translation>Plug-in-Optionen speichern</translation>
 </phrase>
 
 <phrase>
 <original>Plugin options saved.</original>
-<translation>Plugin-Optionen gespeichert.</translation>
+<translation>Plug-in-Optionen gespeichert.</translation>
 </phrase>
 
 <phrase>
