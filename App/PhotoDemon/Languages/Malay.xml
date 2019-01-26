@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3362</langversion>
+<langversion>6.8.3364</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3722,7 +3722,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -8352,6 +8357,36 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>secara automatik mengedarkan nod sama rata</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>tetapan nod semasa</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>kedudukan</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>editor nod</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>ya</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>alat tambahan</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>Rawak</translation>
 </phrase>
@@ -8394,36 +8429,6 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <phrase>
 <original>vary alpha</original>
 <translation>bervariasi alfa</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>secara automatik mengedarkan nod sama rata</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>tetapan nod semasa</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>kedudukan</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>editor nod</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>ya</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>alat tambahan</translation>
 </phrase>
 
 <phrase>
@@ -15569,12 +15574,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>

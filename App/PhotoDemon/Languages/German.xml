@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.757</langversion>
+<langversion>7.2.764</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1285,7 +1285,7 @@ Schließen Sie bitte diese Datei in allen anderen laufenden Programmen, dann ver
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>Leider konnte PhotoDemon folgendes Bild nicht laden: 
+<translation>Leider konnte PhotoDemon das folgende Bild nicht laden: 
 
  %1
 
@@ -1303,7 +1303,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Leider konnte PhotoDemon folgendes Bild nicht laden:
+<translation>Leider konnte PhotoDemon das folgende Bild nicht laden:
 
 %1
 
@@ -1764,7 +1764,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler ist aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -1774,12 +1774,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>Konnte DIB-Sperre nicht übernehmen. Stellen Sie bitte sicher, dass andere Programme Zugriff auf den Scanner haben. Wenn das Problem bestehen bleibt, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Stellen Sie bitte sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem bestehen bleibt, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Temporärer Fehler bei Dateizugriff. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Starten Sie bitte PhotoDemon mit Administratorrechten und versuchen es erneut.</translation>
+<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Starten Sie bitte PhotoDemon mit Administratorrechten und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2345,7 +2345,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Could not retrieve program window - the program appears to have been unloaded.</original>
-<translation>Konnte Programmfenster nicht abrufen - das Programm scheint entladen worden zu sein.</translation>
+<translation>Programmfenster konnte nicht wiederhergestellt werden - das Programm scheint entladen worden zu sein.</translation>
 </phrase>
 
 <phrase>
@@ -2416,7 +2416,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler ist aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
+<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3613,7 +3613,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Legacy file format could not be decoded.</original>
-<translation>Legacy Dateiformat konnte nicht dekodiert werden.</translation>
+<translation>Legacy-Dateiformat konnte nicht decodiert werden.</translation>
 </phrase>
 
 <phrase>
@@ -3725,7 +3725,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -5266,7 +5271,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Flatten image</original>
-<translation>Bild vereinen</translation>
+<translation>Bild auf Hintergrund-Layer reduzieren</translation>
 </phrase>
 
 <phrase>
@@ -5466,7 +5471,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Equalize</original>
-<translation>Abgleichen</translation>
+<translation>Angleichen</translation>
 </phrase>
 
 <phrase>
@@ -7349,7 +7354,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Equalize Histogram</original>
-<translation>Histogramm abgleichen</translation>
+<translation>Histogramm angleichen</translation>
 </phrase>
 
 <phrase>
@@ -7379,7 +7384,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Equalizing image</original>
-<translation>Bild wird abgeglichen</translation>
+<translation>Bild wird angeglichen</translation>
 </phrase>
 
 <phrase>
@@ -8356,6 +8361,36 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>Nodes automatisch gleichmäßig verteilen</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>Aktuelle Node-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>Position</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>Node-Editor</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>Ja</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>Weitere Tools</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>Randomisieren</translation>
 </phrase>
@@ -8398,36 +8433,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <phrase>
 <original>vary alpha</original>
 <translation>Alpha variieren</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>Nodes automatisch gleichmäßig verteilen</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>Aktuelle Node-Einstellungen</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>Position</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>Node-Editor</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>Ja</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>Weitere Tools</translation>
 </phrase>
 
 <phrase>
@@ -8712,7 +8717,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>interface accent color</original>
-<translation>Farbe der Interface-Akzente</translation>
+<translation>Interface-Akzentfarbe</translation>
 </phrase>
 
 <phrase>
@@ -12189,7 +12194,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>Legacy 15 Bit-Kodierung (X1-R5-G5-B5) verwenden</translation>
+<translation>Legacy 15 Bit-Encoding (X1-R5-G5-B5) verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12418,7 +12423,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>use progressive encoding</original>
-<translation>Progressive Kodierung verwenden</translation>
+<translation>Progressives Encoding verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12673,7 +12678,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>Der schnelle, freie und portable Fotoeditor</translation>
+<translation>Der Fotoeditor - schnell, frei und portabel</translation>
 </phrase>
 
 <phrase>
@@ -12765,7 +12770,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>Hinweis: Diese Operation wird das Bild vereinen, bevor es in der Größe geändert wird.</translation>
+<translation>Hinweis: Diese Operation wird das Bild auf den Hintergrund-Layer reduzieren, bevor es in der Größe geändert wird.</translation>
 </phrase>
 
 <phrase>
@@ -13266,7 +13271,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>flatten behavior</original>
-<translation>Verhalten beim Vereinen</translation>
+<translation>Verhalten bei: Auf Hintergrund-Layer reduzieren</translation>
 </phrase>
 
 <phrase>
@@ -14806,7 +14811,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>temporary file location</original>
-<translation>Speicherort für temporäre Dateien</translation>
+<translation>Temporärer Dateispeicherort</translation>
 </phrase>
 
 <phrase>
@@ -15245,7 +15250,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Einige Interface-Elemente erhalten benutzerdefinierte Dekorationen (wie Schlagschatten). Auf älteren PC´s können diese Dekorationen für einen geringen Performance-Schub ausgesetzt werden.</translation>
+<translation>Einige Interface-Elemente erhalten benutzerdefinierte Dekorationen (wie Schlagschatten). Auf älteren PCs können diese Dekorationen für einen geringen Performance-Schub ausgesetzt werden.</translation>
 </phrase>
 
 <phrase>
@@ -15255,7 +15260,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Rendering der primären Bildleinwand ist ein häufiger Flaschenhals für die Performance von PhotoDemon. Die automatische Einstellung wird empfohlen, aber auf älteren Pc´s können Sie die Option "Performance maximieren" manuell auswählen, um für mehr Performance sorgen.</translation>
+<translation>Rendering der primären Bildleinwand ist ein häufiger Flaschenhals für die Performance von PhotoDemon. Die automatische Einstellung wird empfohlen, aber auf älteren PCs können Sie die Option "Performance maximieren" manuell auswählen, um für mehr Performance sorgen.</translation>
 </phrase>
 
 <phrase>
@@ -15571,12 +15576,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>

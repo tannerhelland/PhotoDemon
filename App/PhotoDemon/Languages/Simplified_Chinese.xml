@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.685</langversion>
+<langversion>7.2.687</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3716,7 +3716,12 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -8345,6 +8350,36 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>自动分配节点均匀</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>当前节点设置</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>新层上下位置：</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>节点编辑</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>是</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>其他工具</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>随机</translation>
 </phrase>
@@ -8387,36 +8422,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>vary alpha</original>
 <translation>改变Alpha</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>自动分配节点均匀</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>当前节点设置</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>新层上下位置：</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>节点编辑</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>是</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>其他工具</translation>
 </phrase>
 
 <phrase>
@@ -15555,12 +15560,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>

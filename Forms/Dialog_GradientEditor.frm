@@ -57,17 +57,6 @@ Begin VB.Form dialog_GradientEditor
       Width           =   12615
       _ExtentX        =   22251
       _ExtentY        =   10398
-      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   9
-         Top             =   5280
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   582
-         Caption         =   "automatically distribute nodes evenly"
-         Value           =   0   'False
-      End
       Begin VB.PictureBox picInteract 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -82,6 +71,17 @@ Begin VB.Form dialog_GradientEditor
          TabIndex        =   8
          Top             =   2400
          Width           =   12615
+      End
+      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   9
+         Top             =   5280
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   582
+         Caption         =   "automatically distribute nodes evenly"
+         Value           =   0   'False
       End
       Begin VB.PictureBox picNodePreview 
          Appearance      =   0  'Flat

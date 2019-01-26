@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3362</langversion>
+<langversion>6.8.3364</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3718,7 +3718,12 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -8348,6 +8353,36 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>automatiskt distribuera noder jämnt</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>aktuella noden inställningar</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>ställning</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>nod redaktör</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>ja</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>ytterligare verktyg</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>randomisera</translation>
 </phrase>
@@ -8390,36 +8425,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <phrase>
 <original>vary alpha</original>
 <translation>variera alfa</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>automatiskt distribuera noder jämnt</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>aktuella noden inställningar</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>ställning</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>nod redaktör</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>ja</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>ytterligare verktyg</translation>
 </phrase>
 
 <phrase>
@@ -15564,12 +15569,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>

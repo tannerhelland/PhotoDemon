@@ -622,7 +622,7 @@ End Function
 Friend Function ReadIntUnsigned() As Long
     If m_Open And (Me.GetPosition() + 2& <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
-            CopyMemoryStrict VarPtr(ReadIntUnsigned) + 2&, VarPtr(m_MemBuffer(m_Pointer)), 2&
+            CopyMemoryStrict VarPtr(ReadIntUnsigned), VarPtr(m_MemBuffer(m_Pointer)), 2&
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt) + 2&, 2&
@@ -994,12 +994,23 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1) As Lo
         Peek_PointerOnly = VarPtr(m_MemBuffer(peekPosition))
         
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        
         'TODO!!
-        
     End If
 
 End Function
+
+'Only works on memory streams at present; file streams present a unique perf problem and I don't need an
+' implementation at present.
+Public Sub SwapEndianness16()
+
+    If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+        VBHacks.SwapEndianness16 m_MemBuffer
+        
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        'TODO!!
+    End If
+    
+End Sub
 
 'Ensure that (n) bytes are available for a new write.  In PD, we do a lot of writing by raw pointer(s), and this function
 ' lets us ensure that we have enough space available for unprotected copies.

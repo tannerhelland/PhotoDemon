@@ -3,9 +3,8 @@ Attribute VB_Name = "VBHacks"
 'Misc VB6 Hacks
 'Copyright 2016-2018 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 06/February/17
-'Last update: add support for window subclassing via built-in WAPI functions; I'm migrating PD to this faster
-' (and safer) alternative instead of the old-school cSelfSubHookCallback approach.
+'Last updated: 26/January/19
+'Last update: helper function for fast endian swapping (16-bit boundaries); this is used constantly in PSD parsing
 '
 'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations and C-style
 ' code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to move it here, so I
@@ -45,6 +44,7 @@ Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (ptr() As Any)
 
 Public Declare Sub GetMem1 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstByte As Byte)
 Public Declare Sub GetMem2 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstInteger As Integer)
+Public Declare Sub GetMem2_Ptr Lib "msvbvm60" Alias "GetMem2" (ByVal ptrSrc As Long, ByVal ptrDstInteger As Long)
 Public Declare Sub GetMem4 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstValue As Long)
 Public Declare Sub GetMem8 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstCurrency As Currency)
 Public Declare Sub PutMem1 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Byte)
@@ -80,6 +80,9 @@ Private Declare Function PeekMessageA Lib "user32" (ByRef lpMsg As winMsg, ByVal
 Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
+
+Private Declare Function htonl Lib "Ws2_32" (ByVal srcLong As Long) As Long
+Private Declare Function htons Lib "Ws2_32" (ByVal srcShort As Integer) As Integer
 
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
@@ -374,6 +377,34 @@ End Function
 
 Public Sub SleepAPI(ByVal sleepTimeInMS As Long)
     Sleep sleepTimeInMS
+End Sub
+
+'Make certain the length of the source array is an even number (e.g. the UBound is odd) before calling;
+' this function does not attempt to verify otherwise
+Public Sub SwapEndianness16(ByRef srcData() As Byte)
+    Dim i As Long, tmpValue As Long, tmpIndex As Long
+    For i = 0 To UBound(srcData) \ 2
+        tmpIndex = i * 2
+        tmpValue = srcData(tmpIndex)
+        srcData(tmpIndex) = srcData(tmpIndex + 1)
+        srcData(tmpIndex + 1) = tmpValue
+    Next i
+End Sub
+
+'Make certain the length of the source array is a multiple of 4 before calling;
+' this function does not attempt to verify otherwise
+Public Sub SwapEndianness32(ByRef srcData() As Byte)
+    Dim i As Long, tmpValue As Long, tmpIndex As Long
+    For i = 0 To UBound(srcData) Step 4
+        tmpIndex = i + 3
+        tmpValue = srcData(tmpIndex)
+        srcData(tmpIndex) = srcData(i)
+        srcData(i) = tmpValue
+        tmpIndex = i + 2
+        tmpValue = srcData(tmpIndex)
+        srcData(tmpIndex) = srcData(i + 1)
+        srcData(i + 1) = tmpValue
+    Next i
 End Sub
 
 'Safe unsigned addition, regardless of compilation options (e.g. compiling to native code with

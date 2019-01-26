@@ -15,17 +15,26 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 23/January/19
-'Last update: implement CMYK support
+'Last updated: 26/January/19
+'Last update: add support for modern 16-bit-per-channel PSDs (which store their image data in a totally
+'             separate "Lr16" block
 '
-'Proper explanation coming, but the short version is: this class is currently under heavy construction.
-' That said, it should handle all non-HDR PSD images correctly.  Layers will be preserved and details
-' like layer names will be imported correctly.  HDR PSD images and expanded features (like layers masks)
-' are still under construction.
+'This class (and its associated pdPSD- child classes) handles Adobe PSD parsing duties.  It is custom-built
+' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
+' Esoteric PhotoShop formats should be covered quite well, but if you ever encounter an image that does
+' not load at all (or loads improperly), you are always welcome to file an issue on GitHub so I can
+' investigate further.
+'
+'At present, this class only handles import duties.  Exporting PSDs is still TODO.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" Adobe spec at this URL (link good as of January 2019):
 ' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
+'
+'In places where Adobe's spec is either out-of-date or purely inaccurate, the open-source, MIT-licensed
+' Paint.NET PSD plugin proved to be a valuable resource.  Its source code is available here
+' (link good as of January 2019):
+' https://github.com/PsdPlugin/PsdPlugin
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -35,8 +44,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
-' dump all kinds of diagnostic information to the debug log.  (Note that the child pdPSDLayer class has its
-' own version of this constant.)
+' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
+' version of this constant.)
 Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
@@ -184,7 +193,7 @@ Private m_NumImageResources As Long
 ' as (0 to Abs(m_NumOfLayers) - 1).
 Private m_Layers() As pdPSDLayer
 
-'Per the spec, the number of layers *CAN BE NEGATIVE*.  A negative count has special meaning; see Step4  for details.
+'Per the spec, the number of layers *CAN BE NEGATIVE*.  A negative count has special meaning; see Step 4 for details.
 Private m_numOfLayers As Long
 
 'Embedded ICC profiles are read and used by PD.  (These can be found in the "image resource" segment.)
@@ -334,22 +343,58 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     For i = 0 To Abs(m_numOfLayers) - 1
         
         If m_Layers(i).DoesLayerHaveUsableData() Then
-        
-            'Prep a new layer object and initialize it with the image bits we've retrieved
-            newLayerID = dstImage.CreateBlankLayer()
-            Set tmpLayer = dstImage.GetLayerByID(newLayerID)
-            tmpLayer.InitializeNewLayer PDL_IMAGE, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
             
-            'Fill in any remaining layer properties
-            With m_Layers(i)
-                tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
-                tmpLayer.SetLayerOpacity .GetLayerOpacity()
-                tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
-                tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
-                tmpLayer.SetLayerVisibility .GetLayerVisibility()
-            End With
+            'Multichannel images are handled differently; each channel is displayed in its own layer
+            If (m_Header.ColorMode = cm_Multichannel) Then
             
-            numUsableLayers = numUsableLayers + 1
+                Dim j As Long
+                For j = 0 To m_Layers(i).GetLayerCount - 1
+                
+                    'Prep a new layer object and initialize it with the image bits we've retrieved
+                    newLayerID = dstImage.CreateBlankLayer()
+                    Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                    
+                    Dim newLayerName As String
+                    newLayerName = g_Language.TranslateMessage("%1 (Channel %2)", m_Layers(i).GetLayerName(), m_Layers(i).GetMultiChannelLayerID(j))
+                    tmpLayer.InitializeNewLayer PDL_IMAGE, newLayerName, m_Layers(i).GetMultiChannelLayerDIB(j)
+                
+                    'Fill in any remaining layer properties
+                    With m_Layers(i)
+                        
+                        'Hardcode "darken" blend mode so that the resulting layers composite together
+                        ' into a rough estimation of the original result
+                        tmpLayer.SetLayerBlendMode BL_DARKEN
+                        tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                        tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
+                        tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
+                        tmpLayer.SetLayerVisibility .GetLayerVisibility()
+                    End With
+                
+                Next j
+                
+                numUsableLayers = numUsableLayers + 1
+                
+            'All other color modes are handled normally, with a 1:1 correspondence between
+            ' PSD layers and PhotoDemon layers
+            Else
+            
+                'Prep a new layer object and initialize it with the image bits we've retrieved
+                newLayerID = dstImage.CreateBlankLayer()
+                Set tmpLayer = dstImage.GetLayerByID(newLayerID)
+                tmpLayer.InitializeNewLayer PDL_IMAGE, m_Layers(i).GetLayerName(), m_Layers(i).GetLayerDIB()
+                
+                'Fill in any remaining layer properties
+                With m_Layers(i)
+                    tmpLayer.SetLayerBlendMode .GetLayerBlendMode()
+                    tmpLayer.SetLayerOpacity .GetLayerOpacity()
+                    tmpLayer.SetLayerOffsetX .GetLayerOffsetX()
+                    tmpLayer.SetLayerOffsetY .GetLayerOffsetY()
+                    tmpLayer.SetLayerVisibility .GetLayerVisibility()
+                End With
+            
+                numUsableLayers = numUsableLayers + 1
+                
+            End If
             
         End If
         
@@ -379,24 +424,11 @@ Private Function Step4B_SingleLayerImage(ByVal chkPointerPosition As Long) As PD
     ReDim m_Layers(0) As pdPSDLayer
     Set m_Layers(0) = New pdPSDLayer
     
-    'Before attempting to load image data, we need to double-check the presence of (optional)
-    ' global layer mask info and/or additional tagged info blocks.  We may deal with these in
-    ' future releases, but for now, we just want to skip over them to get to the actual
-    ' image pixel data.
-    If (m_Stream.GetPosition < chkPointerPosition) Then
-    
-        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Checking for global mask data..."
-        Step4B_SingleLayerImage = m_Layers(0).ParseGlobalLayerMaskInfo(m_Stream, m_Warnings, m_PSDisPSB)
-        
-        'Finally, if the stream pointer is *still* not at the end of the section, it means optional
-        ' additional tagged blocks are present.  PD does not currently have use for these, so simply
-        ' skip over them for now.
-        If (m_Stream.GetPosition < chkPointerPosition) Then m_Stream.SetPosition chkPointerPosition, FILE_BEGIN
-        
-    End If
+    Dim addLayerInfo As pdPSDLayerInfo
+    Set addLayerInfo = New pdPSDLayerInfo
     
     'With the pointer now correctly aligned, we can proceed with gathering pixel data
-    Step4B_SingleLayerImage = m_Layers(0).NotifySingleLayerImage(m_Stream, m_Header.NumChannels, m_Header.ImageWidthPx, m_Header.ImageHeightPx, m_Header.BitsPerChannel, m_Header.ColorMode)
+    Step4B_SingleLayerImage = m_Layers(0).NotifySingleLayerImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.NumChannels, m_Header.ImageWidthPx, m_Header.ImageHeightPx, m_Header.BitsPerChannel, m_Header.ColorMode, addLayerInfo)
     
     'If image data was parsed successfully, proceed with decoding
     If (Step4B_SingleLayerImage < psd_Failure) Then
@@ -462,7 +494,85 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     If m_PSDisPSB Then lenOfLayerInfoSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
     finalLayerInfoPosition = m_Stream.GetPosition() + finalLayerInfoPosition
     
-    'The layer info section *can* have zero-length; see psd-tools assortment of test images for this case
+    'The layer info section *can* have zero-length; this is common on 16-bit images, for example,
+    ' as the actual layer data is stored in a separate chunk for backward-compatibility reasons.
+    ' (Also, see the psd-tools collection of test images - they cover this case.)
+    If (lenOfLayerInfoSection = 0) Then
+        
+        'Layer info section is null.  We now have one of two possibilities:
+        ' 1) This is a single-layer image, and PhotoShop has placed the background layer data in the
+        '     composite image chunk at the end of the file.  We can grab that, no problem.
+        ' 2) This is a high bit-depth image, and PhotoShop has placed the actual layer data inside a
+        '     specialized "Lr16" or "Lr32" additional info block (presumably for backward-compatibility).
+        '
+        ' We can distinguish between these two states using the length of the layer chunk.
+        Dim hpdChunkFound As Boolean
+        hpdChunkFound = False
+        
+        If (m_Stream.GetPosition < finalPointerPosition) Then
+            
+            'Even though there are no layers, there is global mask data and/or additional
+            ' "global" layer info blocks (for lack of a better term; the spec is nebulous on
+            ' what these blocks may even hold).
+            
+            'Global mask data gets checked first.  (We don't use this data in PD, so we just
+            ' read it using a temp layer.)
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Checking for global mask data..."
+            Dim tmpLayer As pdPSDLayer
+            Set tmpLayer = New pdPSDLayer
+            Step4_GatherLayersAndMasks = tmpLayer.ParseGlobalLayerMaskInfo(m_Stream, m_Warnings, m_PSDisPSB)
+            
+            'Finally, if the stream pointer is *still* not at the end of the section, it means optional
+            ' additional tagged blocks are present.  Newer versions of Photoshop may write critical
+            ' image data here (e.g. pixel data for 16/32-bit channels) so it's crucial to retrieve
+            ' these segments.
+            Dim addLayerInfo As pdPSDLayerInfo
+            Set addLayerInfo = New pdPSDLayerInfo
+            If (m_Stream.GetPosition < finalPointerPosition) Then
+            
+                'Parse and acquire all tagged blocks, then reset the stream pointer to a
+                ' known-aligned position.
+                addLayerInfo.ParseAdditionalLayerInfo m_Stream, m_Warnings, m_PSDisPSB, finalPointerPosition, True
+                m_Stream.SetPosition finalPointerPosition, FILE_BEGIN
+                
+            End If
+            
+            'If we found a high bit-depth segment, we want to continue parsing the file, but using that
+            ' high bit-depth segment as if it were the actual file contents.
+            If addLayerInfo.DoesKeyExist("Lr16") Or addLayerInfo.DoesKeyExist("Lr32") Then
+                
+                hpdChunkFound = True
+                
+                'Close our original stream; it no longer serves any purpose
+                Set m_Stream = New pdStream
+                
+                'Instead, wrap the m_Stream object around the high bit-depth block
+                If addLayerInfo.DoesKeyExist("Lr16") Then
+                    Set m_Stream = addLayerInfo.GetStreamForKey("Lr16")
+                Else
+                    Set m_Stream = addLayerInfo.GetStreamForKey("Lr32")
+                End If
+                
+                'Reset any/all pointer trackers to match the new stream length and position.
+                lenOfLayerInfoSection = m_Stream.GetStreamSize()
+                
+            End If
+            
+        End If
+    
+        'If we didn't find a high bit-depth segment, this is just a plain single-layer image.
+        ' The single background layer's contents live in the composite image segment.
+        If (Not hpdChunkFound) Then
+            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Activating alternate parse strategy..."
+            Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(finalPointerPosition)
+            Exit Function
+        End If
+    
+    End If
+    
+    'By this point, if we still have a non-zero layer info segment, we can parse it normally,
+    ' regardless of where the data actually resides.  (Previous steps may have pointed the
+    ' stream at an alternate segment of the PSD file without us knowing; that's by design.)
     If (lenOfLayerInfoSection > 0) Then
         
         Dim i As Long
@@ -519,10 +629,12 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         If (Step4_GatherLayersAndMasks < psd_Failure) Then Step4_GatherLayersAndMasks = m_Layers(0).ParseGlobalLayerMaskInfo(m_Stream, m_Warnings, m_PSDisPSB)
         
         'Finally, an additional set of additional layer information (that's not confusing at all)
-        ' may follow the global mask.  This section is entirely optional.
+        ' may follow the global mask.  This section is entirely optional, and the spec is fuzzy about
+        ' what these chunks may contain.  We don't have a use for it in PD at present, so we just
+        ' skip this segment pending further investigation.
         If (Step4_GatherLayersAndMasks < psd_Failure) Then
         
-            
+            'TODO?
         
         End If
         
@@ -549,15 +661,12 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 Exit Function
             End If
         Next i
-        
-    '/end null-length layer info section check
-    Else
-        
-        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Activating alternate parse strategy..."
-        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(finalPointerPosition)
-        Exit Function
-        
+    
+    'Layer info section is null-length; layer data has already been located using an alternate strategy
     End If
+    
+    'At the end of this step, we are finished with the source stream object.  Free it to conserve resources.
+    m_Stream.StopStream True
     
     Exit Function
 

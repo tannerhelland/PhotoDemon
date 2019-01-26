@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.47</langversion>
+<langversion>1.0.49</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3719,7 +3719,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -8347,6 +8352,36 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>노드를 고르게 분산</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>현재 노드 설정</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>위치</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>노드 편집기</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>예</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>추가 도구</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>무작위로 추출하다</translation>
 </phrase>
@@ -8389,36 +8424,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <phrase>
 <original>vary alpha</original>
 <translation>알파를 변화시키다</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>노드를 고르게 분산</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>현재 노드 설정</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>위치</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>노드 편집기</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>예</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>추가 도구</translation>
 </phrase>
 
 <phrase>
@@ -15563,12 +15568,18 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>

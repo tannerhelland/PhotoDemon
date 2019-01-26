@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3362</langversion>
+<langversion>6.8.3364</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3720,7 +3720,12 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for pdPSD.cls -->
 
-<!-- pdPSD.cls contains 0 phrases. -->
+<phrase>
+<original>%1 (Channel %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pdPSD.cls-->
 
@@ -8348,6 +8353,36 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation>Automaticky distribuují uzly rovnoměrně</translation>
+</phrase>
+
+<phrase>
+<original>current node settings</original>
+<translation>Aktuální nastavení uzlů</translation>
+</phrase>
+
+<phrase>
+<original>position</original>
+<translation>pozice</translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation>Editor uzlu</translation>
+</phrase>
+
+<phrase>
+<original>yes</original>
+<translation>Ano</translation>
+</phrase>
+
+<phrase>
+<original>additional tools</original>
+<translation>Další nástroje</translation>
+</phrase>
+
+<phrase>
 <original>randomize</original>
 <translation>Randomize</translation>
 </phrase>
@@ -8390,36 +8425,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <phrase>
 <original>vary alpha</original>
 <translation>měnit alfa</translation>
-</phrase>
-
-<phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>Automaticky distribuují uzly rovnoměrně</translation>
-</phrase>
-
-<phrase>
-<original>current node settings</original>
-<translation>Aktuální nastavení uzlů</translation>
-</phrase>
-
-<phrase>
-<original>position</original>
-<translation>pozice</translation>
-</phrase>
-
-<phrase>
-<original>node editor</original>
-<translation>Editor uzlu</translation>
-</phrase>
-
-<phrase>
-<original>yes</original>
-<translation>Ano</translation>
-</phrase>
-
-<phrase>
-<original>additional tools</original>
-<translation>Další nástroje</translation>
 </phrase>
 
 <phrase>
@@ -15563,12 +15568,18 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4759 phrases. -->
-<!-- 2163 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4761 phrases. -->
+<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12393 total words. -->
 
 </pdData>
