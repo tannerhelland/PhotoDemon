@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median-Cut Color Quantization Class
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 11/September/17
 'Last update: new support for variance and variance + median modes, which are slightly slower but offer better quality

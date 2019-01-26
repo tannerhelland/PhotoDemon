@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Flatten Image Dialog
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 20/May/16
 'Last updated: 20/May/16
 'Last update: provide dialog for setting flatten options

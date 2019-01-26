@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
 'Last updated: 03/May/18
 'Last update: add esoteric unit support (mm, pt, pc)

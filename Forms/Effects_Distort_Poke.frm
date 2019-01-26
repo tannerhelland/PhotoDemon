@@ -148,7 +148,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Poke Distort Tool
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 05/June/13
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params

@@ -195,8 +195,8 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                 Dim i As Long, curNodeName As String, curNodeValue As String
                 For i = 0 To xmlRoot.Attributes.Length - 1
                     
-                    curNodeName = LCase$(xmlRoot.Attributes(i).nodeName)
-                    curNodeValue = xmlRoot.Attributes(i).nodeValue
+                    curNodeName = LCase$(xmlRoot.Attributes(i).NodeName)
+                    curNodeValue = xmlRoot.Attributes(i).NodeValue
                     
                     Select Case curNodeName
                         Case "version"
@@ -253,8 +253,8 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                         
                             For j = 0 To listOfLayers(i).Attributes.Length - 1
                                 
-                                curNodeName = LCase$(listOfLayers(i).Attributes(j).nodeName)
-                                curNodeValue = listOfLayers(i).Attributes(j).nodeValue
+                                curNodeName = LCase$(listOfLayers(i).Attributes(j).NodeName)
+                                curNodeValue = listOfLayers(i).Attributes(j).NodeValue
                                 
                                 Select Case curNodeName
                                     

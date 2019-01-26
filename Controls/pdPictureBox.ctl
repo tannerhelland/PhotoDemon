@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PictureBox Replacement control
-'Copyright 2018-2018 by Tanner Helland
+'Copyright 2018-2019 by Tanner Helland
 'Created: 21/March/18
 'Last updated: 21/March/18
 'Last update: initial build

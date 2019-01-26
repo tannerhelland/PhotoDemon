@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Rendering Surface class - using Cairo instead of GDI+
-'Copyright 2018-2018 by Tanner Helland
+'Copyright 2018-2019 by Tanner Helland
 'Created: 25/June/18
 'Last updated: 28/June/18
 'Last update: continue migrating features from the base pd2DSurface class

@@ -295,7 +295,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tone Mapping (e.g. high-bit-depth image import) Dialog
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 04/December/14
 'Last updated: 08/Augusts/17
 'Last update: migrate to XML params, many performance improvements

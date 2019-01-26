@@ -372,7 +372,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Primary Toolbar
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 22/February/18
 'Last update: properly remember open/closed panel state between sessions

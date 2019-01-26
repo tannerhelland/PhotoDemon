@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Visual Theming class
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 23/October/13
 'Last updated: 11/February/17
 'Last update: add many new theme accent color options

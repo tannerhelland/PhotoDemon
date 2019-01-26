@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn List Box View control (e.g. the list part of a list box, not including the scroll bar)
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 26/March/16
 'Last updated: 04/January/17
 'Last update: added support for a "borderless" rendering mode

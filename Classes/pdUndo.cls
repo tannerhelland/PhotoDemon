@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 12/September/17
 'Last update: cache persistent file handles to the "master" Undo XML file (used by the Autosave engine to reconstruct

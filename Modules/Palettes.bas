@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Master Palette Interface
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 31/January/18
 'Last update: finish work on KD-tree palette matcher, which is both faster and more accurate than GDI matching

@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic Button control
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 31/August/15
 'Last update: split off from pdButtonToolbox.  The two controls are similar, but this one needs to manage a caption.
@@ -89,7 +89,7 @@ Private m_CaptionRect As RECT
 Private m_ImageWidth As Long, m_ImageHeight As Long, m_Images As pdDIB
 
 '(x, y) position of the button image.  This is auto-calculated by the control.
-Private btImageCoords As POINTAPI
+Private btImageCoords As PointAPI
 
 'Mouse state trackers
 Private m_MouseInsideUC As Boolean, m_ButtonStateDown As Boolean

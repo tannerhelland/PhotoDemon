@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selections"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 03/May/18
 'Last update: minor changes to facilitate new "lock width/height/aspect-ratio" support

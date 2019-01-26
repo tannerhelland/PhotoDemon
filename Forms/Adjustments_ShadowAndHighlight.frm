@@ -196,7 +196,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Shadow / Midtone / Highlight Adjustment Tool
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 17/February/13
 'Last updated: 20/July/17
 'Last update: migrate to XML parameters

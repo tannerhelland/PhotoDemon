@@ -118,7 +118,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Plastic Wrap" Image effect
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 03/August/17
 'Last updated: 07/August/17
 'Last update: put finishing touches on the algorithm

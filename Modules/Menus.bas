@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 15/August/17
 'Last update: implement manual handling of Unicode menu captions

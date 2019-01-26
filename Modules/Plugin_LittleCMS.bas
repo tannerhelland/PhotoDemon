@@ -1,7 +1,7 @@
 Attribute VB_Name = "LittleCMS"
 '***************************************************************************
 'LittleCMS Interface
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 21/April/16
 'Last updated: 23/April/18
 'Last update: new external function for creating custom RGB profiles on-the-fly (used with cHRM data from PNGs)

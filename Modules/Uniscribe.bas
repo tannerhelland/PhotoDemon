@@ -1,7 +1,7 @@
 Attribute VB_Name = "Uniscribe"
 '***************************************************************************
 'Uniscribe API Types
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 01/June/16
 'Last update: construct a new dynamic cache when retrieving script properties; this greatly improves performance for
@@ -48,7 +48,7 @@ End Enum
     Private Const GCPGLYPH_LINKAFTER = &H4000, GCPGLYPH_LINKBEFORE = &H8000
 #End If
 
-Public Enum HRESULT
+Public Enum hResult
     S_FALSE = &H1
     S_OK = &H0
     E_INVALIDARG = &H80070057
@@ -321,7 +321,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             Dim numTagsReceived As Long
             
             'Retrieve a list of supported scripts
-            Dim unsReturn As HRESULT
+            Dim unsReturn As hResult
             unsReturn = ScriptGetFontScriptTags(tmpDC, VarPtr(tmpCache), 0&, OPENTYPE_MAX_NUM_SCRIPT_TAGS, VarPtr(m_ScriptTags(0)), VarPtr(numTagsReceived))
             
             'Success!  Copy a list of relevant parameters into the destination font property object

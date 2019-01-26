@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright 2010-2018 by Tanner Helland
+'Copyright 2010-2019 by Tanner Helland
 'Created: 01/July/10
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Compositor class
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 01/May/14
 'Last updated: 04/November/16
 'Last update: add support for scratch layer integration

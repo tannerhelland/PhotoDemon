@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Stream-like I/O Interface
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 05/December/16
 'Last updated: 09/January/19
 'Last update: add new option for wrapping a stream instance around an arbitrary pointer; this is used by pdPNG

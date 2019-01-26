@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Edge Detector ("Marching squares") Engine
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 05/January/17
 'Last updated: 09/May/17
 'Last update: add comprehensive edge detection (e.g. edges of *multiple* objects in one image)
@@ -45,7 +45,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'A stack is used to track polygon points enclosing the first discovered region
-Private m_Stack() As POINTAPI
+Private m_Stack() As PointAPI
 Private m_StackPosition As Long
 Private m_StackHeight As Long
 Private Const INITIAL_STACK_HEIGHT As Long = 4096
@@ -164,7 +164,7 @@ Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     'Resize the stack as necessary
     If (m_StackPosition > m_StackHeight) Then
         m_StackHeight = m_StackHeight * 2 + 1
-        ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+        ReDim Preserve m_Stack(0 To m_StackHeight) As PointAPI
     End If
     
     With m_Stack(m_StackPosition)
@@ -495,7 +495,7 @@ Private Sub Class_Initialize()
     'Reset all stack values
     m_StackPosition = 0
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
-    ReDim m_Stack(0 To m_StackHeight) As POINTAPI
+    ReDim m_Stack(0 To m_StackHeight) As PointAPI
     
     'Populate hard-coded direction descriptors
     ReDim m_XDirs(0 To 15) As Long: ReDim m_YDirs(0 To 15) As Long

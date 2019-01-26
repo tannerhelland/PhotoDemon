@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Layers"
 '***************************************************************************
 'DIB Filters Module
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 15/February/13
 'Last updated: 09/August/17
 'Last update: new functions for blurring just a sub-region of an image

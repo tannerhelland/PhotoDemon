@@ -408,7 +408,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PNG export dialog
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 15/March/17
 'Last update: finally solve (I hope?) persistent layout reflow issues

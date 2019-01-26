@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 27/October/17
 'Last update: fix drag/drop from Firefox, which broke at some point in the past (idk when)

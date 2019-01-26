@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DPI-Aware Window Resize class
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 23/September/15 (but built from many parts existing earlier)
 'Last updated: 06/February/17
 'Last update: migrate to safer subclassing technique
@@ -167,7 +167,7 @@ Private Sub UpdateWinRect()
         GetWindowRect m_hWnd, m_WindowRect
         
         'Find the difference between *the screen coordinate space* and *the parent's coordinate space*
-        Dim tmpPoint As POINTAPI
+        Dim tmpPoint As PointAPI
         tmpPoint.x = m_WindowRect.x1
         tmpPoint.y = m_WindowRect.y1
         MapWindowPoints 0&, GetParent(m_hWnd), VarPtr(tmpPoint), 1

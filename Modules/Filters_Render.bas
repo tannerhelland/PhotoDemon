@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Render"
 '***************************************************************************
 'Render Filter Collection
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 14/October/17
 'Last updated: 14/October/17
 'Last update: start migrating render-specific functions here

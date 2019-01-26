@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Progress Bar UI element
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 20/March/18
 'Last updated: 20/March/18
 'Last update: initial build

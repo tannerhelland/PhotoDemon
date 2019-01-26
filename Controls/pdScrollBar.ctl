@@ -76,7 +76,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Scrollbar control
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 07/October/15
 'Last updated: 11/October/15
 'Last update: wrap up initial build

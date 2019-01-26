@@ -314,7 +314,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Resource editor dialog
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 22/August/16
 'Last updated: 28/August/17
 'Last update: added option to compress individual resources using the faster (but lower-compression) LZ4HC algorithm

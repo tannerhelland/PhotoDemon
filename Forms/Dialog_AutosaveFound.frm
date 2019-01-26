@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Autosave (unsafe shutdown) Prompt/Dialog
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 19/January/14
 'Last updated: 10/January/17
 'Last update: implement better theming support

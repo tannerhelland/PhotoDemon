@@ -139,7 +139,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright 2000-2018 by Tanner Helland
+'Copyright 2000-2019 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 19/July/17
 'Last update: convert to XML params, minor optimizations

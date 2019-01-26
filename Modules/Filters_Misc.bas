@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Miscellaneous"
 '***************************************************************************
 'Filter Module
-'Copyright 2000-2018 by Tanner Helland
+'Copyright 2000-2019 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 07/September/15
 'Last update: continued work on moving crap out of this module

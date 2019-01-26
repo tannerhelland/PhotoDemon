@@ -1,7 +1,7 @@
 Attribute VB_Name = "TextSupport"
 '***************************************************************************
 'Miscellaneous functions related to specialized text handling
-'Copyright 2000-2018 by Tanner Helland
+'Copyright 2000-2019 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 08/August/17
 'Last update: remove legacy BuildParams() parameter system

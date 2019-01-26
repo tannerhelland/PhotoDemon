@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Trace Contour (Outline) Tool
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 15/Feb/13
 'Last updated: 30/July/17
 'Last update: performance improvements, migrate to XML params

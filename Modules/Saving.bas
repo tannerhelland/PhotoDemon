@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 08/March/16
 'Last update: refactor various bits of save-related code to make PD's primary save functions much more versatile.

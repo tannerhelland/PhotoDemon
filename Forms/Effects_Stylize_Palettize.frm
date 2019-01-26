@@ -297,7 +297,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Palettize" (e.g. reduce image color count) Dialog
-'Copyright 2000-2018 by Tanner Helland
+'Copyright 2000-2019 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 01/February/18
 'Last update: improve progress bar reporting

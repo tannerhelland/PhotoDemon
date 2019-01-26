@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS"
 '***************************************************************************
 'OS-specific specific features
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 21/November/13
 'Last updated: 18/July/17
 'Last update: migrate various OS-specific bits to this module
@@ -305,7 +305,7 @@ Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, By
 
 Private Declare Function SysAllocString Lib "oleaut32" (ByVal ptr As Long) As Long
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, ByRef pClsID As OS_Guid) As Long
-Private Declare Function CoCreateGuid Lib "ole32" (ByRef pGuid As OS_Guid) As Long
+Private Declare Function CoCreateGuid Lib "ole32" (ByRef pguid As OS_Guid) As Long
 Private Declare Function CoCreateInstance Lib "ole32" (ByRef rClsID As OS_Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByRef rIID As OS_Guid, ByRef ppv As Any) As Long
 Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, ByRef lpiid As OS_Guid) As Long
 Private Declare Function StringFromGUID2 Lib "ole32" (ByRef rguid As Any, ByVal lpstrClsID As Long, ByVal cbMax As Long) As Long

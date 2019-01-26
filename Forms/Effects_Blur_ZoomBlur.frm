@@ -119,7 +119,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Zoom Blur Tool
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 27/August/13
 'Last updated: 11/June/16
 'Last update: rewrite algorithm to support variable center positioning

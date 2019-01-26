@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 03/May/18
 'Last update: add support for locking width, height, aspect-ratio

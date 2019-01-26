@@ -1,7 +1,7 @@
 Attribute VB_Name = "NavKey"
 '***************************************************************************
 'Navigation Key Handler (including automated tab order handling)
-'Copyright 2017-2018 by Tanner Helland
+'Copyright 2017-2019 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 22/August/17
 'Last update: continuing work on initial build

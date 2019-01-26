@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Uniscribe API Interface
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 19/May/15
 'Last update: migrate everything from a module to a class; there's enough useful code in here that we may want to
@@ -330,7 +330,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     
     Dim numItemsFilled As Long
     
-    Dim unsReturn As HRESULT
+    Dim unsReturn As hResult
     unsReturn = ScriptItemize(StrPtr(m_CurrentString), Len(m_CurrentString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
     
     'Account for potential out of memory errors
@@ -483,7 +483,7 @@ Friend Function Step2_ScriptLayout() As Boolean
     ptrToLVO = VarPtr(m_LogicalToVisualOrder(0))
     
     'Retrieve the final layout order of the runs
-    Dim unsReturn As HRESULT
+    Dim unsReturn As hResult
     unsReturn = ScriptLayout(numOfRuns, VarPtr(embeddingLevels(0)), ptrToVLO, ptrToLVO)
     
     'Again, debugging output can be helpful:
@@ -565,7 +565,7 @@ Friend Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     
     Dim lSubstring As Long, sSubstring As String
     Dim cMaxGlyphs As Long
-    Dim unsReturn As HRESULT
+    Dim unsReturn As hResult
     
     'Start iterating through our item collection
     Dim i As Long
@@ -698,7 +698,7 @@ Friend Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
     ' characters would need to be retrieved separately, using custom code and ScriptGetGlyphABCWidth.
     Dim tmpABC As ABC
     Dim numOfGlyphs As Long
-    Dim unsReturn As HRESULT
+    Dim unsReturn As hResult
     
     'Start iterating through our item collection
     Dim i As Long
@@ -787,7 +787,7 @@ Friend Function Step5_ScriptBreak() As Boolean
     functionSuccess = True
     
     Dim lSubstring As Long, sSubstring As String
-    Dim unsReturn As HRESULT
+    Dim unsReturn As hResult
     
     'Start iterating through our item collection
     Dim i As Long

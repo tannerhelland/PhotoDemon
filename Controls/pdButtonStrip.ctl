@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Button Strip" control
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 13/September/14
 'Last updated: 23/January/16
 'Last update: add caption support; large overhaul of rendering logic to better work with dark themes
@@ -89,7 +89,7 @@ Private Type ButtonEntry
     btImages As pdDIB               'Optional image(s) to use with the button; this class is ignored if the button has no image
     btImageWidth As Long            'If an image is loaded, these will store the image's width and height
     btImageHeight As Long
-    btImageCoords As POINTAPI       '(x, y) position where the button image is painted (if an image exists)
+    btImageCoords As PointAPI       '(x, y) position where the button image is painted (if an image exists)
     btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
 End Type

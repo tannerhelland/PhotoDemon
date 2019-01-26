@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_OptiPNG"
 '***************************************************************************
 'OptiPNG Interface
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 20/April/16
 'Last updated: 20/April/16
 'Last update: initial build

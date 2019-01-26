@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 18/April/17
 'Last update: store the original file format in a proper PDIF enum

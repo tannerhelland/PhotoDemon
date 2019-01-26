@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright 2013-2018 by Frank Donckers
+'Copyright 2013-2019 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 12/December/17
 'Last update: harden against IE initialization errors

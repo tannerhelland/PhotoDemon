@@ -95,7 +95,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Yes/No/Cancel Dialog with automatic "Remember My Choice" handling
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 01/December/12
 'Last updated: 04/May/15
 'Last update: merge code from other dialogs into a single, universal version

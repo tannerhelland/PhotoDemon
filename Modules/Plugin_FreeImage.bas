@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 08/August/17
 'Last update: migrate all tone-mapping code to XML params; new performance improvements for tone-mapping

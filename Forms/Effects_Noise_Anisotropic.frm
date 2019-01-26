@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Anisotropic Diffusion dialog
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 11/December/15
 'Last updated: 11/December/15
 'Last update: initial build

@@ -227,7 +227,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Donut" Distortion
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 01/April/15
 'Last updated: 27/July/17
 'Last update: performance improvements, migrate to XML params

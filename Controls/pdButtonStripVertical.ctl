@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Button Strip Vertical" control
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 15/March/15
 'Last updated: 25/January/16
 'Last update: mirror latest changes from the horizontal button strip update
@@ -91,7 +91,7 @@ Private Type ButtonEntry
     btImages As pdDIB               'Optional image(s) to use with the button; this class is ignored if the button has no image
     btImageWidth As Long            'If an image is loaded, these will store the image's width and height
     btImageHeight As Long
-    btImageCoords As POINTAPI       '(x, y) position of the button image, if any
+    btImageCoords As PointAPI       '(x, y) position of the button image, if any
     btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
     btToolTipText As String         'This control supports per-button tooltips.  This behavior can be overridden by not supplying an index to the

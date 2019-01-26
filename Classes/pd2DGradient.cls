@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Manager
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 08/October/17
 'Last update: rework the way gradient nodes are serialized to XML, to improve performance

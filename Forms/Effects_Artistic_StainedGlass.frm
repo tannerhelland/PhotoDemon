@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Stained Glass Effect Interface
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 26/July/17
 'Last update: performance improvements, migrate to XML params
@@ -320,7 +320,7 @@ Public Sub fxStainedGlass(ByVal effectParams As String, Optional ByVal toPreview
     'All lookup tables are now properly initialized.  Depending on the user's color sampling choice, calculate
     ' cell colors now.
     Dim numPixelsCache As Long
-    Dim thisPoint As POINTAPI
+    Dim thisPoint As PointAPI
     
     For x = 0 To numVoronoiPoints
     

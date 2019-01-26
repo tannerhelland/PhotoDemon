@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 17/June/17
 'Last update: attempted fix for issues reported at https://github.com/tannerhelland/PhotoDemon/commit/25870dd93ae74e79fa146e88ee66989dd0223312
@@ -171,7 +171,7 @@ Private Type TagMSG
     wParam As Long
     lParam As Long
     msgTime As Long
-    msgPoint As POINTAPI
+    msgPoint As PointAPI
 End Type
 
 'System window handling APIs

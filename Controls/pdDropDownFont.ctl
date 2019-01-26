@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font-specific Drop Down control 2.0
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 01/June/16
 'Last updated: 09/February/17
 'Last update: migrate to safer comctl32 subclassing technique

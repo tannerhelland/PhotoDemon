@@ -1,7 +1,7 @@
 Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 26/February/18
 'Last update: new support functions for manually combining certain system cursors at run-time (for pdTitlebar)

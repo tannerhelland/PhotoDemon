@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image seam carving (smart resize/"content-aware scale"/"liquid rescale") Engine
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds

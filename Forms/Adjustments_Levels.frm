@@ -261,7 +261,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2018 by Tanner Helland
+'Copyright 2006-2019 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 19/July/17
 'Last update: rewrite against XML param strings

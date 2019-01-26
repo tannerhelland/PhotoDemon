@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon GDI+ Text Manager and Renderer
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 22/April/15
 'Last updated: 19/May/15
 'Last update: various changes to improve compatibility with the new Uniscribe backend (see pdGlyphCollection)
@@ -323,7 +323,7 @@ Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode
 
 'GDI font rendering functions
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
+Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As PointAPI) As Long
 
 'Back color modes (not useful here except during debug mode)
 Private Const FONT_TRANSPARENT As Long = &H1
@@ -1723,7 +1723,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Start by retrieving default size values
     Dim targetWidth As Long, targetHeight As Long
-    Dim txtSize As POINTAPI
+    Dim txtSize As PointAPI
     GetTextExtentPoint32 m_TmpGdiDIB.GetDIBDC, StrPtr(srcString), Len(srcString), txtSize
     
     Dim tmpRect As RECT

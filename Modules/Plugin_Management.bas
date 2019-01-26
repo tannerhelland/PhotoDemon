@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 'Core Plugin Manager
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 25/June/18
 'Last update: integrate cairo as a permanent plugin

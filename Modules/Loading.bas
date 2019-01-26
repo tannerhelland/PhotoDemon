@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'General-purpose image and data import interface
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 10/September/17
 'Last update: fix a potential activation issue when a paint tool is selected, and a new image is loaded, and we

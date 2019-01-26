@@ -1,7 +1,7 @@
 Attribute VB_Name = "UIImages"
 '***************************************************************************
 'PhotoDemon Central UI image cache
-'Copyright 2018-2018 by Tanner Helland
+'Copyright 2018-2019 by Tanner Helland
 'Created: 13/July/18
 'Last updated: 13/July/18
 'Last update: initial build

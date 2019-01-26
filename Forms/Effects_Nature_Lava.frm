@@ -103,7 +103,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lava Effect
-'Copyright 2002-2018 by Tanner Helland
+'Copyright 2002-2019 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 16/October/17
 'Last update: rewrite using new algorithm; migrate to dedicated UI instance

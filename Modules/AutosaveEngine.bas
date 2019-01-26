@@ -1,7 +1,7 @@
 Attribute VB_Name = "Autosaves"
 '***************************************************************************
 'Image Autosave Handler
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 18/January/14
 'Last updated: 22/March/18
 'Last update: improve detection of original file format

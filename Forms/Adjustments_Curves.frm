@@ -147,7 +147,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Curves Adjustment Dialog
-'Copyright 2008-2018 by Tanner Helland
+'Copyright 2008-2019 by Tanner Helland
 'Created: sometime 2008
 'Last updated: 19/July/17
 'Last update: rewrite against XML params, performance optimizations

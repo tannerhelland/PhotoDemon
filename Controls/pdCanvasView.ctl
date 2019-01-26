@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "CanvasView" User Control (e.g. the primary component of pdCanvas)
-'Copyright 2002-2018 by Tanner Helland
+'Copyright 2002-2019 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 16/February/16
 'Last update: migrate the main view portions of pdCanvas into this control, which will greatly simplify paint tool integration

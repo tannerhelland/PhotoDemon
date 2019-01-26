@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright 2012-2018 by Tanner Helland
+'Copyright 2012-2019 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 01/December/16
 'Last update: start migrating ICC profile stuff from pdDIB to pdLayer (and the ColorManagement module)

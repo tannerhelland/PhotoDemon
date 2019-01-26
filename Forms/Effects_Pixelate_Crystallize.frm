@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Crystallize Effect Interface
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 08/April/17
 'Last update: convert to XML params, performance improvements
@@ -271,7 +271,7 @@ Public Sub fxCrystallize(ByVal effectParams As String, Optional ByVal toPreview 
     'All lookup tables are now properly initialized.  Depending on the user's color sampling choice, calculate
     ' cell colors now.
     Dim numPixelsCache As Long, invNumPixelsCache As Double
-    Dim thisPoint As POINTAPI
+    Dim thisPoint As PointAPI
     
     For x = 0 To numVoronoiPoints
     

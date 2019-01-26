@@ -133,7 +133,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Smoothing Form
-'Copyright 2014-2018 by Tanner Helland, first build Copyright 2014 by Audioglider
+'Copyright 2014-2019 by Tanner Helland, first build Copyright 2014 by Audioglider
 'Created: 19/June/14
 'Last updated: 02/August/17
 'Last update: migrate to XML params, minor performance improvements

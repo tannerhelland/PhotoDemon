@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Collapsible Title Label+Button control
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 22/February/18
 'Last update: new "Draggable" property will render a left-side gripper on the titlebar

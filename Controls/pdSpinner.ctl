@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
-'Copyright 2013-2018 by Tanner Helland
+'Copyright 2013-2019 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 26/June/18
 'Last update: integrate with Evaluator module to support arbitrary formulae evaluation

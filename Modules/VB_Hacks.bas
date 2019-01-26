@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 26/January/19
 'Last update: helper function for fast endian swapping (16-bit boundaries); this is used constantly in PSD parsing

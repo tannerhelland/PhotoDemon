@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Red-eye Detection Engine
-'Copyright 2015-2018 by Tanner Helland
+'Copyright 2015-2019 by Tanner Helland
 'Created: 31/December/16
 'Last updated: 06/January/16
 'Last update: rework flood fill functionality into red-eye region detection
@@ -31,7 +31,7 @@ Option Explicit
 
 'A stack is used to track pixels that need to be checked.  This stack will be reused over and over again as each
 ' new region is detected, but to save processing time we don't reallocate it unless absolutely necessary.
-Private m_Stack() As POINTAPI
+Private m_Stack() As PointAPI
 Private m_StackPosition As Long
 Private m_StackHeight As Long
 Private Const INITIAL_STACK_HEIGHT As Long = 4096
@@ -78,7 +78,7 @@ Friend Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight A
     m_RegionStackPosition = 0
     
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
-    ReDim m_Stack(0 To m_StackHeight) As POINTAPI
+    ReDim m_Stack(0 To m_StackHeight) As PointAPI
     m_StackPosition = 0
     
     m_CurrentRegion = 0
@@ -305,7 +305,7 @@ Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     'Resize the stack as necessary
     If m_StackPosition > m_StackHeight Then
         m_StackHeight = m_StackHeight * 2 + 1
-        ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+        ReDim Preserve m_Stack(0 To m_StackHeight) As PointAPI
     End If
     
     'Mark this point as "due to be checked", so it does not get re-checked

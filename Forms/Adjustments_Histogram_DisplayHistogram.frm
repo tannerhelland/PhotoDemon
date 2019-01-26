@@ -344,7 +344,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright 2001-2018 by Tanner Helland
+'Copyright 2001-2019 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 30/September/13
 'Last update: when drawing cubic spline histograms, cache various GDI+ handles to improve performance.

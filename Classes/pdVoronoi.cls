@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Voronoi class
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 02/February/18
 'Last update: fix potential crash on very small input images (thank you to GioRock for reporting)

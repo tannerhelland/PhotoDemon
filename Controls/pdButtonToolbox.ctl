@@ -32,7 +32,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Toolbox Button control
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 14/February/16
 'Last update: finalize theming support

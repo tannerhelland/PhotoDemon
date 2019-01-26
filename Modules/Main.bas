@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMain"
 '***************************************************************************
 'PhotoDemon Startup Module
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 31/January/17
 'Last update: continued work on improving program startup time
