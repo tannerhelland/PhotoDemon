@@ -1303,7 +1303,7 @@ Begin VB.Form FormMain
          Caption         =   "Create macro"
          Index           =   5
          Begin VB.Menu MnuMacroCreate 
-            Caption         =   "From session history..."
+            Caption         =   "From history..."
             Index           =   0
          End
          Begin VB.Menu MnuMacroCreate 

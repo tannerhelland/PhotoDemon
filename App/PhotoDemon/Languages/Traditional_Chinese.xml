@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.51</langversion>
+<langversion>7.0.52</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3695,6 +3695,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPSDLayer.cls-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- BEGIN text for pdRandomize.cls -->
 
 <!-- pdRandomize.cls contains 0 phrases. -->
@@ -5950,7 +5956,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>From session history</original>
+<original>From history</original>
 <translation></translation>
 </phrase>
 
@@ -8415,7 +8421,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>請選擇一個控制點</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15515,18 +15521,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPSDLayerInfo.cls -->
-
-<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
-
-<!-- END text for pdPSDLayerInfo.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4761 phrases. -->
-<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4760 phrases. -->
+<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12392 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.764</langversion>
+<langversion>7.2.782</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -77,7 +77,7 @@
 
 <phrase>
 <original>Initializing window manager</original>
-<translation>Fenstermanager wird iitialisiert</translation>
+<translation>Fenstermanager wird initialisiert</translation>
 </phrase>
 
 <phrase>
@@ -3727,7 +3727,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>%1 (Channel %2)</original>
-<translation></translation>
+<translation>%1 (Kanal %2)</translation>
 </phrase>
 
 <!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3739,6 +3739,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdPSDLayer.cls contains 0 phrases. -->
 
 <!-- END text for pdPSDLayer.cls-->
+
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
 
 <!-- BEGIN text for pdRandomize.cls -->
 
@@ -5406,7 +5412,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Rechannel</original>
-<translation>Rückkanal</translation>
+<translation>Umlenken</translation>
 </phrase>
 
 <phrase>
@@ -5995,8 +6001,8 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>From session history</original>
-<translation>Aus Sitzungshistorie</translation>
+<original>From history</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6852,7 +6858,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>input channel(s)</original>
-<translation>Eingabekanal bzw. -kanäle</translation>
+<translation>Eingabekanal / -kanäle</translation>
 </phrase>
 
 <phrase>
@@ -8460,7 +8466,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Bitte einen Node auswählen</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -11543,7 +11549,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>stretching to fit</original>
-<translation>Zum Anpassen dehnen bzw. stauchen</translation>
+<translation>Dehnen zum Anpassen</translation>
 </phrase>
 
 <phrase>
@@ -15376,7 +15382,7 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
@@ -15576,18 +15582,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPSDLayerInfo.cls -->
-
-<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
-
-<!-- END text for pdPSDLayerInfo.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4761 phrases. -->
-<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4760 phrases. -->
+<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12392 total words. -->
 
 </pdData>

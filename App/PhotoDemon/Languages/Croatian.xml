@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3364</langversion>
+<langversion>6.8.3365</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3735,6 +3735,12 @@ Upišite numeričku vrijednost.</translation>
 
 <!-- END text for pdPSDLayer.cls-->
 
+<!-- BEGIN text for pdPSDLayerInfo.cls -->
+
+<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
+
+<!-- END text for pdPSDLayerInfo.cls-->
+
 <!-- BEGIN text for pdRandomize.cls -->
 
 <!-- pdRandomize.cls contains 0 phrases. -->
@@ -5988,7 +5994,7 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>From session history</original>
+<original>From history</original>
 <translation></translation>
 </phrase>
 
@@ -8452,7 +8458,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Odaberite čvor</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 31 phrases. 9 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15570,18 +15576,12 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPSDLayerInfo.cls -->
-
-<!-- pdPSDLayerInfo.cls contains 0 phrases. -->
-
-<!-- END text for pdPSDLayerInfo.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4761 phrases. -->
-<!-- 2164 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4760 phrases. -->
+<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 12392 total words. -->
 
 </pdData>
