@@ -3,8 +3,8 @@ Attribute VB_Name = "LittleCMS"
 'LittleCMS Interface
 'Copyright 2016-2019 by Tanner Helland
 'Created: 21/April/16
-'Last updated: 23/April/18
-'Last update: new external function for creating custom RGB profiles on-the-fly (used with cHRM data from PNGs)
+'Last updated: 29/January/19
+'Last update: minor updates to assist with PSD parsing
 '
 'Module for handling all LittleCMS interfacing.  This module is pointless without the accompanying
 ' LittleCMS plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "lcms2.dll".
@@ -223,6 +223,13 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_BGR_HALF_FLT = &H44041A
     TYPE_BGRA_HALF_FLT = &H44449A
     TYPE_ABGR_HALF_FLT = &H44041A
+    
+    'These flags are *not* automatically defined by LCMS; I've defined them to allow for OR'ing with
+    ' existing constants (since VB makes bit-shifting such a PITA)
+    FLAG_MINISWHITE = &H2000&
+    FLAG_PLANAR = &H1000&
+    FLAG_SE = &H800&
+    
 End Enum
 
 #If False Then
@@ -236,6 +243,7 @@ End Enum
     Private Const TYPE_ALab_8 = &HA0499, TYPE_Lab_16 = &HA001A, TYPE_Yxy_16 = &HE001A, TYPE_YCbCr_8 = &H70019, TYPE_YCbCr_8_PLANAR = &H71019, TYPE_YCbCr_16 = &H7001A, TYPE_YCbCr_16_PLANAR = &H7101A, TYPE_YCbCr_16_SE = &H7081A, TYPE_YUV_8 = &H80019, TYPE_YUV_8_PLANAR = &H81019, TYPE_YUV_16 = &H8001A, TYPE_YUV_16_PLANAR = &H8101A, TYPE_YUV_16_SE = &H8081A, TYPE_HLS_8 = &HD0019, TYPE_HLS_8_PLANAR = &HD1019, TYPE_HLS_16 = &HD001A
     Private Const TYPE_HLS_16_PLANAR = &HD101A, TYPE_HLS_16_SE = &HD081A, TYPE_HSV_8 = &HC0019, TYPE_HSV_8_PLANAR = &HC1019, TYPE_HSV_16 = &HC001A, TYPE_HSV_16_PLANAR = &HC101A, TYPE_HSV_16_SE = &HC081A, TYPE_NAMED_COLOR_INDEX = &HA&, TYPE_XYZ_FLT = &H49001C, TYPE_Lab_FLT = &H4A001C, TYPE_GRAY_FLT = &H43000C, TYPE_RGB_FLT = &H44001C, TYPE_CMYK_FLT = &H460024, TYPE_XYZA_FLT = &H49009C, TYPE_LabA_FLT = &H4A009C, TYPE_RGBA_FLT = &H44009C
     Private Const TYPE_XYZ_DBL = &H490018, TYPE_Lab_DBL = &H4A0018, TYPE_GRAY_DBL = &H430008, TYPE_RGB_DBL = &H440018, TYPE_CMYK_DBL = &H460020, TYPE_LabV2_8 = &H1E0019, TYPE_ALabV2_8 = &H1E0499, TYPE_LabV2_16 = &H1E001A, TYPE_GRAY_HALF_FLT = &H43000A, TYPE_RGB_HALF_FLT = &H44001A, TYPE_RGBA_HALF_FLT = &H44009A, TYPE_CMYK_HALF_FLT = &H460022, TYPE_ARGB_HALF_FLT = &H44409A, TYPE_BGR_HALF_FLT = &H44041A, TYPE_BGRA_HALF_FLT = &H44449A, TYPE_ABGR_HALF_FLT = &H44041A
+    Private Const FLAG_PLANAR = &H1000&, FLAG_SE = &H800&, FLAG_MINISWHITE = &H2000&
 #End If
 
 'LCMS supports more intents than the default ICC spec does
@@ -382,7 +390,8 @@ End Type
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
 Private Declare Function cmsGetEncodedCMMversion Lib "lcms2.dll" () As Long
 
-'Error logger registration
+'Error logger registration; note that lcms must be custom-built to ensure this function signature is
+' explicitly marked as stdcall; a default build assumes cdecl.
 Private Declare Sub cmsSetLogErrorHandler Lib "lcms2.dll" (ByVal ptrToCmsLogErrorHandlerFunction As Long)
 
 'Profile create/release functions; white points declared as ByVal Longs can typically be set to NULL to use the default D50 value
@@ -457,6 +466,12 @@ Public Function InitializeLCMS() As Boolean
     If (Not InitializeLCMS) Then
         PDDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
         PDDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
+    Else
+        
+        'NOTE: error callbacks are not reliable, so do not enable this in production code.  It can be
+        ' useful, however, for tracking down esoteric errors in debug builds.
+        cmsSetLogErrorHandler AddressOf LCMS_ErrorCallback
+        
     End If
     
     'Initialize D65 primaries as well; these are helpful shortcuts when assembling RGB profiles on-the-fly
@@ -816,8 +831,16 @@ Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTra
         
 End Function
 
-Public Sub LCMS_TransformArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal WidthInPixels As Long, ByVal hTransform As Long)
-    cmsDoTransform hTransform, srcPointer, dstPointer, WidthInPixels
+Public Sub LCMS_TransformArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal imgWidthInPixels As Long, ByVal hTransform As Long)
+    cmsDoTransform hTransform, srcPointer, dstPointer, imgWidthInPixels
+End Sub
+
+Public Sub LCMS_TransformArbitraryMemoryEx(ByVal hTransform As Long, ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal imgWidthInPixels As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
+    cmsDoTransformLineStride hTransform, srcPointer, dstPointer, imgWidthInPixels, numOfLines, bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut
+End Sub
+
+Public Sub LCMS_ErrorCallback(ByVal cmsContextID As Long, ByVal cmsUInt32ErrorCode As Long, ByVal ptrToDescription As Long)
+    PDDebug.LogAction "LCMS returned error #" & CStr(cmsUInt32ErrorCode) & ": " & Strings.StringFromCharPtr(ptrToDescription, False), PDM_External_Lib
 End Sub
 
 'Given a target DIB and a valid pdICCProfile object, apply said profile to said DIB.

@@ -59,6 +59,15 @@ Friend Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal 
     End If
 End Function
 
+Friend Function ApplyTransformToArbitraryMemoryEx(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal imgWidthInPixels As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long) As Boolean
+    If (m_TransformHandle <> 0) Then
+        LittleCMS.LCMS_TransformArbitraryMemoryEx m_TransformHandle, srcPointer, dstPointer, imgWidthInPixels, numOfLines, bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut
+        ApplyTransformToArbitraryMemoryEx = True
+    Else
+        Debug.Print "WARNING!  ApplyTransformToArbitraryMemory failed; transform handle doesn't exist!"
+    End If
+End Function
+
 Friend Function ApplyTransformToPDDib(ByRef targetDIB As pdDIB) As Boolean
     If (Not (targetDIB Is Nothing)) And (m_TransformHandle <> 0) Then
         ApplyTransformToPDDib = LittleCMS.LCMS_ApplyTransformToDIB(targetDIB, m_TransformHandle)

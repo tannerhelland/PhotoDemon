@@ -15,17 +15,25 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 26/January/19
-'Last update: add support for modern 16-bit-per-channel PSDs (which store their image data in a totally
+'Last updated: 29/January/19
+'Last update: finalize support for modern 16-bit-per-channel PSDs (which store their image data in a
 '             separate "Lr16" block
 '
-'This class (and its associated pdPSD- child classes) handles Adobe PSD parsing duties.  It is custom-built
+'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
-' Esoteric PhotoShop formats should be covered quite well, but if you ever encounter an image that does
-' not load at all (or loads improperly), you are always welcome to file an issue on GitHub so I can
-' investigate further.
 '
-'At present, this class only handles import duties.  Exporting PSDs is still TODO.
+'To my knowledge, this is the only PSD parser (besides Adobe's) that passes the full Apple color management
+' test suite (https://developer.apple.com/library/archive/technotes/tn2115/_index.html).  This is a large
+' point of pride for the author. ;)
+'
+'Currently, all color modes except LAB, and all color depths below 32-bits-per-channel are believed to be
+' fully covered.  32-bit channels and LAB color mode remain a work-in-progress.
+'
+'At present, this class only handles PSD importing.  Exporting PSDs is still TODO.
+'
+'As with all 3rd-party PSD loaders, Photoshop has many features that don't have analogs in PhotoDemon.
+' Such features are still extracted by this class, but they will not "appear" in the final loaded image.
+' The ongoing goal is to expand support in this class as various PSD features are implemented in PD itself.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" Adobe spec at this URL (link good as of January 2019):
@@ -240,7 +248,7 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Try to validate the source file
     Dim keepLoading As PD_PSDResult
-    keepLoading = Step1_ValidateHeader(srcFile, checkExtension)
+    keepLoading = Step1_ValidateHeader(srcFile, checkExtension, True)
     
     If (keepLoading < psd_Failure) Then
         
@@ -977,7 +985,7 @@ InternalVBError:
 
 End Function
 
-Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PSDResult
+Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False, Optional ByVal cacheFileIfSuccessful As Boolean = False) As PD_PSDResult
 
     On Error GoTo InternalVBError
     
@@ -988,8 +996,8 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
     okToProceed = psd_Success
     
     'We always check the file extension.  If the user has *asked* us to check it, we treat extension
-    ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)  This step is skipped
-    ' if the PSD is loaded directly from memory
+    ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)  This step is obviously
+    ' skipped when a PSD is loaded directly from memory.
     If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) Then
         If (Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "psd", True) And Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "psb", True)) Then
             m_Warnings.AddString "File extension doesn't match PSD"
@@ -997,12 +1005,7 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
         End If
     End If
     
-    'TODO: potentially validate minimum file size?  Unfortunately I don't know the spec well enough to
-    ' determine a safe "minimum" file size at present, so let's skip this step.
-    
-    'If all pre-checks passed, open a stream.  (For performance reasons during testing, I currently cache
-    ' the entire stream in-memory instead of streaming it in pieces - this will likely be undesirable in
-    ' production code, so I've marked a revisit of this as TODO 7.2.)
+    'If all pre-checks passed, open a stream over the source data.
     If (okToProceed < psd_Failure) Then
         If (m_SourceFilename = PSD_LOADED_FROM_MEMORY) Then
             Set m_Stream = New pdStream
@@ -1011,20 +1014,16 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
                 okToProceed = psd_Failure
             End If
         Else
-        
-            'For validation purposes, simply wrap a stream around the file; if it validates,
-            ' we'll cache the file in-memory and continue loading from there.
             Set m_Stream = New pdStream
             If Not m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
                 m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
                 okToProceed = psd_Failure
             End If
-            
         End If
     End If
     
-    'The stream is open; validate both the PSD's ASCII identifier and its version; if either is mismatched,
-    ' abandon ship.
+    'The stream is open.  Validate both the PSD's ASCII identifier and its version;
+    ' if either fails, abandon ship.
     If (okToProceed < psd_Failure) Then
         
         Dim asciiID As String
@@ -1041,28 +1040,43 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
             If (psdVersion = 1) Or (psdVersion = 2) Then okToProceed = psd_Success Else okToProceed = psd_Failure
             If (okToProceed < psd_Failure) Then
             
-                'This appears to be a valid PSD file.  If streaming from the HDD, attempt to pre-cache the
-                ' file in memory to improve load time.  (This may not be feasible with very large PSDs;
-                ' if pre-caching fails, we'll continue round-tripping out to the HDD as we go.)
-                If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) Then
+                'This appears to be a valid PSD file.  If streaming from the HDD, attempt to pre-cache
+                ' smaller files in memory to improve load time.  (Obviously, we skip this step when
+                ' loading a PSD directly from memory!)
+                If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) And cacheFileIfSuccessful Then
                     
-                    m_Stream.StopStream
-                    Set m_Stream = Nothing
+                    'Given the huge variance in potential PSD file sizes, I don't know of a good way to
+                    ' "predict" the gains we might get from pre-loading the file (or if this will just
+                    ' cause issues due to increased memory pressure).  In lieu of something more complex,
+                    ' let's just test file size and use that as our guide - sufficiently small files
+                    ' will then "always" pre-cache successfully, while large files get some measure of
+                    ' safety against memory-related issues.
                     
-                    Dim streamOK As Boolean
-                    streamOK = Files.FileLoadAsPDStream(m_SourceFilename, m_Stream)
-                    If (Not streamOK) Then
-                        Set m_Stream = New pdStream
-                        streamOK = m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess)
+                    'We currently use a threshold of 50 mb.  PSDs don't encode particularly efficiently,
+                    ' so we're unlikely to encounter a very small PSD that expands to huge numbers
+                    ' when expanded.  (And if a file's *that* big, 50mb of RAM won't make a difference.)
+                    Const FILE_SIZE_TOO_BIG As Long = 50000000
+                    If (Files.FileLenW(m_SourceFilename) < FILE_SIZE_TOO_BIG) Then
+                        
+                        Dim cachedStream As pdStream
+                        Set cachedStream = New pdStream
+                        
+                        'If pre-caching fails, no problem; we'll just abandon the attempt and
+                        ' continue using our original stream.
+                        If Files.FileLoadAsPDStream(m_SourceFilename, cachedStream) Then
+                            
+                            'Replace the master stream object and advance its pointer by six bytes
+                            ' (to bypass the fields we've already validated)
+                            Set m_Stream = cachedStream
+                            m_Stream.SetPosition 6&, FILE_BEGIN
+                            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "PSD looks good; caching source file in memory for improved performance..."
+                        
+                        End If
+                    
+                    '/File too big to pre-cache
                     End If
-                    
-                    'Advance the stream pointer by 6 bytes (to bypass the fields we've already validated)
-                    If streamOK Then
-                        m_Stream.SetPosition 6&, FILE_BEGIN
-                    Else
-                        m_Warnings.AddString "Lost file access after initial validation; file may be locked or in an inaccessible location."
-                        okToProceed = psd_Failure
-                    End If
+                
+                '/PSD is being loaded from pointer, or caller explicitly asked us to *not* pre-cache
                 End If
                 
                 'Confirm our stream is still attached to the PSD data and finish validating the header segment

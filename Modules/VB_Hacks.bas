@@ -46,6 +46,7 @@ Public Declare Sub GetMem1 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstByte A
 Public Declare Sub GetMem2 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstInteger As Integer)
 Public Declare Sub GetMem2_Ptr Lib "msvbvm60" Alias "GetMem2" (ByVal ptrSrc As Long, ByVal ptrDstInteger As Long)
 Public Declare Sub GetMem4 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstValue As Long)
+Public Declare Sub GetMem4_Ptr Lib "msvbvm60" Alias "GetMem4" (ByVal ptrSrc As Long, ByVal ptrDstLong As Long)
 Public Declare Sub GetMem8 Lib "msvbvm60" (ByVal ptrSrc As Long, ByRef dstCurrency As Currency)
 Public Declare Sub PutMem1 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Byte)
 Public Declare Sub PutMem2 Lib "msvbvm60" (ByVal ptrDst As Long, ByVal newValue As Integer)
@@ -382,12 +383,11 @@ End Sub
 'Make certain the length of the source array is an even number (e.g. the UBound is odd) before calling;
 ' this function does not attempt to verify otherwise
 Public Sub SwapEndianness16(ByRef srcData() As Byte)
-    Dim i As Long, tmpValue As Long, tmpIndex As Long
-    For i = 0 To UBound(srcData) \ 2
-        tmpIndex = i * 2
-        tmpValue = srcData(tmpIndex)
-        srcData(tmpIndex) = srcData(tmpIndex + 1)
-        srcData(tmpIndex + 1) = tmpValue
+    Dim i As Long, tmpValue As Long
+    For i = 0 To UBound(srcData) Step 2
+        tmpValue = srcData(i)
+        srcData(i) = srcData(i + 1)
+        srcData(i + 1) = tmpValue
     Next i
 End Sub
 

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 26/January/19
-'Last update: add support for zip and zip-with-prediction compression methods
+'Last updated: 29/January/19
+'Last update: large refactoring to better cover image construction in various color modes
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -25,6 +25,11 @@ Attribute VB_Exposed = False
 'All code in this class is my original work.  It is based off the "official" Adobe spec at this URL
 ' (link good as of January 2019):
 ' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
+'
+'Zip-with-prediction mode is currently undocumented in the PSD spec.  To my knowledge, the first people
+' to reverse-engineer it were the authors of Paint.NET's PSD plugin.  Their MIT-licensed work was used as
+' a reference for my own implementation.  Many thanks to those authors; their reference implementation
+' is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -196,7 +201,7 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     
     m_ColorMode = imgColorMode
     
-    'Support for additional formats are being added all the time.  Reject any unwanted combinations for now.
+    'Support for additional formats are being added all the time.  Reject any unsupported combinations for now.
     Dim mustCancel As Boolean
     mustCancel = False
     If (Not mustCancel) Then mustCancel = (bitsPC > 16)
@@ -206,469 +211,35 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
         Set m_LayerDIB = Nothing
         ConstructImage = psd_Failure
         Exit Function
-    Else
-        If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Bit-depth and color mode are supported; attempting to decode now..."
     End If
+    
+    'If we're still here, PD thinks it can construct an image from the underlying data.  (Note that a failure will
+    ' still allow PD to fall back to FreeImage's very primitive composite image support, if possible.)
+    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Bit-depth and color mode are supported; attempting to decode now..."
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
-    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
-    ' so we need to reference it early (and often).
-    Dim iccAvailable As Boolean
-    iccAvailable = (Not srcProfile Is Nothing)
-    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
-    
-    Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
-    If iccAvailable Then
+    'Image construction varies greatly depending on the format of the input data.  To better handle the unique needs
+    ' of each color format, handling is sorted by color mode.  (This allows for acceleration that would otherwise
+    ' be impractical in a "universal" image constructor.)
+    If (imgColorMode = cm_RGB) Then
+        ConstructImage = ConstructImage_RGB(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
-        Set lcmsSrcProfile = New pdLCMSProfile
-        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+    ElseIf (imgColorMode = cm_CMYK) Then
+        ConstructImage = ConstructImage_CMYK(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
-        'Destination profile and transform parameters depend on what we find inside the image; they will be
-        ' constructed on-the-fly when appropriate.
-        Set lcmsDstProfile = New pdLCMSProfile
-        Set lcmsTransform = New pdLCMSTransform
+    ElseIf (imgColorMode = cm_Grayscale) Or (imgColorMode = cm_Indexed) Or (imgColorMode = cm_Duotone) Or (imgColorMode = cm_Bitmap) Then
+        ConstructImage = ConstructImage_SingleChannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
-    End If
-                                    
-    'Start by preparing a pdDIB object.  This will ultimately hold the results of our parsing, although the
-    ' data may get convolved through various intermediary formats first.
-    Dim layerWidth As Long, layerHeight As Long
-    layerWidth = m_Rect.Right - m_Rect.Left
-    layerHeight = m_Rect.Bottom - m_Rect.Top
-    
-    'Multi-channel images may result in multiple DIBs being created.  All other color modes will produce
-    ' a single RGBA DIB from this function
-    If (m_ColorMode = cm_Multichannel) Then
-        m_FinalChannelCount = 0
-        ReDim m_FinalChannelDIBs(0) As pdDIB
-        ReDim m_FinalChannelIDs(0) As PSD_ChannelID
-    Else
-        Set m_LayerDIB = New pdDIB
-        m_LayerDIB.CreateBlank layerWidth, layerHeight, 32, vbWhite, 255
-    End If
-    
-    'When loading CMYK data, we need to use a different intermediary format: a CMYKA buffer that can
-    ' hold five channels worth of data.  (This data will then be color-managed into an RGBA buffer.)
-    Dim cmykaBuffer8() As Byte
-    If (imgColorMode = cm_CMYK) Then
-        ReDim cmykaBuffer8(0 To (layerWidth * 5) - 1, 0 To layerHeight - 1) As Byte
-        FillMemory VarPtr(cmykaBuffer8(0, 0)), (layerWidth * 5) * layerHeight, 255
+    ElseIf (imgColorMode = cm_Multichannel) Then
+        ConstructImage = ConstructImage_Multichannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        
     End If
     
     If PSD_DEBUG_VERBOSE Then
-        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Total image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
-    End If
-    
-    'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
-    ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
-    ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
-    ' are reset as each channel is loaded, so that changes to one of them does not affect any
-    ' other layers in the image.
-    Dim chnColorMode As PSD_ColorMode, chnBitDepth As Long
-    
-    'Channel data is stored in planar format (e.g. not interleaved - RRRGGGBBB instead of RGBRGBRGB).
-    ' As such, each channel must be loaded independent of other channels in the image.
-    Dim i As Long
-    For i = 0 To Abs(m_ChannelCount) - 1
-        
-        'If the target layer DIB was freed by a previous step, exit immediately
-        If (m_LayerDIB Is Nothing) And (m_ColorMode <> cm_Multichannel) Then Exit For
-        
-        'Reset any on-the-fly changes we've made to color mode or bit-depth
-        chnColorMode = m_ColorMode
-        chnBitDepth = bitsPC
-        
-        'Interpretation of the underlying data depends on bit-depth, obviously
-        Dim bytesPerChannel As Long
-        bytesPerChannel = (chnBitDepth \ 8)
-        
-        With m_Channels(i)
-            
-            'If channel data wasn't decoded properly, skip this channel entirely
-            If (Not .ciDecodedOK) Then GoTo SkipChannel
-            
-            'Some channels contribute nothing to the final image (and are zero-length).  Ignore them.
-            If (.ciDataLength = 0) Then GoTo SkipChannel
-            
-            'Layer masks represent a significant complication; we will deal with them in the future
-            If (.ciID < cidAlpha) Then
-                
-                'TODO: calculate special decoding rect, as it is *not* the same as the regular rect.  We also have to
-                ' deal with crap like "default color" which determines whether the encoded data represents hiding
-                ' or showing the layer beneath.
-                'Debug.Print .ciID
-                'If .ciID = cidUserLayerMask Then
-                '    Debug.Print m_MaskRect.Left, m_MaskRect.Top, m_MaskRect.Right - m_MaskRect.Left, m_MaskRect.Bottom - m_MaskRect.Top
-                '    Debug.Print m_RealMaskRect.Left, m_RealMaskRect.Top, m_RealMaskRect.Right - m_RealMaskRect.Left, m_RealMaskRect.Bottom - m_RealMaskRect.Top
-                'End If
-                
-                GoTo SkipChannel
-                
-            End If
-            
-            'Monochrome layers are a special case.  If encountered, it's easiest to expand them to an 8-bit stream
-            ' and treat the results as grayscale.  (This allows us to reuse the grayscale code "as-is".)
-            If (chnBitDepth = 1) Then
-                ExpandMonochrome m_Channels(i), layerHeight, layerWidth
-                chnColorMode = cm_Grayscale
-                chnBitDepth = 8
-                bytesPerChannel = 1
-            End If
-            
-            'For color channels, we can calculate the size of the finished channel data from the image's dimensions
-            ' and current bit-depth.
-            Dim numPixels As Long
-            numPixels = layerWidth * layerHeight
-            
-            Dim finalArraySize As Long
-            finalArraySize = numPixels * bytesPerChannel
-            
-            'Final failsafe check to ensure we have a valid buffer for constructing image data
-            If (finalArraySize <= 0) Then
-                ConstructImage = psd_Warning
-                GoTo SkipChannel
-            End If
-            
-            Dim x As Long, y As Long
-            
-            Dim tmpBytes() As Byte, tmpSA As SafeArray1D
-            Dim scanWidth As Long, scanStart As Long, srcIndex As Long
-            
-            If (m_ColorMode = cm_Multichannel) Then
-                
-                ReDim Preserve m_FinalChannelDIBs(0 To m_FinalChannelCount) As pdDIB
-                ReDim m_FinalChannelIDs(0 To m_FinalChannelCount) As PSD_ChannelID
-                
-                Set m_FinalChannelDIBs(m_FinalChannelCount) = New pdDIB
-                m_FinalChannelDIBs(m_FinalChannelCount).CreateBlank layerWidth, layerHeight, 32, vbWhite, 255
-                m_FinalChannelIDs(m_FinalChannelCount) = .ciID
-                
-                scanStart = m_FinalChannelDIBs(m_FinalChannelCount).GetDIBPointer()
-                scanWidth = m_FinalChannelDIBs(m_FinalChannelCount).GetDIBStride()
-                
-            Else
-                scanStart = m_LayerDIB.GetDIBPointer()
-                scanWidth = m_LayerDIB.GetDIBStride()
-            End If
-            
-            Dim cOffset As Long
-            
-            '"Painting" steps are determined by the color space of the embedded data
-            
-            'RGB color space
-            If (chnColorMode = cm_RGB) Then
-                
-                'Channel order in the file is likely to be RGB, not BGR, so we need to manually
-                ' swizzle order as we go.
-                If (.ciID = cidBlue) Then
-                    cOffset = 0
-                ElseIf (.ciID = cidGreen) Then
-                    cOffset = 1
-                ElseIf (.ciID = cidRed) Then
-                    cOffset = 2
-                ElseIf (.ciID = cidAlpha) Then
-                    cOffset = 3
-                End If
-                
-                'TODO: handle masks here, if present; we can simply merge their results with the existing
-                ' alpha channel data, as premultiplication will sort out the rest.
-                
-                'NOTE!  masks represent a more complex problem; Photoshop only stores a sub-portion of the
-                ' mask in the file.  The rect and default mask color setting need to be read to know how
-                ' to paint areas outside said rect, and the number of scanlines is likely to be very different
-                ' (in both width and height) than the layer itself.  Handling this will be potentially complex.
-                
-                'Actually painting the color channel data is extremely simple; just copy the byte into its
-                ' relevant position in the target DIB.
-                m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                
-                '8-bit channel (most common case)
-                If (bytesPerChannel = 1) Then
-                
-                    For y = 0 To layerHeight - 1
-                        tmpSA.pvData = scanStart + (scanWidth * y)
-                    For x = 0 To layerWidth - 1
-                        tmpBytes(x * 4 + cOffset) = .ciDataDecoded(y * layerWidth + x)
-                    Next x
-                    Next y
-                    
-                '16-bit channel
-                ElseIf (bytesPerChannel = 2) Then
-                
-                    For y = 0 To layerHeight - 1
-                        tmpSA.pvData = scanStart + (scanWidth * y)
-                    For x = 0 To layerWidth - 1
-                        tmpBytes(x * 4 + cOffset) = .ciDataDecoded(y * layerWidth * 2 + x * 2)
-                    Next x
-                    Next y
-                
-                End If
-                
-                m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-            
-            'CMYK is passed into an intermediary buffer, then color-managed into an RGBA container.
-            ElseIf (chnColorMode = cm_CMYK) Then
-            
-                If (.ciID = cidCyan) Then
-                    cOffset = 0
-                ElseIf (.ciID = cidMagenta) Then
-                    cOffset = 1
-                ElseIf (.ciID = cidYellow) Then
-                    cOffset = 2
-                ElseIf (.ciID = cidKey) Then
-                    cOffset = 3
-                ElseIf (.ciID = cidAlpha) Then
-                    cOffset = 4
-                End If
-                
-                '8-bit CMYK/A
-                If (bytesPerChannel = 1) Then
-                    
-                    For y = 0 To layerHeight - 1
-                    For x = 0 To layerWidth - 1
-                        cmykaBuffer8(x * 5 + cOffset, y) = .ciDataDecoded(y * layerWidth + x)
-                    Next x
-                    Next y
-                
-                '16-bit CMYK/A
-                ElseIf (bytesPerChannel = 2) Then
-                
-                    For y = 0 To layerHeight - 1
-                    For x = 0 To layerWidth - 1
-                        cmykaBuffer8(x * 5 + cOffset, y) = .ciDataDecoded(y * layerWidth * 2 + x * 2)
-                    Next x
-                    Next y
-                
-                End If
-                
-            'Indexed, duotone, and grayscale images are handled very similarly
-            ElseIf (chnColorMode = cm_Indexed) Or (chnColorMode = cm_Grayscale) Or (chnColorMode = cm_Duotone) Then
-                
-                'Indexed color images can still have masks, so we need to check channel IDs.
-                ' (Note that the "indexed" channel ID is simply 0; this refers to the pixel data
-                ' channel of indexed, grayscale, and duotone color modes.)
-                If (.ciID = cidIndexed) Then
-                    
-                    'Next step is to construct a palette for the image; this step varies
-                    ' based on channel type.
-                    Dim imgPalette() As RGBQuad, palSize As Long, trnsIndex As Long
-                    trnsIndex = -1
-                    
-                    'In indexed images, we can simply read the color table information from the parent image
-                    If (chnColorMode = cm_Indexed) Then
-                        
-                        parentPSD.GetColorTableData imgPalette, palSize, trnsIndex
-                        If (palSize > 0) Then
-                            If (trnsIndex >= 0) And (trnsIndex <= 255) Then imgPalette(trnsIndex).Alpha = 0
-                        Else
-                            ReDim imgPalette(0 To 255) As RGBQuad
-                        End If
-                        
-                    'For grayscale, multichannel, or duotone we manually construct a standard grayscale palette
-                    Else
-                    
-                        ReDim imgPalette(0 To 255) As RGBQuad
-                        palSize = 256
-                        For x = 0 To 255
-                            imgPalette(x).Blue = x
-                            imgPalette(x).Green = x
-                            imgPalette(x).Red = x
-                            If (x = trnsIndex) Then imgPalette(x).Alpha = 0 Else imgPalette(x).Alpha = 255
-                        Next x
-                        
-                        'While here, if a color profile exists, we want to apply color management prior to
-                        ' applying the palette to the image.  We can do this in-place over the decoded
-                        ' grayscale pixel data.
-                        If iccAvailable Then
-                            
-                            'Build a destination lcms profile
-                            lcmsDstProfile.CreateGenericGrayscaleProfile
-                            
-                            'Construct and apply the transform in-place over the existing grayscale data
-                            If (bytesPerChannel = 1) Then
-                                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_GRAY_8, TYPE_GRAY_8, INTENT_PERCEPTUAL
-                                lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(.ciDataDecoded(0)), VarPtr(.ciDataDecoded(0)), layerWidth, layerWidth, layerHeight, layerWidth, False
-                            
-                            ElseIf (bytesPerChannel = 2) Then
-                                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_GRAY_16, TYPE_GRAY_16, INTENT_PERCEPTUAL, 0&
-                                lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(.ciDataDecoded(0)), VarPtr(.ciDataDecoded(0)), layerWidth * 2, layerWidth * 2, layerHeight, layerWidth, False
-                                
-                            End If
-                            
-                        End If
-                        
-                    End If
-                    
-                    'Now we can simply paint the palette into the destination 32-bpp DIB.
-                    ' (TODO: accelerate this using a Long array; painting individual bytes is stupid.)
-                    m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                    
-                    '8-bit channel
-                    If (bytesPerChannel = 1) Then
-                        
-                        For y = 0 To layerHeight - 1
-                            tmpSA.pvData = scanStart + (scanWidth * y)
-                        For x = 0 To layerWidth - 1
-                            srcIndex = .ciDataDecoded(y * layerWidth + x)
-                            tmpBytes(x * 4) = imgPalette(srcIndex).Blue
-                            tmpBytes(x * 4 + 1) = imgPalette(srcIndex).Green
-                            tmpBytes(x * 4 + 2) = imgPalette(srcIndex).Red
-                            tmpBytes(x * 4 + 3) = imgPalette(srcIndex).Alpha
-                        Next x
-                        Next y
-                        
-                    '16-bit channel
-                    ElseIf (bytesPerChannel = 2) Then
-                    
-                        For y = 0 To layerHeight - 1
-                            tmpSA.pvData = scanStart + (scanWidth * y)
-                        For x = 0 To layerWidth - 1
-                            srcIndex = .ciDataDecoded(y * layerWidth * 2 + x * 2)
-                            tmpBytes(x * 4) = imgPalette(srcIndex).Blue
-                            tmpBytes(x * 4 + 1) = imgPalette(srcIndex).Green
-                            tmpBytes(x * 4 + 2) = imgPalette(srcIndex).Red
-                            tmpBytes(x * 4 + 3) = imgPalette(srcIndex).Alpha
-                        Next x
-                        Next y
-                        
-                    End If
-                    
-                    m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                
-                'Any other channels in an indexed image, if they exist, are treated as alpha data.
-                ' TODO: sort out mask handling into a separate function.
-                Else
-                
-                    m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                    
-                    If (bytesPerChannel = 1) Then
-                    
-                        For y = 0 To layerHeight - 1
-                            tmpSA.pvData = scanStart + (scanWidth * y)
-                        For x = 0 To layerWidth - 1
-                            tmpBytes(x * 4 + 3) = CSng(tmpBytes(x * 4 + 3)) * (CSng(.ciDataDecoded(y * layerWidth + x)) / 255!)
-                        Next x
-                        Next y
-                    
-                    'TODO pending acquisition of a test file
-                    ElseIf (bytesPerChannel = 2) Then
-                    
-                    End If
-                    
-                    m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                    
-                End If
-            
-            'Multichannel images represent a significant complication, as we cannot automatically interpret their
-            ' contents as belonging to any particular color space.  Convention for this in other parsers is to
-            ' create each channel as a unique grayscale layer, then allow the user to "rechannel" the results
-            ' according to whatever special knowledge they may have of each channel's intended contents.
-            ElseIf (chnColorMode = cm_Multichannel) Then
-                
-                ReDim imgPalette(0 To 255) As RGBQuad
-                For x = 0 To 255
-                    imgPalette(x).Blue = x
-                    imgPalette(x).Green = x
-                    imgPalette(x).Red = x
-                    imgPalette(x).Alpha = 255
-                Next x
-                
-                'Now we can simply paint the palette into the destination 32-bpp DIB.
-                ' (TODO: accelerate this using a Long array; painting individual bytes is stupid.)
-                m_FinalChannelDIBs(m_FinalChannelCount).WrapArrayAroundScanline tmpBytes, tmpSA, 0
-                
-                '8-bit channel
-                If (bytesPerChannel = 1) Then
-                    
-                    For y = 0 To layerHeight - 1
-                        tmpSA.pvData = scanStart + (scanWidth * y)
-                    For x = 0 To layerWidth - 1
-                        srcIndex = .ciDataDecoded(y * layerWidth + x)
-                        tmpBytes(x * 4) = imgPalette(srcIndex).Blue
-                        tmpBytes(x * 4 + 1) = imgPalette(srcIndex).Green
-                        tmpBytes(x * 4 + 2) = imgPalette(srcIndex).Red
-                        tmpBytes(x * 4 + 3) = imgPalette(srcIndex).Alpha
-                    Next x
-                    Next y
-                    
-                '16-bit channel
-                ElseIf (bytesPerChannel = 2) Then
-                
-                    For y = 0 To layerHeight - 1
-                        tmpSA.pvData = scanStart + (scanWidth * y)
-                    For x = 0 To layerWidth - 1
-                        srcIndex = .ciDataDecoded(y * layerWidth * 2 + x * 2)
-                        tmpBytes(x * 4) = imgPalette(srcIndex).Blue
-                        tmpBytes(x * 4 + 1) = imgPalette(srcIndex).Green
-                        tmpBytes(x * 4 + 2) = imgPalette(srcIndex).Red
-                        tmpBytes(x * 4 + 3) = imgPalette(srcIndex).Alpha
-                    Next x
-                    Next y
-                    
-                End If
-                
-                m_FinalChannelDIBs(m_FinalChannelCount).UnwrapArrayFromDIB tmpBytes
-                m_FinalChannelDIBs(m_FinalChannelCount).SetAlphaPremultiplication True
-                
-                m_FinalChannelCount = m_FinalChannelCount + 1
-            
-            'Other color spaces can be handled here in the future
-            'ElseIf (chnColorMode = cm_Lab) Then    'etc
-                
-            End If
-            
-        End With
-    
-SkipChannel:
-    Next i
-    
-    If PSD_DEBUG_VERBOSE Then
-        PDDebug.LogAction "Image assembly setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-        VBHacks.GetHighResTime startTime
-    End If
-    
-    'If a full layer image was constructed successfully, apply any relevant post-processing before exiting
-    If (Not m_LayerDIB Is Nothing) And (imgColorMode <> cm_Multichannel) Then
-        
-        'With all color channels assembled, 8-bit RGBA images can now be color-managed in-place
-        If (imgColorMode = cm_RGB) Then
-            If iccAvailable Then
-                lcmsDstProfile.CreateSRGBProfile
-                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile
-                lcmsTransform.ApplyTransformToPDDib m_LayerDIB
-            End If
-        
-        'CMYK data needs to be converted to RGBA for use in PD.
-        ElseIf (imgColorMode = cm_CMYK) Then
-            
-            'TODO: failsafe CMYK path if an ICC profile is not embedded.  This will *never* happen if the PSD
-            ' came from Photoshop (and in fact, it should never happen period unless a writer is broken), but
-            ' I imagine there are plenty of broken PSDs in the wild...
-            If (bitsPC = 8) And iccAvailable Then
-                lcmsDstProfile.CreateSRGBProfile
-                lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_CMYKA_8, TYPE_BGRA_8
-                lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(cmykaBuffer8(0, 0)), m_LayerDIB.GetDIBPointer, layerWidth * 5, layerWidth * 4, layerHeight, layerWidth
-                Erase cmykaBuffer8
-            End If
-        End If
-        
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Color management took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    
-        'TODO: only premultiply if an alpha channel was found in the image; otherwise, we can guarantee full opacity
-        'Premultiply alpha before exiting
-        m_LayerDIB.SetAlphaPremultiplication True
-    
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    
     End If
     
     Exit Function
@@ -677,6 +248,879 @@ InternalVBError:
     InternalError "ConstructImage", "internal VB error #" & Err.Number & ": " & Err.Description
     warningStack.AddString "Internal error in ConstructImage, #" & Err.Number & ": " & Err.Description
     ConstructImage = psd_Failure
+    
+End Function
+
+Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage_CMYK = psd_Success
+    On Error GoTo InternalVBError
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
+    ' so we need to reference it early (and often).
+    Dim iccAvailable As Boolean
+    iccAvailable = (Not srcProfile Is Nothing)
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    
+    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
+    Dim alphaPresent As Boolean
+    alphaPresent = False
+    
+    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
+    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
+    ' so maybe a separate tracker for layer masks specifically is a better idea?
+    
+    'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
+    ' without an obvious RGB mapping.
+    Dim i As Long
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidKey) Then alphaPresent = True
+    Next i
+    
+    'In earlier builds, I attempted to construct an lcms transform very early in the assembly process,
+    ' then use that transform to merge all assembly steps into a single color-managed transform handled
+    ' by lcms.  This proved doubly problematic: it takes a *lot* of memory to assemble a complete planar
+    ' representation of large 16-bit PSD files, and lcms is unpredictable about converting planar data
+    ' to interleaved while simultaneously changing bit-depth.  (This isn't surprising, given what a weird
+    ' edgecase it is.)  As such, PD now takes the slower but much safer route of manually downsampling
+    ' the PSD data channel-by-channel into the final image buffer, then color-managing the final 8-bit
+    ' buffer as a final step.  This solves all reliability issues and greatly reduces memory presssure,
+    ' so I'm content to keep it as PD's "permanent" solution.
+    
+    'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
+    ' of the parent image.
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
+    Dim channelSize As Long
+    channelSize = bytesPerChannel * layerWidth * layerHeight
+    
+    'When loading CMYK data, we cannot decode channel data directly into a destination image buffer.
+    ' Instead, we need to use an intermediary format: a CMYK/A buffer that can potentially hold
+    ' *five* channels worth of data.  (Note that this is required even for plain CMYK images,
+    ' as we cannot perform an in-place color-managed conversion from CMYK to RGB.)
+    Dim cmykaBuffer8() As Byte
+    ReDim cmykaBuffer8(0 To (layerWidth * 5) - 1, 0 To layerHeight - 1) As Byte
+    
+    'To avoid specialized handling when alpha is missing, initialize the buffer to all-255's
+    FillMemory VarPtr(cmykaBuffer8(0, 0)), (layerWidth * 5) * layerHeight, 255
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim x As Long, y As Long
+    
+    'Iterate through all channels, copying their planar data into the interleaved final image buffer as we go
+    Dim chIndex As Long
+    For chIndex = 0 To Abs(m_ChannelCount) - 1
+        
+        With m_Channels(chIndex)
+            
+            'There are a lot of reasons to ignore a given channel:
+            ' 1) Channel data wasn't decoded successfully
+            ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
+            ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            If (.ciID < cidAlpha) Then
+                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
+                GoTo SkipChannel
+            End If
+            
+            'Channel order in the file is not guaranteed, so we'll need to manually swizzle based on channel ID.
+            Dim cOffset As Long, ySrcOffset As Long, xLoopEnd As Long
+            xLoopEnd = layerWidth - 1
+            
+            If (.ciID = cidCyan) Then
+                cOffset = 0
+            ElseIf (.ciID = cidMagenta) Then
+                cOffset = 1
+            ElseIf (.ciID = cidYellow) Then
+                cOffset = 2
+            ElseIf (.ciID = cidKey) Then
+                cOffset = 3
+            ElseIf (.ciID = cidAlpha) Or (.ciID > cidKey) Then
+                cOffset = 4
+            End If
+            
+            '8-bit CMYK/A
+            If (bytesPerChannel = 1) Then
+                
+                For y = 0 To layerHeight - 1
+                    ySrcOffset = y * layerWidth
+                For x = 0 To xLoopEnd
+                    cmykaBuffer8(x * 5 + cOffset, y) = .ciDataDecoded(ySrcOffset + x)
+                Next x
+                Next y
+            
+            '16-bit CMYK/A
+            ElseIf (bytesPerChannel = 2) Then
+            
+                For y = 0 To layerHeight - 1
+                    ySrcOffset = y * layerWidth * 2
+                For x = 0 To xLoopEnd
+                    cmykaBuffer8(x * 5 + cOffset, y) = .ciDataDecoded(ySrcOffset + x * 2)
+                Next x
+                Next y
+            
+            'I don't know if 32-bit CMYK is a thing, but if it is, it remains TODO
+            ElseIf (bytesPerChannel = 4) Then
+                '???
+            End If
+            
+            'Free the source channel's data to relieve memory pressure
+            Erase .ciDataDecoded
+            
+        End With
+
+SkipChannel:
+    Next chIndex
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'To simplify handling if channels are missing in the source data, start with a white, opaque destination.
+    Set m_LayerDIB = New pdDIB
+    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+        InternalError "ConstructImage_CMYK", "Couldn't allocate image buffer; image is likely too large."
+        ConstructImage_CMYK = psd_Failure
+        Exit Function
+    End If
+    
+    'Currently, PD requires an embedded ICC profile for CMYK images.  This will *always* be true if the PSD
+    ' came from Photoshop, but I imagine there are broken 3rd-party PSD writers who have no idea how CMYK works
+    ' and thus just try to do some kind of idiot plain RGB<->CMYK transform.  If someone ever encounter such
+    ' a file, it would be trivial to add a workaround, but for now we assume CMYK PSDs are always coded correctly.
+    If iccAvailable Then
+    
+        Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
+        Set lcmsSrcProfile = New pdLCMSProfile
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        
+        Set lcmsDstProfile = New pdLCMSProfile
+        lcmsDstProfile.CreateSRGBProfile
+        
+        'Explicitly request blackpoint compensation to produce results similar to Adobe's CMM,
+        ' and note that PSD files use *inverted* CMYK values - e.g. 0000 is WHITE, not BLACK.
+        Set lcmsTransform = New pdLCMSTransform
+        lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_CMYKA_8 Or FLAG_MINISWHITE, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
+        lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(cmykaBuffer8(0, 0)), m_LayerDIB.GetDIBPointer, layerWidth * 5, layerWidth * 4, layerHeight, layerWidth
+        
+        'Transforms can consume a surprising amount of memory, depending on the way the ICC is built.  (For example,
+        ' files can define giant 3D mapping tables - and this approach is actually very common in CMYK images.)
+        ' To relieve memory pressure on subsequent post-processing functions, free all LCMS objects and
+        ' temporary buffers immediately.
+        Erase cmykaBuffer8
+        Set lcmsSrcProfile = Nothing: Set lcmsDstProfile = Nothing: Set lcmsTransform = Nothing
+        
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Color management took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+    End If
+    
+    'If meaningful alpha data exists in the file, premultiply it now
+    If alphaPresent Then
+        m_LayerDIB.SetAlphaPremultiplication True
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    Else
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage_CMYK", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage_CMYK, #" & Err.Number & ": " & Err.Description
+    ConstructImage_CMYK = psd_Failure
+    
+End Function
+
+'Multichannel images don't provide a clear mechanism for handling them (in an RGBA context, anyway).
+' In PD, I follow convention of other parsers and load each channel to its own grayscale layer.
+' The hope is that the user can rechannel each layer's contents according to their specialized knowledge,
+' and ultimately obtain a usable image.  This approach means that channel data is handled similarly to
+' grayscale channels, but each input layer will potentially produce *multiple* output layers.
+Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage_Multichannel = psd_Success
+    On Error GoTo InternalVBError
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Unlike other image constructors, this sub does *not* deal with ICC profiles.  I can revisit this if
+    ' someone sends a multichannel file with a relevant embedded profile, but at present, I have no idea how
+    ' to connect mode-less channel data to mode-specific ICC data.
+    
+    '(Same goes for alpha channels - their meaning is nebulous in a multichannel file, so we don't deal
+    ' with them at present.  They'll be potentially easier to deal with once we have support for layer masks.)
+    
+    'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
+    ' of the parent image.
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'A unique target DIB will be created for each discovered channel.  Initialize our collection in advance.
+    m_FinalChannelCount = 0
+    ReDim m_FinalChannelDIBs(0) As pdDIB
+    ReDim m_FinalChannelIDs(0) As PSD_ChannelID
+        
+    'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
+    Dim channelSize As Long
+    channelSize = bytesPerChannel * layerWidth * layerHeight
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim x As Long, y As Long
+    Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
+    Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
+    scanStart = m_LayerDIB.GetDIBPointer()
+    scanWidth = m_LayerDIB.GetDIBStride()
+    
+    'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
+    ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
+    ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
+    ' are reset as each channel is processed.
+    Dim chnColorMode As PSD_ColorMode, chnBitDepth As Long
+    
+    'Prep a generic grayscale palette in advance, then copy it into a Long-type array that we can
+    ' access more quickly inside loops.
+    Dim imgPalette() As RGBQuad, palSize As Long, trnsIndex As Long
+    ReDim imgPalette(0 To 255) As RGBQuad
+    For x = 0 To 255
+        imgPalette(x).Blue = x
+        imgPalette(x).Green = x
+        imgPalette(x).Red = x
+        imgPalette(x).Alpha = 255
+    Next x
+    
+    Dim palLookup() As Long
+    ReDim palLookup(0 To 255) As Long
+    For x = 0 To palSize - 1
+        GetMem4 VarPtr(imgPalette(x)), palLookup(x)
+    Next x
+        
+    'Iterate through all channels, copying their planar data into the interleaved final image buffer as we go
+    Dim chIndex As Long
+    For chIndex = 0 To Abs(m_ChannelCount) - 1
+        
+        'Reset any on-the-fly changes we've made to color mode or bit-depth
+        chnColorMode = m_ColorMode
+        chnBitDepth = bitsPC
+        
+        With m_Channels(chIndex)
+            
+            'There are a lot of reasons to ignore a given channel:
+            ' 1) Channel data wasn't decoded successfully
+            ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
+            ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            If (.ciID < cidAlpha) Then
+                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
+                GoTo SkipChannel
+            End If
+            
+            'Prepare a target image for this channel
+            ReDim Preserve m_FinalChannelDIBs(0 To m_FinalChannelCount) As pdDIB
+            ReDim Preserve m_FinalChannelIDs(0 To m_FinalChannelCount) As PSD_ChannelID
+            
+            Set m_FinalChannelDIBs(m_FinalChannelCount) = New pdDIB
+            If m_FinalChannelDIBs(m_FinalChannelCount).CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255) Then
+            
+                m_FinalChannelIDs(m_FinalChannelCount) = .ciID
+                scanStart = m_FinalChannelDIBs(m_FinalChannelCount).GetDIBPointer()
+                scanWidth = m_FinalChannelDIBs(m_FinalChannelCount).GetDIBStride()
+                
+                'Use the grayscale palette to populate the target image
+                m_FinalChannelDIBs(m_FinalChannelCount).WrapLongArrayAroundScanline tmpLongs, tmpSA, 0
+                xLoopEnd = layerWidth - 1
+                
+                '8-bit channel
+                If (bytesPerChannel = 1) Then
+                    
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth
+                    For x = 0 To xLoopEnd
+                        tmpLongs(x) = palLookup(.ciDataDecoded(ySrcOffset + x))
+                    Next x
+                    Next y
+                    
+                '16-bit channel
+                ElseIf (bytesPerChannel = 2) Then
+                
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth * 2
+                    For x = 0 To xLoopEnd
+                        tmpLongs(x) = palLookup(.ciDataDecoded(ySrcOffset + x * 2))
+                    Next x
+                    Next y
+                    
+                '32-bit grayscale remains TODO
+                Else
+                
+                End If
+                
+                m_FinalChannelDIBs(m_FinalChannelCount).UnwrapLongArrayFromDIB tmpLongs
+                m_FinalChannelDIBs(m_FinalChannelCount).SetAlphaPremultiplication True
+                
+                m_FinalChannelCount = m_FinalChannelCount + 1
+                
+            Else
+                warningStack.AddString "Couldn't create target DIB for this source channel; memory may be low."
+                GoTo SkipChannel
+            End If
+            
+            'Immediately free the source channel data to relieve memory pressure
+            Erase .ciDataDecoded
+            
+        End With
+
+SkipChannel:
+    Next chIndex
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage_Multichannel", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage_Multichannel, #" & Err.Number & ": " & Err.Description
+    ConstructImage_Multichannel = psd_Failure
+    
+End Function
+
+Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage_RGB = psd_Success
+    On Error GoTo InternalVBError
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
+    ' so we need to reference it early (and often).
+    Dim iccAvailable As Boolean
+    iccAvailable = (Not srcProfile Is Nothing)
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    
+    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
+    Dim alphaPresent As Boolean
+    alphaPresent = False
+    
+    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
+    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
+    ' so maybe a separate tracker for layer masks specifically is a better idea?
+    
+    'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
+    ' without an obvious RGB mapping.
+    Dim i As Long
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then alphaPresent = True
+    Next i
+    
+    'In earlier builds, I attempted to construct an lcms transform very early in the assembly process,
+    ' then use that transform to merge all assembly steps into a single color-managed transform handled
+    ' by lcms.  This proved doubly problematic: it takes a *lot* of memory to assemble a complete planar
+    ' representation of large 16-bit PSD files, and lcms is unpredictable about converting planar data
+    ' to interleaved while simultaneously changing bit-depth.  (This isn't surprising, given what a weird
+    ' edgecase it is.)  As such, PD now takes the slower but much safer route of manually downsampling
+    ' the PSD data channel-by-channel into the final image buffer, then color-managing the final 8-bit
+    ' buffer as a final step.  This solves all reliability issues and greatly reduces memory presssure,
+    ' so I'm content to keep it as PD's "permanent" solution.
+    
+    'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
+    ' of the parent image.
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
+    Dim channelSize As Long
+    channelSize = bytesPerChannel * layerWidth * layerHeight
+    
+    'To simplify handling if channels are missing, start with a white, opaque destination.
+    Set m_LayerDIB = New pdDIB
+    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+        InternalError "ConstructImage_RGB", "Couldn't allocate image buffer; image is likely too large."
+        ConstructImage_RGB = psd_Failure
+        Exit Function
+    End If
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim x As Long, y As Long
+    Dim tmpBytes() As Byte, tmpSA As SafeArray1D
+    Dim scanStart As Long, scanWidth As Long
+    scanStart = m_LayerDIB.GetDIBPointer()
+    scanWidth = m_LayerDIB.GetDIBStride()
+    
+    'Iterate through all channels, copying their planar data into the interleaved final image buffer as we go
+    Dim chIndex As Long
+    For chIndex = 0 To Abs(m_ChannelCount) - 1
+        
+        With m_Channels(chIndex)
+            
+            'There are a lot of reasons to ignore a given channel:
+            ' 1) Channel data wasn't decoded successfully
+            ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
+            ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            If (.ciID < cidAlpha) Then
+                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
+                GoTo SkipChannel
+            End If
+            
+            'Channel order in the file is not guaranteed, so we'll need to manually swizzle based on channel ID.
+            Dim cOffset As Long, ySrcOffset As Long, xLoopEnd As Long
+            If (.ciID = cidBlue) Then
+                cOffset = 0
+            ElseIf (.ciID = cidGreen) Then
+                cOffset = 1
+            ElseIf (.ciID = cidRed) Then
+                cOffset = 2
+            ElseIf (.ciID = cidAlpha) Or (.ciID > cidBlue) Then
+                cOffset = 3
+            End If
+                
+            'Actually painting the color channel data is extremely simple; just copy the byte into its
+            ' relevant position in the target DIB.
+            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+            xLoopEnd = layerWidth - 1
+            
+            '8-bit channel (most common case)
+            If (bytesPerChannel = 1) Then
+            
+                For y = 0 To layerHeight - 1
+                    tmpSA.pvData = scanStart + (scanWidth * y)
+                    ySrcOffset = y * layerWidth
+                For x = 0 To xLoopEnd
+                    tmpBytes(x * 4 + cOffset) = .ciDataDecoded(ySrcOffset + x)
+                Next x
+                Next y
+                
+            '16-bit channel (take high-bit only, and note that the source data *is big-endian*
+            ElseIf (bytesPerChannel = 2) Then
+            
+                For y = 0 To layerHeight - 1
+                    tmpSA.pvData = scanStart + (scanWidth * y)
+                    ySrcOffset = y * layerWidth * 2
+                For x = 0 To xLoopEnd
+                    tmpBytes(x * 4 + cOffset) = .ciDataDecoded(ySrcOffset + x * 2)
+                Next x
+                Next y
+            
+            '32-bit channel remains TODO
+            ElseIf (bytesPerChannel = 4) Then
+                'An ICC profile should really be used to transform 32-bit data, but short of assembling
+                ' small intermediary copies of RGB float data and then transforming those, I'm not really
+                ' sure how to handle it.  This will take some consideration.
+            End If
+            
+            'Manually free our unsafe array wrapper before proceeding, and immediately free our source data
+            ' to relieve memory pressure
+            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+            Erase .ciDataDecoded
+            
+        End With
+
+SkipChannel:
+    Next chIndex
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'With the destination image assembled successfully, we can now perform any post-processing
+    ' (including color management).
+    If iccAvailable Then
+    
+        Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
+        Set lcmsSrcProfile = New pdLCMSProfile
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        
+        Set lcmsDstProfile = New pdLCMSProfile
+        lcmsDstProfile.CreateSRGBProfile
+        
+        'Explicitly request blackpoint compensation to produce results similar to Adobe's CMM
+        Set lcmsTransform = New pdLCMSTransform
+        lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_BGRA_8, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
+        lcmsTransform.ApplyTransformToPDDib m_LayerDIB
+        
+        'Transforms can consume a surprising amount of memory, depending on the way the ICC is built.  (For example,
+        ' files can define giant 3D mapping tables - and this approach is actually very common in CMYK images.)
+        ' To relieve memory pressure on subsequent post-processing functions, free all LCMS objects immediately.
+        Set lcmsSrcProfile = Nothing: Set lcmsDstProfile = Nothing: Set lcmsTransform = Nothing
+        
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Color management took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+    End If
+    
+    'If meaningful alpha data exists in the file, premultiply it now
+    If alphaPresent Then
+        m_LayerDIB.SetAlphaPremultiplication True
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    Else
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage_RGB", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage_RGB, #" & Err.Number & ": " & Err.Description
+    ConstructImage_RGB = psd_Failure
+    
+End Function
+
+'Grayscale, duotone, and indexed images share a unified load function.  (Monochrome images are also handled here,
+' with their encoding having been silently "upsampled" to grayscale in a previous stage.)
+Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage_SingleChannel = psd_Success
+    On Error GoTo InternalVBError
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
+    ' so we need to reference it early (and often).
+    Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
+    Dim iccAvailable As Boolean
+    iccAvailable = (Not srcProfile Is Nothing)
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    If iccAvailable Then
+        Set lcmsSrcProfile = New pdLCMSProfile: Set lcmsDstProfile = New pdLCMSProfile: Set lcmsTransform = New pdLCMSTransform
+    End If
+    
+    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
+    Dim alphaPresent As Boolean
+    alphaPresent = False
+    
+    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
+    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
+    ' so maybe a separate tracker for layer masks specifically is a better idea?
+    
+    'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
+    ' without an obvious RGB mapping.
+    Dim i As Long
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidIndexed) Then alphaPresent = True
+    Next i
+    
+    'In earlier builds, I attempted to construct an lcms transform very early in the assembly process,
+    ' then use that transform to merge all assembly steps into a single color-managed transform handled
+    ' by lcms.  This proved doubly problematic: it takes a *lot* of memory to assemble a complete planar
+    ' representation of large 16-bit PSD files, and lcms is unpredictable about converting planar data
+    ' to interleaved while simultaneously changing bit-depth.  (This isn't surprising, given what a weird
+    ' edgecase it is.)  As such, PD now takes the slower but much safer route of manually downsampling
+    ' the PSD data channel-by-channel into the final image buffer, then color-managing the final 8-bit
+    ' buffer as a final step.  This solves all reliability issues and greatly reduces memory presssure,
+    ' so I'm content to keep it as PD's "permanent" solution.
+    
+    'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
+    ' of the parent image.
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Determine the size of a single channel; we'll need this to calculate offsets into our planar assembly array
+    Dim channelSize As Long
+    channelSize = bytesPerChannel * layerWidth * layerHeight
+    
+    'To simplify handling if channels are missing, start with a white, opaque destination.
+    Set m_LayerDIB = New pdDIB
+    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+        InternalError "ConstructImage_SingleChannel", "Couldn't allocate image buffer; image is likely too large."
+        ConstructImage_SingleChannel = psd_Failure
+        Exit Function
+    End If
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim x As Long, y As Long
+    Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
+    Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
+    scanStart = m_LayerDIB.GetDIBPointer()
+    scanWidth = m_LayerDIB.GetDIBStride()
+    
+    'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
+    ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
+    ' render manually, so we translate them to a grayscale equivalent on the fly).  These parameters
+    ' are reset as each channel is processed.
+    Dim chnColorMode As PSD_ColorMode, chnBitDepth As Long
+        
+    'Iterate through all channels, copying their planar data into the interleaved final image buffer as we go
+    Dim chIndex As Long
+    For chIndex = 0 To Abs(m_ChannelCount) - 1
+        
+        'Reset any on-the-fly changes we've made to color mode or bit-depth
+        chnColorMode = m_ColorMode
+        chnBitDepth = bitsPC
+        
+        With m_Channels(chIndex)
+            
+            'There are a lot of reasons to ignore a given channel:
+            ' 1) Channel data wasn't decoded successfully
+            ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
+            ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            If (.ciID < cidAlpha) Then
+                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
+                GoTo SkipChannel
+            End If
+            
+            'Monochrome layers are a special case.  If encountered, it's easiest to expand them to an 8-bit stream
+            ' and treat the results as grayscale.  (This allows us to reuse our grayscale converter "as-is".)
+            If (chnBitDepth = 1) Then
+                ExpandMonochrome m_Channels(chIndex), layerHeight, layerWidth
+                chnColorMode = cm_Grayscale
+                chnBitDepth = 8
+                bytesPerChannel = 1
+            End If
+            
+            'Indexed color images can still have masks, so we need to check channel IDs.
+            ' (Note that the "indexed" channel ID is simply 0; this refers to the pixel data
+            ' channel of indexed, grayscale, and duotone color modes.)
+            If (.ciID = cidIndexed) Then
+                
+                'Next step is to construct a palette for the image; this step varies
+                ' based on channel type.
+                Dim imgPalette() As RGBQuad, palSize As Long, trnsIndex As Long
+                trnsIndex = -1
+                
+                'In indexed images, we can simply read the color table information from the parent image
+                If (chnColorMode = cm_Indexed) Then
+                    
+                    parentPSD.GetColorTableData imgPalette, palSize, trnsIndex
+                    If (palSize > 0) Then
+                        If (trnsIndex >= 0) And (trnsIndex <= 255) Then imgPalette(trnsIndex).Alpha = 0
+                    Else
+                        ReDim imgPalette(0 To 255) As RGBQuad
+                    End If
+                
+                'For grayscale, bitmap, or duotone images let's manually construct a linear grayscale palette
+                Else
+                
+                    ReDim imgPalette(0 To 255) As RGBQuad
+                    palSize = 256
+                    For x = 0 To 255
+                        imgPalette(x).Blue = x
+                        imgPalette(x).Green = x
+                        imgPalette(x).Red = x
+                        If (x = trnsIndex) Then imgPalette(x).Alpha = 0 Else imgPalette(x).Alpha = 255
+                    Next x
+                    
+                    'For grayscale channels, we want to do handle any ICC processing *before* converting
+                    ' the data internally to RGBA.  (Grayscale profiles can only be applied to single-channel
+                    ' grayscale data, so if we convert the data to RGBA format, the profile will be unusable.)
+                    If iccAvailable Then
+                    
+                        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+                        lcmsDstProfile.CreateGenericGrayscaleProfile
+                        
+                        'Construct and apply the transform in-place over the existing grayscale data
+                        If (bytesPerChannel = 1) Then
+                            lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_GRAY_8, TYPE_GRAY_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION
+                            lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(.ciDataDecoded(0)), VarPtr(.ciDataDecoded(0)), layerWidth, layerWidth, layerHeight, layerWidth
+                        ElseIf (bytesPerChannel = 2) Then
+                            lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_GRAY_16_SE, TYPE_GRAY_16_SE, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION
+                            lcmsTransform.ApplyTransformToArbitraryMemory VarPtr(.ciDataDecoded(0)), VarPtr(.ciDataDecoded(0)), layerWidth * 2, layerWidth * 2, layerHeight, layerWidth
+                        End If
+                        
+                    End If
+                    
+                '/End palette assembly
+                End If
+                
+                'To accelerate the load process, we want to set all four bytes of individual pixels as Longs
+                ' (rather than the slower step of assigning RGBA values individually).  To "trick" VB into
+                ' doing this for us, we'll alias a Long array around the destination DIB, and we need a matching
+                ' Long-type array for the palette data.
+                Dim palLookup() As Long
+                ReDim palLookup(0 To 255) As Long
+                For x = 0 To palSize - 1
+                    GetMem4 VarPtr(imgPalette(x)), palLookup(x)
+                Next x
+                
+                m_LayerDIB.WrapLongArrayAroundScanline tmpLongs, tmpSA, 0
+                xLoopEnd = layerWidth - 1
+                
+                '8-bit channel
+                If (bytesPerChannel = 1) Then
+                    
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth
+                    For x = 0 To xLoopEnd
+                        tmpLongs(x) = palLookup(.ciDataDecoded(ySrcOffset + x))
+                    Next x
+                    Next y
+                    
+                '16-bit channel
+                ElseIf (bytesPerChannel = 2) Then
+                
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth * 2
+                    For x = 0 To xLoopEnd
+                        tmpLongs(x) = palLookup(.ciDataDecoded(ySrcOffset + x * 2))
+                    Next x
+                    Next y
+                    
+                '32-bit grayscale remains TODO
+                Else
+                
+                End If
+                
+                m_LayerDIB.UnwrapLongArrayFromDIB tmpLongs
+                
+            'Any other channels are treated as alpha data
+            ElseIf (.ciID > cidIndexed) Or (.ciID = cidAlpha) Then
+        
+                m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                xLoopEnd = layerWidth - 1
+                
+                '8-bit alpha channel
+                If (bytesPerChannel = 1) Then
+                
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth
+                    For x = 0 To xLoopEnd
+                        tmpBytes(x * 4 + 3) = .ciDataDecoded(ySrcOffset + x)
+                    Next x
+                    Next y
+                
+                '16-bit alpha channel
+                ElseIf (bytesPerChannel = 2) Then
+                
+                    For y = 0 To layerHeight - 1
+                        tmpSA.pvData = scanStart + (scanWidth * y)
+                        ySrcOffset = y * layerWidth * 2
+                    For x = 0 To xLoopEnd
+                        tmpBytes(x * 4 + 3) = .ciDataDecoded(ySrcOffset + x * 2)
+                    Next x
+                    Next y
+                
+                '32-bit grayscale channels remain TODO
+                Else
+                
+                End If
+                
+                m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                    
+            '/End .ciID = valid channel ID
+            End If
+            
+            'Immediately free the source channel data to relieve memory pressure
+            Erase .ciDataDecoded
+            
+        End With
+
+SkipChannel:
+    Next chIndex
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'With the destination image assembled successfully, we can now perform any post-processing
+    ' (including color management).  Note that grayscale images have already handle color management as
+    ' part of the decode process, so this step is only relevant for *color* images.
+    If iccAvailable And (imgColorMode = cm_Indexed) Then
+        
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        lcmsDstProfile.CreateSRGBProfile
+        
+        'Explicitly request blackpoint compensation to produce results similar to Adobe's CMM
+        lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, TYPE_BGRA_8, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
+        lcmsTransform.ApplyTransformToPDDib m_LayerDIB
+        
+        'Transforms can consume a surprising amount of memory, depending on the way the ICC is built.  (For example,
+        ' files can define giant 3D mapping tables - and this approach is actually very common in CMYK images.)
+        ' To relieve memory pressure on subsequent post-processing functions, free all LCMS objects immediately.
+        Set lcmsSrcProfile = Nothing: Set lcmsDstProfile = Nothing: Set lcmsTransform = Nothing
+        
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Color management took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+    End If
+    
+    'If meaningful alpha data exists in the file, premultiply it now
+    If alphaPresent Then
+        m_LayerDIB.SetAlphaPremultiplication True
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    Else
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage_SingleChannel", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage_SingleChannel, #" & Err.Number & ": " & Err.Description
+    ConstructImage_SingleChannel = psd_Failure
     
 End Function
 
@@ -753,12 +1197,10 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
             
             'Monochrome is a special case.
             If (bytesPerChannel = 0) Then
-            
                 layerWidth = (layerWidth + 7) \ 8
                 If (layerWidth = 0) Then layerWidth = 1
                 numPixels = layerWidth * layerHeight
                 finalArraySize = numPixels
-            
             Else
                 finalArraySize = numPixels * bytesPerChannel
             End If
@@ -768,7 +1210,6 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                 
                 'Prep a temporary output buffer
                 Dim x As Long, y As Long
-                
                 If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Channel #" & i & " (ID=" & .ciID & ") has compression type: " & .ciCompression
                 
                 Select Case .ciCompression
@@ -808,6 +1249,9 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                 lineLengths(y) = rleStream.ReadIntUnsigned_BE()
                             Next y
                         End If
+                        
+                        'TODO: drop stream dependency past this point, and access the bare array directly;
+                        ' reducing function calls would accelerate decoding a meaningful amount.
                         
                         'We now want to extract each scanline in turn.  (Technically, we don't need to
                         ' know RLE line lengths to do this, but they provide a nice failsafe mechanism
@@ -917,7 +1361,9 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                     If (bitsPC = 16) Then
                                         VBHacks.SwapEndianness16 .ciDataDecoded
                                     ElseIf (bitsPC = 32) Then
-                                        'TODO: delta encoding uses a different scheme in 32-bit data
+                                        'TODO: delta encoding likely uses a different scheme with 32-bit floats!  (TIFFs convert the float
+                                        ' data to planar on a "1-2-3-4" byte pattern, then delta-encode each plane individually - I bet
+                                        ' PSDs do something similar.)
                                         VBHacks.SwapEndianness32 .ciDataDecoded
                                     End If
                                     
@@ -928,7 +1374,7 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                     ' 2-byte unsigned int value, and subsequent bytes are the delta between the previous
                                     ' pixel and the current one.  This makes decoding tedious, but straightforward.
                                     ' (Note that I deliberately mix data types here, as VB lacks unsigned ints but we
-                                    ' can "cheat" and use longs by copying memory strategically.)
+                                    ' can "cheat" and use longs by shifting memory strategically.)
                                     If (bitsPC = 16) Then
                                         
                                         Dim curDelta As Long, deltaPrev As Long, newValue As Long, tmpIndex As Long
