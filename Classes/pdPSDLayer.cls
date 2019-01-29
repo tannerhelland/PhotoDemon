@@ -16,20 +16,20 @@ Attribute VB_Exposed = False
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 29/January/19
-'Last update: large refactoring to better cover image construction in various color modes
+'Last update: in-line RLE decompression calculations for large perf improvements (70-80% shorter processing time)
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
 ' PhotoDemon itself, refer to the pdLayer class.
 '
-'All code in this class is my original work.  It is based off the "official" Adobe spec at this URL
-' (link good as of January 2019):
+'Unless otherwise noted, all code in this class is my original work.  It is based off the "official" Adobe spec
+' at this URL (link good as of January 2019):
 ' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
 '
-'Zip-with-prediction mode is currently undocumented in the PSD spec.  To my knowledge, the first people
-' to reverse-engineer it were the authors of Paint.NET's PSD plugin.  Their MIT-licensed work was used as
-' a reference for my own implementation.  Many thanks to those authors; their reference implementation
-' is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
+'Adobe's custom "zip-with-prediction" compression mode is currently undocumented in the PSD spec.  To my knowledge,
+' the first 3rd-party to reverse-engineer it is the authors of Paint.NET's PSD plugin.  Their MIT-licensed work was
+' used as a reference for this class's "zip-with-prediction" decoder.  Many thanks to those authors; their reference
+' implementation is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -1210,7 +1210,11 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                 
                 'Prep a temporary output buffer
                 Dim x As Long, y As Long
-                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Channel #" & i & " (ID=" & .ciID & ") has compression type: " & .ciCompression
+                If PSD_DEBUG_VERBOSE Then
+                    PDDebug.LogAction "Channel #" & i & " (ID=" & .ciID & ") has compression type: " & .ciCompression
+                    Dim decodeStartTime As Currency
+                    VBHacks.GetHighResTime decodeStartTime
+                End If
                 
                 Select Case .ciCompression
                 
@@ -1230,8 +1234,8 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                         'We know the necessary size of the final array; prep the receiving buffer now.
                         ReDim .ciDataDecoded(0 To finalArraySize - 1) As Byte
                         
-                        'For convenience, we're going to wrap a pdStream object around the source bytes.
-                        ' This simplifies things like translating from big-endian values.
+                        'For convenience, we're going to wrap a temporary pdStream object around the source bytes.
+                        ' This simplifies translating a large series of big-endian values.
                         Dim rleStream As pdStream
                         Set rleStream = New pdStream
                         rleStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .ciDataLength, VarPtr(.ciData(0))
@@ -1250,14 +1254,18 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                             Next y
                         End If
                         
-                        'TODO: drop stream dependency past this point, and access the bare array directly;
-                        ' reducing function calls would accelerate decoding a meaningful amount.
+                        'We got what we need from the stream.  Note its position (as this is where pixel data begins),
+                        ' then free it.
+                        Dim basePtrPosition As Long
+                        basePtrPosition = rleStream.GetPosition()
+                        Set rleStream = Nothing
                         
                         'We now want to extract each scanline in turn.  (Technically, we don't need to
                         ' know RLE line lengths to do this, but they provide a nice failsafe mechanism
                         ' for ensuring we don't overrun line boundaries.)
-                        Dim bytesReadTotal As Long, bytesReadLine As Long, rleCode As Long, tmpVal As Long
-                        bytesReadTotal = 0
+                        Dim bytesReadDst As Long, bytesReadSrc As Long, bytesReadLine As Long, rleCode As Long, tmpVal As Long
+                        bytesReadDst = 0
+                        bytesReadSrc = 0
                         
                         For y = 0 To layerHeight - 1
                             
@@ -1267,35 +1275,38 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                             
                                 'Packbits is extremely simple as compression strategies go.  Treat the first
                                 ' (signed) byte in each stream as a code.
-                                rleCode = rleStream.ReadByte()
+                                rleCode = .ciData(basePtrPosition + bytesReadSrc)
                                 If (rleCode > 127) Then rleCode = rleCode - 256
                                 bytesReadLine = bytesReadLine + 1
+                                bytesReadSrc = bytesReadSrc + 1
                                 
                                 'If the code is >= 0, the next (code) bytes should be copied to the destination
                                 ' buffer as-is.
                                 If (rleCode > 0) Then
+                                    
                                     rleCode = rleCode + 1
-                                    tmpVal = rleStream.ReadBytes_PointerOnly(rleCode)
                                     bytesReadLine = bytesReadLine + rleCode
                                     'If (bytesReadLine > lineLengths(y)) Then
                                     '    Debug.Print "WARNING RLE OVERFLOW (1)! " & lineLengths(y), y, rleCode
                                     '    Exit Do
                                     'End If
-                                    CopyMemoryStrict VarPtr(.ciDataDecoded(bytesReadTotal)), tmpVal, rleCode
-                                    bytesReadTotal = bytesReadTotal + rleCode
+                                    CopyMemoryStrict VarPtr(.ciDataDecoded(bytesReadDst)), VarPtr(.ciData(basePtrPosition + bytesReadSrc)), rleCode
+                                    bytesReadDst = bytesReadDst + rleCode
+                                    bytesReadSrc = bytesReadSrc + rleCode
                                     
                                 'If the code is on the range [-127,-1], inclusive, the next byte should be
                                 ' repeated [1 - code] times in the destination buffer.
                                 ElseIf (rleCode > -128) Then
+                                    
                                     rleCode = 1 - rleCode
-                                    tmpVal = rleStream.ReadByte()
                                     bytesReadLine = bytesReadLine + 1
                                     'If (bytesReadLine > lineLengths(y)) Then
                                     '    Debug.Print "WARNING RLE OVERFLOW (2)! " & lineLengths(y), y, rleCode
                                     '    Exit Do
                                     'End If
-                                    FillMemory VarPtr(.ciDataDecoded(bytesReadTotal)), rleCode, tmpVal
-                                    bytesReadTotal = bytesReadTotal + rleCode
+                                    FillMemory VarPtr(.ciDataDecoded(bytesReadDst)), rleCode, .ciData(basePtrPosition + bytesReadSrc) 'tmpVal
+                                    bytesReadDst = bytesReadDst + rleCode
+                                    bytesReadSrc = bytesReadSrc + 1
                                     
                                 '-128 means do nothing (nop).  I'm not sure why an encoder would set this, but if it does,
                                 ' the decoder will continue normally.
@@ -1450,6 +1461,8 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                         End If
                         
                 End Select
+                
+                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Total time to decode channel #" & i & ": " & VBHacks.GetTimeDiffNowAsString(decodeStartTime)
                 
             'Raw data is zero-length; this layer does not contain usable data
             Else

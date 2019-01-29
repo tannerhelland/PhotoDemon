@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
 '
-'To my knowledge, this is the only PSD parser (besides Adobe's) that passes the full Apple color management
+'To my knowledge, this is the only 3rd-party PSD parser that passes the full Apple color management
 ' test suite (https://developer.apple.com/library/archive/technotes/tn2115/_index.html).  This is a large
 ' point of pride for the author. ;)
 '
@@ -31,9 +31,9 @@ Attribute VB_Exposed = False
 '
 'At present, this class only handles PSD importing.  Exporting PSDs is still TODO.
 '
-'As with all 3rd-party PSD loaders, Photoshop has many features that don't have analogs in PhotoDemon.
+'As with all 3rd-party PSD loaders, Photoshop has many features that don't have direct analogs in PhotoDemon.
 ' Such features are still extracted by this class, but they will not "appear" in the final loaded image.
-' The ongoing goal is to expand support in this class as various PSD features are implemented in PD itself.
+' My ongoing goal is to expand support in this class as various PSD features are implemented in PD itself.
 '
 'Unless otherwise noted, all code in this class is my original work.  I've based my work off the
 ' "official" Adobe spec at this URL (link good as of January 2019):
@@ -763,7 +763,7 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                 m_ImageResources(m_NumImageResources).irDataLength = resSize
                 If PSD_DEBUG_VERBOSE Then
                     With m_ImageResources(m_NumImageResources)
-                        PDDebug.LogAction "Image resource: 0x" & Hex$(.irID) & ", " & .irDataLength & " bytes, name: " & .irName
+                        PDDebug.LogAction "Image resource: 0x" & Hex$(.irID) & ", " & .irDataLength & " bytes"
                     End With
                 End If
                 

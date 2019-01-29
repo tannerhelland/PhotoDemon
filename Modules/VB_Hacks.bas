@@ -103,6 +103,23 @@ Private m_EditBoxRef As pdEditBoxW
 Private m_AcceleratorRef As pdAccelerator
 Private m_PDIKRef As pdInputKeyboard
 
+'Point an internal 1D VB array at some other arbitrary 1D array.  The new array should *NOT* be initialized
+' or it will leak memory.  Any arrays aliased this way must be freed via Unalias1DArray or VB will crash.
+Public Sub Alias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte, ByRef newArraySA As SafeArray1D)
+    
+    'Retrieve a copy of the original 2D array's SafeArray struct
+    Dim ptrSrc As Long
+    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
+    CopyMemory ByVal VarPtr(newArraySA), ByVal ptrSrc, LenB(newArraySA)
+    
+    'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
+    CopyMemory ByVal VarPtrArray(new1DArray()), VarPtr(newArraySA), 4&
+    
+    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
+    SafeArrayLock ptrSrc
+    
+End Sub
+
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
 Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SafeArray2D)
@@ -147,6 +164,20 @@ Public Sub Alias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() As 
     
     'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
     SafeArrayLock ptrSrc
+    
+End Sub
+
+'Counterpart to Alias1DArray_ functions, above.  Do NOT call this function on arrays that were not originally
+' processed by an Alias21Array_ function.
+Public Sub Unalias1DArray_Byte(ByRef orig1DArray() As Byte, ByRef new1DArray() As Byte)
+    
+    'Wipe the array pointer
+    CopyMemory ByVal VarPtrArray(new1DArray), 0&, 4&
+    
+    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
+    Dim ptrSrc As Long
+    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
+    SafeArrayUnlock ptrSrc
     
 End Sub
 
