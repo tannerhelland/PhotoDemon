@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 29/January/19
-'Last update: finalize support for modern 16-bit-per-channel PSDs (which store their image data in a
-'             separate "Lr16" block
+'Last updated: 30/January/19
+'Last update: finalize support for modern 32-bit-per-channel PSDs
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -650,6 +649,10 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         ' format we can actually interpret.  The amount of work involved varies by channel
         ' type (e.g. layer masks differ from color channels) and compression type.
         For i = 0 To Abs(m_numOfLayers) - 1
+            
+            'To avoid wasting time, skip layers with null sizes
+            If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then GoTo SkipLayer
+            
             If (m_Layers(i).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
             
                 'If the channel decoded successfully, convert it from a bare byte/int/float stream
@@ -668,6 +671,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
                 Step4_GatherLayersAndMasks = psd_Failure
                 Exit Function
             End If
+SkipLayer:
         Next i
     
     'Layer info section is null-length; layer data has already been located using an alternate strategy

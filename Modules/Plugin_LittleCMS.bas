@@ -226,6 +226,7 @@ Public Enum LCMS_PIXEL_FORMAT
     
     'These flags are *not* automatically defined by LCMS; I've defined them to allow for OR'ing with
     ' existing constants (since VB makes bit-shifting such a PITA)
+    FLAG_ALPHAPRESENT = &H80&
     FLAG_MINISWHITE = &H2000&
     FLAG_PLANAR = &H1000&
     FLAG_SE = &H800&

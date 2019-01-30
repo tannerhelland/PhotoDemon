@@ -282,7 +282,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             Case id_FreeImage
                 decoderName = "FreeImage plugin"
         End Select
-            
+        
         PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True
         PDDebug.LogAction vbTab & "Detected format: " & ImageFormats.GetInputFormatDescription(ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
