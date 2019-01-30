@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 29/January/19
-'Last update: in-line RLE decompression calculations for large perf improvements (70-80% shorter processing time)
+'Last update: add support for Lab color mode (8 and 16-bit channels)
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -65,10 +65,13 @@ Public Enum PSD_ChannelID
     cidYellow = 2
     cidKey = 3
     cidIndexed = 0
+    cidLabL = 0
+    cidLabA = 1
+    cidLabB = 2
 End Enum
 
 #If False Then
-    Private Const cidRealUserLayerMask = -3, cidUserLayerMask = -2, cidAlpha = -1, cidRed = 0, cidGreen = 1, cidBlue = 2, cidCyan = 0, cidMagenta = 1, cidYellow = 2, cidKey = 3
+    Private Const cidRealUserLayerMask = -3, cidUserLayerMask = -2, cidAlpha = -1, cidRed = 0, cidGreen = 1, cidBlue = 2, cidCyan = 0, cidMagenta = 1, cidYellow = 2, cidKey = 3, cidIndexed = 0, cidLabL = 0, cidLabA = 1, cidLabB = 2
 #End If
 
 Private Enum PSD_ChannelCompression
@@ -205,7 +208,6 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     Dim mustCancel As Boolean
     mustCancel = False
     If (Not mustCancel) Then mustCancel = (bitsPC > 16)
-    If (Not mustCancel) Then mustCancel = (imgColorMode = cm_Lab)
     If mustCancel Then
         warningStack.AddString "The current color mode (" & GetNameOfColorMode(imgColorMode) & ") and bpc (" & bitsPC & ") combination is still under construction."
         Set m_LayerDIB = Nothing
@@ -231,6 +233,9 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
         
     ElseIf (imgColorMode = cm_Grayscale) Or (imgColorMode = cm_Indexed) Or (imgColorMode = cm_Duotone) Or (imgColorMode = cm_Bitmap) Then
         ConstructImage = ConstructImage_SingleChannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+    
+    ElseIf (imgColorMode = cm_Lab) Then
+        ConstructImage = ConstructImage_Lab(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
     ElseIf (imgColorMode = cm_Multichannel) Then
         ConstructImage = ConstructImage_Multichannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
@@ -450,6 +455,257 @@ InternalVBError:
     InternalError "ConstructImage_CMYK", "internal VB error #" & Err.Number & ": " & Err.Description
     warningStack.AddString "Internal error in ConstructImage_CMYK, #" & Err.Number & ": " & Err.Description
     ConstructImage_CMYK = psd_Failure
+    
+End Function
+
+Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+
+    ConstructImage_Lab = psd_Success
+    On Error GoTo InternalVBError
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Set a flag to determine ICC profile availability; this affects a *lot* of subsequent work in this function,
+    ' so we need to reference it early (and often).
+    Dim iccAvailable As Boolean
+    iccAvailable = (Not srcProfile Is Nothing)
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    
+    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
+    Dim alphaPresent As Boolean
+    alphaPresent = False
+    
+    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
+    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
+    ' so maybe a separate tracker for layer masks specifically is a better idea?
+    
+    'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
+    ' without an obvious RGB mapping.
+    Dim i As Long
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then alphaPresent = True
+    Next i
+    
+    'Unlike other color modes, Lab images are tricky because an accurate reconstruction depends on full
+    ' color-management applied to the raw channel data.  LittleCMS needs channel data to be contiguous
+    ' before it can process it into RGB, or we have to do something low-quality like ignore the ICC data
+    ' and manually transform the channels ourselves into RGB mode (which results in a lower quality image).
+    '
+    'Assembling all channels in the image into a contiguous chunk would require a large block of memory,
+    ' so we don't want to do that.  Instead, what we're going to do is assemble one scanline of Lab data
+    ' at a time - into a single contiguous planar block - then color-manage that block into an RGBA
+    ' buffer via LittleCMS.  This gives us the best combination of proper HDR handling without ballooning
+    ' RAM requirements into problematic areas (for a 32-bit app, anyway).
+    '
+    'Because Photoshop doesn't guarantee a certain channel order in the file, we need to explicitly map
+    ' L/a/b channel indices in advance.  (I don't know that Lab files can exist without all three channels
+    ' being present, but just in case, we cover that possibility.)
+    Dim lIndex As Long, aIndex As Long, bIndex As Long, channelsFound As Long
+    lIndex = -1: aIndex = -1: bIndex = -1: channelsFound = 0
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidLabL) Then
+            lIndex = i
+            channelsFound = channelsFound + 1
+        ElseIf (m_Channels(i).ciID = cidLabA) Then
+            aIndex = i
+            channelsFound = channelsFound + 1
+        ElseIf (m_Channels(i).ciID = cidLabB) Then
+            bIndex = i
+            channelsFound = channelsFound + 1
+        End If
+    Next i
+    
+    If (channelsFound < 3) Then warningStack.AddString "Lab image is missing channels; PhotoDemon will try to assemble a usable image anyway."
+    
+    'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely
+    ' independent of the parent image.
+    Dim layerWidth As Long, layerHeight As Long
+    layerWidth = m_Rect.Right - m_Rect.Left
+    layerHeight = m_Rect.Bottom - m_Rect.Top
+    
+    'Determine the size of a single channel scanline; we'll need this to calculate offsets into our planar
+    ' assembly array
+    Dim channelScanlineSize As Long
+    channelScanlineSize = bytesPerChannel * layerWidth
+    
+    'If alpha is present, we ignore it until all Lab data is processed first; this means we only need to
+    ' allocate three contiguous channels worth of memory.
+    Dim labBuffer() As Byte
+    ReDim labBuffer(0 To channelScanlineSize * 3 - 1) As Byte
+    
+    'Prep the RGBA buffer in advance; it *does* need to be allocated into a single contiguous chunk.
+    Set m_LayerDIB = New pdDIB
+    If (Not m_LayerDIB.CreateBlank(layerWidth, layerHeight, 32, vbWhite, 255)) Then
+        InternalError "ConstructImage_Lab", "Couldn't allocate image buffer; image is likely too large."
+        ConstructImage_Lab = psd_Failure
+        Exit Function
+    End If
+    
+    Dim scanStart As Long, scanWidth As Long
+    scanStart = m_LayerDIB.GetDIBPointer()
+    scanWidth = m_LayerDIB.GetDIBStride()
+    
+    'Prep all required color management objects.  Note that special flags are set to mark the source data
+    ' as planar instead of interleaved, and to specify transform parameters that more closely mimic the
+    ' results of Adobe's CMM.
+    Dim lcmsSrcProfile As pdLCMSProfile, lcmsDstProfile As pdLCMSProfile, lcmsTransform As pdLCMSTransform
+    Set lcmsSrcProfile = New pdLCMSProfile
+        
+    If iccAvailable Then
+        lcmsSrcProfile.CreateFromPDICCObject srcProfile
+        
+    'If the image came from Photoshop itself, it will always have an ICC profile attached.  Only garbage
+    ' 3rd-party software would dare write Lab data without a profile.  Fortunately for us, LittleCMS can
+    ' generate a proper Lab profile "on the fly" as required.
+    Else
+        lcmsSrcProfile.CreateLabProfile True
+    End If
+    
+    Set lcmsDstProfile = New pdLCMSProfile
+    lcmsDstProfile.CreateSRGBProfile
+    
+    Dim srcColorFormat As LCMS_PIXEL_FORMAT
+    If (bytesPerChannel = 1) Then
+        srcColorFormat = TYPE_Lab_8
+    ElseIf (bytesPerChannel = 2) Then
+        srcColorFormat = TYPE_Lab_16
+    ElseIf (bytesPerChannel = 4) Then
+        srcColorFormat = TYPE_Lab_FLT
+    End If
+    
+    'Mark the data as planar, and if it's 2-bytes per channel, mark it as big-endian
+    srcColorFormat = srcColorFormat Or FLAG_PLANAR
+    If (bytesPerChannel = 2) Then srcColorFormat = srcColorFormat Or FLAG_SE
+    
+    'Explicitly request blackpoint compensation to produce results similar to Adobe's CMM.  (This shouldn't matter
+    ' as the source profile should have perceptual rendering intent set, but for images "in the wild", who knows
+    ' wtf we might find.)
+    Set lcmsTransform = New pdLCMSTransform
+    lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, srcColorFormat, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Construction setup took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim x As Long, y As Long
+    
+    'Instead of iterating through all channels in the image (as we do in other color modes), we're actually
+    ' going to iterate through scanlines.
+    For y = 0 To layerHeight - 1
+    
+        'Copy the source Lab data into our temporary contiguous buffer
+        If (lIndex >= 0) Then CopyMemoryStrict VarPtr(labBuffer(0)), VarPtr(m_Channels(lIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+        If (aIndex >= 0) Then CopyMemoryStrict VarPtr(labBuffer(channelScanlineSize)), VarPtr(m_Channels(aIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+        If (bIndex >= 0) Then CopyMemoryStrict VarPtr(labBuffer(channelScanlineSize * 2)), VarPtr(m_Channels(bIndex).ciDataDecoded(y * channelScanlineSize)), channelScanlineSize
+        
+        'Use lcms to color-manage the data into the RGBA buffer
+        lcmsTransform.ApplyTransformToArbitraryMemoryEx VarPtr(labBuffer(0)), scanStart + scanWidth * y, layerWidth, 1, channelScanlineSize * 3, scanWidth, channelScanlineSize, 0&
+        
+    Next y
+    
+    'The lab data has been successfully assembled!  Immediately free all source channel arrays to reduce memory pressure.
+    If (lIndex >= 0) Then Erase m_Channels(lIndex).ciDataDecoded
+    If (aIndex >= 0) Then Erase m_Channels(aIndex).ciDataDecoded
+    If (bIndex >= 0) Then Erase m_Channels(bIndex).ciDataDecoded
+    
+    'Our final step is to copy alpha data, if any, into the image buffer.
+    If alphaPresent Then
+        
+        Dim tmpBytes() As Byte, tmpSA As SafeArray1D
+    
+        Dim chIndex As Long
+        For chIndex = 0 To Abs(m_ChannelCount) - 1
+            
+            With m_Channels(chIndex)
+                
+                'There are a lot of reasons to ignore a given channel:
+                ' 1) Channel data wasn't decoded successfully
+                ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
+                ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
+                If (Not .ciDecodedOK) Then GoTo SkipChannel
+                If (.ciDataLength = 0) Then GoTo SkipChannel
+                If (.ciID < cidAlpha) Then
+                    warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
+                    GoTo SkipChannel
+                End If
+            
+                'Make sure this is an alpha channel
+                Dim cOffset As Long
+                If (.ciID = cidAlpha) Or (.ciID > cidLabB) Then
+                    
+                    Dim ySrcOffset As Long, xLoopEnd As Long
+                    m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+                    xLoopEnd = layerWidth - 1
+                    
+                    '8-bit channel (most common case)
+                    If (bytesPerChannel = 1) Then
+                    
+                        For y = 0 To layerHeight - 1
+                            tmpSA.pvData = scanStart + (scanWidth * y)
+                            ySrcOffset = y * layerWidth
+                        For x = 0 To xLoopEnd
+                            tmpBytes(x * 4 + 3) = .ciDataDecoded(ySrcOffset + x)
+                        Next x
+                        Next y
+                        
+                    '16-bit channel (take high-bit only, and note that the source data *is big-endian*
+                    ElseIf (bytesPerChannel = 2) Then
+                    
+                        For y = 0 To layerHeight - 1
+                            tmpSA.pvData = scanStart + (scanWidth * y)
+                            ySrcOffset = y * layerWidth * 2
+                        For x = 0 To xLoopEnd
+                            tmpBytes(x * 4 + 3) = .ciDataDecoded(ySrcOffset + x * 2)
+                        Next x
+                        Next y
+                    
+                    '32-bit channel remains TODO
+                    ElseIf (bytesPerChannel = 4) Then
+
+                    End If
+                    
+                    'Manually free our unsafe array wrapper before proceeding, and immediately free our source data
+                    ' to relieve memory pressure
+                    m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                    Erase .ciDataDecoded
+            
+                End If
+                
+            End With
+            
+SkipChannel:
+        Next chIndex
+    
+    End If
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Lab transform took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'If meaningful alpha data exists in the file, premultiply it now
+    If alphaPresent Then
+        m_LayerDIB.SetAlphaPremultiplication True
+        If PSD_DEBUG_VERBOSE Then
+            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+    Else
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructImage_Lab", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructImage_Lab, #" & Err.Number & ": " & Err.Description
+    ConstructImage_Lab = psd_Failure
     
 End Function
 
