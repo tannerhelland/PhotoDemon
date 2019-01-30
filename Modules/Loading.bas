@@ -174,6 +174,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Split handling into two groups: internal PD formats vs generic external formats
     '*************************************************************************************************************************************
     
+    'Image load performance is critical to a good user experience.  Profile it and report timings
+    ' in the debug log.
+    Dim justImageLoadTime As Currency
+    VBHacks.GetHighResTime justImageLoadTime
+    
     Dim freeImage_Return As PD_OPERATION_OUTCOME
     
     If (internalFormatID = FIF_UNKNOWN) Then
@@ -262,31 +267,23 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction "~ Summary of image """ & Files.FileGetName(srcFile) & """ follows ~", , True
         PDDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
         
+        Dim decoderName As String
         Select Case decoderUsed
-            
             Case id_Internal
-                PDDebug.LogAction vbTab & "Load engine: Internal PhotoDemon decoder", , True
-            
-            Case id_FreeImage
-                PDDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
-            
+                decoderName = "Internal PDI parser"
             Case id_PNGParser
-                PDDebug.LogAction vbTab & "Load engine: Internal PNG parser", , True
-            
+                decoderName = "Internal PNG parser"
             Case id_ORAParser
-                PDDebug.LogAction vbTab & "Load engine: Internal OpenRaster parser", , True
-                
+                decoderName = "Internal OpenRaster parser"
             Case id_PSDParser
-                PDDebug.LogAction vbTab & "Load engine: Internal PSD parser", , True
-                
+                decoderName = "Internal PSD parser"
             Case id_GDIPlus
-                PDDebug.LogAction vbTab & "Load engine: GDI+", , True
-            
-            Case id_OLELoadPicture
-                PDDebug.LogAction vbTab & "Load engine: OleLoadPicture", , True
-            
+                decoderName = "GDI+"
+            Case id_FreeImage
+                decoderName = "FreeImage plugin"
         End Select
             
+        PDDebug.LogAction vbTab & "Load engine: " & decoderName, , True
         PDDebug.LogAction vbTab & "Detected format: " & ImageFormats.GetInputFormatDescription(ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
         PDDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
         PDDebug.LogAction vbTab & "Image size (original file): " & Format$(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
@@ -295,6 +292,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction vbTab & "ICC profile embedded: " & (LenB(targetImage.GetColorProfile_Original) <> 0), , True
         PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
         PDDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
+        PDDebug.LogAction vbTab & "Time to load: " & VBHacks.GetTimeDiffNowAsString(justImageLoadTime), , True
         PDDebug.LogAction "~ End of image summary ~", , True
         
         '*************************************************************************************************************************************
