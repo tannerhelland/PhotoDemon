@@ -320,7 +320,7 @@ Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeAr
 End Sub
 
 Friend Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
-    PutMem4 VarPtrArray(srcArray), 0
+    PutMem4 VarPtrArray(srcArray), 0&
 End Sub
 
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply

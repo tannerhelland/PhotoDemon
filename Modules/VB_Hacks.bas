@@ -425,7 +425,7 @@ Public Sub SwapEndianness16(ByRef srcData() As Byte)
 End Sub
 
 'Make certain the length of the source array is a multiple of 4 before calling;
-' this function does not attempt to verify otherwise
+' this function does not attempt to verify otherwise.
 Public Sub SwapEndianness32(ByRef srcData() As Byte)
     Dim i As Long, tmpValue As Long, tmpIndex As Long
     For i = 0 To UBound(srcData) Step 4
@@ -446,6 +446,24 @@ End Sub
 Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As Long
     UnsignedAdd = ((baseValue Xor SIGN_BIT) + amtToAdd) Xor SIGN_BIT
 End Function
+
+'Wrap an array of [type] around an arbitrary pointer.  This is currently used by the PSD parser to
+' accelerate some otherwise tedious pointer math.
+Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
+    With dstSA1D
+        .cbElements = 2
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcLenInBytes \ 2
+        .pvData = srcPtr
+    End With
+    CopyMemory ByVal VarPtrArray(dstInts()), VarPtr(dstSA1D), 4&
+End Sub
+
+Public Sub UnwrapArrayFromPtr_Int(ByRef dstInts() As Integer)
+    PutMem4 VarPtrArray(dstInts), 0&
+End Sub
 
 'Subclassing helper functions follow
 Public Function StartSubclassing(ByVal hWnd As Long, ByVal Thing As ISubclass, Optional dwRefData As Long) As Boolean

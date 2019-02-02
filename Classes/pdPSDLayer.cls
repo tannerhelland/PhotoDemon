@@ -242,19 +242,19 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     ' of each color format, handling is sorted by color mode.  (This allows for acceleration that would otherwise
     ' be impractical in a "universal" image constructor.)
     If (imgColorMode = cm_RGB) Then
-        ConstructImage = ConstructImage_RGB(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_RGB(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_CMYK) Then
-        ConstructImage = ConstructImage_CMYK(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_CMYK(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_Grayscale) Or (imgColorMode = cm_Indexed) Or (imgColorMode = cm_Duotone) Or (imgColorMode = cm_Bitmap) Then
-        ConstructImage = ConstructImage_SingleChannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_SingleChannel(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
     
     ElseIf (imgColorMode = cm_Lab) Then
-        ConstructImage = ConstructImage_Lab(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_Lab(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_Multichannel) Then
-        ConstructImage = ConstructImage_Multichannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        ConstructImage = ConstructImage_Multichannel(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
     End If
     
@@ -262,7 +262,7 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     ' masks present in the image.  (The data in layer masks is not contingent on the image's color mode, but they
     ' *are* contingent on color depth, so we can deal with them in a roughly uniform manner regardless of how
     ' channel data was encoded.)
-    If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+    If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(warningStack, imageIsPSB, bitsPC, imgColorMode, parentPSD, imageHasAlpha)
     
     'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now
     If imageHasAlpha Then
@@ -285,7 +285,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+Private Function ConstructImage_CMYK(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_CMYK = psd_Success
     On Error GoTo InternalVBError
@@ -439,7 +439,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+Private Function ConstructImage_Lab(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_Lab = psd_Success
     On Error GoTo InternalVBError
@@ -602,7 +602,6 @@ Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningSt
                 If (.ciID < cidAlpha) Then GoTo SkipChannel
                 
                 'Make sure this is an alpha channel
-                Dim cOffset As Long
                 If (.ciID = cidAlpha) Or (.ciID > cidLabB) Then
                     
                     Dim ySrcOffset As Long, xLoopEnd As Long
@@ -686,7 +685,7 @@ End Function
 ' The hope is that the user can rechannel each layer's contents according to their specialized knowledge,
 ' and ultimately obtain a usable image.  This approach means that channel data is handled similarly to
 ' grayscale channels, but each input layer will potentially produce *multiple* output layers.
-Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Private Function ConstructImage_Multichannel(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
 
     ConstructImage_Multichannel = psd_Success
     On Error GoTo InternalVBError
@@ -726,7 +725,7 @@ Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef 
     End If
     
     Dim x As Long, y As Long
-    Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
+    Dim tmpLongs() As Long, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
     scanStart = m_LayerDIB.GetDIBPointer()
     scanWidth = m_LayerDIB.GetDIBStride()
@@ -739,7 +738,7 @@ Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef 
     
     'Prep a generic grayscale palette in advance, then copy it into a Long-type array that we can
     ' access more quickly inside loops.
-    Dim imgPalette() As RGBQuad, palSize As Long, trnsIndex As Long
+    Dim imgPalette() As RGBQuad, palSize As Long
     ReDim imgPalette(0 To 255) As RGBQuad
     For x = 0 To 255
         imgPalette(x).Blue = x
@@ -863,7 +862,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_RGB = psd_Success
     On Error GoTo InternalVBError
@@ -1095,7 +1094,7 @@ End Function
 
 'Grayscale, duotone, and indexed images share a unified load function.  (Monochrome images are also handled here,
 ' with their encoding having been silently "upsampled" to grayscale in a previous stage.)
-Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+Private Function ConstructImage_SingleChannel(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_SingleChannel = psd_Success
     On Error GoTo InternalVBError
@@ -1435,7 +1434,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructLayerMasks(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+Private Function ConstructLayerMasks(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructLayerMasks = psd_Success
     On Error GoTo InternalVBError
@@ -1482,7 +1481,7 @@ Private Function ConstructLayerMasks(ByRef srcStream As pdStream, ByRef warningS
     
     'Prep pointers into the destination image; we'll obviously need these to properly apply the layer mask
     Dim x As Long, y As Long
-    Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
+    Dim tmpBytes() As Byte, tmpSA As SafeArray1D
     Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
     scanStart = m_LayerDIB.GetDIBPointer()
     scanWidth = m_LayerDIB.GetDIBStride()
@@ -1605,7 +1604,7 @@ Private Function ConstructLayerMasks(ByRef srcStream As pdStream, ByRef warningS
             
             'Actually applying the mask is very simple.  We simply want to multiply any existing alpha values
             ' by the values found in the mask.
-            Dim layerWidth As Long, layerHeight As Long, alphaValue As Long
+            Dim layerWidth As Long, layerHeight As Long
             layerWidth = m_LayerDIB.GetDIBWidth
             layerHeight = m_LayerDIB.GetDIBHeight
             
@@ -1648,7 +1647,7 @@ End Function
 ' That's what this function handles.  If the underlying data is irrelevant to PD (e.g. adjustment or effect layers),
 ' this function simply frees the associated layer data to cut down on memory requirements.  Layers with relevant
 ' image data, however, will produce a usable pdDIB object from this step.
-Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef parentPSD As pdPSD) As PD_PSDResult
     
     DecodeChannels = psd_Success
     
@@ -1692,8 +1691,8 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
             End If
             
             'Layer masks are *not* required to have the same dimensions as their parent layer.  (In fact, they are
-            ' often significantly smaller.)  If one is found, silently substitute the mask's dimensions in place of
-            ' the layer ones; this ensures that decompression doesn't overrun boundaries.
+            ' often much smaller.)  If one is found, silently substitute the mask's dimensions in place of the
+            ' layer's dimensions; this gives us proper boundaries for decompression overrun checks.
             If (.ciID < cidAlpha) Then
                 
                 If (.ciID = cidUserLayerMask) Then
@@ -1716,17 +1715,6 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                     .ciDecodedOK = False
                     GoTo SkipChannel
                 End If
-                
-                'TODO: calculate special decoding rect, as it is *not* the same as the regular rect.  We also have to
-                ' deal with crap like "default color" which determines whether the encoded data represents hiding
-                ' or showing the layer beneath.
-                'Debug.Print .ciID
-                'If .ciID = cidUserLayerMask Then
-                '    Debug.Print m_MaskRect.Left, m_MaskRect.Top, m_MaskRect.Right - m_MaskRect.Left, m_MaskRect.Bottom - m_MaskRect.Top
-                '    Debug.Print m_RealMaskRect.Left, m_RealMaskRect.Top, m_RealMaskRect.Right - m_RealMaskRect.Left, m_RealMaskRect.Bottom - m_RealMaskRect.Top
-                'End If
-                '.ciDecodedOK = False
-                'GoTo SkipChannel
                 
             End If
             
@@ -1815,7 +1803,7 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                         'We now want to extract each scanline in turn.  (Technically, we don't need to
                         ' know RLE line lengths to do this, but they provide a nice failsafe mechanism
                         ' for ensuring we don't overrun line boundaries.)
-                        Dim bytesReadDst As Long, bytesReadSrc As Long, bytesReadLine As Long, rleCode As Long, tmpVal As Long
+                        Dim bytesReadDst As Long, bytesReadSrc As Long, bytesReadLine As Long, rleCode As Long
                         bytesReadDst = 0
                         bytesReadSrc = 0
                         
@@ -1838,10 +1826,11 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                     
                                     rleCode = rleCode + 1
                                     bytesReadLine = bytesReadLine + rleCode
-                                    'If (bytesReadLine > lineLengths(y)) Then
-                                    '    Debug.Print "WARNING RLE OVERFLOW (1)! " & lineLengths(y), y, rleCode
-                                    '    Exit Do
-                                    'End If
+                                    
+                                    'Failsafe RLE checks can be performed here, but they have an obvious negative perf impact;
+                                    ' we currently assume the PSD is well-formed.
+                                    'If (bytesReadLine > lineLengths(y)) Then Exit Do
+                                    
                                     CopyMemoryStrict VarPtr(.ciDataDecoded(bytesReadDst)), VarPtr(.ciData(basePtrPosition + bytesReadSrc)), rleCode
                                     bytesReadDst = bytesReadDst + rleCode
                                     bytesReadSrc = bytesReadSrc + rleCode
@@ -1852,16 +1841,13 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                     
                                     rleCode = 1 - rleCode
                                     bytesReadLine = bytesReadLine + 1
-                                    'If (bytesReadLine > lineLengths(y)) Then
-                                    '    Debug.Print "WARNING RLE OVERFLOW (2)! " & lineLengths(y), y, rleCode
-                                    '    Exit Do
-                                    'End If
+                                    'If (bytesReadLine > lineLengths(y)) Then Exit Do
                                     FillMemory VarPtr(.ciDataDecoded(bytesReadDst)), rleCode, .ciData(basePtrPosition + bytesReadSrc) 'tmpVal
                                     bytesReadDst = bytesReadDst + rleCode
                                     bytesReadSrc = bytesReadSrc + 1
                                     
                                 '-128 means do nothing (nop).  I'm not sure why an encoder would set this, but if it does,
-                                ' the decoder will continue normally.
+                                ' we can just continue normally.
                                 'Else
                                     
                                 End If
@@ -1874,8 +1860,7 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                             
                         Next y
                         
-                        'Manually free our temporary stream object, as it unsafely wraps a local array
-                        Set rleStream = Nothing
+                        'Decompression was successful!
                         .ciDecodedOK = True
                         DecodeChannels = psd_Success
                     
@@ -1929,22 +1914,29 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                         VBHacks.GetHighResTime startTime
                                     End If
                                     
-                                    Dim curDelta As Long, deltaPrev As Long, newValue As Long, tmpIndex As Long
+                                    Dim deltaPrev As Long, newValue As Long, tmpIndex As Long, basePtr As Long
                                     Dim srcIndex As Long, srcInt As Integer, srcLong As Long, yOffset As Long, xOffset As Long
+                                    Dim lyrBoundY As Long, lyrBoundX As Long
+                                    lyrBoundY = layerHeight - 1
+                                    lyrBoundX = layerWidth - 1
+                                    basePtr = VarPtr(.ciDataDecoded(0))
                                     
                                     '16-bit PSDs use an extremely primitive delta encoding scheme - each line starts with a
                                     ' 2-byte unsigned int value, and subsequent bytes are the delta between the previous
                                     ' pixel and the current one.  This makes decoding tedious, but straightforward.
                                     ' (Note that I deliberately mix data types here, as VB lacks unsigned ints but we
                                     ' can "cheat" and use longs by shifting memory strategically.)
+                                    '
+                                    'TODO: wrap an integer array around the decoded data stream; we could use this to
+                                    ' "trick" VB into reading/placing signed ints
                                     If (bitsPC = 16) Then
                                         
                                         srcIndex = 0
                                         
-                                        For y = 0 To (layerHeight - 1)
+                                        For y = 0 To lyrBoundY
     
                                             'Retrieve the first value in each row and treat it as an absolute value
-                                            GetMem2_Ptr VarPtr(.ciDataDecoded(srcIndex)), VarPtr(deltaPrev)
+                                            GetMem2_Ptr basePtr + srcIndex, VarPtr(deltaPrev)
                                             srcIndex = srcIndex + 2
                                             
                                             'While here, cache the current scanline pointer to avoid unnecessary multipliations
@@ -1952,17 +1944,17 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                             tmpIndex = y * layerWidth * 2
                                             
                                             'All subsequent bytes are treated as deltas
-                                            For x = 1 To layerWidth - 1
+                                            For x = 1 To lyrBoundX
                                                 
                                                 'Retrieve the next two bytes into a signed int
-                                                GetMem2_Ptr VarPtr(.ciDataDecoded(srcIndex)), VarPtr(srcInt)
+                                                GetMem2_Ptr basePtr + srcIndex, VarPtr(srcInt)
                                                 
                                                 'Apply the delta from the previous pixel
-                                                newValue = (CLng(srcInt) + deltaPrev)
+                                                newValue = CLng(srcInt) + deltaPrev
                                                 
                                                 'Store the result in-place over the old value.  (A lack of easy dereferencing
                                                 ' makes this tedious, but GetMem2 provides a slight speed boost over RtlMoveMemory.)
-                                                GetMem2_Ptr VarPtr(newValue), VarPtr(.ciDataDecoded(srcIndex))
+                                                GetMem2_Ptr VarPtr(newValue), basePtr + srcIndex
                                                 
                                                 'Store the delta for the next pixel to use and increment our index into the array
                                                 deltaPrev = newValue And &HFFFF&
@@ -1971,13 +1963,15 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                                             Next x
     
                                         Next y
-                                    
+                                        
                                     '32-bit data is a totally different beast.
                                     ElseIf (bitsPC = 32) Then
                                         
                                         srcIndex = 0
                                         
-                                        'We also need a temporary buffer the size of one scanline
+                                        'We need a temporary buffer the size of one scanline; we'll reassemble individual
+                                        ' floats into this line as we go, then copy the finished result back into the
+                                        ' original array.
                                         Dim tmpScanLine() As Byte
                                         ReDim tmpScanLine(0 To layerWidth * 4 - 1) As Byte
                                         

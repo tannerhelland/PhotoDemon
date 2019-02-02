@@ -422,7 +422,7 @@ InternalVBError:
     
 End Function
 
-Private Function Step4B_SingleLayerImage(ByVal chkPointerPosition As Long) As PD_PSDResult
+Private Function Step4B_SingleLayerImage() As PD_PSDResult
 
     'If a PSD only contains one layer, the layer's data will be saved at the end of the file,
     ' in the "image data" section.  Step4_GatherLayersAndMasks() will defer to us in this case,
@@ -439,12 +439,11 @@ Private Function Step4B_SingleLayerImage(ByVal chkPointerPosition As Long) As PD
     
     'If image data was parsed successfully, proceed with decoding
     If (Step4B_SingleLayerImage < psd_Failure) Then
-        If (m_Layers(0).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+        If (m_Layers(0).DecodeChannels(m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, Me) < psd_Failure) Then
             Step4B_SingleLayerImage = m_Layers(0).ConstructImage(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me)
         Else
             InternalError "Step4B_SingleLayerImage", "pdPSDLayer.DecodeChannels() failed catastrophically"
             Step4B_SingleLayerImage = psd_Failure
-            Exit Function
         End If
     End If
     
@@ -485,7 +484,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     ' obnoxious ways).
     If (lenOfSection <= 0) Then
         If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Retrieving layer data from image segment instead..."
-        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(m_Stream.GetPosition())
+        Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
         Exit Function
     End If
     
@@ -571,7 +570,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
         ' The single background layer's contents live in the composite image segment.
         If (Not hpdChunkFound) Then
             If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Single-layer PSD found.  Activating alternate parse strategy..."
-            Step4_GatherLayersAndMasks = Step4B_SingleLayerImage(finalPointerPosition)
+            Step4_GatherLayersAndMasks = Step4B_SingleLayerImage()
             Exit Function
         End If
     
@@ -653,7 +652,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
             'To avoid wasting time, skip layers with null sizes
             If (m_Layers(i).GetLayerWidth <= 0) Or (m_Layers(i).GetLayerHeight <= 0) Then GoTo SkipLayer
             
-            If (m_Layers(i).DecodeChannels(m_Stream, m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, m_Profile, Me) < psd_Failure) Then
+            If (m_Layers(i).DecodeChannels(m_Warnings, m_PSDisPSB, m_Header.BitsPerChannel, m_Header.ColorMode, Me) < psd_Failure) Then
             
                 'If the channel decoded successfully, convert it from a bare byte/int/float stream
                 ' into usable pixel data. This comprehensive stage translates channel data to
