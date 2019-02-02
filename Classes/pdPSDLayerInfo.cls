@@ -36,7 +36,7 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
 ' version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = True
+Private Const PSD_DEBUG_VERBOSE As Boolean = False
 
 'Layers can include additional optional data.  This comes in a variety of shapes and sizes,
 ' and while we can successfully parse it all, we don't make use of every possible descriptor.

@@ -24,8 +24,14 @@ Public Const PI_DIV_180 As Double = 0.017453292519943
 Public Const PI_14 As Double = 0.785398163397448
 Public Const PI_34 As Double = 2.35619449019234
 
+Private Declare Function IntersectRect Lib "user32" (ByVal ptrDstRect As Long, ByVal ptrSrcRect1 As Long, ByVal ptrSrcRect2 As Long) As Long
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RectL, ByVal x As Long, ByVal y As Long) As Long
+
+'Rect intersect calculation; wraps IntersectRect API and returns VB boolean if rects intersect
+Public Function IntersectRectL(ByRef dstRect As RectL, ByRef srcRect1 As RectL, ByRef srcRect2 As RectL) As Boolean
+    IntersectRectL = (IntersectRect(VarPtr(dstRect), VarPtr(srcRect1), VarPtr(srcRect2)) <> 0)
+End Function
 
 'See if a point lies inside a rect (integer)
 Public Function IsPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
@@ -46,6 +52,13 @@ Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRe
             IsPointInRectF = False
         End If
     End With
+End Function
+
+Public Function PopulateRectL(ByVal srcLeft As Long, ByVal srcTop As Long, ByVal srcRight As Long, ByVal srcBottom As Long) As RectL
+    PopulateRectL.Left = srcLeft
+    PopulateRectL.Top = srcTop
+    PopulateRectL.Right = srcRight
+    PopulateRectL.Bottom = srcBottom
 End Function
 
 'Find the union rect of two floating-point rects.  (This is the smallest rect that contains both rects.)

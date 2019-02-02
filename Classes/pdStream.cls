@@ -693,6 +693,32 @@ Friend Function ReadFloat_BE() As Single
     CopyMemoryStrict VarPtr(ReadFloat_BE), VarPtr(tmpLong), 4&
 End Function
 
+Friend Function ReadDouble() As Double
+    If m_Open And (Me.GetPosition() + 8& <= m_BufferSize) Then
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+            GetMem8_Ptr VarPtr(m_MemBuffer(m_Pointer)), ByVal VarPtr(ReadDouble)
+            m_Pointer = m_Pointer + 8&
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadDouble), 8&
+        End If
+    End If
+End Function
+
+'Same as ReadDouble(), above, but with endianness conversion.
+Friend Function ReadDouble_BE() As Double
+    
+    ReadDouble_BE = Me.ReadDouble()
+    
+    'There's no good way to reverse bytes in pure VB code, so we opt for an extremely ugly way to do it. Yay?
+    Dim i As Long, tmpByte As Byte
+    For i = 0 To 3
+        GetMem1 VarPtr(ReadDouble_BE) + i, tmpByte
+        GetMem1_Ptr VarPtr(ReadDouble_BE) + (7 - i), VarPtr(ReadDouble_BE) + i
+        PutMem1 VarPtr(ReadDouble_BE) + (7 - i), tmpByte
+    Next i
+    
+End Function
+
 'Read a series of one-byte values from the stream, and treat the chars as if they are individual ASCII codes.
 ' A proper BSTR is returned.  If the requested length is invalid (i.e. it extends beyond the end of the stream),
 ' a null string will be returned, *not* a partial string.

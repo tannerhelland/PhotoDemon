@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 30/January/19
-'Last update: add support for 32-bit channels (all color modes!)
+'Last updated: 02/February/19
+'Last update: add support for layer masks.  (These get merged into the layer's alpha channel at import time.)
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -41,10 +41,10 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
 ' version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = True
+Private Const PSD_DEBUG_VERBOSE As Boolean = False
 
-'Various rects; these have been translated to the proper order (Adobe uses top/left/bottom/right order)
-Private m_Rect As RectL, m_MaskRect As RectL, m_RealMaskRect As RectL
+'Layer rect, automatically translated to the proper order (Adobe uses top/left/bottom/right order)
+Private m_Rect As RectL
 
 'Channel count can vary on a per-layer basis
 Private m_ChannelCount As Long
@@ -132,6 +132,22 @@ Private m_LayerDIB As pdDIB
 ' unused in any other color mode.)
 Private m_FinalChannelDIBs() As pdDIB, m_FinalChannelIDs() As PSD_ChannelID, m_FinalChannelCount As Long
 
+'If layer mask data is present, these trackers will be set to TRUE and relevant mask parameters will be auto-filled
+Private m_LayerMaskExists As Boolean, m_RealLayerMaskExists As Boolean
+Private Type LayerMaskData
+    lmRect As RectL
+    lmDefaultColor As Byte
+    lmFlags As Byte
+    lmParameters As Byte
+    lmUserMaskDensity As Byte
+    lmUserMaskFeather As Double
+    lmVectorMaskFeather As Double   'This and the next parameter appear in the file in opposite order; I've reversed
+    lmVectorMaskDensity As Byte     ' them here to avoid unwanted struct padding complications
+    lmPadding1 As Byte
+    lmParametersLoaded As Boolean
+End Type
+Private m_LayerMaskData As LayerMaskData, m_RealLayerMaskData As LayerMaskData
+
 Friend Function DoesLayerHaveUsableData() As Boolean
     DoesLayerHaveUsableData = (m_ChannelCount > 0) And ((m_Rect.Right - m_Rect.Left) <> 0) And ((m_Rect.Bottom - m_Rect.Top) <> 0)
     If DoesLayerHaveUsableData Then
@@ -214,28 +230,45 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     
     'AFAIK, all bit-depths and color modes are now fully covered by PhotoDemon's importer.
     'If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Bit-depth and color mode are supported; attempting to decode now..."
-    
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
+    
+    'Many images may not contain alpha channels.  For these images, we don't want to waste time premultiplying
+    ' alpha after converting the data to RGBA.  Image constructor will modify this value if alpha is encountered.
+    Dim imageHasAlpha As Boolean
+    imageHasAlpha = False
     
     'Image construction varies greatly depending on the format of the input data.  To better handle the unique needs
     ' of each color format, handling is sorted by color mode.  (This allows for acceleration that would otherwise
     ' be impractical in a "universal" image constructor.)
     If (imgColorMode = cm_RGB) Then
-        ConstructImage = ConstructImage_RGB(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        ConstructImage = ConstructImage_RGB(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_CMYK) Then
-        ConstructImage = ConstructImage_CMYK(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        ConstructImage = ConstructImage_CMYK(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_Grayscale) Or (imgColorMode = cm_Indexed) Or (imgColorMode = cm_Duotone) Or (imgColorMode = cm_Bitmap) Then
-        ConstructImage = ConstructImage_SingleChannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        ConstructImage = ConstructImage_SingleChannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
     
     ElseIf (imgColorMode = cm_Lab) Then
-        ConstructImage = ConstructImage_Lab(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
+        ConstructImage = ConstructImage_Lab(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
         
     ElseIf (imgColorMode = cm_Multichannel) Then
         ConstructImage = ConstructImage_Multichannel(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
         
+    End If
+    
+    'After all meaningful color channels have been assembled, let's perform one final pass to deal with any layer
+    ' masks present in the image.  (The data in layer masks is not contingent on the image's color mode, but they
+    ' *are* contingent on color depth, so we can deal with them in a roughly uniform manner regardless of how
+    ' channel data was encoded.)
+    If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(srcStream, warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+    
+    'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now
+    If imageHasAlpha Then
+        m_LayerDIB.SetAlphaPremultiplication True
+    Else
+        m_LayerDIB.SetInitialAlphaPremultiplicationState True
     End If
     
     If PSD_DEBUG_VERBOSE Then
@@ -252,7 +285,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_CMYK = psd_Success
     On Error GoTo InternalVBError
@@ -276,19 +309,11 @@ Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningS
         Exit Function
     End If
     
-    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
-    Dim alphaPresent As Boolean
-    alphaPresent = False
-    
-    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
-    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
-    ' so maybe a separate tracker for layer masks specifically is a better idea?
-    
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
     ' without an obvious RGB mapping.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
-        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidKey) Then alphaPresent = True
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidKey) Then imageHasAlpha = True
     Next i
     
     'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
@@ -348,7 +373,7 @@ Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningS
     ' then color-manage, interleave, swizzle, and (when necessary) swap endianness while merging the data
     ' into the final image buffer.
     Dim tmpPlanarBuffer() As Byte, srcLineSize As Long
-    If alphaPresent Then srcLineSize = channelScanlineSize * 5 Else srcLineSize = channelScanlineSize * 4
+    If imageHasAlpha Then srcLineSize = channelScanlineSize * 5 Else srcLineSize = channelScanlineSize * 4
     ReDim tmpPlanarBuffer(0 To srcLineSize - 1) As Byte
     
     'Prep source and destination ICC profiles
@@ -370,7 +395,7 @@ Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningS
     ElseIf (bytesPerChannel = 4) Then
         srcColorMode = TYPE_CMYK_FLT Or FLAG_PLANAR
     End If
-    If alphaPresent Then srcColorMode = srcColorMode Or FLAG_ALPHAPRESENT
+    If imageHasAlpha Then srcColorMode = srcColorMode Or FLAG_ALPHAPRESENT
     
     'Photoshop defines CMYK data as vanilla (e.g. 0 is white, 1 is black)
     srcColorMode = srcColorMode Or FLAG_MINISWHITE
@@ -394,24 +419,15 @@ Private Function ConstructImage_CMYK(ByRef srcStream As pdStream, ByRef warningS
     Next y
     
     'Free all source channel data to relieve memory pressure
-    For x = 0 To Abs(m_ChannelCount) - 1
-        Erase m_Channels(x).ciDataDecoded
-    Next x
+    If (cIndex >= 0) Then Erase m_Channels(cIndex).ciDataDecoded
+    If (mIndex >= 0) Then Erase m_Channels(mIndex).ciDataDecoded
+    If (yIndex >= 0) Then Erase m_Channels(yIndex).ciDataDecoded
+    If (kIndex >= 0) Then Erase m_Channels(kIndex).ciDataDecoded
+    If (aIndex >= 0) Then Erase m_Channels(aIndex).ciDataDecoded
     
     If PSD_DEBUG_VERBOSE Then
         PDDebug.LogAction "Image assembly took: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
-    End If
-    
-    'If meaningful alpha data exists in the file, premultiply it now
-    If alphaPresent Then
-        m_LayerDIB.SetAlphaPremultiplication True
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    Else
-        m_LayerDIB.SetInitialAlphaPremultiplicationState True
     End If
     
     Exit Function
@@ -423,7 +439,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_Lab = psd_Success
     On Error GoTo InternalVBError
@@ -441,19 +457,11 @@ Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningSt
     iccAvailable = (Not srcProfile Is Nothing)
     If iccAvailable Then iccAvailable = srcProfile.HasICCData()
     
-    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
-    Dim alphaPresent As Boolean
-    alphaPresent = False
-    
-    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
-    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
-    ' so maybe a separate tracker for layer masks specifically is a better idea?
-    
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
-    ' without an obvious RGB mapping.
+    ' without an obvious color channel mapping.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
-        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then alphaPresent = True
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then imageHasAlpha = True
     Next i
     
     'Unlike other color modes, Lab images are tricky because an accurate reconstruction depends on full
@@ -580,7 +588,7 @@ Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningSt
     If (bIndex >= 0) Then Erase m_Channels(bIndex).ciDataDecoded
     
     'Our final step is to copy alpha data, if any, into the image buffer.
-    If alphaPresent Then
+    If imageHasAlpha Then
         
         Dim tmpBytes() As Byte, tmpSA As SafeArray1D
     
@@ -589,17 +597,10 @@ Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningSt
             
             With m_Channels(chIndex)
                 
-                'There are a lot of reasons to ignore a given channel:
-                ' 1) Channel data wasn't decoded successfully
-                ' 2) Channel doesn't contribute pixel data to the final image (e.g. adjustment layers)
-                ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
                 If (Not .ciDecodedOK) Then GoTo SkipChannel
                 If (.ciDataLength = 0) Then GoTo SkipChannel
-                If (.ciID < cidAlpha) Then
-                    warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
-                    GoTo SkipChannel
-                End If
-            
+                If (.ciID < cidAlpha) Then GoTo SkipChannel
+                
                 'Make sure this is an alpha channel
                 Dim cOffset As Long
                 If (.ciID = cidAlpha) Or (.ciID > cidLabB) Then
@@ -630,9 +631,26 @@ Private Function ConstructImage_Lab(ByRef srcStream As pdStream, ByRef warningSt
                         Next x
                         Next y
                     
-                    '32-bit channel remains TODO
+                    '32-bit channel
                     ElseIf (bytesPerChannel = 4) Then
-
+                            
+                        Dim tmpSingle As Single
+                        For y = 0 To layerHeight - 1
+                            tmpSA.pvData = scanStart + (scanWidth * y)
+                            ySrcOffset = y * layerWidth * 4
+                        For x = 0 To xLoopEnd
+                        
+                            'Extract the source data into a single-type value
+                            GetMem4_Ptr VarPtr(.ciDataDecoded(ySrcOffset + x * 4)), VarPtr(tmpSingle)
+                            
+                            'Clamp for safety before assigning
+                            If (tmpSingle < 0!) Then tmpSingle = 0!
+                            If (tmpSingle > 1!) Then tmpSingle = 1!
+                            tmpBytes(x * 4 + 3) = Int(tmpSingle * 255!)
+                            
+                        Next x
+                        Next y
+                        
                     End If
                     
                     'Manually free our unsafe array wrapper before proceeding, and immediately free our source data
@@ -652,17 +670,6 @@ SkipChannel:
     If PSD_DEBUG_VERBOSE Then
         PDDebug.LogAction "Lab transform took: " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
-    End If
-    
-    'If meaningful alpha data exists in the file, premultiply it now
-    If alphaPresent Then
-        m_LayerDIB.SetAlphaPremultiplication True
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    Else
-        m_LayerDIB.SetInitialAlphaPremultiplicationState True
     End If
     
     Exit Function
@@ -763,10 +770,7 @@ Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef 
             ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
             If (Not .ciDecodedOK) Then GoTo SkipChannel
             If (.ciDataLength = 0) Then GoTo SkipChannel
-            If (.ciID < cidAlpha) Then
-                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
-                GoTo SkipChannel
-            End If
+            If (.ciID < cidAlpha) Then GoTo SkipChannel
             
             'Prepare a target image for this channel
             ReDim Preserve m_FinalChannelDIBs(0 To m_FinalChannelCount) As pdDIB
@@ -828,7 +832,7 @@ Private Function ConstructImage_Multichannel(ByRef srcStream As pdStream, ByRef 
                 End If
                 
                 m_FinalChannelDIBs(m_FinalChannelCount).UnwrapLongArrayFromDIB tmpLongs
-                m_FinalChannelDIBs(m_FinalChannelCount).SetAlphaPremultiplication True
+                m_FinalChannelDIBs(m_FinalChannelCount).SetInitialAlphaPremultiplicationState True
                 
                 m_FinalChannelCount = m_FinalChannelCount + 1
                 
@@ -859,7 +863,7 @@ InternalVBError:
     
 End Function
 
-Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_RGB = psd_Success
     On Error GoTo InternalVBError
@@ -877,19 +881,11 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
     iccAvailable = (Not srcProfile Is Nothing)
     If iccAvailable Then iccAvailable = srcProfile.HasICCData()
     
-    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
-    Dim alphaPresent As Boolean
-    alphaPresent = False
-    
-    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
-    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
-    ' so maybe a separate tracker for layer masks specifically is a better idea?
-    
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
-    ' without an obvious RGB mapping.
+    ' with a positive ID, but no corresponding RGB mapping.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
-        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then alphaPresent = True
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidBlue) Then imageHasAlpha = True
     Next i
     
     'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
@@ -938,22 +934,26 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
         rIndex = -1: gIndex = -1: bIndex = -1: aIndex = -1
         
         For x = 0 To Abs(m_ChannelCount) - 1
-            If (m_Channels(x).ciID = cidBlue) Then
-                bIndex = x
-            ElseIf (m_Channels(x).ciID = cidGreen) Then
-                gIndex = x
-            ElseIf (m_Channels(x).ciID = cidRed) Then
-                rIndex = x
-            ElseIf (m_Channels(x).ciID = cidAlpha) Or (m_Channels(x).ciID > cidBlue) Then
-                aIndex = x
-            End If
+            With m_Channels(x)
+                If .ciDecodedOK Then
+                    If (.ciID = cidBlue) Then
+                        bIndex = x
+                    ElseIf (.ciID = cidGreen) Then
+                        gIndex = x
+                    ElseIf (.ciID = cidRed) Then
+                        rIndex = x
+                    ElseIf (.ciID = cidAlpha) Or (.ciID > cidBlue) Then
+                        aIndex = x
+                    End If
+                End If
+            End With
         Next x
         
         'Prep a temporary buffer.  We'll assemble each scanline into a contiguous planar chunk in this buffer,
         ' then color-manage, interleave, swizzle, and (when necessary) swap endianness while merging the data
         ' into the final image buffer.
         Dim tmpPlanarBuffer() As Byte, srcLineSize As Long
-        If alphaPresent Then srcLineSize = channelScanlineSize * 4 Else srcLineSize = channelScanlineSize * 3
+        If imageHasAlpha Then srcLineSize = channelScanlineSize * 4 Else srcLineSize = channelScanlineSize * 3
         ReDim tmpPlanarBuffer(0 To srcLineSize - 1) As Byte
         
         'Prep source and destination ICC profiles
@@ -975,7 +975,7 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
         ElseIf (bytesPerChannel = 4) Then
             srcColorMode = TYPE_RGB_FLT Or FLAG_PLANAR
         End If
-        If alphaPresent Then srcColorMode = srcColorMode Or FLAG_ALPHAPRESENT
+        If imageHasAlpha Then srcColorMode = srcColorMode Or FLAG_ALPHAPRESENT
         
         Set lcmsTransform = New pdLCMSTransform
         lcmsTransform.CreateTwoProfileTransform lcmsSrcProfile, lcmsDstProfile, srcColorMode, TYPE_BGRA_8, lcmsSrcProfile.GetRenderingIntent(), cmsFLAGS_BLACKPOINTCOMPENSATION Or cmsFLAGS_COPY_ALPHA
@@ -994,6 +994,12 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
             
         Next y
         
+        'Channel data is potentially huge; free all of it before exiting
+        If (rIndex >= 0) Then Erase m_Channels(rIndex).ciDataDecoded
+        If (gIndex >= 0) Then Erase m_Channels(gIndex).ciDataDecoded
+        If (bIndex >= 0) Then Erase m_Channels(bIndex).ciDataDecoded
+        If (aIndex >= 0) Then Erase m_Channels(aIndex).ciDataDecoded
+        
     'No embedded color profile.  Swizzle and interleave manually on a channel-by-channel basis.
     Else
         
@@ -1009,10 +1015,7 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
                 ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
                 If (Not .ciDecodedOK) Then GoTo SkipChannel
                 If (.ciDataLength = 0) Then GoTo SkipChannel
-                If (.ciID < cidAlpha) Then
-                    warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
-                    GoTo SkipChannel
-                End If
+                If (.ciID < cidAlpha) Then GoTo SkipChannel
                 
                 'Channel order in the file is not guaranteed, so we'll need to manually swizzle based on channel ID.
                 Dim cOffset As Long, ySrcOffset As Long, xLoopEnd As Long
@@ -1055,7 +1058,7 @@ Private Function ConstructImage_RGB(ByRef srcStream As pdStream, ByRef warningSt
                 
                 '32-bit channels are not supported if an ICC profile is missing, as a manual transform will
                 ' produce a garbage-quality image.  (PSDs from Photoshop will *always* have an ICC profile
-                ' attached, so this is only relevant to garbage-quality 3rd-party implementations.)
+                ' attached, so this is only relevant to bad 3rd-party implementations.)
                 ElseIf (bytesPerChannel = 4) Then
                     warningStack.AddString "32-bit channels require an ICC profile for correct assembly."
                 End If
@@ -1081,17 +1084,6 @@ SkipChannel:
         VBHacks.GetHighResTime startTime
     End If
     
-    'If meaningful alpha data exists in the file, premultiply it now
-    If alphaPresent Then
-        m_LayerDIB.SetAlphaPremultiplication True
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    Else
-        m_LayerDIB.SetInitialAlphaPremultiplicationState True
-    End If
-    
     Exit Function
     
 InternalVBError:
@@ -1103,7 +1095,7 @@ End Function
 
 'Grayscale, duotone, and indexed images share a unified load function.  (Monochrome images are also handled here,
 ' with their encoding having been silently "upsampled" to grayscale in a previous stage.)
-Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD) As PD_PSDResult
+Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
 
     ConstructImage_SingleChannel = psd_Success
     On Error GoTo InternalVBError
@@ -1125,30 +1117,12 @@ Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef
         Set lcmsSrcProfile = New pdLCMSProfile: Set lcmsDstProfile = New pdLCMSProfile: Set lcmsTransform = New pdLCMSTransform
     End If
     
-    'If there's no embedded alpha channel, we can skip certain processing steps; determine alpha status now
-    Dim alphaPresent As Boolean
-    alphaPresent = False
-    
-    'TODO: figure out if we want to account for layer masks here; we technically don't need to, as the mask
-    ' gets assembled separately and "composited" over the top - but we *would* need to premultiply in that case,
-    ' so maybe a separate tracker for layer masks specifically is a better idea?
-    
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
     ' without an obvious RGB mapping.
     Dim i As Long
     For i = 0 To Abs(m_ChannelCount) - 1
-        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidIndexed) Then alphaPresent = True
+        If (m_Channels(i).ciID = cidAlpha) Or (m_Channels(i).ciID > cidIndexed) Then imageHasAlpha = True
     Next i
-    
-    'In earlier builds, I attempted to construct an lcms transform very early in the assembly process,
-    ' then use that transform to merge all assembly steps into a single color-managed transform handled
-    ' by lcms.  This proved doubly problematic: it takes a *lot* of memory to assemble a complete planar
-    ' representation of large 16-bit PSD files, and lcms is unpredictable about converting planar data
-    ' to interleaved while simultaneously changing bit-depth.  (This isn't surprising, given what a weird
-    ' edgecase it is.)  As such, PD now takes the slower but much safer route of manually downsampling
-    ' the PSD data channel-by-channel into the final image buffer, then color-managing the final 8-bit
-    ' buffer as a final step.  This solves all reliability issues and greatly reduces memory presssure,
-    ' so I'm content to keep it as PD's "permanent" solution.
     
     'Layer dimensions determine the size of the constructed layer, obviously; layer sizes are completely independent
     ' of the parent image.
@@ -1205,10 +1179,7 @@ Private Function ConstructImage_SingleChannel(ByRef srcStream As pdStream, ByRef
             ' 3) Layer masks, which have to be handled separately due to custom size and layout considerations
             If (Not .ciDecodedOK) Then GoTo SkipChannel
             If (.ciDataLength = 0) Then GoTo SkipChannel
-            If (.ciID < cidAlpha) Then
-                warningStack.AddString "Found a layer mask, but PD can't interpret these yet - sorry."
-                GoTo SkipChannel
-            End If
+            If (.ciID < cidAlpha) Then GoTo SkipChannel
             
             'Monochrome layers are a special case.  If encountered, it's easiest to expand them to an 8-bit stream
             ' and treat the results as grayscale.  (This allows us to reuse our grayscale converter "as-is".)
@@ -1346,7 +1317,7 @@ SkipChannel:
     Next chIndex
     
     'If alpha is present, repeat the above steps, looking for alpha channels specifically.
-    If alphaPresent Then
+    If imageHasAlpha Then
         
         For chIndex = 0 To Abs(m_ChannelCount) - 1
             
@@ -1455,23 +1426,221 @@ SkipChannelAlpha:
         
     End If
     
-    'If meaningful alpha data exists in the file, premultiply it now
-    If alphaPresent Then
-        m_LayerDIB.SetAlphaPremultiplication True
-        If PSD_DEBUG_VERBOSE Then
-            PDDebug.LogAction "Alpha premultiplication took: " & VBHacks.GetTimeDiffNowAsString(startTime)
-            VBHacks.GetHighResTime startTime
-        End If
-    Else
-        m_LayerDIB.SetInitialAlphaPremultiplicationState True
-    End If
-    
     Exit Function
     
 InternalVBError:
     InternalError "ConstructImage_SingleChannel", "internal VB error #" & Err.Number & ": " & Err.Description
     warningStack.AddString "Internal error in ConstructImage_SingleChannel, #" & Err.Number & ": " & Err.Description
     ConstructImage_SingleChannel = psd_Failure
+    
+End Function
+
+Private Function ConstructLayerMasks(ByRef srcStream As pdStream, ByRef warningStack As pdStringStack, ByVal imageIsPSB As Boolean, ByVal bitsPC As Long, ByVal imgColorMode As PSD_ColorMode, ByRef srcProfile As pdICCProfile, ByRef parentPSD As pdPSD, ByRef imageHasAlpha As Boolean) As PD_PSDResult
+
+    ConstructLayerMasks = psd_Success
+    On Error GoTo InternalVBError
+    
+    'Perform a few failsafe checks to detect any issues that arose during channel assembly
+    Dim exitEarly As Boolean: exitEarly = False
+    If (m_LayerDIB Is Nothing) Then exitEarly = True
+    If (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Then exitEarly = True
+    
+    'Multichannel images have unique constraints; I have not seen a multichannel + mask image "in the wild",
+    ' and I'd like to have one for testing before enabling mask + multichannel behavior.
+    If (imgColorMode = cm_Multichannel) Then exitEarly = True
+    
+    If exitEarly Then
+        ConstructLayerMasks = psd_Warning
+        Exit Function
+    End If
+    
+    'Before proceeding further, see if this layer even contains masks
+    Dim i As Long, maskFound As Boolean
+    For i = 0 To Abs(m_ChannelCount) - 1
+        If (m_Channels(i).ciID = cidUserLayerMask) Or (m_Channels(i).ciID = cidRealUserLayerMask) Then maskFound = True
+    Next i
+    
+    If (Not maskFound) Then
+        ConstructLayerMasks = psd_Success
+        Exit Function
+    Else
+        imageHasAlpha = maskFound
+    End If
+    
+    'If we're still here, one (or more) masks were found.
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Interpretation of the underlying data depends on bit-depth, obviously
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (bitsPC \ 8)
+    
+    'Unlike color channels, which inherit the dimensions of their parent layer, layer masks provide their
+    ' own dimensions.  These are not constrained by layer dimensions, and areas exclusive to the mask rect
+    ' have a pre-defined value of 0 or 255 (defined by a separate value in the underlying PSD).
+    Dim maskWidth As Long, maskHeight As Long
+    
+    'Prep pointers into the destination image; we'll obviously need these to properly apply the layer mask
+    Dim x As Long, y As Long
+    Dim tmpBytes() As Byte, tmpLongs() As Long, tmpSA As SafeArray1D
+    Dim scanStart As Long, scanWidth As Long, xLoopEnd As Long, ySrcOffset As Long
+    scanStart = m_LayerDIB.GetDIBPointer()
+    scanWidth = m_LayerDIB.GetDIBStride()
+    
+    'Iterate through all channels, looking for mask data
+    Dim chIndex As Long
+    For chIndex = 0 To Abs(m_ChannelCount) - 1
+        
+        With m_Channels(chIndex)
+            
+            'As with normal layers, skip any channels that had decoding failures
+            If (Not .ciDecodedOK) Then GoTo SkipChannel
+            If (.ciDataLength = 0) Then GoTo SkipChannel
+            If (.ciID >= cidAlpha) Then GoTo SkipChannel
+            If (.ciID <> cidUserLayerMask) And (.ciID <> cidRealUserLayerMask) Then GoTo SkipChannel
+            
+            'Boundaries are unique to each layer mask ID
+            If (.ciID = cidUserLayerMask) Then
+                maskWidth = m_LayerMaskData.lmRect.Right - m_LayerMaskData.lmRect.Left
+                maskHeight = m_LayerMaskData.lmRect.Bottom - m_LayerMaskData.lmRect.Top
+            ElseIf (.ciID = cidRealUserLayerMask) Then
+                maskWidth = m_RealLayerMaskData.lmRect.Right - m_RealLayerMaskData.lmRect.Left
+                maskHeight = m_RealLayerMaskData.lmRect.Bottom - m_RealLayerMaskData.lmRect.Top
+            End If
+            
+            'Special flags inside the mask section can indicate that a mask is "disabled"; if it is, we want to ignore it
+            Dim maskDisabled As Boolean
+            maskDisabled = False
+            If (.ciID = cidUserLayerMask) Then
+                If ((m_LayerMaskData.lmFlags And &H2&) <> 0) Then maskDisabled = True
+            ElseIf (.ciID = cidRealUserLayerMask) Then
+                If ((m_RealLayerMaskData.lmFlags And &H2&) <> 0) Then maskDisabled = True
+            End If
+            
+            If maskDisabled Then GoTo SkipChannel
+            
+            'There are a lot of different ways to go about applying the mask to the image.  AFAIK, no guarantees
+            ' are made about things like rect intersections between the mask and layer, although common sense
+            ' suggests the layer is typically inclusive of the mask... but this is a PSD, so expect the worst.
+            
+            'To simplify handling (especially for the case where a mask obscures a large portion of the layer
+            ' via the "default color" mask byte), let's prep a full buffer at the size of the layer, fill it with
+            ' the default value, then simply overwrite the relevant rect with the mask's actual data.
+            Dim tmpBuffer() As Byte
+            ReDim tmpBuffer(0 To m_LayerDIB.GetDIBWidth - 1, 0 To m_LayerDIB.GetDIBHeight - 1) As Byte
+            If (.ciID = cidUserLayerMask) Then
+                FillMemory VarPtr(tmpBuffer(0, 0)), m_LayerDIB.GetDIBWidth * m_LayerDIB.GetDIBHeight, m_LayerMaskData.lmDefaultColor
+            ElseIf (.ciID = cidRealUserLayerMask) Then
+                FillMemory VarPtr(tmpBuffer(0, 0)), m_LayerDIB.GetDIBWidth * m_LayerDIB.GetDIBHeight, m_RealLayerMaskData.lmDefaultColor
+            End If
+            
+            'There's a bit in the layer flags that supposedly indicates whether the mask position is in absolute
+            ' vs relative coordinates (to its parent layer).  Limited testing shows that this bit doesn't seem
+            ' to matter, but if someone can turn up an image that shows otherwise, I'd be happy to modify this code.
+            Dim rIntersect As RectL
+            Dim srcMaskRect As RectL
+            If (.ciID = cidUserLayerMask) Then srcMaskRect = m_LayerMaskData.lmRect Else srcMaskRect = m_RealLayerMaskData.lmRect
+            
+            'By default, mask rects are in IMAGE coordinates - not LAYER coordinates.  Modify this now by adding layer
+            ' offsets to the mask rectangle.
+            srcMaskRect.Left = srcMaskRect.Left - m_Rect.Left
+            srcMaskRect.Right = srcMaskRect.Right - m_Rect.Left
+            srcMaskRect.Top = srcMaskRect.Top - m_Rect.Top
+            srcMaskRect.Bottom = srcMaskRect.Bottom - m_Rect.Top
+            
+            'Ensure the layer and mask overlap (and also, *where* they overlap)
+            If PDMath.IntersectRectL(rIntersect, PopulateRectL(0, 0, m_LayerDIB.GetDIBWidth - 1, m_LayerDIB.GetDIBHeight - 1), srcMaskRect) Then
+            
+                'We now need to merge the mask data with the "default color" array.  Handling varies by
+                ' parent layer color depth.
+                Dim mOffsetLeft As Long, mOffsetTop As Long
+                mOffsetLeft = srcMaskRect.Left
+                mOffsetTop = srcMaskRect.Top
+                
+                '8-bit channel
+                If (bytesPerChannel = 1) Then
+                    
+                    For y = rIntersect.Top To rIntersect.Bottom - 1
+                    For x = rIntersect.Left To rIntersect.Right - 1
+                        tmpBuffer(x, y) = .ciDataDecoded((y - mOffsetTop) * maskWidth + (x - mOffsetLeft))
+                    Next x
+                    Next y
+                    
+                '16-bit channel
+                ElseIf (bytesPerChannel = 2) Then
+                
+                    For y = rIntersect.Top To rIntersect.Bottom
+                    For x = rIntersect.Left To rIntersect.Right
+                        tmpBuffer(x, y) = .ciDataDecoded((y - mOffsetTop) * maskWidth * 2 + (x - mOffsetLeft) * 2)
+                    Next x
+                    Next y
+                    
+                '32-bit (grayscale only, hopefully; other color modes may not produce desirable results)
+                Else
+                    
+                    Dim tmpSingle As Single
+                    For y = rIntersect.Top To rIntersect.Bottom
+                    For x = rIntersect.Left To rIntersect.Right
+                        
+                        'Extract the source data into a single-type value
+                        GetMem4_Ptr VarPtr((y - mOffsetTop) * maskWidth * 2 + (x - mOffsetLeft) * 2), VarPtr(tmpSingle)
+                        
+                        'Clamp for safety before assigning
+                        If (tmpSingle < 0!) Then tmpSingle = 0!
+                        If (tmpSingle > 1!) Then tmpSingle = 1!
+                        tmpBuffer(x, y) = Int(tmpSingle * 255!)
+                        
+                    Next x
+                    Next y
+                    
+                End If
+            
+            'Rects do not overlap; only the "default color" of the mask will be used
+            Else
+                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Mask found, but does not overlap the layer!"
+            End If
+            
+            'Immediately free the source channel data to relieve memory pressure
+            Erase .ciDataDecoded
+            
+            'Actually applying the mask is very simple.  We simply want to multiply any existing alpha values
+            ' by the values found in the mask.
+            Dim layerWidth As Long, layerHeight As Long, alphaValue As Long
+            layerWidth = m_LayerDIB.GetDIBWidth
+            layerHeight = m_LayerDIB.GetDIBHeight
+            
+            m_LayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+            xLoopEnd = layerWidth - 1
+            
+            Const ONE_DIV_255 As Single = 1! / 255!
+            
+            For y = 0 To layerHeight - 1
+                tmpSA.pvData = scanStart + (scanWidth * y)
+                ySrcOffset = y * layerWidth
+            For x = 0 To xLoopEnd
+                tmpSingle = CSng(tmpBuffer(x, y)) * ONE_DIV_255
+                tmpBytes(x * 4 + 3) = Int(CSng(tmpBytes(x * 4 + 3)) * tmpSingle)
+            Next x
+            Next y
+            
+            m_LayerDIB.UnwrapArrayFromDIB tmpBytes
+                    
+        End With
+
+SkipChannel:
+    Next chIndex
+    
+    If PSD_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Mask construction + merge took: " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Exit Function
+    
+InternalVBError:
+    InternalError "ConstructLayerMasks", "internal VB error #" & Err.Number & ": " & Err.Description
+    warningStack.AddString "Internal error in ConstructLayerMasks , #" & Err.Number & ": " & Err.Description
+    ConstructLayerMasks = psd_Failure
     
 End Function
 
@@ -1486,9 +1655,10 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
     On Error GoTo InternalVBError
     
     'Decoded data size is contingent on the layer's rectangle
+    Dim origLayerWidth As Long, origLayerHeight As Long
     Dim layerWidth As Long, layerHeight As Long
-    layerWidth = m_Rect.Right - m_Rect.Left
-    layerHeight = m_Rect.Bottom - m_Rect.Top
+    origLayerWidth = m_Rect.Right - m_Rect.Left
+    origLayerHeight = m_Rect.Bottom - m_Rect.Top
     
     'Layers will typically match the color-mode and bit-depth of the parent image, but it can be
     ' convenient to adjust these "on-the-fly" (e.g. bitmap/monochrome layers are inconvenient to
@@ -1506,6 +1676,10 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
         chnColorMode = imgColorMode
         chnBitDepth = bitsPC
         
+        'Same goes for layer dimensions
+        layerWidth = origLayerWidth
+        layerHeight = origLayerHeight
+        
         With m_Channels(i)
             
             'Failsafe reset of decoding results; this tells subsequent steps to ignore this layer's data
@@ -1517,8 +1691,31 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                 GoTo SkipChannel
             End If
             
-            'Layer masks represent a significant complication; we will deal with them in the future
+            'Layer masks are *not* required to have the same dimensions as their parent layer.  (In fact, they are
+            ' often significantly smaller.)  If one is found, silently substitute the mask's dimensions in place of
+            ' the layer ones; this ensures that decompression doesn't overrun boundaries.
             If (.ciID < cidAlpha) Then
+                
+                If (.ciID = cidUserLayerMask) Then
+                    With m_LayerMaskData.lmRect
+                        layerWidth = (.Right - .Left)
+                        layerHeight = (.Bottom - .Top)
+                    End With
+                ElseIf (.ciID = cidRealUserLayerMask) Then
+                    With m_RealLayerMaskData.lmRect
+                        layerWidth = (.Right - .Left)
+                        layerHeight = (.Bottom - .Top)
+                    End With
+                Else
+                    .ciDecodedOK = False
+                    GoTo SkipChannel
+                End If
+                
+                'Perform a final check to ensure calculated boundaries are acceptable
+                If (layerWidth <= 0) Or (layerHeight <= 0) Then
+                    .ciDecodedOK = False
+                    GoTo SkipChannel
+                End If
                 
                 'TODO: calculate special decoding rect, as it is *not* the same as the regular rect.  We also have to
                 ' deal with crap like "default color" which determines whether the encoded data represents hiding
@@ -1528,8 +1725,8 @@ Friend Function DecodeChannels(ByRef srcStream As pdStream, ByRef warningStack A
                 '    Debug.Print m_MaskRect.Left, m_MaskRect.Top, m_MaskRect.Right - m_MaskRect.Left, m_MaskRect.Bottom - m_MaskRect.Top
                 '    Debug.Print m_RealMaskRect.Left, m_RealMaskRect.Top, m_RealMaskRect.Right - m_RealMaskRect.Left, m_RealMaskRect.Bottom - m_RealMaskRect.Top
                 'End If
-                .ciDecodedOK = False
-                GoTo SkipChannel
+                '.ciDecodedOK = False
+                'GoTo SkipChannel
                 
             End If
             
@@ -2431,7 +2628,7 @@ Private Function ParseLayerMaskAdjustmentData(ByRef srcStream As pdStream, ByRef
     ' reset the pointer at the end of this segment.
     
     'Layer mask rect, in "top, left, bottom, right" order
-    With m_MaskRect
+    With m_LayerMaskData.lmRect
         .Top = srcStream.ReadLong_BE()
         .Left = srcStream.ReadLong_BE()
         .Bottom = srcStream.ReadLong_BE()
@@ -2442,7 +2639,7 @@ Private Function ParseLayerMaskAdjustmentData(ByRef srcStream As pdStream, ByRef
     ' to keep the parser properly aligned.
     
     'Default color (can only be 0 or 255; not current validated)
-    srcStream.ReadByte
+    m_LayerMaskData.lmDefaultColor = srcStream.ReadByte()
     
     'Flags
     ' bit 0 = position relative to layer
@@ -2450,30 +2647,57 @@ Private Function ParseLayerMaskAdjustmentData(ByRef srcStream As pdStream, ByRef
     ' bit 2 = invert layer mask when blending (Obsolete)
     ' bit 3 = indicates that the user mask actually came from rendering other data
     ' bit 4 = indicates that the user and/or vector masks have parameters applied to them
-    Dim maskFlags As Byte
-    maskFlags = srcStream.ReadByte()
+    m_LayerMaskData.lmFlags = srcStream.ReadByte()
+    
+    m_LayerMaskExists = True
     
     'Per the spec, "[2 bytes] Padding. Only present if size = 20"
     If (segmentLength = 20) Then
         srcStream.SetPosition 2, FILE_CURRENT
         
-    'When size=36, the padding is instead replaced by usable data
+    'When size > 20, padding may instead be replaced by usable data
     Else
         
-        'Real Flags. Same as Flags information above.
-        srcStream.ReadByte
+        If (srcStream.GetPosition() <= expectedFinalPointer - 18) Then
+            
+            'Real Flags. Same as Flags information above.
+            m_RealLayerMaskData.lmFlags = srcStream.ReadByte()
+            
+            'Real user mask background.  Must be 0 or 255 (not currently validated).
+            m_RealLayerMaskData.lmDefaultColor = srcStream.ReadByte()
+            
+            'Rectangle enclosing the real user mask
+            With m_RealLayerMaskData.lmRect
+                .Top = srcStream.ReadLong_BE()
+                .Left = srcStream.ReadLong_BE()
+                .Bottom = srcStream.ReadLong_BE()
+                .Right = srcStream.ReadLong_BE()
+            End With
+            
+            'Mark the "real" layer mask as existing
+            m_RealLayerMaskExists = True
+            
+        End If
         
-        'Real user mask background.  Must be 0 or 255 (not currently validated).
-        srcStream.ReadByte
+    End If
+    
+    'Now the spec has this wrong, but after the real layer mask data, there can potentially be more information.
+    ' This information is contingent on the m_LayerMaskData.lmFlags byte, above:
+    ' "1 byte | Mask Parameters. Only present if bit 4 of Flags set above."
+    If ((m_LayerMaskData.lmFlags And &H10&) <> 0) And (srcStream.GetPosition < expectedFinalPointer) Then
+
+        With m_LayerMaskData
+            .lmParameters = srcStream.ReadByte()
+            .lmParametersLoaded = True
         
-         'Rectangle enclosing the real user mask
-        With m_RealMaskRect
-            .Top = srcStream.ReadLong_BE()
-            .Left = srcStream.ReadLong_BE()
-            .Bottom = srcStream.ReadLong_BE()
-            .Right = srcStream.ReadLong_BE()
+            'The parameters byte determines the presence of even MORE data.  (Whoever thought up this
+            ' segment of the file should be smacked; saving a few bytes is not worth this much trouble.)
+            If ((.lmParameters And &H1&) <> 0) Then .lmUserMaskDensity = srcStream.ReadByte()
+            If ((.lmParameters And &H2&) <> 0) Then .lmUserMaskFeather = srcStream.ReadDouble_BE()
+            If ((.lmParameters And &H4&) <> 0) Then .lmVectorMaskDensity = srcStream.ReadByte()
+            If ((.lmParameters And &H8&) <> 0) Then .lmVectorMaskFeather = srcStream.ReadDouble_BE()
         End With
-        
+
     End If
     
     'Modern PSDs must have additional data here that is not present in the spec, because I've received
