@@ -317,6 +317,74 @@ Friend Function GetVResolution() As Single
     GetVResolution = m_ResolutionInfo.riVRes
 End Function
 
+'Only valid after LoadPSD has been called
+Friend Function GetBytesPerPixel() As Long
+    
+    Dim bytesPerChannel As Long
+    bytesPerChannel = (m_Header.BitsPerChannel \ 8)
+    
+    'Bits per pixel is a little convoluted to calculate, as it depends on both color mode and color depth
+    ' (and optionally, the presence of alpha).
+    With m_Header
+        If (.ColorMode = cm_Bitmap) Then
+            GetBytesPerPixel = 1
+        ElseIf (.ColorMode = cm_CMYK) Then
+            GetBytesPerPixel = bytesPerChannel * 4
+            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+        ElseIf (.ColorMode = cm_Duotone) Then
+            GetBytesPerPixel = bytesPerChannel
+        ElseIf (.ColorMode = cm_Grayscale) Then
+            GetBytesPerPixel = bytesPerChannel
+            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel * 2
+        ElseIf (.ColorMode = cm_Indexed) Then
+            GetBytesPerPixel = 8
+        ElseIf (.ColorMode = cm_Lab) Then
+            GetBytesPerPixel = bytesPerChannel * 3
+            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+        
+        'Multichannel doesn't have a meaningful analog in PD; treat it as grayscale
+        ElseIf (.ColorMode = cm_Multichannel) Then
+            GetBytesPerPixel = bytesPerChannel
+            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel * 2
+        ElseIf (.ColorMode = cm_RGB) Then
+            GetBytesPerPixel = bytesPerChannel * 3
+            If Me.HasAlpha() Then GetBytesPerPixel = GetBytesPerPixel + bytesPerChannel
+        Else
+            GetBytesPerPixel = 32
+        End If
+    End With
+    
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Function GetColorMode() As PSD_ColorMode
+    GetColorMode = m_Header.ColorMode
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Function HasAlpha() As Boolean
+    Dim i As Long
+    For i = 0 To Abs(m_numOfLayers) - 1
+        If Not (m_Layers(i) Is Nothing) Then
+            If m_Layers(i).HasAlpha Then HasAlpha = True
+        End If
+    Next i
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Function HasICCProfile() As Boolean
+    HasICCProfile = Not (m_Profile Is Nothing)
+End Function
+
+Friend Function GetICCProfile() As pdICCProfile
+    Set GetICCProfile = m_Profile
+End Function
+
+'Only valid after LoadPSD has been called
+Friend Function IsGrayscale() As Boolean
+    IsGrayscale = (m_Header.ColorMode = cm_Grayscale) Or (m_Header.ColorMode = cm_Multichannel)
+End Function
+
 Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage As pdImage) As PD_PSDResult
 
     On Error GoTo InternalVBError

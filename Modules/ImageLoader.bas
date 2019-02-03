@@ -1183,19 +1183,34 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     If LoadPSD Then LoadPSD = (cPSD.LoadPSD(srcFile, dstImage, dstDIB) < psd_Failure)
     
     'Perform some PD-specific object initialization before exiting
-    If LoadPSD Then
+    If LoadPSD And (Not dstImage Is Nothing) Then
         
         dstImage.SetOriginalFileFormat PDIF_PSD
         dstImage.NotifyImageChanged UNDO_Everything
-        dstImage.SetOriginalColorDepth 32
-        dstImage.SetOriginalGrayscale False
-        dstImage.SetOriginalAlpha True
+        dstImage.SetOriginalColorDepth cPSD.GetBytesPerPixel()
+        dstImage.SetOriginalGrayscale cPSD.IsGrayscale()
+        dstImage.SetOriginalAlpha cPSD.HasAlpha()
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank 16, 16, 32, 0
         dstDIB.SetColorManagementState cms_ProfileConverted
+        
+        'Before exiting, ensure all color management data has been added to PD's central cache
+        Dim profHash As String
+        If cPSD.HasICCProfile() Then
+            profHash = ColorManagement.AddProfileToCache(cPSD.GetICCProfile(), True, False, False)
+            dstImage.SetColorProfile_Original profHash
+            
+            'IMPORTANT NOTE: at present, the destination image - by the time we're done with it - will have been
+            ' hard-converted to sRGB, so we don't want to associate the destination DIB with its source profile.
+            ' Instead, note that it is currently sRGB.
+            profHash = ColorManagement.GetSRGBProfileHash()
+            dstDIB.SetColorProfileHash profHash
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+        End If
         
     End If
     

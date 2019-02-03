@@ -667,8 +667,8 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             profHash = ColorManagement.AddProfileToCache(tmpProfile, True, False, False)
             If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
             
-            'IMPORTANT NOTE: at preset, the destination DIB - by the time we're done with it - will have been
-            ' hard-converted to sRGB, so we don't want to associate the destination DIB with it's source profile.
+            'IMPORTANT NOTE: at present, the destination DIB - by the time we're done with it - will have been
+            ' hard-converted to sRGB, so we don't want to associate the destination DIB with its source profile.
             ' Instead, note that it is currently sRGB.
             profHash = ColorManagement.GetSRGBProfileHash()
             dstDIB.SetColorProfileHash profHash

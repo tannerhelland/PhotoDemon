@@ -127,6 +127,11 @@ Private m_LayerNameANSI As String, m_LayerNameUnicode As String
 'The final result of all channel decoding is this pdDIB object, ready for attachment to a pdLayer.
 Private m_LayerDIB As pdDIB
 
+'If the original layer contained transparency data (whether in an alpha channel or layer mask),
+' this will be set to TRUE.  PD hard-converts everything to RGBA format during loading, but when exporting,
+' it can be helpful to know if a fully opaque alpha channel came from the source file or from us.
+Private m_LayerHasAlpha As Boolean
+
 'Multichannel images represent a variation on the above rule.  Instead of creating one DIB, they create several -
 ' one for each channel.  The user can then decide how to assemble these into a final image.  (These values are
 ' unused in any other color mode.)
@@ -213,6 +218,10 @@ Friend Function GetMultiChannelLayerID(ByVal lIndex As Long) As PSD_ChannelID
     GetMultiChannelLayerID = m_FinalChannelIDs(lIndex)
 End Function
 
+Friend Function HasAlpha() As Boolean
+    HasAlpha = m_LayerHasAlpha
+End Function
+
 'After channel data has been decoded (decompressed), it needs to be assembled into a final usable image.
 ' At present, this step is limited to certain color modes and bit-depths, although I am actively expanding coverage.
 ' If you have a PSD file that doesn't work, this step is likely the culprit - attach the PSD file to a new Issue
@@ -235,23 +244,22 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     
     'Many images may not contain alpha channels.  For these images, we don't want to waste time premultiplying
     ' alpha after converting the data to RGBA.  Image constructor will modify this value if alpha is encountered.
-    Dim imageHasAlpha As Boolean
-    imageHasAlpha = False
+    m_LayerHasAlpha = False
     
     'Image construction varies greatly depending on the format of the input data.  To better handle the unique needs
     ' of each color format, handling is sorted by color mode.  (This allows for acceleration that would otherwise
     ' be impractical in a "universal" image constructor.)
     If (imgColorMode = cm_RGB) Then
-        ConstructImage = ConstructImage_RGB(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_RGB(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, m_LayerHasAlpha)
         
     ElseIf (imgColorMode = cm_CMYK) Then
-        ConstructImage = ConstructImage_CMYK(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_CMYK(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, m_LayerHasAlpha)
         
     ElseIf (imgColorMode = cm_Grayscale) Or (imgColorMode = cm_Indexed) Or (imgColorMode = cm_Duotone) Or (imgColorMode = cm_Bitmap) Then
-        ConstructImage = ConstructImage_SingleChannel(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_SingleChannel(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, m_LayerHasAlpha)
     
     ElseIf (imgColorMode = cm_Lab) Then
-        ConstructImage = ConstructImage_Lab(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, imageHasAlpha)
+        ConstructImage = ConstructImage_Lab(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD, m_LayerHasAlpha)
         
     ElseIf (imgColorMode = cm_Multichannel) Then
         ConstructImage = ConstructImage_Multichannel(warningStack, imageIsPSB, bitsPC, imgColorMode, srcProfile, parentPSD)
@@ -262,10 +270,10 @@ Friend Function ConstructImage(ByRef srcStream As pdStream, ByRef warningStack A
     ' masks present in the image.  (The data in layer masks is not contingent on the image's color mode, but they
     ' *are* contingent on color depth, so we can deal with them in a roughly uniform manner regardless of how
     ' channel data was encoded.)
-    If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(warningStack, imageIsPSB, bitsPC, imgColorMode, parentPSD, imageHasAlpha)
+    If (ConstructImage < psd_Failure) Then ConstructImage = ConstructLayerMasks(warningStack, imageIsPSB, bitsPC, imgColorMode, parentPSD, m_LayerHasAlpha)
     
     'If meaningful alpha data exists in the file (in the form of alpha channel(s) or masks), premultiply it now
-    If imageHasAlpha Then
+    If m_LayerHasAlpha Then
         m_LayerDIB.SetAlphaPremultiplication True
     Else
         m_LayerDIB.SetInitialAlphaPremultiplicationState True
