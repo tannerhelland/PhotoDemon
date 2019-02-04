@@ -195,7 +195,7 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                 Dim i As Long, curNodeName As String, curNodeValue As String
                 For i = 0 To xmlRoot.Attributes.Length - 1
                     
-                    curNodeName = LCase$(xmlRoot.Attributes(i).NodeName)
+                    curNodeName = LCase$(xmlRoot.Attributes(i).nodeName)
                     curNodeValue = xmlRoot.Attributes(i).NodeValue
                     
                     Select Case curNodeName
@@ -253,7 +253,7 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                         
                             For j = 0 To listOfLayers(i).Attributes.Length - 1
                                 
-                                curNodeName = LCase$(listOfLayers(i).Attributes(j).NodeName)
+                                curNodeName = LCase$(listOfLayers(i).Attributes(j).nodeName)
                                 curNodeValue = listOfLayers(i).Attributes(j).NodeValue
                                 
                                 Select Case curNodeName
@@ -311,16 +311,51 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
                         
                         'Before creating a layer, we want to first attempt to retrieve the layer's PNG data.
                         ' (If this fails, we'll discard the layer entirely.)
-                        If m_ZipArchive.Extract(tmpPngBytes, layerProps(i).orlSourceFile) Then
-                            
-                            If GENERATE_PERF_REPORTS Then
-                                zipTime = zipTime + VBHacks.GetTimerDifferenceNow(startTime)
-                                VBHacks.GetHighResTime startTime
-                            End If
-                            
+                        
+                        'Many ORA writers (e.g. GIMP, MyPaint) choose to write their PNGs to the zip container as-is,
+                        ' without an additional deflate pass over-the-top.  This is a great idea as deflating a PNG
+                        ' is largely pointless (little size reduction), and it adds unwanted complexity to the
+                        ' extraction process because we effectively have to deflate pixel data twice (zip -> png -> final).
+                        '
+                        'To avoid wasting time "extracting" uncompressed PNGs into a temporary byte array, and then
+                        ' decoding THAT, it makes a lot more sense to simply parse the PNG data directly from its
+                        ' file offset on-disk when we can.  I've added a small "peek" function to cZipArchive to allow
+                        ' us to more easily do this - but note that if the PNG file *is* deflated, we have no choice but
+                        ' to inflate the data to a temporary buffer, *then* decode the resulting PNG.
+                        Dim srcOffset As Long, srcSizeCompressed As Long, srcSizeOriginal As Long, srcIsDeflated As Boolean
+                        If m_ZipArchive.PeekSingleFile(layerProps(i).orlSourceFile, srcOffset, srcSizeCompressed, srcSizeOriginal, srcIsDeflated) Then
+
+                            Dim pngLoadSuccess As Boolean
                             Set tmpDIB = New pdDIB
                             Set cPNG = New pdPNG
-                            If (cPNG.LoadPNG_Simple(vbNullString, Nothing, tmpDIB, False, VarPtr(tmpPngBytes(0)), UBound(tmpPngBytes) + 1) = png_Success) Then
+
+                            'If the source data is compressed, we have no choice but to decompress it into a temporary array.
+                            If srcIsDeflated Then
+                                
+                                If m_ZipArchive.Extract(tmpPngBytes, layerProps(i).orlSourceFile) Then
+                                    
+                                    If GENERATE_PERF_REPORTS Then
+                                        zipTime = zipTime + VBHacks.GetTimerDifferenceNow(startTime)
+                                        VBHacks.GetHighResTime startTime
+                                    End If
+
+                                    pngLoadSuccess = (cPNG.LoadPNG_Simple(vbNullString, Nothing, tmpDIB, False, VarPtr(tmpPngBytes(0)), srcSizeOriginal) = png_Success)
+                                Else
+                                    pngLoadSuccess = False
+                                End If
+                                
+                            'If, however, the source data is *not* compressed (as is common for e.g. OpenRaster files
+                            ' from GIMP), then it's a waste to copy the data into memory.  Instead, load the data
+                            ' directly from the file into our PNG class, bypassing a temporary memory copy completely.
+                            Else
+                                If GENERATE_PERF_REPORTS Then
+                                    zipTime = zipTime + VBHacks.GetTimerDifferenceNow(startTime)
+                                    VBHacks.GetHighResTime startTime
+                                End If
+                                pngLoadSuccess = (cPNG.LoadPNG_Simple(srcFilename, Nothing, tmpDIB, False, offsetInSrcFile:=srcOffset) = png_Success)
+                            End If
+                            
+                            If pngLoadSuccess Then
                                 
                                 If GENERATE_PERF_REPORTS Then
                                     pngTime = pngTime + VBHacks.GetTimerDifferenceNow(startTime)
@@ -391,6 +426,8 @@ Friend Function LoadORA(ByRef srcFilename As String, ByRef dstImage As pdImage) 
         InternalWarning "LoadORA", "Time spent in PNG parsing: " & Format$(pngTime * 1000#, "0.0") & " ms"
         InternalWarning "LoadORA", "Time spent in post-processing: " & Format$(postTime * 1000#, "0.0") & " ms"
     End If
+    
+    Set m_ZipArchive = Nothing
     
     Exit Function
     
@@ -522,6 +559,7 @@ Friend Function SaveORA(ByRef srcPDImage As pdImage, ByVal dstFile As String) As
     
     'And we're done!  Write the finished archive out to disk.
     SaveORA = m_ZipArchive.CompressArchive(ArchiveFile:=dstFile, useUTF8:=vbTrue)
+    Set m_ZipArchive = Nothing
     
     Exit Function
     

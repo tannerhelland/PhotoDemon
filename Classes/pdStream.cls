@@ -362,7 +362,6 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
             m_Open = True
             
         Else
-            
             InternalStreamError "External pointer-backed streams require a non-zero buffer size and pointer."
             m_Open = False
         End If
