@@ -101,7 +101,7 @@ Private m_NumOfChunks As Long
 Private m_Chunks() As pdPNGChunk
 
 'Simplified wrapper to load a PNG automatically.
-Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0) As PD_PNGResult
+Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
     
     'We want to support PNG loading from both file and memory; if the passed loadFromPtr value is non-zero,
     ' treat it as a pointer and we'll wrap our stream around it instead.
@@ -116,7 +116,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
     
     'Try to validate the source file
     Dim keepLoading As PD_PNGResult
-    keepLoading = Me.Step1_ValidatePNG(srcFile, checkExtension)
+    keepLoading = Me.Step1_ValidatePNG(srcFile, checkExtension, offsetInSrcFile)
     
     'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
     ' will cause us to abandon the attempt entirely.)
@@ -151,7 +151,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
 End Function
 
 'The first step toward loading a PNG is validating it.  Do this first, before attempting anything else.
-Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PNGResult
+Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False, Optional ByVal startingOffset As Long = 0) As PD_PNGResult
     
     On Error GoTo InternalVBError
     
@@ -167,9 +167,9 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
     ' mismatches as a failure state.  (Otherwise, it will only raise a warning.)  This step is skipped
     ' if the PNG is loaded directly from memory
     If (m_SourceFilename <> PNG_LOADED_FROM_MEMORY) Then
-        If Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "png", True) Then
+        If Strings.StringsNotEqual(Right$(m_SourceFilename, 3), "png", True) And checkExtension Then
             m_Warnings.AddString "File extension doesn't match PNG"
-            If checkExtension Then okToProceed = png_FileNotPNG Else okToProceed = png_Warning
+            okToProceed = png_FileNotPNG
         End If
     End If
     
@@ -190,30 +190,27 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
         End If
     End If
     
-    'If all pre-checks passed, open a stream.  (For performance reasons, we cache the entire stream
-    ' in-memory instead of streaming it in pieces.)
+    'If all pre-checks passed, open a stream on the file.
     If (okToProceed < png_Failure) Then
+        Set m_Stream = New pdStream
         If (m_SourceFilename = PNG_LOADED_FROM_MEMORY) Then
-            Set m_Stream = New pdStream
             If Not m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_SourcePtrLen, m_SourcePtr) Then
                 m_Warnings.AddString "Couldn't start in-memory stream against passed pointer: " & m_SourcePtr
                 okToProceed = png_Failure
             End If
         Else
-            
-            'For validation purposes, simply wrap a stream around the file; if it validates,
-            ' we'll cache the file in-memory and continue loading from there.
-            Set m_Stream = New pdStream
             If Not m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
                 m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
                 okToProceed = png_Failure
             End If
-            
         End If
     End If
     
     'The stream is open; validate the PNG's "magic number".
     If (okToProceed < png_Failure) Then
+    
+        'If the caller wants us to use a different offset, move the file pointer now
+        If (startingOffset <> 0) Then m_Stream.SetPosition startingOffset, FILE_BEGIN
         
         Dim header1 As Long, header2 As Long
         header1 = m_Stream.ReadLong_BE()
@@ -222,30 +219,7 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
             m_Warnings.AddString "PNG header failed basic validation.  (This is not a PNG file.)"
             okToProceed = png_FileNotPNG
         Else
-            
-            'If we're loading this PNG from file, pre-cache the file in-memory.  (If this fails -
-            ' perhaps due to limited memory - we'll fall back to regular file access.)
-            If (m_SourceFilename <> PNG_LOADED_FROM_MEMORY) Then
-                
-                m_Stream.StopStream
-                Set m_Stream = Nothing
-                
-                Dim streamOK As Boolean
-                streamOK = Files.FileLoadAsPDStream(m_SourceFilename, m_Stream)
-                If (Not streamOK) Then
-                    Set m_Stream = New pdStream
-                    streamOK = m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess)
-                End If
-                
-                'Advance the stream pointer by 8 bytes (to bypass the "magic number" header)
-                If streamOK Then
-                    m_Stream.SetPosition 8&, FILE_BEGIN
-                Else
-                    m_Warnings.AddString "Lost file access after initial validation; file may be locked or in an inaccessible location."
-                    okToProceed = png_Failure
-                End If
-            End If
-            
+            okToProceed = png_Success
         End If
         
     End If
