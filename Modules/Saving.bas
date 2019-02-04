@@ -377,7 +377,11 @@ End Function
 ' (I *DO NOT* recommend calling this function directly.  PD only uses it from within the main _SaveImage function, which also applies
 '  a number of failsafe checks against things like path accessibility and format compatibility.)
 Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
-
+    
+    'Generate perf reports on export; this is useful for regression testing
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
     'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
     ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).
     Dim cParams As pdParamXML
@@ -434,7 +438,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = False
             
     End Select
-
+    
+    If ExportToSpecificFormat Then PDDebug.LogAction "Image export took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    
 End Function
 
 'Save the current image to PhotoDemon's native PDI format
