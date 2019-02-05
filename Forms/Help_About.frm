@@ -281,16 +281,16 @@ Private Sub Form_Load()
     
     'Super patrons
     actualText = g_Language.TranslateMessage("SUPER PATRONS")
-    'If OS.IsWin7OrLater Then
-    '    uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
-    '    GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
-    'Else
-    '    GeneratePatron actualText, , True
-    'End If
+    If OS.IsWin7OrLater Then
+        uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
+        GeneratePatron uncSpecial & setSpaces & actualText & setSpaces & uncSpecial, "header", True
+    Else
+        GeneratePatron actualText, , True
+    End If
     
-    'GeneratePatron "(name goes here)"
-    'm_superPatronEndIndex = m_numOfPatrons
-    'GeneratePatron vbNullString
+    GeneratePatron "EFF.ORG", "https://www.eff.org/"
+    m_superPatronEndIndex = m_numOfPatrons
+    GeneratePatron vbNullString
     
     'Regular patrons (TODO someday soon, I hope!)
     actualText = g_Language.TranslateMessage("PATRONS")
@@ -303,7 +303,7 @@ Private Sub Form_Load()
     'GeneratePatron vbNullString
     
     'Thank you text
-    actualText = g_Language.TranslateMessage("THANK YOU to our wonderful Patreon supporters!")
+    actualText = g_Language.TranslateMessage("Thank you to our wonderful Patreon supporters!")
     If OS.IsWin7OrLater Then
         uncSpecial = ChrW$(&H2665)    'Hearts
         GeneratePatron uncSpecial & setSpaces & actualText, , True

@@ -6,6 +6,10 @@
 
 Ongoing PhotoDemon development is supported by our [awesome Patreon members](https://www.patreon.com/photodemon/overview).  Visit [PhotoDemon's Patreon page](https://www.patreon.com/photodemon/overview) to learn more about patron benefits, like [monthly tutorials on new PhotoDemon features](https://www.patreon.com/photodemon/posts)!
 
+Super Patrons:
+
+* [EFF.ORG](https://www.eff.org/)
+
 ### 3rd-party libraries
 
 The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these developers for freely sharing their work.  
