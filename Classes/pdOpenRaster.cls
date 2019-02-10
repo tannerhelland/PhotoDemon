@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon OpenRaster Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 08/January/19
-'Last updated: 09/January/19
-'Last update: wrap up initial build
+'Last updated: 04/February/19
+'Last update: reduce memory consumption at import-time if source PNGs are stored without compression
 '
 'OpenRaster is currently the "best" mechanism for sharing multi-layer images between PhotoDemon
 ' and other open-source photo editors (GIMP, Krita, MyPaint, etc).

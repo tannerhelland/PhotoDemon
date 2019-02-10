@@ -41,7 +41,7 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
 ' version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = False
+Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'Layer rect, automatically translated to the proper order (Adobe uses top/left/bottom/right order)
 Private m_Rect As RectL
@@ -74,7 +74,7 @@ End Enum
     Private Const cidRealUserLayerMask = -3, cidUserLayerMask = -2, cidAlpha = -1, cidRed = 0, cidGreen = 1, cidBlue = 2, cidCyan = 0, cidMagenta = 1, cidYellow = 2, cidKey = 3, cidIndexed = 0, cidLabL = 0, cidLabA = 1, cidLabB = 2
 #End If
 
-Private Enum PSD_ChannelCompression
+Public Enum PSD_ChannelCompression
     ccRaw = 0
     ccPackBits = 1
     ccZip = 2
@@ -2362,70 +2362,7 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     'Next comes the actual blend mode; this is a 4-byte ascii identifier
     Dim bmCode As String
     bmCode = srcStream.ReadString_ASCII(4)
-    
-    Select Case bmCode
-        Case "pass" ' = pass through
-            m_BlendMode = BL_NORMAL 'TODO
-        Case "norm" ' = normal
-            m_BlendMode = BL_NORMAL
-        Case "diss" ' = dissolve
-            m_BlendMode = BL_NORMAL 'TODO
-        Case "dark" ' = darken
-            m_BlendMode = BL_DARKEN
-        Case "mul " ' = multiply
-            m_BlendMode = BL_MULTIPLY
-        Case "idiv" ' = color burn
-            m_BlendMode = BL_COLORBURN
-        Case "lbrn" ' = linear burn
-            m_BlendMode = BL_LINEARBURN
-        Case "dkCl" ' = darker color
-            m_BlendMode = BL_DARKEN 'TODO
-        Case "lite" ' = lighten
-            m_BlendMode = BL_LIGHTEN
-        Case "scrn" ' = screen
-            m_BlendMode = BL_SCREEN
-        Case "div " ' = color dodge
-            m_BlendMode = BL_COLORDODGE
-        Case "lddg" ' = linear dodge
-            m_BlendMode = BL_LINEARDODGE
-        Case "lgCl" ' = lighter color
-            m_BlendMode = BL_LIGHTEN    'TODO
-        Case "over" ' = overlay
-            m_BlendMode = BL_OVERLAY
-        Case "sLit" ' = soft light
-            m_BlendMode = BL_SOFTLIGHT
-        Case "hLit" ' = hard light
-            m_BlendMode = BL_HARDLIGHT
-        Case "vLit" ' = vivid light
-            m_BlendMode = BL_VIVIDLIGHT
-        Case "lLit" ' = linear light
-            m_BlendMode = BL_LINEARLIGHT
-        Case "pLit" ' = pin light
-            m_BlendMode = BL_PINLIGHT
-        Case "hMix" ' = hard mix
-            m_BlendMode = BL_HARDMIX
-        Case "diff" ' = difference
-            m_BlendMode = BL_DIFFERENCE
-        Case "smud" ' = exclusion
-            m_BlendMode = BL_EXCLUSION
-        Case "fsub" ' = subtract
-            m_BlendMode = BL_SUBTRACT
-        Case "fdiv" ' = divide
-            m_BlendMode = BL_DIVIDE
-        Case "hue " ' = hue
-            m_BlendMode = BL_HUE
-        Case "sat " ' = saturation
-            m_BlendMode = BL_SATURATION
-        Case "colr" ' = color
-            m_BlendMode = BL_COLOR
-        Case "lum " ' = luminosity
-            m_BlendMode = BL_LUMINOSITY
-        Case Else
-            warningStack.AddString "ParseLayer encountered an unknown blend mode code: " & bmCode
-            m_BlendMode = BL_NORMAL
-            ParseLayer = psd_Warning
-    
-    End Select
+    m_BlendMode = GetBlendModeFromKey(bmCode)
     
     'Next comes opacity (1-byte)
     m_Opacity = srcStream.ReadByte()
@@ -2541,6 +2478,140 @@ InternalVBError:
     InternalError "ParseLayer", "internal VB error #" & Err.Number & ": " & Err.Description
     warningStack.AddString "Internal error in ParseLayer, #" & Err.Number & ": " & Err.Description
     ParseLayer = psd_Failure
+    
+End Function
+
+Private Function GetBlendModeFromKey(ByVal srcKey As String) As PD_BlendMode
+    
+    Select Case srcKey
+        Case "pass" ' = pass through
+            GetBlendModeFromKey = BL_NORMAL 'TODO
+        Case "norm" ' = normal
+            GetBlendModeFromKey = BL_NORMAL
+        Case "diss" ' = dissolve
+            GetBlendModeFromKey = BL_NORMAL 'TODO
+        Case "dark" ' = darken
+            GetBlendModeFromKey = BL_DARKEN
+        Case "mul " ' = multiply
+            GetBlendModeFromKey = BL_MULTIPLY
+        Case "idiv" ' = color burn
+            GetBlendModeFromKey = BL_COLORBURN
+        Case "lbrn" ' = linear burn
+            GetBlendModeFromKey = BL_LINEARBURN
+        Case "dkCl" ' = darker color
+            GetBlendModeFromKey = BL_DARKEN 'TODO
+        Case "lite" ' = lighten
+            GetBlendModeFromKey = BL_LIGHTEN
+        Case "scrn" ' = screen
+            GetBlendModeFromKey = BL_SCREEN
+        Case "div " ' = color dodge
+            GetBlendModeFromKey = BL_COLORDODGE
+        Case "lddg" ' = linear dodge
+            GetBlendModeFromKey = BL_LINEARDODGE
+        Case "lgCl" ' = lighter color
+            GetBlendModeFromKey = BL_LIGHTEN    'TODO
+        Case "over" ' = overlay
+            GetBlendModeFromKey = BL_OVERLAY
+        Case "sLit" ' = soft light
+            GetBlendModeFromKey = BL_SOFTLIGHT
+        Case "hLit" ' = hard light
+            GetBlendModeFromKey = BL_HARDLIGHT
+        Case "vLit" ' = vivid light
+            GetBlendModeFromKey = BL_VIVIDLIGHT
+        Case "lLit" ' = linear light
+            GetBlendModeFromKey = BL_LINEARLIGHT
+        Case "pLit" ' = pin light
+            GetBlendModeFromKey = BL_PINLIGHT
+        Case "hMix" ' = hard mix
+            GetBlendModeFromKey = BL_HARDMIX
+        Case "diff" ' = difference
+            GetBlendModeFromKey = BL_DIFFERENCE
+        Case "smud" ' = exclusion
+            GetBlendModeFromKey = BL_EXCLUSION
+        Case "fsub" ' = subtract
+            GetBlendModeFromKey = BL_SUBTRACT
+        Case "fdiv" ' = divide
+            GetBlendModeFromKey = BL_DIVIDE
+        Case "hue " ' = hue
+            GetBlendModeFromKey = BL_HUE
+        Case "sat " ' = saturation
+            GetBlendModeFromKey = BL_SATURATION
+        Case "colr" ' = color
+            GetBlendModeFromKey = BL_COLOR
+        Case "lum " ' = luminosity
+            GetBlendModeFromKey = BL_LUMINOSITY
+        Case Else
+            InternalError "GetBlendModeFromKey", "ParseLayer encountered an unknown blend mode code: " & srcKey
+            GetBlendModeFromKey = BL_NORMAL
+            
+    End Select
+    
+End Function
+
+Private Function GetKeyFromBlendMode(ByVal srcBlendmode As PD_BlendMode) As String
+    
+    Select Case srcBlendmode
+        
+        Case BL_NORMAL ' = normal
+            GetKeyFromBlendMode = "norm"
+        Case BL_DARKEN ' = darken
+            GetKeyFromBlendMode = "dark"
+        Case BL_MULTIPLY ' = multiply
+            GetKeyFromBlendMode = "mul "
+        Case BL_COLORBURN ' = color burn
+            GetKeyFromBlendMode = "idiv"
+        Case BL_LINEARBURN ' = linear burn
+            GetKeyFromBlendMode = "lbrn"
+        Case BL_LIGHTEN ' = lighten
+            GetKeyFromBlendMode = "lite"
+        Case BL_SCREEN ' = screen
+            GetKeyFromBlendMode = "scrn"
+        Case BL_COLORDODGE ' = color dodge
+            GetKeyFromBlendMode = "div "
+        Case BL_LINEARDODGE ' = linear dodge
+            GetKeyFromBlendMode = "lddg"
+        Case BL_OVERLAY ' = overlay
+            GetKeyFromBlendMode = "over"
+        Case BL_SOFTLIGHT ' = soft light
+            GetKeyFromBlendMode = "sLit"
+        Case BL_HARDLIGHT ' = hard light
+            GetKeyFromBlendMode = "hLit"
+        Case BL_VIVIDLIGHT ' = vivid light
+            GetKeyFromBlendMode = "vLit"
+        Case BL_LINEARLIGHT ' = linear light
+            GetKeyFromBlendMode = "lLit"
+        Case BL_PINLIGHT ' = pin light
+            GetKeyFromBlendMode = "pLit"
+        Case BL_HARDMIX ' = hard mix
+            GetKeyFromBlendMode = "hMix"
+        Case BL_DIFFERENCE ' = difference
+            GetKeyFromBlendMode = "diff"
+        Case BL_EXCLUSION ' = exclusion
+            GetKeyFromBlendMode = "smud"
+        Case BL_SUBTRACT ' = subtract
+            GetKeyFromBlendMode = "fsub"
+        Case BL_DIVIDE ' = divide
+            GetKeyFromBlendMode = "fdiv"
+        Case BL_HUE ' = hue
+            GetKeyFromBlendMode = "hue "
+        Case BL_SATURATION ' = saturation
+            GetKeyFromBlendMode = "sat "
+        Case BL_COLOR ' = color
+            GetKeyFromBlendMode = "colr"
+        Case BL_LUMINOSITY ' = luminosity
+            GetKeyFromBlendMode = "lum "
+        
+        'Some Adobe blend modes are not currently implemented in PD; these are still TODO
+'        Case "pass" ' = pass through
+'        Case "diss" ' = dissolve
+'        Case "lgCl" ' = lighter color
+'        Case "dkCl" ' = darker color
+            
+        Case Else
+            InternalError "GetKeyFromBlendMode", "Someone passed a bad blend mode ID: " & srcBlendmode
+            GetKeyFromBlendMode = "norm"
+            
+    End Select
     
 End Function
 
@@ -2765,6 +2836,243 @@ InternalVBError:
     ParseGlobalLayerMaskInfo = psd_Failure
     
 End Function
+
+Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False)
+
+    'Layer records are complicated beasts.  Some of the information we place is fixed; other pieces are not.
+    ' I don't have a lot of helpful information other than "review the spec" if you have questions.
+    
+    'The first chunk of a layer record is a (mostly) fixed-length segment describing basic layer parameters.
+    With srcLayer
+        
+        'Because PhotoDemon supports non-destructive affine layer transformations (rotate, resize, etc),
+        ' and we don't have a way to embed this data inside PSDs (that I know of), we need to first generate
+        ' a temporary copy of the source layer's data, with all affine transforms accounted for.  (This is
+        ' also useful as we will generate planar channel data in this step, and we want to un-premultiply a
+        ' temporary copy of the image, to avoid modifying source image data as part of the save.)
+        Dim tmpLayerDIB As pdDIB, layerOffsetX As Long, layerOffsetY As Long
+        Set tmpLayerDIB = New pdDIB
+        If srcLayer.AffineTransformsActive(True) Then
+            If (Not srcLayer.GetAffineTransformedDIB(tmpLayerDIB, layerOffsetX, layerOffsetY)) Then
+                InternalError "WriteLayerData", "couldn't generate affine-transformed layer DIB!"
+                Exit Sub
+            End If
+        Else
+            tmpLayerDIB.CreateFromExistingDIB srcLayer.layerDIB
+            layerOffsetX = Int(srcLayer.GetLayerOffsetX)
+            layerOffsetY = Int(srcLayer.GetLayerOffsetY)
+        End If
+        
+        'Unpremultiply the temporary DIB before continuing
+        tmpLayerDIB.SetAlphaPremultiplication False
+        
+        'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order
+        cStream.WriteLong_BE layerOffsetY
+        cStream.WriteLong_BE layerOffsetX
+        cStream.WriteLong_BE Int(layerOffsetY + tmpLayerDIB.GetDIBHeight())
+        cStream.WriteLong_BE Int(layerOffsetX + tmpLayerDIB.GetDIBWidth())
+        
+        'Next is number of channels in the layer; PD always writes RGBA data
+        cStream.WriteInt_BE 4
+        
+        'Next is a list of channel information, 6 bytes per channel (so 6*4 for PD)
+        ' - 2 bytes: Channel ID
+        ' - 4 bytes: Channel length (PSB is 8 bytes)
+        
+        'Channel lengths are POST-compression, so we can't know these values without performing actual
+        ' channel compression.  We may as well handle that now, so we don't have to revisit these numbers later.
+        ReDim m_Channels(0 To 3) As PSD_ChannelInfo
+        PrepChannelsForWrite srcLayer, tmpLayerDIB, channelCompression
+        
+        'We can now write channel information for each channel
+        Dim i As Long
+        For i = 0 To 3
+            cStream.WriteInt_BE m_Channels(i).ciID
+            
+            'Add 2 to the length of the compressed channel data, because the data itself is prefaced by
+            ' a 2-byte "compression type" indicator
+            cStream.WriteLong_BE m_Channels(i).ciDataLength + 2
+        Next i
+        
+        'Blend mode signature is hard-coded
+        cStream.WriteString_ASCII "8BIM"
+        
+        'Blend mode itself is also a hard-coded ANSI string
+        cStream.WriteString_ASCII GetKeyFromBlendMode(.GetLayerBlendMode)
+        
+        'Opacity [0,255]
+        cStream.WriteByte Int(.GetLayerOpacity() * 2.55! + 0.5!)
+        
+        'Clipping
+        cStream.WriteByte 0
+        
+        'Flags; at present, the only flag we care about is the "invisibility" flag (bit 2)
+        Dim psdFlags As Byte
+        If (Not .GetLayerVisibility) Then psdFlags = psdFlags Or 2
+        cStream.WriteByte psdFlags
+        
+        'Padding byte (required by the spec)
+        cStream.WriteByte 0
+        
+        'Length of the next five fields.  We don't know this value in advance, so simply flag the current position for now
+        Dim startExtraFieldsPosition As Long
+        startExtraFieldsPosition = cStream.GetPosition()
+        cStream.WriteLong_BE 0
+        
+        'Layer mask data would come next.  PD doesn't support masks at present, so the length of this section is "0"
+        cStream.WriteLong_BE 0
+        
+        'Layer blending ranges are also not currently supported (or understood, if I'm being honest)
+        cStream.WriteLong_BE 0
+        
+        'Layer name is a Pascal-style string, "padded to a multiple of 4 bytes".  By my testing, this name is not used
+        ' by any modern PSD-compatible program (including Adobe itself).  Instead, an optional appended block allows
+        ' us to provide a variable-length Unicode layer name.
+        '
+        'We could use WideCharToMultiByte() to produce a string in the local codepage, but given the general
+        ' uselessness of this string in the first place, let's just write a UTF-8 string (which plays nicely
+        ' with some 3rd-party readers written in e.g. Python) and assume that very few programs, if any,
+        ' will use this data in a way that makes UTF-8 problematic.
+        Dim lName As String, lNameLength As Long, lNameLengthBytes As Long, tmpBytes() As Byte
+        lName = .GetLayerName()
+        If (Len(lName) > 0) Then
+        
+            Strings.UTF8FromString lName, tmpBytes, lNameLengthBytes
+            If (lNameLengthBytes > 255) Then lNameLengthBytes = 255
+            cStream.WriteByte lNameLengthBytes
+            cStream.WriteByteArray tmpBytes, lNameLengthBytes
+            
+            'Calculate and write padding, as necessary
+            Dim reqPadding As Long
+            reqPadding = ((lNameLengthBytes + 1) Mod 4)
+            If (reqPadding <> 0) Then cStream.WritePadding 4 - reqPadding
+        
+        Else
+            cStream.WriteLong_BE 0 '1 byte = 0 as length, 3 null bytes for padding
+        End If
+        
+        'All mandatory layer information has now been written.  We can now write any optional
+        ' additional descriptors.  These blocks all use the same general layout.
+        
+        'At present, the only optional descriptor we write is a Unicode layer name.
+        If (Len(lName) > 0) Then
+        
+            'Write a 4-byte hard-coded "start of block" flag
+            cStream.WriteString_ASCII "8BIM"
+            
+            'Write a 4-byte hard-coded ASCII identifier of the optional block
+            cStream.WriteString_ASCII "luni"
+            
+            'Write the length of the *entire* data section (4-byte string length + string itself)
+            cStream.WriteLong_BE LenB(lName) + 4
+            
+            'Write the string itself
+            cStream.WriteLong_BE Len(lName)
+            cStream.WriteString_UnicodeBE lName, False
+            
+            'Optional blocks are supposed to be even-padded, but we don't have to worry about this with
+            ' Unicode strings (2 bytes per char, remember!)
+            
+        End If
+        
+        'END OF LAYER BLOCK
+        
+        'Before exiting, we need to go back and overwrite the "length of extra data field" value from
+        ' earlier in this function.
+        Dim finalPosition As Long
+        finalPosition = cStream.GetPosition()
+        
+        cStream.SetPosition startExtraFieldsPosition, FILE_BEGIN
+        cStream.WriteLong_BE (finalPosition - startExtraFieldsPosition) - 4  'Do not include the length value's 4 bytes in total
+        cStream.SetPosition finalPosition, FILE_BEGIN
+        
+    End With
+
+End Sub
+
+Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As pdDIB, ByVal channelCompression As PSD_ChannelCompression)
+    
+    'Grab pointers to the layer's image data
+    Dim tmpBytes() As Byte, tmpSA As SafeArray1D
+    Dim scanStart As Long, scanWidth As Long
+    srcLayerDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+    scanStart = tmpSA.pvData
+    scanWidth = srcLayerDIB.GetDIBStride
+    
+    Dim x As Long, y As Long
+    Dim lWidth As Long, lHeight As Long, xLoopSrc As Long, yLoopSrc As Long
+    Dim dstOffset As Long
+    
+    lWidth = srcLayerDIB.GetDIBWidth
+    lHeight = srcLayerDIB.GetDIBHeight
+    xLoopSrc = lWidth - 1
+    yLoopSrc = lHeight - 1
+    
+    'Mark channel IDs in advance; we'll use a fixed RGBA order for these
+    m_Channels(0).ciID = cidRed
+    m_Channels(1).ciID = cidGreen
+    m_Channels(2).ciID = cidBlue
+    m_Channels(3).ciID = cidAlpha
+    
+    Select Case channelCompression
+    
+        'RAW compression just means "no compression"; extract all source channels as-is
+        Case ccRaw
+            
+            For x = 0 To 3
+                ReDim m_Channels(x).ciData(0 To lWidth * lHeight - 1) As Byte
+                m_Channels(x).ciDataLength = lWidth * lHeight
+            Next x
+            
+            For y = 0 To yLoopSrc
+                tmpSA.pvData = scanStart + scanWidth * y
+            For x = 0 To xLoopSrc
+                
+                dstOffset = y * lWidth + x
+                
+                'Destination channels are in RGBA order, not BGRA order
+                m_Channels(2).ciData(dstOffset) = tmpBytes(x * 4)
+                m_Channels(1).ciData(dstOffset) = tmpBytes(x * 4 + 1)
+                m_Channels(0).ciData(dstOffset) = tmpBytes(x * 4 + 2)
+                m_Channels(3).ciData(dstOffset) = tmpBytes(x * 4 + 3)
+                
+            Next x
+            Next y
+        
+        'Other compression methods TODO
+        
+    End Select
+    
+    srcLayerDIB.UnwrapArrayFromDIB tmpBytes
+    
+End Sub
+
+Friend Sub WriteChannelData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False)
+
+    'Because channel data has already been separated into planes and (optionally) compressed, writing the actual
+    ' data out to file is super easy.  The only caveat involves PackBits compression, because we must first write out
+    ' RLE tables for *all* channels before writing out actual channel data.
+    Dim i As Long
+    
+    Select Case channelCompression
+    
+        Case ccRaw
+        
+            'Dump channel bytes out as-is
+            For i = 0 To 3
+                cStream.WriteInt_BE channelCompression
+                cStream.WriteByteArray m_Channels(i).ciData, m_Channels(i).ciDataLength
+            Next i
+        
+        Case ccPackBits
+        
+        Case ccZip
+        
+        Case ccZipWithPrediction
+    
+    End Select
+
+End Sub
 
 'Given a bit-depth and image width, figure out how "long" a scanline is for a single color channel.
 Private Function CalculateBytesPerRow(ByVal channelBitDepth As Long, ByVal imgWidth As Long) As Long

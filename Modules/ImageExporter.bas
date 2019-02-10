@@ -36,7 +36,7 @@ End Enum
 '  heuristics entirely.  Similarly, for a format like GIF, this function will return 8-bpp as the recommended
 '  color depth, *but you still need to deal with the alpha result*.  You may need to forcibly crop alpha to 0 and 255
 '  prior to exporting the GIF; PD provides a dialog for this.
-Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False) As Long
+Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef IsGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False) As Long
     
     Dim colorCheckSuccessful As Boolean: colorCheckSuccessful = False
     
@@ -44,12 +44,12 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     ' necessary for the caller to do this.  PD will provide correct results either way.
     If (srcDIB.GetDIBColorDepth = 24) Then
         currentAlphaStatus = PDAS_NoAlpha
-        colorCheckSuccessful = AutoDetectColors_24BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome)
+        colorCheckSuccessful = AutoDetectColors_24BPPSource(srcDIB, uniqueColorCount, IsGrayscale, isMonochrome)
         isTrueColor = (uniqueColorCount > 256)
     
     'If the incoming image is 32-bpp, we will run additional alpha channel heuristics
     Else
-        colorCheckSuccessful = AutoDetectColors_32BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome, currentAlphaStatus)
+        colorCheckSuccessful = AutoDetectColors_32BPPSource(srcDIB, uniqueColorCount, IsGrayscale, isMonochrome, currentAlphaStatus)
         isTrueColor = (uniqueColorCount > 256)
     End If
     
@@ -104,7 +104,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
             
             'JPEG files are always 24-bpp, unless the source is grayscale.  Then we will recommend 8-bpp.
             Case PDIF_JPEG
-                If isGrayscale Then
+                If IsGrayscale Then
                     AutoDetectOutputColorDepth = 8
                 Else
                     AutoDetectOutputColorDepth = 24
@@ -283,7 +283,7 @@ End Function
 '
 'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
 ' it a 32-bpp image!)
-Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUniqueColors As Long, ByRef isGrayscale As Boolean, ByRef isMonochrome As Boolean) As Boolean
+Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUniqueColors As Long, ByRef IsGrayscale As Boolean, ByRef isMonochrome As Boolean) As Boolean
     
     AutoDetectColors_24BPPSource = False
     
@@ -352,14 +352,14 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
         
         'By default, we assume that an image is neither monochrome nor grayscale
-        isGrayscale = False
+        IsGrayscale = False
         isMonochrome = False
         
         'Further checks are only relevant if the image contains 256 colors or less
         If numUniqueColors <= 256 Then
             
             'Check for grayscale images
-            isGrayscale = True
+            IsGrayscale = True
         
             'Loop through all available colors
             For i = 0 To numUniqueColors - 1
@@ -369,12 +369,12 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
                 
                 'If any of the components do not match, this is not a grayscale image
                 If (r <> g) Then
-                    isGrayscale = False
+                    IsGrayscale = False
                     Exit For
                 Else
                     b = Colors.ExtractBlue(uniqueColors(i))
                     If (b <> r) Or (b <> g) Then
-                        isGrayscale = False
+                        IsGrayscale = False
                         Exit For
                     End If
                 End If
@@ -383,7 +383,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             
             'If the image is grayscale and it only contains two colors, check for monochrome next
             ' (where monochrome = pure black and pure white, only).
-            If isGrayscale And (numUniqueColors <= 2) Then
+            If IsGrayscale And (numUniqueColors <= 2) Then
             
                 r = Colors.ExtractRed(uniqueColors(0))
                 g = Colors.ExtractGreen(uniqueColors(0))
@@ -417,7 +417,7 @@ End Function
 '
 'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
 ' it a 24-bpp image!)
-Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef isMonochrome As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS) As Boolean
+Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef IsGrayscale As Boolean, ByRef isMonochrome As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS) As Boolean
 
     AutoDetectColors_32BPPSource = False
 
@@ -513,7 +513,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         netColorCount = numUniqueColors
 
         'By default, we assume that an image is neither monochrome nor grayscale
-        isGrayscale = False
+        IsGrayscale = False
         isMonochrome = False
 
         'Further checks are only relevant if the image contains 256 colors or less
@@ -522,18 +522,18 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             'Check for grayscale images
             If (numUniqueColors <= 256) Then
 
-                isGrayscale = True
+                IsGrayscale = True
 
                 'Loop through all available colors
                 For i = 0 To numUniqueColors - 1
                     
                     'If any of the components do not match, this is not a grayscale image
                     If (uniqueColors(i).Red <> uniqueColors(i).Green) Then
-                        isGrayscale = False
+                        IsGrayscale = False
                         Exit For
                     Else
                         If (uniqueColors(i).Blue <> uniqueColors(i).Red) Or (uniqueColors(i).Blue <> uniqueColors(i).Green) Then
-                            isGrayscale = False
+                            IsGrayscale = False
                             Exit For
                         End If
                     End If
@@ -545,7 +545,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
             'If the image is grayscale and it only contains two colors, check for monochrome next
             ' (where monochrome = pure black and pure white, only).
-            If isGrayscale And (numUniqueColors <= 2) Then
+            If IsGrayscale And (numUniqueColors <= 2) Then
                 
                 If ((uniqueColors(0).Red = 0) And (uniqueColors(0).Green = 0) And (uniqueColors(0).Blue = 0)) Or ((uniqueColors(0).Red = 255) And (uniqueColors(0).Green = 255) And (uniqueColors(0).Blue = 255)) Then
                     If ((uniqueColors(1).Red = 0) And (uniqueColors(1).Green = 0) And (uniqueColors(1).Blue = 0)) Or ((uniqueColors(1).Red = 255) And (uniqueColors(1).Green = 255) And (uniqueColors(1).Blue = 255)) Then isMonochrome = True
@@ -627,10 +627,10 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     srcPDImage.GetCompositedImage tmpImageCopy, False
     
     'Retrieve the recommended output color depth of the image.
-    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
     
     If StrComp(LCase$(cParams.GetString("BMPColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_BMP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_BMP, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
         'Because BMP files only support alpha in 32-bpp mode, we can ignore binary-alpha mode completely
@@ -666,7 +666,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         If ImageFormats.IsFreeImageEnabled Then
             
             Dim fi_DIB As Long
-            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, , bmpBackgroundColor, isGrayscale Or bmpForceGrayscale, bmpCustomColors, Not bmp16bpp_555Mode)
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, , bmpBackgroundColor, IsGrayscale Or bmpForceGrayscale, bmpCustomColors, Not bmp16bpp_555Mode)
             If bmpFlipRowOrder Then Outside_FreeImageV3.FreeImage_FlipVertically fi_DIB
             
             'Finally, prepare some BMP save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
@@ -809,8 +809,8 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'Retrieve the recommended output color depth of the image.
         ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
         'Our JP2 exporter is a simplified one, so ignore special alpha modes
@@ -919,11 +919,11 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp jpegBackgroundColor
     
     'Retrieve the recommended output color depth of the image.
-    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
     Dim forceGrayscale As Boolean
     
     If StrComp(LCase$(cParams.GetString("JPEGColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JPEG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JPEG, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
     Else
         outputColorDepth = cParams.GetLong("JPEGColorDepth", 24)
@@ -934,7 +934,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     If ImageFormats.IsFreeImageEnabled Then
         
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , vbWhite, isGrayscale Or forceGrayscale)
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , vbWhite, IsGrayscale Or forceGrayscale)
         
         'Use that handle to save the image to JPEG format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
@@ -1013,8 +1013,8 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'Retrieve the recommended output color depth of the image.
         ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JXR, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JXR, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
         'Our JXR exporter is a simplified one, so ignore special alpha modes
@@ -1377,9 +1377,9 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         autoColorModeActive = ParamsEqual(outputColorModel, "auto")
         autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
         
-        Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
         If autoColorModeActive Or autoTransparencyModeActive Then
-            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNG, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
             ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
         Else
             currentAlphaStatus = PDAS_ComplicatedAlpha
@@ -1388,7 +1388,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         'From the automatic values, construct matching output values
         If autoColorModeActive Then
             outputColorDepth = autoColorDepth
-            forceGrayscale = isGrayscale
+            forceGrayscale = IsGrayscale
             If (Not isTrueColor) Then outputPaletteSize = netColorCount
         End If
         
@@ -1545,11 +1545,11 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp pnmBackColor
     
     'If any "auto" parameters are present, calculate their ideal values now
-    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
     Dim forceGrayscale As Boolean
     
     If ParamsEqual(pnmColorModel, "auto") Then
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNM, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNM, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
     Else
         If ParamsEqual(pnmColorModel, "color") Then
@@ -1606,7 +1606,7 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     If ImageFormats.IsFreeImageEnabled Then
         
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, finalColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , pnmBackColor, isGrayscale Or forceGrayscale)
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, finalColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , pnmBackColor, IsGrayscale Or forceGrayscale)
         
         'Use that handle to save the image to PNM format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
@@ -1661,67 +1661,54 @@ ExportPNMError:
     
 End Function
 
-'Save to PSD (or PSB) format using the FreeImage library
+'Save to PSD (or PSB) format using our own internal PSD encoder
 Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportPSDError
-    
+
     ExportPSD = False
     Dim sFileType As String: sFileType = "PSD"
     
-    If ImageFormats.IsFreeImageEnabled Then
+    'OpenRaster has a straightforward spec based on a zip file container:
+    ' https://www.openraster.org/
     
-        'TODO: parse incoming PSD parameters.  (This requires a PSD export dialog, which I haven't constructed yet...)
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
-        cParams.SetParamString formatParams
+    'Most of the heavy lifting for the save will be performed by our pdOpenRaster class
+    Dim cPSD As pdPSD
+    Set cPSD = New pdPSD
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    If cPSD.SavePSD(srcPDImage, tmpFilename, False, 0, False) Then
+    
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportPSD = True
         
-        Dim compressRLE As Boolean, usePSBFormat As Boolean
-        compressRLE = True
-        usePSBFormat = False
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
         
-        If usePSBFormat Then sFileType = "PSB"
-        
-        'Generate a composited image copy, with alpha automatically un-premultiplied
-        Dim tmpImageCopy As pdDIB
-        Set tmpImageCopy = New pdDIB
-        srcPDImage.GetCompositedImage tmpImageCopy, False
-        
-        'Retrieve the recommended output color depth of the image.
-        ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PSD, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
-        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
-        
-        'Our PSD exporter is only a simplified one, so we can ignore binary-alpha mode completely
-        If (currentAlphaStatus = PDAS_NoAlpha) Then desiredAlphaStatus = PDAS_NoAlpha Else desiredAlphaStatus = PDAS_ComplicatedAlpha
-        
-        'Similarly, because PSD is currently limited to 24-bpp or 32-bpp output, convert any non-transparent images to 24-bpp now
-        If (desiredAlphaStatus = PDAS_NoAlpha) Or (outputColorDepth <= 24) Then tmpImageCopy.ConvertTo24bpp
-        
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
-        
-        If (fi_DIB <> 0) Then
+            ExportPSD = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
             
-            Dim fi_Flags As Long: fi_Flags = 0&
-            If compressRLE Then fi_Flags = fi_Flags Or PSD_RLE Else fi_Flags = fi_Flags Or PSD_NONE
-            If usePSBFormat Then fi_Flags = fi_Flags Or PSD_PSB
-            
-            ExportPSD = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_PSD, fi_Flags, outputColorDepth, , , , , True)
-            If ExportPSD Then
-                ExportDebugMsg "Export to " & sFileType & " appears successful."
-            Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            If (Not ExportPSD) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite OpenRaster file; original file is likely open elsewhere."
             End If
             
-        Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportPSD = False
         End If
+    
     Else
-        RaiseFreeImageWarning
         ExportPSD = False
+        ExportDebugMsg "WARNING!  pdPSD.SavePSD() failed for reasons unknown; check the debug log for additional details"
     End If
     
     Exit Function
@@ -1758,8 +1745,8 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'Retrieve the recommended output color depth of the image.
         ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TARGA, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TARGA, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
         'Our TGA exporter is a simplified one, so ignore special alpha modes
@@ -1887,7 +1874,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     autoColorModeActive = ParamsEqual(outputColorModel, "auto")
     autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
     
-    Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
     
     Dim TIFFflags As Long: TIFFflags = TIFF_DEFAULT
     
@@ -1941,7 +1928,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 Set tmpLayerDIB = tmpLayer.layerDIB
                 
                 If autoColorModeActive Or autoTransparencyModeActive Then
-                    autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpLayerDIB, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+                    autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpLayerDIB, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
                     ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
                     If (currentAlphaStatus = PDAS_BinaryAlpha) Then currentAlphaStatus = PDAS_ComplicatedAlpha
                 Else
@@ -1951,7 +1938,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
                 'From the automatic values, construct matching output values
                 If autoColorModeActive Then
                     pageColorDepth = autoColorDepth
-                    pageForceGrayscale = isGrayscale
+                    pageForceGrayscale = IsGrayscale
                     If (Not isTrueColor) Then outputPaletteSize = netColorCount
                 Else
                     pageColorDepth = outputColorDepth
@@ -2065,7 +2052,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         srcPDImage.GetCompositedImage tmpImageCopy, False
         
         If autoColorModeActive Or autoTransparencyModeActive Then
-            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
             ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
         Else
             currentAlphaStatus = PDAS_ComplicatedAlpha
@@ -2074,7 +2061,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'From the automatic values, construct matching output values
         If autoColorModeActive Then
             outputColorDepth = autoColorDepth
-            forceGrayscale = isGrayscale
+            forceGrayscale = IsGrayscale
             If (Not isTrueColor) Then outputPaletteSize = netColorCount
         End If
         
@@ -2220,8 +2207,8 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         'Retrieve the recommended output color depth of the image.
         ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_WEBP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, IsGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_WEBP, currentAlphaStatus, netColorCount, isTrueColor, IsGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         
         'WebP only supports 24-bpp and 32-bpp outputs, so check for transparency now

@@ -53,7 +53,7 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
 ' version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = False
+Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -103,9 +103,9 @@ Private Enum PSD_ResourceID
     rid_IptcMetadata = 1028     'Compare against ExifTool's results?
     rid_JpegQuality = 1030      'We could auto-suggest this if saving as a JPEG from PD?
     rid_GridAndGuidesInfo = 1032   'Guides are on my to-do list
-    rid_IccProfile = 1039
+    rid_IccProfile = 1039       'Speaks for itself; this is critical to PD's color-managed import process
     rid_IccUntagged = 1041      'Spec is unclear on what this means; I'd need to see it "in the wild" to know how to handle in PD
-    rid_IndexedColorTableCount = 1046   'Number of used colors - important!
+    rid_IndexedColorTableCount = 1046   'Number of used colors - important for indexed images!
     rid_TransparentIndex = 1047 'Need to test against an indexed image PSD
     rid_AlphaIdentifiers = 1053 'No idea what this does, but we should check it against alpha channels
     rid_VersionInfo = 1057      'Lets us know if PS was the actual image source; will need to write when saving
@@ -128,7 +128,7 @@ End Enum
 'Standard PSD header.  At load-time, only populated if the target PSD validates
 Private Type PSD_Header
     Signature As String * 4
-    version As Integer
+    Version As Integer
     Reserved(0 To 5) As Byte
     NumChannels As Integer
     ImageHeightPx As Long
@@ -187,7 +187,7 @@ Private m_ColorTable() As RGBQuad, m_ColorTableCount As Long, m_TransparentIndex
 Private Type PSD_ImageResource
     'irSignature As String * 4  'Always '8BIM', so we don't waste bytes storing it
     irID As PSD_ResourceID      '2-byte hex ID
-    irName As String            'Pascal string, rarely relevant
+    irName As String            'Pascal string, always "null" IRL as far as I can tell
     irDataLength As Long        'Size of data array
     irDataBytes() As Byte       '"Padded to make the size even"; PD will *not* retrieve padding bytes if they occur
 End Type
@@ -272,25 +272,456 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 4 successful." Else PDDebug.LogAction "PSD parsing step 4 unsuccessful."
         End If
         
+        'The final segment of a PSD file is a full copy of the composited layered image.  When Photoshop writes
+        ' a PSD file, the contents of this segment are tied to a "maximize compatibility" setting. If "maximize
+        ' compatibility" is checked (default = true), a full copy of the composited image is written out to the
+        ' final block of the file.  If "maximize compatibility" is *not* set, PhotoShop writes out a plain white
+        ' image to that final segment - a strange decision, but pure white compresses well and this guarantees
+        ' that "lazy" readers still have something to read.
+        
+        'Anyway, we don't need this data in PD so we ignore it at present.  You could, however, parse it as the
+        ' final stage in the load process, if desired - but note that there are caveats to the data in this segment.
+        ' (For example, Photoshop may choose to write some single-layer images as zero-layer images, with the image
+        ' data actually stored in the composited image segment.  PhotoDemon supports this condition, so the current
+        ' stream point may not point where you think it does - consider yourself warned!)
+        
         'If we made it this far successfully, we have enough data to construct a pdImage object!
-        ' Free the source stream object (as we no longer need it and it may have cached a bunch
-        ' of memory), assemble the final image, then exit.
         If (keepLoading < psd_Failure) Then
+            
+            'Because the stream object may have pre-cached the PSD file (useful for perf improvements when the source
+            ' data is small), let's free it to free up as much memory as possible before we attempt to assemble the
+            ' final image.
             Set m_Stream = Nothing
+            
             keepLoading = Step5_AssemblePDImage(srcFile, dstImage)
             If PSD_DEBUG_VERBOSE Then If (keepLoading < psd_Failure) Then PDDebug.LogAction "PSD parsing step 5 successful." Else PDDebug.LogAction "PSD parsing step 5 unsuccessful."
+            
         End If
         
         LoadPSD = keepLoading
         
     End If
     
-    'Current results may not be usable; always fall back to FreeImage's PSD support until
-    ' this class matures.
+    'Even if the PSD loaded, one (or more) surprises may have affected our ability to render everything correctly.
+    ' Regardless of this class's debug verbosity setting, warnings always get dumped out to the debug log.  This is
+    ' especially useful when new versions of Photoshop release, as they often bring new parsing surprises/nightmares.
     If (Me.Warnings_GetCount() > 0) Then
-        PDDebug.LogAction "The PSD parser generated one or more warnings.  Here is a full list:"
+        PDDebug.LogAction "PhotoDemon's PSD parser generated one or more warnings.  Here is a full list:"
         Me.Warnings_DumpToDebugger
     End If
+
+End Function
+
+'Save a new PSD file to disk.  (With minor modifications, this could also be used to save to a memory stream,
+' but this is *not* currently implemented.)
+'
+'If the destination file exists, it will be forcibly overwritten.  Safe save measures should be implemented externally.
+Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal useMaxCompatibility As Boolean = True, Optional ByVal compressionType As Long = 0, Optional ByVal writePSB As Boolean = False) As Boolean
+
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcPDImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError "SavePSD", "invalid function parameters"
+        SavePSD = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD enforces save overwriting in the parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'So, a few quick notes before we begin.
+    
+    '1) Saving a PSD file is much easier than loading it, primarily because we don't need to cover every
+    ' color-mode and bit-depth option.  Instead, we focus on exporting 32-bit RGBA data in the cleanest
+    ' manner possible.  Other bit-depths and/or color modes may be covered in future updates.
+    
+    '2) PSDs use a ton of structs with non-DWORD alignments.  This causes issues in VB6 as struct members
+    ' are typically aligned to DWORD boundaries (with some caveats; it's complicated and basically don't
+    ' worry about it if you aren't a VB6 developer).  To avoid complications or convoluted struct-shifting,
+    ' this function manually writes out most struct members individually.
+    
+    '3) This code was designed against the latest PSD spec at the time of its writing (August 2016,
+    ' available here: https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/).  No guarantee is
+    ' made that this approach will be compatible with earlier or later spec versions.
+    
+    '4) If padding issues with strings (or any other data type) seem messy, that's because they are.
+    ' Adobe uses many different string alignment/padding practices throughout PSDs, and only by a careful
+    ' reading of the spec can you seewhat is required where.  Any messiness is their doing - not mine.
+    
+    '5) All PSD data is big-endian, so you will see a ton of _BE suffixes in stream function calls.
+    
+    'All good?  Then let's do this!
+    
+    'As usual, all writing is handled by a pdStream instance.  Note that we do not request typical
+    ' sequential perf-optimized mode - this is because PSDs use a ton of "length" entries that describe
+    ' following data segments.  Lengths are not easily known in advance, so the writer must periodically
+    ' "retreat" and update previous length entries.  This incurs potentially huge penalties when
+    ' sequential mode is requested, and random-access shows no meaningful benefit, so we stick to
+    ' default caching behavior.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile
+    useMaxCompatibility = False
+    'Start by writing out a basic PSD header.
+    Dim keepGoing As PD_PSDResult
+    keepGoing = ExportStep1_WriteHeaderAndColorTable(cStream, srcPDImage, useMaxCompatibility, writePSB)
+    
+    'Next comes the image resource segment.  This is a variable-length segment comprised of individual "blocks".
+    ' Blocks are similar to chunks in other formats; they are self-contained descriptors of variable length
+    ' and type.  We write much fewer of these than Photoshop typically does, obviously.
+    If (keepGoing < psd_Failure) Then keepGoing = ExportStep2_WriteImageResources(cStream, srcPDImage, useMaxCompatibility, writePSB)
+    
+    'Next comes the (potentially very large) layer and mask information section.  This is the most time-consuming
+    ' segment to write, on account of writing all layer pixel data.
+    If (keepGoing < psd_Failure) Then keepGoing = ExportStep3_WriteLayerAndMaskInformation(cStream, srcPDImage, compressionType, writePSB)
+    
+    'Finally, if "maximum compatibility" is selected, write out a copy of the merged image data.
+    If (keepGoing < psd_Failure) Then
+        'If useMaxCompatibility Then
+            keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, writePSB)
+        
+        'TODO:
+        'If maximum compatibility is *not* selected, cheat and write out a plain white image at the same dimensions
+        ' as the current image.  This is what Photoshop does, and it ensures that lazy parsers still have data to
+        ' work with (avoiding possible errors) while inserting data that compresses as well as possible under PackBits.
+        'Else
+        '
+        'End If
+        
+    End If
+    
+    SavePSD = (keepGoing < psd_Failure)
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError "SavePSD", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SavePSD = False
+    
+End Function
+
+Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal compressionType As Long = 0, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+
+    'Start by retrieving a merged image copy
+    Dim tmpDIB As pdDIB
+    srcImage.GetCompositedImage tmpDIB, False
+    
+    'Write the compression method first
+    cStream.WriteInt_BE compressionType
+    
+    'RLE requires special handling
+    If compressionType = 1 Then
+    
+    'The only other supported compression type at present is raw bytes (no compression).
+    Else
+    
+        'We simply need to write all data to file in planar format (e.g. RRRRGGGGBBBBAAAA instead of RGBARGBARGBA...)
+        Dim x As Long, y As Long
+        Dim lWidth As Long, lHeight As Long, xLoopSrc As Long, yLoopSrc As Long
+        Dim dstOffset As Long
+        
+        lWidth = tmpDIB.GetDIBWidth
+        lHeight = tmpDIB.GetDIBHeight
+        xLoopSrc = lWidth - 1
+        yLoopSrc = lHeight - 1
+        
+        'Pre-cache each plane individually before writing, to improve performance.
+        Dim chSize As Long
+        chSize = lWidth * lHeight
+        
+        Dim planarBytes() As Byte
+        ReDim planarBytes(0 To chSize * 4 - 1) As Byte
+        
+        Dim tmpBytes() As Byte, tmpSA As SafeArray1D
+        Dim scanStart As Long, scanWidth As Long
+        tmpDIB.WrapArrayAroundScanline tmpBytes, tmpSA, 0
+        scanStart = tmpSA.pvData
+        scanWidth = tmpDIB.GetDIBStride
+            
+        For y = 0 To yLoopSrc
+            tmpSA.pvData = scanStart + scanWidth * y
+        For x = 0 To xLoopSrc
+            
+            dstOffset = y * lWidth + x
+            
+            'Destination channels are in RGBA order, not BGRA order
+            planarBytes(dstOffset) = tmpBytes(x * 4 + 2)
+            planarBytes(chSize + dstOffset) = tmpBytes(x * 4 + 1)
+            planarBytes(chSize * 2 + dstOffset) = tmpBytes(x * 4)
+            planarBytes(chSize * 3 + dstOffset) = tmpBytes(x * 4 + 3)
+            
+        Next x
+        Next y
+        
+        tmpDIB.UnwrapArrayFromDIB tmpBytes
+        
+        'Write the planar data to file
+        cStream.WriteByteArray planarBytes
+        
+    End If
+
+End Function
+
+Private Function ExportStep3_WriteLayerAndMaskInformation(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal compressionType As Long = 0, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+
+    'As with other segments in a PSD file, the first marker in this segment is a "net length" marker.
+    ' We can't possibly predict this value in advance, so just write a dummy value and we'll overwrite
+    ' it at the end of this function with a correct value.
+    Dim startPosition As Long
+    startPosition = cStream.GetPosition()
+    cStream.WriteLong_BE 0
+    
+    'The layer and mask info section is broken into several sub-sections:
+    ' 1) Layer info
+    ' 2) Global mask info
+    ' 3) Misc tagged blocks
+    
+    'Each of these sections contains multiple sub-sections of their own.
+    ExportStep3_WriteLayerAndMaskInformation = ExportStep3a_WriteLayerInfo(cStream, srcImage, 0, writePSB)
+    
+    'With all layer and channel data written, the last segment we need to write is global layer mask info.
+    ' This is always 0.
+    cStream.WriteLong_BE 0
+    
+    'No misc blocks are written in this global section (at present)
+    
+    'All writes are complete, which means we can (finally) calculate the size of this segment.
+    Dim finalPosition As Long, segmentSize As Long
+    finalPosition = cStream.GetPosition()
+    segmentSize = (finalPosition - startPosition) - 4
+    
+    'Return to the initial length parameter and write it out correctly.
+    cStream.SetPosition startPosition, FILE_BEGIN
+    cStream.WriteLong_BE segmentSize    'Do not include the length value itself in the size calculation
+    cStream.SetPosition finalPosition, FILE_BEGIN
+    
+End Function
+
+Private Function ExportStep3a_WriteLayerInfo(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal compressionType As Long = 0, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+
+    'As always, we start with a (currently unknown) length marker.  Unlike other segments, this one
+    ' should actually be rounded up to a multiple of 2.
+    Dim startPosition As Long
+    startPosition = cStream.GetPosition()
+    cStream.WriteLong_BE 0
+    
+    'Next comes layer count.  When reading PSD files from Photoshop, it may use a negative layer count to describe
+    ' special alpha packing (per the spec, "If [layer count] is a negative number, its absolute value is the number
+    ' of layers and the first alpha channel contains the transparency data for the merged result.")  We don't need
+    ' to write this case, so we only ever write the *actual* layer count.
+    cStream.WriteInt_BE srcImage.GetNumOfLayers()
+    
+    'Next comes a variable-length segment called "layer records".  One of these records exists for each layer.
+    ' Because all PSD layer-specific data is managed by a dedicated class, it's easier for us to offload
+    ' layer embedding tasks to that same class.  Note that we want the classes to be persistent for the duration
+    ' of this function because each layer header must define the length of the layer's pixel data; it's easiest
+    ' to calculate both of those simultaneously, then keep the channel data in-memory for subsequent embedding
+    ' after all layer segments are written.
+    Dim tmpPSDLayers() As pdPSDLayer
+    ReDim tmpPSDLayers(0 To srcImage.GetNumOfLayers - 1) As pdPSDLayer
+    
+    Dim i As Long
+    For i = 0 To srcImage.GetNumOfLayers() - 1
+        Set tmpPSDLayers(i) = New pdPSDLayer
+        tmpPSDLayers(i).WriteLayerData cStream, srcImage.GetLayerByIndex(i), compressionType, writePSB
+    Next i
+    
+    'During the previous step, each layer generated a compressed byte stream of each channel's pixel data
+    ' (remember: PSDs store channels as planar, not interleaved).  That makes the next step - storing channel
+    ' data - trivial, as we can just ask each layer object to dump channel data out to file.
+    For i = 0 To srcImage.GetNumOfLayers() - 1
+        tmpPSDLayers(i).WriteChannelData cStream, srcImage.GetLayerByIndex(i), compressionType, writePSB
+    Next i
+    
+    'All writes are complete, which means we can (finally) calculate the size of this segment.
+    Dim finalPosition As Long, segmentSize As Long
+    finalPosition = cStream.GetPosition()
+    segmentSize = (finalPosition - startPosition) - 4
+    
+    'The spec says that the segment size should be a multiple of 2.  Enforce this now.
+    If (segmentSize And 1) = 1 Then
+        finalPosition = finalPosition + 1
+        segmentSize = segmentSize + 1
+        cStream.WriteByte 0
+    End If
+    
+    'Return to the initial length parameter and write it out correctly.
+    cStream.SetPosition startPosition, FILE_BEGIN
+    cStream.WriteLong_BE segmentSize    'Do not include the length value itself in the size calculation
+    cStream.SetPosition finalPosition, FILE_BEGIN
+    
+    ExportStep3a_WriteLayerInfo = psd_Success
+    
+End Function
+
+Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal useMaxCompatibility As Boolean = True, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+    
+    'Before doing anything else, we need to make a note of the current stream position.  The first entry
+    ' in this segment is the TOTAL LENGTH of the image resource segment.  We can't predict this value in
+    ' advance (not easily, anyway), so we just write a dummy value for now, then return and fill in the
+    ' "correct" value when the section is finished.
+    Dim startPosition As Long
+    startPosition = cStream.GetPosition()
+    cStream.WriteLong_BE 0
+    
+    'Image resource blocks all use a fixed structure:
+    ' - 4 byte signature '8BIM'
+    ' - 2 byte unique ID (hard-coded and defined by Adobe)
+    ' - Variable-length Pascal string w/ resource name (in practice, this always seems to be a two-byte null-string)
+    ' - 4 byte size of resource data
+    ' - actual resource data (even-padded according to the spec, but this does *not* appear to be practiced IRL)
+    
+    'A cleaner implementation would use dedicated sub-classes for each possible resource block type.  We don't do
+    ' this because VB6 makes it impossible to cleanly organize large class collections.  (Also, we don't actually
+    ' write many image resource blocks, so this function is manageable for now.)  That's why you'll see a bunch
+    ' of ugly naked stream writes here.
+    
+    'PSD images from Photoshop typically contain dozens of image resource blocks.  PhotoDemon doesn't attempt to
+    ' mimic this behavior; instead, we only write blocks that contain information relevant to the current PD session.
+    ' (Photoshop will fill in default values for any blocks we don't supply.)
+    
+    'Here are the blocks we currently write.
+    
+    'First, a resolution info block (0x03ED).  The PSD spec does not define this; instead, you have to track down
+    ' Appendix A of the Photoshop API guide.  (Fortunately, it's an easy segment to write, aside from the hassle
+    ' of using fixed-point fractional values.)
+    Dim blockSize As Long
+    blockSize = 16
+    WriteImageResourceHeader cStream, &H3ED, blockSize
+    
+    'Horizontal resolution (as fixed 16-16), resolution unit (1=ppi), and width unit (1=inches)
+    cStream.WriteFixed1616_BE srcImage.GetDPI()
+    cStream.WriteInt_BE 1
+    cStream.WriteInt_BE 1
+    
+    'Vertical resolution is exactly the same
+    cStream.WriteFixed1616_BE srcImage.GetDPI()
+    cStream.WriteInt_BE 1
+    cStream.WriteInt_BE 1
+    
+    'Second, an ICC profile (0x040F).  At present, all images exported from PhotoDemon are hard-converted to sRGB.
+    ' PSD is the rare format where an embedded profile would actually (most likely?) be used by target software,
+    ' instead of being completely ignored as usual... but some internal changes would have to be made to make
+    ' that feasible.  Instead, we just generate a stock sRGB profile on-the-fly and embed it.
+    '
+    '(I've gone back and forth on the compatibility complications of writing this profile in modern v4 format.
+    ' v4 profiles date back to 2001, but some people use *really* old software, so for now, PD forcibly generates
+    ' a larger-but-more-compatible v2.1 sRGB profile for embedding.  Note that the contents of v2 vs v4 sRGB
+    ' profiles are identical in how the image gets rendered, but the v4 profile is much smaller on account of
+    ' v4 descriptors that represent sRGB's weird gamma ramp in a compact way.)
+    Dim tmpProfile As pdLCMSProfile
+    Set tmpProfile = New pdLCMSProfile
+    tmpProfile.CreateSRGBProfile False
+    
+    Dim profBytes() As Byte, profSize As Long
+    blockSize = tmpProfile.GetRawProfileBytes(profBytes)
+    WriteImageResourceHeader cStream, &H40F, blockSize
+    cStream.WriteByteArray profBytes, blockSize
+    
+    'Image resource blocks must report their sizes accurately (no padding).  If an image resource block size
+    ' is ODD, however, an extra padding byte needs to be inserted after the block, so that the *next* block
+    ' lies on an even-position boundary.  (Again, this padding is *not* reported in the resource block size.)
+    If ((blockSize And 1) = 1) Then cStream.WriteByte 0
+    
+    'Third (and last), version information (0x0421).  Version information describes the program that wrote
+    ' the PSD file.  The spec doesn't mark this block as required (in fact, *no* resource blocks are required
+    ' in a PSD file), but as with other formats, we try to follow Best Practices and take responsibility for
+    ' the files we write.
+    
+    'Size of the version number is calculated as follows:
+    ' 4 bytes - version number (always 1)
+    ' 1 byte - real merged data included in file (e.g. "max compatibility" used at export time)
+    ' (variable bytes) - name of PSD writer as a "Unicode string" (4 byte len + 2 bytes * num chars)
+    ' (variable bytes) - name of PSD reader as a "Unicode string" (4 byte len + 2 bytes * num chars)
+    ' 4 bytes - file version (always 1)
+    blockSize = 4 + 1 + 4 'Fixed-size entries
+    blockSize = blockSize + 4 + 4 'Size descriptors for two Unicode strings
+    
+    Dim writerName As String, readerName As String
+    writerName = "PhotoDemon"
+    readerName = writerName & " " & Updates.GetPhotoDemonVersion()
+    blockSize = blockSize + LenB(writerName) + LenB(readerName) 'Add string sizes to calculation
+    
+    WriteImageResourceHeader cStream, &H421, blockSize
+    cStream.WriteLong_BE 1
+    If useMaxCompatibility Then cStream.WriteByte 1 Else cStream.WriteByte 0
+    cStream.WriteLong_BE Len(writerName)
+    cStream.WriteString_UnicodeBE writerName
+    cStream.WriteLong_BE Len(readerName)
+    cStream.WriteString_UnicodeBE readerName
+    cStream.WriteLong_BE 1
+    
+    'See above note about image resource block padding
+    If ((blockSize And 1) = 1) Then cStream.WriteByte 0
+    
+    'All image resource blocks have been written successfully!
+    
+    'Remember the beginning of this function?  We now need to return to the start of this segment and write out
+    ' a *correct* "length of segment" marker.
+    Dim finalPosition As Long, fullSizeOfSegment As Long
+    finalPosition = cStream.GetPosition()
+    fullSizeOfSegment = (finalPosition - startPosition) - 4  'Subtract 4 because the length marker itself is not included in the size calculation
+    
+    cStream.SetPosition startPosition, FILE_BEGIN
+    cStream.WriteLong_BE fullSizeOfSegment
+    cStream.SetPosition finalPosition, FILE_BEGIN
+    
+    ExportStep2_WriteImageResources = psd_Success
+    
+End Function
+
+Private Sub WriteImageResourceHeader(ByRef cStream As pdStream, ByVal resID As Integer, ByVal resDataSize As Long)
+    
+    'Always start with the hard-coded signature
+    Const IMAGE_RESOURCE_SIGNATURE As String = "8BIM"
+    cStream.WriteString_ASCII IMAGE_RESOURCE_SIGNATURE
+    
+    'Next, the resource ID
+    cStream.WriteIntU_BE resID
+    
+    'Next, a null Pascal string as the "resource name"
+    cStream.WriteByte 0 '0 length
+    cStream.WriteByte 0 'Extra byte for padding
+    
+    'Next, size of the resource data
+    cStream.WriteLong_BE resDataSize
+    
+    'Writing of the actual data is left to the caller
+    
+End Sub
+
+Private Function ExportStep1_WriteHeaderAndColorTable(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal useMaxCompatibility As Boolean = True, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+
+    ' As noted previously, VB6 struct alignment issues prevent us from easily writing out structs "as-is";
+    ' instead, we write out members one-at-a-time.
+    
+    'Magic number
+    cStream.WriteString_ASCII "8BPS"
+    
+    'Version: 1 for PSD, 2 for PSB
+    cStream.WriteInt_BE 1
+    
+    '6 reserved bytes; must be 0
+    cStream.WritePadding 6
+    
+    'Number of channels in the image, including alpha.  PD always writes RGBA data at present.
+    cStream.WriteInt_BE 4
+    
+    'Height and width of the image, in pixels
+    cStream.WriteLong_BE srcImage.Height
+    cStream.WriteLong_BE srcImage.Width
+    
+    'Number of bits per channel; PD always writes 8bx4 channels at present
+    cStream.WriteInt_BE 8
+    
+    'Color mode; PD always writes RGB images at present.
+    cStream.WriteInt_BE cm_RGB
+    
+    'While here, let's also write the color mode data segment.  In indexed images, this segment stores palette data.
+    ' It is unused by PhotoDemon exports so we only need to populate the first field - segment length, which is 0.
+    cStream.WriteLong_BE 0
+    
+    ExportStep1_WriteHeaderAndColorTable = psd_Success
 
 End Function
 
@@ -544,7 +975,7 @@ Private Function Step4_GatherLayersAndMasks(ByRef srcFile As String) As PD_PSDRe
     If m_PSDisPSB Then lenOfSection = m_Stream.ReadLong_BE()        'TODO: fix PSB approach
     finalPointerPosition = m_Stream.GetPosition() + lenOfSection
     
-    PDDebug.LogAction "Length of layer and mask section is: " & lenOfSection
+    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Length of layer and mask section (offset " & CStr(m_Stream.GetPosition - 4) & "): " & lenOfSection
     
     'If a PSD only contains one layer, it can be written at the end of the file (in the
     ' "image data" segment), bypassing this section completely.  To cover this special case,
@@ -818,7 +1249,7 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                 'The ID is followed by a Pascal ShortString.  This is a one-byte length value, followed by a
                 ' string of chars (current system codepage) of length 0-255.  Adobe forcibly pads these to be
                 ' a length with a multiple of two, *including* the length bit (e.g. per the spec, "a null name
-                ' consists of two bytes of zero").
+                ' consists of two bytes of zero").  In practice, these seem to always be null-strings.
                 resNameLength = m_Stream.ReadByte()
                 If (resNameLength = 0) Then
                     m_Stream.SetPosition 1, FILE_CURRENT   'Forcibly advance the pointer by 1 more byte
@@ -840,8 +1271,8 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                 
                 'Before touching the actual resource data, calculate a final pointer position.
                 ' This is important as...
-                '  1) we may not actually retrieve resource data because it's useless to us, or
-                '  2) we may retrieve only a portion of the data, and
+                '  1) we may not actually retrieve resource data because it's enormous and useless to us, or...
+                '  2) we may retrieve only a portion of the data, and...
                 '  3) resource data is padded to even numbers, so the useful size of the data may
                 '     not be the amount we actually need to move the pointer.
                 '
@@ -909,10 +1340,10 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                                 
                                 'Resolutions are stored as PPI in 32-bit fixed-point, while all other indicators
                                 ' are ushorts.
-                                m_ResolutionInfo.riHRes = tmpStream.ReadFixed32_BE()
+                                m_ResolutionInfo.riHRes = tmpStream.ReadFixed1616_BE()
                                 m_ResolutionInfo.riHResUnit = tmpStream.ReadInt_BE()
                                 m_ResolutionInfo.riWidthUnit = tmpStream.ReadInt_BE()
-                                m_ResolutionInfo.riVRes = tmpStream.ReadFixed32_BE()
+                                m_ResolutionInfo.riVRes = tmpStream.ReadFixed1616_BE()
                                 m_ResolutionInfo.riVResUnit = tmpStream.ReadInt_BE()
                                 m_ResolutionInfo.riHeightUnit = tmpStream.ReadInt_BE()
                                 
@@ -936,6 +1367,34 @@ Private Function Step3_GatherImageResources(ByRef srcFile As String, ByRef dstIm
                                 tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
                                 m_TransparentIndex = tmpStream.ReadInt_BE()
                                 Set tmpStream = Nothing
+                            End If
+                            
+                        'At import time, "Version Info" is mostly a curiosity (it tells us what program wrote the PSD),
+                        ' but because we are a well-behaved engine, we also need to *write* this data at save time.
+                        ' PD always imports anything it attempts to write so we can verify correct round-trip behavior.
+                        Case rid_VersionInfo
+                            If (.irDataLength > 0) Then
+                                
+                                Set tmpStream = New pdStream
+                                tmpStream.StartStream PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , .irDataLength, VarPtr(.irDataBytes(0))
+                                
+                                Dim versionNumber As Long
+                                versionNumber = tmpStream.ReadLong_BE()
+                                
+                                Dim hasRealMergedData As Boolean
+                                hasRealMergedData = (tmpStream.ReadByte() <> 0)
+                                
+                                Dim writerName As String, readerName As String
+                                resNameLength = tmpStream.ReadLong_BE()
+                                writerName = tmpStream.ReadString_Unicode_BE(resNameLength)
+                                resNameLength = tmpStream.ReadLong_BE()
+                                readerName = tmpStream.ReadString_Unicode_BE(resNameLength)
+                                
+                                Dim fileVersion As Long
+                                fileVersion = tmpStream.ReadLong_BE()
+                                
+                                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "PSD version info is: " & versionNumber & ", " & hasRealMergedData & ", " & fileVersion & ", " & writerName & ", " & readerName
+                                
                             End If
                             
                     End Select
@@ -1155,7 +1614,7 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
                     
                     With m_Header
                     
-                        .version = psdVersion
+                        .Version = psdVersion
                     
                         'After the signature and version come 6 reserved bytes
                         m_Stream.SetPosition 6&, FILE_CURRENT

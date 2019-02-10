@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.782</langversion>
+<langversion>7.2.820</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -815,12 +815,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Fade</original>
-<translation>Überblenden</translation>
+<translation>Fade</translation>
 </phrase>
 
 <phrase>
 <original>Fade: %1</original>
-<translation>Überblenden: %1</translation>
+<translation>Fade: %1</translation>
 </phrase>
 
 <phrase>
@@ -2030,7 +2030,7 @@ Beschreibung: %2
 
 <phrase>
 <original>blend mode</original>
-<translation>Blending-Modus</translation>
+<translation>Überblendungsmodus</translation>
 </phrase>
 
 <phrase>
@@ -4163,7 +4163,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>Hier klicken, um einen vollen Farbauswahlbildschirm einzugeben.</translation>
+<translation>Hier klicken, um einen Vollfarb-Auswahlbildschirm einzugeben.</translation>
 </phrase>
 
 <phrase>
@@ -4173,7 +4173,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>Hier klicken, um die Malfarbe des Hauptbildschirms als die aktive Farbe festzulegen.</translation>
+<translation>Hier klicken, damit die Malfarbe des Hauptbildschirms die aktive Farbe wird.</translation>
 </phrase>
 
 <phrase>
@@ -5142,7 +5142,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation>Grundlegender Layer</translation>
+<translation>Grund-Layer</translation>
 </phrase>
 
 <phrase>
@@ -5172,7 +5172,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Hidden layers</original>
-<translation>Verborgene Layer</translation>
+<translation>Ausgeblendete Layer</translation>
 </phrase>
 
 <phrase>
@@ -5252,7 +5252,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Make color transparent</original>
-<translation>Farbe als transparent festlegen</translation>
+<translation>Farbe transparent machen</translation>
 </phrase>
 
 <phrase>
@@ -5532,7 +5532,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Red-eye removal</original>
-<translation>Entfernen von rotem Auge</translation>
+<translation>Rote-Augen-Entfernung</translation>
 </phrase>
 
 <phrase>
@@ -6002,7 +6002,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>From history</original>
-<translation></translation>
+<translation>Aus Historie</translation>
 </phrase>
 
 <phrase>
@@ -6345,7 +6345,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation>Verborgene Layer löschen</translation>
+<translation>Ausgeblendete Layer löschen</translation>
 </phrase>
 
 <phrase>
@@ -7952,7 +7952,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Red eye removal</original>
-<translation>Entfernen von rotem Auge</translation>
+<translation>Rote-Augen-Entfernung</translation>
 </phrase>
 
 <phrase>
@@ -8940,12 +8940,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fading previous action (%1)</original>
-<translation>Vorherige Aktion (%1) wird überblendet</translation>
+<translation>Fading der vorherigen Aktion (%1)</translation>
 </phrase>
 
 <phrase>
 <original>Fade complete.</original>
-<translation>Überblenden abgeschlossen.</translation>
+<translation>Fade abgeschlossen.</translation>
 </phrase>
 
 <!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10291,7 +10291,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>spatial power (currently hidden)</original>
-<translation>Räumliche Kraft (derzeit verborgen)</translation>
+<translation>Räumliche Kraft (derzeit ausgeblendet)</translation>
 </phrase>
 
 <phrase>
@@ -10573,7 +10573,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color fade</original>
-<translation>Farbüberblendung</translation>
+<translation>Farb-Fade</translation>
 </phrase>
 
 <phrase>
@@ -10588,7 +10588,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fade edges</original>
-<translation>Kanten überblenden</translation>
+<translation>Fade-Kanten</translation>
 </phrase>
 
 <phrase>
@@ -13241,7 +13241,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>make the new layer the active layer</original>
-<translation>Den neuen Layer als aktiven Layer festlegen</translation>
+<translation>Den neuen Layer zu aktivem Layer machen</translation>
 </phrase>
 
 <phrase>
@@ -13336,7 +13336,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>blend</original>
-<translation>Blending</translation>
+<translation>Überblenden</translation>
 </phrase>
 
 <phrase>
@@ -13770,7 +13770,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation>Blending- / Alphamodus</translation>
+<translation>Überblendungs- / Alphamodus</translation>
 </phrase>
 
 <phrase>
@@ -13943,7 +13943,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Make layer changes permanent</original>
-<translation>Layer-Änderungen als dauerhaft festlegen</translation>
+<translation>Layer-Änderungen dauerhaft machen</translation>
 </phrase>
 
 <phrase>
@@ -13963,7 +13963,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) als dauerhaft festlegen. Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn das Viewport-Rendering träge ist.</translation>
+<translation>Aktuelle Layer-Transformationen (Größe, Winkel und Scherung) dauerhaft machen. Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn das Viewport-Rendering träge ist.</translation>
 </phrase>
 
 <phrase>
@@ -14076,7 +14076,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Diese Option steuert, wie weich eine Auswahl mit ihrer Umgebung verschmilzt.</translation>
+<translation>Diese Option steuert, wie weich eine Auswahl sich mit deren Umgebung vermischt.</translation>
 </phrase>
 
 <phrase>
@@ -14177,7 +14177,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Dieser Layer ist ein Typografie-Layer. Um ihn mit dem grundlegenden Texttool zu bearbeiten, müssen Sie ihn zuerst in einen grundlegenden Textlayer konvertieren.</translation>
+<translation>Dieser Layer ist ein Typografie-Layer. Um ihn mit dem Grundtext-Tool zu bearbeiten, müssen Sie ihn zuerst in einen Grundtext-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -14187,7 +14187,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click here to convert this layer to a basic text layer.</original>
-<translation>Klicken Sie hier, um diesen Layer in einen grundlegenden Textlayer zu konvertieren.</translation>
+<translation>Klicken Sie hier, um diesen Layer in einen Grundtext-Layer zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -14328,7 +14328,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>Dieser Layer ist ein grundlegender Textlayer. Um ihn mit dem Typografie-Tool zu bearbeiten, müssen Sie ihn zuerst in einen Typografie-Layer konvertieren.</translation>
+<translation>Dieser Layer ist ein Grundtext-Layer. Um ihn mit dem Typografie-Tool zu bearbeiten, müssen Sie ihn zuerst in einen Typografie-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -15171,7 +15171,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Monitore physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die originalen Bilddaten angewandt werden.</translation>
+<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Bildschirme physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die originalen Bilddaten angewandt werden.</translation>
 </phrase>
 
 <phrase>
@@ -15296,12 +15296,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Um benutzerdefinierte Farbprofile bei einer Grundlage pro Monitor zu konfigurieren, verwenden Sie bitte diese Einstellung.</translation>
+<translation>Um benutzerdefinierte Farbprofile auf einer pro-Monitor-Basis zu konfigurieren, verwenden Sie bitte diese Einstellung.</translation>
 </phrase>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Spezifizieren Sie bitte ein Farbprofil für jeden Monitor, der derzeit an das System angeschlossenen ist. Beachten Sie, dass der Text in Klammern die Grafikkarte ist, die den benannten Monitor ansteuert.</translation>
+<translation>Spezifizieren Sie bitte ein Farbprofil für jeden derzeit an das System angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern die Grafikkarte ist, die den benannten Monitor ansteuert.</translation>
 </phrase>
 
 <phrase>

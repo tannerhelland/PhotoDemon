@@ -104,7 +104,7 @@ Friend Function ParseAdditionalLayerInfo(ByRef srcStream As pdStream, ByRef warn
         sigCheck = srcStream.ReadString_ASCII(4)
         
         If (sigCheck <> "8BIM") And (sigCheck <> "8B64") Then
-            warningStack.AddString "ParseAdditionalLayerIngo found an unknown additional segment signature: " & sigCheck
+            warningStack.AddString "ParseAdditionalLayerInfo found an unknown additional segment signature: " & sigCheck
             ParseAdditionalLayerInfo = psd_Warning
         Else
             
