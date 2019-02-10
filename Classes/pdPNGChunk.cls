@@ -476,13 +476,16 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                     
                 '"Up" filtering filters according to the pixel above
                 Case png_Up
-                
-                    yOffset = yOffset + 1
-                    For x = 0 To xStride - 2
-                        If (y > 0) Then prevValue = srcBytes(yOffset + x - xStride) Else prevValue = 0
-                        curValue = srcBytes(yOffset + x)
-                        srcBytes(yOffset + x) = (curValue + prevValue) And 255
-                    Next x
+                    
+                    'First line has no "previous" line; values are absolute.
+                    If (y <> 0) Then
+                        yOffset = yOffset + 1
+                        For x = 0 To xStride - 2
+                            prevValue = srcBytes(yOffset + x - xStride)
+                            curValue = srcBytes(yOffset + x)
+                            srcBytes(yOffset + x) = (curValue + prevValue) And 255
+                        Next x
+                    End If
                     
                 '"Average" filtering filters according to the average between the previous pixel and the pixel above
                 Case png_Average
