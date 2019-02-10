@@ -389,57 +389,60 @@ Private Type ThreeAsciiChars
 End Type
 
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
-Private Declare Function cmsGetEncodedCMMversion Lib "lcms2.dll" () As Long
+Private Declare Function cmsGetEncodedCMMversion Lib "lcms2" () As Long
 
 'Error logger registration; note that lcms must be custom-built to ensure this function signature is
 ' explicitly marked as stdcall; a default build assumes cdecl.
-Private Declare Sub cmsSetLogErrorHandler Lib "lcms2.dll" (ByVal ptrToCmsLogErrorHandlerFunction As Long)
+Private Declare Sub cmsSetLogErrorHandler Lib "lcms2" (ByVal ptrToCmsLogErrorHandlerFunction As Long)
 
 'Profile create/release functions; white points declared as ByVal Longs can typically be set to NULL to use the default D50 value
-Private Declare Function cmsCloseProfile Lib "lcms2.dll" (ByVal srcProfile As Long) As Long
-Private Declare Function cmsCreateBCHSWabstractProfile Lib "lcms2.dll" (ByVal nLUTPoints As Long, ByVal newBrightness As Double, ByVal newContrast As Double, ByVal newHue As Double, ByVal newSaturation As Double, ByVal srcTemp As Long, ByVal dstTemp As Long) As Long
-Private Declare Function cmsCreateGrayProfile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long, ByVal sourceToneCurve As Long) As Long
-Private Declare Function cmsCreateLab2Profile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long) As Long
-Private Declare Function cmsCreateLab4Profile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long) As Long
-Private Declare Function cmsCreate_sRGBProfile Lib "lcms2.dll" () As Long
-Private Declare Function cmsCreateRGBProfile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal ptrTo3ToneCurves As Long) As Long
-Private Declare Function cmsCreateXYZProfile Lib "lcms2.dll" () As Long
-Private Declare Function cmsOpenProfileFromMem Lib "lcms2.dll" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
-Private Declare Function cmsSaveProfileToMem Lib "lcms2.dll" (ByVal srcProfile As Long, ByVal dstPtr As Long, ByRef sizeRequiredInBytes As Long) As Long
+Private Declare Function cmsCloseProfile Lib "lcms2" (ByVal srcProfile As Long) As Long
+Private Declare Function cmsCreateBCHSWabstractProfile Lib "lcms2" (ByVal nLUTPoints As Long, ByVal newBrightness As Double, ByVal newContrast As Double, ByVal newHue As Double, ByVal newSaturation As Double, ByVal srcTemp As Long, ByVal dstTemp As Long) As Long
+Private Declare Function cmsCreateGrayProfile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long, ByVal sourceToneCurve As Long) As Long
+Private Declare Function cmsCreateLab2Profile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long) As Long
+Private Declare Function cmsCreateLab4Profile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long) As Long
+Private Declare Function cmsCreate_sRGBProfile Lib "lcms2" () As Long
+Private Declare Function cmsCreateRGBProfile Lib "lcms2" (ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal ptrTo3ToneCurves As Long) As Long
+Private Declare Function cmsCreateXYZProfile Lib "lcms2" () As Long
+Private Declare Function cmsOpenProfileFromMem Lib "lcms2" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
+Private Declare Function cmsSaveProfileToMem Lib "lcms2" (ByVal srcProfile As Long, ByVal dstPtr As Long, ByRef sizeRequiredInBytes As Long) As Long
 
 'Profile information functions
-Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
-Private Declare Function cmsGetProfileInfo Lib "lcms2.dll" (ByVal hProfile As Long, ByVal srcInfo As LCMS_INFOTYPE, ByVal ptrToLanguageCode As Long, ByVal ptrToCountryCode As Long, ByVal ptrToWCharBuffer As Long, ByVal necessaryBufferSize As Long) As Long
-Private Declare Function cmsGetPCS Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
-Private Declare Function cmsGetColorSpace Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+Private Declare Function cmsGetEncodedICCversion Lib "lcms2" (ByVal hProfile As Long) As Long
+Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
+Private Declare Function cmsGetProfileInfo Lib "lcms2" (ByVal hProfile As Long, ByVal srcInfo As LCMS_INFOTYPE, ByVal ptrToLanguageCode As Long, ByVal ptrToCountryCode As Long, ByVal ptrToWCharBuffer As Long, ByVal necessaryBufferSize As Long) As Long
+Private Declare Function cmsGetProfileVersion Lib "lcms2" (ByVal hProfile As Long) As Double
+Private Declare Function cmsGetPCS Lib "lcms2" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+Private Declare Function cmsGetColorSpace Lib "lcms2" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+Private Declare Sub cmsSetProfileVersion Lib "lcms2" (ByVal hProfile As Long, ByVal newVersion As Double)
  
 'Tone curve creation/destruction
-Private Declare Function cmsBuildParametricToneCurve Lib "lcms2.dll" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
-Private Declare Function cmsBuildGamma Lib "lcms2.dll" (ByVal ContextID As Long, ByVal gammaValue As Double) As Long
-Private Declare Sub cmsFreeToneCurve Lib "lcms2.dll" (ByVal srcToneCurve As Long)
+Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
+Private Declare Function cmsBuildGamma Lib "lcms2" (ByVal ContextID As Long, ByVal gammaValue As Double) As Long
+Private Declare Sub cmsFreeToneCurve Lib "lcms2" (ByVal srcToneCurve As Long)
 
 'Transform functions
-Private Declare Function cmsCreateTransform Lib "lcms2.dll" (ByVal hInputProfile As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputProfile As Long, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
-Private Declare Function cmsCreateMultiprofileTransform Lib "lcms2.dll" (ByVal ptrToFirstProfile As Long, ByVal numOfProfiles As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
-Private Declare Sub cmsDeleteTransform Lib "lcms2.dll" (ByVal hTransform As Long)
+Private Declare Function cmsCreateTransform Lib "lcms2" (ByVal hInputProfile As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputProfile As Long, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
+Private Declare Function cmsCreateMultiprofileTransform Lib "lcms2" (ByVal ptrToFirstProfile As Long, ByVal numOfProfiles As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
+Private Declare Sub cmsDeleteTransform Lib "lcms2" (ByVal hTransform As Long)
 
 'Color space conversions; any conversion that requires an XYZ WhitePoint can pass null for default D50 values
-Private Declare Sub cmsLab2XYZ Lib "lcms2.dll" (ByVal ptrToWhitePointXYZ As Long, ByRef dstXYZ As LCMS_XYZ, ByRef srcLab As LCMS_Lab)
-Private Declare Sub cmsXYZ2Lab Lib "lcms2.dll" (ByVal ptrToWhitePointXYZ As Long, ByRef dstLab As LCMS_Lab, ByRef srcXYZ As LCMS_XYZ)
-Private Declare Sub cmsXYZ2xyY Lib "lcms2.dll" (ByRef dstxyY As LCMS_xyY, ByRef srcXYZ As LCMS_XYZ)
-Private Declare Sub cmsxyY2XYZ Lib "lcms2.dll" (ByRef dstXYZ As LCMS_XYZ, ByRef srcxyY As LCMS_xyY)
-Private Declare Function cmsWhitePointFromTemp Lib "lcms2.dll" (ByRef dstWhitePointxyY As LCMS_xyY, ByVal srcTemperature As Double) As Long
-Private Declare Function cmsTempFromWhitePoint Lib "lcms2.dll" (ByRef dstTemperature As Double, ByRef srcWhitePointxyY As LCMS_xyY) As Long
+Private Declare Sub cmsLab2XYZ Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstXYZ As LCMS_XYZ, ByRef srcLab As LCMS_Lab)
+Private Declare Sub cmsXYZ2Lab Lib "lcms2" (ByVal ptrToWhitePointXYZ As Long, ByRef dstLab As LCMS_Lab, ByRef srcXYZ As LCMS_XYZ)
+Private Declare Sub cmsXYZ2xyY Lib "lcms2" (ByRef dstxyY As LCMS_xyY, ByRef srcXYZ As LCMS_XYZ)
+Private Declare Sub cmsxyY2XYZ Lib "lcms2" (ByRef dstXYZ As LCMS_XYZ, ByRef srcxyY As LCMS_xyY)
+Private Declare Function cmsWhitePointFromTemp Lib "lcms2" (ByRef dstWhitePointxyY As LCMS_xyY, ByVal srcTemperature As Double) As Long
+Private Declare Function cmsTempFromWhitePoint Lib "lcms2" (ByRef dstTemperature As Double, ByRef srcWhitePointxyY As LCMS_xyY) As Long
 
 'Pointers to the constant XYZ/xyY declarations for D50
-Private Declare Function cmsD50_XYZ Lib "lcms2.dll" () As Long
-Private Declare Function cmsD50_xyY Lib "lcms2.dll" () As Long
+Private Declare Function cmsD50_XYZ Lib "lcms2" () As Long
+Private Declare Function cmsD50_xyY Lib "lcms2" () As Long
 
 'Similar internal functions for D65 (which is used by a number of RGB spaces, e.g. Adobe and sRGB)
 Private m_D65_XYZ() As Double, m_D65_xyY() As Double
 
 'Actual transform application functions
-Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsToTransform As Long)
+Private Declare Sub cmsDoTransform Lib "lcms2" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsToTransform As Long)
 
 'In 2.8, a dedicated line/stride transform function was added to LittleCMS.  Here is what the documentation says:
 ' "This function translates bitmaps with complex organization. Each bitmap may contain several lines, and every line
@@ -449,7 +452,7 @@ Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, By
 '  to cmsDoTransform(), especially when customized plug-ins are being used."
 '
 'I do not currently make use of this function, but given the efficiency caveat above, it may be worth investigating in the future.
-Private Declare Sub cmsDoTransformLineStride Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsPerLine As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
+Private Declare Sub cmsDoTransformLineStride Lib "lcms2" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsPerLine As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
 
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
@@ -647,6 +650,10 @@ Public Function LCMS_GetProfileRenderingIntent(ByVal hProfile As Long) As LCMS_R
     LCMS_GetProfileRenderingIntent = cmsGetHeaderRenderingIntent(hProfile)
 End Function
 
+Public Function LCMS_GetProfileVersion(ByVal hProfile As Long) As Double
+    LCMS_GetProfileVersion = cmsGetProfileVersion(hProfile)
+End Function
+
 Public Function LCMS_LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal sizeOfProfileInBytes As Long) As Long
     LCMS_LoadProfileFromMemory = cmsOpenProfileFromMem(ptrToProfile, sizeOfProfileInBytes)
 End Function
@@ -720,8 +727,9 @@ Public Function LCMS_LoadLinearRGBProfile() As Long
     
 End Function
 
-Public Function LCMS_LoadStockSRGBProfile() As Long
+Public Function LCMS_LoadStockSRGBProfile(Optional ByVal useIccV4 As Boolean = True) As Long
     LCMS_LoadStockSRGBProfile = cmsCreate_sRGBProfile()
+    If (Not useIccV4) Then cmsSetProfileVersion LCMS_LoadStockSRGBProfile, 2.1
 End Function
 
 Public Function LCMS_LoadStockLabProfile(Optional ByVal useVersion4 As Boolean = True) As Long

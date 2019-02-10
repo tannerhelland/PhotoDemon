@@ -69,9 +69,9 @@ Friend Function CreateLinearRGBProfile() As Boolean
     CreateLinearRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
-Friend Function CreateSRGBProfile() As Boolean
+Friend Function CreateSRGBProfile(Optional ByVal useIccV4 As Boolean = True) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
-    m_ProfileHandle = LittleCMS.LCMS_LoadStockSRGBProfile()
+    m_ProfileHandle = LittleCMS.LCMS_LoadStockSRGBProfile(useIccV4)
     CreateSRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
