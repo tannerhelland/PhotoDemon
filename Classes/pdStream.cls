@@ -656,21 +656,21 @@ Friend Function ReadLong_BE() As Long
 End Function
 
 'Adobe files used fixed-point floats in some places.
-Friend Function ReadFixed32() As Single
+Friend Function ReadFixed1616() As Single
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
         Dim intPart As Long, floatPart As Long
         intPart = Me.ReadInt()
-        floatPart = Me.ReadInt()
-        ReadFixed32 = CSng(intPart) + CSng(floatPart) / 65535!
+        floatPart = Me.ReadIntUnsigned()
+        ReadFixed1616 = CSng(intPart) + CSng(floatPart) / 65535!
     End If
 End Function
 
-Friend Function ReadFixed32_BE() As Single
+Friend Function ReadFixed1616_BE() As Single
     If m_Open And (Me.GetPosition() + 4& <= m_BufferSize) Then
         Dim intPart As Long, floatPart As Long
         intPart = Me.ReadInt_BE()
-        floatPart = Me.ReadInt_BE()
-        ReadFixed32_BE = CSng(intPart) + CSng(floatPart) / 65535!
+        floatPart = Me.ReadIntUnsigned_BE()
+        ReadFixed1616_BE = CSng(intPart) + CSng(floatPart) / 65536!
     End If
 End Function
 
@@ -897,15 +897,20 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
             If (Not m_FSO Is Nothing) Then
             
                 'Write the data out to file
-                m_FSO.FileWriteData m_FileHandle, dataPointer, dataLength
+                If m_FSO.FileWriteData(m_FileHandle, dataPointer, dataLength) Then
                 
-                'Retrieve the new file pointer (which is opaquely managed by WAPI)
-                WriteBytesFromPointer = m_FSO.FileGetCurrentPointer(m_FileHandle)
+                    'Retrieve the new file pointer (which is opaquely managed by WAPI)
+                    WriteBytesFromPointer = m_FSO.FileGetCurrentPointer(m_FileHandle)
+                    
+                    'Manually increase the buffer size to match, but only if we've moved past the end of the file
+                    Dim tmpSize As Long
+                    tmpSize = WriteBytesFromPointer - m_FilePointerOffset
+                    If (m_BufferSize < tmpSize) Then m_BufferSize = tmpSize
                 
-                'Manually increase the buffer size to match, but only if we've moved past the end of the file
-                Dim tmpSize As Long
-                tmpSize = WriteBytesFromPointer - m_FilePointerOffset
-                If (m_BufferSize < tmpSize) Then m_BufferSize = tmpSize
+                'Write failed
+                Else
+                    InternalStreamError "WriteBytesFromPointer failed to write to target file; see pdFSO error for more details."
+                End If
             
             Else
                 WriteBytesFromPointer = 0
@@ -922,6 +927,24 @@ End Function
 'Write a single byte to the stream.
 Friend Function WriteByte(ByVal srcByte As Byte) As Boolean
     WriteByte = WriteBytesFromPointer(VarPtr(srcByte), 1)
+End Function
+
+'Write a 16-16 fixed-point value to the stream.
+Friend Function WriteFixed1616(ByVal srcFloat As Single) As Boolean
+    Dim intPart As Long, floatPart As Long
+    intPart = Int(srcFloat)
+    floatPart = Int(CSng(srcFloat - Int(srcFloat)) * 65536!)
+    WriteFixed1616 = Me.WriteInt(intPart And &HFFFF&)
+    If WriteFixed1616 Then WriteFixed1616 = Me.WriteIntU(floatPart And &HFFFF&)
+End Function
+
+'Write a 16-16 fixed-point value (big-endian) to the stream.
+Friend Function WriteFixed1616_BE(ByVal srcFloat As Single) As Boolean
+    Dim intPart As Long, floatPart As Long
+    intPart = Int(srcFloat)
+    floatPart = Int(CSng(srcFloat - Int(srcFloat)) * 65536!)
+    WriteFixed1616_BE = Me.WriteInt_BE(intPart And &HFFFF&)
+    If WriteFixed1616_BE Then WriteFixed1616_BE = Me.WriteIntU_BE(floatPart And &HFFFF&)
 End Function
 
 'Write a single (pun?) 32-bit float to the stream
@@ -969,6 +992,14 @@ End Function
 'Write a single long to the stream, *after* converting it to big-endian format.
 Friend Function WriteLong_BE(ByVal srcLong As Long) As Boolean
     WriteLong_BE = WriteLong(htonl(srcLong))
+End Function
+
+'Write null padding bytes.  Padding values are guaranteed to be 0.  (If you don't care about
+' padding values, note that it's faster to just call SetFilePointer.)
+Friend Function WritePadding(ByVal padLength As Long) As Boolean
+    Dim nullPadding() As Byte
+    ReDim nullPadding(0 To padLength - 1) As Byte
+    Me.WriteBytesFromPointer VarPtr(nullPadding(0)), padLength
 End Function
 
 'Given a source VB string, write each char to the stream as if it were a one-byte ASCII value.
