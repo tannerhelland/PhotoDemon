@@ -44,6 +44,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
+' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
+' classes have their own version of this constant.)
+Private Const PNG_DEBUG_VERBOSE As Boolean = False
+
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
 ' As such, PD does not enable it by default.  For strict CRC validation, set this compile-time constant to TRUE.
@@ -114,6 +119,10 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         m_SourcePtrLen = 0
     End If
     
+    Dim startTime As Currency, firstStartTime As Currency
+    VBHacks.GetHighResTime startTime
+    firstStartTime = startTime
+    
     'Try to validate the source file
     Dim keepLoading As PD_PNGResult
     keepLoading = Me.Step1_ValidatePNG(srcFile, checkExtension, offsetInSrcFile)
@@ -121,28 +130,59 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
     'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
     ' will cause us to abandon the attempt entirely.)
     If (keepLoading < png_Failure) Then
+    
+        If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "File is PNG; running internal parser..."
         
-        PDDebug.LogAction "File is PNG; running internal parser..."
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > validation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
         
         'Parse the original file into chunks.  (Once this is done, we no longer need to maintain an
-        ' in-memory copy of the original PNG data.)
+        ' copy of the original PNG data.)
         keepLoading = Me.Step2_PreLoadChunks(srcFile)
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > chunk parsing took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
         
         'If all chunks were loaded successfully and minimal validation passed (e.g. a minimal amount of
         ' required chunks are present), go ahead and decompress all relevant chunks, including merging
         ' multiple IDAT chunks (if any) into a single IDAT instance.
         If (keepLoading < png_Failure) Then keepLoading = Me.Step3_Decompress(srcFile)
         
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > inflate took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
         'All compressed data has now been decompressed.  Our next task is to "un-filter" the IDAT chunk,
         ' which converts the pixel bytestream (which has been "filtered" into some other representation
         ' format) into a raw stream of actual pixel data.
         If (keepLoading < png_Failure) Then keepLoading = Me.Step4_UnfilterIDAT(srcFile)
         
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > unfiltering IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
         'Next, convert the unfiltered IDAT into actual pixel data.
         If (keepLoading < png_Failure) Then keepLoading = Me.Step5_ConstructImage(srcFile, dstDIB, dstImage)
         
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > constructing DIB from IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
         'Finally, perform any weird post-processing due to non-standard gamma or chromaticity chunks
         If (keepLoading < png_Failure) Then keepLoading = Me.Step6_PostProcessing(srcFile, dstDIB, dstImage)
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "PNG > post-processing (color management, etc) took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            PDDebug.LogAction "Total PNG import time took " & VBHacks.GetTimeDiffNowAsString(firstStartTime)
+            VBHacks.GetHighResTime startTime
+        End If
         
     End If
     
@@ -976,7 +1016,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             
             Case png_TruecolorAlpha
             
-                'If LittleCMS is available, use it for faster byte swizzling
+                'If LittleCMS is available, use it for fast byte swizzling
                 If (Not dstTransform Is Nothing) Then
                     
                     For y = 0 To yFinal
