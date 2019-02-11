@@ -15,10 +15,9 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright 2001-2019 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 12/September/17
-'Last update: cache persistent file handles to the "master" Undo XML file (used by the Autosave engine to reconstruct
-'             images after a crash), and the related "Autosave" thumbnail file.  This cuts the write time of those files
-'             to sub-1.0 ms amounts on my old 7200 RPM dev drive, which is an excellent improvement.
+'Last updated: 10/February/19
+'Last update: track sizes of generated Undo/Redo files; this data is not currently used for anything,
+'             but in the future, it could be a valuable tool in reducing per-session HDD impact
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -71,7 +70,7 @@ Option Explicit
 Private Const UNDO_DEBUG_MODE As Boolean = False
 
 'Similarly, detailed timing reports can also be provided
-Private Const UNDO_DETAILED_TIMING_REPORTS As Boolean = False
+Private Const UNDO_DETAILED_REPORTS As Boolean = False
 
 'In the Undo/Redo stack, which entry is this image currently on?
 Private m_UndoNum As Long
@@ -204,13 +203,16 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
     
     'Forward a save request to the actual SaveUndoData function.  It handles the messy business of actually writing the correct
     ' filetypes (which it determines based on the current processType and targetLayer)
-    Saving.SaveUndoData parentPDImage, GetCurrentUndoFilename(), srcProcData.pcUndoType, targetLayerID, m_UndoAcceleration(srcProcData.pcUndoType)
+    Dim finalUndoFileSize As Long
+    Saving.SaveUndoData parentPDImage, GetCurrentUndoFilename(), srcProcData.pcUndoType, targetLayerID, m_UndoAcceleration(srcProcData.pcUndoType), finalUndoFileSize
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
     If (m_UndoNum <> UBound(m_UndoStack)) Then ReDim Preserve m_UndoStack(0 To m_UndoNum) As PD_UndoEntry
     With m_UndoStack(m_UndoNum)
         .srcProcCall = srcProcData
         .undoLayerID = targetLayerID
+        .undoFileSize = finalUndoFileSize
+        If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo file size: " & Format$(CDbl(.undoFileSize) / 1000#, "#,##0") & " kb"
     End With
     
     'If the present image is NOT the last image in the undo train (i.e., the user pressed Undo before running
@@ -252,7 +254,7 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
             
     End Select
     
-    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
+    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
     
     'Increase our Undo count
     m_UndoNum = m_UndoNum + 1
@@ -280,7 +282,7 @@ Friend Sub CreateUndoData(ByRef srcProcData As PD_ProcessCall, Optional ByVal ta
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
-    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
+    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
     
     m_UndoRedoActive = False
     
@@ -321,8 +323,8 @@ Private Sub CalculateUndoAcceleration(ByVal processType As PD_UndoType, ByVal ti
         If (m_UndoAcceleration(processType) > Plugin_lz4.Lz4_GetMaxAccelerationLevel()) Then m_UndoAcceleration(processType) = Plugin_lz4.Lz4_GetMaxAccelerationLevel()
         If (m_UndoAcceleration(processType) < 2) Then m_UndoAcceleration(processType) = 2
         
-        If UNDO_DETAILED_TIMING_REPORTS Then
-            If (m_UndoAcceleration(processType) <> curLz4Level) Then Debug.Print "Undo is too slow, accelerating lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType) & " (" & Format$(timeTaken, "0") & " ms)"
+        If UNDO_DETAILED_REPORTS Then
+            If (m_UndoAcceleration(processType) <> curLz4Level) Then PDDebug.LogAction "Undo is too slow, accelerating lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType) & " (" & Format$(timeTaken, "0") & " ms)"
         End If
         
     Else
@@ -340,8 +342,8 @@ Private Sub CalculateUndoAcceleration(ByVal processType As PD_UndoType, ByVal ti
             'If we get too low, restore default settings
             If (m_UndoAcceleration(processType) < 2) Then m_UndoAcceleration(processType) = -1
             
-            If UNDO_DETAILED_TIMING_REPORTS Then
-                If (m_UndoAcceleration(processType) <> curLz4Level) Then Debug.Print "Undo is fast enough, decreasing lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType)
+            If UNDO_DETAILED_REPORTS Then
+                If (m_UndoAcceleration(processType) <> curLz4Level) Then PDDebug.LogAction "Undo is fast enough, decreasing lz4 acceleration to compensate. Level changed from " & curLz4Level & " to " & m_UndoAcceleration(processType)
             End If
         
         'If we're already running at maximum lz4 compression, we can't improve compression further.
@@ -1186,8 +1188,8 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
     
     Next i
     
-    If UNDO_DETAILED_TIMING_REPORTS Then
-        Debug.Print "Undo engine XML generation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If UNDO_DETAILED_REPORTS Then
+        PDDebug.LogAction "Undo engine XML generation took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     End If
     
@@ -1210,8 +1212,8 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
 
     End If
     
-    If UNDO_DETAILED_TIMING_REPORTS Then
-        Debug.Print "Undo engine XML file write took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If UNDO_DETAILED_REPORTS Then
+        PDDebug.LogAction "Undo engine XML file write took " & VBHacks.GetTimeDiffNowAsString(startTime)
         VBHacks.GetHighResTime startTime
     End If
     
@@ -1236,7 +1238,7 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
         End If
     End If
     
-    If UNDO_DETAILED_TIMING_REPORTS Then Debug.Print "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    If UNDO_DETAILED_REPORTS Then PDDebug.LogAction "Undo engine thumbnail write took " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -1362,11 +1364,11 @@ Private Sub Class_Initialize()
         
         'Start with a faster default compression speed for large undo types
         If (i = UNDO_Everything) Or (i = UNDO_Image) Then
-            m_UndoAcceleration(i) = 20
+            m_UndoAcceleration(i) = 100
         
         'For layer-based undo types (as used by things like paint strokes), use a slightly slower-but-better option
         ElseIf (i = UNDO_Layer) Then
-            m_UndoAcceleration(i) = 10
+            m_UndoAcceleration(i) = 50
         
         'Everything else gets maximum compression by default
         Else

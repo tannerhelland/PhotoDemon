@@ -764,11 +764,15 @@ End Function
 '
 'The only required parameter is the destination filename.
 '
-'Two optional parameters exist for this function:
+'Several optional parameters exist for this function:
 ' - secondPassDirectoryCompression: compress the directory chunk before writing it out to file.
 ' - thisIsATempFile: special WAPI flags related to temp files will be set.  Note that this flag does not affect file correctness in
 '                    any way; it simply specifies hints related to file caching.
-Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
+' - compressionLevel: only relevant if secondPassDirectoryCompression is TRUE
+' - dstFinalSize: optional [out] parameter to report the final stream size.  This is helpful as the actual
+'                 file contents will be written asynchronously, if possible, so attempting to measure
+'                 file size shortly after calling this function brings a high chance of failure.
+Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByRef dstFinalSize As Long) As Boolean
     
     'If memory is tight, you may choose to free any temporary compression buffers here, as they are no longer needed.
     ' (In PD, we keep them around as we may reuse a pdPackage instance for multiple writes.)
@@ -828,10 +832,11 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     ' thing from scratch).
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         If m_File.FileExists(dstFilename) Then m_File.FileDelete dstFilename
-    
+        
     'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
     ' and the dictionary.  Close the stream.
     Else
+        dstFinalSize = m_DataBuffer.GetStreamSize()
         m_DataBuffer.StopStream
     End If
     
@@ -859,14 +864,14 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             'First, attempt to write out the package using a memory-mapped file.  This can be faster (comparable to
             ' an asynchronous write) vs raw WriteData calls.
             totalWriteSize = LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked + m_FileHeader.DirectoryChunkSizePacked
+            dstFinalSize = totalWriteSize
             
             Dim useMemMapMode As Boolean
             useMemMapMode = m_File.FileConvertHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize)
             
             If useMemMapMode Then
     
-                'Write out the file data using good ol' CopyMemoryStrict!
-                
+                'Write out the file data using good ol' RtlMoveMemory!
                 mmapOffset = LenB(m_FileHeader)
                 
                 'File header...

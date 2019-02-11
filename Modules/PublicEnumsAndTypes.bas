@@ -702,6 +702,7 @@ End Type
 Public Type PD_UndoEntry
     srcProcCall As PD_ProcessCall   'The processor call that initiated this Undo action
     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+    undoFileSize As Long            'Size of the generated Undo data
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
 
