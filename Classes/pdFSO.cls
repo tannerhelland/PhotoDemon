@@ -300,7 +300,7 @@ Friend Function FileCloseHandle(ByRef srcHandle As Long) As Boolean
     End If
     
     'As a convenience to the caller, manually reset the handle to 0.  (This is why it's passed ByRef.)
-    If FileCloseHandle Then srcHandle = 0
+    If FileCloseHandle Then srcHandle = 0 Else FSOError "FileCloseHandle", "unable to close handle #" & srcHandle & "; system error code was #" & Err.LastDllError
     
 End Function
 
@@ -840,7 +840,7 @@ Friend Function FileLenW(ByRef srcPath As String) As Long
     Dim hFile As Long
     If Me.FileCreateHandle(srcPath, hFile, True) Then
         FileLenW = CLng(FileLenW_Large(hFile))
-        CloseHandle hFile
+        Me.FileCloseHandle hFile
     Else
         FileLenW = 0
     End If
