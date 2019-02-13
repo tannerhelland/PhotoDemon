@@ -47,7 +47,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = False
+Private Const PNG_DEBUG_VERBOSE As Boolean = True
 
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
@@ -668,6 +668,9 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
+    Dim imgHasEmbeddedICC As Boolean
+    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0)
+    
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, dstTransform As pdLCMSTransform, srcImgProfileGood As Boolean
     PrepICCData srcProfile, dstProfile, dstTransform, srcImgProfileGood
     If srcImgProfileGood Then
@@ -1016,8 +1019,9 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
             
             Case png_TruecolorAlpha
             
-                'If LittleCMS is available, use it for fast byte swizzling
-                If (Not dstTransform Is Nothing) Then
+                'If the image has an embedded color profile, combine swizzling and color management
+                ' into a single step.
+                If imgHasEmbeddedICC Then
                     
                     For y = 0 To yFinal
                     
@@ -1047,27 +1051,60 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     ' image was untagged, we leave it as such.)
                     If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
-                'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
+                'If the image does *not* have an embedded ICC profile, we can do a faster manual swizzle.
                 Else
-                    For y = 0 To yFinal
-                        srcOffset = y * xStride + 1
-                    For x = 0 To xFinal
+                    
+                    '32-bit RGBA are the most common use-case for standard PNGs, so they are worthwhile
+                    ' to manually accelerate.
+                    If (m_Header.BitDepth = 8) Then
                         
-                        xDIB = x * 4
-                        If (m_Header.BitDepth = 8) Then
-                            dstBytes(xDIB, y) = srcBytes(srcOffset + x * 4 + 2)
-                            dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 4 + 1)
-                            dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 4)
-                            dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 4 + 3)
-                        Else
+                        Dim dstBytesLine() As Byte, dstSA1D As SafeArray1D
+                        dstDIB.WrapArrayAroundScanline dstBytesLine, dstSA1D, 0
+                        
+                        Dim scanStart As Long, scanWidth As Long
+                        scanStart = dstDIB.GetDIBPointer
+                        scanWidth = dstDIB.GetDIBStride
+                    
+                        For y = 0 To yFinal
+                            
+                            srcOffset = y * xStride + 1
+                            dstSA1D.pvData = scanStart + y * scanWidth
+                            
+                            'Start by copying the unfiltered IDAT as-is into the destination DIB.
+                            ' (Green and alpha bytes are already in the correct position; we only need
+                            ' to swizzle red and blue to the required BGRA order.)
+                            CopyMemoryStrict VarPtr(dstBytesLine(0)), VarPtr(srcBytes(srcOffset)), imgWidth * 4
+                            
+                            'Manually swizzle r/b
+                            For x = 0 To xFinal * 4 Step 4
+                                r = dstBytesLine(x)
+                                dstBytesLine(x) = dstBytesLine(x + 2)
+                                dstBytesLine(x + 2) = r
+                            Next x
+                            
+                        Next y
+                        
+                        dstDIB.UnwrapArrayFromDIB dstBytesLine
+                        
+                    '64-bit is much rarer "in the wild", and it needs to be processed manually as VB
+                    ' doesn't natively support ushorts.
+                    Else
+                    
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
+                        For x = 0 To xFinal
+                            
+                            xDIB = x * 4
                             dstBytes(xDIB, y) = srcBytes(srcOffset + x * 8 + 4)
                             dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 8 + 2)
                             dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 8)
                             dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 8 + 6)
-                        End If
-                        
-                    Next x
-                    Next y
+                            
+                        Next x
+                        Next y
+                    
+                    End If
+                    
                 End If
                 
                 okToProceed = True

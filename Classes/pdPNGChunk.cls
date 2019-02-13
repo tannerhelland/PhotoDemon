@@ -468,8 +468,8 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                 Case png_Sub
                 
                     yOffset = yOffset + 1
-                    For x = 0 To xStride - 2
-                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                    For x = pxOffset To xStride - 2
+                        prevValue = srcBytes(yOffset + x - pxOffset)
                         curValue = srcBytes(yOffset + x)
                         srcBytes(yOffset + x) = (curValue + prevValue) And 255
                     Next x
