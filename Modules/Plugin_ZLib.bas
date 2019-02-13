@@ -41,6 +41,7 @@ Private Const ZLIB_DEFAULT_CLEVEL As Long = 6
 
 Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As PD_ZLibReturn
 Private Declare Function uncompress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As PD_ZLibReturn
+Private Declare Function adler32 Lib "zlibwapi" (ByVal adlerStart As Long, ByVal srcPtr As Long, ByVal srcLength As Long) As Long
 Private Declare Function crc32 Lib "zlibwapi" (ByVal initValue As Long, ByVal ptrDstBuffer As Long, ByVal dstBufferLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 
@@ -193,6 +194,15 @@ Public Function ZLib_GetMaxCompressionLevel() As Long
 End Function
 
 'ZLib also provides checksum functionality
+Public Function ZLib_GetAdler32(ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal startValue As Long = 0&) As Long
+    
+    'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
+    ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
+    If (startValue = 0&) Then startValue = adler32(0&, 0&, 0&)
+    ZLib_GetAdler32 = adler32(startValue, dataPointer, dataLength)
+
+End Function
+
 Public Function ZLib_GetCRC32(ByVal ptrToData As Long, ByVal dataLength As Long, Optional ByVal startValue As Long = 0&) As Long
     If (startValue = 0&) Then startValue = crc32(0&, 0&, 0&)
     ZLib_GetCRC32 = crc32(startValue, ptrToData, dataLength)

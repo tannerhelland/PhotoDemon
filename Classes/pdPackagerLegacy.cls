@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2019 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 06/February/15
-'Last update: expand zip-like interface, with help from the new pdFSO class
+'Last updated: 12/February/19
+'Last update: minor cleanup to prepare for transition from zlib to libdeflate
 'Dependencies: pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -193,20 +193,8 @@ Private Type PDP_NODE
     
 End Type
 
-'zLib compression and checksum validation
-Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
-Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
-Private Declare Function uncompress_safe Lib "zlibwapi.dll" Alias "uncompress" (ByVal dstBufferPointer As Long, ByVal dstLenPointer As Long, ByVal srcBufferPointer As Long, ByVal srcLenNotAPointer As Long) As Long
-Private Declare Function adler32 Lib "zlibwapi.dll" (ByVal adlerStart As Long, ByRef srcBuffer As Any, ByVal srcLength As Long) As Long
-
-'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
-' us to call any DLL we like without first passing them through regsvr32.
-Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
-Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
-
-'If zLib has been successfully initialized, this will be set to TRUE.  If we initialized the DLL within this class, we will also
-' have a zLibToken value; this value must be used at termination time to free our zLib library handle.
-Private m_ZLibAvailable As Boolean, m_ZLibToken As Long
+'If zLib has been successfully initialized, this will be set to TRUE.
+Private m_ZLibAvailable As Boolean
 
 'When writing new pdPackage files, these variables will hold the package's contents as they are being assembled.
 Private m_FileHeader As PDP_HEADER
@@ -855,15 +843,11 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         ReDim dstArray(0 To dstSize - 1) As Byte
         
         'Request compression from zLib.
-        Dim zLibResult As Long
-        If compressionLevel >= 0 Then
-            zLibResult = compress2(dstArray(0), dstSize, ByVal srcPointer, srcSize, compressionLevel)
-        Else
-            zLibResult = compress(dstArray(0), dstSize, ByVal srcPointer, srcSize)
-        End If
+        Dim zlibResult As Long
+        zlibResult = Plugin_zLib.ZlibCompressNakedPointers(VarPtr(dstArray(0)), dstSize, srcPointer, srcSize, compressionLevel)
         
         'Make sure zLib compressed the data successfully.
-        If (zLibResult = 0) Then
+        If (zlibResult = 0) Then
         
             'ReDim the destination array, if requested
             If trimDestinationArray Then ReDim Preserve dstArray(0 To dstSize - 1) As Byte
@@ -908,8 +892,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     On Error GoTo StopPackageFileRead
     
     Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
-    Dim tmpLength As Long
-    Dim zLibResult As Long
+    Dim tmpLength As Long, zlibResult As Boolean
     
     'Before doing anything else, make sure the file exists
     If Not m_File.FileExists(srcFilename) Then
@@ -983,15 +966,15 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Use zLib to decompress the data
                     tmpLength = m_FileHeader.DirectoryChunkSize
-                    zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed)
+                    zlibResult = Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed)
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DirectoryChunkSize) Then
                         RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
                     End If
                     
-                    If (zLibResult <> 0) Then
-                        RaiseInternalMessage "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                    If (Not zlibResult) Then
+                        RaiseInternalMessage "Directory is compressed, but zLib failed to decompress it."
                         GoTo StopPackageFileRead
                     End If
                     
@@ -1038,15 +1021,15 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Use zLib to decompress the data
                     tmpLength = m_FileHeader.DataChunkSize
-                    zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed)
+                    zlibResult = Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed)
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DataChunkSize) Then
                         RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
                     End If
                     
-                    If (zLibResult <> 0) Then
-                        RaiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                    If (Not zlibResult) Then
+                        RaiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it."
                         GoTo StopPackageFileRead
                     End If
                     
@@ -1125,7 +1108,7 @@ Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
                     Get #fileNum, , rawDataBuffer
                     
                     Set m_DataBuffer = New pdStream
-                    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadOnly
+                    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
                     m_DataBuffer.WriteByteArray rawDataBuffer
                     
                     'Mark the load as successful
@@ -1721,12 +1704,9 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             ReDim dstArray(0 To dataOriginalSize - 1) As Byte
             
             'Use zLib to decompress the data
-            Dim zLibResult As Long
-            zLibResult = uncompress_safe(VarPtr(dstArray(0)), VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
-            
-            If zLibResult <> 0 Then
+            If (Not Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)) Then
                 
-                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex = False
                 Exit Function
             
@@ -1829,12 +1809,9 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         If m_ZLibAvailable Then
             
             'Use zLib to decompress the data directly into the pointer we've been given
-            Dim zLibResult As Long
-            zLibResult = uncompress_safe(dstPointer, VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
-            
-            If zLibResult <> 0 Then
+            If (Not Plugin_zLib.ZlibDecompress_UnsafePtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)) Then
                 
-                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex_UnsafeDstPointer = False
                 Exit Function
             
@@ -1903,30 +1880,8 @@ End Function
 ' Additionally, the third parameter can be set as FALSE to notify this class that the caller tried to initiate zLib, but
 ' failed to do so successfully.
 Public Function Init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveInitToCaller As Boolean = False, Optional callerInitiationSuccess As Boolean = True) As Boolean
-
-    If leaveInitToCaller Then
-        m_ZLibAvailable = callerInitiationSuccess
-        m_ZLibToken = 0
-        
-    'The caller wants us to handle zLib initialization.  Attempt to load the zLib library path we were passed.
-    Else
     
-        If Len(pathToZLibDLL) <> 0 Then
-        
-            'If the library was successfully loaded, a non-zero value will be returned.
-            m_ZLibToken = LoadLibrary(StrPtr(pathToZLibDLL))
-            
-            If m_ZLibToken <> 0 Then
-                m_ZLibAvailable = True
-            Else
-                m_ZLibAvailable = False
-            End If
-            
-        Else
-            m_ZLibAvailable = False
-        End If
-        
-    End If
+    m_ZLibAvailable = Compression.IsCompressionEngineAvailable(PD_CE_ZLib)
     
     'This function will return TRUE if it considers zLib to be available, and FALSE if it does not.
     Init_ZLib = m_ZLibAvailable
@@ -2028,11 +1983,7 @@ End Function
 'Since this class makes extensive use of checksums, it's a convenient place to expose an arbitrary checksum function.  This function uses the
 ' same checksum strategy as pdPackage itself, so checksums by this function can be used as a failsafe check against internal pdPackage checksums.
 Public Function ChecksumArbitraryData(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
-    
-    'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
-    ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
-    ChecksumArbitraryData = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
-    
+    ChecksumArbitraryData = Plugin_zLib.ZLib_GetAdler32(dataPointer, dataLength)
 End Function
 
 'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with VB arrays
@@ -2071,7 +2022,6 @@ Private Sub Class_Initialize()
 
     'Reset all module-level variables
     m_ZLibAvailable = False
-    m_ZLibToken = 0
     
     'Prepare a module-level pdFSO instance, which will make file operations much easier
     Set m_File = New pdFSO
@@ -2080,9 +2030,6 @@ End Sub
 
 Private Sub Class_Terminate()
 
-    'If we loaded zLib, free it now
-    If m_ZLibToken <> 0 Then FreeLibrary m_ZLibToken
-    
     'Release our data stream buffer
     If Not (m_DataBuffer Is Nothing) Then
         m_DataBuffer.StopStream
