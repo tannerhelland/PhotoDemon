@@ -1250,15 +1250,15 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Check compression.  As of 2016, this is no longer a true/false value - it is an enum describing a specific
     ' PD compression engine.
-    Dim useDecompressionEngine As PD_CompressionEngine
-    useDecompressionEngine = PD_CE_NoCompression
+    Dim useDecompressionFormat As PD_CompressionFormat
+    useDecompressionFormat = cf_None
     
     If (DIBVersionCheck = DIB_FILE_VERSION_2016) Then
-        cFile.FileReadData hFile, VarPtr(useDecompressionEngine), 4&
+        cFile.FileReadData hFile, VarPtr(useDecompressionFormat), 4&
     Else
         Dim toDecompress As Boolean
         cFile.FileReadData hFile, VarPtr(toDecompress), 2&
-        If toDecompress Then useDecompressionEngine = PD_CE_ZLib Else useDecompressionEngine = PD_CE_NoCompression
+        If toDecompress Then useDecompressionFormat = cf_Zlib Else useDecompressionFormat = cf_None
     End If
     
     Dim fileData() As Byte
@@ -1267,7 +1267,7 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     ' of the entire pixel chunk.
     Dim origDataSize As Long, compressedDataSize As Long
     
-    If (useDecompressionEngine <> PD_CE_NoCompression) Then
+    If (useDecompressionFormat <> cf_None) Then
         cFile.FileReadData hFile, VarPtr(origDataSize), 4&
         cFile.FileReadData hFile, VarPtr(compressedDataSize), 4&
         ReDim fileData(0 To compressedDataSize - 1) As Byte
@@ -1287,10 +1287,10 @@ Friend Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         
         'If the DIB data is compressed, decompress it now.  Note that we decompress directly into the DIB itself, to avoid the
         ' need for a costly CopyMemory call (and extra DIB-sized allocation).
-        If (useDecompressionEngine <> PD_CE_NoCompression) Then
+        If (useDecompressionFormat <> cf_None) Then
             
             'If the data is decompressed successfully, convert it to a 2D array and copy it into this class's DIB memory chunk
-            If (Not Compression.DecompressPtrToPtr(tmpDIBPointer, tmpDIBLength, VarPtr(fileData(0)), compressedDataSize, useDecompressionEngine)) Then
+            If (Not Compression.DecompressPtrToPtr(tmpDIBPointer, tmpDIBLength, VarPtr(fileData(0)), compressedDataSize, useDecompressionFormat)) Then
                 PDDebug.LogAction "Decompression was not successful (unspecified compression plugin error).  DIB processing abandoned."
                 CreateFromFile = False
                 Exit Function
@@ -1319,7 +1319,7 @@ End Function
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
 ' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
-Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompressionEngine As PD_CompressionEngine = PD_CE_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
+Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long = 0) As Boolean
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.GetDIBWidth <= 0) Or (Me.GetDIBHeight <= 0) Then
@@ -1370,15 +1370,15 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
         
     'If compression has been requested, and zLib is available, we'll shrink the DIB data down before writing it.
     Dim dataWasCompressed As Boolean: dataWasCompressed = False
-    If (useCompressionEngine <> PD_CE_NoCompression) Then
+    If (cmpFormat <> cf_None) Then
         
         'Before writing anything to file, attempt compression and make sure it works
         Dim compressedImageData() As Byte, compressedSize As Long
-        dataWasCompressed = Compression.CompressPtrToDstArray(compressedImageData, compressedSize, tmpDIBPointer, tmpDIBLength, useCompressionEngine)
+        dataWasCompressed = Compression.CompressPtrToDstArray(compressedImageData, compressedSize, tmpDIBPointer, tmpDIBLength, cmpFormat)
         
         If dataWasCompressed Then
             
-            cFile.FileWriteData hFile, VarPtr(useCompressionEngine), 4&
+            cFile.FileWriteData hFile, VarPtr(cmpFormat), 4&
                 
             'Write the original size of the array, followed by the compressed size, followed by the image data itself.  (The array sizes will
             ' help us automatically create intelligently-sized buffers at decompression time.)
@@ -1390,14 +1390,14 @@ Friend Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
                 
         'On failure, we'll simply write out uncompressed bytes
         Else
-            useCompressionEngine = PD_CE_NoCompression
+            cmpFormat = cf_None
         End If
         
     End If
     
     'If compression has not been requested, or zLib is unavailable, we can dump the raw image data to file as-is.
     If (Not dataWasCompressed) Then
-        cFile.FileWriteData hFile, VarPtr(useCompressionEngine), 4&
+        cFile.FileWriteData hFile, VarPtr(cmpFormat), 4&
         cFile.FileWriteData hFile, tmpDIBPointer, tmpDIBLength
     End If
         

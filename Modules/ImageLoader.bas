@@ -259,7 +259,7 @@ LoadPDIFail:
     
     'Case 1: this file is compressed (using one or more libraries), and the user has somehow messed up their PD plugin situation
     Dim cmpMissing As Boolean
-    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zLib))
+    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate))
     cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_ZstdRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zstd))
     cmpMissing = cmpMissing Or pdiReader.GetPackageFlag(PDP_HF2_Lz4Required, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_lz4))
     
@@ -1081,8 +1081,9 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
         ' after selections and such are applied to the base layer/image, so we may as well just use the raw pdDIB data we've cached).
         Case PDIF_RAWBUFFER
             
-            'These raw pdDIB objects may require zLib for parsing (compression is optional), so it is possible for the load function
-            ' to fail if zLib goes missing.
+            'These raw pdDIB objects may require 3rd-party compression libraries for parsing
+            ' (compression is optional), so it is possible for the load function to fail if
+            ' zstd/lz4/libdeflate goes missing.
             CascadeLoadInternalImage = LoadRawImageBuffer(srcFile, dstDIB, dstImage)
             
             dstImage.SetOriginalFileFormat PDIF_UNKNOWN
@@ -1188,7 +1189,7 @@ Private Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalFileFormat PDIF_PSD
         dstImage.NotifyImageChanged UNDO_Everything
         dstImage.SetOriginalColorDepth cPSD.GetBytesPerPixel()
-        dstImage.SetOriginalGrayscale cPSD.IsGrayscale()
+        dstImage.SetOriginalGrayscale cPSD.IsGrayscaleColorMode()
         dstImage.SetOriginalAlpha cPSD.HasAlpha()
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
@@ -1330,7 +1331,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     ' data bits from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1527,9 +1528,9 @@ LoadPDIFail:
     
     'Before falling back to a generic error message, check for a couple known problem states.
     
-    'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
+    'Case 1: compression is enabled for this file, but the user doesn't have the right compression plugin
     Dim cmpMissing As Boolean
-    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_zLib))
+    cmpMissing = pdiReader.GetPackageFlag(PDP_HF2_ZlibRequired, PDP_LOCATION_ANY) And (Not PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate))
     
     If cmpMissing Then
         PDMsgBox "The PDI file ""%1"" contains compressed data, but the required plugin is missing or disabled.", vbCritical Or vbOKOnly, "Compression plugin missing", Files.FileGetName(pdiPath)
@@ -1561,7 +1562,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1678,7 +1679,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_zLib)
+    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.

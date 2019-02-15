@@ -440,10 +440,10 @@ Private Sub cmdExport_Click()
         
         'By default, zstd is used for compression, as it yields the best compression ratios.  However, large resources
         ' (or resources used in performance-sensitive scenarios) can manually specify LZ4HC compression instead.
-        Dim resCompressionEngine As PD_CompressionEngine
-        resCompressionEngine = PD_CE_Zstd
+        Dim resCompFormat As PD_CompressionFormat
+        resCompFormat = cf_Zstd
         
-        Dim thisNodeCompression As PD_CompressionEngine
+        Dim thisNodeCompression As PD_CompressionFormat
         
         'We're also going to use a quick trick to significantly reduce file size of bitmap data.
         ' In our icons, we force all transparency values to be a multiple of 5.  This reduces net entropy
@@ -524,10 +524,10 @@ Private Sub cmdExport_Click()
                     End If
                     
                     'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
-                    cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                    cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
                     
                     'Figure out what compression engine to use for the bitmap data itself
-                    If m_Resources(i).UseHighSpeedCompression Then thisNodeCompression = PD_CE_Lz4HC Else thisNodeCompression = resCompressionEngine
+                    If m_Resources(i).UseHighSpeedCompression Then thisNodeCompression = cf_Lz4hc Else thisNodeCompression = resCompFormat
                     
                     'Write the actual bitmap data to the second half of the node.  Note that we use two
                     ' different strategies here.
@@ -581,7 +581,7 @@ Private Sub cmdExport_Click()
         lblExport.RequestRefresh
         
         'With the package complete, write it out to file!
-        cPackage.WritePackageToFile targetResFile, resCompressionEngine, False, Compression.GetMaxCompressionLevel(resCompressionEngine)
+        cPackage.WritePackageToFile targetResFile, resCompFormat, False, Compression.GetMaxCompressionLevel(resCompFormat)
         
         lblExport.Caption = "Resource export complete."
         lblExport.RequestRefresh

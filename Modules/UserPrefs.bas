@@ -638,13 +638,16 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
         
         .WriteTag "Plugins", vbNullString, True
+            .WriteTag "ForceCairoDisable", "False"
             .WriteTag "ForceExifToolDisable", "False"
             .WriteTag "ForceEZTwainDisable", "False"
             .WriteTag "ForceFreeImageDisable", "False"
+            .WriteTag "ForceLibDeflateDisable", "False"
             .WriteTag "ForceLittleCMSDisable", "False"
+            .WriteTag "ForceLz4Disable", "False"
             .WriteTag "ForceOptiPNGDisable", "False"
             .WriteTag "ForcePngQuantDisable", "False"
-            .WriteTag "ForceZLibDisable", "False"
+            .WriteTag "ForceZstdDisable", "False"
             .WriteTag "LastPluginPreferencesPage", "0"
         .CloseTag "Plugins"
         .WriteBlankLine

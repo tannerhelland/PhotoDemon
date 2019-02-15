@@ -47,7 +47,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = True
+Private Const PNG_DEBUG_VERBOSE As Boolean = False
 
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
@@ -320,9 +320,14 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         chunkSize = m_Stream.ReadLong_BE()
         
         'Because the PNG format is dumb, CRCs are calculated over the chunk type *and* data portion.
-        ' Before proceeding, calculate a CRC using zLib.  (Nonsense like this is why we cache the
-        ' entire source file in memory; it's a hell of a lot faster that way.)
-        If REQUIRE_CRC_VALIDATION Then testCRC = Plugin_zLib.ZLib_GetCRC32(m_Stream.Peek_PointerOnly(), chunkSize + 4)
+        ' Before proceeding, calculate a CRC using libdeflate.
+        If REQUIRE_CRC_VALIDATION Then
+            Dim posBackup As Long, tmpCrcBytes() As Byte
+            posBackup = m_Stream.GetPosition()
+            m_Stream.ReadBytes tmpCrcBytes, chunkSize + 4
+            m_Stream.SetPosition posBackup
+            testCRC = Plugin_libdeflate.GetCrc32(VarPtr(tmpCrcBytes(0)), chunkSize + 4)
+        End If
         
         'With the CRC calculated, grab the chunk type next.  (Note that the CRC calculation only used
         ' a pointer peek - it didn't actually move the stream pointer!)
@@ -356,7 +361,6 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         
         If REQUIRE_CRC_VALIDATION Then
             m_Chunks(m_NumOfChunks).NotifyCRCs testCRC, embeddedCRC
-        
             If (embeddedCRC <> testCRC) Then
                 Step2_PreLoadChunks = png_Warning
                 m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (0x" & Hex$(embeddedCRC) & " expected, 0x" & Hex$(testCRC) & " found)"
@@ -432,10 +436,10 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
     ' 1) Merging multiple IDAT entries, if any, into a single IDAT chunk.  (IDAT data is a single
     '    zLib stream, but encoders are allowed to split it over multiple IDAT chunks if they want;
     '    the original goal was "streaming decompression" but this is just an annoyance today.)
-    ' 2) Decompressing chunks whose entire datastream was compressed via zLib.  Besides IDAT, we're
-    '    primarily concerned with ICC profiles (iCCP).  Two other chunks - zTXt and optionally iTXt -
-    '    can compress a *portion* of their datastream, but you have to manually scan the stream for
-    '    markers and offsets, and we don't care about that in this step.  We just want enough data
+    ' 2) Decompressing chunks whose entire datastream is compressed in zLib format.  Besides IDAT,
+    '    we're primarily concerned with ICC profiles (iCCP).  Two other chunks - zTXt and optionally
+    '    iTXt - can compress a *portion* of their datastream, but you have to manually scan the stream
+    '    for markers and offsets, and we don't care about that in this step.  We just want enough data
     '    to start assembling pixel data (which is the most time-consuming part of the load process).
     
     'Before doing any decompression, let's merge our various IDAT chunks into a single instance.

@@ -849,7 +849,7 @@ Friend Sub BuildThemePackage()
     Loop
     
     'With all files added, finalize the package
-    tmpPackage.WritePackageToFile dstFilename, PD_CE_Zstd, , Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    tmpPackage.WritePackageToFile dstFilename, cf_Zstd, , Compression.GetMaxCompressionLevel(cf_Zstd)
     
 End Sub
 
@@ -863,7 +863,7 @@ Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef srcFile
     'Copy that string into the packager
     Dim tmpNode As Long
     tmpNode = dstPackager.AddNode(Files.FileGetName(srcFilename))
-    dstPackager.AddNodeDataFromString tmpNode, True, tmpString, PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    dstPackager.AddNodeDataFromString tmpNode, True, tmpString, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
 
 End Sub
 

@@ -348,7 +348,7 @@ Private Sub WriteAllThumbnails()
     Dim i As Long
     For i = 0 To m_ItemCount - 1
         If (Not m_Items(i).imgThumbnail Is Nothing) And (Len(m_Items(i).fullThumbPathAndFilename) <> 0) Then
-            If m_Items(i).hasChangedThisSession Then m_Items(i).imgThumbnail.WriteToFile m_Items(i).fullThumbPathAndFilename, PD_CE_Lz4
+            If m_Items(i).hasChangedThisSession Then m_Items(i).imgThumbnail.WriteToFile m_Items(i).fullThumbPathAndFilename, cf_Lz4
         End If
     Next i
     

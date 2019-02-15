@@ -413,7 +413,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
         Case PDIF_PDI
-            ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, False, PD_CE_Zstd, PD_CE_Zstd, False, True, Plugin_zstd.Zstd_GetDefaultCompressionLevel())
+            ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, False, cf_Zstd, cf_Zstd, False, True, Compression.GetDefaultCompressionLevel(cf_Zstd))
                         
         Case PDIF_PNG
             ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
@@ -448,7 +448,7 @@ End Function
 '  - Add support for storing a PNG copy of the fully composited image, preferably in the data chunk of the first node.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressLayers As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal includeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal includeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_CompressionFormat = cf_None, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -589,7 +589,7 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressLayers As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
     
     On Error GoTo SavePDLayerError
     
@@ -684,21 +684,21 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     'As of v7.0, PD has multiple compression engines available.  These engines are not exposed to the user.  We use LZ4 by default,
     ' as it is far and away the fastest at both compression and decompression (while compressing at marginally worse ratios).
     ' Note that if the user selects increasingly better compression results, we will silently switch to zstd instead.
-    Dim undoCmpEngine As PD_CompressionEngine, undoCmpLevel As Long
+    Dim undoCmpEngine As PD_CompressionFormat, undoCmpLevel As Long
     If (g_UndoCompressionLevel = 0) Then
-        undoCmpEngine = PD_CE_NoCompression
+        undoCmpEngine = cf_None
         undoCmpLevel = 0
     
     'At level 1 (the current PD default), use LZ4 compression at default strength.  (Remember that LZ4's compression level do not
     ' improve as the level goes up - the algorithm's *performance* improves as the level goes up.)
     ElseIf (g_UndoCompressionLevel = 1) Then
-        undoCmpEngine = PD_CE_Lz4
+        undoCmpEngine = cf_Lz4
         undoCmpLevel = compressionHint
     
     'For all higher levels, use zstd, and reset the compression level to start at 1 (so a g_UndoCompressionLevel of 2 uses zstd at
     ' its default compression strength of level 1).
     Else
-        undoCmpEngine = PD_CE_Zstd
+        undoCmpEngine = cf_Zstd
         undoCmpLevel = g_UndoCompressionLevel - 1
     End If
     
@@ -710,25 +710,25 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_Everything
             Dim tmpFileSizeCheck As Long
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, cf_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True, dstUndoFileSize)
             srcPDImage.MainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel, tmpFileSizeCheck
             dstUndoFileSize = dstUndoFileSize + tmpFileSizeCheck
             
         'A full copy of the pdImage stack
         Case UNDO_Image, UNDO_Image_VectorSafe
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, cf_Lz4, undoCmpEngine, False, True, undoCmpLevel, , True, dstUndoFileSize)
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_ImageHeader
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, True, undoCmpLevel, , True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, cf_None, True, True, undoCmpLevel, , True, dstUndoFileSize)
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_Layer, UNDO_Layer_VectorSafe
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_Lz4, undoCmpEngine, False, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, cf_Lz4, undoCmpEngine, False, undoCmpLevel, True, dstUndoFileSize)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LayerHeader
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, PD_CE_NoCompression, True, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, cf_None, True, undoCmpLevel, True, dstUndoFileSize)
             
         'Selection data only
         Case UNDO_Selection
@@ -737,7 +737,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
             PDDebug.LogAction "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, , undoCmpLevel, , True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, cf_Lz4, undoCmpEngine, False, , undoCmpLevel, , True, dstUndoFileSize)
         
     End Select
     

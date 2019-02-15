@@ -844,7 +844,7 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         
         'Request compression from zLib.
         Dim zlibResult As Long
-        zlibResult = Plugin_zLib.ZlibCompressNakedPointers(VarPtr(dstArray(0)), dstSize, srcPointer, srcSize, compressionLevel)
+        zlibResult = Compression.CompressPtrToPtr(VarPtr(dstArray(0)), dstSize, srcPointer, srcSize, cf_Zlib, compressionLevel)
         
         'Make sure zLib compressed the data successfully.
         If (zlibResult = 0) Then
@@ -966,7 +966,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Use zLib to decompress the data
                     tmpLength = m_FileHeader.DirectoryChunkSize
-                    zlibResult = Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed)
+                    zlibResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed, cf_Zlib)
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DirectoryChunkSize) Then
@@ -1021,7 +1021,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Use zLib to decompress the data
                     tmpLength = m_FileHeader.DataChunkSize
-                    zlibResult = Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed)
+                    zlibResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), tmpLength, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed, cf_Zlib)
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DataChunkSize) Then
@@ -1704,12 +1704,10 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             ReDim dstArray(0 To dataOriginalSize - 1) As Byte
             
             'Use zLib to decompress the data
-            If (Not Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)) Then
-                
+            If (Not Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cf_Zlib)) Then
                 RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex = False
                 Exit Function
-            
             End If
             
         Else
@@ -1750,7 +1748,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         zLibAdlerSum = ChecksumArbitraryArray(dstArray)
         
         'If the checksums do not match, fail the function and exit
-        If checkSumOriginal <> zLibAdlerSum Then
+        If (checkSumOriginal <> zLibAdlerSum) Then
             RaiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
             GetNodeDataByIndex = False
             Exit Function
@@ -1809,12 +1807,10 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         If m_ZLibAvailable Then
             
             'Use zLib to decompress the data directly into the pointer we've been given
-            If (Not Plugin_zLib.ZlibDecompress_UnsafePtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)) Then
-                
+            If (Not Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cf_Zlib)) Then
                 RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex_UnsafeDstPointer = False
                 Exit Function
-            
             End If
             
         Else
@@ -1870,18 +1866,11 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
 
 End Function
 
-'If you want to use compression functions, you must provide the class with a path to a STDCALL (WAPI) copy of zLib, including
-' "/zlibwapi.dll" at the end of the path.  This class assumes a file named "zlibwapi.dll"; if you are using one called zLib.dll,
-' you must rewrite the zLib API function declarations to match.
-'
-'Optionally, if the caller wants to handle LoadLibrary/FreeLibrary by itself, it is welcome to do so.  (If you plan on using
-' multiple pdPackage instances within a single application, it makes more sense to have the caller handle this just once.)
-' Simply pass TRUE as the second parameter and this class will assume you've already used LoadLibrary successfully.
-' Additionally, the third parameter can be set as FALSE to notify this class that the caller tried to initiate zLib, but
-' failed to do so successfully.
+'If you want to use compression functions, you must provide the class with a path to a standard copy of libdeflate, including
+' "/libdeflate.dll" at the end of the path.
 Public Function Init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveInitToCaller As Boolean = False, Optional callerInitiationSuccess As Boolean = True) As Boolean
     
-    m_ZLibAvailable = Compression.IsCompressionEngineAvailable(PD_CE_ZLib)
+    m_ZLibAvailable = Compression.IsFormatSupported(cf_Zlib)
     
     'This function will return TRUE if it considers zLib to be available, and FALSE if it does not.
     Init_ZLib = m_ZLibAvailable
@@ -1983,7 +1972,7 @@ End Function
 'Since this class makes extensive use of checksums, it's a convenient place to expose an arbitrary checksum function.  This function uses the
 ' same checksum strategy as pdPackage itself, so checksums by this function can be used as a failsafe check against internal pdPackage checksums.
 Public Function ChecksumArbitraryData(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
-    ChecksumArbitraryData = Plugin_zLib.ZLib_GetAdler32(dataPointer, dataLength)
+    ChecksumArbitraryData = Plugin_libdeflate.GetAdler32(dataPointer, dataLength)
 End Function
 
 'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with VB arrays

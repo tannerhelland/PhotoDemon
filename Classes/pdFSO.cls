@@ -448,14 +448,16 @@ Friend Function FileCreateFromPtr(ByVal ptrSrc As Long, ByVal dataLength As Long
     Dim hFile As Long, createSuccess As Boolean
     
     If fileIsTempFile Then
-        createSuccess = FileCreateHandle(pathToFile, hFile, False, True, OptimizeTempFile)
+        createSuccess = FileCreateHandle(pathToFile, hFile, True, True, OptimizeTempFile)
     Else
-        createSuccess = FileCreateHandle(pathToFile, hFile, False, True, OptimizeSequentialAccess)
+        createSuccess = FileCreateHandle(pathToFile, hFile, True, True, OptimizeSequentialAccess)
     End If
     
     If createSuccess Then
         FileCreateFromPtr = FileWriteData(hFile, ptrSrc, dataLength)
         CloseHandle hFile
+    Else
+        FSOError "FileCreateFromPtr", "couldn't create file handle"
     End If
     
     Exit Function

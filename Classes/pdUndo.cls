@@ -1230,7 +1230,7 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
                 ' That's okay - but we don't want to try and write a thumbnail file if this occurs.
                 If (m_UndoStack(m_UndoNum - 1).thumbnailLarge.GetDIBWidth > 0) Then
                     m_FSO.FileMovePointer m_ThumbnailFileHandle, 0, FILE_BEGIN
-                    If m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile(vbNullString, PD_CE_Lz4, True, m_ThumbnailFileHandle) Then m_FSO.FileSetEOF m_ThumbnailFileHandle
+                    If m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile(vbNullString, cf_Lz4, True, m_ThumbnailFileHandle) Then m_FSO.FileSetEOF m_ThumbnailFileHandle
                 End If
                 
             End If

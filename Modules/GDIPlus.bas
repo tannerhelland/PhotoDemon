@@ -2756,7 +2756,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
             Case 3
                 tiff_Compression = GP_EV_CompressionLZW
             
-            'Obsolete deflate (PKZIP or zLib-style) - not supported by GDI+
+            'Obsolete deflate - not supported by GDI+
             Case 4
                 tiff_Compression = GP_EV_CompressionLZW
             

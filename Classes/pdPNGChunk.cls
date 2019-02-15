@@ -173,13 +173,13 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
         ' exactly what we anticipated.
         Dim initSize As Long
         initSize = inflateSize
-        DecompressChunk = Plugin_zLib.ZlibDecompress_UnsafePtr(tmpBuffer.Peek_PointerOnly(0), inflateSize, m_Data.Peek_PointerOnly(0), m_Size)
+        DecompressChunk = Compression.DecompressPtrToPtr(tmpBuffer.Peek_PointerOnly(0), inflateSize, m_Data.Peek_PointerOnly(0), m_Size, cf_Zlib)
         
         If DecompressChunk Then
             DecompressChunk = (initSize = inflateSize)
-            If (Not DecompressChunk) Then warningStack.AddString "pdPNGChunk.DecompressChunk received mismatched sizes from zLib: " & initSize & ", " & inflateSize
+            If (Not DecompressChunk) Then warningStack.AddString "pdPNGChunk.DecompressChunk received mismatched sizes from libdeflate: " & initSize & ", " & inflateSize
         Else
-            warningStack.AddString "pdPNGChunk.DecompressChunk received a failure state from zLib; FYI sizes were init: " & initSize & ", " & inflateSize
+            warningStack.AddString "pdPNGChunk.DecompressChunk received a failure state from libdeflate; FYI sizes were init: " & initSize & ", " & inflateSize
         End If
         
         'If decompression worked, swap streams and update our internal size tracker
@@ -242,15 +242,16 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
                 Dim curOffset As Long
                 curOffset = m_Data.GetPosition()
                 
-                'ZLib is going to fail - we know that - but it's okay.  We know 128 bytes isn't enough to extract the
-                ' entire profile.  (We do, however, need to fail specifically because the buffer is too small, and not
+                'Decompression is going to fail - we know that - but it's okay.  We know 128 bytes isn't enough to extract
+                ' the entire profile.  (We do, however, need to fail specifically because the buffer is too small, and not
                 ' because of some other problem state.)
                 Dim writeSize As Long: writeSize = 128
-                Const ZLIB_BUFF_TOO_SMALL As Long = -5
+                Const ERR_BUFF_TOO_SMALL As Long = 3
                 
-                Dim zLibResult As Long
-                zLibResult = Plugin_zLib.ZlibDecompress_UnsafePtrEx(tmpBuffer.Peek_PointerOnly(0), writeSize, m_Data.Peek_PointerOnly(curOffset), m_Size - curOffset)
-                If (zLibResult = ZLIB_BUFF_TOO_SMALL) Then
+                Dim ldResult As Long
+                ldResult = Plugin_libdeflate.Decompress_ZLib(tmpBuffer.Peek_PointerOnly(0), writeSize, m_Data.Peek_PointerOnly(curOffset), m_Size - curOffset)
+                
+                If (ldResult = ERR_BUFF_TOO_SMALL) Then
                     
                     'The ICC header has now been dumped into our temporary stream.  Retrieve the profile header size.
                     tmpBuffer.SetSizeExternally 128
@@ -262,7 +263,7 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
                     'We can now reset our temporary buffer to that size, and extract the *entire* ICC profile
                     tmpBuffer.StopStream True
                     tmpBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , profSize
-                    DecompressChunk = Plugin_zLib.ZlibDecompress_UnsafePtr(tmpBuffer.Peek_PointerOnly(0), profSize, m_Data.Peek_PointerOnly(curOffset), m_Size - curOffset)
+                    DecompressChunk = Compression.DecompressPtrToPtr(tmpBuffer.Peek_PointerOnly(0), profSize, m_Data.Peek_PointerOnly(curOffset), m_Size - curOffset, cf_Zlib)
                     tmpBuffer.SetSizeExternally profSize
                     
                     'Compression was successful!  Overwrite our stream with the contents of the ICC profile, then exit.
@@ -275,7 +276,7 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
                     End If
                     
                 Else
-                    warningStack.AddString "pdPNGChunk.DecompressChunk couldn't extract a valid ICC header (" & CStr(zLibResult) & "); ICC retrieval was *not* successful."
+                    warningStack.AddString "pdPNGChunk.DecompressChunk couldn't extract a valid ICC header (" & CStr(ldResult) & "); ICC retrieval was *not* successful."
                 End If
                 
             Else

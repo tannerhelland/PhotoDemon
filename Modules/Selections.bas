@@ -208,8 +208,8 @@ Public Sub SaveSelectionToFile()
         
         'Write out the selection file
         Dim cmpLevel As Long
-        cmpLevel = Compression.GetMaxCompressionLevel(PD_CE_Zstd)
-        If PDImages.GetActiveImage.MainSelection.WriteSelectionToFile(sFile, PD_CE_Zstd, cmpLevel, PD_CE_Zstd, cmpLevel) Then
+        cmpLevel = Compression.GetDefaultCompressionLevel(cf_Zstd)
+        If PDImages.GetActiveImage.MainSelection.WriteSelectionToFile(sFile, cf_Zstd, cmpLevel, cf_Zstd, cmpLevel) Then
             Message "Selection saved."
         Else
             Message "Unknown error occurred.  Selection was not saved.  Please try again."

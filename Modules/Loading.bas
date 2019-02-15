@@ -564,7 +564,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it!)
         Case "PDI"
         
-            'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
+            'PDI images require zstd, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
             loadSuccessful = LoadPhotoDemonImage(imagePath, targetDIB, tmpPDImage)
             
             'Retrieve a copy of the fully composited image
@@ -758,7 +758,7 @@ Public Sub DuplicateCurrentImage()
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
     tmpDuplicationFile = UserPrefs.GetTempPath & "PDDuplicate.pdi"
-    SavePhotoDemonImage PDImages.GetActiveImage(), tmpDuplicationFile, True, PD_CE_Lz4, PD_CE_Lz4, False
+    SavePhotoDemonImage PDImages.GetActiveImage(), tmpDuplicationFile, True, cf_Lz4, cf_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
