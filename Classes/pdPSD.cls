@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 30/January/19
-'Last update: finalize support for modern 32-bit-per-channel PSDs
+'Last updated: 15/February/19
+'Last update: wrap up PackBits support during export
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -25,12 +25,12 @@ Attribute VB_Exposed = False
 ' test suite (https://developer.apple.com/library/archive/technotes/tn2115/_index.html).  This is a large
 ' point of pride for the author. ;)
 '
-'Currently, all color modes except LAB, and all color depths below 32-bits-per-channel are believed to be
-' fully covered.  32-bit channels and LAB color mode remain a work-in-progress.
+'Currently, all color modes (nine in the spec), and all color depths (1 through 32-bits-per-channel)
+' are believed to be fully covered by the import engine.  The export engine, by design, only writes
+' 32-bpp RGBA images (as this is all PhotoDemon itself supports internally), but supporting other
+' color modes or depths would require only minor modifications.
 '
-'At present, this class only handles PSD importing.  Exporting PSDs is still TODO.
-'
-'As with all 3rd-party PSD loaders, Photoshop has many features that don't have direct analogs in PhotoDemon.
+'As with all 3rd-party PSD engines, Photoshop has many features that don't have direct analogs in PhotoDemon.
 ' Such features are still extracted by this class, but they will not "appear" in the final loaded image.
 ' My ongoing goal is to expand support in this class as various PSD features are implemented in PD itself.
 '
@@ -51,8 +51,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
-' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
-' version of this constant.)
+' dump all kinds of diagnostic information to the debug log.  (Note that other PSD-adjacent classes have
+' their own version of this constant.)
 Private Const PSD_DEBUG_VERBOSE As Boolean = True
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
@@ -74,7 +74,8 @@ End Enum
 #End If
 
 'PSDs support many different color modes.  Some color modes (e.g. Duotone) are proprietary and not
-' publicly documented; we follow Adobe's recommendation and simply load the data as grayscale in that case.
+' publicly documented; we follow Adobe's recommendation and simply load the data in an alternative format
+' (e.g. grayscale in the case of Duotone).
 Public Enum PSD_ColorMode
     cm_Bitmap = 0
     cm_Grayscale = 1
@@ -125,7 +126,9 @@ End Enum
     Private Const rid_ResolutionInfo = 1005, rid_Caption = 1008, rid_BackgroundColor = 1010, rid_QuickMaskInfo = 1022, rid_LayerStateInfo = 1024, rid_LayersGroupInfo = 1026, rid_IptcMetadata = 1028, rid_JpegQuality = 1030, rid_GridAndGuidesInfo = 1032, rid_IccProfile = 1039, rid_IccUntagged = 1041, rid_IndexedColorTableCount = 1046, rid_TransparentIndex = 1047, rid_AlphaIdentifiers = 1053, rid_VersionInfo = 1057, rid_EXIFData1 = 1058, rid_EXIFData3 = 1059, rid_XMPMetadata = 1060, rid_PixelAspectRatio = 1064, rid_LayerSelectionIDs = 1069, rid_LayerGroupsEnabledID = 1072, rid_MeasurementScale = 1074, rid_DisplayInfo = 1077, rid_PathInfo = 2000, rid_ClippingPathName = 2999
 #End If
 
-'Standard PSD header.  At load-time, only populated if the target PSD validates
+'Standard PSD header.  At load-time, only populated if the target PSD validates.
+' (Note that this struct has major alignment issues under VB if attempting to write the whole thing
+' as a block; PD writes members individually to avoid these issues.
 Private Type PSD_Header
     Signature As String * 4
     Version As Integer
@@ -361,7 +364,10 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     Dim cStream As pdStream
     Set cStream = New pdStream
     cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile
-    useMaxCompatibility = False
+    
+    'Maximum compatibility is currently forcibly enforced, pending a UI to control its value
+    useMaxCompatibility = True
+    
     'Start by writing out a basic PSD header.
     Dim keepGoing As PD_PSDResult
     keepGoing = ExportStep1_WriteHeaderAndColorTable(cStream, srcPDImage, useMaxCompatibility, writePSB)
@@ -377,13 +383,14 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     
     'Finally, if "maximum compatibility" is selected, write out a copy of the merged image data.
     If (keepGoing < psd_Failure) Then
+        
         'If useMaxCompatibility Then
             keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, writePSB)
         
         'TODO:
         'If maximum compatibility is *not* selected, cheat and write out a plain white image at the same dimensions
         ' as the current image.  This is what Photoshop does, and it ensures that lazy parsers still have data to
-        ' work with (avoiding possible errors) while inserting data that compresses as well as possible under PackBits.
+        ' work with (avoiding possible errors) while inserting data that compresses as well as possible using PackBits.
         'Else
         '
         'End If
@@ -406,16 +413,28 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
     Dim tmpDIB As pdDIB
     srcImage.GetCompositedImage tmpDIB, False
     
+    'Determine if the composite image has meaningful alpha values (e.g. if it is *not* fully opaque)
+    Dim alphaMatters As Boolean
+    alphaMatters = DIBs.IsDIBTransparent(tmpDIB)
+    
     'Write the compression method first
     cStream.WriteInt_BE compressionType
     
     'RLE requires special handling
-    If compressionType = 1 Then
+    If (compressionType = 1) Then
+    
+        'Generating RLE data is convoluted and obnoxious, so let's just reuse a standard layer object to do it!
+        Dim tmpPSDLayer As pdPSDLayer
+        Set tmpPSDLayer = New pdPSDLayer
+        tmpPSDLayer.PrepChannelsForWrite tmpDIB, compressionType
+        
+        'The PSD layer object can also write out the channel data for us - how nice!
+        tmpPSDLayer.WriteSpecialMergedChannelData cStream, compressionType, writePSB, alphaMatters
     
     'The only other supported compression type at present is raw bytes (no compression).
     Else
     
-        'We simply need to write all data to file in planar format (e.g. RRRRGGGGBBBBAAAA instead of RGBARGBARGBA...)
+        'We simply need to write all data to file in planar format (e.g. RRRGGGBBBAAA instead of RGBARGBARGBA...)
         Dim x As Long, y As Long
         Dim lWidth As Long, lHeight As Long, xLoopSrc As Long, yLoopSrc As Long
         Dim dstOffset As Long
@@ -430,7 +449,7 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
         chSize = lWidth * lHeight
         
         Dim planarBytes() As Byte
-        ReDim planarBytes(0 To chSize * 4 - 1) As Byte
+        If alphaMatters Then ReDim planarBytes(0 To chSize * 4 - 1) As Byte Else ReDim planarBytes(0 To chSize * 3 - 1) As Byte
         
         Dim tmpBytes() As Byte, tmpSA As SafeArray1D
         Dim scanStart As Long, scanWidth As Long
@@ -448,7 +467,7 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
             planarBytes(dstOffset) = tmpBytes(x * 4 + 2)
             planarBytes(chSize + dstOffset) = tmpBytes(x * 4 + 1)
             planarBytes(chSize * 2 + dstOffset) = tmpBytes(x * 4)
-            planarBytes(chSize * 3 + dstOffset) = tmpBytes(x * 4 + 3)
+            If alphaMatters Then planarBytes(chSize * 3 + dstOffset) = tmpBytes(x * 4 + 3)
             
         Next x
         Next y
@@ -459,6 +478,21 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
         cStream.WriteByteArray planarBytes
         
     End If
+    
+    'If alpha does *not* matter, we want to do something kind of hacky - we want to return to very near
+    ' the start of the file, and embed a "3" instead of "4" for the number of channels in the image.
+    If (Not alphaMatters) Then
+        
+        Dim curStreamPosition As Long
+        curStreamPosition = cStream.GetPosition()
+        
+        'This is effectively a magic number: 4 bytes ASCII signature + 2 bytes version no. + 6 reserved bytes = 12
+        cStream.SetPosition 12, FILE_BEGIN
+        cStream.WriteInt_BE 3
+        cStream.SetPosition curStreamPosition, FILE_BEGIN
+        
+    End If
+        
 
 End Function
 
@@ -477,7 +511,7 @@ Private Function ExportStep3_WriteLayerAndMaskInformation(ByRef cStream As pdStr
     ' 3) Misc tagged blocks
     
     'Each of these sections contains multiple sub-sections of their own.
-    ExportStep3_WriteLayerAndMaskInformation = ExportStep3a_WriteLayerInfo(cStream, srcImage, 0, writePSB)
+    ExportStep3_WriteLayerAndMaskInformation = ExportStep3a_WriteLayerInfo(cStream, srcImage, compressionType, writePSB)
     
     'With all layer and channel data written, the last segment we need to write is global layer mask info.
     ' This is always 0.
@@ -530,7 +564,7 @@ Private Function ExportStep3a_WriteLayerInfo(ByRef cStream As pdStream, ByRef sr
     ' (remember: PSDs store channels as planar, not interleaved).  That makes the next step - storing channel
     ' data - trivial, as we can just ask each layer object to dump channel data out to file.
     For i = 0 To srcImage.GetNumOfLayers() - 1
-        tmpPSDLayers(i).WriteChannelData cStream, srcImage.GetLayerByIndex(i), compressionType, writePSB
+        tmpPSDLayers(i).WriteChannelData cStream, compressionType, writePSB
     Next i
     
     'All writes are complete, which means we can (finally) calculate the size of this segment.
@@ -606,12 +640,13 @@ Private Function ExportStep2_WriteImageResources(ByRef cStream As pdStream, ByRe
     '
     '(I've gone back and forth on the compatibility complications of writing this profile in modern v4 format.
     ' v4 profiles date back to 2001, but some people use *really* old software, so for now, PD forcibly generates
-    ' a larger-but-more-compatible v2.1 sRGB profile for embedding.  Note that the contents of v2 vs v4 sRGB
-    ' profiles are identical in how the image gets rendered, but the v4 profile is much smaller on account of
-    ' v4 descriptors that represent sRGB's weird gamma ramp in a compact way.)
+    ' a larger-but-more-compatible v2.1 sRGB profile for embedding whenever "maximum compatibility" is checked
+    ' (as it is by default).  Note that the contents of v2 vs v4 sRGB profiles are identical in how the image
+    ' is ultimately rendered, but the v4 profile is much smaller on account of v4 descriptors that represent
+    ' sRGB's weird gamma ramp in a compact way.)
     Dim tmpProfile As pdLCMSProfile
     Set tmpProfile = New pdLCMSProfile
-    tmpProfile.CreateSRGBProfile False
+    tmpProfile.CreateSRGBProfile (Not useMaxCompatibility)
     
     Dim profBytes() As Byte, profSize As Long
     blockSize = tmpProfile.GetRawProfileBytes(profBytes)
@@ -704,7 +739,12 @@ Private Function ExportStep1_WriteHeaderAndColorTable(ByRef cStream As pdStream,
     '6 reserved bytes; must be 0
     cStream.WritePadding 6
     
-    'Number of channels in the image, including alpha.  PD always writes RGBA data at present.
+    'Number of channels in the image, including alpha.  This is a little convoluted to write,
+    ' because we only want to embed alpha data in the base layer if it's actually relevant
+    ' (e.g. if the merged image is *not* fully opaque).  Because generating an extra merged copy
+    ' of the full image is expensive, we only want to do it once, at the end of this function -
+    ' so for now, just assume 4-channel RGBA and we will revisit this value later if we determine
+    ' that the image's alpha data is pointless.
     cStream.WriteInt_BE 4
     
     'Height and width of the image, in pixels
@@ -812,8 +852,8 @@ Friend Function GetICCProfile() As pdICCProfile
 End Function
 
 'Only valid after LoadPSD has been called
-Friend Function IsGrayscale() As Boolean
-    IsGrayscale = (m_Header.ColorMode = cm_Grayscale) Or (m_Header.ColorMode = cm_Multichannel)
+Friend Function IsGrayscaleColorMode() As Boolean
+    IsGrayscaleColorMode = (m_Header.ColorMode = cm_Grayscale) Or (m_Header.ColorMode = cm_Multichannel)
 End Function
 
 Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage As pdImage) As PD_PSDResult

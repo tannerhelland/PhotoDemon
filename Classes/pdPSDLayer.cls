@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 02/February/19
-'Last update: add support for layer masks.  (These get merged into the layer's alpha channel at import time.)
+'Last updated: 15/February/19
+'Last update: add PackBits support when writing PSDs
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -108,6 +108,13 @@ Private Type PSD_ChannelInfo
     
     'After a channel has been decoded, the new raw data will be placed here.
     ciDataDecoded() As Byte
+    
+    'Most PSD files are stored in PackBits format.  When writing a PSD file, we store RLE scanline lengths
+    ' separate from the scanlines themselves; this is merely a convenience, as the length table needs to be
+    ' stored as individual ushorts, which VB6 doesn't natively support.  (We also need to embed the table in
+    ' different orders, depending on whether we're writing layer or composite image data, so it's helpful
+    ' to maintain it separately for that case too.)
+    rleTable() As Long
     
 End Type
 
@@ -1838,6 +1845,7 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                                     'Failsafe RLE checks can be performed here, but they have an obvious negative perf impact;
                                     ' we currently assume the PSD is well-formed.
                                     'If (bytesReadLine > lineLengths(y)) Then Exit Do
+                                    'If (bytesReadDst + rleCode > UBound(.ciDataDecoded)) Then Exit Do
                                     
                                     CopyMemoryStrict VarPtr(.ciDataDecoded(bytesReadDst)), VarPtr(.ciData(basePtrPosition + bytesReadSrc)), rleCode
                                     bytesReadDst = bytesReadDst + rleCode
@@ -1849,7 +1857,11 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                                     
                                     rleCode = 1 - rleCode
                                     bytesReadLine = bytesReadLine + 1
+                                    
+                                    'See above statement on the performance impact of "safe" boundary checking
                                     'If (bytesReadLine > lineLengths(y)) Then Exit Do
+                                    'If (bytesReadDst + rleCode > UBound(.ciDataDecoded)) Then Exit Do
+                                    
                                     FillMemory VarPtr(.ciDataDecoded(bytesReadDst)), rleCode, .ciData(basePtrPosition + bytesReadSrc) 'tmpVal
                                     bytesReadDst = bytesReadDst + rleCode
                                     bytesReadSrc = bytesReadSrc + 1
@@ -1878,18 +1890,18 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                     Case ccZip
                         
                         'Inflate the stream directly into its final buffer.
-                        If Plugin_zLib.IsZLibAvailable() Then
+                        If Compression.IsFormatSupported(cf_Zlib) Then
                             ReDim .ciDataDecoded(0 To finalArraySize - 1) As Byte
-                            If Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(.ciDataDecoded(0)), finalArraySize, VarPtr(.ciData(0)), .ciDataLength) Then
+                            If Compression.DecompressPtrToPtr(VarPtr(.ciDataDecoded(0)), finalArraySize, VarPtr(.ciData(0)), .ciDataLength, cf_Zlib) Then
                                 .ciDecodedOK = True
                                 DecodeChannels = psd_Success
                             Else
                                 DecodeChannels = psd_Warning
-                                InternalError "DecodeChannels", "zLib failed to inflate compressed channel stream."
+                                InternalError "DecodeChannels", "libdeflate failed to inflate compressed channel stream."
                             End If
                         Else
                             DecodeChannels = psd_Failure
-                            InternalError "DecodeChannels", "zLib missing"
+                            InternalError "DecodeChannels", "libdeflate missing"
                         End If
                         
                     Case ccZipWithPrediction
@@ -1901,10 +1913,10 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                         If (bitsPC = 16) Or (bitsPC = 32) Then
                         
                             'Start by inflating the stream.
-                            If Plugin_zLib.IsZLibAvailable() Then
+                            If Compression.IsFormatSupported(cf_Zlib) Then
                                 
                                 ReDim .ciDataDecoded(0 To finalArraySize - 1) As Byte
-                                If Plugin_zLib.ZlibDecompress_UnsafePtr(VarPtr(.ciDataDecoded(0)), finalArraySize, VarPtr(.ciData(0)), .ciDataLength) Then
+                                If Compression.DecompressPtrToPtr(VarPtr(.ciDataDecoded(0)), finalArraySize, VarPtr(.ciData(0)), .ciDataLength, cf_Zlib) Then
                                     
                                     If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Time spent in inflate: " & VBHacks.GetTimeDiffNowAsString(startTime)
                                     VBHacks.GetHighResTime startTime
@@ -2033,12 +2045,12 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                                     .ciDecodedOK = True
                                     
                                 Else
-                                    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "zLib failed to inflate stream."
+                                    If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "libdeflate failed to inflate stream."
                                     .ciDecodedOK = False
                                     DecodeChannels = psd_Failure
                                 End If
                             Else
-                                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "zLib is missing; can't deflate stream."
+                                If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "libdeflate is missing; can't deflate stream."
                                 .ciDecodedOK = False
                                 DecodeChannels = psd_Failure
                             End If
@@ -2548,9 +2560,9 @@ Private Function GetBlendModeFromKey(ByVal srcKey As String) As PD_BlendMode
     
 End Function
 
-Private Function GetKeyFromBlendMode(ByVal srcBlendmode As PD_BlendMode) As String
+Private Function GetKeyFromBlendMode(ByVal srcBlendMode As PD_BlendMode) As String
     
-    Select Case srcBlendmode
+    Select Case srcBlendMode
         
         Case BL_NORMAL ' = normal
             GetKeyFromBlendMode = "norm"
@@ -2608,7 +2620,7 @@ Private Function GetKeyFromBlendMode(ByVal srcBlendmode As PD_BlendMode) As Stri
 '        Case "dkCl" ' = darker color
             
         Case Else
-            InternalError "GetKeyFromBlendMode", "Someone passed a bad blend mode ID: " & srcBlendmode
+            InternalError "GetKeyFromBlendMode", "Someone passed a bad blend mode ID: " & srcBlendMode
             GetKeyFromBlendMode = "norm"
             
     End Select
@@ -2863,8 +2875,12 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
             layerOffsetY = Int(srcLayer.GetLayerOffsetY)
         End If
         
-        'Unpremultiply the temporary DIB before continuing
-        tmpLayerDIB.SetAlphaPremultiplication False
+        'Before continuing, we want to determine if alpha is relevant in this layer.  If a layer is fully opaque,
+        ' we can ignore alpha data, as Photoshop will automatically plug-in full opacity for us.
+        m_LayerHasAlpha = DIBs.IsDIBTransparent(tmpLayerDIB)
+        
+        'Unpremultiply the temporary DIB before continuing, if alpha values are relevant
+        If m_LayerHasAlpha Then tmpLayerDIB.SetAlphaPremultiplication False
         
         'First is layer rect.  Note that Adobe uses the non-standard top/left/bottom/right order
         cStream.WriteLong_BE layerOffsetY
@@ -2872,8 +2888,8 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         cStream.WriteLong_BE Int(layerOffsetY + tmpLayerDIB.GetDIBHeight())
         cStream.WriteLong_BE Int(layerOffsetX + tmpLayerDIB.GetDIBWidth())
         
-        'Next is number of channels in the layer; PD always writes RGBA data
-        cStream.WriteInt_BE 4
+        'Next is number of channels in the layer; PD always writes RGB/A data
+        If m_LayerHasAlpha Then cStream.WriteInt_BE 4 Else cStream.WriteInt_BE 3
         
         'Next is a list of channel information, 6 bytes per channel (so 6*4 for PD)
         ' - 2 bytes: Channel ID
@@ -2881,17 +2897,34 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         
         'Channel lengths are POST-compression, so we can't know these values without performing actual
         ' channel compression.  We may as well handle that now, so we don't have to revisit these numbers later.
+        ' (This could be better optimized to ignore the alpha channel if we aren't going to write it to file - TODO!)
         ReDim m_Channels(0 To 3) As PSD_ChannelInfo
-        PrepChannelsForWrite srcLayer, tmpLayerDIB, channelCompression
+        PrepChannelsForWrite tmpLayerDIB, channelCompression
         
         'We can now write channel information for each channel
         Dim i As Long
         For i = 0 To 3
+            
+            'If the layer's alpha channel is irrelevant, don't write it.
+            If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
+            
+            'Preface this segment with each channel's ID
             cStream.WriteInt_BE m_Channels(i).ciID
             
-            'Add 2 to the length of the compressed channel data, because the data itself is prefaced by
-            ' a 2-byte "compression type" indicator
-            cStream.WriteLong_BE m_Channels(i).ciDataLength + 2
+            'Note that regardless of compression type, we must add "2" to the length of the compressed channel data,
+            ' because PSDs require that channel data be prefaced with a 2-byte "compression type" indicator.
+            If (channelCompression = ccPackBits) Then
+                
+                'PackBits requires us to write a separate scanline length table at the start of the channel segment
+                Dim rleSize As Long
+                rleSize = m_Channels(i).ciDataLength + 2
+                If writePSB Then rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 4 Else rleSize = rleSize + (UBound(m_Channels(i).rleTable) + 1) * 2
+                cStream.WriteLong_BE rleSize
+                
+            Else
+                cStream.WriteLong_BE m_Channels(i).ciDataLength + 2
+            End If
+            
         Next i
         
         'Blend mode signature is hard-coded
@@ -2990,7 +3023,9 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
 
 End Sub
 
-Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As pdDIB, ByVal channelCompression As PSD_ChannelCompression)
+'Note that this function may be called externally; this is by design, as it is shared by our parent pdPSD class
+' when writing a composite image copy out to the end of a PSD file
+Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompression As PSD_ChannelCompression)
     
     'Grab pointers to the layer's image data
     Dim tmpBytes() As Byte, tmpSA As SafeArray1D
@@ -2999,7 +3034,7 @@ Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As
     scanStart = tmpSA.pvData
     scanWidth = srcLayerDIB.GetDIBStride
     
-    Dim x As Long, y As Long
+    Dim chIndex As Long, x As Long, y As Long
     Dim lWidth As Long, lHeight As Long, xLoopSrc As Long, yLoopSrc As Long
     Dim dstOffset As Long
     
@@ -3007,6 +3042,13 @@ Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As
     lHeight = srcLayerDIB.GetDIBHeight
     xLoopSrc = lWidth - 1
     yLoopSrc = lHeight - 1
+    
+    'This function may be called by an outside caller (as part of writing a compressed composite image
+    ' at the end of a PSD file), so perform a failsafe check for channel count.
+    If (m_ChannelCount <= 0) Then
+        m_ChannelCount = 4
+        ReDim m_Channels(0 To 3) As PSD_ChannelInfo
+    End If
     
     'Mark channel IDs in advance; we'll use a fixed RGBA order for these
     m_Channels(0).ciID = cidRed
@@ -3019,10 +3061,10 @@ Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As
         'RAW compression just means "no compression"; extract all source channels as-is
         Case ccRaw
             
-            For x = 0 To 3
-                ReDim m_Channels(x).ciData(0 To lWidth * lHeight - 1) As Byte
-                m_Channels(x).ciDataLength = lWidth * lHeight
-            Next x
+            For chIndex = 0 To 3
+                ReDim m_Channels(chIndex).ciData(0 To lWidth * lHeight - 1) As Byte
+                m_Channels(chIndex).ciDataLength = lWidth * lHeight
+            Next chIndex
             
             For y = 0 To yLoopSrc
                 tmpSA.pvData = scanStart + scanWidth * y
@@ -3039,6 +3081,85 @@ Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As
             Next x
             Next y
         
+        'PackBits is simple RLE compression
+        Case ccPackBits
+        
+            'Writing a PackBits stream is fairly straightforward.  There's no "official" guideline to writing
+            ' a PackBits stream (and in fact, even "official" implementations like Apple vs Adobe vs libtiff
+            ' use slightly different patterns), so we're mostly left to our own devices.
+            '
+            'For purposes of this encoder, just note that PackBits streams are generated on a per-scanline basis.
+            ' (Said another way, each scanline is its own unique stream; the next line "starts fresh" with its
+            ' own stream.)  This approach would make this process easy to multithread if desired, but at present,
+            ' it's a low-usage scenario so I'm not too obsessed with improving its performance further.
+            '
+            'Start by initializing separate RLE tables for each channel.  Note also that PackBits does have a
+            ' pathological worst-case memory consumption of one extra byte for each 127 input bytes (if the
+            ' input data has 0% contiguous runs), so the potential output space *is* larger than the number of
+            ' pixels in the channel.
+            For chIndex = 0 To 3
+                With m_Channels(chIndex)
+                    .ciDataLength = lWidth * lHeight + Int(CDbl(lWidth * lHeight) * 0.1)
+                    ReDim .ciData(0 To .ciDataLength) As Byte
+                    ReDim .rleTable(0 To lHeight - 1) As Long
+                End With
+            Next chIndex
+            
+            'To simplify the PackBits algorithm, we'll manually pull RGBA bytes into their own planar arrays
+            ' before packing them.  We'll also use a temporary destination array that is plenty long enough
+            ' to hold any pathologically bad lines.
+            Dim tmpSrcBytes() As Byte, tmpDstBytes() As Byte, srcOffset As Long, dstSize As Long
+            ReDim tmpSrcBytes(0 To lWidth - 1) As Byte
+            ReDim tmpDstBytes(0 To lWidth * 2) As Byte
+            
+            'First test: before doing anything else, let's just make sure we can write a literal-only
+            ' (no run) PackBits that produces a valid output stream
+            For chIndex = 0 To 3
+            
+                'Source data is in BGRA order; we want it in RGBA order
+                If (chIndex = 0) Then
+                    srcOffset = 2
+                ElseIf (chIndex = 2) Then
+                    srcOffset = 0
+                Else
+                    srcOffset = chIndex
+                End If
+                
+                dstOffset = 0
+                
+                With m_Channels(chIndex)
+                    
+                    For y = 0 To yLoopSrc
+                        
+                        'Point an array at this scanline in the original image
+                        tmpSA.pvData = scanStart + scanWidth * y
+                    
+                        'Start by populating a temporary source bytes array
+                        For x = 0 To xLoopSrc
+                            tmpSrcBytes(x) = tmpBytes(x * 4 + srcOffset)
+                        Next x
+                        
+                        'Hand the temporary source array off to the packbits encoder; it handles the rest!
+                        GeneratePackbitsLine lWidth, dstSize, tmpSrcBytes, tmpDstBytes
+                        
+                        'Take the retrieved data and copy into the destination data array, and store the RLE line size
+                        CopyMemoryStrict VarPtr(.ciData(dstOffset)), VarPtr(tmpDstBytes(0)), dstSize
+                        .rleTable(y) = dstSize
+                        
+                        'Update the running offset into the destination array
+                        dstOffset = dstOffset + dstSize
+                        
+                    Next y
+                    
+                    'Store the finished length of this PackBits stream and trim the completed array
+                    ' (to save a bit of memory)
+                    .ciDataLength = dstOffset
+                    ReDim Preserve .ciData(0 To dstOffset - 1) As Byte
+                
+                End With
+            
+            Next chIndex
+        
         'Other compression methods TODO
         
     End Select
@@ -3047,7 +3168,119 @@ Private Sub PrepChannelsForWrite(ByRef srcLayer As pdLayer, ByRef srcLayerDIB As
     
 End Sub
 
-Friend Sub WriteChannelData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False)
+'Generate a PackBits-compressed line of pixels.  Source and destination arrays must be non-null and properly sized
+' (especially the destination line - it must be large enough to hold any possible PackBits output).
+Private Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
+    
+    'Cover the special case of 1-pixel lines
+    If (scanlineWidth = 1) Then
+        dstBytes(0) = 0
+        dstBytes(1) = srcBytes(0)
+        dstFinalSize = 2
+        Exit Sub
+    End If
+    
+    'Some upper limits are defined by PackBits itself.
+    Const MAXIMUM_RUN_LENGTH As Long = 128
+    Const MAXIMUM_LITERAL_LENGTH As Long = 128
+    
+    Dim dstOffset As Long: dstOffset = 0
+    Dim srcOffset As Long: srcOffset = 0
+    Dim curRunLength As Long: curRunLength = 0
+    Dim targetByte As Byte
+    
+    Do While (srcOffset < scanlineWidth)
+        
+        'Previous iterations, if any, will have advanced the pointer to a new byte, one that does not belong
+        ' to the previous segment (repeats or literals).  Our job is to analyze this byte and its immediate
+        ' neighbor to determine if we should start a new repeat or literal run.
+        
+        'Start with the special case of "only one byte left in the stream".  This will only occur if we just
+        ' ended a repeat run, and the last byte in the line is either 1) another repeat, but the previous run
+        ' hit the maximum repeat length, or 2) a unique value that requires its own segment.
+        '
+        'To avoid slow EOF checks in the inner loop, we want to cover this as a special case (that a branch
+        ' predictor can predictably ignore).
+        If (srcOffset = scanlineWidth - 1) Then
+        
+            'Write out the final byte as a 1-byte literal
+            dstBytes(dstOffset) = 0
+            dstBytes(dstOffset + 1) = srcBytes(srcOffset)
+            dstOffset = dstOffset + 2
+            srcOffset = srcOffset + 1
+            
+        'We have room to check neighboring pixels for repeats, without worrying about EOF
+        Else
+            
+            'Compare this byte to its immediate neighbor.  If they match, start a new repeat run.
+            targetByte = srcBytes(srcOffset)
+            If (targetByte = srcBytes(srcOffset + 1)) Then
+            
+                'This byte and its neighbor match.  See how long the run continues.
+                curRunLength = 2
+                
+                'Make sure we don't run past the end of the scanline
+                Dim maxRunLength As Long
+                If (scanlineWidth - srcOffset < MAXIMUM_RUN_LENGTH) Then maxRunLength = scanlineWidth - srcOffset Else maxRunLength = MAXIMUM_RUN_LENGTH
+                
+                'Count the number of repeats
+                Do While (curRunLength < maxRunLength)
+                    If (srcBytes(srcOffset + curRunLength) = targetByte) Then curRunLength = curRunLength + 1 Else Exit Do
+                Loop
+                
+                'curRunLength is now one larger than the actual size of the run.  Encode it in the destination
+                ' and advance all pointers to match.
+                dstBytes(dstOffset) = 256 - (curRunLength - 1)
+                dstBytes(dstOffset + 1) = targetByte
+                dstOffset = dstOffset + 2
+                srcOffset = srcOffset + curRunLength
+            
+            'This byte and its neighbor do not match.  Start a new literal run.
+            Else
+                
+                curRunLength = 2
+                
+                'Make sure we don't run past the end of the scanline
+                'Dim maxRunLength As Long
+                If (scanlineWidth - srcOffset < MAXIMUM_LITERAL_LENGTH) Then maxRunLength = scanlineWidth - srcOffset Else maxRunLength = MAXIMUM_LITERAL_LENGTH
+                
+                'Count the number of non-repeats
+                Do While (curRunLength < maxRunLength)
+                    If (srcBytes(srcOffset + curRunLength - 1) <> srcBytes(srcOffset + curRunLength)) Then
+                        curRunLength = curRunLength + 1
+                    Else
+                        'See if this new repeat run is at least three bytes long.  If it isn't, it can actually improve
+                        ' compression by keeping those bytes inside this literal run, because 1) we've already eaten the
+                        ' "cost" of the flag byte for this run, and 2) if the 3rd byte starts a new literal run, it incurs
+                        ' a new flag byte cost - which we can avoid by keeping the current run intact!
+                        If (curRunLength + 1 < maxRunLength) Then
+                            If (srcBytes(srcOffset + curRunLength) = srcBytes(srcOffset + curRunLength + 1)) Then Exit Do Else curRunLength = curRunLength + 1
+                        Else
+                            Exit Do
+                        End If
+                        
+                    End If
+                Loop
+                
+                'curRunLength is now one larger than the actual size of the run.  Encode it in the destination
+                ' and advance all pointers to match.
+                dstBytes(dstOffset) = (curRunLength - 1)
+                CopyMemoryStrict VarPtr(dstBytes(dstOffset + 1)), VarPtr(srcBytes(srcOffset)), curRunLength
+                dstOffset = dstOffset + curRunLength + 1    '+ 1 for the flag byte, of course!
+                srcOffset = srcOffset + curRunLength
+                
+            End If
+        
+        End If
+        
+    Loop
+    
+    'Return the final size before exiting
+    dstFinalSize = dstOffset
+    
+End Sub
+
+Friend Sub WriteChannelData(ByRef cStream As pdStream, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False)
 
     'Because channel data has already been separated into planes and (optionally) compressed, writing the actual
     ' data out to file is super easy.  The only caveat involves PackBits compression, because we must first write out
@@ -3060,12 +3293,83 @@ Friend Sub WriteChannelData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer
         
             'Dump channel bytes out as-is
             For i = 0 To 3
+                'If alpha is irrelevant, do not write it
+                If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
                 cStream.WriteInt_BE channelCompression
                 cStream.WriteByteArray m_Channels(i).ciData, m_Channels(i).ciDataLength
             Next i
         
         Case ccPackBits
         
+            'Write RLE tables before writing PackBits stream
+            For i = 0 To 3
+                
+                'If alpha is irrelevant, do not write it
+                If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
+                
+                cStream.WriteInt_BE channelCompression
+                
+                With m_Channels(i)
+                    
+                    'The RLE table is stored as Longs, but we need to write it as big-endian ushorts
+                    Dim y As Long
+                    For y = 0 To UBound(.rleTable)
+                        cStream.WriteIntU_BE .rleTable(y)
+                    Next y
+                    
+                    'Dump the channel after it
+                    cStream.WriteBytesFromPointer VarPtr(.ciData(0)), .ciDataLength
+                    
+                End With
+                
+            Next i
+        
+        Case ccZip
+        
+        Case ccZipWithPrediction
+    
+    End Select
+
+End Sub
+
+'Only use this when writing a composite image at the *end* of a PSD file; it is NOT correct for normal layer data!
+Friend Sub WriteSpecialMergedChannelData(ByRef cStream As pdStream, ByRef channelCompression As PSD_ChannelCompression, Optional ByVal writePSB As Boolean = False, Optional ByVal writeAlpha As Boolean = True)
+
+    'Because channel data has already been separated into planes and (optionally) compressed, writing the actual
+    ' data out to file is super easy.  The only caveat involves PackBits compression, because we must first write out
+    ' RLE tables for *all* channels before writing out actual channel data.
+    Dim i As Long
+    
+    Select Case channelCompression
+    
+        Case ccRaw
+        
+            'Dump channel bytes out as-is
+            For i = 0 To 3
+                If (i = 3) And (Not writeAlpha) Then Exit For
+                cStream.WriteByteArray m_Channels(i).ciData, m_Channels(i).ciDataLength
+            Next i
+        
+        Case ccPackBits
+        
+            'Unlike normal layers, we write *all* RLE tables out first, followed by *all* PackBits streams
+            For i = 0 To 3
+                If (i = 3) And (Not writeAlpha) Then Exit For
+                With m_Channels(i)
+                    Dim y As Long
+                    For y = 0 To UBound(.rleTable)
+                        cStream.WriteIntU_BE .rleTable(y)
+                    Next y
+                End With
+            Next i
+            
+            For i = 0 To 3
+                If (i = 3) And (Not writeAlpha) Then Exit For
+                With m_Channels(i)
+                    cStream.WriteBytesFromPointer VarPtr(.ciData(0)), .ciDataLength
+                End With
+            Next i
+            
         Case ccZip
         
         Case ccZipWithPrediction

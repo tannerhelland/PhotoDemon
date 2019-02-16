@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.382</langversion>
+<langversion>6.7.384</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -750,7 +750,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 <translation>Enregistrer ne peut pas être menée à bien sans FreeImage bibliothèque.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1817,6 +1817,18 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_libdeflate.bas -->
+
+<!-- Plugin_libdeflate.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_libdeflate.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -1853,18 +1865,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_PNGQuant.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
-
-<!-- BEGIN text for Plugin_ZLib.bas -->
-
-<!-- Plugin_ZLib.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_ZLib.bas-->
 
 <!-- BEGIN text for Plugin_zstd.bas -->
 
@@ -3598,72 +3598,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
-<phrase>
-<original>File doesn't have valid pdPackage header.  Abandoning load.</original>
-<translation>Fichier n'a pas de tête pdPackage valide. Abandonnant charge.</translation>
-</phrase>
-
-<phrase>
-<original>File doesn't match requested sub-type value.  Abandoning load.</original>
-<translation>Fichier ne correspond pas valeur de sous-type demandé. Abandonnant charge.</translation>
-</phrase>
-
-<phrase>
-<original>Legacy file format could not be decoded.</original>
-<translation>Format de fichier Legacy n'a pas pu être décodé.</translation>
-</phrase>
-
-<phrase>
-<original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
-<translation>La taille nœud de l'en-tête n'est pas valide. Ce fichier semble être corrompu! Abandonnant charge.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>ATTENTION! La taille du bloc d'annuaire décompressé indique une erreur CRC possible (</translation>
-</phrase>
-
-<phrase>
-<original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Annuaire est comprimé, mais zLib échoué pour le décompresser. Code d'erreur retourné: %1</translation>
-</phrase>
-
-<phrase>
-<original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Morceau annuaire est comprimé, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Morceau de données sont compressées, mais zLib échoué pour le décompresser. Code d'erreur retourné: %1</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Bloc de données est comprimée, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Nœud de fichier est compressé, mais zLib échoué pour le décompresser. Code d'erreur retourné: %1</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Nœud de fichier est compressé, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
-</phrase>
-
-<phrase>
-<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation>Le noeud de fichier n'est pas compressé, mais la taille est répertoriée comme zéro. Charge impossible tentative d'abandon.</translation>
-</phrase>
-
-<phrase>
-<original>Checksum failed for node #</original>
-<translation>Somme de contrôle n'a pas pour le noeud #</translation>
-</phrase>
-
-<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 0 phrases. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
 
@@ -12740,7 +12675,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>THANK YOU to our wonderful Patreon supporters!</original>
+<original>Thank you to our wonderful Patreon supporters!</original>
 <translation></translation>
 </phrase>
 
@@ -15582,10 +15517,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4760 phrases. -->
-<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4740 phrases. -->
+<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 12243 total words. -->
 
 </pdData>

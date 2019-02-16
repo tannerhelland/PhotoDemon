@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3365</langversion>
+<langversion>6.8.3367</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -749,7 +749,7 @@ To aktivere støtte for dette bildeformatet, kan du kopiere FreeImage.dll fil (k
 <translation>Lagre kan ikke fullføres  uten FreeImage bibliotek.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1816,6 +1816,18 @@ To aktivere skannerstøtten, kan du kopiere EZTW32.dll filen (tilgjengelig for n
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_libdeflate.bas -->
+
+<!-- Plugin_libdeflate.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_libdeflate.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -1852,18 +1864,6 @@ To aktivere skannerstøtten, kan du kopiere EZTW32.dll filen (tilgjengelig for n
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_PNGQuant.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
-
-<!-- BEGIN text for Plugin_ZLib.bas -->
-
-<!-- Plugin_ZLib.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_ZLib.bas-->
 
 <!-- BEGIN text for Plugin_zstd.bas -->
 
@@ -3598,72 +3598,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
-<phrase>
-<original>File doesn't have valid pdPackage header.  Abandoning load.</original>
-<translation>Fil har ikke gyldig pakke spissen. Forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>File doesn't match requested sub-type value.  Abandoning load.</original>
-<translation>File samsvarer  ikke bedt subtype verdi. Forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>Legacy file format could not be decoded.</original>
-<translation>Legacy filformat kan ikke dekodes.</translation>
-</phrase>
-
-<phrase>
-<original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
-<translation>Node struct størrelse i header er ugyldig. Denne filen ser ut til å være ødelagt! Forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>ADVARSEL! Komprimert katalogen blings størrelse viser mulig CRC feil (</translation>
-</phrase>
-
-<phrase>
-<original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Directory er komprimert, men ZLIB klarte ikke å dekomprimere den. Feilkode  returnert: %1</translation>
-</phrase>
-
-<phrase>
-<original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Directory blings er komprimert, men mangler ZLIB. Dekompresjon umulig; forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datastykket  er komprimert, men ZLIB klarte ikke å dekomprimere den. Feilkode  returnert: %1</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Datastykket  er komprimert, men mangler ZLIB. Dekompresjon umulig; forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>File node er komprimert, men ZLIB klarte ikke å dekomprimere den. Feilkode  returnert: %1</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>File node er komprimert, men mangler ZLIB. Dekompresjon umulig; forlate belastning.</translation>
-</phrase>
-
-<phrase>
-<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation>File node er ukomprimert, men størrelsen er oppført som null. Last umulig; forlate forsøk.</translation>
-</phrase>
-
-<phrase>
-<original>Checksum failed for node #</original>
-<translation>Sjekksum mislyktes for node #</translation>
-</phrase>
-
-<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 0 phrases. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
 
@@ -12741,7 +12676,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>THANK YOU to our wonderful Patreon supporters!</original>
+<original>Thank you to our wonderful Patreon supporters!</original>
 <translation></translation>
 </phrase>
 
@@ -15580,10 +15515,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4760 phrases. -->
-<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4740 phrases. -->
+<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 12243 total words. -->
 
 </pdData>

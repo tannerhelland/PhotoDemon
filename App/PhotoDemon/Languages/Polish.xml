@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.60</langversion>
+<langversion>7.0.62</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -744,7 +744,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>Zapisywanie nie może zostać zakończone bez biblioteki FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1805,6 +1805,18 @@ Aby włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępny 
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_libdeflate.bas -->
+
+<!-- Plugin_libdeflate.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_libdeflate.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -1841,18 +1853,6 @@ Aby włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępny 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_PNGQuant.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
-
-<!-- BEGIN text for Plugin_ZLib.bas -->
-
-<!-- Plugin_ZLib.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_ZLib.bas-->
 
 <!-- BEGIN text for Plugin_zstd.bas -->
 
@@ -3582,72 +3582,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
-<phrase>
-<original>File doesn't have valid pdPackage header.  Abandoning load.</original>
-<translation>Plik nie posiada ważnego nagłówka pakietu. Porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>File doesn't match requested sub-type value.  Abandoning load.</original>
-<translation>Plik nie pasuje do żądanej wartości podtypu. Porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>Legacy file format could not be decoded.</original>
-<translation>Format pliku Legacy nie może być dekodowane.</translation>
-</phrase>
-
-<phrase>
-<original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
-<translation>Wielkość struct node w nagłówku jest nieprawidłowy. Ten plik wygląda na uszkodzony! Porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>OSTRZEŻENIE! Sprężone Rozmiar fragment katalog pokazuje możliwy błąd CRC (</translation>
-</phrase>
-
-<phrase>
-<original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Katalog jest skompresowany, ale nie udało się go zlib dekompresji. Kod błędu zwracane: %1</translation>
-</phrase>
-
-<phrase>
-<original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>fragment katalog jest skompresowany, ale zlib brakuje. Dekompresja niemożliwe; porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>fragment dane są kompresowane, ale nie udało się go zlib dekompresji. Kod błędu zwracane: %1</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>fragment dane są kompresowane, ale zlib brakuje. Dekompresja niemożliwe; porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Węzeł plik jest skompresowany, ale nie udało się go zlib dekompresji. Kod błędu zwracane: %1</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Węzeł plik jest skompresowany, ale zlib brakuje. Dekompresja niemożliwe; porzucenie obciążenia.</translation>
-</phrase>
-
-<phrase>
-<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation>Węzeł plik jest nieskompresowany, ale rozmiar jest wymieniony jako zero. Załaduj niemożliwe; porzucając próbę.</translation>
-</phrase>
-
-<phrase>
-<original>Checksum failed for node #</original>
-<translation>Kontrolna nie powiodło się dla węzła #</translation>
-</phrase>
-
-<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 0 phrases. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
 
@@ -12721,7 +12656,7 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>THANK YOU to our wonderful Patreon supporters!</original>
+<original>Thank you to our wonderful Patreon supporters!</original>
 <translation></translation>
 </phrase>
 
@@ -15558,10 +15493,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4760 phrases. -->
-<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4740 phrases. -->
+<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 12243 total words. -->
 
 </pdData>

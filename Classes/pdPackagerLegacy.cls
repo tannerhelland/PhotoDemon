@@ -909,14 +909,14 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
         'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
         If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
-            RaiseInternalMessage "File doesn't have valid pdPackage header.  Abandoning load."
+            InternalError "File doesn't have valid pdPackage header.  Abandoning load."
             GoTo StopPackageFileRead
         End If
         
         'If the caller requested a sub-type validation, perform that now
         If (subTypeValidator <> 0) Then
             If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
-                RaiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
+                InternalError "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
         End If
@@ -929,7 +929,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             'Let the legacy load function have a go at the data
             If Not LoadLegacyPDPackage(srcFilename) Then
-                RaiseInternalMessage "Legacy file format could not be decoded."
+                InternalError "Legacy file format could not be decoded."
                 GoTo StopPackageFileRead
             End If
         
@@ -939,7 +939,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
             Dim tmpNode As PDP_NODE
             If m_FileHeader.NodeStructSize <> LenB(tmpNode) Then
-                RaiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                InternalError "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                 GoTo StopPackageFileRead
             End If
             
@@ -970,17 +970,17 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DirectoryChunkSize) Then
-                        RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
+                        InternalError "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
                     End If
                     
                     If (Not zlibResult) Then
-                        RaiseInternalMessage "Directory is compressed, but zLib failed to decompress it."
+                        InternalError "Directory is compressed, but zLib failed to decompress it."
                         GoTo StopPackageFileRead
                     End If
                     
                 'If the directory is compressed but zLib is unavailable, we're effectively screwed
                 Else
-                    RaiseInternalMessage "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    InternalError "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 End If
             
@@ -1025,16 +1025,16 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Make sure the decompression size is what we expected
                     If (tmpLength <> m_FileHeader.DataChunkSize) Then
-                        RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
+                        InternalError "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
                     End If
                     
                     If (Not zlibResult) Then
-                        RaiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it."
+                        InternalError "Data chunk is compressed, but zLib failed to decompress it."
                         GoTo StopPackageFileRead
                     End If
                     
                 Else
-                    RaiseInternalMessage "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    InternalError "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 End If
                 
@@ -1116,7 +1116,7 @@ Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
                     
                 'Struct size mismatch - file is probably not PDI type.
                 Else
-                    RaiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                    InternalError "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                     LoadLegacyPDPackage = False
                 End If
                 
@@ -1705,13 +1705,13 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
             'Use zLib to decompress the data
             If (Not Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cf_Zlib)) Then
-                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
+                InternalError "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex = False
                 Exit Function
             End If
             
         Else
-            RaiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            InternalError "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
             GetNodeDataByIndex = False
             Exit Function
         End If
@@ -1721,7 +1721,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         If (dataPackedSize <> 0) Then
             m_DataBuffer.ReadBytes dstArray, dataPackedSize
         Else
-            RaiseInternalMessage "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
+            InternalError "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
             GetNodeDataByIndex = False
             Exit Function
         End If
@@ -1749,7 +1749,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         
         'If the checksums do not match, fail the function and exit
         If (checkSumOriginal <> zLibAdlerSum) Then
-            RaiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            InternalError "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
             GetNodeDataByIndex = False
             Exit Function
         Else
@@ -1808,14 +1808,14 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             
             'Use zLib to decompress the data directly into the pointer we've been given
             If (Not Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cf_Zlib)) Then
-                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it."
+                InternalError "File node is compressed, but zLib failed to decompress it."
                 GetNodeDataByIndex_UnsafeDstPointer = False
                 Exit Function
             End If
             
         Else
         
-            RaiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            InternalError "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
             GetNodeDataByIndex_UnsafeDstPointer = False
             Exit Function
         
@@ -1848,7 +1848,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         'If the checksums do not match, fail the function and exit
         If checkSumOriginal <> zLibAdlerSum Then
-            RaiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            InternalError "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
             GetNodeDataByIndex_UnsafeDstPointer = False
             Exit Function
         Else
@@ -2032,7 +2032,7 @@ End Sub
 
 'If something unexpected occurs, and the user needs to know about it (e.g. it's not just debugging data), pdPackage will raise a message
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
-Private Sub RaiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
+Private Sub InternalError(ByVal msgString As String, ParamArray ExtraText() As Variant)
     
     If UBound(ExtraText) >= LBound(ExtraText) Then
         Message msgString, ExtraText

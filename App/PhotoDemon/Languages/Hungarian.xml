@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3365</langversion>
+<langversion>6.8.3367</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -749,7 +749,7 @@ To támogatásának engedélyezéséhez Ez a képformátum másolja a FreeImage.
 <translation>Save nem lehet befejezni anélkül FreeImage könyvtár.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 29 phrases. 23 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1809,6 +1809,18 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_libdeflate.bas -->
+
+<!-- Plugin_libdeflate.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_libdeflate.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -1845,18 +1857,6 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_PNGQuant.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
-
-<!-- BEGIN text for Plugin_ZLib.bas -->
-
-<!-- Plugin_ZLib.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_ZLib.bas-->
 
 <!-- BEGIN text for Plugin_zstd.bas -->
 
@@ -3586,72 +3586,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPackagerLegacy.cls -->
 
-<phrase>
-<original>File doesn't have valid pdPackage header.  Abandoning load.</original>
-<translation>A fájl nem érvényes a csomag fejlécében. Felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>File doesn't match requested sub-type value.  Abandoning load.</original>
-<translation>Fájl nem egyezik kért altípus értéket. Felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>Legacy file format could not be decoded.</original>
-<translation>Legacy fájlformátum nem dekódolható.</translation>
-</phrase>
-
-<phrase>
-<original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
-<translation>Node struct mérete fejléc érvénytelen. Ez a fájl úgy néz ki, hogy korrupt! Felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>FIGYELEM! Sűrített könyvtár darabok méretét mutatja lehetséges CRC hiba (</translation>
-</phrase>
-
-<phrase>
-<original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Directory tömörített, de Zlib sikerült kibontani azt. Hibakód válasza: %1</translation>
-</phrase>
-
-<phrase>
-<original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Directory darab tömörített, de Zlib hiányzik. Dekompressziós lehetetlen; felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Az adatok darab tömörített, de Zlib sikerült kibontani azt. Hibakód válasza: %1</translation>
-</phrase>
-
-<phrase>
-<original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Az adatok darab tömörített, de Zlib hiányzik. Dekompressziós lehetetlen; felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Fájl csomópont tömörített, de Zlib sikerült kibontani azt. Hibakód válasza: %1</translation>
-</phrase>
-
-<phrase>
-<original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Fájl csomópont tömörített, de Zlib hiányzik. Dekompressziós lehetetlen; felhagy terhelést.</translation>
-</phrase>
-
-<phrase>
-<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation>Fájl csomópont tömörítetlen, de a mérete szerepel a nulla. Töltsön lehetetlen; felhagy kísérlet.</translation>
-</phrase>
-
-<phrase>
-<original>Checksum failed for node #</original>
-<translation>Checksum meghiúsult csomópont #</translation>
-</phrase>
-
-<!-- pdPackagerLegacy.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- pdPackagerLegacy.cls contains 0 phrases. -->
 
 <!-- END text for pdPackagerLegacy.cls-->
 
@@ -12723,7 +12658,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>THANK YOU to our wonderful Patreon supporters!</original>
+<original>Thank you to our wonderful Patreon supporters!</original>
 <translation></translation>
 </phrase>
 
@@ -15559,10 +15494,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4760 phrases. -->
-<!-- 2163 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 12392 total words. -->
+<!-- As of this build, PhotoDemon contains 4740 phrases. -->
+<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 12243 total words. -->
 
 </pdData>
