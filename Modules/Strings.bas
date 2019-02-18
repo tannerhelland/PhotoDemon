@@ -18,6 +18,7 @@ Option Explicit
 
 Private Const CP_UTF8 As Long = 65001   'Fixed constant for UTF-8 "codepage" transformations
 Private Const CRYPT_STRING_BASE64 As Long = 1&
+Private Const CRYPT_STRING_HEXASCII As Long = &H4&
 Private Const CRYPT_STRING_NOCR As Long = &H80000000
 Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
@@ -252,6 +253,40 @@ Public Function BytesFromBase64Ex(ByVal dstPtr As Long, ByRef dstBufferSize As L
     BytesFromBase64Ex = False
     Dim dwActualUsed As Long
     BytesFromBase64Ex = (CryptStringToBinary(StrPtr(srcBase64), Len(srcBase64), CRYPT_STRING_BASE64, dstPtr, dstBufferSize, 0&, dwActualUsed) <> 0)
+End Function
+
+'Convert a hex string into a byte array, using standard Windows libraries.
+' Returns TRUE if successful; FALSE otherwise.
+Public Function BytesFromHex(ByRef dstArray() As Byte, ByVal srcHex As String) As Boolean
+    
+    BytesFromHex = False
+    If InStr(1, srcHex, " ") Then srcHex = Replace$(srcHex, " ", vbNullString)
+    If InStr(1, srcHex, vbCr) Then srcHex = Replace$(srcHex, vbCr, vbNullString)
+    If InStr(1, srcHex, vbLf) Then srcHex = Replace$(srcHex, vbLf, vbNullString)
+    
+    'Retrieve the necessary output buffer size.
+    Dim lngOutLen As Long, dwActualUsed As Long
+    If (CryptStringToBinary(StrPtr(srcHex), Len(srcHex), CRYPT_STRING_HEXASCII, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0) Then
+        ReDim dstArray(lngOutLen - 1) As Byte
+        BytesFromHex = (CryptStringToBinary(StrPtr(srcHex), Len(srcHex), CRYPT_STRING_HEXASCII, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
+    End If
+    
+End Function
+
+'Convert a byte array into a human-readable hex string, using standard Windows libraries.
+' Returns TRUE if successful; FALSE otherwise.
+Public Function BytesToHex(ByRef srcArray() As Byte, ByRef dstHex As String, Optional ByVal convertUpperCase As Boolean = True) As Boolean
+    
+    BytesToHex = False
+    
+    'Retrieve the necessary output buffer size.
+    Dim bufferSize As Long
+    If (CryptBinaryToString(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, CRYPT_STRING_HEXASCII Or CRYPT_STRING_NOCRLF, 0&, bufferSize) <> 0) Then
+        dstHex = String$(bufferSize - 1, 0)
+        BytesToHex = (CryptBinaryToString(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, CRYPT_STRING_HEXASCII Or CRYPT_STRING_NOCRLF, StrPtr(dstHex), bufferSize) <> 0)
+        If convertUpperCase Then dstHex = UCase$(dstHex)
+    End If
+    
 End Function
 
 'XML escaping is easier than HTML escaping, as only five chars must be handled ("'<>&).  While these five
