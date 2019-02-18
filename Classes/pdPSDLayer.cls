@@ -15,8 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 15/January/19
-'Last updated: 15/February/19
-'Last update: add PackBits support when writing PSDs
+'Last updated: 18/February/19
+'Last update: minor modifications to ensure "optimal" PackBits encoding.  I don't think it's mathematically
+'             possible to produce smaller PackBits runs than my implementation - as evidenced by PD's exported
+'             PSD files being smaller than all 3rd-party PSD encoders and even PSDs from Photoshop itself -
+'             but I would genuinely welcome examples to the contrary!
 '
 'This class contains layer-specific data pulled from a PSD file.  It is populated by a parent
 ' pdPSD instance.  It has no purpose outside of a PSD parsing context; for layer handling inside
@@ -27,9 +30,9 @@ Attribute VB_Exposed = False
 ' https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_72092
 '
 'Adobe's custom "zip-with-prediction" compression mode is currently undocumented in the PSD spec.  To my knowledge,
-' the first 3rd-party to reverse-engineer it is the authors of Paint.NET's PSD plugin.  Their MIT-licensed work was
-' used as a reference for this class's "zip-with-prediction" decoder.  Many thanks to those authors; their reference
-' implementation is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
+' the first 3rd-party to reverse-engineer it was (were?) the authors of Paint.NET's PSD plugin.  Their MIT-licensed
+' work was used as a reference for this class's "zip-with-prediction" decoder.  Many thanks to those authors;
+' their reference implementation is available here (link good as of January 2019): https://github.com/PsdPlugin/PsdPlugin
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -3170,7 +3173,7 @@ End Sub
 
 'Generate a PackBits-compressed line of pixels.  Source and destination arrays must be non-null and properly sized
 ' (especially the destination line - it must be large enough to hold any possible PackBits output).
-Private Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
+Friend Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
     
     'Cover the special case of 1-pixel lines
     If (scanlineWidth = 1) Then
@@ -3249,13 +3252,29 @@ Private Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize
                     If (srcBytes(srcOffset + curRunLength - 1) <> srcBytes(srcOffset + curRunLength)) Then
                         curRunLength = curRunLength + 1
                     Else
+                    
                         'See if this new repeat run is at least three bytes long.  If it isn't, it can actually improve
                         ' compression by keeping those bytes inside this literal run, because 1) we've already eaten the
                         ' "cost" of the flag byte for this run, and 2) if the 3rd byte starts a new literal run, it incurs
                         ' a new flag byte cost - which we can avoid by keeping the current run intact!
                         If (curRunLength + 1 < maxRunLength) Then
-                            If (srcBytes(srcOffset + curRunLength) = srcBytes(srcOffset + curRunLength + 1)) Then Exit Do Else curRunLength = curRunLength + 1
+                            If (srcBytes(srcOffset + curRunLength) = srcBytes(srcOffset + curRunLength + 1)) Then
+                                
+                                'Subtract 1, so that the first byte of the forthcoming repeat run is *not* included in
+                                ' the current literal run (e.g. so the repeat run starts at the *first* char in the repeat
+                                ' sequence, not the *second* one!)
+                                curRunLength = curRunLength - 1
+                                Exit Do
+                                
+                            Else
+                                curRunLength = curRunLength + 1
+                            End If
+                        
+                        'We're already at maximum length for this run, so we couldn't extend it even if we wanted to.
+                        ' Subtract 1 per the note above (to ensure the repeated byte is not included in the
+                        ' current literal run), then immediately exit.
                         Else
+                            curRunLength = curRunLength - 1
                             Exit Do
                         End If
                         
@@ -3264,7 +3283,7 @@ Private Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize
                 
                 'curRunLength is now one larger than the actual size of the run.  Encode it in the destination
                 ' and advance all pointers to match.
-                dstBytes(dstOffset) = (curRunLength - 1)
+                dstBytes(dstOffset) = (curRunLength - 1)    '- 1 per the spec, so e.g. an encoded "0" actually represents a length of "1"
                 CopyMemoryStrict VarPtr(dstBytes(dstOffset + 1)), VarPtr(srcBytes(srcOffset)), curRunLength
                 dstOffset = dstOffset + curRunLength + 1    '+ 1 for the flag byte, of course!
                 srcOffset = srcOffset + curRunLength
