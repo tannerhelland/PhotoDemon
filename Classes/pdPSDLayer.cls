@@ -44,7 +44,7 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD classes have their own
 ' version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = True
+Private Const PSD_DEBUG_VERBOSE As Boolean = False
 
 'Layer rect, automatically translated to the proper order (Adobe uses top/left/bottom/right order)
 Private m_Rect As RectL
@@ -182,6 +182,10 @@ Friend Function GetLayerCount() As Long
     Else
         GetLayerCount = 1
     End If
+End Function
+
+Friend Function GetLayerClipping() As Boolean
+    GetLayerClipping = (m_Clipping = 1)
 End Function
 
 Friend Function GetLayerDIB() As pdDIB
@@ -3075,22 +3079,22 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
     'This function may be called by an outside caller (as part of writing a compressed composite image
     ' at the end of a PSD file), so perform a failsafe check for channel count.
     If (m_ChannelCount <= 0) Then
-        m_ChannelCount = 4
-        ReDim m_Channels(0 To 3) As PSD_ChannelInfo
+        If (srcLayerDIB.GetDIBColorDepth = 32) Then m_ChannelCount = 4 Else m_ChannelCount = 3
+        ReDim m_Channels(0 To m_ChannelCount - 1) As PSD_ChannelInfo
     End If
     
     'Mark channel IDs in advance; we'll use a fixed RGBA order for these
     m_Channels(0).ciID = cidRed
     m_Channels(1).ciID = cidGreen
     m_Channels(2).ciID = cidBlue
-    m_Channels(3).ciID = cidAlpha
+    If (m_ChannelCount > 3) Then m_Channels(3).ciID = cidAlpha
     
     Select Case channelCompression
     
         'RAW compression just means "no compression"; extract all source channels as-is
         Case ccRaw
             
-            For chIndex = 0 To 3
+            For chIndex = 0 To m_ChannelCount - 1
                 ReDim m_Channels(chIndex).ciData(0 To lWidth * lHeight - 1) As Byte
                 m_Channels(chIndex).ciDataLength = lWidth * lHeight
             Next chIndex
@@ -3105,7 +3109,7 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
                 m_Channels(2).ciData(dstOffset) = tmpBytes(x * 4)
                 m_Channels(1).ciData(dstOffset) = tmpBytes(x * 4 + 1)
                 m_Channels(0).ciData(dstOffset) = tmpBytes(x * 4 + 2)
-                m_Channels(3).ciData(dstOffset) = tmpBytes(x * 4 + 3)
+                If (m_ChannelCount = 4) Then m_Channels(3).ciData(dstOffset) = tmpBytes(x * 4 + 3)
                 
             Next x
             Next y
@@ -3126,7 +3130,7 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
             ' pathological worst-case memory consumption of one extra byte for each 127 input bytes (if the
             ' input data has 0% contiguous runs), so the potential output space *is* larger than the number of
             ' pixels in the channel.
-            For chIndex = 0 To 3
+            For chIndex = 0 To m_ChannelCount - 1
                 With m_Channels(chIndex)
                     .ciDataLength = lWidth * lHeight + Int(CDbl(lWidth * lHeight) * 0.1)
                     ReDim .ciData(0 To .ciDataLength) As Byte
@@ -3143,7 +3147,7 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
             
             'First test: before doing anything else, let's just make sure we can write a literal-only
             ' (no run) PackBits that produces a valid output stream
-            For chIndex = 0 To 3
+            For chIndex = 0 To m_ChannelCount - 1
             
                 'Source data is in BGRA order; we want it in RGBA order
                 If (chIndex = 0) Then

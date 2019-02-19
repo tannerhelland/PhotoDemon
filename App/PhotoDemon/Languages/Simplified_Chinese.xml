@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.690</langversion>
+<langversion>7.2.691</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12206,7 +12206,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_Save_GIF.frm-->
 
-<!-- BEGIN text for File_Save_JP2Settings.frm (dialog_ExportJP2) -->
+<!-- BEGIN text for File_Save_JP2.frm (dialog_ExportJP2) -->
 
 <phrase>
 <original>JPEG 2000 Export Options</original>
@@ -12258,11 +12258,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>自定义比例（X:1）</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- END text for File_Save_JP2Settings.frm-->
+<!-- END text for File_Save_JP2.frm-->
 
-<!-- BEGIN text for File_Save_JPEGSettings.frm (dialog_ExportJPEG) -->
+<!-- BEGIN text for File_Save_JPG.frm (dialog_ExportJPEG) -->
 
 <phrase>
 <original>JPEG Export Options</original>
@@ -12339,11 +12339,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>黑白（8 位）</translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_Save_JPG.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
-<!-- END text for File_Save_JPEGSettings.frm-->
+<!-- END text for File_Save_JPG.frm-->
 
-<!-- BEGIN text for File_Save_JXRSettings.frm (dialog_ExportJXR) -->
+<!-- BEGIN text for File_Save_JXR.frm (dialog_ExportJXR) -->
 
 <phrase>
 <original>JPEG XR Export Options</original>
@@ -12380,9 +12380,9 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>超压缩，图像质量很差（20）</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JXR.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<!-- END text for File_Save_JXRSettings.frm-->
+<!-- END text for File_Save_JXR.frm-->
 
 <!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
 
@@ -12531,6 +12531,32 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_Save_PNG.frm-->
 
+<!-- BEGIN text for File_Save_PSD.frm (dialog_ExportPSD) -->
+
+<phrase>
+<original>PSD Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximize compatibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PackBits</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSD.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for File_Save_PSD.frm-->
+
 <!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
 
 <phrase>
@@ -12587,16 +12613,16 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_Save_TIFF.frm-->
 
-<!-- BEGIN text for File_Save_WebPSettings.frm (dialog_ExportWebP) -->
+<!-- BEGIN text for File_Save_WebP.frm (dialog_ExportWebP) -->
 
 <phrase>
 <original>WebP Export Options</original>
 <translation>WebP输出选项</translation>
 </phrase>
 
-<!-- File_Save_WebPSettings.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Save_WebP.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- END text for File_Save_WebPSettings.frm-->
+<!-- END text for File_Save_WebP.frm-->
 
 <!-- BEGIN text for Help_About.frm (FormAbout) -->
 
@@ -15503,10 +15529,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4740 phrases. -->
-<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 12243 total words. -->
+<!-- As of this build, PhotoDemon contains 4751 phrases. -->
+<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 12250 total words. -->
 
 </pdData>

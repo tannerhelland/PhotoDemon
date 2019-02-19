@@ -357,7 +357,10 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 
             Case PDIF_PNM
                 GetExportParamsFromDialog = (DialogManager.PromptPNMSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
-                
+            
+            Case PDIF_PSD
+                GetExportParamsFromDialog = (DialogManager.PromptPSDSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_TIFF
                 GetExportParamsFromDialog = (DialogManager.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             

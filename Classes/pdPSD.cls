@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 15/February/19
-'Last update: wrap up PackBits support during export
+'Last updated: 19/February/19
+'Last update: wrap up support for "use max compatibility" feature when exporting PSDs
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -53,7 +53,7 @@ Option Explicit
 'PSD files contain a *lot* of information.  To aid debugging, you can activate "verbose" output; this will
 ' dump all kinds of diagnostic information to the debug log.  (Note that other PSD-adjacent classes have
 ' their own version of this constant.)
-Private Const PSD_DEBUG_VERBOSE As Boolean = True
+Private Const PSD_DEBUG_VERBOSE As Boolean = False
 
 'PSD loading is complicated, and a lot of things can go wrong.  Instead of returning binary "success/fail"
 ' values, we return specific flags; "warnings" may be recoverable and you can still attempt to load the file.
@@ -365,9 +365,6 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     Set cStream = New pdStream
     cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile
     
-    'Maximum compatibility is currently forcibly enforced, pending a UI to control its value
-    useMaxCompatibility = True
-    
     'Start by writing out a basic PSD header.
     Dim keepGoing As PD_PSDResult
     keepGoing = ExportStep1_WriteHeaderAndColorTable(cStream, srcPDImage, useMaxCompatibility, writePSB)
@@ -382,20 +379,11 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     If (keepGoing < psd_Failure) Then keepGoing = ExportStep3_WriteLayerAndMaskInformation(cStream, srcPDImage, compressionType, writePSB)
     
     'Finally, if "maximum compatibility" is selected, write out a copy of the merged image data.
-    If (keepGoing < psd_Failure) Then
-        
-        'If useMaxCompatibility Then
-            keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, writePSB)
-        
-        'TODO:
-        'If maximum compatibility is *not* selected, cheat and write out a plain white image at the same dimensions
-        ' as the current image.  This is what Photoshop does, and it ensures that lazy parsers still have data to
-        ' work with (avoiding possible errors) while inserting data that compresses as well as possible using PackBits.
-        'Else
-        '
-        'End If
-        
-    End If
+    If (keepGoing < psd_Failure) Then keepGoing = ExportStep4_WriteMergedImage(cStream, srcPDImage, compressionType, useMaxCompatibility, writePSB)
+    
+    'The write is finished.  Close the file handle and exit.
+    cStream.StopStream
+    Set cStream = Nothing
     
     SavePSD = (keepGoing < psd_Failure)
     
@@ -407,11 +395,22 @@ CouldNotSaveFile:
     
 End Function
 
-Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal compressionType As Long = 0, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
+Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal compressionType As Long = 0, Optional ByVal useMaxCompatibility As Boolean = True, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
 
     'Start by retrieving a merged image copy
     Dim tmpDIB As pdDIB
-    srcImage.GetCompositedImage tmpDIB, False
+    If useMaxCompatibility Then
+        srcImage.GetCompositedImage tmpDIB, False
+    
+    'When "max compatibility" is *not* set in Photoshop, Adobe just embeds a blank white image at the size of the
+    ' original image.  This compresses much better and allows 3rd-party decoders to still retrieve *something*
+    ' without crashing, and if a program can read layer data anyway, the composite is just a waste of space.
+    ' (See also: https://feedback.photoshop.com/photoshop_family/topics/maximize_file_compatibility_bloats_files_need_smaller_option)
+    ' We mimic Adobe's approach.
+    Else
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank srcImage.Width, srcImage.Height, 32, vbWhite
+    End If
     
     'Determine if the composite image has meaningful alpha values (e.g. if it is *not* fully opaque)
     Dim alphaMatters As Boolean
@@ -950,7 +949,15 @@ Private Function Step5_AssemblePDImage(ByRef srcFile As String, ByRef dstImage A
     If (numUsableLayers <= 0) Or (dstImage.GetNumOfLayers <= 0) Then
         m_Warnings.AddString "unable to create any usable layers.  Abandoning load."
         Step5_AssemblePDImage = psd_Failure
+        Exit Function
     End If
+    
+    'Look for the "clipping" flag on any loaded layers.  If it is set, we can mimic the clipping results by
+    ' merging the alpha channel of any clipped layers with the alpha channel of the lowest non-background
+    ' layer in the image (I think?  Photoshop's strategy may be more complicated than this, but I don't
+    ' have enough images available to test it well.)
+    
+    ' TODO!
     
     Exit Function
 

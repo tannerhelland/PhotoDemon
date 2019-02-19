@@ -1669,10 +1669,19 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportPSD = False
     Dim sFileType As String: sFileType = "PSD"
     
-    'OpenRaster has a straightforward spec based on a zip file container:
-    ' https://www.openraster.org/
+    'Parse all relevant PSD parameters.  (See the PSD export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
     
-    'Most of the heavy lifting for the save will be performed by our pdOpenRaster class
+    Dim useMaxCompatibility As Boolean
+    useMaxCompatibility = cParams.GetBool("max-compatibility", True)
+    
+    'Compression defaults to 1 - PackBits (RLE), same as Photoshop
+    Dim compressionType As Long
+    compressionType = cParams.GetLong("compression", 1)
+    
+    'Most of the heavy lifting for the save will be performed by our pdPSD class
     Dim cPSD As pdPSD
     Set cPSD = New pdPSD
     
@@ -1689,7 +1698,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         tmpFilename = dstFile
     End If
     
-    If cPSD.SavePSD(srcPDImage, tmpFilename, False, 1, False) Then
+    If cPSD.SavePSD(srcPDImage, tmpFilename, useMaxCompatibility, compressionType, False) Then
     
         If Strings.StringsEqual(dstFile, tmpFilename) Then
             ExportPSD = True
@@ -1701,7 +1710,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             If (Not ExportPSD) Then
                 Files.FileDelete tmpFilename
-                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite OpenRaster file; original file is likely open elsewhere."
+                PDDebug.LogAction "WARNING!  ImageExporter could not overwrite PSD file; original file is likely open elsewhere."
             End If
             
         End If

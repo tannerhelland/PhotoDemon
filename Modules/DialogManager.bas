@@ -165,6 +165,20 @@ Public Function PromptPNMSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptPSDSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportPSD
+    dialog_ExportPSD.ShowDialog srcImage
+    
+    PromptPSDSettings = dialog_ExportPSD.GetDialogResult
+    dstFormatParams = dialog_ExportPSD.GetFormatParams
+    dstMetadataParams = dialog_ExportPSD.GetMetadataParams
+    
+    Unload dialog_ExportPSD
+    Set dialog_ExportPSD = Nothing
+    
+End Function
+
 Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportTIFF

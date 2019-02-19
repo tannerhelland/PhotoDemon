@@ -1080,7 +1080,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
             IsExportDialogSupported = True
         
         Case PDIF_PSD
-            IsExportDialogSupported = False
+            IsExportDialogSupported = True
         
         Case PDIF_TARGA
             IsExportDialogSupported = False

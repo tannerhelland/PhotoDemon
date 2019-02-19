@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.822</langversion>
+<langversion>7.2.857</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1116,7 +1116,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Text layer</original>
-<translation>Textlayer</translation>
+<translation>Text-Layer</translation>
 </phrase>
 
 <phrase>
@@ -1151,7 +1151,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Diese Aktion wird Text- und Vektorlayer in Bildlayer (Raster) kon- vertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
+<translation>Diese Aktion wird Text- und Vektor-Layer in Bild- (Raster) Layer konvertieren. Bedeutet, dass Sie Layer-spezifische Einstellungen (wie Text, Font, Farbe oder Form) nicht mehr modifizieren können.</translation>
 </phrase>
 
 <phrase>
@@ -1161,27 +1161,27 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation>Ja.  Text- und Vektorlayer in Bildlayer (Raster) konvertieren.</translation>
+<translation>Ja. Text- und Vektor-Layer in Bild- (Raster) Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation>Nein.  Text- und Vektorlayer lassen wie sie sind.</translation>
+<translation>Nein. Text- und Vektor-Layer lassen wie sie sind.</translation>
 </phrase>
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>Dieser Textlayer wird in einen Bildlayer (Raster) geändert. Bedeutet, dass Sie dessen Text- oder Fonteinstellungen nicht mehr modifizie- ren können.</translation>
+<translation>Dieser Text-Layer wird in einen Bild- (Raster) Layer geändert. Bedeutet, dass Sie dessen Text- oder Fonteinstellungen nicht mehr modifizieren können.</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation>Ja.  Diesen Textlayer bitte konvertieren.</translation>
+<translation>Ja. Diesen Text-Layer bitte konvertieren.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation>Nein.  Diesen Textlayer lassen wie er ist.</translation>
+<translation>Nein. Diesen Text-Layer lassen wie er ist.</translation>
 </phrase>
 
 <phrase>
@@ -2664,12 +2664,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Shifttaste: Seitenverhältnis des Layers beibehalten</translation>
+<translation>Shifttaste: Layer-Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
 <original>Target layer: %1</original>
-<translation>Ziellayer: %1</translation>
+<translation>Ziel-Layer: %1</translation>
 </phrase>
 
 <phrase>
@@ -3953,7 +3953,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>New text layer</original>
-<translation>Neuer Textlayer</translation>
+<translation>Neuer Text-Layer</translation>
 </phrase>
 
 <phrase>
@@ -3963,7 +3963,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Center the image inside the viewport</original>
-<translation>Das Bild innerhalb des Viewport zentrieren</translation>
+<translation>Das Bild in Viewport zentrieren</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3977,7 +3977,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
-<translation>Ziehen Sie ein Bild auf diese Fläche, um mit der Bearbeitung zu beginnen.
+<translation>Ziehen Sie ein Bild auf diesen Raum, um die Bearbeitung zu beginnen.
 
 Sie können auch den Button "Bild öffnen" oben links verwenden
 oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation>
@@ -4947,7 +4947,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Copy from layer</original>
-<translation>Von Layer kopieren</translation>
+<translation>Aus Layer kopieren</translation>
 </phrase>
 
 <phrase>
@@ -4977,7 +4977,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>Inhaltsabhängige Größenänderung</translation>
+<translation>Content-abhängige Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -6360,7 +6360,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation>Inhaltsabhängige Layer-Größenänderung</translation>
+<translation>Content-abhängige Layer-Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -6495,7 +6495,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>Inhaltsabhängige Bild-Größenänderung</translation>
+<translation>Content-abhängige Bild-Größenänderung</translation>
 </phrase>
 
 <phrase>
@@ -6727,7 +6727,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>Bild für wahren Kontrast samplen (langsamer, aber präziser)</translation>
+<translation>Bild für wahren Kontrast samplen (langsamer, aber genauer)</translation>
 </phrase>
 
 <phrase>
@@ -8378,7 +8378,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation>Linksklick, um neue Nodes hinzuzufügen oder vorhandene Nodes zu bearbeiten.  Rechtsklick auf einen Node, um ihn zu entfernen.</translation>
+<translation>Linksklick, um neue Nodes hinzuzufügen oder vorhandene Nodes zu bearbeiten. Rechtsklick auf einen Node, um diesen zu entfernen.</translation>
 </phrase>
 
 <phrase>
@@ -8424,7 +8424,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended.</original>
-<translation>Sie führen PhotoDemon innerhalb der Visual Basic IDE aus. Dies wird nicht empfohlen.</translation>
+<translation>Sie führen PhotoDemon in der Visual Basic IDE aus. Dies wird nicht empfohlen.</translation>
 </phrase>
 
 <phrase>
@@ -8434,7 +8434,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.</original>
-<translation>Darüber hinaus, wie alle anderen Fotoeditoren, stützt sich PhotoDemon stark auf mehrdimensionale Arrays. Die Performance solcher Arrays wird in der IDE erheblich beeinträchtigt, sodass einige Funktionen sehr langsam ablaufen.</translation>
+<translation>Darüber hinaus, wie alle anderen Fotoeditoren, stützt sich PhotoDemon stark auf multidimensionale Arrays. Die Performance solcher Arrays wird in der IDE erheblich beeinträchtigt, sodass einige Funktionen sehr langsam ablaufen.</translation>
 </phrase>
 
 <phrase>
@@ -8839,7 +8839,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation>(Sorry, aber automatische Neustarts innerhalb der IDE funktionieren nicht.)</translation>
+<translation>(Sorry, aber automatische Neustarts in der IDE funktionieren nicht.)</translation>
 </phrase>
 
 <phrase>
@@ -9293,7 +9293,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>accurate</original>
-<translation>Präzise</translation>
+<translation>Genau</translation>
 </phrase>
 
 <phrase>
@@ -10371,7 +10371,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Printing image to digital halftone surface</original>
-<translation>Bild wird in digitaler Druckrasteroberfläche gedruckt</translation>
+<translation>Bild wird in digitaler Halbtonoberfläche gedruckt</translation>
 </phrase>
 
 <!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11274,7 +11274,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
-<translation>Sie haben bereits eine Bilderliste zur Verarbeitung erstellt. Die Bilderliste innerhalb dieser Datei wird an das Ende Ihrer aktuellen Liste angefügt.</translation>
+<translation>Sie haben bereits eine Bilderliste zur Verarbeitung erstellt. Die Bilderliste in dieser Datei wird an das Ende Ihrer aktuellen Liste angefügt.</translation>
 </phrase>
 
 <phrase>
@@ -11379,12 +11379,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddateien unter Verwendung des Standard- dialogs "Bild öffnen".</translation>
+<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddateien unter Verwendung des Standarddialogs "Bild öffnen".</translation>
 </phrase>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) innerhalb des Ordners (oder Unterordner, falls ausgewählt) werden automatisch identifiziert.</translation>
+<translation>2) Durch Hinzufügung gesamter Ordner auf einmal. Bilddatei(en) in dem Ordner (oder den Unterordnern, falls ausgewählt) werden automatisch identifiziert.</translation>
 </phrase>
 
 <phrase>
@@ -11600,7 +11600,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>palette contents</original>
-<translation>Paletteninhalte</translation>
+<translation>Paletten-Contents</translation>
 </phrase>
 
 <phrase>
@@ -11630,7 +11630,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Adobe Swatch Exchange (ASE) -Dateien können mehrere Paletten innerhalb einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche Paletten, die sich bereits in der Datei befinden, werden nicht modifiziert.</translation>
+<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche Paletten, die sich bereits in der Datei befinden, werden nicht modifiziert.</translation>
 </phrase>
 
 <phrase>
@@ -11780,7 +11780,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>always apply this action to multi-image files</original>
-<translation>Diese Aktion immer auf Dateien mit mehreren Bildern anwenden</translation>
+<translation>Diese Aktion immer auf Multi-Bilddateien anwenden</translation>
 </phrase>
 
 <phrase>
@@ -11978,7 +11978,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>one image spread across multiple pages (poster print)</original>
-<translation>Ein Bild über multiple Seiten ausbreiten (Plakatdruck)</translation>
+<translation>Ein Bild über multiple Seiten ausbreiten (Posterdruck)</translation>
 </phrase>
 
 <phrase>
@@ -12218,7 +12218,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <!-- END text for File_Save_GIF.frm-->
 
-<!-- BEGIN text for File_Save_JP2Settings.frm (dialog_ExportJP2) -->
+<!-- BEGIN text for File_Save_JP2.frm (dialog_ExportJP2) -->
 
 <phrase>
 <original>JPEG 2000 Export Options</original>
@@ -12270,11 +12270,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Benutzerdefiniertes Verhältnis (X:1)</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-<!-- END text for File_Save_JP2Settings.frm-->
+<!-- END text for File_Save_JP2.frm-->
 
-<!-- BEGIN text for File_Save_JPEGSettings.frm (dialog_ExportJPEG) -->
+<!-- BEGIN text for File_Save_JPG.frm (dialog_ExportJPEG) -->
 
 <phrase>
 <original>JPEG Export Options</original>
@@ -12351,11 +12351,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Schwarzweiß (8-bpp)</translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_Save_JPG.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
-<!-- END text for File_Save_JPEGSettings.frm-->
+<!-- END text for File_Save_JPG.frm-->
 
-<!-- BEGIN text for File_Save_JXRSettings.frm (dialog_ExportJXR) -->
+<!-- BEGIN text for File_Save_JXR.frm (dialog_ExportJXR) -->
 
 <phrase>
 <original>JPEG XR Export Options</original>
@@ -12392,9 +12392,9 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Super-Kompression, sehr schlechte Bildqualität (20)</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JXR.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
-<!-- END text for File_Save_JXRSettings.frm-->
+<!-- END text for File_Save_JXR.frm-->
 
 <!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
 
@@ -12543,6 +12543,32 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <!-- END text for File_Save_PNG.frm-->
 
+<!-- BEGIN text for File_Save_PSD.frm (dialog_ExportPSD) -->
+
+<phrase>
+<original>PSD Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximize compatibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PackBits</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PSD.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for File_Save_PSD.frm-->
+
 <!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
 
 <phrase>
@@ -12599,16 +12625,16 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <!-- END text for File_Save_TIFF.frm-->
 
-<!-- BEGIN text for File_Save_WebPSettings.frm (dialog_ExportWebP) -->
+<!-- BEGIN text for File_Save_WebP.frm (dialog_ExportWebP) -->
 
 <phrase>
 <original>WebP Export Options</original>
 <translation>WebP-Exportoptionen</translation>
 </phrase>
 
-<!-- File_Save_WebPSettings.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- File_Save_WebP.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- END text for File_Save_WebPSettings.frm-->
+<!-- END text for File_Save_WebP.frm-->
 
 <!-- BEGIN text for Help_About.frm (FormAbout) -->
 
@@ -12679,7 +12705,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Thank you to our wonderful Patreon supporters!</original>
-<translation></translation>
+<translation>Danke an unsere wunderbaren Patreon-Unterstützer!</translation>
 </phrase>
 
 <phrase>
@@ -12716,12 +12742,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation>Inhaltsabhängige Größenänderungs-Engine wird initialisiert</translation>
+<translation>Content-abhängige Größenänderungs-Engine wird initialisiert</translation>
 </phrase>
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation>Inhaltsabhängige Größenänderung wird angewendet</translation>
+<translation>Content-abhängige Größenänderung wird angewendet</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13196,12 +13222,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>top of layer stack</original>
-<translation>Oberster des Layer-Stapels</translation>
+<translation>Oberster von Layer-Stapel</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>Unterster des Layer-Stapels</translation>
+<translation>Unterster von Layer-Stapel</translation>
 </phrase>
 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -13452,7 +13478,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation>Texttools: Erstellen und bearbeiten Sie Textlayer.</translation>
+<translation>Texttools: Erstellen und bearbeiten Sie Text-Layer.</translation>
 </phrase>
 
 <phrase>
@@ -13532,7 +13558,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>Hand (Bildlauf anklicken und ziehen)</translation>
+<translation>Hand (Bild-Scrolling klicken und ziehen)</translation>
 </phrase>
 
 <phrase>
@@ -13542,7 +13568,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Move and resize image layers</original>
-<translation>Bildlayer verschieben und in Größe ändern</translation>
+<translation>Bild-Layer verschieben und in Größe ändern</translation>
 </phrase>
 
 <phrase>
@@ -14006,7 +14032,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahlinhalte - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
+<translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahl-Contents - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
 
 <phrase>
@@ -14540,7 +14566,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>This tool allows you to create and edit PhotoDemon language files.</original>
-<translation>Dieses Tool erlaubt Ihnen, Sprach- dateien für PhotoDemon zu erstel- len und zu bearbeiten.</translation>
+<translation>Dieses Tool erlaubt Ihnen, Sprachdateien für PhotoDemon zu erstellen und zu bearbeiten.</translation>
 </phrase>
 
 <phrase>
@@ -14595,7 +14621,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>This final step allows you to edit existing translations, and add missing ones.</original>
-<translation>Dieser letzte Schritt erlaubt Ihnen, vorhandene Übersetzungen zu bear- beiten und fehlende hinzuzufügen.</translation>
+<translation>Dieser letzte Schritt erlaubt Ihnen, vorhandene Übersetzungen zu bearbeiten und fehlende hinzuzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -14610,7 +14636,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>When you are finished editing this language, please consider sharing it!  Contact me by visiting</original>
-<translation>Wenn Sie die Bearbeitung dieser Spra- che beendet haben, erwägen Sie bitte, diese zu teilen! Kontaktieren Sie mich mit dem Besuch unter</translation>
+<translation>Wenn Sie die Bearbeitung dieser Sprache beendet haben, erwägen Sie bitte, diese zu teilen! Kontaktieren Sie mich mit dem Besuch unter</translation>
 </phrase>
 
 <phrase>
@@ -14912,7 +14938,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
-<translation>Automatische Drehinstruktionen innerhalb Bilddateien befolgen</translation>
+<translation>Automatische Drehinstruktionen in Bilddateien befolgen</translation>
 </phrase>
 
 <phrase>
@@ -15111,17 +15137,17 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu mehreren Metadatenkopien in einer einzelnen Datei führt. PhotoDemon kann Duplikateinträge automatisch für Sie lösen.</translation>
+<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann Duplikateinträge automatisch für Sie lösen.</translation>
 </phrase>
 
 <phrase>
 <original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Das JPEG-Format bietet keine Möglichkeit, JPEG-Qualitätseinstellungen innerhalb Bilddateien zu speichern. PhotoDemon kann dies durch Inferieren von Qualitätseinstellungen aus anderen Metadaten (wie Quantisierungstabellen) umgehen.</translation>
+<translation>Das JPEG-Format bietet keine Möglichkeit, JPEG-Qualitätseinstellungen in Bilddateien zu speichern. PhotoDemon kann dies durch Inferieren von Qualitätseinstellungen aus anderen Metadaten (wie Quantisierungstabellen) umgehen.</translation>
 </phrase>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Einige Kamerahersteller speichern proprietäre Metadaten-Tags innerhalb Bilddateien. Diese Tags sind normalerweise nicht für Menschen nützlich, aber PhotoDemon kann versuchen, sie trotzdem zu extrahieren.</translation>
+<translation>Einige Kamerahersteller speichern proprietäre Metadaten-Tags in Bilddateien. Diese Tags sind normalerweise nicht für Menschen nützlich, aber PhotoDemon kann versuchen, sie trotzdem zu extrahieren.</translation>
 </phrase>
 
 <phrase>
@@ -15196,7 +15222,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon generiert viele Thumbnail-Bilder, insbesondere wenn Bilder mehrere Layer enthalten. Die Thumbnail-Qualität kann verringert werden, um die Performance zu verbessern.</translation>
+<translation>PhotoDemon generiert viele Thumbnail-Bilder, insbesondere wenn Bilder multiple Layer enthalten. Die Thumbnail-Qualität kann verringert werden, um die Performance zu verbessern.</translation>
 </phrase>
 
 <phrase>
@@ -15344,7 +15370,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>reading not accurate inside IDE</original>
-<translation>Lesen innerhalb IDE nicht präzise</translation>
+<translation>Lesen in IDE nicht genau</translation>
 </phrase>
 
 <phrase>
@@ -15519,10 +15545,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4740 phrases. -->
-<!-- 2156 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 12243 total words. -->
+<!-- As of this build, PhotoDemon contains 4751 phrases. -->
+<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 12250 total words. -->
 
 </pdData>
