@@ -1400,13 +1400,13 @@ SkipChannel:
                     End If
                 
                     m_LayerDIB.UnwrapArrayFromDIB tmpBytes
-                
+                    
+                    'Immediately free the source channel data to relieve memory pressure
+                    Erase .ciDataDecoded
+                    
                 '/End alpha channel found
                 End If
                 
-                'Immediately free the source channel data to relieve memory pressure
-                Erase .ciDataDecoded
-            
             End With
 
 SkipChannelAlpha:
@@ -1730,6 +1730,7 @@ Friend Function DecodeChannels(ByRef warningStack As pdStringStack, ByVal imageI
                 
                 'Perform a final check to ensure calculated boundaries are acceptable
                 If (layerWidth <= 0) Or (layerHeight <= 0) Then
+                    InternalError "DecodeChannels", "layer width or height is <= 0; layer will not be decoded"
                     .ciDecodedOK = False
                     GoTo SkipChannel
                 End If
@@ -2278,7 +2279,11 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByRef warnin
             Dim rleTable() As Long
             ReDim rleTable(0 To m_ChannelCount * imgHeightPx - 1) As Long
             For i = 0 To UBound(rleTable)
-                rleTable(i) = srcStream.ReadIntUnsigned_BE()
+                If imageIsPSB Then
+                    rleTable(i) = srcStream.ReadLong_BE()
+                Else
+                    rleTable(i) = srcStream.ReadIntUnsigned_BE()
+                End If
             Next i
             
             'Reset the stream pointer
@@ -2294,7 +2299,11 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByRef warnin
                 Next j
                 
                 'The required size for each channel is (rleTableForChannel + rleEncodedBytes)
-                m_Channels(i).ciDataLength = (imgHeightPx * 2) + chSizeSum
+                If imageIsPSB Then
+                    m_Channels(i).ciDataLength = (imgHeightPx * 4) + chSizeSum
+                Else
+                    m_Channels(i).ciDataLength = (imgHeightPx * 2) + chSizeSum
+                End If
                 
             Next i
             
@@ -2306,14 +2315,24 @@ Friend Function NotifySingleLayerImage(ByRef srcStream As pdStream, ByRef warnin
                     ' "Image data is stored in planar order: first all the red data, then all the green data, etc."
                     .ciID = i
                     ReDim .ciData(0 To .ciDataLength - 1) As Byte
-                    srcStream.ReadBytesToBarePointer VarPtr(.ciData(0)), (imgHeightPx * 2)
+                    
+                    If imageIsPSB Then
+                        srcStream.ReadBytesToBarePointer VarPtr(.ciData(0)), (imgHeightPx * 4)
+                    Else
+                        srcStream.ReadBytesToBarePointer VarPtr(.ciData(0)), (imgHeightPx * 2)
+                    End If
+                    
                 End With
             Next i
             
             'Do one last loop to copy actual RLE bytes into place
             For i = 0 To m_ChannelCount - 1
                 With m_Channels(i)
-                    srcStream.ReadBytesToBarePointer VarPtr(.ciData(imgHeightPx * 2)), (.ciDataLength - (imgHeightPx * 2))
+                    If imageIsPSB Then
+                        srcStream.ReadBytesToBarePointer VarPtr(.ciData(imgHeightPx * 4)), (.ciDataLength - (imgHeightPx * 4))
+                    Else
+                        srcStream.ReadBytesToBarePointer VarPtr(.ciData(imgHeightPx * 2)), (.ciDataLength - (imgHeightPx * 2))
+                    End If
                 End With
             Next i
             
@@ -2361,7 +2380,14 @@ Friend Function ParseLayer(ByRef srcStream As pdStream, ByRef warningStack As pd
     For i = 0 To m_ChannelCount - 1
         m_Channels(i).ciID = srcStream.ReadInt_BE()
         m_Channels(i).ciSizeL = srcStream.ReadLong_BE()
-        If imageIsPSB Then m_Channels(i).ciSizeH = srcStream.ReadLong_BE  'TODO for PSB format!
+        
+        'PSB entries are actually 8-bytes; grab the next byte while we're here, but note that 32-bit limitations
+        ' mean we can still only reasonably use the 4 low bytes of the size.
+        If imageIsPSB Then
+            m_Channels(i).ciSizeH = m_Channels(i).ciSizeL
+            m_Channels(i).ciSizeL = srcStream.ReadLong_BE
+        End If
+        
     Next i
     
     'After the channel descriptors comes a blend mode signature, which is great for confirming
@@ -3173,7 +3199,7 @@ End Sub
 
 'Generate a PackBits-compressed line of pixels.  Source and destination arrays must be non-null and properly sized
 ' (especially the destination line - it must be large enough to hold any possible PackBits output).
-Friend Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
+Private Sub GeneratePackbitsLine(ByVal scanlineWidth As Long, ByRef dstFinalSize As Long, ByRef srcBytes() As Byte, ByRef dstBytes() As Byte)
     
     'Cover the special case of 1-pixel lines
     If (scanlineWidth = 1) Then

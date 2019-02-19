@@ -114,7 +114,18 @@ Friend Function ParseAdditionalLayerInfo(ByRef srcStream As pdStream, ByRef warn
                 .aiKey = srcStream.ReadString_ASCII(4)
                 .aiDataLength = srcStream.ReadLong_BE()
                 
-                'PSB has another 4 bytes of length here
+                'PSB has another 4 bytes of length here BUT ONLY FOR CERTAIN KEYS
+                If imageIsPSB Then
+                
+                    'Per the spec, in a PSB file "...the following keys have a length count of 8 bytes:
+                    ' LMsk, Lr16, Lr32, Layr, Mt16, Mt32, Mtrn, Alph, FMsk, lnk2, FEid, FXid, PxSD.
+                    If (.aiKey = "LMsk") Or (.aiKey = "Lr16") Or (.aiKey = "Lr32") Or (.aiKey = "Layr") Then .aiDataLength = srcStream.ReadLong_BE()
+                    If (.aiKey = "Mt16") Or (.aiKey = "Mt32") Or (.aiKey = "Mtrn") Or (.aiKey = "Alph") Then .aiDataLength = srcStream.ReadLong_BE()
+                    If (.aiKey = "FMsk") Or (.aiKey = "lnk2") Or (.aiKey = "FEid") Or (.aiKey = "FXid") Then .aiDataLength = srcStream.ReadLong_BE()
+                    If (.aiKey = "PxSD") Then .aiDataLength = srcStream.ReadLong_BE()
+                    
+                End If
+                
                 If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "Additional layer info found: " & .aiKey & " (" & .aiDataLength & " bytes)"
                 If (.aiDataLength > 0) Then srcStream.ReadBytes .aiDataBytes, .aiDataLength, True
                 
