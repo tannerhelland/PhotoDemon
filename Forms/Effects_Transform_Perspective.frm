@@ -4,10 +4,10 @@ Begin VB.Form FormPerspective
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Perspective"
-   ClientHeight    =   9615
+   ClientHeight    =   9060
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   15135
+   ClientWidth     =   14175
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,31 +20,31 @@ Begin VB.Form FormPerspective
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   641
+   ScaleHeight     =   604
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1009
+   ScaleWidth      =   945
    ShowInTaskbar   =   0   'False
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
-      Height          =   8640
+      Height          =   8040
       Left            =   6000
-      ScaleHeight     =   574
+      ScaleHeight     =   534
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   598
+      ScaleWidth      =   534
       TabIndex        =   4
       Top             =   120
-      Width           =   9000
+      Width           =   8040
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
       Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
+      Width           =   5745
+      _ExtentX        =   10134
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
@@ -52,7 +52,7 @@ Begin VB.Form FormPerspective
       Height          =   705
       Left            =   120
       TabIndex        =   3
-      Top             =   6960
+      Top             =   6660
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1270
@@ -67,7 +67,7 @@ Begin VB.Form FormPerspective
       Height          =   735
       Left            =   120
       TabIndex        =   5
-      Top             =   7800
+      Top             =   7440
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
@@ -77,7 +77,7 @@ Begin VB.Form FormPerspective
       Height          =   735
       Left            =   120
       TabIndex        =   1
-      Top             =   6000
+      Top             =   5850
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
@@ -88,9 +88,9 @@ Begin VB.Form FormPerspective
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   8865
-      Width           =   15135
-      _ExtentX        =   26696
+      Top             =   8310
+      Width           =   14175
+      _ExtentX        =   25003
       _ExtentY        =   1323
    End
 End
