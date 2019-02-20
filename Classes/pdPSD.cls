@@ -416,11 +416,16 @@ Private Function ExportStep4_WriteMergedImage(ByRef cStream As pdStream, ByRef s
     Dim alphaMatters As Boolean
     alphaMatters = DIBs.IsDIBTransparent(tmpDIB)
     
-    'Write the compression method first
+    'Write the compression method first.  Note that only raw and PackBits are currently supported in the
+    ' merged image data segment; PD *could* technically write zipped data, but the spec is unclear on how
+    ' the zip stream is handled in this segment - and it wouldn't be compatible with most applications
+    ' anyway which defeats the whole point of the "maximize compatibility" setting!
+    Const PSD_COMPRESSION_PACKBITS As Long = 1
+    If (compressionType > PSD_COMPRESSION_PACKBITS) Then compressionType = PSD_COMPRESSION_PACKBITS
     cStream.WriteInt_BE compressionType
     
     'RLE requires special handling
-    If (compressionType = 1) Then
+    If (compressionType = PSD_COMPRESSION_PACKBITS) Then
     
         'Generating RLE data is convoluted and obnoxious, so let's just reuse a standard layer object to do it!
         Dim tmpPSDLayer As pdPSDLayer

@@ -3193,6 +3193,37 @@ Friend Sub PrepChannelsForWrite(ByRef srcLayerDIB As pdDIB, ByVal channelCompres
             
             Next chIndex
         
+        Case ccZip
+            
+            'Start by generating planar copies of each channel
+            For chIndex = 0 To m_ChannelCount - 1
+                ReDim m_Channels(chIndex).ciDataDecoded(0 To lWidth * lHeight - 1) As Byte
+                m_Channels(chIndex).ciDataLength = lWidth * lHeight
+            Next chIndex
+            
+            For y = 0 To yLoopSrc
+                tmpSA.pvData = scanStart + scanWidth * y
+            For x = 0 To xLoopSrc
+                
+                dstOffset = y * lWidth + x
+                
+                'Destination channels are in RGBA order, not BGRA order
+                m_Channels(2).ciDataDecoded(dstOffset) = tmpBytes(x * 4)
+                m_Channels(1).ciDataDecoded(dstOffset) = tmpBytes(x * 4 + 1)
+                m_Channels(0).ciDataDecoded(dstOffset) = tmpBytes(x * 4 + 2)
+                If (m_ChannelCount = 4) Then m_Channels(3).ciDataDecoded(dstOffset) = tmpBytes(x * 4 + 3)
+                
+            Next x
+            Next y
+            
+            'With all channels separated into planar arrays, we can now produce zipped copies of them
+            For chIndex = 0 To m_ChannelCount - 1
+                With m_Channels(chIndex)
+                    Compression.CompressPtrToDstArray .ciData, .ciDataLength, VarPtr(.ciDataDecoded(0)), lWidth * lHeight, cf_Zlib, -1, False, True
+                End With
+            Next chIndex
+            
+        Case ccZipWithPrediction
         'Other compression methods TODO
         
     End Select
@@ -3375,6 +3406,14 @@ Friend Sub WriteChannelData(ByRef cStream As pdStream, ByRef channelCompression 
         
         Case ccZip
         
+            'Dump channel bytes out as-is
+            For i = 0 To 3
+                'If alpha is irrelevant, do not write it
+                If (i = 3) And (Not m_LayerHasAlpha) Then Exit For
+                cStream.WriteInt_BE channelCompression
+                cStream.WriteByteArray m_Channels(i).ciData, m_Channels(i).ciDataLength
+            Next i
+        
         Case ccZipWithPrediction
     
     End Select
@@ -3399,7 +3438,7 @@ Friend Sub WriteSpecialMergedChannelData(ByRef cStream As pdStream, ByRef channe
                 cStream.WriteByteArray m_Channels(i).ciData, m_Channels(i).ciDataLength
             Next i
         
-        Case ccPackBits
+        Case Else
         
             'Unlike normal layers, we write *all* RLE tables out first, followed by *all* PackBits streams
             For i = 0 To 3
@@ -3419,10 +3458,6 @@ Friend Sub WriteSpecialMergedChannelData(ByRef cStream As pdStream, ByRef channe
                 End With
             Next i
             
-        Case ccZip
-        
-        Case ccZipWithPrediction
-    
     End Select
 
 End Sub
