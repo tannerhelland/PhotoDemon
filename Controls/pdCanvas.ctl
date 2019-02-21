@@ -758,6 +758,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
     
+    'Generate a default viewport parameter object
+    Dim tmpViewportParams As PD_ViewportParams
+    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            
     'Check mouse button use
     If (Button = vbLeftButton) Then
         
@@ -844,7 +848,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     Tools.SetCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                     
                     'Redraw the viewport immediately
-                    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_CornerSE
+                    tmpViewportParams.curPOI = poi_CornerSE
+                    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
                 
                 End If
             
@@ -1717,7 +1722,12 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     
     'Some cursor functions operate on a POI basis
     Dim curPOI As PD_PointOfInterest
-
+    
+    'Prepare a default viewport parameter object; some cursor objects are rendered directly onto the
+    ' primary canvas, so we may need to perform a viewport refresh
+    Dim tmpViewportParams As PD_ViewportParams
+    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
         
@@ -1790,7 +1800,8 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' POI can be highlighted.
             If (m_LastPOI <> curPOI) Then
                 m_LastPOI = curPOI
-                ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, curPOI
+                tmpViewportParams.curPOI = curPOI
+                ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
             End If
             
         'The color-picker custom-draws its own outline.
@@ -1950,7 +1961,8 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 ' POI can be highlighted.
                 If (m_LastPOI <> curPOI) Then
                     m_LastPOI = curPOI
-                    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, curPOI
+                    tmpViewportParams.curPOI = curPOI
+                    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
                 End If
                 
             'If the current layer is *not* a text layer, clicking anywhere will create a new text layer

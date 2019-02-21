@@ -71,6 +71,19 @@ Private m_TotalTime As Currency, m_TotalTimeStage2 As Currency, m_TotalTimeStage
 ' marching-ant timer-initiated redraws.
 Private m_LastPOI As PD_PointOfInterest
 
+'The viewport engine supports a number of optional parameters.  Rather than exponentially increase the parameter list
+' of each function, new viewport parameters are added to this struct.  Calls into the viewport engine do *not* have
+' to supply this struct; most calls will simply want to use default parameters.
+Public Type PD_ViewportParams
+    curPOI As PD_PointOfInterest
+    renderScratchLayerIndex As Long
+End Type
+
+Public Function GetDefaultParamObject() As PD_ViewportParams
+    GetDefaultParamObject.curPOI = poi_Undefined
+    GetDefaultParamObject.renderScratchLayerIndex = -1
+End Function
+
 'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
@@ -78,7 +91,7 @@ Private m_LastPOI As PD_PointOfInterest
 'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied, it will forward this to any
 ' UI functions that accept POI identifiers.  (Because the viewport is agnostic to underlying UI complexities, by design, it is up to
 ' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
-Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1, Optional ByVal fullPipelineCall As Boolean = False)
+Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal ptrToViewportParams As Long = 0, Optional ByVal fullPipelineCall As Boolean = False)
     
     'If an outside function has invoked this pipeline stage directly, we need to make sure we're even allowed to render
     Dim allowedToRender As Boolean: allowedToRender = True
@@ -94,8 +107,16 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             Dim startTime As Currency
             VBHacks.GetHighResTime startTime
             
+            'If the user passed in viewport parameters, retrieve them now
+            Dim localViewportParams As PD_ViewportParams
+            If (ptrToViewportParams <> 0) Then
+                CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
+            Else
+                localViewportParams = ViewportEngine.GetDefaultParamObject()
+            End If
+            
             'If the "reuse last POI" indicator is passed, substitute our last-saved POI for the one passed in
-            If (curPOI = poi_ReuseLast) Then curPOI = m_LastPOI Else m_LastPOI = curPOI
+            If (localViewportParams.curPOI = poi_ReuseLast) Then localViewportParams.curPOI = m_LastPOI Else m_LastPOI = localViewportParams.curPOI
             
             'Flip the viewport buffer over to the canvas control.  Any additional rendering must now happen there.
             GDI.BitBltWrapper dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
@@ -105,8 +126,8 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             'The layer move/size tool provides a number of rendering options specific to that tool
             If (g_CurrentTool = NAV_MOVE) Then
                 If Tools_Move.GetDrawLayerBorders() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
-                If Tools_Move.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                If Tools_Move.GetDrawLayerCornerNodes() Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
+                If Tools_Move.GetDrawLayerRotateNodes() Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
             
             ElseIf (g_CurrentTool = COLOR_PICKER) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_ColorPicker.RenderColorPickerCursor dstCanvas
@@ -125,8 +146,8 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 
                 If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
                     Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
-                    Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
-                    Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                    Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
+                    Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
                 End If
                     
             'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
@@ -166,7 +187,7 @@ End Sub
 '
 'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
 ' control nodes.
-Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1, Optional ByVal fullPipelineCall As Boolean = False)
+Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal ptrToViewportParams As Long = 0, Optional ByVal fullPipelineCall As Boolean = False)
     
     'If an outside function has invoked this pipeline stage directly, we need to make sure we're even allowed to render
     Dim allowedToRender As Boolean: allowedToRender = True
@@ -177,6 +198,14 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
             
+        'If the user passed in viewport parameters, retrieve them now
+        Dim localViewportParams As PD_ViewportParams
+        If (ptrToViewportParams <> 0) Then
+            CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
+        Else
+            localViewportParams = ViewportEngine.GetDefaultParamObject()
+        End If
+        
         'If no images have been loaded, clear the canvas and exit
         If (Not PDImages.IsImageNonNull()) Then
             
@@ -216,7 +245,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             
             'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
             ' remaining UI elements!
-            Stage4_FlipBufferAndDrawUI srcImage, dstCanvas, curPOI, renderScratchLayerIndex, True
+            Stage4_FlipBufferAndDrawUI srcImage, dstCanvas, ptrToViewportParams, True
             
         End If
         
@@ -236,13 +265,21 @@ End Sub
 ' a full viewport cache purge is required (because things like zoom or window size may have changed).  If this function is called
 ' directly by another portion of the program, existing caches can be safely reused - but the function *must* check to make sure
 ' viewport rendering is allowed (as it can't assume a parent pipeline stage has performed this check on its behalf).
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1, Optional ByVal fullPipelineCall As Boolean = False)
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal ptrToViewportParams As Long = 0, Optional ByVal fullPipelineCall As Boolean = False)
     
     'If an outside function has invoked this pipeline stage directly, we need to make sure we're even allowed to render
     Dim allowedToRender As Boolean: allowedToRender = True
     If (Not fullPipelineCall) Then allowedToRender = ViewportRenderingAllowed(srcImage, dstCanvas)
     
     If allowedToRender Then
+    
+        'If the user passed in viewport parameters, retrieve them now
+        Dim localViewportParams As PD_ViewportParams
+        If (ptrToViewportParams <> 0) Then
+            CopyMemoryStrict VarPtr(localViewportParams), ptrToViewportParams, LenB(localViewportParams)
+        Else
+            localViewportParams = ViewportEngine.GetDefaultParamObject()
+        End If
         
         'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
         ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
@@ -340,35 +377,26 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
                 GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.CanvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern, , True
             End With
             
-            'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
-            ' in the future... but for now, we leave it, just in case.
-            If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
-                    
-                'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
-                ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+            'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
+            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+            
+            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+            Dim vpInterpolation As GP_InterpolationMode
+            If (g_ViewportPerformance = PD_PERF_FASTEST) Then
+                vpInterpolation = GP_IM_NearestNeighbor
+            Else
                 
-                'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-                Dim vpInterpolation As GP_InterpolationMode
-                If (g_ViewportPerformance = PD_PERF_FASTEST) Then
+                'If we're zoomed-in, use nearest-neighbor regardless of the current settings
+                If (m_ZoomRatio > 1#) Then
                     vpInterpolation = GP_IM_NearestNeighbor
                 Else
-                    
-                    'If we're zoomed-in, use nearest-neighbor regardless of the current settings
-                    If (m_ZoomRatio > 1#) Then
-                        vpInterpolation = GP_IM_NearestNeighbor
-                    Else
-                        If (g_ViewportPerformance = PD_PERF_BALANCED) Then vpInterpolation = GP_IM_Bilinear Else vpInterpolation = GP_IM_HighQualityBicubic
-                    End If
-                    
+                    If (g_ViewportPerformance = PD_PERF_BALANCED) Then vpInterpolation = GP_IM_Bilinear Else vpInterpolation = GP_IM_HighQualityBicubic
                 End If
                 
-                srcImage.GetCompositedRect srcImage.CanvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, renderScratchLayerIndex
-                        
-            'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
-            Else
-                Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
             End If
             
+            srcImage.GetCompositedRect srcImage.CanvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, localViewportParams.renderScratchLayerIndex
+                
             'Cache the relevant section of the image, in case outside functions require it.
             srcImage.ImgViewport.SetIntersectRectImage srcRectF
             
@@ -388,7 +416,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         ' Examining the pdCanvas class, particularly its scrollbars, is a good place to start for seeing what needs to be notified.
         
         'Pass control to the next stage of the pipeline.
-        Stage3_CompositeCanvas srcImage, dstCanvas, curPOI, renderScratchLayerIndex, True
+        Stage3_CompositeCanvas srcImage, dstCanvas, ptrToViewportParams, True
         
         'If timing reports are enabled, we report them after the rest of the pipeline has finished.
         If g_DisplayTimingReports Then
@@ -689,7 +717,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
             End If
             
             'With our work here complete, we can pass control to the next pipeline stage.
-            Stage2_CompositeAllLayers srcImage, dstCanvas, , , True
+            Stage2_CompositeAllLayers srcImage, dstCanvas, 0&, True
         
         End If
         

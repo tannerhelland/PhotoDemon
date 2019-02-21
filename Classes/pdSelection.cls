@@ -3755,7 +3755,10 @@ Private Sub m_AntTimer_Timer()
         End If
         
         If okayToRender Then
-            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
+            Dim tmpViewportParams As PD_ViewportParams
+            tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            tmpViewportParams.curPOI = poi_ReuseLast
+            ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
         Else
             m_AntTimer.StopTimer
         End If

@@ -498,7 +498,10 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Else
     
         'Manually request a canvas redraw
-        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, m_CurPOI
+        Dim tmpViewportParams As PD_ViewportParams
+        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams.curPOI = m_CurPOI
+        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, VarPtr(tmpViewportParams)
     
     End If
     

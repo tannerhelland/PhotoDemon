@@ -1582,7 +1582,10 @@ Public Sub EnableUserInput()
     If mouseMustBeFaked Then
         If (Not g_WindowManager Is Nothing) Then g_WindowManager.GetScreenToClient FormMain.MainCanvas(0).GetCanvasViewHWnd, tmpPoint
         FormMain.MainCanvas(0).ManuallyNotifyCanvasMouse tmpPoint.x, tmpPoint.y
-        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
+        Dim tmpViewportParams As PD_ViewportParams
+        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams.curPOI = poi_ReuseLast
+        ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
     End If
     
 End Sub

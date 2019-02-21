@@ -431,7 +431,10 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
             FormMain.MainCanvas(0).AlignCanvasView
             
         Else
-            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), poi_ReuseLast
+            Dim tmpViewportParams As PD_ViewportParams
+            tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+            tmpViewportParams.curPOI = poi_ReuseLast
+            ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
         End If
         
         'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image

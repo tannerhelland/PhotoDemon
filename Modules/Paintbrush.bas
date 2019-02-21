@@ -988,7 +988,10 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
         'Reset the frame drop counter and the "time since last viewport render" tracker
         m_FramesDropped = 0
         VBHacks.GetHighResTime m_TimeSinceLastRender
-        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, , PDImages.GetActiveImage.GetActiveLayerIndex
+        Dim tmpViewportParams As PD_ViewportParams
+        tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+        tmpViewportParams.renderScratchLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
     
     'If not enough time has passed since the last redraw, simply update the cursor
     Else
