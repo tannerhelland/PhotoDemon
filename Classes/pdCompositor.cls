@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright 2014-2019 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 04/November/16
-'Last update: add support for scratch layer integration
+'Last updated: 22/February/19
+'Last update: allow outside callers to manage their own scratch layer when invoking _PaintOp functions
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -64,8 +64,9 @@ Private m_PlgPointsDst() As PointFloat
 ' moved to a dedicated class.
 Private m_Blender As pdPixelBlender
 
-'To avoid un-incremented object references, we need to manually increment ref counts on fast-copied objects.
-' Thank you to Bonnie West for the original description of this technique: http://www.vbforums.com/showthread.php?707879-VB6-Dereferencing-Pointers-sans-CopyMemory
+'To avoid miscounted object references when passing object pointers, we need to manually increment ref counts.
+' Thank you to Bonnie West for the original breakdown of this technique, available here (link good as of Feb '19):
+' http://www.vbforums.com/showthread.php?707879-VB6-Dereferencing-Pointers-sans-CopyMemory
 Private Declare Function ObjSetAddRef Lib "msvbvm60" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
 
 'Composite two DIBs using the requested blend mode.  An offset can be specified for the top DIB, relative to the bottom DIB.
@@ -1633,63 +1634,64 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             If isFirstPaintEvent Then lodDIB.ResetDIB
         End If
         
-        'DEBUG ONLY
-        
         'Some paint tools are capable of doing their own "generate preview in viewport coordinate space" work.
         ' When they do this, they'll pass in their own viewport-ready rect, which we can simply plug into the
-        ' rendering chain.
+        ' rendering chain, without further modification.  (At present, this is primarily used by the on-canvas
+        ' Gradient tools, as they can render very accurate viewport-space previews.)
         If (ptrToAlternateScratch <> 0) Then
+            
+            'Make sure ref count gets updated
             Dim alternateScratch As pdDIB
             ObjSetAddRef alternateScratch, ptrToAlternateScratch
+            
+            'Fast copy the tool's render into our local buffer
             GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, alternateScratch.GetDIBDC, 0, 0, vbSrcCopy
-            GoTo DebugFastScratch
-        End If
-        
-        'END DEBUG ONLY
-                
-        'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
-        ' simply use BitBlt (way faster).
-        If isRectZoomless Then
-            GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
             
-        'The viewport is zoomed, so extra work is required.
+        'Most of the time, we'll be responsible for generating a viewport-space preview of the full scratch layer.
         Else
-            
-            'If zoomed-in, we can switch to StretchBlt for performance gains.  (Nearest-neighbor interpolation will
-            ' be used regardless of the caller's requested interpolation type.)
-            If (srcImageRect.Width < dstViewportRect.Width) Then
+        
+            'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
+            ' simply use BitBlt (way faster).
+            If isRectZoomless Then
+                GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                 
-                'We are zoomed-in to the image, e.g. zoom is larger than 100%.
-                
-                'Paint the resized DIB to the temporary DIB, at offset (0, 0), with subpixel offsets already accounted for.
-                ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
-                '  the function-wide resample mode.)
-                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, True, True
-                
-            'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
-            ' option at present.
+            'The viewport is zoomed, so extra work is required.
             Else
                 
-                'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                
-                ' NOTE!  I have no idea why I'm forced to specify "isZoomedIn" as TRUE here (because the image is *definitely* not zoomed-in,
-                ' it's zoomed-out), but if I don't set that to TRUE, previewed paint strokes are very obviously offset by 0.5 pixels,
-                ' as noticed when releasing the mouse and the final layer merge operation occurs (causing the on-screen preview to shift).
-                ' This requires further study, but it will probably wait until post-7.0 when some other compositor projects are planned.
-                ' TODO 7.2: deal with comment above
-                If fullCacheCreationRequired Then
-                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                'If zoomed-in, we can switch to StretchBlt for performance gains.  (Nearest-neighbor interpolation will
+                ' be used regardless of the caller's requested interpolation type.)
+                If (srcImageRect.Width < dstViewportRect.Width) Then
+                    
+                    'We are zoomed-in to the image, e.g. zoom is larger than 100%.
+                    
+                    'Paint the resized DIB to the temporary DIB, at offset (0, 0), with subpixel offsets already accounted for.
+                    ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
+                    '  the function-wide resample mode.)
+                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, True, True
+                    
+                'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
+                ' option at present.
                 Else
-                    GDIPlus_StretchBlt lodDIB, (intRectDstStroke.Left - dstViewportRect.Left) - xOffsetInt, (intRectDstStroke.Top - dstViewportRect.Top) - yOffsetInt, intRectDstStroke.Width, intRectDstStroke.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                    
+                    'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
+                    
+                    ' NOTE!  I have no idea why I'm forced to specify "isZoomedIn" as TRUE here (because the image is *definitely* not zoomed-in,
+                    ' it's zoomed-out), but if I don't set that to TRUE, previewed paint strokes are very obviously offset by 0.5 pixels,
+                    ' as noticed when releasing the mouse and the final layer merge operation occurs (causing the on-screen preview to shift).
+                    ' This requires further study, but it will probably wait until post-7.0 when some other compositor projects are planned.
+                    ' TODO 7.2: deal with comment above
+                    If fullCacheCreationRequired Then
+                        GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                    Else
+                        GDIPlus_StretchBlt lodDIB, (intRectDstStroke.Left - dstViewportRect.Left) - xOffsetInt, (intRectDstStroke.Top - dstViewportRect.Top) - yOffsetInt, intRectDstStroke.Width, intRectDstStroke.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, , Tools_Paint.GetBrushPreviewQuality_GDIPlus, , True, True, True
+                    End If
+                    
                 End If
                 
             End If
-            
-        End If
         
-        'DEBUG ONLY
-DebugFastScratch:
-        'END DEBUG ONLY
+        '/End ptrToAlternateScratch <> 0
+        End If
         
         'lodDIB now contains the chunk of the paintbrush layer that appears on the viewport.  Our next step is to composite it onto our
         ' temporary copy of the target layer DIB!

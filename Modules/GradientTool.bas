@@ -17,9 +17,6 @@ Attribute VB_Name = "Tools_Gradient"
 Option Explicit
 
 'Development-time parameter only, remove in production
-Private Const USE_FAST_PREVIEW As Boolean = True
-
-'Development-time parameter only, remove in production
 Private Const USE_CAIRO_RENDERER As Boolean = False
 
 Public Enum PD_GradientAttributes
@@ -71,8 +68,9 @@ Private m_GradientGdip As pd2DGradient, m_GradientCairo As pd2DGradientCairo
 'Other gradient parameters, as relevant
 Private m_Angle As Single
 
-'TESTING ONLY: components for a fast-preview mode
-Private m_PreviewDIB As pdDIB
+'To improve canvas responsiveness, this module can render specialized "fast" previews during
+' UI interactions, then silently switch to full "accurate" rendering on _MouseUp.
+Private m_FastPreviews As Boolean, m_PreviewDIB As pdDIB
 
 'Universal gradient settings
 Public Function GetGradientAlphaMode() As PD_AlphaMode
@@ -85,6 +83,10 @@ End Function
 
 Public Function GetGradientBlendMode() As PD_BlendMode
     GetGradientBlendMode = m_GradientBlendmode
+End Function
+
+Public Function GetGradientFastPreviews() As Boolean
+    GetGradientFastPreviews = m_FastPreviews
 End Function
 
 Public Function GetGradientOpacity() As Single
@@ -107,6 +109,10 @@ End Sub
 
 Public Sub SetGradientBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BL_NORMAL)
     If (newBlendMode <> m_GradientBlendmode) Then m_GradientBlendmode = newBlendMode
+End Sub
+
+Public Sub SetGradientFastPreviews(Optional ByVal newFastMode As Boolean = True)
+    If (newFastMode <> m_FastPreviews) Then m_FastPreviews = newFastMode
 End Sub
 
 Public Sub SetGradientOpacity(ByVal newOpacity As Single)
@@ -223,7 +229,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
         
         PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
         
-        If USE_FAST_PREVIEW And (Not isLastStroke) Then
+        If m_FastPreviews And (Not isLastStroke) Then
             PreviewRenderer srcCanvas, m_Points(0), m_Points(1)
         Else
             If USE_CAIRO_RENDERER Then
@@ -248,7 +254,10 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     Dim tmpViewportParams As PD_ViewportParams
     tmpViewportParams = ViewportEngine.GetDefaultParamObject()
     tmpViewportParams.renderScratchLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
-    If USE_FAST_PREVIEW And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
+    
+    'If fast previews are active, we want to inject our own local scratch layer instead of using
+    ' the standard (full-image-sized) one.
+    If m_FastPreviews And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
     If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
     
 End Sub
