@@ -77,11 +77,13 @@ Private m_LastPOI As PD_PointOfInterest
 Public Type PD_ViewportParams
     curPOI As PD_PointOfInterest
     renderScratchLayerIndex As Long
+    ptrToAlternateScratch As Long
 End Type
 
 Public Function GetDefaultParamObject() As PD_ViewportParams
     GetDefaultParamObject.curPOI = poi_Undefined
     GetDefaultParamObject.renderScratchLayerIndex = -1
+    GetDefaultParamObject.ptrToAlternateScratch = 0&
 End Function
 
 'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
@@ -395,7 +397,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
                 
             End If
             
-            srcImage.GetCompositedRect srcImage.CanvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, localViewportParams.renderScratchLayerIndex
+            srcImage.GetCompositedRect srcImage.CanvasBuffer, viewportRect, srcRectF, vpInterpolation, fullPipelineCall, CLC_Viewport, localViewportParams.renderScratchLayerIndex, localViewportParams.ptrToAlternateScratch
                 
             'Cache the relevant section of the image, in case outside functions require it.
             srcImage.ImgViewport.SetIntersectRectImage srcRectF

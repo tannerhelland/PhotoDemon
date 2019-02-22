@@ -17,6 +17,9 @@ Attribute VB_Name = "Tools_Gradient"
 Option Explicit
 
 'Development-time parameter only, remove in production
+Private Const USE_FAST_PREVIEW As Boolean = True
+
+'Development-time parameter only, remove in production
 Private Const USE_CAIRO_RENDERER As Boolean = False
 
 Public Enum PD_GradientAttributes
@@ -67,6 +70,9 @@ Private m_GradientGdip As pd2DGradient, m_GradientCairo As pd2DGradientCairo
 
 'Other gradient parameters, as relevant
 Private m_Angle As Single
+
+'TESTING ONLY: components for a fast-preview mode
+Private m_PreviewDIB As pdDIB
 
 'Universal gradient settings
 Public Function GetGradientAlphaMode() As PD_AlphaMode
@@ -207,26 +213,25 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
         
     End If
     
-    'On last stroke, release the gradient UI elements (as the mouse has been released)
-    If isLastStroke Then m_PointsInitialized = False
-        
     'On any other stroke, update the 2nd set of mouse coordinates
     If m_PointsInitialized Then
         m_Points(1).x = srcX
         m_Points(1).y = srcY
     End If
     
-    'TODO!
-    
     'Notify the scratch layer of our updates
-    If mouseButtonDown Then
+    If mouseButtonDown Or isLastStroke Then
         
         PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
         
-        If USE_CAIRO_RENDERER Then
-            CairoRenderer
+        If USE_FAST_PREVIEW And (Not isLastStroke) Then
+            PreviewRenderer srcCanvas
         Else
-            GdipRenderer
+            If USE_CAIRO_RENDERER Then
+                CairoRenderer
+            Else
+                GdipRenderer
+            End If
         End If
         
         'Notify the target layer of the changes
@@ -237,8 +242,55 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     'With all drawing tasks complete, update all old state values to match the new state values.
     m_MouseDown = mouseButtonDown
     
+    'On last stroke, release the gradient UI elements (as the mouse has been released)
+    If isLastStroke Then m_PointsInitialized = False
+    
     'Notify the viewport of the need for a redraw
-    If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, , PDImages.GetActiveImage.GetActiveLayerIndex
+    Dim tmpViewportParams As PD_ViewportParams
+    tmpViewportParams = ViewportEngine.GetDefaultParamObject()
+    tmpViewportParams.renderScratchLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
+    If USE_FAST_PREVIEW And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
+    If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
+    
+End Sub
+
+'A new test; attempt to maximize performance by translating the gradient to the current viewport space and only rendering it there.
+' At _MouseUp(), a full-size preview will be manually rendered and committed.
+Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas)
+    
+    'Retrieve a copy of the intersected viewport rect; we will use this for clipping
+    Dim viewportIntersectRect As RectF
+    PDImages.GetActiveImage.ImgViewport.GetIntersectRectCanvas viewportIntersectRect
+    
+    'Ensure we have a valid preview DIB (TODO: don't re-initialize on every call, obviously)
+    If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+    
+    'Initialize to the size of the current viewport.
+    With m_PreviewDIB
+        If (.GetDIBWidth <> srcCanvas.GetCanvasWidth) Or (.GetDIBHeight <> srcCanvas.GetCanvasHeight) Then
+            Dim pDibWidth As Long, pDibHeight As Long
+            With viewportIntersectRect
+                pDibWidth = Int(.Width + PDMath.Frac(.Left) + 0.9999)
+                pDibHeight = Int(.Height + PDMath.Frac(.Top) + 0.9999)
+            End With
+            m_PreviewDIB.CreateBlank pDibWidth, pDibHeight, 32, 0, 0
+        Else
+            m_PreviewDIB.ResetDIB 0
+        End If
+    End With
+    
+    'Test only: fill the selected area
+    Dim cSurface As pd2DSurface
+    Set cSurface = New pd2DSurface
+    cSurface.WrapSurfaceAroundPDDIB m_PreviewDIB
+    
+    Dim cBrush As pd2DBrush
+    Drawing2D.QuickCreateSolidBrush cBrush, vbRed, 50!
+    
+    PD2D.FillRectangleF cSurface, cBrush, 0, 0, viewportIntersectRect.Width, viewportIntersectRect.Height
+    
+    Set cBrush = Nothing
+    Set cSurface = Nothing
     
 End Sub
 

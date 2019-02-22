@@ -64,6 +64,10 @@ Private m_PlgPointsDst() As PointFloat
 ' moved to a dedicated class.
 Private m_Blender As pdPixelBlender
 
+'To avoid un-incremented object references, we need to manually increment ref counts on fast-copied objects.
+' Thank you to Bonnie West for the original description of this technique: http://www.vbforums.com/showthread.php?707879-VB6-Dereferencing-Pointers-sans-CopyMemory
+Private Declare Function ObjSetAddRef Lib "msvbvm60" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
+
 'Composite two DIBs using the requested blend mode.  An offset can be specified for the top DIB, relative to the bottom DIB.
 ' Per the function name, the *top DIB* is treated as the destination.  After compositing, the caller would need to alpha-blend
 ' the finished top DIB over the bottom DIB to achieve full composition.
@@ -622,7 +626,7 @@ End Sub
 '
 'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer
 ' at the requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
-Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1, Optional ByVal ptrToAlternateScratch As Long = 0&)
         
     'A few other things to note before we begin:
     ' - dstDIB will have already been created by the caller.  It may contain a background checkerboard, so we can't
@@ -695,7 +699,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     
                 'Pass this paint layer to a dedicated renderer (one specially optimized for real-time performance,
                 ' so different trade-offs are made compared to the standard renderer).
-                GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless
+                GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, ptrToAlternateScratch
                 
             'Painting is not active; apply a standard composite op
             Else
@@ -1198,7 +1202,7 @@ End Sub
 '
 'IMPORTANT!  This function is only relevant when painting onto a raster layer.  When painting onto a vector layer,
 ' the paint strokes are automatically assigned to a new layer.
-Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False)
+Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal ptrToAlternateScratch As Long = 0&)
     
     'Just like the standard GetCompositedRect_LayerHelper() function, this function requires two non-optional rects as parameters:
     
@@ -1360,7 +1364,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                     lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
                     lodDIB.SetInitialAlphaPremultiplicationState True
                 Else
-                    lodDIB.ResetDIB
+                    lodDIB.ResetDIB 0
                 End If
                     
                 'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
@@ -1628,6 +1632,20 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             'If this is *not* the first paint event, we don't need to reset anything, as we'll only modify the changed region
             If isFirstPaintEvent Then lodDIB.ResetDIB
         End If
+        
+        'DEBUG ONLY
+        
+        'Some paint tools are capable of doing their own "generate preview in viewport coordinate space" work.
+        ' When they do this, they'll pass in their own viewport-ready rect, which we can simply plug into the
+        ' rendering chain.
+        If (ptrToAlternateScratch <> 0) Then
+            Dim alternateScratch As pdDIB
+            ObjSetAddRef alternateScratch, ptrToAlternateScratch
+            GDI.BitBltWrapper lodDIB.GetDIBDC, 0, 0, lodDIB.GetDIBWidth, lodDIB.GetDIBHeight, alternateScratch.GetDIBDC, 0, 0, vbSrcCopy
+            GoTo DebugFastScratch
+        End If
+        
+        'END DEBUG ONLY
                 
         'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
         ' simply use BitBlt (way faster).
@@ -1668,6 +1686,10 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             End If
             
         End If
+        
+        'DEBUG ONLY
+DebugFastScratch:
+        'END DEBUG ONLY
         
         'lodDIB now contains the chunk of the paintbrush layer that appears on the viewport.  Our next step is to composite it onto our
         ' temporary copy of the target layer DIB!
