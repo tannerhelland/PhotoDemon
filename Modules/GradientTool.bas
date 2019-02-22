@@ -201,7 +201,6 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
                 Case gr_None
                     'Clamp mode is not supported by GDI+, so we lie and set a functional mode
                     ' and simply overwrite the results later
-                    'm_GradientGdip.SetGradientWrapMode P2_WM_Clamp
                     m_GradientGdip.SetGradientWrapMode P2_WM_TileFlipXY
                 Case gr_Wrap
                     m_GradientGdip.SetGradientWrapMode P2_WM_Tile
@@ -225,12 +224,12 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
         PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
         
         If USE_FAST_PREVIEW And (Not isLastStroke) Then
-            PreviewRenderer srcCanvas
+            PreviewRenderer srcCanvas, m_Points(0), m_Points(1)
         Else
             If USE_CAIRO_RENDERER Then
-                CairoRenderer
+                CairoRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
             Else
-                GdipRenderer
+                GdipRenderer m_Points(0), m_Points(1), PDImages.GetActiveImage.ScratchLayer.layerDIB
             End If
         End If
         
@@ -256,7 +255,7 @@ End Sub
 
 'A new test; attempt to maximize performance by translating the gradient to the current viewport space and only rendering it there.
 ' At _MouseUp(), a full-size preview will be manually rendered and committed.
-Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas)
+Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas, ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat)
     
     'Retrieve a copy of the intersected viewport rect; we will use this for clipping
     Dim viewportIntersectRect As RectF
@@ -279,22 +278,27 @@ Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas)
         End If
     End With
     
+    'With the preview DIB created, we now need to translate the stored gradient endpoints from
+    ' image space to viewport space.
+    Dim newPoints() As PointFloat
+    ReDim newPoints(0 To 1) As PointFloat
+    CopyMemoryStrict VarPtr(newPoints(0)), VarPtr(m_Points(0)), 16&
+    
+    Dim cTransform As pd2DTransform
+    Drawing.GetTransformFromImageToCanvas cTransform, srcCanvas, PDImages.GetActiveImage
+    cTransform.ApplyTranslation -viewportIntersectRect.Left, -viewportIntersectRect.Top, P2_TO_Append
+    cTransform.ApplyTransformToPointFs VarPtr(newPoints(0)), 2
+    
     'Test only: fill the selected area
-    Dim cSurface As pd2DSurface
-    Set cSurface = New pd2DSurface
-    cSurface.WrapSurfaceAroundPDDIB m_PreviewDIB
-    
-    Dim cBrush As pd2DBrush
-    Drawing2D.QuickCreateSolidBrush cBrush, vbRed, 50!
-    
-    PD2D.FillRectangleF cSurface, cBrush, 0, 0, viewportIntersectRect.Width, viewportIntersectRect.Height
-    
-    Set cBrush = Nothing
-    Set cSurface = Nothing
+    If USE_CAIRO_RENDERER Then
+        CairoRenderer newPoints(0), newPoints(1), m_PreviewDIB
+    Else
+        GdipRenderer newPoints(0), newPoints(1), m_PreviewDIB
+    End If
     
 End Sub
 
-Private Sub CairoRenderer()
+Private Sub CairoRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Rendering methods are still being debated; cairo and GDI+ both have trade-offs depending
     ' on gradient parameters.
@@ -302,11 +306,11 @@ Private Sub CairoRenderer()
     Set cSurface = New pd2DSurfaceCairo
     cSurface.SetAntialias ca_FAST
     cSurface.SetOperator co_Source
-    cSurface.WrapAroundPDDIB PDImages.GetActiveImage.ScratchLayer.layerDIB
+    cSurface.WrapAroundPDDIB dstDIB
     
     'Populate any remaining gradient properties
-    m_GradientCairo.SetGradientPoint1 m_Points(0)
-    m_GradientCairo.SetGradientPoint2 m_Points(1)
+    m_GradientCairo.SetGradientPoint1 firstPoint
+    m_GradientCairo.SetGradientPoint2 secondPoint
     m_GradientCairo.SetGradientShape P2_GS_Linear
     'm_GradientCairo.SetGradientRadii 0!, PDMath.DistanceTwoPoints(m_Points(0).x, m_Points(0).y, m_Points(1).x, m_Points(1).y)
     
@@ -319,7 +323,7 @@ Private Sub CairoRenderer()
     VBHacks.GetHighResTime cairoStartTime
     
     'Fill the entire source
-    Plugin_Cairo.Context_Rectangle cSurface.GetContextHandle, 0#, 0#, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth, PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
+    Plugin_Cairo.Context_Rectangle cSurface.GetContextHandle, 0#, 0#, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
     Plugin_Cairo.Context_Fill cSurface.GetContextHandle
     
     Debug.Print VBHacks.GetTimeDiffNowAsString(cairoStartTime)
@@ -330,13 +334,13 @@ Private Sub CairoRenderer()
     
 End Sub
 
-Private Sub GdipRenderer()
+Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Rendering methods are still being debated; cairo and GDI+ both have trade-offs depending
     ' on gradient parameters.
     Dim cSurface As pd2DSurface
     Set cSurface = New pd2DSurface
-    cSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.ScratchLayer.layerDIB
+    cSurface.WrapSurfaceAroundPDDIB dstDIB
     cSurface.SetSurfaceAntialiasing P2_AA_None
     cSurface.SetSurfaceCompositing P2_CM_Overwrite
     cSurface.SetSurfacePixelOffset P2_PO_Normal
@@ -345,7 +349,7 @@ Private Sub GdipRenderer()
     m_GradientGdip.SetGradientShape P2_GS_Linear
     
     Dim gradAngle As Double
-    gradAngle = PDMath.Atan2(m_Points(1).y - m_Points(0).y, m_Points(1).x - m_Points(0).x)
+    gradAngle = PDMath.Atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x)
     m_GradientGdip.SetGradientAngle PDMath.RadiansToDegrees(gradAngle)
     
     Dim gdipStartTime As Currency
@@ -357,15 +361,15 @@ Private Sub GdipRenderer()
     cBrush.SetBrushMode P2_BM_Gradient
     
     Dim cRadius As Double
-    cRadius = PDMath.DistanceTwoPoints(m_Points(0).x, m_Points(0).y, m_Points(1).x, m_Points(1).y)
+    cRadius = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
     
     Dim boundsRect As RectF
     With boundsRect
-        .Left = PDMath.Min2Float_Single(m_Points(0).x, m_Points(1).x)
-        .Top = PDMath.Min2Float_Single(m_Points(0).y, m_Points(1).y)
-        .Width = Abs(m_Points(1).x - m_Points(0).x)
+        .Left = PDMath.Min2Float_Single(firstPoint.x, secondPoint.x)
+        .Top = PDMath.Min2Float_Single(firstPoint.y, secondPoint.y)
+        .Width = Abs(secondPoint.x - firstPoint.x)
         If (.Width < 1!) Then .Width = 1!
-        .Height = Abs(m_Points(1).y - m_Points(0).y)
+        .Height = Abs(secondPoint.y - firstPoint.y)
         If (.Height < 1!) Then .Height = 1!
     End With
     
@@ -377,8 +381,8 @@ Private Sub GdipRenderer()
     cBrush.SetBrushGradientAllSettings m_GradientGdip.GetGradientAsString()
     
     Dim slWidth As Single, slHeight As Single
-    slWidth = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth()
-    slHeight = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight()
+    slWidth = dstDIB.GetDIBWidth()
+    slHeight = dstDIB.GetDIBHeight()
     PD2D.FillRectangleF cSurface, cBrush, 0!, 0!, slWidth, slHeight
     
     'The gradient now covers the entire underlying scratch layer, for better or worse.
@@ -409,8 +413,8 @@ Private Sub GdipRenderer()
         
         Dim clipPoly() As PointFloat
         ReDim clipPoly(0 To 3) As PointFloat
-        PDMath.ConvertPolarToCartesian_Sng angPerpendicular, diagLength, clipPoly(0).x, clipPoly(0).y, m_Points(0).x, m_Points(0).y
-        PDMath.ConvertPolarToCartesian_Sng angPerpendicular2, diagLength, clipPoly(1).x, clipPoly(1).y, m_Points(0).x, m_Points(0).y
+        PDMath.ConvertPolarToCartesian_Sng angPerpendicular, diagLength, clipPoly(0).x, clipPoly(0).y, firstPoint.x, firstPoint.y
+        PDMath.ConvertPolarToCartesian_Sng angPerpendicular2, diagLength, clipPoly(1).x, clipPoly(1).y, firstPoint.x, firstPoint.y
         
         'We now have two endpoints of the clip polygon we desire.  To generate the next two points,
         ' we can repeat our previous steps: rotate a point 90 degrees around the two points we've
@@ -435,8 +439,8 @@ Private Sub GdipRenderer()
         ' opposite side of the gradient.)
         angPerpendicular = gradAngle - PI_HALF
         angPerpendicular2 = gradAngle + PI_HALF
-        PDMath.ConvertPolarToCartesian_Sng angPerpendicular, diagLength, clipPoly(0).x, clipPoly(0).y, m_Points(1).x, m_Points(1).y
-        PDMath.ConvertPolarToCartesian_Sng angPerpendicular2, diagLength, clipPoly(1).x, clipPoly(1).y, m_Points(1).x, m_Points(1).y
+        PDMath.ConvertPolarToCartesian_Sng angPerpendicular, diagLength, clipPoly(0).x, clipPoly(0).y, secondPoint.x, secondPoint.y
+        PDMath.ConvertPolarToCartesian_Sng angPerpendicular2, diagLength, clipPoly(1).x, clipPoly(1).y, secondPoint.x, secondPoint.y
         
         angPerpendicular = angPerpendicular + PI_HALF
         angPerpendicular2 = angPerpendicular2 - PI_HALF
