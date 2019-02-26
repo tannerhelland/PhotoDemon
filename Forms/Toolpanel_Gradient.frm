@@ -26,16 +26,6 @@ Begin VB.Form toolpanel_Gradient
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkFastPreviews 
-      Height          =   375
-      Left            =   3180
-      TabIndex        =   5
-      Top             =   900
-      Width           =   2295
-      _ExtentX        =   4048
-      _ExtentY        =   661
-      Caption         =   "fast previews"
-   End
    Begin PhotoDemon.pdGradientSelector grdPrimary 
       Height          =   1215
       Left            =   120
@@ -103,7 +93,7 @@ Begin VB.Form toolpanel_Gradient
       Height          =   735
       Index           =   2
       Left            =   7920
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   0
       Width           =   2295
       _ExtentX        =   4048
@@ -159,10 +149,6 @@ Private Sub cboSetting_Click(Index As Integer)
             
     End Select
     
-End Sub
-
-Private Sub chkFastPreviews_Click()
-    Tools_Gradient.SetGradientFastPreviews chkFastPreviews.Value
 End Sub
 
 Private Sub Form_Load()
@@ -242,7 +228,6 @@ Public Sub SyncAllGradientSettingsToUI()
     Tools_Gradient.SetGradientAlphaMode cboSetting(1).ListIndex
     Tools_Gradient.SetGradientShape cboSetting(2).ListIndex
     Tools_Gradient.SetGradientRepeat cboSetting(3).ListIndex
-    Tools_Gradient.SetGradientFastPreviews chkFastPreviews.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintgradient settings, use this function
@@ -252,5 +237,4 @@ Public Sub SyncUIToAllGradientSettings()
     cboSetting(1).ListIndex = Tools_Gradient.GetGradientAlphaMode()
     cboSetting(2).ListIndex = Tools_Gradient.GetGradientShape()
     cboSetting(3).ListIndex = Tools_Gradient.GetGradientRepeat()
-    chkFastPreviews.Value = Tools_Gradient.GetGradientFastPreviews()
 End Sub
