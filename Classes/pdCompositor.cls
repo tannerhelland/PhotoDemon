@@ -717,9 +717,9 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 
                 'Selections require us to pre-mask our selection result
                 If srcImage.IsSelectionActive Then
-                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetMaskDIB_ViewportCopy()
+                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetMaskDIB_ViewportCopy(), ptrToAlternateScratch
                 Else
-                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+                    GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, Nothing, ptrToAlternateScratch
                 End If
                 
             End If
@@ -766,7 +766,7 @@ End Sub
 ' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.  If the caches do not need to
 ' be forcibly generated, the optional levelOfDetail parameter should be correctly set, which clues the compositor into which LOD cache to use
 ' in the target layer, greatly improving performance.
-Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByRef maskInViewportSpace As pdDIB = Nothing)
+Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RectF, ByRef srcImageRect As RectF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic, Optional ByRef maskInViewportSpace As pdDIB = Nothing, Optional ByVal ptrToAlternateDIB As Long = 0&)
     
     'This function requires two non-optional rects as parameters:
     
@@ -876,6 +876,28 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         
         'If a mask was supplied, also treat this as a non-standard blend
         If (Not nonStandardBlendingActive) Then nonStandardBlendingActive = (Not maskInViewportSpace Is Nothing)
+        
+        'Before proceeding further, see if the caller supplied their own alternate scratch surface.  Some tools
+        ' (e.g. gradient tools) are capable of rendering their own tool previews in viewport coordinate space.
+        ' This provides a large perf boost when a tool is actively applied to a large image while zoomed-out.
+        ' If such an alternate layer is provided, we can skip all our expensive internal caching strategies,
+        ' and instead, simply apply the source layer as-is.
+        If (ptrToAlternateDIB <> 0) Then
+            
+            'Make sure ref count gets updated
+            Dim alternateScratch As pdDIB
+            ObjSetAddRef alternateScratch, ptrToAlternateDIB
+            
+            'Paint using settings supplied by whatever layer was passed into the function
+            If nonStandardBlendingActive Then
+                CompositeAndBlendDIBs alternateScratch, m_dstDIB, srcLayer.GetLayerBlendMode, 0!, 0!, srcLayer.GetLayerOpacity / 100!, , srcLayer.GetLayerAlphaMode, , maskInViewportSpace
+            Else
+                alternateScratch.AlphaBlendToDC m_dstDIB.GetDIBDC, srcLayer.GetLayerOpacity * 2.55, 0, 0
+            End If
+            
+            Exit Sub
+                
+        End If
         
         'To improve performance, this function also calculates and checks a dedicated "viewport hash" of the layer.  If the layer AND viewport
         ' have not changed since our last render, we can just grab the last temporary viewport object we generated, which makes things like
