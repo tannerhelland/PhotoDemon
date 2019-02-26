@@ -114,15 +114,18 @@ Private m_GradientGdip As pd2DGradient, m_GradientCairo As pd2DGradientCairo
 'Other gradient parameters, as relevant
 Private m_Angle As Single
 
-'When our internal gradient renderer is in use, we don't want to manually interpolate gradient
-' values for every point, as that would be crazy slow.  Instead, we pre-generate a gradient
+'When our internal gradient renderer is uses, we don't want to manually interpolate gradient
+' values for every point on-the-fly, as that's crazy slow.  Instead, we pre-generate a gradient
 ' lookup table.  The size of this table depends on a number of factors, including gradient-specific
 ' settings like the number of colors in use (e.g. 2-color gradients don't benefit from extremely
 ' large lookups).  IMPORTANT NOTE: the lookup table resolution must *always* be a power of 2.
 ' This allows us to use && instead of % on the inner rendering loop, at a large boost to performance.
 ' Changing it to some value that is NOT a power of 2 will break the renderer.
+'
+'Note that we also cache the "last" color in the gradient; this accelerates the default "clamped"
+' edge mode, as we can bypass the lookup table entirely for points outside the gradient's boundary.
 Private Const MAX_LOOKUP_RESOLUTION As Long = 8192
-Private m_GradLookup() As Long, m_LookupResolution As Long
+Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As Long
 
 'To improve canvas responsiveness, this module can render specialized "fast" previews during
 ' UI interactions, then silently switch to full "accurate" rendering on _MouseUp.  When fast previews
@@ -298,6 +301,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
             End If
             
             m_GradientGdip.GetLookupTable m_GradLookup, m_LookupResolution
+            m_LastGradColor = m_GradientGdip.GetLastColor()
             
         End If
         
@@ -630,13 +634,12 @@ End Sub
 Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradAngle As Double, maxColor As Long
+    Dim gradAngle As Double
     gradAngle = PDMath.Atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x)
     gradAngle = PDMath.Modulo(gradAngle, PI_DOUBLE)
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    maxColor = m_GradLookup(lutBound)
     
     Dim oX As Double, oY As Double
     oX = firstPoint.x
@@ -707,13 +710,12 @@ End Sub
 Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradDistance As Long, maxColor As Long
+    Dim gradDistance As Long
     gradDistance = Abs(firstPoint.x - secondPoint.x) + Abs(firstPoint.y - secondPoint.y)
     If (gradDistance < 1) Then gradDistance = 1
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    maxColor = m_GradLookup(lutBound)
     
     Dim oX As Long, oY As Long
     oX = firstPoint.x
@@ -750,7 +752,7 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
                 
                 'None: paint as the terminal gradient color
                 Case gr_None
-                    curColor = maxColor
+                    curColor = m_LastGradColor
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect
@@ -783,13 +785,12 @@ End Sub
 Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradDistance As Double, maxColor As Long
+    Dim gradDistance As Double
     gradDistance = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
     If (gradDistance <= 1#) Then gradDistance = 1#
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    maxColor = m_GradLookup(lutBound)
     
     Dim oX As Double, oY As Double
     oX = firstPoint.x
@@ -826,7 +827,7 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
                 
                 'None: paint as the terminal gradient color
                 Case gr_None
-                    curColor = maxColor
+                    curColor = m_LastGradColor
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect
@@ -859,7 +860,7 @@ End Sub
 Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradAngle As Double, maxColor As Long
+    Dim gradAngle As Double
     gradAngle = PDMath.Atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x)
     gradAngle = PDMath.Modulo(gradAngle, PI_DOUBLE)
     
@@ -873,7 +874,6 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    maxColor = m_GradLookup(lutBound)
     
     Dim oX As Double, oY As Double
     oX = firstPoint.x
@@ -915,7 +915,7 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
             'If the point lies outside the first spiral in the pattern, force it to the
             ' terminal gradient color
             If (curDistance > gradDistance) Then
-                curColor = maxColor
+                curColor = m_LastGradColor
             Else
                 luIndex = Int(curDistance * mapAdjust + 0.5)
                 curColor = m_GradLookup(luIndex)
@@ -957,13 +957,12 @@ End Sub
 Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradDistance As Long, maxColor As Long
+    Dim gradDistance As Long
     gradDistance = PDMath.Max2Int(Abs(firstPoint.x - secondPoint.x), Abs(firstPoint.y - secondPoint.y))
     If (gradDistance < 1) Then gradDistance = 1
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    maxColor = m_GradLookup(lutBound)
     
     Dim oX As Long, oY As Long
     oX = firstPoint.x
@@ -1000,7 +999,7 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
                 
                 'None: paint as the terminal gradient color
                 Case gr_None
-                    curColor = maxColor
+                    curColor = m_LastGradColor
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect

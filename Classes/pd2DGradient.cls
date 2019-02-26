@@ -429,6 +429,20 @@ Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints()
     End If
 End Sub
 
+Friend Function GetFirstColor() As Long
+    If (m_NumOfPoints > 0) Then
+        If (Not m_IsSorted) Then SortGradientArray
+        VBHacks.GetMem4_Ptr VarPtr(m_GradientPoints(0)), VarPtr(GetFirstColor)
+    End If
+End Function
+
+Friend Function GetLastColor() As Long
+    If (m_NumOfPoints > 0) Then
+        If (Not m_IsSorted) Then SortGradientArray
+        VBHacks.GetMem4_Ptr VarPtr(m_GradientPoints(m_NumOfPoints - 1)), VarPtr(GetFirstColor)
+    End If
+End Function
+
 Friend Function GetNumOfNodes() As Long
     GetNumOfNodes = m_NumOfPoints
 End Function
