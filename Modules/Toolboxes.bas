@@ -140,7 +140,7 @@ Private Sub FillDefaultToolboxValues()
             Select Case i
             
                 Case PDT_LeftToolbox
-                    .DefaultSize = FixDPI(96)
+                    .DefaultSize = FixDPI(144)
                     .MinSize = FixDPI(48)
                     .MaxSize = FixDPI(188)
                 
