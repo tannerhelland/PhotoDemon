@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.857</langversion>
+<langversion>7.2.862</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2842,11 +2842,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
-<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
-<translation>WARNUNG! GDI+ konnte nicht gefunden werden. (PhotoDemon erfordert GDI+ für eine ordnungsgemäße Programmoperation.)</translation>
-</phrase>
-
-<phrase>
 <original>Operation halted.</original>
 <translation>Operation angehalten.</translation>
 </phrase>
@@ -2866,7 +2861,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Viewport-Rendering angehalten aufgrund eines unerwarteten Fehlers (#%1)</translation>
 </phrase>
 
-<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -12547,22 +12542,22 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>PSD Export Options</original>
-<translation></translation>
+<translation>PSD-Exportoptionen</translation>
 </phrase>
 
 <phrase>
 <original>compression</original>
-<translation></translation>
+<translation>Kompression</translation>
 </phrase>
 
 <phrase>
 <original>maximize compatibility</original>
-<translation></translation>
+<translation>Kompatibilität maximieren</translation>
 </phrase>
 
 <phrase>
 <original>PackBits</original>
-<translation></translation>
+<translation>PackBits</translation>
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12798,7 +12793,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Remove tags that might contain personal information</original>
-<translation>Tags entfernen, die persönliche Informationen enthalten könnten</translation>
+<translation>Tags entfernen, die persönliche Daten enthalten könnten</translation>
 </phrase>
 
 <phrase>
@@ -13791,8 +13786,33 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
+<original>fast previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat</original>
 <translation>Wiederholen</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>conical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spiral</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13805,7 +13825,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Reflektieren</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15545,10 +15565,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4751 phrases. -->
-<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 12250 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2167 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12243 total words. -->
 
 </pdData>

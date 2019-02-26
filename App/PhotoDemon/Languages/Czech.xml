@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3368</langversion>
+<langversion>6.8.3369</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2837,11 +2837,6 @@ Při zadání číselné hodnoty.</translation>
 <!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
-<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
-<translation>VAROVÁNÍ! GDI nebylo nalezeno. (PhotoDemon vyžaduje GDI pro správný provoz programu.)</translation>
-</phrase>
-
-<phrase>
 <original>Operation halted.</original>
 <translation>Operace se zastavila.</translation>
 </phrase>
@@ -2861,7 +2856,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>Vykreslení výřezu zobrazení bylo pozastaveno kvůli neočekávané chybě (# %1)</translation>
 </phrase>
 
-<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -13785,7 +13780,32 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
+<original>fast previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>conical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spiral</original>
 <translation></translation>
 </phrase>
 
@@ -13799,7 +13819,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15537,10 +15557,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4751 phrases. -->
-<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 12250 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2167 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12243 total words. -->
 
 </pdData>

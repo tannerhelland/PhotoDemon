@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3368</langversion>
+<langversion>6.8.3369</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2835,11 +2835,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
-<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
-<translation>UYARI! GDI bulunamadı. (PhotoDemon doğru programın çalışması için GDI gerektirir.)</translation>
-</phrase>
-
-<phrase>
 <original>Operation halted.</original>
 <translation>Operasyon durdurdu.</translation>
 </phrase>
@@ -2859,7 +2854,7 @@ Please enter a numeric value.</original>
 <translation>Görünüm oluşturma beklenmedik bir hata (# %1) için durdu</translation>
 </phrase>
 
-<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -13781,7 +13776,32 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
+<original>fast previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>conical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spiral</original>
 <translation></translation>
 </phrase>
 
@@ -13795,7 +13815,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15530,10 +15550,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4751 phrases. -->
-<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 12250 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2167 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12243 total words. -->
 
 </pdData>

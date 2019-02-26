@@ -883,6 +883,39 @@ Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA
 
 End Function
 
+'Return a Long-type lookup table that describes the contents of the gradient.  The table size can be defined
+' by the caller; larger tables obviously include more details, but they may be pointless depending on the
+' number of colors in the gradient and/or their positions.  (For example, a 2-color gradient from 0.0 to 1.0
+' won't benefit from more than 256 entries in the lookup table, because the underlying data uses 8-bit channels.)
+Friend Function GetLookupTable(ByRef dstArray() As Long, Optional ByVal sizeOfTable As Long = 1024) As Boolean
+
+    'Use GDI+ to render a 1-byte-tall sample of the current gradient.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateBlank sizeOfTable, 1, 32, 0, 0
+    
+    Dim bRect As RectF
+    bRect.Left = 0!
+    bRect.Top = 0!
+    bRect.Width = sizeOfTable
+    bRect.Height = 1!
+    
+    Dim gradHandle As Long
+    gradHandle = Me.GetBrushHandle(bRect, True)
+    
+    Dim imgHandle As Long
+    imgHandle = GDI_Plus.GetGDIPlusGraphicsFromDC_Fast(tmpDIB.GetDIBDC)
+    
+    GDI_Plus.GDIPlus_FillRectF imgHandle, gradHandle, bRect.Left, bRect.Top, bRect.Width, bRect.Height
+    GDI_Plus.ReleaseGDIPlusGraphics imgHandle
+    GDI_Plus.ReleaseGDIPlusBrush gradHandle
+    
+    'Simply copy the contents of the temporary image into the lookup table
+    ReDim dstArray(0 To sizeOfTable - 1) As Long
+    CopyMemoryStrict VarPtr(dstArray(0)), tmpDIB.GetDIBPointer, sizeOfTable * 4
+
+End Function
+
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Private Function GetBlendedColors(ByVal firstColor As Byte, ByVal secondColor As Byte, ByRef mixRatio As Double) As Byte
     GetBlendedColors = ((1# - mixRatio) * firstColor) + (mixRatio * secondColor)

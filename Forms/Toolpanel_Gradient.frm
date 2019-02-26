@@ -89,14 +89,26 @@ Begin VB.Form toolpanel_Gradient
    End
    Begin PhotoDemon.pdDropDown cboSetting 
       Height          =   735
-      Index           =   2
-      Left            =   7920
+      Index           =   3
+      Left            =   10320
       TabIndex        =   4
       Top             =   0
       Width           =   2295
       _ExtentX        =   4048
       _ExtentY        =   1296
       Caption         =   "repeat"
+      FontSizeCaption =   10
+   End
+   Begin PhotoDemon.pdDropDown cboSetting 
+      Height          =   735
+      Index           =   2
+      Left            =   7920
+      TabIndex        =   6
+      Top             =   0
+      Width           =   2295
+      _ExtentX        =   4048
+      _ExtentY        =   1296
+      Caption         =   "shape"
       FontSizeCaption =   10
    End
 End
@@ -136,8 +148,13 @@ Private Sub cboSetting_Click(Index As Integer)
         'Alpha mode
         Case 1
             Tools_Gradient.SetGradientAlphaMode cboSetting(Index).ListIndex
-            
+        
+        'Shape
         Case 2
+            Tools_Gradient.SetGradientShape cboSetting(Index).ListIndex
+        
+        'Wrap
+        Case 3
             Tools_Gradient.SetGradientRepeat cboSetting(Index).ListIndex
             
     End Select
@@ -157,10 +174,23 @@ Private Sub Form_Load()
     'Populate any custom dropdowns
     cboSetting(2).SetAutomaticRedraws False
     cboSetting(2).Clear
-    cboSetting(2).AddItem "none", 0
-    cboSetting(2).AddItem "wrap", 1
-    cboSetting(2).AddItem "reflect", 2
+    cboSetting(2).AddItem "linear", 0
+    cboSetting(2).AddItem "reflection", 1
+    cboSetting(2).AddItem "radial", 2
+    cboSetting(2).AddItem "square", 3
+    cboSetting(2).AddItem "diamond", 4
+    cboSetting(2).AddItem "conical", 5
+    cboSetting(2).AddItem "spiral", 6
+    cboSetting(2).ListIndex = 0
     cboSetting(2).SetAutomaticRedraws True, True
+    
+    cboSetting(3).SetAutomaticRedraws False
+    cboSetting(3).Clear
+    cboSetting(3).AddItem "none", 0
+    cboSetting(3).AddItem "wrap", 1
+    cboSetting(3).AddItem "reflect", 2
+    cboSetting(3).ListIndex = 0
+    cboSetting(3).SetAutomaticRedraws True, True
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -210,7 +240,8 @@ Public Sub SyncAllGradientSettingsToUI()
     Tools_Gradient.SetGradientOpacity sldSetting(0).Value
     Tools_Gradient.SetGradientBlendMode cboSetting(0).ListIndex
     Tools_Gradient.SetGradientAlphaMode cboSetting(1).ListIndex
-    Tools_Gradient.SetGradientRepeat cboSetting(2).ListIndex
+    Tools_Gradient.SetGradientShape cboSetting(2).ListIndex
+    Tools_Gradient.SetGradientRepeat cboSetting(3).ListIndex
     Tools_Gradient.SetGradientFastPreviews chkFastPreviews.Value
 End Sub
 
@@ -219,6 +250,7 @@ Public Sub SyncUIToAllGradientSettings()
     sldSetting(0).Value = Tools_Gradient.GetGradientOpacity
     cboSetting(0).ListIndex = Tools_Gradient.GetGradientBlendMode()
     cboSetting(1).ListIndex = Tools_Gradient.GetGradientAlphaMode()
-    cboSetting(2).ListIndex = Tools_Gradient.GetGradientRepeat()
+    cboSetting(2).ListIndex = Tools_Gradient.GetGradientShape()
+    cboSetting(3).ListIndex = Tools_Gradient.GetGradientRepeat()
     chkFastPreviews.Value = Tools_Gradient.GetGradientFastPreviews()
 End Sub

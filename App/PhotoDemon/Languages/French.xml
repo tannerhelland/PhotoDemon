@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.385</langversion>
+<langversion>6.7.386</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -2839,11 +2839,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
-<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
-<translation>ATTENTION! GDI + n'a pas pu être trouvé. (PhotoDemon nécessite GDI + pour un fonctionnement correcte du programme.)</translation>
-</phrase>
-
-<phrase>
 <original>Operation halted.</original>
 <translation>Opération interrompue.</translation>
 </phrase>
@@ -2863,7 +2858,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Rendu Viewport suspendue en raison d'une erreur inattendue (#%1)</translation>
 </phrase>
 
-<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -13788,7 +13783,32 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
+<original>fast previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>conical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spiral</original>
 <translation></translation>
 </phrase>
 
@@ -13802,7 +13822,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15543,10 +15563,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4751 phrases. -->
-<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 12250 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2167 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12243 total words. -->
 
 </pdData>

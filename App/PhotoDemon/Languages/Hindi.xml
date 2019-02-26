@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.88</langversion>
+<langversion>1.0.89</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2838,11 +2838,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
-<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
-<translation>चेतावनी! GDI पाया नहीं जा सका (PhotoDemon को उचित प्रोग्राम ऑपरेशन के लिए GDI की आवश्यकता है।)</translation>
-</phrase>
-
-<phrase>
 <original>Operation halted.</original>
 <translation>ऑपरेशन रुका हुआ</translation>
 </phrase>
@@ -2862,7 +2857,7 @@ Please enter a numeric value.</original>
 <translation>व्यूपोर्ट रेंडरिंग अप्रत्याशित त्रुटि (# %1) के कारण रुका हुआ</translation>
 </phrase>
 
-<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
 
@@ -13787,7 +13782,32 @@ I में लोड करें, इस दुर्भावना के �
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
+<original>fast previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>conical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spiral</original>
 <translation></translation>
 </phrase>
 
@@ -13801,7 +13821,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15540,10 +15560,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2592</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4751 phrases. -->
-<!-- 2163 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 12250 total words. -->
+<!-- As of this build, PhotoDemon contains 4759 phrases. -->
+<!-- 2167 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 12243 total words. -->
 
 </pdData>
