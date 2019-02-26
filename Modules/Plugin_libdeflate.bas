@@ -82,6 +82,7 @@ Private m_ProcAddresses() As Long
 
 'Rather than allocate new memory on each DispCallFunc invoke, just reuse a set of temp arrays declared
 ' to the maximum relevant size (see InitializeEngine, below).
+Private Const MAX_PARAM_COUNT As Long = 10
 Private m_vType() As Integer, m_vPtr() As Long
 
 'Basic init/release functions
@@ -119,8 +120,8 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     End If
     
     'Initialize all module-level arrays
-    ReDim m_vType(0 To 9) As Integer
-    ReDim m_vPtr(0 To 9) As Long
+    ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
+    ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
     
 End Function
 
@@ -400,24 +401,21 @@ End Sub
 
 'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
 ' for a link to his original, unmodified version
-Private Function CallCDeclW(ByVal lProc As LD_ProcAddress, ByVal fRetType As VbVarType, ParamArray pA() As Variant) As Variant
+Private Function CallCDeclW(ByVal lProc As LD_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
 
     Dim i As Long, pFunc As Long, vTemp() As Variant, hResult As Long
     
     Dim numParams As Long
+    If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
     
-    If (UBound(pA) < LBound(pA)) Then numParams = 0 Else numParams = UBound(pA) + 1
-    ReDim vType(0 To numParams) As Integer
-    ReDim vPtr(0 To numParams) As Long
-    
-    vTemp = pA 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
     For i = 0 To numParams - 1
-        If VarType(pA(i)) = vbString Then vTemp(i) = StrPtr(pA(i))
+        If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
         m_vType(i) = VarType(vTemp(i))
         m_vPtr(i) = VarPtr(vTemp(i))
     Next i
     
-    Const CC_CDECL = 1
+    Const CC_CDECL As Long = 1
     hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
     If hResult Then Err.Raise hResult
     
