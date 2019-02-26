@@ -439,7 +439,7 @@ End Function
 Friend Function GetLastColor() As Long
     If (m_NumOfPoints > 0) Then
         If (Not m_IsSorted) Then SortGradientArray
-        VBHacks.GetMem4_Ptr VarPtr(m_GradientPoints(m_NumOfPoints - 1)), VarPtr(GetFirstColor)
+        VBHacks.GetMem4_Ptr VarPtr(m_GradientPoints(m_NumOfPoints - 1)), VarPtr(GetLastColor)
     End If
 End Function
 

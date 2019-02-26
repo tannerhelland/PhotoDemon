@@ -4,7 +4,7 @@ Attribute VB_Name = "Tools_Gradient"
 'Copyright 2018-2019 by Tanner Helland
 'Created: 31/December/18
 'Last updated: 26/February/19
-'Last update: wrap up conical and spiral gradient rendering
+'Last update: add progress bar updates for long-running gradient renders
 '
 'This module interfaces between the gradient tool UI and pd2DGradient backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant fill data here.
@@ -133,6 +133,9 @@ Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As L
 ' DIB is used to cache intermediate gradient results.
 Private m_PreviewDIB As pdDIB
 
+'Set to TRUE when a gradient is actively being rendered
+Private m_GradientRendering As Boolean
+
 'Universal gradient settings
 Public Function GetGradientAlphaMode() As PD_AlphaMode
     GetGradientAlphaMode = m_GradientAlphamode
@@ -227,6 +230,8 @@ End Sub
 Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
     If (Not PDImages.IsImageActive()) Then Exit Sub
+    If m_GradientRendering Then Exit Sub
+    m_GradientRendering = True
     
     m_MouseX = srcX
     m_MouseY = srcY
@@ -360,6 +365,8 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     If (g_ViewportPerformance >= PD_PERF_BALANCED) And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
     If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
     
+    m_GradientRendering = False
+    
 End Sub
 
 'Return the best renderer for the current gradient job; this varies according to both gradient and system settings.
@@ -439,7 +446,7 @@ Private Sub PreviewRenderer(ByRef srcCanvas As pdCanvas, ByRef firstPoint As Poi
     ElseIf (curBackend = gr_GDIPlus) Then
         GdipRenderer newPoints(0), newPoints(1), m_PreviewDIB
     ElseIf (curBackend = gr_Internal) Then
-        InternalRenderer newPoints(0), newPoints(1), m_PreviewDIB
+        InternalRenderer newPoints(0), newPoints(1), m_PreviewDIB, False
     End If
     
 End Sub
@@ -609,21 +616,30 @@ Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As Po
     
 End Sub
 
-Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
+Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
+    
+    'On final renders, display a progress bar (as the render may take up to 500 ms on large images)
+    If isFullSizeRender Then ProgressBars.SetProgBarMax dstDIB.GetDIBHeight
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
     If (m_GradientShape = gs_Radial) Then
-        InternalRender_Radial firstPoint, secondPoint, dstDIB
+        InternalRender_Radial firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Square) Then
-        InternalRender_Square firstPoint, secondPoint, dstDIB
+        InternalRender_Square firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Diamond) Then
-        InternalRender_Diamond firstPoint, secondPoint, dstDIB
+        InternalRender_Diamond firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Conical) Then
-        InternalRender_Conical firstPoint, secondPoint, dstDIB
+        InternalRender_Conical firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Spiral) Then
-        InternalRender_Spiral firstPoint, secondPoint, dstDIB
+        InternalRender_Spiral firstPoint, secondPoint, dstDIB, isFullSizeRender
+    End If
+    
+    'If we displayed a progress bar, free it now
+    If isFullSizeRender Then
+        ProgressBars.SetProgBarVal 0
+        ProgressBars.ReleaseProgressBar
     End If
     
     'Profiling should be turned off in production builds, obviously
@@ -631,7 +647,7 @@ Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint A
     
 End Sub
 
-Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
+Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradAngle As Double
@@ -674,6 +690,10 @@ Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondP
     xBound = dstDIB.GetDIBWidth - 1
     yBound = dstDIB.GetDIBHeight - 1
     
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
+    
     Dim curAngle As Double, newAngle As Double, curColor As Long, luIndex As Long
     
     For y = 0 To yBound
@@ -701,13 +721,16 @@ Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondP
         dstPixels(x) = curColor
         
     Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
     Next y
     
     dstDIB.UnwrapLongArrayFromDIB dstPixels
     
 End Sub
 
-Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
+Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradDistance As Long
@@ -733,6 +756,10 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
     dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA, 0
     xBound = dstDIB.GetDIBWidth - 1
     yBound = dstDIB.GetDIBHeight - 1
+    
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
     
     Dim curDistance As Long, curColor As Long, luIndex As Long
     
@@ -776,14 +803,19 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
         dstPixels(x) = curColor
         
     Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
     Next y
     
     dstDIB.UnwrapLongArrayFromDIB dstPixels
     
 End Sub
 
-Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
-
+Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
+    
+    Debug.Print "rendering gradient of size " & dstDIB.GetDIBWidth & "x" & dstDIB.GetDIBHeight
+    
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradDistance As Double
     gradDistance = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
@@ -808,6 +840,10 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
     dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA, 0
     xBound = dstDIB.GetDIBWidth - 1
     yBound = dstDIB.GetDIBHeight - 1
+    
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
     
     Dim curDistance As Double, curColor As Long, luIndex As Long
     
@@ -851,13 +887,16 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
         dstPixels(x) = curColor
         
     Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
     Next y
     
     dstDIB.UnwrapLongArrayFromDIB dstPixels
     
 End Sub
 
-Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
+Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradAngle As Double
@@ -891,6 +930,10 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
     dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA, 0
     xBound = dstDIB.GetDIBWidth - 1
     yBound = dstDIB.GetDIBHeight - 1
+    
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
     
     Dim curDistance As Double, curAngle As Double, newAngle As Double, curColor As Long, luIndex As Long
     
@@ -948,13 +991,16 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
         dstPixels(x) = curColor
         
     Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
     Next y
     
     dstDIB.UnwrapLongArrayFromDIB dstPixels
     
 End Sub
 
-Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB)
+Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradDistance As Long
@@ -980,6 +1026,10 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
     dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA, 0
     xBound = dstDIB.GetDIBWidth - 1
     yBound = dstDIB.GetDIBHeight - 1
+    
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
     
     Dim curDistance As Long, curColor As Long, luIndex As Long
     
@@ -1023,6 +1073,9 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
         dstPixels(x) = curColor
         
     Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
     Next y
     
     dstDIB.UnwrapLongArrayFromDIB dstPixels

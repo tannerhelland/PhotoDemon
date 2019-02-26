@@ -483,14 +483,6 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   4210752
       End
    End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      Index           =   0
-      X1              =   224
-      X2              =   224
-      Y1              =   48
-      Y2              =   544
-   End
    Begin VB.Label lblCommandBar 
       BackColor       =   &H00C0C0C0&
       Height          =   900

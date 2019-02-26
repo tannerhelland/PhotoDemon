@@ -310,9 +310,11 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
         
         Dim cPen As pd2DPen
-        Drawing2D.QuickCreateSolidPen cPen, 1, m_Colors.RetrieveColor(PDPB_Border, Me.Enabled)
+        Drawing2D.QuickCreateSolidPen cPen, 1!, m_Colors.RetrieveColor(PDPB_Border, Me.Enabled)
         PD2D.DrawRectangleF_FromRectF cSurface, cPen, m_BorderRect
         Set cPen = Nothing
+        
+        Dim cBrush As pd2DBrush
         
         'Marquee mode doesn't use the value or max properties; instead, all rendering is handled manually
         If m_MarqueeMode Then
@@ -338,7 +340,6 @@ Private Sub RedrawBackBuffer()
             If (m_MarqueeOffset > m_ProgressRect.Width + gradWidth) Then m_MarqueeOffset = (-1# * gradWidth)
             
             'Fill the progress bar with the default accent color
-            Dim cBrush As pd2DBrush
             Drawing2D.QuickCreateSolidBrush cBrush, m_Colors.RetrieveColor(PDPB_Progress, Me.Enabled)
             With m_ProgressRect
                 PD2D.FillRectangleF cSurface, cBrush, .Left, .Top, .Width, .Height
@@ -401,7 +402,6 @@ Private Sub RedrawBackBuffer()
                 cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
                 cSurface.SetSurfacePixelOffset P2_PO_Half
                 
-                'Dim cBrush As pd2DBrush
                 Drawing2D.QuickCreateSolidBrush cBrush, m_Colors.RetrieveColor(PDPB_Progress, Me.Enabled)
                 
                 Dim progBarWidth As Single

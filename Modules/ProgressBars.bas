@@ -48,7 +48,7 @@ End Function
 
 Public Sub SetProgBarMax(ByVal pbVal As Double)
     
-    If (Macros.GetMacroStatus <> MacroBATCH) And (pbVal <> 0) Then
+    If (Macros.GetMacroStatus <> MacroBATCH) And (pbVal <> 0#) Then
         
         Dim prevProgBarValue As Double
         prevProgBarValue = FormMain.MainCanvas(0).ProgBar_GetValue()
@@ -71,13 +71,13 @@ Public Sub SetProgBarVal(ByVal pbVal As Double)
     If (Macros.GetMacroStatus <> MacroBATCH) Then
         
         FormMain.MainCanvas(0).ProgBar_SetValue pbVal
-            
-        'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
-        ' when PD is in the midst of a long-running action.
-        Replacement_DoEvents FormMain.hWnd
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
         If OS.IsWin7OrLater Then OS.SetTaskbarProgressValue pbVal, GetProgBarMax
+        
+        'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
+        ' when PD is in the midst of a long-running action.
+        Replacement_DoEvents FormMain.hWnd
         
     End If
     
@@ -89,7 +89,7 @@ Public Function FindBestProgBarValue() As Long
 
     'First, figure out what the range of this operation will be, based on the current progress bar maximum
     Dim progBarRange As Double
-    progBarRange = CDbl(GetProgBarMax())
+    progBarRange = CDbl(ProgressBars.GetProgBarMax())
     
     'Divide that value by some arbitrary number; the number is how many times we want the progress bar to update during
     ' the current process.  (e.g. a value of "10" means "try to update the progress bar ~10 times")  Larger numbers
@@ -110,7 +110,8 @@ Public Function IsProgressBarVisible() As Boolean
     IsProgressBarVisible = FormMain.MainCanvas(0).ProgBar_GetVisibility()
 End Function
 
-'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
+'When a function is done with the progress bar, this function must be called to free up its memory
+' and hide any associated UI elements
 Public Sub ReleaseProgressBar()
     
     PDDebug.LogAction "Releasing progress bar..."
