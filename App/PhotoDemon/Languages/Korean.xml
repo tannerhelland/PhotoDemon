@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.55</langversion>
+<langversion>1.0.56</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2921,7 +2921,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- BEGIN text for pd2DGradient.cls -->
 
-<!-- pd2DGradient.cls contains 0 phrases. -->
+<phrase>
+<original>Unnamed gradient</original>
+<translation></translation>
+</phrase>
+
+<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8283,13 +8288,28 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
+<original>load gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>edit mode</original>
 <translation>편집 모드</translation>
 </phrase>
 
 <phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>노드를 고르게 분산</translation>
+<original>import / export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>make node distances equal</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8313,8 +8333,18 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>additional tools</original>
-<translation>추가 도구</translation>
+<original>additional options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use gamma when blending</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient name</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8363,6 +8393,31 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
+<original>All supported gradients</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GIMP Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>새로운 노드를 추가하거나 기존 노드를 편집하려면 왼쪽 버튼을 클릭하십시오. 제거 할 노드를 마우스 오른쪽 단추로 클릭하십시오.</translation>
 </phrase>
@@ -8378,6 +8433,16 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
+<original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>노드 설정</translation>
 </phrase>
@@ -8387,7 +8452,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>노드를 선택하십시오.</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15552,10 +15617,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4758 phrases. -->
-<!-- 2167 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12241 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 12296 total words. -->
 
 </pdData>

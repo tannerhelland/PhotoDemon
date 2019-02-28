@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.57</langversion>
+<langversion>7.0.58</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -2882,7 +2882,12 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pd2DGradient.cls -->
 
-<!-- pd2DGradient.cls contains 0 phrases. -->
+<phrase>
+<original>Unnamed gradient</original>
+<translation></translation>
+</phrase>
+
+<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8247,13 +8252,28 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>load gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>edit mode</original>
 <translation>編輯模式</translation>
 </phrase>
 
 <phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>自動均勻分配控制點</translation>
+<original>import / export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>make node distances equal</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8277,8 +8297,18 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>additional tools</original>
-<translation>其他工具</translation>
+<original>additional options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use gamma when blending</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient name</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8327,6 +8357,31 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>All supported gradients</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GIMP Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>按下左鍵以加入或編輯現有控制點。按下右鍵則移除控制點。</translation>
 </phrase>
@@ -8342,6 +8397,16 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>控制點設定</translation>
 </phrase>
@@ -8351,7 +8416,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>請選擇一個控制點</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15499,10 +15564,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4758 phrases. -->
-<!-- 2167 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12241 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 12296 total words. -->
 
 </pdData>

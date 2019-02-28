@@ -1172,9 +1172,11 @@ Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hIm
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal typeOfAdjustment As GP_ColorAdjustType, ByVal enableSeparateAdjustmentFlag As Long, ByVal ptrToColorMatrix As Long, ByVal ptrToGrayscaleMatrix As Long, ByVal extraColorMatrixFlags As GP_ColorMatrixFlags) As GP_Result
 Private Declare Function GdipSetInfinite Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newInterpolationMode As GP_InterpolationMode) As GP_Result
+Private Declare Function GdipSetLineGammaCorrection Lib "gdiplus" (ByVal hBrush As Long, ByVal useGammaCorrection As Long) As GP_Result
 Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
 Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As PointFloat) As GP_Result
+Private Declare Function GdipSetPathGradientGammaCorrection Lib "gdiplus" (ByVal hBrush As Long, ByVal useGammaCorrection As Long) As GP_Result
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal pathFillMode As GP_FillMode) As GP_Result
@@ -5185,6 +5187,12 @@ Public Function GDIPlus_ImageUpgradeMetafile(ByVal hImage As Long, ByVal srcGrap
     
 End Function
 
+Public Sub GDIPlus_LineGradientSetGamma(ByVal hGradientBrush As Long, ByVal newGamma As Boolean)
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipSetLineGammaCorrection(hGradientBrush, IIf(newGamma, 1, 0))
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Sub
+
 Public Function GDIPlus_MatrixCreate() As Long
     Dim tmpReturn As GP_Result
     tmpReturn = GdipCreateMatrix(GDIPlus_MatrixCreate)
@@ -5422,6 +5430,12 @@ Public Function GDIPlus_PathGetPathBoundsL(ByVal hPath As Long, Optional ByVal h
     tmpReturn = GdipGetPathWorldBoundsI(hPath, GDIPlus_PathGetPathBoundsL, hTransform, hPen)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
+
+Public Sub GDIPlus_PathGradientSetGamma(ByVal hGradientBrush As Long, ByVal newGamma As Boolean)
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipSetPathGradientGammaCorrection(hGradientBrush, IIf(newGamma, 1, 0))
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Sub
 
 Public Function GDIPlus_PathIsPointInsideF(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long

@@ -4,7 +4,7 @@ Begin VB.Form dialog_GradientEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Gradient editor"
-   ClientHeight    =   7995
+   ClientHeight    =   8970
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   12660
@@ -20,11 +20,22 @@ Begin VB.Form dialog_GradientEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   533
+   ScaleHeight     =   598
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin PhotoDemon.pdButton cmdFile 
+      Height          =   615
+      Index           =   0
+      Left            =   360
+      TabIndex        =   21
+      Top             =   7440
+      Width           =   5940
+      _ExtentX        =   5741
+      _ExtentY        =   1085
+      Caption         =   "load gradient file"
+   End
    Begin PhotoDemon.pdButtonStrip btsEdit 
       Height          =   915
       Left            =   120
@@ -41,15 +52,37 @@ Begin VB.Form dialog_GradientEditor
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   7245
+      Top             =   8220
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
       DontAutoUnloadParent=   -1  'True
       DontResetAutomatically=   -1  'True
    End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   3
+      Left            =   120
+      Top             =   7080
+      Width           =   12135
+      _ExtentX        =   16536
+      _ExtentY        =   556
+      Caption         =   "import / export"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdButton cmdFile 
+      Height          =   615
+      Index           =   1
+      Left            =   6480
+      TabIndex        =   22
+      Top             =   7440
+      Width           =   5940
+      _ExtentX        =   10478
+      _ExtentY        =   1085
+      Caption         =   "save gradient file"
+   End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
+      Height          =   5775
       Index           =   0
       Left            =   0
       TabIndex        =   2
@@ -57,6 +90,15 @@ Begin VB.Form dialog_GradientEditor
       Width           =   12615
       _ExtentX        =   22251
       _ExtentY        =   10398
+      Begin PhotoDemon.pdTextBox txtName 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   24
+         Top             =   5265
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   661
+      End
       Begin VB.PictureBox picInteract 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -74,13 +116,13 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
          Height          =   330
-         Left            =   360
+         Left            =   8400
          TabIndex        =   9
          Top             =   5280
-         Width           =   6735
-         _ExtentX        =   11880
+         Width           =   4095
+         _ExtentX        =   7223
          _ExtentY        =   582
-         Caption         =   "automatically distribute nodes evenly"
+         Caption         =   "make node distances equal"
          Value           =   0   'False
       End
       Begin VB.PictureBox picNodePreview 
@@ -163,8 +205,8 @@ Begin VB.Form dialog_GradientEditor
          Height          =   285
          Left            =   0
          Top             =   2880
-         Width           =   12660
-         _ExtentX        =   22331
+         Width           =   12630
+         _ExtentX        =   22278
          _ExtentY        =   503
          Alignment       =   2
          Caption         =   "yes"
@@ -174,17 +216,39 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   4
+         Left            =   4560
+         Top             =   4800
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   556
+         Caption         =   "additional options"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdCheckBox chkGamma 
+         Height          =   330
+         Left            =   4800
+         TabIndex        =   23
+         Top             =   5280
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   582
+         Caption         =   "use gamma when blending"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   5
          Left            =   120
          Top             =   4800
-         Width           =   12135
-         _ExtentX        =   21405
+         Width           =   4095
+         _ExtentX        =   7223
          _ExtentY        =   556
-         Caption         =   "additional tools"
+         Caption         =   "gradient name"
          FontSize        =   12
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5895
+      Height          =   5775
       Index           =   1
       Left            =   0
       TabIndex        =   3
@@ -363,8 +427,8 @@ Attribute VB_Exposed = False
 'Gradient Editor Dialog
 'Copyright 2014-2019 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
-'Last updated: 05/October/17
-'Last update: add "automatic" mode for creating noisy gradients
+'Last updated: 27/February/19
+'Last update: add buttons for saving and loading gradient files
 '
 'Comprehensive gradient editor.  This dialog is currently based around the properties of GDI+ gradient brushes, but it
 ' could easily be expanded in the future due to its modular design.
@@ -566,6 +630,13 @@ Private Sub chkDistributeEvenly_Click()
     End If
 End Sub
 
+Private Sub chkGamma_Click()
+    If (Not m_SuspendUI) Then
+        RedrawEverything
+        SyncUIToActiveNode
+    End If
+End Sub
+
 Private Sub cmdBar_AddCustomPresetData()
 
     'This control (obviously) requires a lot of extra custom preset data.
@@ -635,6 +706,8 @@ Private Sub cmdBar_ResetClick()
     Me.csColorAuto(0).Color = vbBlack
     
     chkDistributeEvenly.Value = False
+    chkGamma.Value = False
+    txtName.Text = vbNullString
     
     m_SuspendUI = False
     
@@ -643,6 +716,149 @@ Private Sub cmdBar_ResetClick()
     SyncControlsToGradientObject
     UpdatePreview
     
+End Sub
+
+Private Sub cmdFile_Click(Index As Integer)
+
+    Select Case Index
+        
+        'Load gradient file
+        Case 0
+            ImportGradientFile
+        
+        'Save gradient file
+        Case 1
+            ExportGradientFile
+    
+    End Select
+    
+End Sub
+
+Private Sub ImportGradientFile()
+
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
+    
+    'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+    Dim initialFolder As String
+    initialFolder = UserPrefs.GetGradientPath()
+    
+    'Build a common dialog filter list
+    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Set cdFilter = New pdString
+    
+    cdFilter.Append g_Language.TranslateMessage("All supported gradients") & "|*.ggr|"
+    cdFilter.Append g_Language.TranslateMessage("GIMP Gradient") & " (.ggr)|*.ggr|"
+    cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
+    
+    Dim cdIndex As Long
+    cdIndex = 1
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Import gradient")
+    
+    'Prep a common dialog interface
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
+    
+    Dim srcFilename As String
+    If openDialog.GetOpenFileName(srcFilename, , True, False, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath, cdTitle, , GetModalOwner().hWnd) Then
+        
+        'Update preferences
+        UserPrefs.SetGradientPath Files.FileGetPath(srcFilename)
+        
+        'For now, forcibly switch to the "manual" panel and load the gradient there
+        If (btsEdit.ListIndex <> 0) Then btsEdit.ListIndex = 0
+        
+        Dim tmpGradient As pd2DGradient
+        Set tmpGradient = New pd2DGradient
+        tmpGradient.SetGradientAngle 0!
+        tmpGradient.SetGradientShape P2_GS_Linear
+        
+        If tmpGradient.LoadGradientFromFile(srcFilename) Then
+            
+            Set m_NodePreview = tmpGradient
+            
+            'Sync all controls to reflect the new gradient
+            m_CurPoint = -1
+            chkDistributeEvenly.Value = False
+            SyncControlsToGradientObject
+            
+            UpdatePreview
+            
+        End If
+        
+    End If
+    
+    'Re-enable UI
+    Interface.EnableUserInput
+    
+End Sub
+
+Private Sub ExportGradientFile()
+
+    'Disable user input until the dialog closes
+    Interface.DisableUserInput
+    
+    'Determine an initial folder.  This is easy - just grab the last "profile" path from the preferences file.
+    Dim initialSaveFolder As String
+    initialSaveFolder = UserPrefs.GetGradientPath()
+    
+    'Build a common dialog filter list
+    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Set cdFilter = New pdString
+    Set cdFilterExtensions = New pdString
+    
+    cdFilter.Append g_Language.TranslateMessage("GIMP Gradient") & " (.ggr)|*.ggr"
+    cdFilterExtensions.Append "ggr"
+    
+    Dim cdIndex As Long
+    cdIndex = 1
+    
+    'Suggest a file name.  At present, we just reuse the current image's name.
+    ' (TODO: find a way to integrate gradient name more elegantly.)
+    Dim dstFilename As String
+    If (PDImages.GetNumOpenImages > 0) Then dstFilename = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("New gradient")
+    dstFilename = initialSaveFolder & dstFilename
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export gradient")
+    
+    'Prep a common dialog interface
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+    
+        'Update preferences
+        UserPrefs.SetGradientPath Files.FileGetPath(dstFilename)
+        
+        'Set the source gradient differently, depending on the current active panel
+        Dim srcGradient As pd2DGradient
+        If (btsEdit.ListIndex = 0) Then
+            Set srcGradient = m_NodePreview
+        Else
+            Set srcGradient = m_AutoPreview
+        End If
+                
+        'Proceed with saving.  The embedded gradient class handles this for us.
+        Select Case cdIndex
+            
+            'Export GIMP format
+            Case 1
+                srcGradient.SaveGradient_GIMP dstFilename
+            
+            'No other supported formats at present
+            Case Else
+            
+        End Select
+        
+    End If
+    
+    'Re-enable UI
+    Interface.EnableUserInput
+        
 End Sub
 
 Private Sub cmdRandomize_Click()
@@ -683,10 +899,13 @@ Private Sub Form_Load()
     instructionText = g_Language.TranslateMessage("Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.")
     lblInstructions.Caption = instructionText
     
-    'Populate button strips and drop-downs
+    'Populate button strips, drop-downs, tooltips, etc
     btsEdit.AddItem "manual", 0
     btsEdit.AddItem "automatic", 1
-    btsEdit_Click 0
+    btsEdit.ListIndex = 0
+    
+    chkGamma.AssignTooltip "When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance."
+    chkDistributeEvenly.AssignTooltip "Use this setting to automatically calculate equal positioning for all gradient nodes."
     
     If PDMain.IsProgramRunning() Then
     
@@ -733,7 +952,7 @@ Private Sub Form_Load()
         activeOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Miter
         activeOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetGenericUIColor(UI_Accent)
         activeOutlinePen.CreatePen
-                
+        
         'Draw the initial set of interactive gradient nodes
         SyncUIToActiveNode
         DrawGradientNodes
@@ -820,9 +1039,11 @@ Private Sub UpdateGradientObjects()
     End If
     
     With m_NodePreview
-        .SetGradientProperty P2_GradientShape, P2_GS_Linear
-        .SetGradientProperty P2_GradientAngle, 0#
+        .SetGradientShape P2_GS_Linear
+        .SetGradientAngle 0#
         .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+        .SetGradientGammaMode chkGamma.Value
+        .SetGradientName txtName.Text
     End With
 
 End Sub
@@ -835,6 +1056,8 @@ Private Sub SyncControlsToGradientObject()
     
     With m_NodePreview
         .GetCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
+        chkGamma.Value = .GetGradientGammaMode()
+        txtName.Text = .GetGradientName()
     End With
     
     DrawGradientNodes
@@ -1274,11 +1497,12 @@ Private Sub UpdatePreview_Auto()
     Dim gradPoints() As GradientPoint
     Dim numGradientPoints As Long
     
-    'In the future, it would be nice to increase the maximum density of gradients, but at present, there are some factors
-    ' (including XML serialization of the gradient data) that make that unfortunately slow.  An increase factor of five
-    ' seems to still work well across expected hardware configurations, and post-7.0 I'll look at improving performance
-    ' further so we can bump that number up.
-    numGradientPoints = sldDensityAuto.Value * 10#
+    'The "density" (e.g. number of auto-generated noise nodes) is displayed to the user on a [0, 100] scale.
+    ' We can remap this to effectively any value we want, but there are diminishing returns as the number
+    ' climbs.  Currently we limit this to 200 nodes total, which is still probably overkill as a 1000px
+    ' gradient only leaves an average of 5 pixels per node, but we can always bump this number up in the
+    ' future if users request it.
+    numGradientPoints = sldDensityAuto.Value * 2#
     If (numGradientPoints < 1) Then numGradientPoints = 1
     
     'Insert two extra points for our initial and final colors

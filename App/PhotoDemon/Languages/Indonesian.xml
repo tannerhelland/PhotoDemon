@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.329</langversion>
+<langversion>6.6.330</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2925,7 +2925,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for pd2DGradient.cls -->
 
-<!-- pd2DGradient.cls contains 0 phrases. -->
+<phrase>
+<original>Unnamed gradient</original>
+<translation></translation>
+</phrase>
+
+<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8294,13 +8299,28 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>load gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>edit mode</original>
 <translation>mode edit</translation>
 </phrase>
 
 <phrase>
-<original>automatically distribute nodes evenly</original>
-<translation>secara otomatis mendistribusikan node secara merata</translation>
+<original>import / export</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>make node distances equal</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8324,8 +8344,18 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>additional tools</original>
-<translation>alat tambahan</translation>
+<original>additional options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use gamma when blending</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient name</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8374,6 +8404,31 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>All supported gradients</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>GIMP Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>Klik kiri untuk menambahkan node baru atau edit node yang ada. Klik kanan sebuah simpul untuk menghapusnya.</translation>
 </phrase>
@@ -8389,6 +8444,16 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
+<original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>pengaturan simpul</translation>
 </phrase>
@@ -8398,7 +8463,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>silahkan pilih sebuah node</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 30 phrases. 8 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15564,10 +15629,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2591</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4758 phrases. -->
-<!-- 2167 are duplicates, so only 2591 unique phrases have been written to file. -->
-<!-- These 2591 phrases contain approximately 12241 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 12296 total words. -->
 
 </pdData>
