@@ -621,9 +621,6 @@ Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint A
     'On final renders, display a progress bar (as the render may take up to 500 ms on large images)
     If isFullSizeRender Then ProgressBars.SetProgBarMax dstDIB.GetDIBHeight
     
-    Dim startTime As Currency
-    VBHacks.GetHighResTime startTime
-    
     If (m_GradientShape = gs_Radial) Then
         InternalRender_Radial firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Square) Then
@@ -641,9 +638,6 @@ Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint A
         ProgressBars.SetProgBarVal 0
         ProgressBars.ReleaseProgressBar
     End If
-    
-    'Profiling should be turned off in production builds, obviously
-    Debug.Print VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
 
@@ -701,7 +695,7 @@ Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondP
     For x = 0 To xBound
         
         'Calculate angle, and remap it (with rounding) to a lookup table index
-        curAngle = PDMath.Atan2(y - oY, x - oX)
+        curAngle = PDMath.Atan2_Faster(y - oY, x - oX)
         curAngle = curAngle - gradAngle
         
         'Reflect mode operates a little differently; we want the gradient to be symmetrical across
@@ -761,14 +755,15 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Long, curColor As Long, luIndex As Long
+    Dim curDistance As Long, curColor As Long, luIndex As Long, yFast As Long
     
     For y = 0 To yBound
         dstSA.pvData = dstPtr + dstStride * y
+        yFast = Abs(y - oY)
     For x = 0 To xBound
         
         'Calculate square distance, and remap it (with rounding) to a lookup table index
-        curDistance = Abs(x - oX) + Abs(y - oY)
+        curDistance = Abs(x - oX) + yFast
         luIndex = Int(CDbl(curDistance) * mapAdjust + 0.5)
         
         'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
@@ -814,8 +809,6 @@ End Sub
 
 Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
     
-    Debug.Print "rendering gradient of size " & dstDIB.GetDIBWidth & "x" & dstDIB.GetDIBHeight
-    
     'Before doing anything else, calculate some helpful geometry shortcuts
     Dim gradDistance As Double
     gradDistance = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
@@ -845,14 +838,15 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Double, curColor As Long, luIndex As Long
+    Dim curDistance As Double, curColor As Long, luIndex As Long, ySquared As Long
     
     For y = 0 To yBound
         dstSA.pvData = dstPtr + dstStride * y
+        ySquared = (y - oY) * (y - oY)
     For x = 0 To xBound
         
         'Calculate distance, and remap it (with rounding) to a lookup table index
-        curDistance = Sqr((x - oX) * (x - oX) + (y - oY) * (y - oY))
+        curDistance = Sqr((x - oX) * (x - oX) + ySquared)
         luIndex = Int(curDistance * mapAdjust + 0.5)
         
         'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
@@ -936,17 +930,22 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
     Dim curDistance As Double, curAngle As Double, newAngle As Double, curColor As Long, luIndex As Long
+    Dim yFast As Long, ySquared As Long
     
     For y = 0 To yBound
         dstSA.pvData = dstPtr + dstStride * y
+        
+        'For a minor perf improvement, we can calculate y and y^2 terms outside the inner loop
+        yFast = (y - oY)
+        ySquared = yFast * yFast
     For x = 0 To xBound
         
         'Calculate distance
-        curDistance = Sqr((x - oX) * (x - oX) + (y - oY) * (y - oY))
+        curDistance = Sqr((x - oX) * (x - oX) + ySquared)
         
         'Calculate angle, remap it against the angle of the gradient line, then normalize it
         ' (in radians, remember)
-        curAngle = PDMath.Atan2(y - oY, x - oX)
+        curAngle = PDMath.Atan2_Faster(yFast, x - oX)
         curAngle = curAngle - gradAngle
         curAngle = PDMath.Modulo(curAngle, PI_DOUBLE)
         
@@ -1031,14 +1030,15 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Long, curColor As Long, luIndex As Long
+    Dim curDistance As Long, curColor As Long, luIndex As Long, yFast As Long
     
     For y = 0 To yBound
         dstSA.pvData = dstPtr + dstStride * y
+        yFast = Abs(y - oY)
     For x = 0 To xBound
         
         'Calculate square distance, and remap it (with rounding) to a lookup table index
-        curDistance = PDMath.Max2Int(Abs(x - oX), Abs(y - oY))
+        curDistance = PDMath.Max2Int(Abs(x - oX), yFast)
         luIndex = Int(CDbl(curDistance) * mapAdjust + 0.5)
         
         'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
