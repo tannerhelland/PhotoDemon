@@ -50,8 +50,9 @@ Private m_IconPath As String
 
 Private m_ColorProfilePath As String
 Private m_UserLanguagePath As String
-Private m_SelectionPath As String
+Private m_GradientPath As String
 Private m_PalettePath As String
+Private m_SelectionPath As String
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
                                     ' are automatically placed here.
@@ -157,6 +158,15 @@ End Function
 Public Sub SetColorProfilePath(ByRef newPath As String)
     m_ColorProfilePath = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "ColorProfiles", m_ColorProfilePath
+End Sub
+
+Public Function GetGradientPath() As String
+    GetGradientPath = m_GradientPath
+End Function
+
+Public Sub SetGradientPath(ByRef newPath As String)
+    m_GradientPath = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "Gradient", m_GradientPath
 End Sub
 
 Public Function GetPalettePath() As String
@@ -395,6 +405,9 @@ Public Function InitializePaths() As Boolean
     m_DebugPath = m_DataPath & "Debug\"
     If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
     
+    m_GradientPath = m_DataPath & "Gradients\"
+    If (Not Files.PathExists(m_GradientPath)) Then Files.PathCreate m_GradientPath
+    
     m_IconPath = m_DataPath & "Icons\"
     If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
     
@@ -497,6 +510,7 @@ Public Sub LoadUserSettings()
             
         'Pull all other stored paths
         m_ColorProfilePath = GetPref_String("Paths", "ColorProfiles", m_ColorProfilePath)
+        m_GradientPath = GetPref_String("Paths", "Gradient", m_GradientPath)
         m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
         m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
         m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)

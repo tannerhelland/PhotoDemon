@@ -15,17 +15,15 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager
 'Copyright 2015-2019 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 08/October/17
-'Last update: rework the way gradient nodes are serialized to XML, to improve performance
+'Last updated: 27/February/19
+'Last update: add support for importing/exporting GIMP gradient files (ggr)
 '
 'This class manages a single PD gradient instance.
 '
-'At present, it is primarily based on the capabilities of GDI+ gradient brushes.  This will likely expand in the future,
-' but GDI+ provides a nice baseline feature set.
-'
-'Also, note that unlike other pd2D classes, this class does not expose a "debug mode" parameter.  While you can use this class
-' to create and edit gradients directly, I *strongly* recommend handling actual gradient brush creation through the pd2DBrush class.
-' It is equipped to properly create and destroy brush handles automatically, so you don't have to worry about leaks.
+'Unlike other pd2D classes, this class does not expose a "debug mode" parameter.  While you can use
+' this class to create and edit gradients directly, I *strongly* recommend handling actual gradient
+' brush creation through the pd2DBrush class. It is equipped to properly create and destroy brush
+' handles automatically, so you don't have to worry about leaks.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -37,6 +35,7 @@ Option Explicit
 Private m_GradientShape As PD_2D_GradientShape
 Private m_GradientAngle As Single
 Private m_GradientWrapMode As PD_2D_WrapMode
+Private m_GradientGammaMode As Boolean
 
 'Number of points in the current gradient
 Private m_NumOfPoints As Long
@@ -47,6 +46,9 @@ Private m_GradientPoints() As GradientPoint
 'Are the points currently sorted from lowest-to-highest?  If they are, this will be set to TRUE; this allows us to skip sorting
 ' prior to constructing the actual brush.
 Private m_IsSorted As Boolean
+
+'Gradient name is only relevant if the gradient is loaded from file; internal gradients are *not* named
+Private m_GradientName As String
 
 'All non-linear brushes are constructed with the help of a pd2DPath object
 Private m_Path As pd2DPath
@@ -65,27 +67,47 @@ Private m_GradientIsDefault As Boolean
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetGradientProperty functions, below.
 Friend Function GetGradientShape() As PD_2D_GradientShape
-    GetGradientShape = Me.GetGradientProperty(P2_GradientShape)
+    GetGradientShape = m_GradientShape
 End Function
 
 Friend Sub SetGradientShape(ByVal newShape As PD_2D_GradientShape)
-    SetGradientProperty P2_GradientShape, newShape
+    m_GradientShape = newShape
+    m_GradientIsDefault = False
 End Sub
 
 Friend Function GetGradientAngle() As Single
-    GetGradientAngle = Me.GetGradientProperty(P2_GradientAngle)
+    GetGradientAngle = m_GradientAngle
 End Function
 
 Friend Sub SetGradientAngle(ByVal newAngle As Single)
-    SetGradientProperty P2_GradientAngle, newAngle
+    m_GradientAngle = newAngle
+    m_GradientIsDefault = False
+End Sub
+
+Friend Function GetGradientGammaMode() As Boolean
+    GetGradientGammaMode = m_GradientGammaMode
+End Function
+
+Friend Sub SetGradientGammaMode(ByVal newMode As Boolean)
+    m_GradientGammaMode = newMode
 End Sub
 
 Friend Function GetGradientWrapMode() As PD_2D_WrapMode
-    GetGradientWrapMode = Me.GetGradientProperty(P2_GradientWrapMode)
+    GetGradientWrapMode = m_GradientWrapMode
 End Function
 
 Friend Sub SetGradientWrapMode(ByVal newWrapMode As PD_2D_WrapMode)
-    SetGradientProperty P2_GradientWrapMode, newWrapMode
+    m_GradientWrapMode = newWrapMode
+    m_GradientIsDefault = False
+End Sub
+
+Friend Function GetGradientName() As String
+    GetGradientName = m_GradientName
+End Function
+
+Friend Sub SetGradientName(ByRef srcName As String)
+    m_GradientName = srcName
+    m_GradientIsDefault = False
 End Sub
 
 'It's a little confusing, but a gradient string is actually comprised of two portions:
@@ -98,63 +120,18 @@ End Sub
 '(Note that in order to maintain a consistent naming convention, this public-facing GetGradientNodes() function wraps
 ' a similarly named internal function; the internal function does the heavy lifting.)
 Friend Function GetGradientNodes() As String
-    GetGradientNodes = Me.GetGradientProperty(P2_GradientNodes)
+    GetGradientNodes = GetGradientNodesAsString()
 End Function
 
 Friend Sub SetGradientNodes(ByRef srcString As String)
-    SetGradientProperty P2_GradientNodes, srcString
-End Sub
-
-'Get/set individual settings by enum type
-Friend Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As Variant
-    
-    Select Case propID
-        
-        Case P2_GradientShape
-            GetGradientProperty = m_GradientShape
-            
-        Case P2_GradientAngle
-            GetGradientProperty = m_GradientAngle
-            
-        Case P2_GradientWrapMode
-            GetGradientProperty = m_GradientWrapMode
-            
-        Case P2_GradientNodes
-            GetGradientProperty = GetGradientNodesAsString
-            
-    End Select
-    
-End Function
-
-Friend Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal newSetting As Variant)
-    
-    Select Case propID
-        
-        Case P2_GradientShape
-            m_GradientShape = CLng(newSetting)
-            
-        Case P2_GradientAngle
-            m_GradientAngle = CSng(newSetting)
-            
-        Case P2_GradientWrapMode
-            m_GradientWrapMode = CLng(newSetting)
-            
-        Case P2_GradientNodes
-            SetGradientNodesFromString CStr(newSetting)
-            m_IsSorted = False
-            
-    End Select
-    
+    SetGradientNodesFromString srcString
+    m_IsSorted = False
     m_GradientIsDefault = False
-    
 End Sub
 
 Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Boolean = True) As String
     
     If (Not m_GradientIsDefault) Then
-        
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
         
         Dim tmpXML As pdParamXML
         Set tmpXML = New pdParamXML
@@ -194,9 +171,6 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
         
         GetGradientNodesAsString = tmpXML.GetParamString()
         
-        'Performance reports:
-        'Debug.Print "Wrote gradient to string in " & VBHacks.GetTimeDiffNowAsString(startTime)
-        
     End If
         
 End Function
@@ -205,7 +179,6 @@ Private Sub SetGradientNodesFromString(ByRef srcString As String)
     
     If (LenB(srcString) = 0) Then
         Me.ResetAllProperties
-        
     Else
     
         Dim tmpXML As pdParamXML
@@ -283,6 +256,8 @@ Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
             .AddParam "GradientShape", m_GradientShape
             .AddParam "GradientAngle", m_GradientAngle
             .AddParam "GradientWrapMode", m_GradientWrapMode
+            If (LenB(m_GradientName) <> 0) Then .AddParam "GradientName", m_GradientName
+            .AddParam "GradientGammaMode", m_GradientGammaMode
             
             'Add the gradient point list (and associated params, like number of points) as one contiguous string
             .AddParam "GradientNodes", GetGradientNodesAsString(useBase64ForNodes), True, True
@@ -304,9 +279,6 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
         Me.ResetAllProperties
     Else
         
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
-        
         m_GradientIsDefault = False
         
         If (m_Serializer Is Nothing) Then Set m_Serializer = New pdParamXML
@@ -317,6 +289,8 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
             m_GradientShape = .GetLong("GradientShape", P2_GS_Linear)
             m_GradientAngle = .GetDouble("GradientAngle", 0)
             m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
+            m_GradientName = .GetString("GradientName", vbNullString)
+            m_GradientGammaMode = .GetBool("GradientGammaMode", False)
             
             'There are several possible options for gradient storage:
             ' 1) New versions of PD stick gradient nodes into their own XML entry.  Retrieve these and pass them off to a
@@ -344,9 +318,6 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
                 
         End With
         
-        'Want performance reports?  Here you go:
-        'Debug.Print "Created " & m_NumOfPoints & "-pt gradient from string in " & VBHacks.GetTimeDiffNowAsString(startTime)
-    
     End If
     
 End Sub
@@ -447,11 +418,318 @@ Friend Function GetNumOfNodes() As Long
     GetNumOfNodes = m_NumOfPoints
 End Function
 
+Friend Function LoadGradientFromFile(ByRef srcFilename As String) As Boolean
+
+    'TODO: support other gradient formats?
+    Dim cStream As New pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, srcFilename) Then
+    
+        Me.ResetAllProperties
+        
+        LoadGradientFromFile = LoadGradient_GIMP(cStream)
+        
+        'Gradients loaded from file should *not* use gamma-corrected blending
+        m_GradientGammaMode = False
+        
+    Else
+        InternalError "LoadGradientFromFile: failed to start stream object"
+        LoadGradientFromFile = False
+    End If
+
+End Function
+
+'Given a valid path to a GIMP-format .ggr file, populate this gradient object with the saved color and position list
+' (Make sure to point the stream at a file or memory location before calling this function.)
+Private Function LoadGradient_GIMP(ByRef srcStream As pdStream) As Boolean
+    
+    On Error GoTo InvalidGradient
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'Because GIMP gradients are just text files, it's easier to parse them as strings
+    srcStream.SetPosition 0, FILE_BEGIN
+    
+    Dim rawFileString As String
+    rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize())
+    
+    If (LenB(rawFileString) <> 0) Then
+        
+        'GIMP gradient files always start with the text "GIMP Gradient"
+        If Strings.StringsEqual(Left$(rawFileString, 13), "GIMP Gradient", True) Then
+            
+            'This appears to be a valid GIMP gradient file.  Hypothetically, line order should be fixed,
+            ' with nodes listed in ascending order, but this function parses the file as if line order
+            ' is *not* fixed.  Let me know if you encounter a file in the wild where this approach fails.
+            
+            'To simplify processing, split the string by lines.
+            Dim fileLines As pdStringStack
+            Set fileLines = New pdStringStack
+            fileLines.CreateFromMultilineString rawFileString
+            
+            Dim curLine As String
+            Const SPACE_CHAR As String = " "
+            
+            'Do some basic sanity tests.  We already checked line 0 for the "GIMP Gradient" ID,
+            ' so the next line should contain a gradient name.
+            curLine = fileLines.GetString(1)
+            If Strings.StringsEqual(Left$(curLine, 5), "Name:", True) Then Me.SetGradientName Trim$(Right$(curLine, Len(curLine) - 5))
+            
+            'The next line is the number of gradient nodes in the file.
+            Dim numOfGimpNodes As Long
+            curLine = Trim$(fileLines.GetString(2))
+            numOfGimpNodes = CLng(curLine)
+            
+            'Make sure at least one node is listed; less than this is (obviously) invalid, but just one node is
+            ' okay because GIMP defines gradient nodes using *both* a left and right endpoint.
+            If (numOfGimpNodes >= 1) Then
+                
+                'The selection of this particular "magic" node number is explained below, in the description
+                ' of GIMP gradient node behavior (which is quite different from ours).
+                ReDim m_GradientPoints(0 To numOfGimpNodes * 2 + 1) As GradientPoint
+                m_NumOfPoints = 0
+                
+                Dim srcColorText() As String, srcColorFloat() As Double
+                ReDim srcColorFloat(0) As Double
+                
+                'Parse each node line in turn.  (Normally we would pop lines like a stack, but as gradient
+                ' nodes are already likely to be in order, it speeds up the subsequent sort process if we
+                ' preserve existing line order - so instead of popping lines, we iterate them in order.)
+                Dim i As Long, j As Long
+                For i = 0 To numOfGimpNodes - 1
+                    
+                    'Translate i to a usable index into the string table (the first 3 lines were already parsed, remember?)
+                    curLine = Trim$(fileLines.GetString(3 + i))
+                    
+                    'AFAIK, there is no formal GIMP spec for gradient files.  One thing we want to standardize
+                    ' (to simplify parsing) is replacing tab chars with space chars; VB's lack of a generic
+                    ' "whitespace" identifier makes this approach the least of several evils.
+                    If (InStr(1, curLine, vbTab, vbBinaryCompare) <> 0) Then curLine = Replace$(curLine, vbTab, SPACE_CHAR, , , vbBinaryCompare)
+                    
+                    'Empty lines, if encountered, can be ignored
+                    If (LenB(curLine) = 0) Then
+                        'Do nothing
+                    
+                    'Comment lines in other GIMP files start with a #; to be safe, check for these and ignore
+                    ElseIf Strings.StringsEqual(Left$(curLine, 1), "#", False) Then
+                        'Do nothing
+                    
+                    'Other lines should only be color descriptors
+                    Else
+                        
+                        'Color descriptor lines contain a minimum of 11 floating-point values, and possible 13 (or more)
+                        ' values, with the extra values being GIMP-specific IDs indicating type (the shape of the blend
+                        ' between two nodes) and color mode (RGB, HSV counter-clockwise, and HSV clockwise).  We do not
+                        ' currently attempt to process these extra values, although it could be added if enough users
+                        ' request it.
+                        
+                        'Here is an example of a typical GIMP gradient color line:
+                        '0.386835 0.430897 0.470785 0.977143 0.634945 0.718332 1.000000 0.391757 0.449753 0.484848 1.000000 0 0
+                        
+                        'The first three values are the gradient's left-point, mid-point, and right-point.
+                        'The next four values are RGBA values for the left end-point
+                        'The next four values are RGBA values for the right end-point
+                        
+                        'This format is problematic for PhotoDemon, which behaves like most other software and defines
+                        ' gradients as a series of standalone nodes, each with their own RGBA values.
+                        
+                        'As such, we need to translate the GIMP values into usable PhotoDemon ones.
+                        
+                        'The way we do this is simple:
+                        '1) Create nodes for all left endpoints using left colors
+                        '2) Auto-calculate midpoint color values by interpolating left/right colors,
+                        '    and manually create matching nodes for them.
+                        '3) Ignore right end-point colors and positions, except for the final node.
+                        
+                        'Start by attempting to split the line by space chars
+                        srcColorText = Split(curLine, SPACE_CHAR)
+                        
+                        'Make sure we retrieved enough values to avoid OOB errors during parsing
+                        If (UBound(srcColorText) < 10) Then
+                            InternalError "LoadGradient_GIMP bad color", "bad color found on line " & CStr(i + 3)
+                            GoTo BadLineColor
+                        End If
+                        
+                        'Next, attempt to convert all text entries to valid floating-point values on
+                        ' the range [0.0, 1.0].
+                        If (UBound(srcColorFloat) <> UBound(srcColorText)) Then ReDim srcColorFloat(0 To UBound(srcColorText))
+                        For j = 0 To UBound(srcColorText)
+                            srcColorFloat(j) = TextSupport.CDblCustom(srcColorText(j))
+                            
+                            'For color, opacity, and position entries, ensure the color value is valid
+                            If (j <= 10) Then
+                                If (srcColorFloat(j) < 0#) Or (srcColorFloat(j) > 1#) Then
+                                    InternalError "LoadGradient_GIMP bad color", "bad color found on line " & CStr(i + 3)
+                                    GoTo BadLineColor
+                                End If
+                            End If
+                        Next j
+                        
+                        'If we're still here, we hypothetically have usable data.  Start producing gradient nodes
+                        ' from the result!  (Note that this section uses some "magic numbers" for indices into the
+                        ' split line string.  If you have questions, review the sample GIMP gradient color line,
+                        ' above, to see why we use the indices we do for specific values.)
+                        
+                        'First is the left endpoint.  This value is always generated.
+                        With m_GradientPoints(m_NumOfPoints)
+                            .PointPosition = srcColorFloat(0)
+                            .PointRGB = RGB(Int(srcColorFloat(3) * 255# + 0.5), Int(srcColorFloat(4) * 255# + 0.5), Int(srcColorFloat(5) * 255# + 0.5))
+                            .PointOpacity = srcColorFloat(6) * 100#
+                        End With
+                        
+                        m_NumOfPoints = m_NumOfPoints + 1
+                        
+                        'Next is the midpoint.  If the midpoint's coordinate is anything other than the halfway
+                        ' value between the left and right endpoints, we will generate it as a unique node with
+                        ' its own unique position.
+                        If (Abs(srcColorFloat(1) - (srcColorFloat(0) + srcColorFloat(2)) * 0.5) >= 0.000002) Then
+                            
+                            'Because of the way GIMP gradient segments work, gradient files may contain
+                            ' segments with identical start and end positions (to forcibly set a whole
+                            ' chunk of the gradient to a solid color).  Check for this state, and if found,
+                            ' do not generate a manual gradient midpoint.
+                            If (srcColorFloat(3) <> srcColorFloat(7)) Or (srcColorFloat(4) <> srcColorFloat(8)) Or (srcColorFloat(5) <> srcColorFloat(9)) Or (srcColorFloat(6) <> srcColorFloat(10)) Then
+                            
+                                Dim newR As Double, newG As Double, newB As Double, newA As Double
+                                With m_GradientPoints(m_NumOfPoints)
+                                    .PointPosition = srcColorFloat(1)
+                                    newR = (srcColorFloat(3) + srcColorFloat(7)) * 0.5
+                                    newG = (srcColorFloat(4) + srcColorFloat(8)) * 0.5
+                                    newB = (srcColorFloat(5) + srcColorFloat(9)) * 0.5
+                                    newA = (srcColorFloat(6) + srcColorFloat(10)) * 0.5
+                                    .PointRGB = RGB(Int(newR * 255# + 0.5), Int(newG * 255# + 0.5), Int(newB * 255# + 0.5))
+                                    .PointOpacity = newA * 100#
+                                End With
+    
+                                m_NumOfPoints = m_NumOfPoints + 1
+                                
+                            End If
+
+                        End If
+                        
+                        'If this is the last point in the file, add the final *right* endpoint to the list
+                        If (i = numOfGimpNodes - 1) Then
+                            With m_GradientPoints(m_NumOfPoints)
+                                .PointPosition = srcColorFloat(2)
+                                .PointRGB = RGB(Int(srcColorFloat(7) * 255# + 0.5), Int(srcColorFloat(8) * 255# + 0.5), Int(srcColorFloat(9) * 255# + 0.5))
+                                .PointOpacity = srcColorFloat(10) * 100#
+                            End With
+                            m_NumOfPoints = m_NumOfPoints + 1
+                        End If
+                    
+                    '/end check line type
+                    End If
+BadLineColor:
+                Next i
+                
+                'If we haven't errored out, consider this a valid parse
+                If (m_NumOfPoints >= 2) Then
+                    ReDim Preserve m_GradientPoints(0 To m_NumOfPoints - 1) As GradientPoint
+                    LoadGradient_GIMP = True
+                Else
+                    LoadGradient_GIMP = False
+                End If
+                
+            '/end check for at least two valid nodes
+            End If
+            
+            'Note that the current gradient is *not* guaranteed to be sorted (although it likely is,
+            ' as GIMP tends to list points in ascending order).
+            m_IsSorted = False
+            
+        '/end basic file validation
+        Else
+            LoadGradient_GIMP = False
+        End If
+    
+    End If
+    
+    Exit Function
+
+InvalidGradient:
+    LoadGradient_GIMP = False
+
+End Function
+
+'Save the current gradient to a GIMP-format .ggr file.  The target file, if it exists, will be forcibly overwritten - plan accordingly!
+Friend Function SaveGradient_GIMP(ByRef dstFilename As String) As Boolean
+    
+    'Sanity checks; all possible fail states are not currently covered, so "use at your own risk", etc
+    If (m_NumOfPoints <= 1) Then Exit Function
+    
+    'Because GIMP gradients are just text files, it's easier to assemble them as strings
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'GIMP gradient files always start with the text "GIMP Gradient"
+    dstText.AppendLine "GIMP Gradient"
+    
+    'Next is the gradient name, if any
+    If (LenB(m_GradientName) <> 0) Then
+        dstText.AppendLine "Name: " & m_GradientName
+    Else
+        dstText.AppendLine "Name: " & g_Language.TranslateMessage("Unnamed gradient")
+    End If
+    
+    'Next is the number of nodes in the gradient.  Note that GIMP differs from most photo editors because
+    ' it defines gradients by a series of *segments*, not *nodes* - and each segment has its own left,
+    ' midpoint, and right coordinates, plus left and right colors.  Because of this, we actually write
+    ' one *less* node than we actually have, as the final node is instead stored as the right endpoint
+    ' of the next-to-last segment in the file.
+    dstText.AppendLine CStr(m_NumOfPoints - 1)
+    
+    'We now need to write each node in turn, but note that we will be writing these in *pairs*,
+    ' because we must write them as *segments*, not *nodes*.  (Note also that all values are written
+    ' as text representations of floating-point values, forced to 7 significant digits.)
+    Dim i As Long
+    For i = 0 To m_NumOfPoints - 2
+        
+        'First, place the left, midpoint, and right values
+        dstText.Append GetGIMPStringValue(m_GradientPoints(i).PointPosition)
+        dstText.Append GetGIMPStringValue((m_GradientPoints(i).PointPosition + m_GradientPoints(i + 1).PointPosition) * 0.5)
+        dstText.Append GetGIMPStringValue(m_GradientPoints(i + 1).PointPosition)
+        
+        'Next, the RGBA values of the current point
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractRed(m_GradientPoints(i).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractGreen(m_GradientPoints(i).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractBlue(m_GradientPoints(i).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(m_GradientPoints(i).PointOpacity) * 0.01)
+        
+        '...followed by the RGBA values of the next point
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractRed(m_GradientPoints(i + 1).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractGreen(m_GradientPoints(i + 1).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(Colors.ExtractBlue(m_GradientPoints(i + 1).PointRGB)) / 255#)
+        dstText.Append GetGIMPStringValue(CDbl(m_GradientPoints(i + 1).PointOpacity) * 0.01)
+        
+        'Immediately following these values are GIMP-specific type and color mode identifiers.  We can simply
+        ' hard-code these.
+        dstText.AppendLine "0 0"
+        
+    Next i
+    
+    'And that's that!  Dump the completed string out to file.
+    Files.FileSaveAsText dstText.ToString(), dstFilename, True, False
+    
+    Exit Function
+
+InvalidGradient:
+    SaveGradient_GIMP = False
+
+End Function
+
+'When writing GIMP gradient files, we have to supply specifically formatted number strings; this function
+' takes care of that for you.  Note that it forcibly appends a trailing space, by design.
+Private Function GetGIMPStringValue(ByVal srcValue As Double) As String
+    GetGIMPStringValue = Format$(srcValue, "0.000000")
+    If (InStr(1, GetGIMPStringValue, ",") <> 0) Then GetGIMPStringValue = Replace$(GetGIMPStringValue, ",", ".")
+    GetGIMPStringValue = GetGIMPStringValue & " "
+End Function
+
 Friend Sub ResetAllProperties()
     
     m_GradientShape = P2_GS_Linear
-    m_GradientAngle = 0
+    m_GradientAngle = 0!
     m_GradientWrapMode = P2_WM_Tile
+    m_GradientGammaMode = False
     
     m_NumOfPoints = 2
     ReDim m_GradientPoints(0 To 1) As GradientPoint
@@ -476,9 +754,6 @@ End Sub
 ' (TODO: optimize the algorithm to pre-check for a sorted array; most of the time, that will be the case, so we can
 '        skip the sorting step entirely.)
 Private Sub SortGradientArray()
-    
-    Dim startTime As Currency
-    VBHacks.GetHighResTime startTime
     
     'If the array is already sorted, ignore this request
     If m_IsSorted Then Exit Sub
@@ -523,9 +798,6 @@ Private Sub SortGradientArray()
     'Mark the array as sorted
     m_IsSorted = True
     
-    'Want timing reports?  Here you go:
-    'Debug.Print "Gradient array sorted in " & VBHacks.GetTimeDiffNowAsString(startTime)
-
 End Sub
 
 'Use QuickSort to sort gradient nodes.  This becomes important as the number of nodes increases.
@@ -592,18 +864,19 @@ Private Function QSPartition(ByRef srcGradientNodes() As GradientPoint, ByVal lo
     
 End Function
 
-'Once this class is populated correctly, you can use this function to retrieve a matching brush handle.  (At present, only GDI+
-' is supported as a backend.)
+'Once this class is populated with all desired settings, you can use this function to retrieve a
+' matching brush handle.
 '
-'Note that a rect is *required* in order to size the gradient region correctly.  (The rect defines where the gradient starts and ends.)
+'Note that a rect is *required* in order to size the gradient region correctly.  (The rect defines
+' where the gradient starts and ends.)
 '
-'As a convenience, if you only want a default linear gradient (as used in the UI, among other things), set forceToLinearMode to TRUE.
-' This will return a linear gradient brush at angle zero, suitable for previews or any kind of "gradient editor" UI, without modifying
-' any of the current gradient settings.
+'As a convenience, if you only want a default linear gradient (as used in the UI, among other things),
+' set forceToLinearMode to TRUE.  This will return a linear gradient brush at angle zero, suitable for
+' previews or any kind of "interactive" UI, without modifying any of the current gradient settings.
 '
-'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with this class via pd2DBrush,
-' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
-' correct backend-specific function!
+'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with
+' this class via pd2DBrush, it will take care of that automatically - but if you access this class manually,
+' make sure to free the brush using the correct backend-specific function!
 Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1!) As Long
     
     'Make sure a gradient has been created
@@ -687,11 +960,15 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
         ' two dummy colors.
         gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 0, P2_WM_TileFlipXY)
         If (gdipBrush = 0) Then
-            Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+            InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
         Else
         
             'Now that we have a brush handle, override the dummy colors with our full color array
-            If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+            If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+            
+            'Set gamma mode, as relevant
+            If m_GradientGammaMode Then GDI_Plus.GDIPlus_LineGradientSetGamma gdipBrush, True
+            
         End If
         
     Else
@@ -702,10 +979,10 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
             Case P2_GS_Linear, P2_GS_Reflection
                 gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 0, m_GradientWrapMode)
                 If (gdipBrush = 0) Then
-                    Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
-                    'Debug.Print "Debug info: " & Me.GetGradientAsString(False)
+                    InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
                 Else
-                    If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    If m_GradientGammaMode Then GDI_Plus.GDIPlus_LineGradientSetGamma gdipBrush, True
                 End If
                 
             'At present, all other gradient types are constructed as "path gradients".  These gradients require a GDI+ GraphicsPath
@@ -791,13 +1068,14 @@ Friend Function GetBrushHandle(ByRef dstRect As RectF, Optional ByVal forceToLin
                     GDI_Plus.SetGDIPlusPathBrushCenter gdipBrush, centerX, centerY
                     
                     'Next, override the brush colors with our custom array
-                    If Not GDI_Plus.OverrideGDIPlusPathGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    If Not GDI_Plus.OverrideGDIPlusPathGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
                     
                     'Finally, set any/all custom parameters (e.g. wrap mode)
                     GDI_Plus.SetGDIPlusPathBrushWrap gdipBrush, m_GradientWrapMode
+                    If m_GradientGammaMode Then GDI_Plus.GDIPlus_PathGradientSetGamma gdipBrush, True
                 
                 Else
-                    Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to create a valid path brush handle."
+                    InternalError "GDI+ error", "WARNING!  pd2DGradient.GetBrushHandle failed to create a valid path brush handle."
                 End If
                 
         End Select
@@ -890,7 +1168,6 @@ Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA
         GetColorAtPosition_RGBA = True
         
     Else
-        Debug.Print "WARNING!  getColorAtPosition_RGBA was called before the gradient was initialized!"
         GetColorAtPosition_RGBA = False
     End If
     
@@ -953,6 +1230,6 @@ End Sub
 ' better fit your project (e.g. perhaps it could raise an actual error event).
 '
 'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DGradient"
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal errorNumberIfPresent As Long = 0)
+    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, errorNumberIfPresent, "pd2DGradient"
 End Sub
