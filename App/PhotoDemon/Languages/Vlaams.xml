@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.388</langversion>
+<langversion>6.7.389</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2930,7 +2930,7 @@ Geef een numerieke waarde.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8409,6 +8409,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
+<original>SVG Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Import gradient</original>
 <translation></translation>
 </phrase>
@@ -8458,7 +8463,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>selecteer een node a.u.b.</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 55 phrases. 20 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15624,10 +15629,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2182 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 12298 total words. -->
 
 </pdData>

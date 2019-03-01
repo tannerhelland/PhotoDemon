@@ -31,10 +31,8 @@ Attribute VB_Name = "Tools_Gradient"
 
 Option Explicit
 
-'***********************************
 'Development-time only; remove in production
-Private Const PROFILE_GRADIENT_PERF As Boolean = True
-'***********************************
+Private Const PROFILE_GRADIENT_PERF As Boolean = False
 
 'Depending on gradient and/or system settings, we may switch between different gradient renderers.
 ' Many - but not all - gradient functions are implemented against multiple backends, so you'll need

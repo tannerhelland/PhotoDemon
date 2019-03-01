@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager
 'Copyright 2015-2019 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 27/February/19
-'Last update: add support for importing/exporting GIMP gradient files (ggr)
+'Last updated: 28/February/19
+'Last update: add support for importing/exporting SVG gradient files
 '
 'This class manages a single PD gradient instance.
 '
@@ -419,15 +419,21 @@ Friend Function GetNumOfNodes() As Long
 End Function
 
 Friend Function LoadGradientFromFile(ByRef srcFilename As String) As Boolean
-
-    'TODO: support other gradient formats?
+    
+    'First, we need to wrap a stream object around the source file.  If the source file is svgz,
+    ' we first want to transparently decompress the file into a buffer, *then* wrap that buffer.
+    ' (At present, svgz files remain TODO!)
     Dim cStream As New pdStream
     Set cStream = New pdStream
     If cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, srcFilename) Then
     
         Me.ResetAllProperties
         
-        LoadGradientFromFile = LoadGradient_GIMP(cStream)
+        'Attempt SVG first
+        LoadGradientFromFile = LoadGradient_SVG(cStream)
+        
+        'Next, attempt GIMP format
+        If (Not LoadGradientFromFile) Then LoadGradientFromFile = LoadGradient_GIMP(cStream)
         
         'Gradients loaded from file should *not* use gamma-corrected blending
         m_GradientGammaMode = False
@@ -636,7 +642,7 @@ BadLineColor:
             ' as GIMP tends to list points in ascending order).
             m_IsSorted = False
             
-        '/end basic file validation
+        '/end basic file validation; file is not a GIMP gradient
         Else
             LoadGradient_GIMP = False
         End If
@@ -648,6 +654,173 @@ BadLineColor:
 InvalidGradient:
     LoadGradient_GIMP = False
 
+End Function
+
+'Given a valid path to an SVG file with at least one defined <linearGradient> object,
+' populate this gradient object with the saved color and position list.
+'
+' (Make sure to point the stream at a file or memory location before calling this function.)
+Private Function LoadGradient_SVG(ByRef srcStream As pdStream) As Boolean
+    
+    On Error GoTo InvalidGradient
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'Because SVG gradients are just text files, it's easier to parse them as strings
+    srcStream.SetPosition 0, FILE_BEGIN
+    
+    Dim rawFileString As String
+    rawFileString = srcStream.ReadString_UnknownEncoding(srcStream.GetStreamSize())
+    
+    If (LenB(rawFileString) <> 0) Then
+        
+        'Validate and load the XML
+        Dim xmlEngine As Object 'MSXML2.DOMDocument
+        Set xmlEngine = CreateObject("MSXML2.DOMDocument")
+        xmlEngine.async = False
+        xmlEngine.validateOnParse = True
+        
+        If xmlEngine.loadXML(rawFileString) Then
+        
+            'The SVG file appears to be usable.  Look for the first linear gradient object
+            ' in the file.  (If multiple gradients are embedded, we don't currently have a
+            ' good way to deal with them - so for now, users will have to settle for loading
+            ' the first stored gradient, only.  We could possibly raise a dialog in the
+            ' future to allow them to select an embedded gradient, but that's a huge UI
+            ' investment for a minor feature... so it'll have to wait.)
+            Dim embeddedGradients As Object 'MSXML2.IXMLDOMNodeList
+            Set embeddedGradients = xmlEngine.getElementsByTagName("linearGradient")
+            
+            'If a linear gradient wasn't found, look for a radial gradient
+            If (embeddedGradients.Length <= 0) Then Set embeddedGradients = xmlEngine.getElementsByTagName("radialGradient")
+            
+            'Hopefully we found at least *one* gradient in the file...
+            If (embeddedGradients.Length > 0) Then
+            
+                'We now want to iterate all "stop" attributes inside the linear gradient object
+                Dim listOfStops As Object 'MSXML2.IXMLDOMNodeList
+                Set listOfStops = embeddedGradients(0).childNodes
+                
+                'Look for a name, which is typically stored as the "id" of the gradient.
+                ' (This is true for e.g. Krita, but not necessarily for Inkscape SVGs,
+                '  which may just supply a generic ID like "linearGradient1234")
+                On Error GoTo 0: On Error Resume Next
+                m_GradientName = vbNullString
+                m_GradientName = embeddedGradients(0).Attributes.getNamedItem("id").NodeValue
+                On Error GoTo 0: On Error GoTo InvalidGradient
+                
+                'The number of child nodes are also the "upper limit" of possible node objects.
+                ReDim m_GradientPoints(0 To listOfStops.Length - 1) As GradientPoint
+                m_NumOfPoints = 0
+                
+                Dim i As Long, j As Long, k As Long
+                For i = 0 To listOfStops.Length - 1
+                    
+                    'If this is a stop, parse its attributes and add it to the current node list
+                    If Strings.StringsEqual(listOfStops(i).baseName, "stop", True) Then
+                        
+                        'Populate a default opacity value, in case an attribute is missing.
+                        ' (Default colors and/or position values are 0.)
+                        m_GradientPoints(m_NumOfPoints).PointOpacity = 100#
+                        
+                        On Error GoTo 0: On Error GoTo BadStopNode
+                        
+                        Dim stopProps As Object 'MSXML2.IXMLDOMNode
+                        Dim stopAttribName As String
+                        
+                        For j = 0 To listOfStops(i).Attributes.Length - 1
+                            
+                            Set stopProps = listOfStops(i).Attributes(j)
+                            stopAttribName = stopProps.nodeName
+                            
+                            'Offsets must always be declared as standalone attributes, but note that they
+                            ' *can* be described as percents instead of fractions.
+                            If Strings.StringsEqual(stopAttribName, "offset", True) Then m_GradientPoints(m_NumOfPoints).PointPosition = SVG_GetFloatFromString(stopProps.NodeValue)
+                            
+                            'It's easier for us if stop color and offset are stored individualy...
+                            If Strings.StringsEqual(stopAttribName, "stop-color", True) Then Colors.GetColorFromString stopProps.NodeValue, m_GradientPoints(m_NumOfPoints).PointRGB
+                            If Strings.StringsEqual(stopAttribName, "stop-opacity", True) Then m_GradientPoints(m_NumOfPoints).PointOpacity = SVG_GetFloatFromString(stopProps.NodeValue) * 100#
+                            
+                            '...but they may also be crammed into a single "style" attribute
+                            If Strings.StringsEqual(stopAttribName, "style", True) Then
+                                
+                                'Unfortunately, I don't know if MSXML can be coerced into parsing a style
+                                ' attribute for us.  It's easy enough to parse ourselves, at least.
+                                
+                                'Break the style element into discrete descriptors.
+                                Dim styleEntries() As String, styleSubEntries() As String
+                                If InStr(1, stopProps.NodeValue, ";") Then
+                                    styleEntries = Split(stopProps.NodeValue, ";")
+                                Else
+                                    ReDim styleEntries(0) As String
+                                    styleEntries(0) = stopProps.NodeValue
+                                End If
+                                
+                                For k = 0 To UBound(styleEntries)
+                                    If (LenB(styleEntries(k)) > 0) Then
+                                        styleSubEntries = Split(styleEntries(k), ":")
+                                        If Strings.StringsEqual(styleSubEntries(0), "stop-color", True) Then Colors.GetColorFromString styleSubEntries(1), m_GradientPoints(m_NumOfPoints).PointRGB
+                                        If Strings.StringsEqual(styleSubEntries(0), "stop-opacity", True) Then m_GradientPoints(m_NumOfPoints).PointOpacity = SVG_GetFloatFromString(styleSubEntries(1)) * 100#
+                                    End If
+                                Next k
+                                
+                            End If
+BadStopNode:
+                            On Error GoTo 0: On Error GoTo InvalidGradient
+                        Next j
+                        
+                        m_NumOfPoints = m_NumOfPoints + 1
+                        
+                    End If
+                
+                Next i
+                
+                'If we haven't errored out, and at least two valid stops were found, consider this a valid parse
+                If (m_NumOfPoints >= 2) Then
+                    ReDim Preserve m_GradientPoints(0 To m_NumOfPoints - 1) As GradientPoint
+                    LoadGradient_SVG = True
+                Else
+                    InternalError "LoadGradient_SVG", "not enough valid stops in file"
+                    LoadGradient_SVG = False
+                End If
+                
+                'Note that the current gradient is *not* guaranteed to be sorted (although it likely is,
+                ' as e.g. Inkscape tends to write nodes in ascending order).
+                m_IsSorted = False
+            
+            '/no linear or radial gradients found
+            Else
+                InternalError "LoadGradient_SVG", "no gradients in file"
+                LoadGradient_SVG = False
+            End If
+            
+        '/end basic file validation; file is not SVG
+        Else
+            InternalError "LoadGradient_SVG", "couldn't load XML file"
+            LoadGradient_SVG = False
+        End If
+    
+    '/end sanity check on file contents being non-null
+    Else
+        LoadGradient_SVG = False
+    End If
+    
+    Exit Function
+
+InvalidGradient:
+    LoadGradient_SVG = False
+
+End Function
+
+'Gradient attributes in an SVG file can be floats or percents; this function helpfully covers
+' both cases, and always returns a proper float value on the range [0.0, 1.0].
+Private Function SVG_GetFloatFromString(ByVal srcValue As String) As Double
+    If (InStr(1, srcValue, "%") <> 0) Then
+        SVG_GetFloatFromString = TextSupport.CDblCustom(Left$(srcValue, InStr(1, srcValue, "%") - 1)) * 0.01
+    Else
+        SVG_GetFloatFromString = TextSupport.CDblCustom(srcValue)
+    End If
+    If (SVG_GetFloatFromString < 0#) Then SVG_GetFloatFromString = 0#
+    If (SVG_GetFloatFromString > 1#) Then SVG_GetFloatFromString = 1#
 End Function
 
 'Save the current gradient to a GIMP-format .ggr file.  The target file, if it exists, will be forcibly overwritten - plan accordingly!
@@ -707,13 +880,8 @@ Friend Function SaveGradient_GIMP(ByRef dstFilename As String) As Boolean
     Next i
     
     'And that's that!  Dump the completed string out to file.
-    Files.FileSaveAsText dstText.ToString(), dstFilename, True, False
+    SaveGradient_GIMP = Files.FileSaveAsText(dstText.ToString(), dstFilename, True, False)
     
-    Exit Function
-
-InvalidGradient:
-    SaveGradient_GIMP = False
-
 End Function
 
 'When writing GIMP gradient files, we have to supply specifically formatted number strings; this function
@@ -722,6 +890,52 @@ Private Function GetGIMPStringValue(ByVal srcValue As Double) As String
     GetGIMPStringValue = Format$(srcValue, "0.000000")
     If (InStr(1, GetGIMPStringValue, ",") <> 0) Then GetGIMPStringValue = Replace$(GetGIMPStringValue, ",", ".")
     GetGIMPStringValue = GetGIMPStringValue & " "
+End Function
+
+'Save the current gradient to a mini SVG file.  The target file, if it exists, will be forcibly overwritten - plan accordingly!
+Friend Function SaveGradient_SVG(ByRef dstFilename As String) As Boolean
+    
+    'Sanity checks; all possible fail states are not currently covered, so "use at your own risk", etc
+    If (m_NumOfPoints <= 1) Then Exit Function
+    
+    'Because SVG gradients are ultimately just text files, it's easier to assemble them as strings
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'Start by appending standard XML headers
+    dstText.AppendLine "<?xml version=""1.0"" encoding=""UTF-8"" ?>"
+    dstText.AppendLine "<!-- Created with PhotoDemon (https://photodemon.org) -->"
+    dstText.AppendLine "<svg>"
+    
+    'Next, a header for the gradient object itself.  Note that some attributes are simply placeholders
+    ' to ensure the gradient is a valid SVG item; photo editors do not actually use these attributes
+    ' when rendering the gradient inside an app.
+    dstText.Append vbTab & "<linearGradient id="""
+    If (LenB(m_GradientName) <> 0) Then dstText.Append m_GradientName Else dstText.Append g_Language.TranslateMessage("Unnamed gradient")
+    dstText.AppendLine """ gradientUnits=""objectBoundingBox"" spreadMethod=""pad"" >"
+    
+    'Write each gradient node in turn
+    Dim i As Long
+    For i = 0 To m_NumOfPoints - 1
+        dstText.Append vbTab & vbTab & "<stop "
+        dstText.Append "stop-color=""#" & Colors.GetHexStringFromRGB(m_GradientPoints(i).PointRGB) & """ "
+        dstText.Append "stop-opacity=""" & TextSupport.FormatInvariant(m_GradientPoints(i).PointOpacity * 0.01, "0.######") & """ "
+        dstText.Append "offset=""" & TextSupport.FormatInvariant(m_GradientPoints(i).PointPosition, "0.######") & """ "
+        dstText.AppendLine "/>"
+    Next i
+    
+    'Finish off the XML
+    dstText.AppendLine vbTab & "</linearGradient>"
+    dstText.AppendLine "</svg>"
+    
+    'And that's that!  Dump the completed string out to file.
+    SaveGradient_SVG = Files.FileSaveAsText(dstText.ToString(), dstFilename, True, False)
+    
+    Exit Function
+
+InvalidGradient:
+    SaveGradient_SVG = False
+
 End Function
 
 Friend Sub ResetAllProperties()

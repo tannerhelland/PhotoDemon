@@ -384,6 +384,37 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
     
 End Function
 
+Friend Function LoadTextResource(ByRef txtResName As String, ByRef dstString As String) As Boolean
+    
+    LoadTextResource = False
+    
+    If m_ResourcesAvailable Then
+    
+        'Ensure this resource exists in the collection.
+        Dim nodeIndex As Long
+        nodeIndex = m_Resources.GetNodeIndexFromName(txtResName, vbBinaryCompare)
+        If (nodeIndex >= 0) Then
+        
+            'Load the data into a byte array
+            Dim retSize As Long
+            If m_Resources.GetNodeDataByIndex(nodeIndex, False, m_Buffer, False, retSize) Then
+            
+                'Translate the data into a usable VB string
+                dstString = Strings.StringFromUTF8(m_Buffer, retSize)
+                LoadTextResource = True
+                
+            Else
+                RaiseResourceError "couldn't get node data by index: " & txtResName
+            End If
+        
+        Else
+            RaiseResourceError "requested node not found: " & txtResName
+        End If
+        
+    End If
+
+End Function
+
 Private Sub RaiseResourceError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
     If msgIsNonErrorFeedback Then
         PDDebug.LogAction "pdResources reported: " & msgError

@@ -747,8 +747,9 @@ Private Sub ImportGradientFile()
     Dim cdFilter As pdString, cdFilterExtensions As pdString
     Set cdFilter = New pdString
     
-    cdFilter.Append g_Language.TranslateMessage("All supported gradients") & "|*.ggr|"
+    cdFilter.Append g_Language.TranslateMessage("All supported gradients") & "|*.svg;*.ggr|"
     cdFilter.Append g_Language.TranslateMessage("GIMP Gradient") & " (.ggr)|*.ggr|"
+    cdFilter.Append g_Language.TranslateMessage("SVG Gradient") & " (.svg)|*.svg|"
     cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdIndex As Long
@@ -809,11 +810,13 @@ Private Sub ExportGradientFile()
     Set cdFilter = New pdString
     Set cdFilterExtensions = New pdString
     
-    cdFilter.Append g_Language.TranslateMessage("GIMP Gradient") & " (.ggr)|*.ggr"
-    cdFilterExtensions.Append "ggr"
+    cdFilter.Append g_Language.TranslateMessage("GIMP Gradient") & " (.ggr)|*.ggr|"
+    cdFilter.Append g_Language.TranslateMessage("SVG Gradient") & " (.svg)|*.svg"
+    cdFilterExtensions.Append "ggr|"
+    cdFilterExtensions.Append "svg"
     
     Dim cdIndex As Long
-    cdIndex = 1
+    cdIndex = 2
     
     'Suggest a file name.  At present, we just reuse the current image's name.
     ' (TODO: find a way to integrate gradient name more elegantly.)
@@ -848,6 +851,10 @@ Private Sub ExportGradientFile()
             'Export GIMP format
             Case 1
                 srcGradient.SaveGradient_GIMP dstFilename
+                
+            'Export SVG format
+            Case 2
+                srcGradient.SaveGradient_SVG dstFilename
             
             'No other supported formats at present
             Case Else

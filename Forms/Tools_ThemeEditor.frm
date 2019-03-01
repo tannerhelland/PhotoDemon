@@ -573,6 +573,15 @@ Private Sub cmdExport_Click()
                     
                 End If
                 
+            '"Other" type resources are simply saved as-is, byte for byte; it's up to the caller to
+            ' interpret the information manually at run-time.
+            ElseIf (m_Resources(i).ResType = PDRT_Other) Then
+                Dim otherResBytes() As Byte
+                If Files.FileLoadAsByteArray(m_Resources(i).ResFileLocation, otherResBytes) Then
+                    cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(otherResBytes(0)), UBound(otherResBytes) + 1, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+                Else
+                    PDDebug.LogAction "WARNING!  Other resource (" & m_Resources(i).ResFileLocation & ") wasn't loaded successfully."
+                End If
             End If
             
         Next i

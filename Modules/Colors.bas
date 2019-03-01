@@ -3,8 +3,8 @@ Attribute VB_Name = "Colors"
 'Miscellaneous Color Functions
 'Copyright 2013-2019 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 13/August/13
-'Last update: added XYZ and CieLAB color conversions
+'Last updated: 28/February/19
+'Last update: add support for retrieving colors by SVG color name
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June 2013.  This module is now used to store all the random bits of specialized color processing code
@@ -39,6 +39,10 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 
 'Constants to improve color space conversion performance
 Private Const ONE_DIV_SIX As Double = 0.166666666666667
+
+'Collection of SVG color names, extracted at run-time from a compressed text file in PD's resource segment.
+' This collection is *not* populated by default; it is automagically populated at first request.
+Private m_SVGColors As pdDictionary
 
 'Present the user with PD's custom color selection dialog.
 ' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
@@ -775,14 +779,19 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
             End If
             
         End If
+            
+    'Next, look for an RGB prefix
+    ElseIf Strings.StringsEqual(Left$(srcString, 4), "rgb(", True) Then
+        dstColorType = ColorRGB
         
+    'Next, look for HSV prefixes
+    ElseIf Strings.StringsEqual(Left$(srcString, 5), "rgba(", True) Then
+        'TODO
+        
+    'Lastly, look for SVG color keywords
+    ElseIf IsStringAColorName(srcString) Then
+        dstColorType = ColorNamed
     End If
-    '/End hex validation
-    
-    'TODO: if the color is still unkown, continue checking other color possibilities
-    'If (dstColorType = ColorUnknown) Then
-    '    '???
-    'End If
     
     'If we've attempted to match all existing color types without success, return failure
     IsStringAColor = (dstColorType <> ColorUnknown)
@@ -825,8 +834,49 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
         Case ColorHSLA
         
         Case ColorNamed
+            dstRGBLong = GetRGBLongFromNamedColor(srcString)
     
     End Select
     
 End Function
 
+'Attempt to match a string against a known list of SVG color names
+Private Function IsStringAColorName(ByRef srcString As String) As Boolean
+    'Debug.Print "srcstring", srcString
+    If (m_SVGColors Is Nothing) Then BuildColorNameList
+    IsStringAColorName = m_SVGColors.DoesKeyExist(srcString)
+End Function
+
+'Make sure you call IsStringAColorName, above, BEFORE calling this function, to verify that your
+' name actually exists in the collection.
+Private Function GetRGBLongFromNamedColor(ByRef srcColorName As String) As Long
+    If (m_SVGColors Is Nothing) Then BuildColorNameList
+    GetRGBLongFromNamedColor = m_SVGColors.GetEntry_Long(srcColorName)
+End Function
+
+Private Sub BuildColorNameList()
+    
+    Set m_SVGColors = New pdDictionary
+    
+    'Retrieve the list of color names from PD's resource segment
+    Dim colorList As String
+    If g_Resources.LoadTextResource("named_colors", colorList) Then
+    
+        'Split the list by line-ending
+        Dim sList As pdStringStack
+        Set sList = New pdStringStack
+        sList.CreateFromMultilineString colorList
+        
+        'Each line uses a set format, with the name on the left and the color (hex) on the right, e.g.:
+        ' mintcream:#f5fffa
+        
+        ' Parse each line in turn, splitting out the name and color segments as we go.
+        Dim i As Long, tmpString As String
+        For i = 0 To sList.GetNumOfStrings - 1
+            tmpString = sList.GetString(i)
+            m_SVGColors.AddEntry Left$(tmpString, InStr(1, tmpString, ":") - 1), Colors.GetRGBLongFromHex(Right$(tmpString, Len(tmpString) - InStr(1, tmpString, ":")))
+        Next i
+    
+    End If
+    
+End Sub

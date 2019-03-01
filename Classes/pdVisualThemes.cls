@@ -710,21 +710,24 @@ Private Function ResolveColor(ByVal initialColorValue As String) As String
             Exit Function
         End If
         
-        'Next, see if the current color value appears to be some kind of valid color representation
-        If Colors.IsStringAColor(initialColorValue, , False) Then
-            ResolveColor = initialColorValue
-            Exit Function
-        
-        'This is not a valid color representation, so assume it's a custom color descriptor (or invalid, I suppose)
-        Else
-            
-            'Attempt to retrieve a new value from the theme's color definition section, then run our validation
-            ' checks a second time.  (We'll repeat this until we fail to retrieve a new definition, or we identify
-            ' a string that can be parsed into an actual color.)
-            initialColorValue = m_XML.GetUniqueTag_String(initialColorValue, vbNullString, , "Definitions")
-            
+        'Next, see if the current color value appears to be some kind of valid color representation.
+        ' (Currently, we require all theme colors to be defined in hex format - that makes this check
+        ' fast and reliable.)
+        If (Left$(initialColorValue, 1) = "#") Then
+            If Colors.IsStringAColor(initialColorValue, , False) Then
+                ResolveColor = initialColorValue
+                Exit Function
+            End If
         End If
-    
+        
+        'If we're still here, this is not a valid color representation, so assume it's a custom color
+        ' descriptor (or invalid, I suppose)
+        
+        'Attempt to retrieve a new value from the theme's color definition section, then run our validation
+        ' checks a second time.  (We'll repeat this until we fail to retrieve a new definition, or we identify
+        ' a string that can be parsed into an actual color.)
+        initialColorValue = m_XML.GetUniqueTag_String(initialColorValue, vbNullString, , "Definitions")
+        
     Loop
 
 End Function

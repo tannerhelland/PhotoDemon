@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.91</langversion>
+<langversion>1.0.92</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2928,7 +2928,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8406,6 +8406,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>SVG Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Import gradient</original>
 <translation></translation>
 </phrase>
@@ -8455,7 +8460,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>कृपया एक नोड का चयन करें</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 55 phrases. 20 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15620,10 +15625,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2182 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 12298 total words. -->
 
 </pdData>

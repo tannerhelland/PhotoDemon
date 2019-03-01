@@ -79,6 +79,16 @@ Public Function CDblCustom(ByVal srcString As String) As Double
 
 End Function
 
+'Because VB6's built-in Format$() function uses locale-specific decimal signs, and it exhibits stupid
+' behavior with things like a trailing decimal point, this shorthand function can be used to produce
+' nicely formatted strings for floating-point values, in a locale-independent manner.  Note that it
+' does *not* handle thousands separators, by design.
+Public Function FormatInvariant(ByVal srcValue As Variant, ByVal newFormat As String) As String
+    FormatInvariant = Format$(srcValue, newFormat)
+    If (InStr(1, FormatInvariant, ",") <> 0) Then FormatInvariant = Replace$(FormatInvariant, ",", ".")
+    If (Right$(FormatInvariant, 1) = ".") Then FormatInvariant = Left$(FormatInvariant, Len(FormatInvariant) - 1)
+End Function
+
 'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
 ' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
 ' for the code.  (Note that the original function listed there is buggy!  I had to add fixes for

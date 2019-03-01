@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3371</langversion>
+<langversion>6.8.3372</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2925,7 +2925,7 @@ Please ange ett numeriskt värde.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pd2DGradient.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pd2DGradient.cls-->
 
@@ -8404,6 +8404,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>SVG Gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Import gradient</original>
 <translation></translation>
 </phrase>
@@ -8453,7 +8458,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>välj en nod</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 51 phrases. 17 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 55 phrases. 20 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15618,10 +15623,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2605</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2177 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 12296 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2182 are duplicates, so only 2605 unique phrases have been written to file. -->
+<!-- These 2605 phrases contain approximately 12298 total words. -->
 
 </pdData>
