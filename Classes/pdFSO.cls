@@ -191,9 +191,9 @@ Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal pt
 
 Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 
-Private Declare Function GetFileVersionInfoW Lib "version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long
-Private Declare Function GetFileVersionInfoSizeW Lib "version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
-Private Declare Function VerQueryValueW Lib "version" (ByVal ptrToSrcBlock As Long, ByVal ptrToSubblockName As Long, ByRef dstBufferPtr As Long, ByRef dstBufferSize As Long) As Long
+Private Declare Function GetFileVersionInfoW Lib "Version" (ByVal ptrToFilename As Long, ByVal dwHandle As Long, ByVal dwLen As Long, ByVal ptrToDstData As Long) As Long
+Private Declare Function GetFileVersionInfoSizeW Lib "Version" (ByVal ptrToFilename As Long, ByRef dstHandle As Long) As Long
+Private Declare Function VerQueryValueW Lib "Version" (ByVal ptrToSrcBlock As Long, ByVal ptrToSubblockName As Long, ByRef dstBufferPtr As Long, ByRef dstBufferSize As Long) As Long
 
 'Use the API to retrieve a Unicode-friendly version of App.Path
 Friend Function AppPathW() As String
@@ -641,7 +641,11 @@ Friend Function FileGetExtension(ByRef srcFile As String) As String
     
     'If the dot sits later than the path, we know where to find the file extension
     Else
-        FileGetExtension = Right$(srcFile, Len(srcFile) - dotPos)
+        If (dotPos > 0) Then
+            FileGetExtension = Right$(srcFile, Len(srcFile) - dotPos)
+        Else
+            FileGetExtension = vbNullString
+        End If
     End If
             
 End Function
