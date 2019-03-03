@@ -144,12 +144,14 @@ Public Event CancelClick()
 'Clicking the RESET button raises the corresponding event.  The rules PD uses for resetting controls are explained
 ' in the cmdReset_Click() sub below.  Additionally, if no last-used settings are found in the Data/Presets folder,
 ' this event will be automatically triggered when the parent dialog is loaded.
+Public Event BeforeResetClick()
 Public Event ResetClick()
 
 'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event, as this
 ' control is capable of randomizing all stock PD controls.  But for tool dialogs like Curves, where a completely
 ' custom interface exists, this event can be used by the parent to perform their own randomizing on non-stock
 ' controls.
+Public Event BeforeRandomizeClick()
 Public Event RandomizeClick()
 
 'All custom PD controls are auto-validated when OK is pressed.  If other custom items need validation, the OK
@@ -389,6 +391,10 @@ Private Sub RandomizeSettings()
     'Disable previews
     m_allowPreviews = False
     
+    'Allow the caller to perform any pre-randomization tasks
+    RaiseEvent BeforeRandomizeClick
+    
+    'TODO: rework randomization against pdRandomize, for better results
     Randomize Timer
     
     'By default, controls are randomized according to the following pattern:
@@ -648,6 +654,9 @@ Private Sub ResetSettings()
 
     'Disable previews
     m_allowPreviews = False
+    
+    'Allow the caller to perform any pre-randomization tasks
+    RaiseEvent BeforeResetClick
     
     'By default, controls are reset according to the following pattern:
     ' 1) If a numeric control can be set to 0, it will be.
