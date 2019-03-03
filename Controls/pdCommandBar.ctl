@@ -701,7 +701,10 @@ Private Sub ResetSettings()
                 End If
                 
             'Button strips are set to their first entry
-            Case "pdButtonStrip", "pdButtonStripVertical"
+            Case "pdButtonStrip"
+                If (Not eControl.DontAutoReset) Then eControl.ListIndex = 0
+            
+            Case "pdButtonStripVertical"
                 eControl.ListIndex = 0
             
             'Scroll bars obey the same rules as other numeric controls

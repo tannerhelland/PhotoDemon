@@ -117,6 +117,10 @@ End Enum
 
 Private m_ColoringMode As PD_BTS_COLOR_SCHEME
 
+'Because button strips are often used as tabstrip analogs, we don't always want them to be reset
+' when the user hits the "reset button" on a command bar.  This can be toggled via its matching property.
+Private m_DontAutoReset As Boolean
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -175,6 +179,15 @@ End Property
 Public Property Let Caption(ByRef newCaption As String)
     ucSupport.SetCaptionText newCaption
     PropertyChanged "Caption"
+End Property
+
+Public Property Get DontAutoReset() As Boolean
+    DontAutoReset = m_DontAutoReset
+End Property
+
+Public Property Let DontAutoReset(ByVal newState As Boolean)
+    m_DontAutoReset = newState
+    PropertyChanged "DontAutoReset"
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -623,6 +636,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     Caption = vbNullString
     ColorScheme = CM_DEFAULT
+    DontAutoReset = False
     FontBold = False
     FontSize = 10
     FontSizeCaption = 12#
@@ -638,6 +652,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", vbNullString)
         m_ColoringMode = .ReadProperty("ColorScheme", CM_DEFAULT)
+        m_DontAutoReset = .ReadProperty("DontAutoReset", False)
         m_FontBold = .ReadProperty("FontBold", False)
         m_FontSize = .ReadProperty("FontSize", 10)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
@@ -654,6 +669,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
+        .WriteProperty "DontAutoReset", m_DontAutoReset, False
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12#
