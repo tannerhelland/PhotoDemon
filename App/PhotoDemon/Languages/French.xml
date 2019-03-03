@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.389</langversion>
+<langversion>6.7.390</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -8293,13 +8293,28 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>load gradient file</original>
+<original>make node distances equal</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>edit mode</original>
-<translation>Mode édition</translation>
+<original>additional options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use gamma when blending</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import gradient file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8308,12 +8323,67 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>save gradient file</original>
+<original>export gradient file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>make node distances equal</original>
+<original>save to gradient collection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate new pattern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>noise density</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary hue</original>
+<translation>varier la teinte</translation>
+</phrase>
+
+<phrase>
+<original>vary saturation</original>
+<translation>varier la saturation</translation>
+</phrase>
+
+<phrase>
+<original>vary luminance</original>
+<translation>varier la luminance</translation>
+</phrase>
+
+<phrase>
+<original>vary alpha</original>
+<translation>varier l'alpha</translation>
+</phrase>
+
+<phrase>
+<original>edit this gradient >></original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sort collection by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>your collection</original>
 <translation></translation>
 </phrase>
 
@@ -8338,63 +8408,23 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>additional options</original>
+<original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use gamma when blending</original>
+<original>Duplicate name</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>gradient name</original>
+<original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>randomize</original>
-<translation>randomiser</translation>
-</phrase>
-
-<phrase>
-<original>start opacity</original>
-<translation>commencer l'opacité</translation>
-</phrase>
-
-<phrase>
-<original>start color</original>
-<translation>commencer la couleur</translation>
-</phrase>
-
-<phrase>
-<original>end opacity</original>
-<translation>fin d'opacité</translation>
-</phrase>
-
-<phrase>
-<original>end color</original>
-<translation>couleur finale</translation>
-</phrase>
-
-<phrase>
-<original>vary hue</original>
-<translation>varier la teinte</translation>
-</phrase>
-
-<phrase>
-<original>vary saturation</original>
-<translation>varier la saturation</translation>
-</phrase>
-
-<phrase>
-<original>vary luminance</original>
-<translation>varier la luminance</translation>
-</phrase>
-
-<phrase>
-<original>vary alpha</original>
-<translation>varier l'alpha</translation>
+<original>Name required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8418,6 +8448,16 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
+<original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New gradient</original>
 <translation></translation>
 </phrase>
@@ -8433,13 +8473,38 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>manual</original>
-<translation>Manuel</translation>
+<original>gradient collection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>automatic</original>
-<translation>automatique</translation>
+<original>make your own</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>noise gradients</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>filename</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>complexity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your gradient collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to open the gradient collection folder in Windows Explorer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8462,7 +8527,7 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <translation>veuillez sélectionner un noeud</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 55 phrases. 20 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 73 phrases. 25 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -10071,6 +10136,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation>randomiser</translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>nombre de rayons</translation>
 </phrase>
@@ -10090,7 +10160,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Générer des faisceaux lumineux</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -10462,7 +10532,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Calcul des fragments d'image</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>manual</original>
+<translation>Manuel</translation>
+</phrase>
+
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -15628,10 +15703,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2605</phrasecount>
+<phrasecount>2620</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4787 phrases. -->
-<!-- 2182 are duplicates, so only 2605 unique phrases have been written to file. -->
-<!-- These 2605 phrases contain approximately 12298 total words. -->
+<!-- As of this build, PhotoDemon contains 4805 phrases. -->
+<!-- 2185 are duplicates, so only 2620 unique phrases have been written to file. -->
+<!-- These 2620 phrases contain approximately 12390 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.865</langversion>
+<langversion>7.2.891</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -272,7 +272,7 @@
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation>Bitte warten, während die Tag-Datenbank erstellt wird</translation>
+<translation>Bitte warten Sie, während die Tag-Datenbank erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -359,9 +359,9 @@ Verlustfreie Kopien werden in demselben Ordner wie dieses initiale Bild gespeich
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Beim Versuch dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Versuchen Sie bitte, das Bild in ein alternatives Format zu speichern.
+<translation>Beim Versuch dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Bitte versuchen Sie, das Bild in ein alternatives Format zu speichern.
 
-Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon bitte via photodemon.org/contact</translation>
+Wenn das Problem bestehen bleibt, melden Sie es bitte den Entwicklern von PhotoDemon via photodemon.org/contact</translation>
 </phrase>
 
 <phrase>
@@ -381,7 +381,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Reduzieren Sie bitte die angeforderte Größe und versuchen es erneut.</translation>
+<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Bitte reduzieren Sie die angeforderte Größe und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -657,7 +657,7 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>Bild ist bereits getrimmt. (Es wurden keine Anderungen an dem Bild vorgenommen.)</translation>
+<translation>Bild ist bereits getrimmt. (Es wurden keine Änderungen an dem Bild vorgenommen.)</translation>
 </phrase>
 
 <phrase>
@@ -718,12 +718,12 @@ Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon b
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Bitte melden Sie diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -1176,7 +1176,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation>Ja. Diesen Text-Layer bitte konvertieren.</translation>
+<translation>Ja. Bitte diesen Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -1261,7 +1261,7 @@ Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk e
 Please close this file in any other running programs, then try again.</original>
 <translation>Leider ist die Datei '%1' derzeit durch ein anderes Programm auf diesem PC gesperrt.
 
-Schließen Sie bitte diese Datei in allen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
+Bitte schließen Sie diese Datei in allen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -1289,7 +1289,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
  %1
 
-Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern, bevor Sie es laden. Danke!</translation>
+Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem generischen Format (wie bspw. JPEG oder PNG) zu speichern. Dankeschön!</translation>
 </phrase>
 
 <phrase>
@@ -1307,7 +1307,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 
-Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Format zu speichern (wie bspw. JPEG oder PNG), bevor Sie es in PhotoDemon laden. Danke!</translation>
+Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in PhotoDemon in einem generischen Format zu speichern (wie bspw. JPEG oder PNG). Dankeschön!</translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1333,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Leider konnte PhotoDemon folgende(s) Bild(er) nicht laden:
 
 %1
-Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Danke!</translation>
+Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Dankeschön!</translation>
 </phrase>
 
 <phrase>
@@ -1390,9 +1390,9 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sit- zung aufgezeichneten Aktionen permanent verloren sein. Wollen Sie wirklich abbrechen?
+<translation>Wenn Sie dieses Makro nicht speichern, werden alle während dieser Sitzung aufgezeichneten Aktionen permanent verloren sein. Wollen Sie wirklich abbrechen?
 
-(Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukeh- ren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
+(Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
 
 <phrase>
@@ -1715,7 +1715,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 Please make sure the device is turned on and ready for use.</original>
 <translation>Ausgewählter Scanner oder ausgewählte Digitalkamera reagieren nicht.
 
-Stellen Sie bitte sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit ist.</translation>
+Bitte stellen Sie sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -1764,7 +1764,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Bitte stellen Sie sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -1774,12 +1774,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Stellen Sie bitte sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem bestehen bleibt, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte stellen Sie sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem bestehen bleibt, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Starten Sie bitte PhotoDemon mit Administratorrechten und versuchen es erneut.</translation>
+<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte Administratorrechte aktivieren und erneut versuchen.</translation>
 </phrase>
 
 <phrase>
@@ -1794,7 +1794,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Besuchen Sie bitte http://www.eztwain.com für mehr Informationen.</translation>
+<translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Bitte besuchen Sie http://www.eztwain.com für mehr Informationen.</translation>
 </phrase>
 
 <!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -1942,7 +1942,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Melden Sie bitte diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".</translation>
+Bitte melden Sie diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -1978,7 +1978,7 @@ Melden Sie bitte diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann keine weiteren Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Fehler ist und er behoben werden muss!
+<translation>PhotoDemon kann keine additionalen Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Fehler ist und er behoben werden muss!
 
 Möchten Sie einen Fehlerbericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
@@ -2272,9 +2272,9 @@ Beschreibung: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat die Website für Fehlerberichte automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem" und wählen dann "Fehlerbericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
+<translation>PhotoDemon hat die Website für Fehlerberichte automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Fehlerbericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
 
-Wenn fertig, klicken Sie auf den Button "Neues Problem einreichen". Vielen Dank!</translation>
+Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</translation>
 </phrase>
 
 <phrase>
@@ -2309,12 +2309,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
+In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Verwenden Sie bitte das Menüitem "Hilfe > Fehlerbericht einreichen", um dieses Vorfall zu melden.</translation>
+<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte verwenden Sie das Menüitem "Hilfe > Fehlerbericht einreichen", um dieses Vorfall zu melden.</translation>
 </phrase>
 
 <phrase>
@@ -2386,7 +2386,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
-<translation>Beim Versuch %1 zu laden, ist ein Fehler aufgetreten. Verifizieren Sie bitte, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
+<translation>Beim Versuch %1 zu laden, ist ein Fehler aufgetreten. Bitte verifizieren Sie, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
 </phrase>
 
 <phrase>
@@ -2416,12 +2416,12 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
+<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Bitte versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Diese Aktion erfordert eine aktive Auswahl. Erstellen Sie bitte eine Auswahl, bevor Sie fortfahren.</translation>
+<translation>Diese Aktion erfordert eine aktive Auswahl. Bitte erstellen Sie eine Auswahl, bevor Sie fortfahren.</translation>
 </phrase>
 
 <phrase>
@@ -2531,7 +2531,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation>Klicken Sie auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
+<translation>Klick auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
 <!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
@@ -2622,12 +2622,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Gradient tool</original>
-<translation>Gradient-Tool</translation>
+<translation>Gradiententool</translation>
 </phrase>
 
 <phrase>
 <original>Gradient layer</original>
-<translation>Gradient-Layer</translation>
+<translation>Gradienten-Layer</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2929,7 +2929,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Unnamed gradient</original>
-<translation></translation>
+<translation>Ubenannter Gradient</translation>
 </phrase>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -2994,7 +2994,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Die Zwischenablage ist leer oder enthält kein gültiges Bildformat. Kopieren Sie bitte ein gültiges Bildformat in die Zwischenablage und versuchen es erneut.</translation>
+<translation>Die Zwischenablage ist leer oder enthält kein gültiges Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3024,7 +3024,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation>Download des Bildes fehlgeschlagen. Kopieren Sie bitte eine gültige Bild-URL und versuchen es erneut.</translation>
+<translation>Download des Bildes fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3121,7 +3121,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Please select a folder</original>
-<translation>Bitte einen Ordner auswählen</translation>
+<translation>Bitte wählen Sie einen Ordner aus</translation>
 </phrase>
 
 <!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3576,7 +3576,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Versuchen Sie es bitte erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen ausgewählten Bilder das, was Windows® für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -3979,7 +3979,7 @@ You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
 <translation>Ziehen Sie ein Bild auf diesen Raum, um die Bearbeitung zu beginnen.
 
-Sie können auch den Button "Bild öffnen" oben links verwenden
+Sie können auch den Button "Bild öffnen" links verwenden
 oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation>
 </phrase>
 
@@ -4098,7 +4098,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>Hier klicken, um einen Vollfarb-Auswahlbildschirm einzugeben.</translation>
+<translation>Klick, um einen Vollfarb-Auswahlbildschirm einzugeben.</translation>
 </phrase>
 
 <phrase>
@@ -4108,7 +4108,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>Hier klicken, damit die Malfarbe des Hauptbildschirms die aktive Farbe wird.</translation>
+<translation>Klick, damit die Malfarbe des Hauptbildschirms die aktive Farbe wird.</translation>
 </phrase>
 
 <phrase>
@@ -4595,12 +4595,12 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Ändern Sie die Maßeinheit, die zur Größenänderung des Bildes verwendet wird.</translation>
+<translation>Die Maßeinheit ändern, die zur Größenänderung des Bildes verwendet wird.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Ändern Sie die Maßeinheit, die für die Bildauflösung (Pixeldichte) verwendet wird.</translation>
+<translation>Die Maßeinheit ändern, die für die Bildauflösung (Pixeldichte) verwendet wird.</translation>
 </phrase>
 
 <phrase>
@@ -6525,7 +6525,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please wait while the new language is applied</original>
-<translation>Bitte warten, während die neue Sprache angewandt wird</translation>
+<translation>Bitte warten Sie, während die neue Sprache angewandt wird</translation>
 </phrase>
 
 <phrase>
@@ -6988,7 +6988,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>Werte für Farbton, Sättigung und Luminanz werden angepasst</translation>
+<translation>Farbton-, Sättigungs- und Luminanzwerte werden angepasst</translation>
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
@@ -7009,7 +7009,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Zu ersetzende Farbe (Rechtsklick auf Vorschau zum Auswählen)</translation>
+<translation>Zu ersetzende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
 </phrase>
 
 <phrase>
@@ -7269,7 +7269,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please wait while the histogram is updated</original>
-<translation>Bitte warten, während das Histogramm aktualisiert wird</translation>
+<translation>Bitte warten Sie, während das Histogramm aktualisiert wird</translation>
 </phrase>
 
 <phrase>
@@ -7371,12 +7371,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Schatten-Eingangspegel-Farbe festlegen, indem Sie mit der rechten Maustaste auf eine Farbe im Vorschaufenster klicken.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Schatten-Eingangspegel-Farbe festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wenn dieser Button aktiv ist, können Sie die Highlight-Eingangspegel-Farbe festlegen, indem Sie mit der rechten Maustaste auf eine Farbe im Vorschaufenster klicken.</translation>
+<translation>Wenn dieser Button aktiv ist, können Sie die Highlight-Eingangspegel-Farbe festlegen, durch Rechtsklick auf eine Farbe im Vorschaufenster.</translation>
 </phrase>
 
 <phrase>
@@ -7423,7 +7423,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Gamma Correction</original>
-<translation>Gamma-Korrektur</translation>
+<translation>Gammakorrektur</translation>
 </phrase>
 
 <phrase>
@@ -7861,7 +7861,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>remove color before photographing; rarely used for actual photos</original>
-<translation>Farbe vor Fotografieren entfernen; selten verwendet für tatsächliche Fotos</translation>
+<translation>Farbe vor dem Fotografieren entfernen; selten verwendet für tatsächliche Fotos</translation>
 </phrase>
 
 <phrase>
@@ -8277,12 +8277,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please wait a moment</original>
-<translation>Bitte einen Moment warten</translation>
+<translation>Bitte warten Sie einen Moment</translation>
 </phrase>
 
 <phrase>
 <original>please wait</original>
-<translation>Bitte warten</translation>
+<translation>Bitte warten Sie</translation>
 </phrase>
 
 <!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -8293,31 +8293,101 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Gradient editor</original>
-<translation>Gradient-Editor</translation>
-</phrase>
-
-<phrase>
-<original>load gradient file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>edit mode</original>
-<translation>Bearbeitungsmodus</translation>
-</phrase>
-
-<phrase>
-<original>import / export</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>save gradient file</original>
-<translation></translation>
+<translation>Gradienten-Editor</translation>
 </phrase>
 
 <phrase>
 <original>make node distances equal</original>
+<translation>Node-Distanzen gleichmachen</translation>
+</phrase>
+
+<phrase>
+<original>additional options</original>
+<translation>Additionale Optionen</translation>
+</phrase>
+
+<phrase>
+<original>use gamma when blending</original>
+<translation>Bei Blending Gamma verwenden</translation>
+</phrase>
+
+<phrase>
+<original>gradient name</original>
+<translation>Gradientenname</translation>
+</phrase>
+
+<phrase>
+<original>import gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import / export</original>
+<translation>Import / Export</translation>
+</phrase>
+
+<phrase>
+<original>export gradient file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save to gradient collection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate new pattern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>start color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>end color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>noise density</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vary hue</original>
+<translation>Farbton variieren</translation>
+</phrase>
+
+<phrase>
+<original>vary saturation</original>
+<translation>Sättigung variieren</translation>
+</phrase>
+
+<phrase>
+<original>vary luminance</original>
+<translation>Luminanz variieren</translation>
+</phrase>
+
+<phrase>
+<original>vary alpha</original>
+<translation>Alpha variieren</translation>
+</phrase>
+
+<phrase>
+<original>edit this gradient >></original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sort collection by</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>your collection</original>
 <translation></translation>
 </phrase>
 
@@ -8342,73 +8412,33 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>additional options</original>
+<original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use gamma when blending</original>
+<original>Duplicate name</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>gradient name</original>
+<original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>randomize</original>
-<translation>Randomisieren</translation>
-</phrase>
-
-<phrase>
-<original>start opacity</original>
-<translation>Opazitätsstart</translation>
-</phrase>
-
-<phrase>
-<original>start color</original>
-<translation>Startfarbe</translation>
-</phrase>
-
-<phrase>
-<original>end opacity</original>
-<translation>Opazitätsende</translation>
-</phrase>
-
-<phrase>
-<original>end color</original>
-<translation>Endfarbe</translation>
-</phrase>
-
-<phrase>
-<original>vary hue</original>
-<translation>Farbton variieren</translation>
-</phrase>
-
-<phrase>
-<original>vary saturation</original>
-<translation>Sättigung variieren</translation>
-</phrase>
-
-<phrase>
-<original>vary luminance</original>
-<translation>Luminanz variieren</translation>
-</phrase>
-
-<phrase>
-<original>vary alpha</original>
-<translation>Alpha variieren</translation>
+<original>Name required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>All supported gradients</original>
-<translation></translation>
+<translation>Alle unterstützten Gradienten</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Gradient</original>
-<translation></translation>
+<translation>GIMP-Gradient</translation>
 </phrase>
 
 <phrase>
@@ -8418,17 +8448,27 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Import gradient</original>
+<translation>Gradient importieren</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid gradient</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>New gradient</original>
-<translation></translation>
+<translation>Neuer Gradient</translation>
 </phrase>
 
 <phrase>
 <original>Export gradient</original>
-<translation></translation>
+<translation>Gradient exportieren</translation>
 </phrase>
 
 <phrase>
@@ -8437,23 +8477,48 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>manual</original>
-<translation>Manuell</translation>
+<original>gradient collection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>automatic</original>
-<translation>Automatisch</translation>
+<original>make your own</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>noise gradients</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>filename</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>complexity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Your gradient collection is stored in the "%1" folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to open the gradient collection folder in Windows Explorer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
-<translation></translation>
+<translation>Wenn ein Gradient Farben mit völlig verschiedenen Luminanzwerten enthält, kann die Gammakorrektur dessen Erscheinungsbild verbessern.</translation>
 </phrase>
 
 <phrase>
 <original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
-<translation></translation>
+<translation>Verwenden Sie diese Einstellung, um eine gleiche Positionierung für alle Gradienten-Nodes automatisch zu berechnen.</translation>
 </phrase>
 
 <phrase>
@@ -8463,10 +8528,10 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>please select a node</original>
-<translation>Bitte einen Node auswählen</translation>
+<translation>Bitte wählen Sie einen Node aus</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 55 phrases. 20 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 73 phrases. 25 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -8494,7 +8559,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Kompilieren Sie bitte PhotoDemon, bevor Sie es verwenden. Viele Features, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, insbesondere wenn Sie das Programm mit dem Button "IDE-Stopp" schließen.</translation>
+<translation>Bitte kompilieren Sie PhotoDemon vor seiner Verwendung. Viele Features, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie bspw. benutzerdefinierte Befehlsbuttons - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, insbesondere wenn Sie das Programm mit dem Button "IDE-Stopp" schließen.</translation>
 </phrase>
 
 <phrase>
@@ -10075,6 +10140,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_Sunshine.frm (FormSunshine) -->
 
 <phrase>
+<original>randomize</original>
+<translation>Randomisieren</translation>
+</phrase>
+
+<phrase>
 <original>number of rays</original>
 <translation>Anzahl der Strahlen</translation>
 </phrase>
@@ -10094,7 +10164,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Lichtstrahlen werden generiert</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_Sunshine.frm-->
 
@@ -10240,7 +10310,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>gradient flow</original>
-<translation>Gradient-Fluss</translation>
+<translation>Gradientenfluss</translation>
 </phrase>
 
 <phrase>
@@ -10466,7 +10536,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bildfragmente werden berechnet</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>manual</original>
+<translation>Manuell</translation>
+</phrase>
+
+<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Fragment.frm-->
 
@@ -11017,7 +11092,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation>Klicken Sie auf OK, um die Reparaturoperation zu beginnen</translation>
+<translation>Klick auf OK, um die Reparaturoperation zu beginnen</translation>
 </phrase>
 
 <phrase>
@@ -11089,7 +11164,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Der Quellordner enhält keinerlei Dateien. Versuchen Sie bitte einen anderen.</translation>
+<translation>Der Quellordner enhält keinerlei Dateien. Bitte versuchen Sie einen anderen.</translation>
 </phrase>
 
 <phrase>
@@ -11180,7 +11255,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>additional rename options</original>
-<translation>Weitere Umbenennungsoptionen</translation>
+<translation>Additionale Umbenennungsoptionen</translation>
 </phrase>
 
 <phrase>
@@ -11349,7 +11424,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is not a valid list of images. Please try a different file.</original>
-<translation>Dies ist keine gültige Bilderliste. Versuchen Sie bitte eine andere Datei.</translation>
+<translation>Dies ist keine gültige Bilderliste. Bitte versuchen Sie eine andere Datei.</translation>
 </phrase>
 
 <phrase>
@@ -11364,7 +11439,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, es ist aber kein Makro ausgewählt worden. Wählen Sie bitte eine gültige Makrodatei aus.</translation>
+<translation>Sie haben angefordert, dass ein Makro auf jedes Bild angewandt wird, es ist aber kein Makro ausgewählt worden. Bitte wählen Sie eine gültige Makrodatei aus.</translation>
 </phrase>
 
 <phrase>
@@ -11374,7 +11449,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation>Sie haben keine Bilder zum Verarbeiten ausgewählt! Fügen Sie bitte ein oder mehrere Bilder der Batchliste hinzu.</translation>
+<translation>Sie haben keine Bilder zum Verarbeiten ausgewählt! Bitte fügen Sie ein oder mehrere Bilder der Batchliste hinzu.</translation>
 </phrase>
 
 <phrase>
@@ -11394,7 +11469,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Wählen Sie bitte einen Ordner (keinen Systemordner!) mit unbeschränkter Zugangsmöglichkeit für den Batch-Prozess aus.</translation>
+<translation>PhotoDemon kann nicht auf den angeforderten Ausgabeordner zugreifen. Bitte wählen Sie einen uneingeschränkten Ordner (keinen Systemordner!) für den Batch-Prozess aus.</translation>
 </phrase>
 
 <phrase>
@@ -11439,7 +11514,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation>Sie können der Batchliste Dateien auf zwei Wegen hinzufügen</translation>
+<translation>Sie können der Batchliste Dateien auf zwei Arten hinzufügen</translation>
 </phrase>
 
 <phrase>
@@ -11494,7 +11569,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>Zu Ihrem Komfort werden auch eine Reihe von Standardoptionen zur Umbennung angeboten. Beachten Sie, dass alle Items unter "Weitere Umbennungsop- tionen" optional sind.</translation>
+<translation>Zu Ihrem Komfort werden auch eine Reihe von Standardoptionen zur Umbennung angeboten. Beachten Sie, dass alle Items unter "Additionale Umbennungsoptionen" optional sind.</translation>
 </phrase>
 
 <phrase>
@@ -11529,7 +11604,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-<translation>Sie haben keine Bilddateien ausgewählt. Fügen Sie bitte eine oder mehrere Dateien der Batchliste hinzu, bevor Sie speichern.</translation>
+<translation>Sie haben keine Bilddateien ausgewählt. Bitte fügen Sie vor dem Speichern eine oder mehrere Dateien der Batchliste hinzu.</translation>
 </phrase>
 
 <phrase>
@@ -11741,7 +11816,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 konnte keine Internetverbindung herstellen. Prüfen Sie bitte Ihre Verbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jede andere Bilddatei öffnen.</translation>
+<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jede andere Bilddatei öffnen.</translation>
 </phrase>
 
 <phrase>
@@ -11756,7 +11831,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 konnte unter dieser URL keine gültige Datei lokalisieren. Prüfen Sie bitte den Pfad gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
+<translation>%1 konnte unter dieser URL keine gültige Datei lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -11771,7 +11846,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 hat Zugriff auf das Internet verloren. Prüfen Sie bitte Ihre Internetverbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
+<translation>%1 hat Zugriff auf das Internet verloren. Bitte prüfen Sie Ihre Internetverbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -11809,7 +11884,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
-<translation>Diese URL ist nicht gültig. Stellen Sie bitte sicher, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
+<translation>Diese URL ist nicht gültig. Bitte stellen Sie sicher, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
 </phrase>
 
 <phrase>
@@ -11819,7 +11894,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Beachten und respektieren Sie bitte die Copyrights, wenn Sie Bilder herunterladen. Auch wenn ein Bild online verfügbar ist, kann es zum Gebrauch außerhalb einer spezifischen Website nicht lizenziert sein. Danke!</translation>
+<translation>Bitte beachten und respektieren Sie die Copyrights, wenn Sie Bilder herunterladen. Auch wenn ein Bild online verfügbar ist, kann es zum Gebrauch außerhalb einer spezifischen Website nicht lizenziert sein. Dankeschön!</translation>
 </phrase>
 
 <phrase>
@@ -11951,7 +12026,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation>Wählen Sie bitte ein Fenster zum Erfassen (Capture) aus.</translation>
+<translation>Bitte wählen Sie ein Fenster zum Erfassen (Capture) aus.</translation>
 </phrase>
 
 <phrase>
@@ -11986,7 +12061,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select another one.</original>
-<translation>Wählen Sie bitte einen anderen aus.</translation>
+<translation>Bitte wählen Sie einen anderen aus.</translation>
 </phrase>
 
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12124,12 +12199,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können weitere Bestätigungsdialoge zum Drucken erscheinen.)</translation>
+<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsdialoge zum Drucken erscheinen.)</translation>
 </phrase>
 
 <phrase>
 <original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
-<translation>%1 konnte das Bild nicht drucken. Stellen Sie bitte sicher, dass der spezifizierte Drucker (%2) eingeschaltet und zum Drucken bereit ist.</translation>
+<translation>%1 konnte das Bild nicht drucken. Bitte stellen Sie sicher, dass der spezifizierte Drucker (%2) eingeschaltet und zum Drucken bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -12261,7 +12336,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
-<translation>Transparente Farbe (Rechtsklick auf Bild zum Auswählen)</translation>
+<translation>Transparente Farbe (zum Auswählen Rechtsklick auf Bild)</translation>
 </phrase>
 
 <phrase>
@@ -12541,7 +12616,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation>Hier klicken, um ein neues Vorschaubild zu generieren</translation>
+<translation>Klick, um ein neues Vorschaubild zu generieren</translation>
 </phrase>
 
 <phrase>
@@ -12596,7 +12671,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation>Bitte warten, während ein neues Vorschaubild erstellt wird</translation>
+<translation>Bitte warten Sie, während ein neues Vorschaubild erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -13084,7 +13159,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
-<translation>Hier klicken, um die verwendete Farbe für leere Rahmungen zu ändern</translation>
+<translation>Klick, um die verwendete Farbe für leere Rahmungen zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -13329,7 +13404,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>Zu löschende Farbe (Rechtsklick auf Vorschau zum Auswählen)</translation>
+<translation>Zu löschende Farbe (zum Auswählen Rechtsklick auf Vorschau)</translation>
 </phrase>
 
 <phrase>
@@ -13623,7 +13698,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>Hand (Bild-Scrolling klicken und ziehen)</translation>
+<translation>Hand (Klick-und-Ziehen für Bild-Scrolling)</translation>
 </phrase>
 
 <phrase>
@@ -13826,7 +13901,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>Füllungen unterstützen viele verschiedene Stile. Hier klicken, um zwischen den Stilen solide Farbe, Muster und Gradient zu wechseln.</translation>
+<translation>Füllungen unterstützen viele verschiedene Stile. Klick, um zwischen den Stilen solide Farbe, Muster und Gradient zu wechseln.</translation>
 </phrase>
 
 <phrase>
@@ -13857,27 +13932,27 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>repeat</original>
-<translation>Wiederholen</translation>
+<translation>Wiederholung</translation>
 </phrase>
 
 <phrase>
 <original>linear</original>
-<translation></translation>
+<translation>Linear</translation>
 </phrase>
 
 <phrase>
 <original>radial</original>
-<translation></translation>
+<translation>Radial</translation>
 </phrase>
 
 <phrase>
 <original>conical</original>
-<translation></translation>
+<translation>Konisch</translation>
 </phrase>
 
 <phrase>
 <original>spiral</original>
-<translation></translation>
+<translation>Spirale</translation>
 </phrase>
 
 <phrase>
@@ -14117,7 +14192,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahl-Contents - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
+<translation>Klick, um die Art zu ändern, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahl-Contents - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
 
 <phrase>
@@ -14233,7 +14308,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click here to convert this layer to a basic text layer.</original>
-<translation>Klicken Sie hier, um diesen Layer in einen Grundtext-Layer zu konvertieren.</translation>
+<translation>Klick hier, um diesen Layer in einen Grundtext-Layer zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -14379,7 +14454,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click here to convert this layer to a typography layer.</original>
-<translation>Klicken Sie hier, um diesen Layer in einen Typografie-Layer zu konvertieren.</translation>
+<translation>Klick hier, um diesen Layer in einen Typografie-Layer zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -14395,7 +14470,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>Verwenden Sie bitte das Format "Hauptversion.Unterversion.Revision", z. B. "1.0.0".</translation>
+<translation>Bitte verwenden Sie das Format "Hauptversion.Unterversion.Revision", z. B. "1.0.0".</translation>
 </phrase>
 
 <phrase>
@@ -14410,12 +14485,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>Verwenden Sie bitte das offizielle 2-stellige ISO-3166-1-Format, z. B. "DE" für "Deutschland".</translation>
+<translation>Bitte verwenden Sie das offizielle 2-stellige ISO-3166-1-Format, z. B. "DE" für "Deutschland".</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>Verwenden Sie bitte das offizielle 2-stellige ISO-639-1-Format, z. B. "de" für "Deutsch".</translation>
+<translation>Bitte verwenden Sie das offizielle 2-stellige ISO-639-1-Format, z. B. "de" für "Deutsch".</translation>
 </phrase>
 
 <phrase>
@@ -14554,7 +14629,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation>Sie haben keinen Zugriff auf diesen Ordner. Melden Sie sich bitte als Administrator an und versuchen es erneut.</translation>
+<translation>Sie haben keinen Zugriff auf diesen Ordner. Bitte melden Sie sich als Administrator an und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -14573,12 +14648,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Please select a language before continuing to the next step.</original>
-<translation>Wählen Sie bitte eine Sprache aus, bevor Sie mit dem nächsten Schritt fortfahren.</translation>
+<translation>Bitte wählen Sie eine Sprache aus, bevor Sie mit dem nächsten Schritt fortfahren.</translation>
 </phrase>
 
 <phrase>
 <original>Please select a language</original>
-<translation>Bitte eine Sprache auswählen</translation>
+<translation>Bitte wählen Sie eine Sprache aus</translation>
 </phrase>
 
 <phrase>
@@ -14656,7 +14731,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.</original>
-<translation>Beginnen Sie bitte, indem Sie eine Basis-Sprachdatei auswählen. Auch wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, haben Sie die Möglichkeit, jede der vor- handenen Übersetzungen zu bear- beiten sowie möglicherweise feh- lende Übersetzungen hinzuzufügen.</translation>
+<translation>Bitte beginnen Sie, indem Sie eine Basis-Sprachdatei auswählen. Auch wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, haben Sie die Möglichkeit, jede der vor- handenen Übersetzungen zu bear- beiten sowie möglicherweise feh- lende Übersetzungen hinzuzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -14696,7 +14771,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>(NOTE: changes made to this page won't be auto-saved unless you click the Next or Previous button.)</original>
-<translation>(HINWEIS: An dieser Seite vorge- nommene Änderungen werden nur dann autom. gespeichert, wenn Sie auf den Button "Weiter" oder "Zurück" klicken.)</translation>
+<translation>(HINWEIS: An dieser Seite vorgenommene Änderungen werden nur dann autom. gespeichert, wenn Sie auf den Button "Weiter" oder "Zurück" klicken.)</translation>
 </phrase>
 
 <phrase>
@@ -15118,7 +15193,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Please select a color profile</original>
-<translation>Wählen Sie bitte ein Farbprofil aus</translation>
+<translation>Bitte wählen Sie ein Farbprofil aus</translation>
 </phrase>
 
 <phrase>
@@ -15182,12 +15257,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Klicken Sie hier, um die erste Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+<translation>Klick, um die erste Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
 </phrase>
 
 <phrase>
 <original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Klicken Sie hier, um die zweite Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+<translation>Klick, um die zweite Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -15347,12 +15422,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Spezifizieren Sie bitte ein Farbprofil für jeden derzeit an das System angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern die Grafikkarte ist, die den benannten Monitor ansteuert.</translation>
+<translation>Bitte spezifizieren Sie ein Farbprofil für jeden derzeit an das System angeschlossenen Monitor. Beachten Sie, dass der Text in Klammern die Grafikkarte ist, die den benannten Monitor ansteuert.</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klicken Sie auf diesen Button, um den Dialog "Nach Farbprofil suchen" anzuzeigen.</translation>
+<translation>Klick auf diesen Button, um den Dialog "Nach Farbprofil suchen" anzuzeigen.</translation>
 </phrase>
 
 <phrase>
@@ -15407,7 +15482,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten zur Unterstützung von PhotoDemon ist das Testen neuer Releases. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen immer Zugriff auf die neuesten Programmverbesserungen, allerdings mit dem Risiko von Programmfehlern.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen immer Zugriff auf die neuesten Programmverbesserungen, allerdings mit dem Risiko von Programmfehlern.)</translation>
 </phrase>
 
 <phrase>
@@ -15460,7 +15535,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation>Klicken Sie hier, um einen neuen temporären Ordner auszuwählen.</translation>
+<translation>Klick, um einen neuen temporären Ordner auszuwählen.</translation>
 </phrase>
 
 <phrase>
@@ -15505,7 +15580,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>WARNUNG: Dieser Ordner ist ungültig (Zugriff untersagt). Geben Sie bitte einen gültigen Ordner an. Wenn kein neuer Ordner angeboten wird, verwendet PhotoDemon den Temp-Ordner des Systems.</translation>
+<translation>WARNUNG: Dieser Ordner ist ungültig (Zugriff untersagt). Bitte geben Sie einen gültigen Ordner an. Wenn kein neuer Ordner angeboten wird, verwendet PhotoDemon den Temp-Ordner des Systems.</translation>
 </phrase>
 
 <phrase>
@@ -15630,10 +15705,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2605</phrasecount>
+<phrasecount>2620</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4787 phrases. -->
-<!-- 2182 are duplicates, so only 2605 unique phrases have been written to file. -->
-<!-- These 2605 phrases contain approximately 12298 total words. -->
+<!-- As of this build, PhotoDemon contains 4805 phrases. -->
+<!-- 2185 are duplicates, so only 2620 unique phrases have been written to file. -->
+<!-- These 2620 phrases contain approximately 12390 total words. -->
 
 </pdData>

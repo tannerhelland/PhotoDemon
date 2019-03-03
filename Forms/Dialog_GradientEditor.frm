@@ -25,16 +25,112 @@ Begin VB.Form dialog_GradientEditor
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.pdButton cmdFile 
-      Height          =   615
-      Index           =   0
-      Left            =   360
-      TabIndex        =   21
-      Top             =   7440
-      Width           =   5940
-      _ExtentX        =   5741
-      _ExtentY        =   1085
-      Caption         =   "load gradient file"
+   Begin PhotoDemon.pdContainer pnlShared 
+      Height          =   2175
+      Left            =   120
+      TabIndex        =   24
+      Top             =   5880
+      Visible         =   0   'False
+      Width           =   12375
+      _ExtentX        =   21828
+      _ExtentY        =   3836
+      Begin PhotoDemon.pdTextBox txtName 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   25
+         Top             =   465
+         Width           =   3975
+         _ExtentX        =   7011
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
+         Height          =   330
+         Left            =   8280
+         TabIndex        =   26
+         Top             =   480
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   582
+         Caption         =   "make node distances equal"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   4
+         Left            =   4440
+         Top             =   0
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   556
+         Caption         =   "additional options"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdCheckBox chkGamma 
+         Height          =   330
+         Left            =   4680
+         TabIndex        =   27
+         Top             =   480
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   582
+         Caption         =   "use gamma when blending"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   5
+         Left            =   0
+         Top             =   0
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+         Caption         =   "gradient name"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdFile 
+         Height          =   615
+         Index           =   1
+         Left            =   5340
+         TabIndex        =   28
+         Top             =   1440
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   1085
+         Caption         =   "import gradient file"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   3
+         Left            =   0
+         Top             =   1080
+         Width           =   12135
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "import / export"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdFile 
+         Height          =   615
+         Index           =   2
+         Left            =   8880
+         TabIndex        =   29
+         Top             =   1440
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   1085
+         Caption         =   "export gradient file"
+      End
+      Begin PhotoDemon.pdButton cmdFile 
+         Height          =   615
+         Index           =   0
+         Left            =   120
+         TabIndex        =   30
+         Top             =   1440
+         Width           =   5160
+         _ExtentX        =   9102
+         _ExtentY        =   1085
+         Caption         =   "save to gradient collection"
+      End
    End
    Begin PhotoDemon.pdButtonStrip btsEdit 
       Height          =   915
@@ -44,7 +140,7 @@ Begin VB.Form dialog_GradientEditor
       Width           =   12255
       _ExtentX        =   21616
       _ExtentY        =   1614
-      Caption         =   "edit mode"
+      DontAutoReset   =   -1  'True
       FontSize        =   12
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -59,46 +155,241 @@ Begin VB.Form dialog_GradientEditor
       DontAutoUnloadParent=   -1  'True
       DontResetAutomatically=   -1  'True
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   3
-      Left            =   120
-      Top             =   7080
-      Width           =   12135
-      _ExtentX        =   16536
-      _ExtentY        =   556
-      Caption         =   "import / export"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdButton cmdFile 
-      Height          =   615
-      Index           =   1
-      Left            =   6480
-      TabIndex        =   22
-      Top             =   7440
-      Width           =   5940
-      _ExtentX        =   10478
-      _ExtentY        =   1085
-      Caption         =   "save gradient file"
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4620
+      Index           =   2
+      Left            =   0
+      TabIndex        =   3
+      Top             =   1200
+      Width           =   12615
+      _ExtentX        =   22251
+      _ExtentY        =   8149
+      Begin PhotoDemon.pdButton cmdRandomize 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   15
+         Top             =   3780
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1085
+         Caption         =   "generate new pattern"
+         FontSize        =   11
+      End
+      Begin VB.PictureBox picAutoPreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00FFFFFF&
+         ForeColor       =   &H00000000&
+         Height          =   1575
+         Left            =   240
+         ScaleHeight     =   103
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   807
+         TabIndex        =   9
+         Top             =   360
+         Width           =   12135
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   1
+         Left            =   120
+         Top             =   0
+         Width           =   9255
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "preview"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdSlider sldOpacityAuto 
+         Height          =   585
+         Index           =   0
+         Left            =   240
+         TabIndex        =   10
+         Top             =   3000
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1032
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdColorSelector csColorAuto 
+         Height          =   855
+         Index           =   0
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2040
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   1508
+         Caption         =   "start color and opacity"
+         curColor        =   0
+      End
+      Begin PhotoDemon.pdSlider sldOpacityAuto 
+         Height          =   585
+         Index           =   1
+         Left            =   3720
+         TabIndex        =   12
+         Top             =   3000
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1032
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdColorSelector csColorAuto 
+         Height          =   855
+         Index           =   1
+         Left            =   3600
+         TabIndex        =   13
+         Top             =   2040
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   1508
+         Caption         =   "end color and opacity"
+      End
+      Begin PhotoDemon.pdSlider sldDensityAuto 
+         Height          =   735
+         Left            =   7200
+         TabIndex        =   14
+         Top             =   2040
+         Width           =   5235
+         _ExtentX        =   9234
+         _ExtentY        =   1296
+         Caption         =   "noise density"
+         Max             =   100
+         SigDigits       =   1
+         Value           =   10
+         NotchPosition   =   2
+         NotchValueCustom=   10
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   735
+         Index           =   0
+         Left            =   7200
+         TabIndex        =   16
+         Top             =   2940
+         Width           =   2595
+         _ExtentX        =   4577
+         _ExtentY        =   1296
+         Caption         =   "vary hue"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   735
+         Index           =   1
+         Left            =   9840
+         TabIndex        =   17
+         Top             =   2940
+         Width           =   2595
+         _ExtentX        =   4577
+         _ExtentY        =   1296
+         Caption         =   "vary saturation"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   735
+         Index           =   2
+         Left            =   7200
+         TabIndex        =   18
+         Top             =   3720
+         Width           =   2595
+         _ExtentX        =   4577
+         _ExtentY        =   1296
+         Caption         =   "vary luminance"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+         Value           =   20
+         DefaultValue    =   20
+      End
+      Begin PhotoDemon.pdSlider sldVaryHSV 
+         Height          =   735
+         Index           =   3
+         Left            =   9840
+         TabIndex        =   19
+         Top             =   3720
+         Width           =   2595
+         _ExtentX        =   4577
+         _ExtentY        =   1296
+         Caption         =   "vary alpha"
+         FontSizeCaption =   10
+         Max             =   100
+         SigDigits       =   1
+         ScaleStyle      =   1
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5775
+      Height          =   6975
       Index           =   0
       Left            =   0
       TabIndex        =   2
       Top             =   1200
       Width           =   12615
       _ExtentX        =   22251
-      _ExtentY        =   10398
-      Begin PhotoDemon.pdTextBox txtName 
+      _ExtentY        =   12303
+      Begin PhotoDemon.pdButton cmdEdit 
+         Height          =   1575
+         Left            =   9240
+         TabIndex        =   23
+         Top             =   120
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   2778
+         Caption         =   "edit this gradient >>"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButtonStripVertical btsSort 
+         Height          =   4335
+         Left            =   9120
+         TabIndex        =   22
+         Top             =   2040
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   10821
+         Caption         =   "sort collection by"
+      End
+      Begin PhotoDemon.pdHyperlink lblCollection 
          Height          =   375
          Left            =   240
-         TabIndex        =   24
-         Top             =   5265
-         Width           =   3975
-         _ExtentX        =   7011
+         Top             =   6540
+         Width           =   12135
+         _ExtentX        =   21405
          _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ""
+         RaiseClickEvent =   -1  'True
       End
+      Begin PhotoDemon.pdListBoxOD lstGradients 
+         Height          =   6375
+         Left            =   240
+         TabIndex        =   21
+         Top             =   0
+         Width           =   8655
+         _ExtentX        =   15901
+         _ExtentY        =   10821
+         Caption         =   "your collection"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4575
+      Index           =   1
+      Left            =   0
+      TabIndex        =   20
+      Top             =   1200
+      Width           =   12615
+      _ExtentX        =   22251
+      _ExtentY        =   8070
       Begin VB.PictureBox picInteract 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -113,17 +404,6 @@ Begin VB.Form dialog_GradientEditor
          TabIndex        =   8
          Top             =   2400
          Width           =   12615
-      End
-      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
-         Height          =   330
-         Left            =   8400
-         TabIndex        =   9
-         Top             =   5280
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   582
-         Caption         =   "make node distances equal"
-         Value           =   0   'False
       End
       Begin VB.PictureBox picNodePreview 
          Appearance      =   0  'Flat
@@ -213,209 +493,6 @@ Begin VB.Form dialog_GradientEditor
          FontSize        =   9
          Layout          =   1
       End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   4
-         Left            =   4560
-         Top             =   4800
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   556
-         Caption         =   "additional options"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdCheckBox chkGamma 
-         Height          =   330
-         Left            =   4800
-         TabIndex        =   23
-         Top             =   5280
-         Width           =   3495
-         _ExtentX        =   6165
-         _ExtentY        =   582
-         Caption         =   "use gamma when blending"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   5
-         Left            =   120
-         Top             =   4800
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   556
-         Caption         =   "gradient name"
-         FontSize        =   12
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   5775
-      Index           =   1
-      Left            =   0
-      TabIndex        =   3
-      Top             =   1200
-      Width           =   12615
-      _ExtentX        =   22251
-      _ExtentY        =   6165
-      Begin PhotoDemon.pdButton cmdRandomize 
-         Height          =   735
-         Left            =   4320
-         TabIndex        =   16
-         Top             =   2760
-         Width           =   3975
-         _ExtentX        =   7011
-         _ExtentY        =   1296
-         Caption         =   "randomize"
-         FontSize        =   12
-      End
-      Begin VB.PictureBox picAutoPreview 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00FFFFFF&
-         ForeColor       =   &H00000000&
-         Height          =   2070
-         Left            =   240
-         ScaleHeight     =   136
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   807
-         TabIndex        =   10
-         Top             =   360
-         Width           =   12135
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   1
-         Left            =   120
-         Top             =   0
-         Width           =   9255
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "preview"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdSlider sldOpacityAuto 
-         Height          =   825
-         Index           =   0
-         Left            =   240
-         TabIndex        =   11
-         Top             =   3600
-         Width           =   3750
-         _ExtentX        =   6615
-         _ExtentY        =   1455
-         Caption         =   "start opacity"
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.pdColorSelector csColorAuto 
-         Height          =   855
-         Index           =   0
-         Left            =   240
-         TabIndex        =   12
-         Top             =   2640
-         Width           =   3870
-         _ExtentX        =   6826
-         _ExtentY        =   1508
-         Caption         =   "start color"
-         curColor        =   0
-      End
-      Begin PhotoDemon.pdSlider sldOpacityAuto 
-         Height          =   825
-         Index           =   1
-         Left            =   8520
-         TabIndex        =   13
-         Top             =   3600
-         Width           =   3750
-         _ExtentX        =   6615
-         _ExtentY        =   1455
-         Caption         =   "end opacity"
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.pdColorSelector csColorAuto 
-         Height          =   855
-         Index           =   1
-         Left            =   8520
-         TabIndex        =   14
-         Top             =   2640
-         Width           =   3870
-         _ExtentX        =   6826
-         _ExtentY        =   1508
-         Caption         =   "end color"
-      End
-      Begin PhotoDemon.pdSlider sldDensityAuto 
-         Height          =   855
-         Left            =   4320
-         TabIndex        =   15
-         Top             =   3600
-         Width           =   3975
-         _ExtentX        =   7011
-         _ExtentY        =   1508
-         Caption         =   "density"
-         Max             =   100
-         SigDigits       =   1
-         Value           =   10
-         NotchPosition   =   2
-         NotchValueCustom=   10
-      End
-      Begin PhotoDemon.pdSlider sldVaryHSV 
-         Height          =   855
-         Index           =   0
-         Left            =   240
-         TabIndex        =   17
-         Top             =   4560
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   1508
-         Caption         =   "vary hue"
-         Max             =   100
-         SigDigits       =   1
-         ScaleStyle      =   1
-      End
-      Begin PhotoDemon.pdSlider sldVaryHSV 
-         Height          =   855
-         Index           =   1
-         Left            =   3240
-         TabIndex        =   18
-         Top             =   4560
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   1508
-         Caption         =   "vary saturation"
-         Max             =   100
-         SigDigits       =   1
-         ScaleStyle      =   1
-      End
-      Begin PhotoDemon.pdSlider sldVaryHSV 
-         Height          =   855
-         Index           =   2
-         Left            =   6240
-         TabIndex        =   19
-         Top             =   4560
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   1508
-         Caption         =   "vary luminance"
-         Max             =   100
-         SigDigits       =   1
-         ScaleStyle      =   1
-      End
-      Begin PhotoDemon.pdSlider sldVaryHSV 
-         Height          =   855
-         Index           =   3
-         Left            =   9240
-         TabIndex        =   20
-         Top             =   4560
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   1508
-         Caption         =   "vary alpha"
-         Max             =   100
-         SigDigits       =   1
-         ScaleStyle      =   1
-      End
    End
 End
 Attribute VB_Name = "dialog_GradientEditor"
@@ -427,14 +504,16 @@ Attribute VB_Exposed = False
 'Gradient Editor Dialog
 'Copyright 2014-2019 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
-'Last updated: 27/February/19
-'Last update: add buttons for saving and loading gradient files
+'Last updated: 03/March/19
+'Last update: new "collection" panel to simplify the process of reusing gradients
 '
-'Comprehensive gradient editor.  This dialog is currently based around the properties of GDI+ gradient brushes, but it
-' could easily be expanded in the future due to its modular design.
+'Comprehensive gradient editor.  This dialog gives the user multiple mechanisms for constructing,
+' loading, and saving unique gradients.  It is used in multiple contexts, including the standalone
+' gradient tool and gradient fill patterns.
 '
-'Note that - by design - this editor always returns a gradient with the same shape and angle as it was passed.  This editor
-' does not allow you to set the gradient's shape and/or angle.  (That must be done externally.)
+'Note that - by design - this editor always returns a gradient with the same shape and angle as
+' it was passed.  The editor itself doesn't handle gradient shape, angle, or other related properties,
+' because we want gradient modifications to only happen in linear mode (matching the construction UI).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -469,7 +548,6 @@ Private m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB, m_AutoPreviewDIB A
 
 'To prevent recursive setting changes, this value can be set to TRUE to prevent automatic UI synchronization
 Private m_SuspendUI As Boolean
-Private m_DialogIsVisible As Boolean
 
 'All mouse interactions for creating/editing gradients is handled by PD's mouse manager
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -478,6 +556,71 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 'This interface tracks its own collection of gradient points
 Private m_NumOfGradientPoints As Long
 Private m_GradientPoints() As GradientPoint
+
+'The gradient collection is assembled at run-time from the files in the /Data/Gradients subfolder.
+Private Type PD_GradientCollection
+    gcPath As String
+    gcFilename As String
+    gcGradient As pd2DGradient
+    gcThumb As pdDIB
+    gcGradientLoadedOK As Boolean
+    gcLoadAttempted As Boolean
+    gcDefaultIndex As Long
+    gcAverageHue As Single
+    gcAverageSaturation As Single
+    gcAverageLuminance As Single
+    gcAveragesCalculated As Boolean
+End Type
+
+Private m_GradientCollection() As PD_GradientCollection
+Private m_NumGradientsInCollection As Long
+Private Const GC_THUMB_WIDTH As Long = 200
+
+Private Enum GC_SortOptions
+    so_Filename = 0
+    so_Name = 1
+    so_Hue = 2
+    so_Saturation = 3
+    so_Luminance = 4
+    so_Complexity = 5
+End Enum
+
+#If False Then
+    Private Const so_Filename = 0, so_Name = 1, so_Hue = 2, so_Saturation = 3, so_Luminance = 4, so_Complexity = 5
+#End If
+
+'The user is allowed to sort their gradient collection by various criteria.  Because recursion is painfully slow in VB,
+' our QuickSort implementation uses a stack instead.
+Private Type QSStack
+    sLB As Long
+    sUB As Long
+End Type
+
+Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
+Private m_qsStack() As QSStack
+Private m_qsStackPtr As Long
+
+'Height of the individual list items in the gradient collection preview list
+Private Const BLOCKHEIGHT As Long = 52
+
+'Font object(s) for rendering text in the individual list item boxes
+Private m_ListFont As pdFont, m_ListFontTitle As pdFont
+
+'Local list of themable colors.  Note that this is simply a duplicate of the color list in PD's Metadata Editor;
+' the reason for this is simply to reuse the UI patterns of another (complicated) owner-drawn list box.
+Private Enum GradientUI_ColorList
+    [_First] = 0
+    cl_TitleSelected = 0
+    cl_TitleUnselected = 1
+    cl_DescriptionSelected = 2
+    cl_DescriptionUnselected = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'The current gradient point (index) selected and/or hovered by the mouse.  -1 if no point is currently selected/hovered.
 Private m_CurPoint As Long, m_CurHoverPoint As Long
@@ -494,8 +637,14 @@ Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 
 'pdRandomize is used to create repeatable random patterns
-Private m_Random As pdRandomize
-Private m_RandomKey As Double
+Private m_Random As pdRandomize, m_RandomKey As Double
+
+'When switching between panels, we need to know which panel was *previously* selected.
+' This allows us to do things like auto-populate settings across panels.
+' (Note that a separate value is used for the "reset" button on the command bar; because this
+' is a separate control, we handle it as a special case, and restore the user's previous panel
+' automatically.)
+Private m_PreviousPanel As Long, m_PanelBeforeReset As Long, m_PrevPanelBeforeReset As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -519,7 +668,9 @@ Private Function GetGradientAsOriginalShape() As String
     Set tmpGradient = New pd2DGradient
     If (btsEdit.ListIndex = 0) Then
         tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
-    Else
+    ElseIf (btsEdit.ListIndex = 1) Then
+        tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
+    ElseIf (btsEdit.ListIndex = 2) Then
         tmpGradient.CreateGradientFromString m_AutoPreview.GetGradientAsString
     End If
     
@@ -571,25 +722,35 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     'The XML file will be stored in the Preset path (/Data/Presets)
     m_XMLFilename = UserPrefs.GetPresetPath & "Gradient_Selector.xml"
     
-    'TODO: if an XML file exists, load its contents now
-    'LoadRecentGradientList
-        
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
 End Sub
 
 Private Sub btsEdit_Click(ByVal buttonIndex As Long)
+    ChangeActivePanel buttonIndex
+End Sub
+
+Private Sub ChangeActivePanel(ByVal buttonIndex As Long)
     
-    Dim i As Long
+    Dim i As Long, j As Long
     For i = picContainer.lBound To picContainer.UBound
+        
+        'Show the primary container for this panel
         picContainer(i).Visible = (i = buttonIndex)
+        
+        'Show/hide the import/export buttons as necessary - they are only relevant for the last two panels
+        pnlShared.Visible = (buttonIndex <> 0)
+        
+        'Noise gradients don't support "distribute points evenly", as it makes no sense there
+        chkDistributeEvenly.Visible = (buttonIndex = 1)
+        
     Next i
     
     'When changing from "manual" to "auto" mode, mirror the "manual" mode settings to the "automatic" pane.
     On Error GoTo ContinueWithPreview
     
-    If (buttonIndex = 1) Then
+    If (buttonIndex = 2) And (m_PreviousPanel = 1) Then
         
         If (m_NumOfGradientPoints > 1) Then
         
@@ -616,11 +777,262 @@ Private Sub btsEdit_Click(ByVal buttonIndex As Long)
         End If
         
     End If
-    
+        
 ContinueWithPreview:
     
     UpdatePreview
+    m_PreviousPanel = buttonIndex
     
+End Sub
+
+Private Sub btsSort_Click(ByVal buttonIndex As Long)
+    ChangeCollectionOrder buttonIndex
+End Sub
+
+'Change the listed order of the gradient collection.  This requires sorting against different sort criteria.
+Private Sub ChangeCollectionOrder(ByVal sortCriteria As GC_SortOptions)
+
+    If (m_NumGradientsInCollection <= 1) Then Exit Sub
+    
+    Dim i As Long
+    
+    Select Case sortCriteria
+    
+        'Default sort order
+        Case so_Filename
+        
+            'Default sort order simply uses filenames.  This is nice as we don't have to actually load
+            ' individual gradient files to have sortable data.
+            
+        'Gradient name
+        Case so_Name
+        
+            'Gradients are not loaded by default at run-time; instead, we load them on-demand.  Sorting by
+            ' name requires us to load each gradient, so pre-load them now.
+            LoadAllGradients
+        
+        'H/S/L
+        Case so_Hue, so_Saturation, so_Luminance
+        
+            'Gradients must all be loaded, and individual gradient classes must be queried for average
+            ' HSL values.  (Once calculated, however, all three HSL values are cached locally, making
+            ' subsequent sorts very fast.)
+            LoadAllGradients
+            
+            For i = 0 To m_NumGradientsInCollection - 1
+                With m_GradientCollection(i)
+                    If (Not .gcAveragesCalculated) Then
+                        .gcGradient.GetAverageHSL .gcAverageHue, .gcAverageSaturation, .gcAverageLuminance
+                        .gcAveragesCalculated = True
+                    End If
+                End With
+            Next i
+            
+        'Complexity (e.g. number of stops)
+        Case so_Complexity
+            LoadAllGradients
+    
+    End Select
+    
+    'After any prerequisites are filled, perform the sort
+    QuickSortStringStack sortCriteria
+    
+    'Repopulate the listbox
+    lstGradients.SetAutomaticRedraws True, True
+    
+End Sub
+
+'Some sort criteria require us to load all gradients.  Call this function to do so (and note that it's harmless
+' to call, in general, as already loaded gradients will not be re-loaded).
+Private Sub LoadAllGradients()
+    Dim i As Long
+    For i = 0 To m_NumGradientsInCollection - 1
+        LoadGradientCollectionPreview i
+    Next i
+End Sub
+
+Private Sub QuickSortStringStack(ByVal sortCriteria As GC_SortOptions)
+    
+    If (m_NumGradientsInCollection > 1) Then
+    
+        'Prep our internal stack
+        ReDim m_qsStack(0 To INIT_QUICKSORT_STACK_SIZE - 1) As QSStack
+        m_qsStackPtr = 0
+        m_qsStack(0).sLB = 0
+        m_qsStack(0).sUB = m_NumGradientsInCollection - 1
+        
+        NaiveQuickSortExtended sortCriteria
+        
+        'Free the stack before exiting
+        Erase m_qsStack
+        
+    End If
+    
+End Sub
+
+'Semi-standard QuickSort implementation, with VB-specific enhancements provided by georgekar, and further
+' enhancements by myself to further improve performance.
+'
+'georgekar's original, unmodified implementation can be found here:
+' http://www.vbforums.com/showthread.php?781043-VB6-Dual-Pivot-QuickSort
+Private Sub NaiveQuickSortExtended(ByVal sortCriteria As Long)
+    
+    Dim lowVal As Long, highVal As Long
+    Dim i As Long, j As Long, v As PD_GradientCollection
+    
+    Do
+        
+        'Load the next set of boundaries, and reset all pivots
+        lowVal = m_qsStack(m_qsStackPtr).sLB
+        highVal = m_qsStack(m_qsStackPtr).sUB
+        
+        'Check for single-entry ranges
+        If (highVal - lowVal = 1) Then
+            i = lowVal
+            If (CompareIndices(i, highVal, sortCriteria) > 0) Then SwapIndices i, highVal
+            GoTo NextSortItem
+        Else
+            
+            'Bisect this range
+            i = (lowVal + highVal) \ 2
+
+            'Migrate all equal entries into place
+            If (CompareIndices(i, lowVal, sortCriteria) = 0) Then
+
+                j = highVal - 1
+                i = lowVal
+
+                Do
+                    i = i + 1
+                    If (i > j) Then
+                        If (CompareIndices(highVal, lowVal, sortCriteria) < 0) Then SwapIndices lowVal, highVal
+                        GoTo NextSortItem
+                    End If
+                Loop Until (CompareIndices(i, lowVal, sortCriteria) <> 0)
+
+                v = m_GradientCollection(i)
+                If (i > lowVal) Then If (CompareIndices(lowVal, i, sortCriteria) > 0) Then SwapIndices lowVal, i
+
+            'Move the pointer until we arrive at an unsorted pivot
+            Else
+                v = m_GradientCollection(i)
+                i = lowVal
+                Do While (CompareValues(m_GradientCollection(i), v, sortCriteria) < 0): i = i + 1: Loop
+            End If
+
+        'End special case handling
+        End If
+        
+        'Resume standard QuickSort behavior
+        j = highVal
+        
+        Do
+            'Advance from the right
+            Do While (CompareValues(m_GradientCollection(j), v, sortCriteria) > 0): j = j - 1: Loop
+            
+            'Swap as necessary
+            If (i <= j) Then
+                SwapIndices i, j
+                i = i + 1
+                j = j - 1
+            End If
+            
+            If (i > j) Then Exit Do
+            
+            'Advance from the left
+            Do While (CompareValues(m_GradientCollection(i), v, sortCriteria) < 0): i = i + 1: Loop
+            
+        Loop
+        
+        'Conditionally add new entries to the processing stack
+        If (lowVal < j) Then
+            m_qsStack(m_qsStackPtr).sLB = lowVal
+            m_qsStack(m_qsStackPtr).sUB = j
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        
+        If (i < highVal) Then
+            m_qsStack(m_qsStackPtr).sLB = i
+            m_qsStack(m_qsStackPtr).sUB = highVal
+            m_qsStackPtr = m_qsStackPtr + 1
+        End If
+        
+'Yep, VB6 requires us to use GOTO and line labels.  There is no "Continue For" equivalent.
+NextSortItem:
+        
+        'Decrement the stack pointer
+        m_qsStackPtr = m_qsStackPtr - 1
+        
+    Loop While (m_qsStackPtr >= 0)
+    
+End Sub
+
+'Helper for gradient sort functions.  Returns -1 for "<", 0 for "=", and 1 for ">".
+Private Function CompareIndices(ByVal idx1 As Long, ByVal idx2 As Long, ByVal sortCriteria As GC_SortOptions) As Long
+    CompareIndices = CompareValues(m_GradientCollection(idx1), m_GradientCollection(idx2), sortCriteria)
+End Function
+
+'Helper for gradient sort functions.  Returns -1 for "<", 0 for "=", and 1 for ">".
+Private Function CompareValues(ByRef tmpGradientEntry1 As PD_GradientCollection, ByRef tmpGradientEntry2 As PD_GradientCollection, ByVal sortCriteria As GC_SortOptions) As Long
+    
+    Select Case sortCriteria
+    
+        'Gradient filename
+        Case so_Filename
+            CompareValues = Strings.StrCompSort(tmpGradientEntry1.gcFilename, tmpGradientEntry2.gcFilename)
+            
+        'Gradient name (requires gradient files to be loaded)
+        Case so_Name
+            CompareValues = Strings.StrCompSort(tmpGradientEntry1.gcGradient.GetGradientName, tmpGradientEntry2.gcGradient.GetGradientName)
+            
+        'H/S/L
+        Case so_Hue
+            If (tmpGradientEntry1.gcAverageHue < tmpGradientEntry2.gcAverageHue) Then
+                CompareValues = -1
+            ElseIf (tmpGradientEntry1.gcAverageHue > tmpGradientEntry2.gcAverageHue) Then
+                CompareValues = 1
+            Else
+                CompareValues = 0
+            End If
+            
+        Case so_Saturation
+            If (tmpGradientEntry1.gcAverageSaturation < tmpGradientEntry2.gcAverageSaturation) Then
+                CompareValues = -1
+            ElseIf (tmpGradientEntry1.gcAverageSaturation > tmpGradientEntry2.gcAverageSaturation) Then
+                CompareValues = 1
+            Else
+                CompareValues = 0
+            End If
+            
+        Case so_Luminance
+            If (tmpGradientEntry1.gcAverageLuminance < tmpGradientEntry2.gcAverageLuminance) Then
+                CompareValues = -1
+            ElseIf (tmpGradientEntry1.gcAverageLuminance > tmpGradientEntry2.gcAverageLuminance) Then
+                CompareValues = 1
+            Else
+                CompareValues = 0
+            End If
+        
+        'Complexity (no. of stops)
+        Case so_Complexity
+            If (tmpGradientEntry1.gcGradient.GetNumOfNodes < tmpGradientEntry2.gcGradient.GetNumOfNodes) Then
+                CompareValues = -1
+            ElseIf (tmpGradientEntry1.gcGradient.GetNumOfNodes > tmpGradientEntry2.gcGradient.GetNumOfNodes) Then
+                CompareValues = 1
+            Else
+                CompareValues = 0
+            End If
+    
+    End Select
+    
+End Function
+
+'Helper for gradient sort functions.  Feel free to modify to improve swap performance, depending on the data type being sorted.
+Private Sub SwapIndices(ByVal objIndex1 As Long, ByVal objIndex2 As Long)
+    Dim tmpGradientCollection As PD_GradientCollection
+    tmpGradientCollection = m_GradientCollection(objIndex1)
+    m_GradientCollection(objIndex1) = m_GradientCollection(objIndex2)
+    m_GradientCollection(objIndex2) = tmpGradientCollection
 End Sub
 
 Private Sub chkDistributeEvenly_Click()
@@ -647,6 +1059,11 @@ Private Sub cmdBar_AddCustomPresetData()
 
 End Sub
 
+Private Sub cmdBar_BeforeResetClick()
+    m_PrevPanelBeforeReset = m_PreviousPanel
+    m_PanelBeforeReset = btsEdit.ListIndex
+End Sub
+
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
@@ -656,15 +1073,51 @@ End Sub
 'OK BUTTON
 Private Sub cmdBar_OKClick()
 
-    'Store the newGradient value (which the dialog handler will use to return the selected gradient to the caller)
-    UpdateGradientObjects
+    'Mirror the selected gradient's settings to the node preview gradient (which controls what gradient
+    ' data is returned to the caller.)
+    If (btsEdit.ListIndex = 0) Then
+        If (lstGradients.ListIndex >= 0) Then
+            Set m_NodePreview = m_GradientCollection(lstGradients.ListIndex).gcGradient
+            With m_NodePreview
+                .SetGradientShape P2_GS_Linear
+                .SetGradientAngle 0#
+            End With
+        End If
     
-    'TODO: save the current list of recently used gradients
-    'SaveRecentGradientList
+    'Store the newGradient value (which the dialog handler will use to return the selected gradient to the caller)
+    Else
+        UpdateGradientObjects
+    End If
     
     userAnswer = vbOK
     Me.Visible = False
 
+End Sub
+
+Private Sub cmdBar_RandomizeClick()
+    
+    btsEdit.ListIndex = m_PreviousPanel
+    txtName.Text = vbNullString
+    
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_AutomaticAndRandom
+    
+    'Create several random nodes with random colors and opacities
+    m_NumOfGradientPoints = 2 + Int(cRandom.GetRandomFloat_WH * 4#)
+    ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As GradientPoint
+    
+    Dim i As Long
+    For i = 0 To m_NumOfGradientPoints - 1
+        With m_GradientPoints(i)
+            .PointOpacity = 100#
+            .PointPosition = cRandom.GetRandomFloat_WH
+            .PointRGB = cRandom.GetRandomFloat_WH * &HFFFFFF
+        End With
+    Next i
+    
+    RedrawEverything
+    
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
@@ -687,6 +1140,9 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     m_SuspendUI = True
+    
+    m_PreviousPanel = m_PrevPanelBeforeReset
+    btsEdit.ListIndex = m_PanelBeforeReset
     
     'Reset our master gradient object; everything else derives from it
     Set m_NodePreview = New pd2DGradient
@@ -718,16 +1174,106 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub cmdEdit_Click()
+
+    If (lstGradients.ListIndex >= 0) Then
+        Set m_NodePreview = m_GradientCollection(lstGradients.ListIndex).gcGradient
+        
+        'Sync all controls to reflect the new gradient
+        m_CurPoint = -1
+        chkDistributeEvenly.Value = False
+        SyncControlsToGradientObject
+        
+        UpdatePreview
+            
+        'Switch the active panel
+        btsEdit.ListIndex = 1
+        
+    End If
+
+End Sub
+
 Private Sub cmdFile_Click(Index As Integer)
 
     Select Case Index
         
-        'Load gradient file
+        'Save to your collection
         Case 0
+            
+            'Start by making sure the current name exists and is unique
+            If (LenB(txtName.Text) > 0) Then
+            
+                'Name exists; see if it is unique in the current collection.  (Unfortunately, this requires us
+                ' to manually load all gradient files.)
+                LoadAllGradients
+                
+                Dim nameIsUnique As Boolean
+                nameIsUnique = True
+                
+                Dim i As Long, matchingIndex As Long
+                matchingIndex = -1
+                
+                For i = 0 To m_NumGradientsInCollection - 1
+                    If Strings.StringsEqual(m_GradientCollection(i).gcGradient.GetGradientName, txtName.Text, True) Then
+                        nameIsUnique = False
+                        matchingIndex = i
+                        Exit For
+                    End If
+                Next i
+                
+                'If the name is unique, save it directly to the user's gradient folder.
+                Dim dstFilename As String
+                
+                If nameIsUnique Then
+                    dstFilename = Files.IncrementFilename(UserPrefs.GetGradientPath, txtName.Text, "svg") & ".svg"
+                    
+                'If the name is *not* unique, provide an overwrite prompt.
+                Else
+                    
+                    Dim pResult As VbMsgBoxResult
+                    pResult = PDMsgBox("A gradient with the name ""%1"" already exists in your collection.  Would you like to overwrite it?", vbYesNoCancel Or vbExclamation, "Duplicate name", txtName.Text)
+                    If (pResult = vbNo) Or (pResult = vbCancel) Then Exit Sub
+                    dstFilename = m_GradientCollection(i).gcFilename
+                    
+                End If
+                
+                'Kill the existing file, if any
+                dstFilename = UserPrefs.GetGradientPath & dstFilename
+                Files.FileDeleteIfExists dstFilename
+                
+                'Make sure all gradient settings are up-to-date
+                UpdateGradientObjects
+                
+                'Save based on the provided extension (which allows us to overwrite ggr files with new ggr data, as relevant)
+                If Strings.StringsEqual(Files.FileGetExtension(dstFilename), "ggr", True) Then
+                    If (btsEdit.ListIndex = 1) Then m_NodePreview.SaveGradient_GIMP dstFilename Else m_AutoPreview.SaveGradient_GIMP dstFilename
+                Else
+                    If (btsEdit.ListIndex = 1) Then m_NodePreview.SaveGradient_SVG dstFilename Else m_AutoPreview.SaveGradient_SVG dstFilename
+                End If
+                
+                'Reset the gradient collection so that the new addition is picked-up
+                BuildGradientCollection
+                
+                'Automatically select the just-saved gradient in the gradient list
+                dstFilename = Files.FileGetName(dstFilename)
+                For i = 0 To m_NumGradientsInCollection - 1
+                    If Strings.StringsEqual(m_GradientCollection(i).gcFilename, dstFilename, True) Then
+                        lstGradients.ListIndex = i
+                        Exit For
+                    End If
+                Next i
+            
+            'Name does not exist; ask the user to supply one.
+            Else
+                PDMsgBox "This gradient doesn't have a name.  Please give it a name before adding it to your collection.", vbOKOnly Or vbInformation, "Name required"
+            End If
+        
+        'Load gradient file
+        Case 1
             ImportGradientFile
         
         'Save gradient file
-        Case 1
+        Case 2
             ExportGradientFile
     
     End Select
@@ -769,7 +1315,7 @@ Private Sub ImportGradientFile()
         UserPrefs.SetGradientPath Files.FileGetPath(srcFilename)
         
         'For now, forcibly switch to the "manual" panel and load the gradient there
-        If (btsEdit.ListIndex <> 0) Then btsEdit.ListIndex = 0
+        If (btsEdit.ListIndex <> 1) Then btsEdit.ListIndex = 1
         
         Dim tmpGradient As pd2DGradient
         Set tmpGradient = New pd2DGradient
@@ -787,6 +1333,8 @@ Private Sub ImportGradientFile()
             
             UpdatePreview
             
+        Else
+            PDMsgBox "Unfortunately, the gradient file ""%1"" doesn't appear to be a valid gradient file.", vbInformation Or vbOKOnly Or vbApplicationModal, "Invalid gradient"
         End If
         
     End If
@@ -818,20 +1366,25 @@ Private Sub ExportGradientFile()
     Dim cdIndex As Long
     cdIndex = 2
     
-    'Suggest a file name.  At present, we just reuse the current image's name.
-    ' (TODO: find a way to integrate gradient name more elegantly.)
+    'Suggest a file name.  If the user has entered a gradient name, we suggest that first.
+    ' After that, we attempt to reuse the current image's name (if any).
     Dim dstFilename As String
-    If (PDImages.GetNumOpenImages > 0) Then dstFilename = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(txtName.Text) > 0) Then
+        dstFilename = txtName.Text
+    ElseIf (PDImages.GetNumOpenImages > 0) Then
+        dstFilename = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    End If
+    
+    'If none of our previous name suggestions stuck, suggest a default name.
     If (LenB(dstFilename) = 0) Then dstFilename = g_Language.TranslateMessage("New gradient")
     dstFilename = initialSaveFolder & dstFilename
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Export gradient")
     
-    'Prep a common dialog interface
+    'Display a common save dialog
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
-    
     If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
     
         'Update preferences
@@ -839,9 +1392,9 @@ Private Sub ExportGradientFile()
         
         'Set the source gradient differently, depending on the current active panel
         Dim srcGradient As pd2DGradient
-        If (btsEdit.ListIndex = 0) Then
+        If (btsEdit.ListIndex = 1) Then
             Set srcGradient = m_NodePreview
-        Else
+        ElseIf (btsEdit.ListIndex = 2) Then
             Set srcGradient = m_AutoPreview
         End If
                 
@@ -888,18 +1441,7 @@ Private Sub csNode_ColorChanged()
     
 End Sub
 
-Private Sub Form_Activate()
-    
-    m_SuspendUI = False
-    m_DialogIsVisible = True
-    
-    RedrawEverything
-    
-End Sub
-
 Private Sub Form_Load()
-    
-    m_SuspendUI = True
     
     'Add the instructions label
     Dim instructionText As String
@@ -907,9 +1449,30 @@ Private Sub Form_Load()
     lblInstructions.Caption = instructionText
     
     'Populate button strips, drop-downs, tooltips, etc
-    btsEdit.AddItem "manual", 0
-    btsEdit.AddItem "automatic", 1
+    btsEdit.AddItem "gradient collection", 0
+    btsEdit.AddItem "make your own", 1
+    btsEdit.AddItem "noise gradients", 2
     btsEdit.ListIndex = 0
+    m_PreviousPanel = 0
+    
+    btsSort.AddItem "filename", 0
+    btsSort.AddItem "gradient name", 1
+    btsSort.AddItem "hue", 2
+    btsSort.AddItem "saturation", 3
+    btsSort.AddItem "luminance", 4
+    btsSort.AddItem "complexity", 5
+    btsSort.ListIndex = 0
+    
+    lstGradients.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
+    
+    Dim buttonImgSize As Long
+    buttonImgSize = Interface.FixDPI(24)
+    cmdFile(0).AssignImage "file_save", , buttonImgSize, buttonImgSize
+    cmdFile(1).AssignImage "file_open", , buttonImgSize, buttonImgSize
+    cmdFile(2).AssignImage "file_saveas", , buttonImgSize, buttonImgSize
+    
+    lblCollection.Caption = g_Language.TranslateMessage("Your gradient collection is stored in the ""%1"" folder", UserPrefs.GetGradientPath)
+    lblCollection.AssignTooltip "click to open the gradient collection folder in Windows Explorer"
     
     chkGamma.AssignTooltip "When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance."
     chkDistributeEvenly.AssignTooltip "Use this setting to automatically calculate equal positioning for all gradient nodes."
@@ -923,8 +1486,29 @@ Private Sub Form_Load()
         m_MouseEvents.AddInputTracker picInteract.hWnd
         m_MouseEvents.SetCursor_System IDC_HAND
         
-        'Prep a default set of gradient points
+        'Prep a default set of gradient points in the editor panel
         ResetGradientPoints
+        
+        'Load the gradient collection, including any associated rendering items
+        Set m_Colors = New pdThemeColors
+        Dim colorCount As GradientUI_ColorList: colorCount = [_Count]
+        m_Colors.InitializeColorList "PDMetadataList", colorCount
+        UpdateColorList
+        
+        Set m_ListFontTitle = New pdFont
+        m_ListFontTitle.SetFontBold True
+        m_ListFontTitle.SetFontSize 10
+        m_ListFontTitle.CreateFontObject
+        m_ListFontTitle.SetTextAlignment vbLeftJustify
+        
+        Set m_ListFont = New pdFont
+        m_ListFont.SetFontBold False
+        m_ListFont.SetFontSize 10
+        m_ListFont.CreateFontObject
+        m_ListFont.SetTextAlignment vbLeftJustify
+        
+        BuildGradientCollection
+        cmdEdit.Enabled = (lstGradients.ListIndex >= 0)
         
         'Prep all gradient point tracking variables
         m_CurPoint = -1
@@ -964,6 +1548,45 @@ Private Sub Form_Load()
         SyncUIToActiveNode
         DrawGradientNodes
                 
+    End If
+    
+    ChangeActivePanel btsEdit.ListIndex
+    RedrawEverything
+
+End Sub
+
+Private Sub BuildGradientCollection()
+
+    'A pdFSO object will help us quickly iterate (potentially) valid gradient files
+    Dim cFSO As pdFSO
+    Set cFSO = New pdFSO
+    
+    Const INIT_COLLECTION_SIZE As Long = 16
+    ReDim m_GradientCollection(0 To INIT_COLLECTION_SIZE - 1) As PD_GradientCollection
+    m_NumGradientsInCollection = 0
+    
+    Dim srcFiles As pdStringStack
+    If cFSO.RetrieveAllFiles(UserPrefs.GetGradientPath, srcFiles, True, True, "ggr|svg") Then
+        
+        lstGradients.SetAutomaticRedraws False, False
+        lstGradients.Clear
+        
+        Dim i As Long, tmpString As String
+        For i = 0 To srcFiles.GetNumOfStrings - 1
+            tmpString = srcFiles.GetString(i)
+            If (m_NumGradientsInCollection > UBound(m_GradientCollection)) Then ReDim Preserve m_GradientCollection(0 To m_NumGradientsInCollection * 2 - 1) As PD_GradientCollection
+            m_GradientCollection(m_NumGradientsInCollection).gcPath = tmpString
+            m_GradientCollection(m_NumGradientsInCollection).gcFilename = Files.FileGetName(tmpString)
+            m_GradientCollection(m_NumGradientsInCollection).gcDefaultIndex = m_NumGradientsInCollection
+            lstGradients.AddItem vbNullString, m_NumGradientsInCollection
+            m_NumGradientsInCollection = m_NumGradientsInCollection + 1
+        Next i
+        
+        'After adding all files, perform a default sort by filename
+        ChangeCollectionOrder so_Filename
+        
+        lstGradients.SetAutomaticRedraws True, True
+    
     End If
     
 End Sub
@@ -1045,13 +1668,27 @@ Private Sub UpdateGradientObjects()
         
     End If
     
-    With m_NodePreview
-        .SetGradientShape P2_GS_Linear
-        .SetGradientAngle 0#
-        .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
-        .SetGradientGammaMode chkGamma.Value
-        .SetGradientName txtName.Text
-    End With
+    'Manual edit mode...
+    If (btsEdit.ListIndex = 1) Then
+        With m_NodePreview
+            .SetGradientShape P2_GS_Linear
+            .SetGradientAngle 0#
+            .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+            .SetGradientGammaMode chkGamma.Value
+            .SetGradientName txtName.Text
+        End With
+    
+    'Noise gradient mode...
+    Else
+        If (Not m_AutoPreview Is Nothing) Then
+            With m_AutoPreview
+                .SetGradientShape P2_GS_Linear
+                .SetGradientAngle 0#
+                .SetGradientGammaMode chkGamma.Value
+                .SetGradientName txtName.Text
+            End With
+        End If
+    End If
 
 End Sub
 
@@ -1073,6 +1710,145 @@ Private Sub SyncControlsToGradientObject()
     
     'Also, synchronize the node-specific UI to the active node (if any)
     SyncUIToActiveNode
+    
+End Sub
+
+Private Sub lblCollection_Click()
+    Dim filePath As String, shellCommand As String
+    filePath = UserPrefs.GetGradientPath
+    shellCommand = "explorer.exe """ & filePath & """"
+    Shell shellCommand, vbNormalFocus
+End Sub
+
+Private Sub lstGradients_Click()
+    cmdEdit.Enabled = (lstGradients.ListIndex >= 0)
+End Sub
+
+Private Sub lstGradients_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+
+    If (bufferDC = 0) Then Exit Sub
+    
+    'Start by loading the requested gradient if we haven't already.
+    If (m_GradientCollection(itemIndex).gcGradient Is Nothing) Then LoadGradientCollectionPreview itemIndex
+    
+    '...Followed by a matching preview DIB
+    If (m_GradientCollection(itemIndex).gcThumb Is Nothing) Then LoadGradientCollectionPreviewDIB itemIndex
+    
+    'Calculate text colors (which vary depending on selection state)
+    Dim txtTitleColor As Long, txtDescriptionColor As Long
+    If itemIsSelected Then
+        txtTitleColor = m_Colors.RetrieveColor(cl_TitleSelected, lstGradients.Enabled, , itemIsHovered)
+        txtDescriptionColor = m_Colors.RetrieveColor(cl_DescriptionSelected, lstGradients.Enabled, , itemIsHovered)
+    Else
+        txtTitleColor = m_Colors.RetrieveColor(cl_TitleUnselected, lstGradients.Enabled, , itemIsHovered)
+        txtDescriptionColor = m_Colors.RetrieveColor(cl_DescriptionUnselected, lstGradients.Enabled, , itemIsHovered)
+    End If
+    
+    'Retrieve the item's boundary rect
+    Dim tmpRectF As RectF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    Dim offsetX As Single, offsetY As Single
+    offsetX = tmpRectF.Left + Interface.FixDPI(8)
+    offsetY = tmpRectF.Top + (tmpRectF.Height - m_GradientCollection(itemIndex).gcThumb.GetDIBHeight) \ 2
+    
+    'Render the gradient preview first, with a light border around it.
+    If m_GradientCollection(itemIndex).gcGradientLoadedOK Then m_GradientCollection(itemIndex).gcThumb.AlphaBlendToDC bufferDC, , offsetX, offsetY
+    
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
+    
+    Dim cPen As pd2DPen, penColor As Long
+    If itemIsSelected Then
+        penColor = g_Themer.GetGenericUIColor(UI_Accent, lstGradients.Enabled, , itemIsHovered)
+    Else
+        penColor = g_Themer.GetGenericUIColor(UI_GrayNeutral, lstGradients.Enabled, , itemIsHovered)
+    End If
+    Drawing2D.QuickCreateSolidPen cPen, 1!, penColor
+    
+    PD2D.DrawRectangleF cSurface, cPen, offsetX, offsetY, m_GradientCollection(itemIndex).gcThumb.GetDIBWidth, m_GradientCollection(itemIndex).gcThumb.GetDIBHeight
+    
+    Set cSurface = Nothing
+    Set cPen = Nothing
+    
+    'Next, render the gradient's name
+    offsetX = offsetX + m_GradientCollection(itemIndex).gcThumb.GetDIBWidth + Interface.FixDPI(8)
+    offsetY = offsetY + 2
+    
+    If (LenB(m_GradientCollection(itemIndex).gcGradient.GetGradientName) <> 0) Then
+        
+        m_ListFontTitle.AttachToDC bufferDC
+        m_ListFontTitle.SetFontColor txtTitleColor
+        m_ListFontTitle.FastRenderText offsetX + 0, offsetY + 0, m_GradientCollection(itemIndex).gcGradient.GetGradientName()
+        m_ListFontTitle.ReleaseFromDC
+        
+        m_ListFont.AttachToDC bufferDC
+        m_ListFont.SetFontColor txtDescriptionColor
+        offsetY = offsetY + Interface.FixDPI(5) + m_ListFont.GetHeightOfString(m_GradientCollection(itemIndex).gcGradient.GetGradientName())
+        m_ListFont.FastRenderTextWithClipping offsetX, offsetY, tmpRectF.Width - offsetX, tmpRectF.Height, m_GradientCollection(itemIndex).gcPath, True, False, False
+        m_ListFont.ReleaseFromDC
+        
+    End If
+    
+End Sub
+
+'Load a gradient collection preview for the first time.  This function is time-consuming; do not call it more
+' than absolutely necessary.
+Private Sub LoadGradientCollectionPreview(ByVal itemIndex As Long)
+    
+    With m_GradientCollection(itemIndex)
+        If .gcLoadAttempted Then Exit Sub
+        Set .gcGradient = New pd2DGradient
+        .gcGradientLoadedOK = .gcGradient.LoadGradientFromFile(UserPrefs.GetGradientPath & .gcPath)
+        .gcLoadAttempted = True
+    End With
+    
+End Sub
+
+'Load a gradient collection preview for the first time.  This function is time-consuming; do not call it more
+' than absolutely necessary.
+Private Sub LoadGradientCollectionPreviewDIB(ByVal itemIndex As Long)
+    
+    'Generate a preview DIB for this gradient.
+    If (m_GradientCollection(itemIndex).gcThumb Is Nothing) Then
+        
+        With m_GradientCollection(itemIndex)
+            
+            Dim thumbHeight As Long
+            thumbHeight = Int(Interface.FixDPIFloat(BLOCKHEIGHT) - 8)
+            Set .gcThumb = New pdDIB
+            .gcThumb.CreateBlank Interface.FixDPI(GC_THUMB_WIDTH), Interface.FixDPI(thumbHeight), 32, 0, 0
+            GDI_Plus.GDIPlusFillDIBRect_Pattern .gcThumb, 0, 0, .gcThumb.GetDIBWidth, .gcThumb.GetDIBHeight, g_CheckerboardPattern
+            
+            If .gcGradientLoadedOK And (.gcGradient.GetNumOfNodes > 1) Then
+                
+                'Create a gradient brush and boundary rect
+                Dim cBrush As pd2DBrush
+                Set cBrush = New pd2DBrush
+                cBrush.SetBrushMode P2_BM_Gradient
+                cBrush.SetBrushGradientAngle 45!
+                cBrush.SetBrushGradientShape P2_GS_Linear
+                cBrush.SetBrushGradientAllSettings .gcGradient.GetGradientAsString()
+                
+                Dim gRectF As RectF
+                gRectF.Left = 0!
+                gRectF.Top = 0!
+                gRectF.Width = .gcThumb.GetDIBWidth
+                gRectF.Height = .gcThumb.GetDIBHeight
+                cBrush.SetBoundaryRect gRectF
+                
+                'Render the gradient preview
+                Dim cSurface As pd2DSurface
+                Drawing2D.QuickCreateSurfaceFromDIB cSurface, .gcThumb, False
+                PD2D.FillRectangleF_FromRectF cSurface, cBrush, gRectF
+                
+            End If
+            
+            .gcThumb.SetAlphaPremultiplication True
+            
+        End With
+        
+    End If
     
 End Sub
 
@@ -1111,23 +1887,28 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     'If this is not an existing point, create a new one now.
     Else
     
-        'Enlarge the target array as necessary
-        If (m_NumOfGradientPoints >= UBound(m_GradientPoints)) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GradientPoint
+        'Make sure the *left* mouse button was clicked
+        If ((Button And pdLeftButton) <> 0) Then
+            
+            'Enlarge the target array as necessary
+            If (m_NumOfGradientPoints >= UBound(m_GradientPoints)) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GradientPoint
+            
+            With m_GradientPoints(m_NumOfGradientPoints)
+                
+                .PointOpacity = 100
+                .PointPosition = ConvertPixelCoordsToNodeCoords(x)
+                
+                'Preset the RGB value to match whatever the gradient already is at this point
+                Dim newRGBA As RGBQuad
+                m_NodePreview.GetColorAtPosition_RGBA .PointPosition, newRGBA
+                .PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
+                
+            End With
+            
+            m_CurPoint = m_NumOfGradientPoints
+            m_NumOfGradientPoints = m_NumOfGradientPoints + 1
         
-        With m_GradientPoints(m_NumOfGradientPoints)
-            
-            .PointOpacity = 100
-            .PointPosition = ConvertPixelCoordsToNodeCoords(x)
-            
-            'Preset the RGB value to match whatever the gradient already is at this point
-            Dim newRGBA As RGBQuad
-            m_NodePreview.GetColorAtPosition_RGBA .PointPosition, newRGBA
-            .PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
-            
-        End With
-        
-        m_CurPoint = m_NumOfGradientPoints
-        m_NumOfGradientPoints = m_NumOfGradientPoints + 1
+        End If
         
     End If
     
@@ -1473,8 +2254,12 @@ End Sub
 'The two different gradient panels (manual and auto) require different preview code, obviously.  Call this function
 ' and it will automatically request a redraw from the active panel.
 Private Sub UpdatePreview()
-    If m_DialogIsVisible Then
-        If (btsEdit.ListIndex = 0) Then UpdatePreview_Manual Else UpdatePreview_Auto
+    If cmdBar.PreviewsAllowed Then
+        If (btsEdit.ListIndex = 1) Then
+            UpdatePreview_Manual
+        ElseIf (btsEdit.ListIndex = 2) Then
+            UpdatePreview_Auto
+        End If
     End If
 End Sub
 
@@ -1681,4 +2466,15 @@ Private Sub UpdatePreview_Manual()
         
     End If
     
+End Sub
+
+'Before the custom list box does any painting, we need to retrieve relevant colors from PD's primary theming class.
+' Note that this step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor cl_TitleSelected, "TitleSelected", IDE_GRAY
+        .LoadThemeColor cl_TitleUnselected, "TitleUnselected", IDE_GRAY
+        .LoadThemeColor cl_DescriptionSelected, "TitleSelected", IDE_GRAY
+        .LoadThemeColor cl_DescriptionUnselected, "TitleUnselected", IDE_GRAY
+    End With
 End Sub
