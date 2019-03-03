@@ -580,7 +580,7 @@ Private Sub Form_Load()
     m_DescriptionFont.SetFontSize 10
     m_DescriptionFont.CreateFontObject
     m_DescriptionFont.SetTextAlignment vbLeftJustify
-        
+    
     'Initialize the category array
     ReDim m_MDCategories(0 To 3) As MDCategory
     m_NumOfCategories = 0
@@ -631,8 +631,8 @@ Private Sub Form_Load()
     
     lstGroup.SetAutomaticRedraws False
     For i = 0 To m_NumOfCategories - 1
-        lstGroup.AddItem m_MDCategories(i).Name, i, (StrComp(LCase$(m_MDCategories(i).Name), "inferred", vbBinaryCompare) = 0)
-        If m_MDCategories(i).Count > m_LargestCategoryCount Then m_LargestCategoryCount = m_MDCategories(i).Count
+        lstGroup.AddItem m_MDCategories(i).Name, i, Strings.StringsEqual(m_MDCategories(i).Name, "inferred", True)
+        If (m_MDCategories(i).Count > m_LargestCategoryCount) Then m_LargestCategoryCount = m_MDCategories(i).Count
     Next i
     lstGroup.SetAutomaticRedraws True, True
     
@@ -880,19 +880,19 @@ Private Sub lstGroup_Click()
     
     'Some categories display a "helper" description
     Dim catName As String, groupDescription As String
-    catName = LCase$(m_MDCategories(curCategory).Name)
-    If StrComp(catName, "system", vbBinaryCompare) = 0 Then
+    catName = m_MDCategories(curCategory).Name
+    If Strings.StringsEqual(catName, "system", True) Then
         groupDescription = g_Language.TranslateMessage("""System"" tags are provided by the operating system.  They are not embedded as traditional metadata.")
-    ElseIf StrComp(catName, "file", vbBinaryCompare) = 0 Then
+    ElseIf Strings.StringsEqual(catName, "file", True) Then
         groupDescription = g_Language.TranslateMessage("""File"" tags are required by this image format.  They are not embedded as traditional metadata.")
-    ElseIf StrComp(catName, "icc profile", vbBinaryCompare) = 0 Then
+    ElseIf Strings.StringsEqual(catName, "icc profile", True) Then
         groupDescription = g_Language.TranslateMessage("ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.")
-    ElseIf StrComp(catName, "inferred", vbBinaryCompare) = 0 Then
+    ElseIf Strings.StringsEqual(catName, "inferred", True) Then
         groupDescription = g_Language.TranslateMessage("""Inferred"" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.")
     End If
     
     'If a helper description exists, show/hide the description label to match
-    If (Len(groupDescription) = 0) Then
+    If (LenB(groupDescription) = 0) Then
         lblGroupDescription.Visible = False
     Else
         lblGroupDescription.Caption = groupDescription
@@ -959,7 +959,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     thisTag = m_AllTags(blockCategory, itemIndex)
     
     Dim linePadding As Long
-    linePadding = FixDPI(3)
+    linePadding = Interface.FixDPI(3)
     
     'If the user has modified this tag, but the tag is *not* currently selected, we paint it with a different background color.
     If (Not itemIsSelected) Then
@@ -972,7 +972,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
             
         'If the user has supplied their own value for this tag, we use a green background
         ElseIf (thisTag.UserModifiedAllSessions) Then
-            If StrComp(LCase$(thisTag.UserValueNew), LCase$(thisTag.TagValueFriendly), vbBinaryCompare) <> 0 Then
+            If (Strings.StringsNotEqual(thisTag.UserValueNew, thisTag.TagValueFriendly, True) <> 0) Then
                 With tmpRectF
                     GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Width, .Height + 1#, m_Colors.RetrieveColor(PDMD_TagBackgroundEdited, Me.Enabled)
                 End With
@@ -1413,18 +1413,18 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
                 ' and the friendly text, crammed into one.  As such, we can't just compare listbox text.
                 If .DB_HardcodedList And (.DB_TypeCount < 2) Then
                     
-                    'Start by detecting which listindex corresponds to the tag's original value.
+                    'Start by detecting which ListIndex corresponds to the tag's original value.
                     Dim foundDefaultListIndex As Boolean: foundDefaultListIndex = False
                     
                     Dim i As Long
                     For i = 0 To .DB_StackValues.GetNumOfStrings - 1
                         
-                        If StrComp(.TagValue, .DB_StackIDs.GetString(i), vbBinaryCompare) = 0 Then
+                        If Strings.StringsEqual(.TagValue, .DB_StackIDs.GetString(i), True) Then
                             foundDefaultListIndex = True
 
                         'As a failsafe, also compare the "print-friendly" version of the current value
                         Else
-                            If StrComp(.TagValueFriendly, .DB_StackValues.GetString(i), vbBinaryCompare) = 0 Then
+                            If Strings.StringsEqual(.TagValueFriendly, .DB_StackValues.GetString(i), True) Then
                                 foundDefaultListIndex = True
                             End If
                         End If
@@ -1464,7 +1464,7 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
                         If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
                     End If
                     
-                    If StrComp(txtValue.Text, testString, vbBinaryCompare) <> 0 Then
+                    If Strings.StringsEqual(txtValue.Text, testString, True) Then
                         
                         'This string is different from the one we placed inside.  Mark the tag as edited, and store the
                         ' user-supplied value.
