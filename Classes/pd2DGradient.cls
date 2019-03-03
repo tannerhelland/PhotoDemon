@@ -145,28 +145,34 @@ Private Function GetGradientNodesAsString(Optional ByVal useBase64ForNodes As Bo
             .AddParam "GradientListAlreadySorted", m_IsSorted, True, True
             .AddParam "GradientNodesUseBase64", useBase64ForNodes, True, True
             
-            'We now have two options for encoding actual node data.  If the caller allows us, we'll just use
-            ' Base64 to dump the full node array to a string.  For very large gradients, this provides a nice
-            ' speed boost over manually encoding individual nodes.
-            If useBase64ForNodes Then
-            
-                Dim strBase64 As String
-                Strings.BytesToBase64Ex VarPtr(m_GradientPoints(0)), m_NumOfPoints * LenB(m_GradientPoints(0)), strBase64
-                .AddParam "GradientNodesBase64", strBase64, True, False
-            
-            Else
-            
-                'Add the gradient point list; for convenience, RGB and opacity are manually separated.
-                Dim i As Long, iString As String
-                For i = 0 To m_NumOfPoints - 1
-                    iString = Trim$(Str$(i))
-                    .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
-                    .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
-                    .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
-                Next i
+            If (m_NumOfPoints > 0) Then
                 
+                'We now have two options for encoding actual node data.  If the caller allows us, we'll just use
+                ' Base64 to dump the full node array to a string.  For very large gradients, this provides a nice
+                ' speed boost over manually encoding individual nodes.
+                If useBase64ForNodes Then
+                
+                    Dim strBase64 As String
+                    Strings.BytesToBase64Ex VarPtr(m_GradientPoints(0)), m_NumOfPoints * LenB(m_GradientPoints(0)), strBase64
+                    .AddParam "GradientNodesBase64", strBase64, True, False
+                
+                Else
+                
+                    'Add the gradient point list; for convenience, RGB and opacity are manually separated.
+                    Dim i As Long, iString As String
+                    For i = 0 To m_NumOfPoints - 1
+                        iString = Trim$(Str$(i))
+                        .AddParam "GP_RGB_" & iString, m_GradientPoints(i).PointRGB, True, True
+                        .AddParam "GP_Opacity_" & iString, m_GradientPoints(i).PointOpacity, True, True
+                        .AddParam "GP_Position_" & iString, m_GradientPoints(i).PointPosition, True, True
+                    Next i
+                    
+                End If
+                
+            Else
+                InternalError "GetGradientNodesAsString", "0 points in gradient " & m_GradientName
             End If
-            
+                
         End With
         
         GetGradientNodesAsString = tmpXML.GetParamString()
@@ -400,6 +406,36 @@ Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints()
     End If
 End Sub
 
+'The Gradient Editor UI allows users to sort gradients by various criteria.  This is helpful for
+' categorizing e.g. gradients with averaged "red" shades vs "blue" shades.  Such sorting requires us
+' to provide average HSL values for the gradient; those are calculated here.
+Friend Sub GetAverageHSL(ByRef dstH As Single, ByRef dstS As Single, ByRef dstL As Single)
+
+    If (m_NumOfPoints > 0) Then
+        
+        'For each point, extract RGB values, calculate corresponding HSL values, and store running averages
+        Dim srcR As Long, srcG As Long, srcB As Long
+        Dim h As Double, s As Double, l As Double
+        Dim hTotal As Double, sTotal As Double, lTotal As Double
+        Dim i As Long
+        For i = 0 To m_NumOfPoints - 1
+            srcR = Colors.ExtractRed(m_GradientPoints(i).PointRGB)
+            srcG = Colors.ExtractGreen(m_GradientPoints(i).PointRGB)
+            srcB = Colors.ExtractBlue(m_GradientPoints(i).PointRGB)
+            Colors.ImpreciseRGBtoHSL srcR, srcG, srcB, h, s, l
+            hTotal = hTotal + h
+            sTotal = sTotal + s
+            lTotal = lTotal + l
+        Next i
+        
+        dstH = hTotal / m_NumOfPoints
+        dstS = sTotal / m_NumOfPoints
+        dstL = lTotal / m_NumOfPoints
+    
+    End If
+
+End Sub
+
 Friend Function GetFirstColor() As Long
     If (m_NumOfPoints > 0) Then
         If (Not m_IsSorted) Then SortGradientArray
@@ -430,13 +466,16 @@ Friend Function LoadGradientFromFile(ByRef srcFilename As String) As Boolean
         Me.ResetAllProperties
         
         'Attempt SVG first
-        LoadGradientFromFile = LoadGradient_SVG(cStream)
+        If Strings.StringsEqual(Files.FileGetExtension(srcFilename), "svg", True) Then LoadGradientFromFile = LoadGradient_SVG(cStream)
         
         'Next, attempt GIMP format
         If (Not LoadGradientFromFile) Then LoadGradientFromFile = LoadGradient_GIMP(cStream)
         
         'Gradients loaded from file should *not* use gamma-corrected blending
-        m_GradientGammaMode = False
+        If LoadGradientFromFile Then
+            m_GradientGammaMode = False
+            m_GradientIsDefault = False
+        End If
         
     Else
         InternalError "LoadGradientFromFile: failed to start stream object"
