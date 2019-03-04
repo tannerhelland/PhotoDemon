@@ -1367,6 +1367,14 @@ Begin VB.Form FormMain
             Caption         =   "Build theme package..."
             Index           =   1
          End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Build standalone package..."
+            Index           =   3
+         End
       End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
@@ -2080,6 +2088,13 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         Case 1
             g_Themer.BuildThemePackage
             
+        '<separator>
+        Case 2
+        
+        'Build standalone package; typically used for resource bundling of random assets
+        Case 3
+            ShowPDDialog vbModal, FormPackage
+            
     End Select
 
 End Sub
@@ -2785,7 +2800,7 @@ FormMainLoadError:
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If (Not g_AllowDragAndDrop) Then Exit Sub
@@ -2798,7 +2813,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
     
     'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
     ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.

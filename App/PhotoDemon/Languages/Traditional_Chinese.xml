@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.60</langversion>
+<langversion>7.0.61</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5941,6 +5941,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Build standalone package</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Test</original>
 <translation>測試</translation>
 </phrase>
@@ -6608,7 +6613,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>移除 alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 192 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15644,10 +15649,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2620</phrasecount>
+<phrasecount>2621</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2185 are duplicates, so only 2620 unique phrases have been written to file. -->
-<!-- These 2620 phrases contain approximately 12390 total words. -->
+<!-- As of this build, PhotoDemon contains 4806 phrases. -->
+<!-- 2185 are duplicates, so only 2621 unique phrases have been written to file. -->
+<!-- These 2621 phrases contain approximately 12393 total words. -->
 
 </pdData>

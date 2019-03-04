@@ -487,6 +487,8 @@ Public Sub InitializeMenus()
         AddMenuItem "Developers", "tools_developers", 7, 12
             AddMenuItem "Theme editor...", "tools_themeeditor", 7, 12, 0
             AddMenuItem "Build theme package...", "tools_themepackage", 7, 12, 1
+            AddMenuItem "-", "-", 7, 12, 2
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 12, 3
         AddMenuItem "Test", "effects_developertest", 7, 13
     End If
     

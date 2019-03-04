@@ -67,7 +67,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
         
             'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
             For i = UBound(listOfFiles) To 0 Step -1
-                If Len(listOfFiles(i)) <> 0 Then Exit For
+                If (LenB(listOfFiles(i)) <> 0) Then Exit For
             Next
             
             'With all the empty strings removed, all that's left is legitimate file paths

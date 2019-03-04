@@ -398,7 +398,7 @@ Private Sub cmdConvertLabels_Click()
         srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
         
         Dim fileContents As String
-        fileContents = getFileAsString(srcFilename)
+        fileContents = GetFileAsString(srcFilename)
         
         Dim fileLines() As String
         fileLines = Split(fileContents, vbCrLf)
@@ -525,149 +525,6 @@ Private Function IsValidPDLabelProperty(ByVal srcString As String) As Boolean
     
 End Function
 
-'NOTE: as of the 7.0 release, this code is unused by the core program.  Consider removing for 7.2.
-'
-'This function scans all of PD's current language files, and generates a small XML file with their version numbers.
-' (Note that two folders are scanned: the standard /App/PhotoDemon/Languages folder, which contains dev build values, and a separate
-'  stable folder, which contains the latest stable build language files.)
-'
-'It also fills two temporary folders (one stable, one dev) with pdPackaged copies of the latest PD language files.  PD's nightly build script
-' will then upload these files to photodemon.org, so individual PD instances can self-patch according to the user's preferences.
-'
-'Note that this function can be automatically run by specifying -s on the command line.  If -s is used, this function will close the program
-' upon completion.
-Private Sub cmdLangVersions_Click()
-    
-    Dim numOfLangFiles As Long
-    numOfLangFiles = 0
-    
-    'Two folders must be iterated for existing language files: a stable language folder, and an unstable (development) language folder.
-    ' We'll start with the development folder.
-    Dim srcFolder As String
-    srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
-    
-    'Two folders are also required for exporting the compressed language file copies (again, stable and dev).
-    Dim exportFolderDev As String, exportFolderStable As String
-    exportFolderDev = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\dev\"
-    exportFolderStable = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\stable\"
-    
-    'Lots of XML parsing will be going on here.
-    Dim xmlInput As pdXML, xmlOutput As pdXML
-    Set xmlInput = New pdXML
-    Set xmlOutput = New pdXML
-    
-    'Prep xmlOutput in advance
-    xmlOutput.prepareNewXML "Language versions"
-    xmlOutput.writeBlankLine
-    xmlOutput.writeComment "This language version file was automatically generated on " & Format(Now, "Medium date")
-    xmlOutput.writeBlankLine
-    
-    'The trusty pdPackage class will be used to compress each language file as we process it.
-    Dim cPackager As pdPackager
-    Set cPackager = New pdPackager
-    cPackager.init_ZLib App.Path & "\zlibwapi.dll"
-    
-    Dim compressedFilename As String
-    
-    'Iterate through every language file in this folder.  (Language files will always be XML format, so we can ignore anything
-    ' that isn't XML.)
-    Dim chkFile As String, chkFileNoExtension As String
-    chkFile = Dir(srcFolder & "*.xml", vbNormal)
-    
-    Do While (chkFile <> "")
-        
-        numOfLangFiles = numOfLangFiles + 1
-        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
-        
-        'Attempt to add this file to the version list
-        chkFileNoExtension = chkFile
-        StripOffExtension chkFileNoExtension
-        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
-        
-        'This program is also responsible for compressing each language file and copying it to a temp folder,
-        ' so the nightly build batch script can find it.
-        compressedFilename = chkFileNoExtension & ".pdz"
-        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
-        cPackager.autoAddNodeFromFile srcFolder & chkFile
-        cPackager.writePackageToFile exportFolderDev & compressedFilename
-        
-        'Retrieve the next file and repeat
-        chkFile = Dir
-        
-    Loop
-    
-    'The MASTER language file is handled separately, on account of being held in a separate location.
-        numOfLangFiles = numOfLangFiles + 1
-        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
-        
-        'Attempt to add this file to the version list
-        chkFile = "Master\MASTER.xml"
-        chkFileNoExtension = "MASTER"
-        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
-        
-        'This program is also responsible for compressing each language file and copying it to a temp folder,
-        ' so the nightly build batch script can find it.
-        compressedFilename = chkFileNoExtension & ".pdz"
-        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
-        cPackager.autoAddNodeFromFile srcFolder & chkFile
-        cPackager.writePackageToFile exportFolderDev & compressedFilename
-        
-    
-    'We are now going to repeat the above process, but for a separate folder of stable version language files.
-    srcFolder = "C:\PhotoDemon v4\PhotoDemon\Support\Master language XML generator\stable build language files\"
-    chkFile = Dir(srcFolder & "*.xml", vbNormal)
-    
-    Do While (chkFile <> "")
-        
-        numOfLangFiles = numOfLangFiles + 1
-        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
-        
-        'Attempt to add this file to the version list
-        chkFileNoExtension = chkFile
-        StripOffExtension chkFileNoExtension
-        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
-        
-        'This program is also responsible for compressing each language file and copying it to a temp folder,
-        ' so the nightly build batch script can find it.
-        compressedFilename = chkFileNoExtension & ".pdz"
-        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
-        cPackager.autoAddNodeFromFile srcFolder & chkFile
-        cPackager.writePackageToFile exportFolderStable & compressedFilename
-        
-        'Retrieve the next file and repeat
-        chkFile = Dir
-        
-    Loop
-    
-    'Once again, the MASTER language file is handled separately, on account of being held in a separate location.
-        numOfLangFiles = numOfLangFiles + 1
-        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
-        
-        'Attempt to add this file to the version list
-        chkFile = "Master\MASTER.xml"
-        chkFileNoExtension = "MASTER"
-        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
-        
-        'This program is also responsible for compressing each language file and copying it to a temp folder,
-        ' so the nightly build batch script can find it.
-        compressedFilename = chkFileNoExtension & ".pdz"
-        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
-        cPackager.autoAddNodeFromFile srcFolder & chkFile
-        cPackager.writePackageToFile exportFolderStable & compressedFilename
-        
-    
-    'The master language version file is now complete.  Write it.
-    Dim dstFile As String
-    dstFile = "C:\PhotoDemon v4\langupdate.xml"
-    
-    xmlOutput.writeXMLToFile dstFile
-    
-    lblUpdates.Caption = numOfLangFiles & " languages successfully added to master language file."
-    lblUpdates.Refresh
-    DoEvents
-    
-End Sub
-
 'Given a full path to a language file, add the language file's information to an output XML object.
 Private Sub AddFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String, ByVal isSourceStableVersion As Boolean)
 
@@ -763,7 +620,7 @@ Private Sub cmdMaster_Click()
     If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_MasterText = getFileAsString(fPath)
+        m_MasterText = GetFileAsString(fPath)
                 
     End If
     
@@ -1000,7 +857,7 @@ Private Sub cmdMergeAll_Click()
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     'Auto-load the latest master language file
-    m_MasterText = getFileAsString(srcFolder & "Master\MASTER.xml")
+    m_MasterText = GetFileAsString(srcFolder & "Master\MASTER.xml")
     
     'Rather than backup the old files to the dev language folder (which is confusing), I now place them inside a dedicated backup folder.
     Dim backupFolder As String
@@ -1014,7 +871,7 @@ Private Sub cmdMergeAll_Click()
     Do While (chkFile <> "")
         
         'Load the file into a string
-        m_OldLanguageText = getFileAsString(srcFolder & chkFile)
+        m_OldLanguageText = GetFileAsString(srcFolder & chkFile)
         m_OldLanguagePath = srcFolder & chkFile
         
         'MsgBox m_OldLanguageText
@@ -1153,7 +1010,7 @@ Private Sub cmdOldLanguage_Click()
     If cDlg.VBGetOpenFileName(tmpLangFile, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_OldLanguageText = getFileAsString(tmpLangFile)
+        m_OldLanguageText = GetFileAsString(tmpLangFile)
         m_OldLanguagePath = tmpLangFile
                 
     End If
@@ -1234,7 +1091,7 @@ Private Sub cmdProcess_Click()
     
     'We are now going to compare the length of the old file and new file.  If the lengths match, there's no reason to write out this new file.
     Dim oldFileString As String
-    oldFileString = getFileAsString(outputFile)
+    oldFileString = GetFileAsString(outputFile)
     
     Dim newFileLen As Long, oldFileLen As Long
     
@@ -1283,9 +1140,8 @@ Private Sub ProcessFile(ByVal srcFile As String)
         Case "Misc_Tooltip.frm"
             Exit Sub
             
-        'TEMPORARILY: I am disabling the Theme Editor, as it only contains debug text at present.
-        ' When PD has an actual theme editor, the form *will* need to be translated.
-        Case "Tools_ThemeEditor.frm"
+        'Some developer-only dialogs do not need to be translated.
+        Case "Tools_ThemeEditor.frm", "Tools_BuildPackage.frm"
             Exit Sub
     
     End Select
@@ -1293,7 +1149,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
     
     'Start by copying all text from the file into a line-by-line array
     Dim fileContents As String
-    fileContents = getFileAsString(srcFile)
+    fileContents = GetFileAsString(srcFile)
     Dim fileLines() As String
     fileLines = Split(fileContents, vbCrLf)
     
@@ -1301,7 +1157,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
     ' is the name of the form. By inserting the form's name into our translation file, the translation engine can use it to quickly
     ' locate all translations on that form.
     Dim shortcutName As String
-    shortcutName = ""
+    shortcutName = vbNullString
     
     If Right$(m_FileName, 3) = "frm" Then
         Dim findName() As String
@@ -1313,7 +1169,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
     ' tracking down errors or incomplete text.
     If LenB(m_FileName) > 0 Then
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
-        If Len(shortcutName) <> 0 Then
+        If LenB(shortcutName) <> 0 Then
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " (" & shortcutName & ") -->"
         Else
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " -->"
@@ -1328,15 +1184,15 @@ Private Sub ProcessFile(ByVal srcFile As String)
     numOfPhrasesWritten = 0
     
     Dim curLineText As String, ucCurLineText As String, processedText As String, processedTextSecondary As String, chkText As String
-    m_FormName = ""
+    m_FormName = vbNullString
     
     Dim toolTipSecondCheckNeeded As Boolean
         
     'Now, start processing the file one line at a time, searching for relevant text as we go
     Do
     
-        processedText = ""
-        processedTextSecondary = ""
+        processedText = vbNullString
+        processedTextSecondary = vbNullString
     
         curLineText = fileLines(curLineNumber)
         
@@ -1478,7 +1334,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
         chkText = Trim$(processedText)
         
         'Only pass the text along if it isn't blank, or a number, or a symbol, or a manually blacklisted phrase
-        If Len(chkText) <> 0 Then
+        If LenB(chkText) <> 0 Then
             If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not IsBlacklisted(chkText)) Then
                 If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
                     numOfPhrasesFound = numOfPhrasesFound + 1
@@ -1490,7 +1346,7 @@ Private Sub ProcessFile(ByVal srcFile As String)
         chkText = Trim$(processedTextSecondary)
         
         'Do the same for the secondary text
-        If Len(chkText) <> 0 Then
+        If LenB(chkText) <> 0 Then
             If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not IsBlacklisted(chkText)) Then
                 If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
                     numOfPhrasesFound = numOfPhrasesFound + 1
@@ -1507,7 +1363,7 @@ nextLine:
     'Now that all phrases in this file have been processed, we can wrap up this section of XML
     
     'For fun, write some stats about our processing results into the translation file.
-    If Len(m_FileName) <> 0 Then
+    If LenB(m_FileName) <> 0 Then
         
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         If numOfPhrasesFound <> 1 Then
@@ -1551,7 +1407,7 @@ nextLine:
     
     'For convenience, once again write the name of the source file into the translation file - this can be helpful when
     ' tracking down errors or incomplete text.
-    If m_FileName <> "" Then
+    If (LenB(m_FileName) <> 0) Then
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         outputText = outputText & "<!-- END text for " & m_FileName & "-->"
     End If
@@ -1566,7 +1422,7 @@ End Sub
 Private Function AddPhrase(ByRef phraseText As String) As Boolean
                         
     'Replace double double-quotes (which are required in code) with just one set of double-quotes
-    If InStr(1, phraseText, """""") Then phraseText = Replace(phraseText, """""", """")
+    If InStr(1, phraseText, """""") Then phraseText = Replace$(phraseText, """""", """")
             
     'Next, do the same pre-processing that we do in the translation engine
     
@@ -1587,21 +1443,11 @@ Private Function AddPhrase(ByRef phraseText As String) As Boolean
         If InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0 Then
             AddPhrase = False
         Else
-            If Len(phraseText) <> 0 Then
-                AddPhrase = True
-            Else
-                AddPhrase = False
-            End If
+            AddPhrase = (LenB(phraseText) <> 0)
         End If
         
     Else
-        
-        If Len(phraseText) <> 0 Then
-            AddPhrase = True
-        Else
-            AddPhrase = False
-        End If
-        
+        AddPhrase = (LenB(phraseText) <> 0)
     End If
     
     'If the phrase does not exist, add it now
@@ -2087,7 +1933,7 @@ Private Sub cmdSelectVBP_Click()
     
     m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
     lblVBP = "Active VBP: " & m_VBPFile
-    m_VBPPath = getDirectory(m_VBPFile)
+    m_VBPPath = GetDirectory(m_VBPFile)
     
     'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
     'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
@@ -2099,7 +1945,7 @@ Private Sub cmdSelectVBP_Click()
     
     'Load the file into a string array, split up line-by-line
     Dim vbpContents As String
-    vbpContents = getFileAsString(m_VBPFile)
+    vbpContents = GetFileAsString(m_VBPFile)
     vbpText = Split(vbpContents, vbCrLf)
     ReDim vbpFiles(0 To UBound(vbpText)) As String
     Dim numOfFiles As Long
@@ -2165,13 +2011,13 @@ Private Sub cmdSelectVBP_Click()
 End Sub
 
 'Given a full file name, remove everything but the directory structure
-Private Function getDirectory(ByVal sString As String) As String
+Private Function GetDirectory(ByVal sString As String) As String
     
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            getDirectory = Left(sString, x)
+            GetDirectory = Left(sString, x)
             Exit Function
         End If
     Next x
@@ -2179,11 +2025,11 @@ Private Function getDirectory(ByVal sString As String) As String
 End Function
 
 'Retrieve an entire file and return it as a string.  pdXML is used to support UTF-8 encodings (which PD's language files default to).
-Private Function getFileAsString(ByVal fName As String) As String
+Private Function GetFileAsString(ByVal fName As String) As String
            
     'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
     If m_XML.loadXMLFile(fName) Then
-        getFileAsString = m_XML.returnCurrentXMLString(True)
+        GetFileAsString = m_XML.returnCurrentXMLString(True)
         
     Else
         
@@ -2194,16 +2040,16 @@ Private Function getFileAsString(ByVal fName As String) As String
             fileNum = FreeFile
             
             Open fName For Binary As #fileNum
-                getFileAsString = Space$(LOF(fileNum))
-                Get #fileNum, , getFileAsString
+                GetFileAsString = Space$(LOF(fileNum))
+                Get #fileNum, , GetFileAsString
             Close #fileNum
             
             'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-            If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
+            If InStr(1, GetFileAsString, vbTab) <> 0 Then GetFileAsString = Replace(GetFileAsString, vbTab, "")
             
         Else
             Debug.Print "File does not exist; exiting."
-            getFileAsString = ""
+            GetFileAsString = ""
         End If
             
     End If
@@ -2213,7 +2059,7 @@ End Function
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
 Private Function CountWordsInString(ByVal srcString As String) As Long
 
-    If Len(Trim$(srcString)) <> 0 Then
+    If LenB(Trim$(srcString)) <> 0 Then
 
         Dim tmpArray() As String
         tmpArray = Split(Trim$(srcString), " ")
@@ -2287,14 +2133,12 @@ Private Sub Form_Load()
     AddBlacklist "1:8 (12.5%)"
     AddBlacklist "1:16 (6.25%)"
     AddBlacklist "PNGQuant 2.1.1"
-    AddBlacklist "zLib 1.2.8"
     AddBlacklist "EZTwain 1.18"
     AddBlacklist "FreeImage 3.16.0"
     AddBlacklist "ExifTool 9.62"
     AddBlacklist "X.X"
     AddBlacklist "XX.XX.XX"
     AddBlacklist "PNGQuant"
-    AddBlacklist "zLib"
     AddBlacklist "EZTwain"
     AddBlacklist "FreeImage"
     AddBlacklist "ExifTool"
@@ -2302,7 +2146,6 @@ Private Sub Form_Load()
     AddBlacklist "photodemon.org/about/contact"
     AddBlacklist "photodemon.org/about/contact/"
     AddBlacklist "HTML / CSS"
-    AddBlacklist "jcbutton"
     AddBlacklist "while it downloads."
     AddBlacklist "*"
     AddBlacklist "("
@@ -2313,7 +2156,7 @@ Private Sub Form_Load()
     Dim chkCommandLine As String
     chkCommandLine = Command$
     
-    If Len(Trim$(chkCommandLine)) <> 0 Then
+    If LenB(Trim$(chkCommandLine)) <> 0 Then
         If InStr(1, chkCommandLine, "-s", vbTextCompare) Then m_SilentMode = True Else m_SilentMode = False
     End If
     
@@ -2373,7 +2216,7 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
     
     Dim i As Long
     For i = 1 To Len(srcString)
-        charID = Asc(UCase$(Mid$(srcString, i, 1)))
+        charID = AscW(UCase$(Mid$(srcString, i, 1)))
         
         'First, check to see if the character lies outside the ASCII alphabet range
         If ((charID < 65) Or (charID > 90)) Then

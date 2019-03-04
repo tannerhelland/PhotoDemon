@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.81</langversion>
+<langversion>1.0.82</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5979,6 +5979,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Build standalone package</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Test</original>
 <translation>テスト</translation>
 </phrase>
@@ -6645,7 +6650,7 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>アルファチャンネルを削除</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 192 were duplicates of existing phrases, so only 367 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15698,10 +15703,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2620</phrasecount>
+<phrasecount>2621</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2185 are duplicates, so only 2620 unique phrases have been written to file. -->
-<!-- These 2620 phrases contain approximately 12390 total words. -->
+<!-- As of this build, PhotoDemon contains 4806 phrases. -->
+<!-- 2185 are duplicates, so only 2621 unique phrases have been written to file. -->
+<!-- These 2621 phrases contain approximately 12393 total words. -->
 
 </pdData>
