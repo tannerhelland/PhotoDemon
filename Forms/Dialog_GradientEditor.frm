@@ -557,12 +557,27 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 Private m_NumOfGradientPoints As Long
 Private m_GradientPoints() As GradientPoint
 
+'In our assembled gradient collection, some items are just placeholders for special gradients -
+' like "foreground to transparent", which are not hardcoded files but are assembled at run-time
+' using the users current colors.
+Private Enum PD_GradientSpecial
+    gs_None = 0
+    gs_FGtoBlack = 1
+    gs_FGtoWhite = 2
+    gs_FGtoTransparent = 3
+End Enum
+
+#If False Then
+    Private Const gs_None = 0, gs_FGtoBlack = 1, gs_FGtoWhite = 2, gs_FGtoTransparent = 3
+#End If
+
 'The gradient collection is assembled at run-time from the files in the /Data/Gradients subfolder.
 Private Type PD_GradientCollection
     gcPath As String
     gcFilename As String
     gcGradient As pd2DGradient
     gcThumb As pdDIB
+    gcIsSpecial As PD_GradientSpecial
     gcGradientLoadedOK As Boolean
     gcLoadAttempted As Boolean
     gcDefaultIndex As Long
@@ -596,7 +611,7 @@ Private Type QSStack
     sUB As Long
 End Type
 
-Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
+Private Const INIT_QUICKSORT_STACK_SIZE As Long = 512
 Private m_qsStack() As QSStack
 Private m_qsStackPtr As Long
 
@@ -895,13 +910,13 @@ Private Sub NaiveQuickSortExtended(ByVal sortCriteria As Long)
             
             'Bisect this range
             i = (lowVal + highVal) \ 2
-
+            
             'Migrate all equal entries into place
             If (CompareIndices(i, lowVal, sortCriteria) = 0) Then
-
+                
                 j = highVal - 1
                 i = lowVal
-
+                
                 Do
                     i = i + 1
                     If (i > j) Then
@@ -909,10 +924,10 @@ Private Sub NaiveQuickSortExtended(ByVal sortCriteria As Long)
                         GoTo NextSortItem
                     End If
                 Loop Until (CompareIndices(i, lowVal, sortCriteria) <> 0)
-
+                
                 v = m_GradientCollection(i)
                 If (i > lowVal) Then If (CompareIndices(lowVal, i, sortCriteria) > 0) Then SwapIndices lowVal, i
-
+                
             'Move the pointer until we arrive at an unsorted pivot
             Else
                 v = m_GradientCollection(i)
@@ -1557,37 +1572,70 @@ End Sub
 
 Private Sub BuildGradientCollection()
 
+    'Disable automatic list box redraws (to improve performance when adding/removing large item counts)
+    lstGradients.SetAutomaticRedraws False, False
+    lstGradients.Clear
+    
     'A pdFSO object will help us quickly iterate (potentially) valid gradient files
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
     
+    'Always add three default gradients to the collection
     Const INIT_COLLECTION_SIZE As Long = 16
     ReDim m_GradientCollection(0 To INIT_COLLECTION_SIZE - 1) As PD_GradientCollection
     m_NumGradientsInCollection = 0
+        
+    Dim i As Long
+    For i = 0 To 2
+        With m_GradientCollection(i)
+            .gcDefaultIndex = i
+            Set .gcGradient = New pd2DGradient
+            .gcGradientLoadedOK = True
+            .gcLoadAttempted = True
+            .gcIsSpecial = i + 1
+            .gcFilename = "_"
+            Select Case .gcIsSpecial
+                Case gs_FGtoBlack
+                    .gcGradient.CreateTwoPointGradient layerpanel_Colors.GetCurrentColor(), RGB(0, 0, 0)
+                    .gcGradient.SetGradientName g_Language.TranslateMessage("Foreground to black")
+                Case gs_FGtoWhite
+                    .gcGradient.CreateTwoPointGradient layerpanel_Colors.GetCurrentColor(), RGB(255, 255, 255)
+                    .gcGradient.SetGradientName g_Language.TranslateMessage("Foreground to white")
+                Case gs_FGtoTransparent
+                    .gcGradient.CreateTwoPointGradient layerpanel_Colors.GetCurrentColor(), RGB(0, 0, 0), 100!, 0!
+                    .gcGradient.SetGradientName g_Language.TranslateMessage("Foreground to transparent")
+            End Select
+        End With
+        m_NumGradientsInCollection = m_NumGradientsInCollection + 1
+    Next i
     
     Dim srcFiles As pdStringStack
     If cFSO.RetrieveAllFiles(UserPrefs.GetGradientPath, srcFiles, True, True, "ggr|svg") Then
         
-        lstGradients.SetAutomaticRedraws False, False
-        lstGradients.Clear
-        
-        Dim i As Long, tmpString As String
+        Dim tmpString As String
         For i = 0 To srcFiles.GetNumOfStrings - 1
             tmpString = srcFiles.GetString(i)
             If (m_NumGradientsInCollection > UBound(m_GradientCollection)) Then ReDim Preserve m_GradientCollection(0 To m_NumGradientsInCollection * 2 - 1) As PD_GradientCollection
-            m_GradientCollection(m_NumGradientsInCollection).gcPath = tmpString
-            m_GradientCollection(m_NumGradientsInCollection).gcFilename = Files.FileGetName(tmpString)
-            m_GradientCollection(m_NumGradientsInCollection).gcDefaultIndex = m_NumGradientsInCollection
-            lstGradients.AddItem vbNullString, m_NumGradientsInCollection
+            With m_GradientCollection(m_NumGradientsInCollection)
+                .gcPath = tmpString
+                .gcFilename = Files.FileGetName(tmpString)
+                .gcDefaultIndex = m_NumGradientsInCollection
+            End With
             m_NumGradientsInCollection = m_NumGradientsInCollection + 1
         Next i
         
-        'After adding all files, perform a default sort by filename
-        ChangeCollectionOrder so_Filename
-        
-        lstGradients.SetAutomaticRedraws True, True
-    
     End If
+    
+    'Add all list items to the list box
+    For i = 0 To m_NumGradientsInCollection - 1
+        lstGradients.AddItem vbNullString, i
+    Next i
+    
+    'After adding all files, perform a default sort by filename
+    ChangeCollectionOrder so_Filename
+    
+    'Render the finished list
+    lstGradients.SetAutomaticRedraws True, True
     
 End Sub
 
@@ -1771,7 +1819,7 @@ Private Sub lstGradients_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex A
     Set cSurface = Nothing
     Set cPen = Nothing
     
-    'Next, render the gradient's name
+    'Next, render the gradient's name and path
     offsetX = offsetX + m_GradientCollection(itemIndex).gcThumb.GetDIBWidth + Interface.FixDPI(8)
     offsetY = offsetY + 2
     
@@ -1782,11 +1830,14 @@ Private Sub lstGradients_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex A
         m_ListFontTitle.FastRenderText offsetX + 0, offsetY + 0, m_GradientCollection(itemIndex).gcGradient.GetGradientName()
         m_ListFontTitle.ReleaseFromDC
         
-        m_ListFont.AttachToDC bufferDC
-        m_ListFont.SetFontColor txtDescriptionColor
-        offsetY = offsetY + Interface.FixDPI(5) + m_ListFont.GetHeightOfString(m_GradientCollection(itemIndex).gcGradient.GetGradientName())
-        m_ListFont.FastRenderTextWithClipping offsetX, offsetY, tmpRectF.Width - offsetX, tmpRectF.Height, m_GradientCollection(itemIndex).gcPath, True, False, False
-        m_ListFont.ReleaseFromDC
+        'Some special gradients (e.g. "Foreground to transparent") do not have paths; render nothing for these
+        If (m_GradientCollection(itemIndex).gcIsSpecial = gs_None) Then
+            m_ListFont.AttachToDC bufferDC
+            m_ListFont.SetFontColor txtDescriptionColor
+            offsetY = offsetY + Interface.FixDPI(5) + m_ListFont.GetHeightOfString(m_GradientCollection(itemIndex).gcGradient.GetGradientName())
+            m_ListFont.FastRenderTextWithClipping offsetX, offsetY, tmpRectF.Width - offsetX, tmpRectF.Height, m_GradientCollection(itemIndex).gcPath, True, False, False
+            m_ListFont.ReleaseFromDC
+        End If
         
     End If
     
@@ -1852,7 +1903,7 @@ Private Sub LoadGradientCollectionPreviewDIB(ByVal itemIndex As Long)
     
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
 
     Dim i As Long
     
@@ -1861,7 +1912,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'See if an existing has been selected.
     Dim tmpPoint As Long
-    tmpPoint = GetPointAtPosition(x, y)
+    tmpPoint = GetPointAtPosition(X, Y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
     If (tmpPoint >= 0) Then
@@ -1896,7 +1947,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
             With m_GradientPoints(m_NumOfGradientPoints)
                 
                 .PointOpacity = 100
-                .PointPosition = ConvertPixelCoordsToNodeCoords(x)
+                .PointPosition = ConvertPixelCoordsToNodeCoords(X)
                 
                 'Preset the RGB value to match whatever the gradient already is at this point
                 Dim newRGBA As RGBQuad
@@ -1919,18 +1970,18 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 
 End Sub
 
-Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     m_MouseEvents.SetCursor_System IDC_HAND
 End Sub
 
-Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     m_CurHoverPoint = -1
     m_CurHoverX = -1
     m_MouseEvents.SetCursor_System IDC_DEFAULT
     DrawGradientNodes
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
     
     'First, separate our handling by mouse button state
     If (Button And pdLeftButton) <> 0 Then
@@ -1940,7 +1991,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         'The left mouse button is down.  Assign the new position to the active node.
         If (m_CurPoint >= 0) Then
             If chkDistributeEvenly.Value Then chkDistributeEvenly.Value = False
-            m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(x)
+            m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(X)
         End If
         
         'Redraw the gradient interaction nodes and the gradient itself
@@ -1953,14 +2004,14 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'See if a new point is currently being hovered.
         Dim tmpPoint As Long
-        tmpPoint = GetPointAtPosition(x, y)
+        tmpPoint = GetPointAtPosition(X, Y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
         If (tmpPoint <> m_CurHoverPoint) Then
             m_CurHoverPoint = tmpPoint
             m_CurHoverX = -1
         Else
-            m_CurHoverX = x
+            m_CurHoverX = X
         End If
         
         DrawGradientNodes
@@ -1970,11 +2021,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 'Given an x-position in the interaction box, return the currently hovered point.  If multiple points are hovered, the nearest one will be returned.
-Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
+Private Function GetPointAtPosition(ByVal X As Long, Y As Long) As Long
     
     'Start by converting the current x-position into the range [0, 1]
     Dim convPoint As Single
-    convPoint = ConvertPixelCoordsToNodeCoords(x)
+    convPoint = ConvertPixelCoordsToNodeCoords(X)
     
     'convPoint now contains the position of the mouse on the range [0, 1].  Find the nearest point.
     Dim minDistance As Single, curDistance As Single, minIndex As Long
@@ -2000,7 +2051,7 @@ Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
 End Function
 
 'Given an (x, y) position on the gradient interaction window, convert it to the [0, 1] range used by the gradient control.
-Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
+Private Function ConvertPixelCoordsToNodeCoords(ByVal X As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
@@ -2011,13 +2062,13 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
         g_WindowManager.GetWindowRect_API picNodePreview.hWnd, nodePreviewRect
         
         Dim tmpPoint As PointAPI
-        tmpPoint.x = nodePreviewRect.x1
-        tmpPoint.y = nodePreviewRect.y1
+        tmpPoint.X = nodePreviewRect.x1
+        tmpPoint.Y = nodePreviewRect.y1
         
         g_WindowManager.GetScreenToClient Me.hWnd, tmpPoint
         
-        uiMin = tmpPoint.x + 1
-        uiMax = tmpPoint.x + (nodePreviewRect.x2 - nodePreviewRect.x1)
+        uiMin = tmpPoint.X + 1
+        uiMax = tmpPoint.X + (nodePreviewRect.x2 - nodePreviewRect.x1)
     
     'This branch should never trigger (as g_WindowManager will always exist), but I've left it here as a
     ' (non-DPI friendly) failsafe.
@@ -2027,7 +2078,7 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     End If
     
     uiRange = uiMax - uiMin
-    ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
+    ConvertPixelCoordsToNodeCoords = (CSng(X) - uiMin) / uiRange
     
     If (ConvertPixelCoordsToNodeCoords < 0) Then
         ConvertPixelCoordsToNodeCoords = 0
