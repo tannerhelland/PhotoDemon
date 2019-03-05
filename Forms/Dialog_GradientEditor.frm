@@ -1593,7 +1593,7 @@ Private Sub BuildGradientCollection()
             .gcGradientLoadedOK = True
             .gcLoadAttempted = True
             .gcIsSpecial = i + 1
-            .gcFilename = "_"
+            .gcFilename = "_"       'Ensure these gradients appear near the top of the "Default" collection sort
             Select Case .gcIsSpecial
                 Case gs_FGtoBlack
                     .gcGradient.CreateTwoPointGradient layerpanel_Colors.GetCurrentColor(), RGB(0, 0, 0)
@@ -1877,9 +1877,9 @@ Private Sub LoadGradientCollectionPreviewDIB(ByVal itemIndex As Long)
                 Dim cBrush As pd2DBrush
                 Set cBrush = New pd2DBrush
                 cBrush.SetBrushMode P2_BM_Gradient
-                cBrush.SetBrushGradientAngle 45!
-                cBrush.SetBrushGradientShape P2_GS_Linear
                 cBrush.SetBrushGradientAllSettings .gcGradient.GetGradientAsString()
+                cBrush.SetBrushGradientAngle 30!
+                cBrush.SetBrushGradientShape P2_GS_Linear
                 
                 Dim gRectF As RectF
                 gRectF.Left = 0!

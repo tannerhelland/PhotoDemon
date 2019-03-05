@@ -177,6 +177,7 @@ Private Sub cmdSave_Click()
     For i = 0 To lstFiles.ListCount - 1
         idxNode = cPackage.AddNode(vbNullString, i)
         If Files.FileLoadAsByteArray(lstFiles.List(i), tmpBytes) Then
+            cPackage.AddNodeDataFromString idxNode, True, Files.FileGetName(lstFiles.List(i)), cmpType, cmpLevel
             cPackage.AddNodeDataFromByteArray idxNode, False, tmpBytes, cmpType, cmpLevel
         Else
             Debug.Print "WARNING!  Couldn't load file: " & lstFiles.List(i)

@@ -143,6 +143,51 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
     
 End Function
 
+'Extract any default assets (e.g. standalone files stored inside the res segment) to their default location
+' in the /Data subfolder.  Note that already extracted assets will *not* be re-extracted.
+Friend Function ExtractDefaultAssets() As Boolean
+    
+    'Assets are typically stored as embedded pdPackage instances.
+    Dim tmpBytes() As Byte, tmpFileBytes() As Byte, tmpFileBytesSize As Long
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    
+    Dim i As Long, dstFilename As String
+    
+    'Extract the default gradient collection (but only if it's never been extracted before).
+    If (Not UserPrefs.GetPref_Boolean("Assets", "ExtractedGradients", False)) Then
+        PDDebug.LogAction "Gradient collection has never been extracted before.  Extracting now..."
+        If Me.LoadGenericResource("gradients", tmpBytes) Then
+            If cPackage.ReadPackageFromMemory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
+            
+                'Extract all nodes to their proper file destination
+                For i = 0 To cPackage.GetNumOfNodes - 1
+                    If cPackage.GetNodeDataByIndex_String(i, True, dstFilename) Then
+                        dstFilename = UserPrefs.GetGradientPath() & dstFilename
+                        If (Not Files.FileExists(dstFilename)) Then
+                            If cPackage.GetNodeDataByIndex(i, False, tmpFileBytes, False, tmpFileBytesSize) Then
+                                Files.FileCreateFromByteArray tmpFileBytes, dstFilename, False, False, tmpFileBytesSize
+                            Else
+                                RaiseResourceError "ExtractDefaultAssets: no bytes found for target asset"
+                            End If
+                        End If
+                    Else
+                        RaiseResourceError "ExtractDefaultAssets: no filename found for target asset"
+                    End If
+                Next i
+            
+            Else
+                RaiseResourceError "ExtractDefaultAssets: failed to extract gradient resource chunk"
+            End If
+        End If
+        
+        'Update the preference to ensure we do not extract these files again
+        UserPrefs.SetPref_Boolean "Assets", "ExtractedGradients", True
+        
+    End If
+
+End Function
+
 'Given a path to a .pdr file, attempt to load and validate it
 Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
         
@@ -193,6 +238,31 @@ Friend Sub NotifyThemeChange()
     m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
     m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
 End Sub
+
+'Load a generic resource (e.g. return it as a raw byte stream)
+Friend Function LoadGenericResource(ByRef txtResName As String, ByRef dstBytes() As Byte) As Boolean
+    
+    LoadGenericResource = False
+    
+    If m_ResourcesAvailable Then
+    
+        'Ensure this resource exists in the collection.
+        Dim nodeIndex As Long
+        nodeIndex = m_Resources.GetNodeIndexFromName(txtResName, vbBinaryCompare)
+        If (nodeIndex >= 0) Then
+        
+            'Load the data into the destination byte array
+            Dim retSize As Long
+            LoadGenericResource = m_Resources.GetNodeDataByIndex(nodeIndex, False, dstBytes, True, retSize)
+            If (Not LoadGenericResource) Then RaiseResourceError "couldn't get node data by index: " & txtResName
+            
+        Else
+            RaiseResourceError "requested node not found: " & txtResName
+        End If
+        
+    End If
+
+End Function
 
 'Load an image-type resource.  Destination width and height must be manually specified.  If they are not specified, the imgae resource
 ' will be returned as-is.  Size is not consistent nor guaranteed to be correct.

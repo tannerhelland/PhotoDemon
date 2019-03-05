@@ -232,12 +232,18 @@ Public Function ContinueLoadingProgram() As Boolean
     
     
     '*************************************************************************************************************************************
-    ' Initialize our internal resources handler
+    ' Initialize the internal resources handler and extract default assets
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize resource handler"
     Set g_Resources = New pdResources
     g_Resources.LoadInitialResourceCollection
+    
+    'Now that resources are available, extract any default program assets.  (This is only done
+    ' once for each group of assets; once extracted, PD will never attempt to extract them again,
+    ' unless the user does a full preferences reset - this is to avoid ever overwriting changes
+    ' the user may have made to said files.)
+    g_Resources.ExtractDefaultAssets
     
     
     '*************************************************************************************************************************************

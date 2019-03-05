@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.94</langversion>
+<langversion>1.0.95</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8521,6 +8521,21 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Foreground to black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to white</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>नोड सेटिंग्स</translation>
 </phrase>
@@ -8530,7 +8545,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>कृपया एक नोड का चयन करें</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 73 phrases. 25 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15705,10 +15720,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4806 phrases. -->
-<!-- 2185 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4812 phrases. -->
+<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12402 total words. -->
 
 </pdData>

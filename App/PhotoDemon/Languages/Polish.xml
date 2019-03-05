@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.69</langversion>
+<langversion>7.0.70</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -8504,6 +8504,21 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Foreground to black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to white</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>ustawienia węzła</translation>
 </phrase>
@@ -8513,7 +8528,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>wybierz węzeł</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 73 phrases. 25 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15684,10 +15699,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4806 phrases. -->
-<!-- 2185 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4812 phrases. -->
+<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12402 total words. -->
 
 </pdData>

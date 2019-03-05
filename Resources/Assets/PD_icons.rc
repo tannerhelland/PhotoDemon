@@ -1,6 +1,9 @@
 // Icon for the main application
 AAA				ICON		PHOTO_all.ico
 
+// Manifest
+1				MANIFEST	PhotoDemon.exe.manifest
+
 // Essential resources follow
 // (These are things that PD requires for a successful run - this does *not* include stuff like translation files,
 //  which are "nice to have" but not "essential".)

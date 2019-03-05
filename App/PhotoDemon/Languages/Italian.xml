@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.391</langversion>
+<langversion>6.7.392</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -8522,6 +8522,21 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 </phrase>
 
 <phrase>
+<original>Foreground to black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to white</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Foreground to transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node settings</original>
 <translation>impostazioni del nodo</translation>
 </phrase>
@@ -8531,7 +8546,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>per favore seleziona un nodo</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 73 phrases. 25 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 79 phrases. 28 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15705,10 +15720,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4806 phrases. -->
-<!-- 2185 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12393 total words. -->
+<!-- As of this build, PhotoDemon contains 4812 phrases. -->
+<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12402 total words. -->
 
 </pdData>
