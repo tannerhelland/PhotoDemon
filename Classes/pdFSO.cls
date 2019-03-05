@@ -417,10 +417,11 @@ Friend Function FileCreateAppendHandle(ByRef srcFilePath As String, ByRef dstFil
 End Function
 
 'Shortcut function for dumping a byte array into a file.
-Friend Function FileCreateFromByteArray(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False) As Boolean
+Friend Function FileCreateFromByteArray(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False, Optional ByVal sizeOfData As Long = -1) As Boolean
     
     On Error GoTo FileCreateFromByteArray_Failure
-    FileCreateFromByteArray = FileCreateFromPtr(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, pathToFile, overwriteExistingIfPresent, fileIsTempFile)
+    If (sizeOfData < 0) Then sizeOfData = UBound(srcArray) - LBound(srcArray) + 1
+    FileCreateFromByteArray = FileCreateFromPtr(VarPtr(srcArray(LBound(srcArray))), sizeOfData, pathToFile, overwriteExistingIfPresent, fileIsTempFile)
     Exit Function
     
 FileCreateFromByteArray_Failure:
