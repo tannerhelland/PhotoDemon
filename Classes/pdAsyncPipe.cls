@@ -500,8 +500,11 @@ Private Sub WriteData()
 End Sub
 
 Private Sub InternalError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
+    'Async errors are not uncommon, especially if the user is running a bunch of PD sessions in parallel.
+    ' To avoid overloading debug logs with reports, we simply report error-number-based messages
+    ' to the debug window.
     If (errNumber <> 0) Then
-        PDDebug.LogAction "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
+        Debug.Print "WARNING!  pdAsyncPipe error # " & errNumber & ": " & errMessage
     Else
         PDDebug.LogAction "WARNING!  Unspecified pdAsyncPipe error: " & errMessage
     End If
