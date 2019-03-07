@@ -1,9 +1,6 @@
-If you want to change PhotoDemon's resource file, you first need to modify the PD_icons.rc 
-resource script.  Then you need to recompile the .RES file using Microsoft's rc.exe and 
-rcdll.dll files.  Finally, you must manually insert a valid manifest to the resource file 
-using the instructions at this link:
- http://www.vbforums.com/showthread.php?606736-VB6-XP-Vista-Win7-Manifest-Creator
+GoRC is currently used to build PhotoDemon's resource file.  You can download a free copy at: 
+http://godevtool.com/
 
-I cannot provide more support than this, as PhotoDemon is only designed to work with its 
-original resource file.  Modified resource files may causes crashes, errors, or instability,
-so fiddle with them at your own risk.
+PhotoDemon's resource file contains a massive amount of custom-built resources.  See the main program's Tools > Developers menu for more details on how these resources are constructed.
+
+Also note that a modified resource file may cause crashes, errors, or other instability.  No support is currently provided for anything but the default .res file that ships with the current PhotoDemon build.  

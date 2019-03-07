@@ -89,12 +89,9 @@ LICENSE.txt
 /App/PhotoDemon/Plugins/ExifToolDatabase.xml
 bfg.jar
 
-# I keep copies of rc.exe and rcdll.dll in this folder,
-# but to my knowledge these are not redistributable, so
-# end users will need to use their own copy or obtain
-# one from something like Visual Studio Express.
-/Resources/Assets/RC.EXE
-/Resources/Assets/RCDLL.DLL
+# GoRC is currently used to build PD's resource file.
+# http://godevtool.com/
 /Resources/Assets/*.pdrc
 /Resources/Assets/*.xml
 /Resources/Assets/GoRC.exe
+/Resources/Assets/PD_Icons.res
