@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.893</langversion>
+<langversion>7.2.904</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5987,7 +5987,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Build standalone package</original>
-<translation></translation>
+<translation>Eigenständiges Package bilden</translation>
 </phrase>
 
 <phrase>
@@ -8323,7 +8323,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>import gradient file</original>
-<translation></translation>
+<translation>Gradientendatei importieren</translation>
 </phrase>
 
 <phrase>
@@ -8333,32 +8333,32 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>export gradient file</original>
-<translation></translation>
+<translation>Gradientendatei exportieren</translation>
 </phrase>
 
 <phrase>
 <original>save to gradient collection</original>
-<translation></translation>
+<translation>In Gradienten-Collection speichern</translation>
 </phrase>
 
 <phrase>
 <original>generate new pattern</original>
-<translation></translation>
+<translation>Neues Muster generieren</translation>
 </phrase>
 
 <phrase>
 <original>start color and opacity</original>
-<translation></translation>
+<translation>Startfarbe und Opazität</translation>
 </phrase>
 
 <phrase>
 <original>end color and opacity</original>
-<translation></translation>
+<translation>Endfarbe und Opazität</translation>
 </phrase>
 
 <phrase>
 <original>noise density</original>
-<translation></translation>
+<translation>Rauschdichte</translation>
 </phrase>
 
 <phrase>
@@ -8383,17 +8383,17 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>edit this gradient >></original>
-<translation></translation>
+<translation>Diesen Gradienten bearbeiten >></translation>
 </phrase>
 
 <phrase>
 <original>sort collection by</original>
-<translation></translation>
+<translation>Collection sortieren nach</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation></translation>
+<translation>Ihre Collection</translation>
 </phrase>
 
 <phrase>
@@ -8418,22 +8418,22 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation></translation>
+<translation>Ein Gradient mit dem Namen "%1" ist bereits in Ihrer Collection vorhanden. Möchten Sie diesen überschreiben?</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate name</original>
-<translation></translation>
+<translation>Doppelter Name (Duplikat)</translation>
 </phrase>
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation></translation>
+<translation>Dieser Gradient hat keinen Namen. Bitte geben Sie ihm einen Namen, bevor dieser zu Ihrer Collection hinzugefügt wird.</translation>
 </phrase>
 
 <phrase>
 <original>Name required</original>
-<translation></translation>
+<translation>Name erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -8448,7 +8448,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>SVG Gradient</original>
-<translation></translation>
+<translation>SVG-Gradient</translation>
 </phrase>
 
 <phrase>
@@ -8458,12 +8458,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation></translation>
+<translation>Leider scheint die Gradientendatei "%1" keine gültige Gradientendatei zu sein.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid gradient</original>
-<translation></translation>
+<translation>Ungültiger Gradient</translation>
 </phrase>
 
 <phrase>
@@ -8483,37 +8483,37 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>gradient collection</original>
-<translation></translation>
+<translation>Gradienten-Collection</translation>
 </phrase>
 
 <phrase>
 <original>make your own</original>
-<translation></translation>
+<translation>Ihren eigenen erstellen</translation>
 </phrase>
 
 <phrase>
 <original>noise gradients</original>
-<translation></translation>
+<translation>Rauschgradienten</translation>
 </phrase>
 
 <phrase>
 <original>filename</original>
-<translation></translation>
+<translation>Dateiname</translation>
 </phrase>
 
 <phrase>
 <original>complexity</original>
-<translation></translation>
+<translation>Komplexität</translation>
 </phrase>
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>Ihre Gradienten-Collection wird im Ordner "%1" gespeichert</translation>
 </phrase>
 
 <phrase>
 <original>click to open the gradient collection folder in Windows Explorer</original>
-<translation></translation>
+<translation>Klick, um den Ordner mit der Gradienten-Collection im Windows-Explorer zu öffnen.</translation>
 </phrase>
 
 <phrase>
@@ -8528,17 +8528,17 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Foreground to black</original>
-<translation></translation>
+<translation>Vordergrund zu schwarz</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to white</original>
-<translation></translation>
+<translation>Vordergrund zu weiß</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to transparent</original>
-<translation></translation>
+<translation>Vordergrund zu transparent</translation>
 </phrase>
 
 <phrase>
@@ -15317,7 +15317,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann Duplikateinträge automatisch für Sie lösen.</translation>
+<translation>Ältere Kameras und Fotobearbeitungssoftware können Metadaten möglicherweise nicht korrekt einbetten, was zu multiplen Metadatenkopien innerhalb einer einzelnen Datei führt. PhotoDemon kann doppelte Einträge (Duplikate) automatisch für Sie lösen.</translation>
 </phrase>
 
 <phrase>
