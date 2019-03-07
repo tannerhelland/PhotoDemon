@@ -100,6 +100,106 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
+      Index           =   1
+      Left            =   8040
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   0
+         Left            =   240
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag names"
+      End
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   1
+         Left            =   240
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   8
+         Top             =   3240
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
+      End
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   240
+         Top             =   2160
+         Width           =   5625
+         _ExtentX        =   9922
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdHyperlink hypExiftool 
+         Height          =   255
+         Left            =   0
+         Top             =   5700
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   "visit the ExifTool homepage"
+         FontSize        =   9
+         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+      End
+      Begin PhotoDemon.pdLabel lblExifTool 
+         Height          =   255
+         Left            =   120
+         Top             =   5370
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   9
+         ForeColor       =   -2147483640
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdButton cmdMarkPrivateTags 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   15
+         Top             =   2640
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Remove tags that might contain personal information"
+      End
+   End
+   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
+      Height          =   630
+      Index           =   2
+      Left            =   1560
+      TabIndex        =   17
+      Top             =   6600
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      AutoToggle      =   -1  'True
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6015
       Index           =   0
       Left            =   8040
       TabIndex        =   4
@@ -202,106 +302,6 @@ Begin VB.Form FormMetadata
          _ExtentY        =   1111
          AutoToggle      =   -1  'True
       End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6015
-      Index           =   1
-      Left            =   8040
-      TabIndex        =   5
-      Top             =   1200
-      Visible         =   0   'False
-      Width           =   6090
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   240
-         TabIndex        =   6
-         Top             =   0
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag names"
-      End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   1
-         Left            =   240
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag values"
-      End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   420
-         TabIndex        =   8
-         Top             =   3240
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
-      End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   240
-         Top             =   2160
-         Width           =   5625
-         _ExtentX        =   9922
-         _ExtentY        =   476
-         Caption         =   "advanced"
-         FontSize        =   11
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdHyperlink hypExiftool 
-         Height          =   255
-         Left            =   0
-         Top             =   5700
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   "visit the ExifTool homepage"
-         FontSize        =   9
-         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-      End
-      Begin PhotoDemon.pdLabel lblExifTool 
-         Height          =   255
-         Left            =   120
-         Top             =   5370
-         Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   ""
-         FontSize        =   9
-         ForeColor       =   -2147483640
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdButton cmdMarkPrivateTags 
-         Height          =   555
-         Left            =   420
-         TabIndex        =   15
-         Top             =   2640
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   979
-         Caption         =   "Remove tags that might contain personal information"
-      End
-   End
-   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
-      Height          =   630
-      Index           =   2
-      Left            =   1560
-      TabIndex        =   17
-      Top             =   6600
-      Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1111
-      AutoToggle      =   -1  'True
    End
 End
 Attribute VB_Name = "FormMetadata"
