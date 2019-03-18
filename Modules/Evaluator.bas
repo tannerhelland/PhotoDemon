@@ -71,7 +71,7 @@ Public Function Evaluate(ByVal srcExpression As String) As Variant
     'The passed string is not a plain number; attempt to evaluate it as an expression
     Else
       
-        'Start by removing spaces and any other problematic operators (e.g. "--")
+        'Start by removing spaces and problematic operators (e.g. "--")
         If InStr(1, srcExpression, " ", vbBinaryCompare) Then srcExpression = Replace$(srcExpression, " ", vbNullString, , , vbBinaryCompare)
         If InStr(1, srcExpression, "--", vbBinaryCompare) Then srcExpression = Replace$(srcExpression, "--", "+", , , vbBinaryCompare)
         
@@ -107,19 +107,30 @@ Private Function Eval(ByVal srcExpression As String) As Variant
     
     'Check for standard operators.  Note that we silently convert some VB6 patterns
     ' (e.g. "\" for "integer division") to standard usage patterns.
-    If Spl(srcExpression, "-", l, r) Then:   Eval = Eval(l) - Eval(r): Exit Function
+    If Spl(srcExpression, "Or", l, r) Then:  Eval = Eval(l) Or Eval(r): Exit Function
+    If Spl(srcExpression, "And", l, r) Then: Eval = Eval(l) And Eval(r): Exit Function
+    If Spl(srcExpression, ">=", l, r) Then:  Eval = Eval(l) >= Eval(r): Exit Function
+    If Spl(srcExpression, "<=", l, r) Then:  Eval = Eval(l) <= Eval(r): Exit Function
+    If Spl(srcExpression, "=", l, r) Then:   Eval = Eval(l) = Eval(r): Exit Function
+    If Spl(srcExpression, ">", l, r) Then:   Eval = Eval(l) > Eval(r): Exit Function
+    If Spl(srcExpression, "<", l, r) Then:   Eval = Eval(l) < Eval(r): Exit Function
+    If Spl(srcExpression, "Like", l, r) Then Eval = Eval(l) Like Eval(r): Exit Function
+    If Spl(srcExpression, "&", l, r) Then:   Eval = Eval(l) & Eval(r): Exit Function
     If Spl(srcExpression, "+", l, r) Then:   Eval = Eval(l) + Eval(r): Exit Function
+    If Spl(srcExpression, "-", l, r) Then:   Eval = Eval(l) - Eval(r): Exit Function
+    If Spl(srcExpression, "Mod", l, r) Then: Eval = Eval(l) Mod Eval(r): Exit Function
+    If Spl(srcExpression, "\", l, r) Then:   Eval = Eval(l) \ Eval(r): Exit Function
     If Spl(srcExpression, "*", l, r) Then:   Eval = Eval(l) * Eval(r): Exit Function
-    If Spl(srcExpression, "%", l, r) Then:   Eval = Eval(l) Mod Eval(r): Exit Function
-    If Spl(srcExpression, "\", l, r) Then:   Eval = Eval(l) / Eval(r): Exit Function
     If Spl(srcExpression, "/", l, r) Then:   Eval = Eval(l) / Eval(r): Exit Function
     If Spl(srcExpression, "^", l, r) Then:   Eval = Eval(l) ^ Eval(r): Exit Function
+    If Trim$(srcExpression) >= "A" Then:     Eval = EvalFnc(Trim$(srcExpression)): Exit Function
+    If InStr(srcExpression, "'") Then Eval = Replace(Trim$(srcExpression), "'", ""): Exit Function
     
     'Return numeric characters as-is, with an additional check for duplicate negatives
-    If Len(srcExpression) Then Eval = Val(Replace$(srcExpression, "--", ""))
+    If Len(srcExpression) Then Eval = Val(Replace(srcExpression, "--", vbNullString))
     
-    'Check for invalid alpha characters
-    If (Trim$(srcExpression) >= "A") Then: Err.Raise 5, , "Invalid expression.": Exit Function
+    'If we don't want to support characters or functions, we can check for invalid alpha characters here
+    'If (Trim$(srcExpression) >= "A") Then: Err.Raise 5, , "Invalid expression.": Exit Function
     
     If (LenB(srcExpression) <> 0) Then
 
@@ -216,9 +227,13 @@ End Function
 Private Function Spl(ByRef srcExpression As String, ByRef Operator As String, ByRef l As String, ByRef r As String) As Boolean
 
     'Look for the requested operator in the source expression
-    Dim p As Long
-    p = InStrRev(srcExpression, Operator, -1, vbTextCompare)
+    Dim p As Long, l_ReEval As Boolean
+    p = -1
+
+Rematch:
+    p = InStrRev(srcExpression, Operator, p, vbTextCompare)
     If p Then Spl = True Else Exit Function
+    
     If ((p < InStrRev(srcExpression, "'", -1, vbBinaryCompare)) And InStr(1, "*-", Operator, vbBinaryCompare)) Then p = InStrRev(srcExpression, "'", p, vbBinaryCompare) - 1
     
     'Separate out the left and right operands
@@ -229,19 +244,23 @@ Private Function Spl(ByRef srcExpression As String, ByRef Operator As String, By
         
         Select Case Right$(l, 1)
         
-            Case "A" To "z"
-                Err.Raise 5, , "Invalid expression: " & srcExpression
+            Case "", "+", "A" To "z"
+                Spl = False
+                Exit Do
                 
-            Case "", "+", "*", "/"
-                
-                If (Operator <> "-") Then
+            Case "*", "/", "\"
+                If (Operator = "-") Then
+                    p = p - 1
+                    l_ReEval = True
+                    Spl = False
+                    GoTo Rematch
+                Else
+                    Spl = False
                     'Expression contains an operator after another operator,
                     ' and the operator is not a "-" which would indicate a negative number
                     Err.Raise 5, , "Invalid expression: " & srcExpression
+                    Exit Do
                 End If
-                
-                Spl = False
-                Exit Do
                  
             Case "-"
                 l = Trim$(Left$(l, Len(l) - 1))
@@ -254,4 +273,16 @@ Private Function Spl(ByRef srcExpression As String, ByRef Operator As String, By
         
     Loop
     
+End Function
+
+Private Function EvalFnc(ByRef srcExpr As String)
+    Select Case LCase$(Left$(srcExpr, 3))
+        Case "abs": EvalFnc = Abs(Val(Mid$(srcExpr, 4)))
+        Case "sin": EvalFnc = Sin(Val(Mid$(srcExpr, 4)))
+        Case "cos": EvalFnc = Cos(Val(Mid$(srcExpr, 4)))
+        Case "atn": EvalFnc = Atn(Val(Mid$(srcExpr, 4)))
+        Case "log": EvalFnc = Log(Val(Mid$(srcExpr, 4)))
+        Case "exp": EvalFnc = Exp(Val(Mid$(srcExpr, 4)))
+        Case Else: Err.Raise 5, , "Invalid expression: " & srcExpr
+    End Select
 End Function
