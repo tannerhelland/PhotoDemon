@@ -1002,6 +1002,17 @@ Friend Function WritePadding(ByVal padLength As Long) As Boolean
     Me.WriteBytesFromPointer VarPtr(nullPadding(0)), padLength
 End Function
 
+'Write the contents of another stream.  By default, the *full* source stream is written; if writing less than this
+' is desired, you will need to perform the write yourself.  The source stream's pointer is not read or modified.
+'
+'IMPORTANT NOTE: this function currently only works when the source stream is a MEMORY STREAM, as it uses a
+' fast pointer-only mechanism for copying stream contents.
+Friend Function WriteStream(ByRef srcStream As pdStream) As Boolean
+    If (Not srcStream Is Nothing) Then
+        WriteStream = (Me.WriteBytesFromPointer(srcStream.Peek_PointerOnly(0), srcStream.GetStreamSize()) <> 0)
+    End If
+End Function
+
 'Given a source VB string, write each char to the stream as if it were a one-byte ASCII value.
 Friend Function WriteString_ASCII(ByRef srcString As String) As Boolean
     If (LenB(srcString) <> 0) Then
