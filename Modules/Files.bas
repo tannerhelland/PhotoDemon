@@ -57,6 +57,8 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As L
 Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByVal lpStartupInfo As Long, ByVal lpProcessInformation As Long) As Long
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 
+Private Declare Function StrFormatByteSizeW Lib "shlwapi" (ByVal srcSize As Currency, ByVal ptrDstString As Long, ByVal sizeDstStringInChars As Long) As Long
+
 'PD creates a lot of temp files.  To prevent hard drive thrashing, this module tracks created temp files,
 ' and deletes them en masse when PD terminates.  (You can also delete temp files prematurely by calling the
 ' associated function, but because some PD tasks run asynchronously, this behavior is not generally advised.)
@@ -86,6 +88,18 @@ Public Sub DeleteTempFiles()
     End If
     
 End Sub
+
+'Given a file size (32-bit), return a properly-formatted string representation.  Uses shlwapi.
+Public Function GetFormattedFileSize(ByVal srcSize As Long) As String
+    Dim tmpLongLong As Currency
+    VBHacks.PutMem4 VarPtr(tmpLongLong), srcSize
+    GetFormattedFileSize = String$(64, 0)
+    If (StrFormatByteSizeW(tmpLongLong, StrPtr(GetFormattedFileSize), Len(GetFormattedFileSize)) <> 0) Then
+        GetFormattedFileSize = Strings.TrimNull(GetFormattedFileSize)
+    Else
+        GetFormattedFileSize = CStr(srcSize) & " bytes"
+    End If
+End Function
 
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the auto-incremented filename WITHOUT an extension and WITHOUT a prepended folder,
