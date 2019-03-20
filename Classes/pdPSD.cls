@@ -329,7 +329,7 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
         Exit Function
     End If
     
-    'Failsafe check only; PD enforces save overwriting in the parent function.
+    'Failsafe check only; PD enforces safe overwriting in the parent function.
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
     'So, a few quick notes before we begin.
@@ -730,8 +730,8 @@ Private Sub WriteImageResourceHeader(ByRef cStream As pdStream, ByVal resID As I
 End Sub
 
 Private Function ExportStep1_WriteHeaderAndColorTable(ByRef cStream As pdStream, ByRef srcImage As pdImage, Optional ByVal useMaxCompatibility As Boolean = True, Optional ByVal writePSB As Boolean = False) As PD_PSDResult
-
-    ' As noted previously, VB6 struct alignment issues prevent us from easily writing out structs "as-is";
+    
+    'As noted previously, VB6 struct alignment issues prevent us from easily writing out structs "as-is";
     ' instead, we write out members one-at-a-time.
     
     'Magic number

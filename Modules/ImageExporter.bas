@@ -295,7 +295,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
         
-        Dim x As Long, y As Long, finalX As Long, finalY As Long
+        Dim X As Long, Y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 3
@@ -316,12 +316,12 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         Dim colorFound As Boolean
             
         'Apply the filter
-        For y = 0 To finalY
-        For x = 0 To finalX Step 3
+        For Y = 0 To finalY
+        For X = 0 To finalX Step 3
             
-            b = srcPixels(x, y)
-            g = srcPixels(x + 1, y)
-            r = srcPixels(x + 2, y)
+            b = srcPixels(X, Y)
+            g = srcPixels(X + 1, Y)
+            r = srcPixels(X + 2, Y)
             
             chkValue = RGB(r, g, b)
             colorFound = False
@@ -345,9 +345,9 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
                 End If
             End If
             
-        Next x
+        Next X
             If numUniqueColors > 256 Then Exit For
-        Next y
+        Next Y
         
         CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
         
@@ -429,7 +429,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
 
-        Dim x As Long, y As Long, finalX As Long, finalY As Long
+        Dim X As Long, Y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
@@ -456,13 +456,13 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         Dim colorFound As Boolean
 
         'Apply the filter
-        For y = 0 To finalY
-        For x = 0 To finalX Step 4
+        For Y = 0 To finalY
+        For X = 0 To finalX Step 4
             
-            b = srcPixels(x, y)
-            g = srcPixels(x + 1, y)
-            r = srcPixels(x + 2, y)
-            a = srcPixels(x + 3, y)
+            b = srcPixels(X, Y)
+            g = srcPixels(X + 1, Y)
+            r = srcPixels(X + 2, Y)
+            a = srcPixels(X + 3, Y)
             
             If (a < 255) Then
                 non255Alpha = True
@@ -504,9 +504,9 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                 
             End If
             
-        Next x
+        Next X
             If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
-        Next y
+        Next Y
 
         CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
 
@@ -1121,9 +1121,9 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 Dim gammaCorrection As Double
                 gammaCorrection = 1# / (1# / 2.2)
                 
-                Dim x As Long, y As Long
+                Dim X As Long, Y As Long
                 
-                For y = 0 To iHeight
+                For Y = 0 To iHeight
                     
                     'Point a 1D VB array at this scanline
                     With srcSA
@@ -1131,22 +1131,22 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                         .cDims = 1
                         .lBound = 0
                         .cElements = iScanWidth
-                        .pvData = FreeImage_GetScanline(fi_FloatDIB, y)
+                        .pvData = FreeImage_GetScanline(fi_FloatDIB, Y)
                     End With
                     CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
                     
                     'Iterate through this line, converting values as we go
-                    For x = 0 To iLoopWidth
+                    For X = 0 To iLoopWidth
                         
                         'Retrieve the source values
-                        srcF = srcImageData(x)
+                        srcF = srcImageData(X)
                         
                         'Apply 1/2.2 gamma correction
-                        If srcF > 0 Then srcImageData(x) = srcF ^ gammaCorrection
+                        If srcF > 0 Then srcImageData(X) = srcF ^ gammaCorrection
                         
-                    Next x
+                    Next X
                     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-                Next y
+                Next Y
                 
                 'With gamma properly accounted for, we can finally write the image out to file.
                 ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, dstFile, 0)
@@ -1319,10 +1319,6 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         Dim pngStandardOptimizeLevel As Long
         pngStandardOptimizeLevel = cParams.GetLong("PNGStandardOptimization", 1)
         
-        'If we're applying some measure of optimization, reset the PNG compression level (as we're just going to
-        ' overwrite it during the optimization step)
-        If (pngStandardOptimizeLevel >= 2) Then pngCompressionLevel = 1
-        
         'Next come the various color-depth and alpha modes
         Dim outputColorModel As String
         outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
@@ -1456,9 +1452,40 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             outputPaletteSize = 2
         End If
         
+        Dim imgSavedOK As Boolean
+        imgSavedOK = False
+        
+        'TODO: if output parameters are supported, use our own internal PNG encoder - it produces
+        ' smaller PNGs than either FreeImage or GDI+.
+        
+        'PD's internal exporter is currently being migrated over from a separate, standalone project.
+        ' To make testing easier, I am migrating it in pieces, roughly corresponding to color depth/format
+        ' coverage (e.g. 32-bit RGBA images to start, than additional formats being added as testing
+        ' verifies correctness).  As such, we currently branch according to color depth and model, but this
+        ' mechanism will evaporate as coverage improves.
+        Const USE_INTERNAL_PNG_ENCODER As Boolean = True
+        
+        If (Not imgSavedOK) And USE_INTERNAL_PNG_ENCODER Then
+            
+            Dim cPNG As pdPNG
+            Set cPNG = New pdPNG
+            
+            '32-bit RGBA images are currently written using our own encoder.  Note that libdeflate supports compression
+            ' levels up to "12", unlike zlib's "9".  Levels 10-12 are slow but capable of producing extremely small files.
+            If (outputColorDepth = 32) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
+                PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+            End If
+            
+            If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
+                Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
+            End If
+            
+        End If
+        
         'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
         ' so the FreeImage path is definitely preferred!
-        If ImageFormats.IsFreeImageEnabled Then
+        If (Not imgSavedOK) And ImageFormats.IsFreeImageEnabled Then
             
             fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
             
@@ -1474,15 +1501,15 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
             ' request RLE encoding from FreeImage.
-            Dim PNGflags As Long: PNGflags = PNG_DEFAULT
-            If pngCompressionLevel = 0 Then PNGflags = PNGflags Or PNG_Z_NO_COMPRESSION Else PNGflags = PNGflags Or pngCompressionLevel
-            If pngInterlacing Then PNGflags = PNGflags Or PNG_INTERLACED
-                    
+            Dim pngFlags As Long: pngFlags = PNG_DEFAULT
+            If (pngCompressionLevel = 0) Then pngFlags = pngFlags Or PNG_Z_NO_COMPRESSION Else pngFlags = pngFlags Or pngCompressionLevel
+            If pngInterlacing Then pngFlags = pngFlags Or PNG_INTERLACED
+            
             'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
             If (fi_DIB <> 0) Then
-                ExportPNG = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, PNGflags)
+                imgSavedOK = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, pngFlags)
                 FreeImage_Unload fi_DIB
-                If ExportPNG Then
+                If imgSavedOK Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                     
                     'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
@@ -1496,12 +1523,17 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 End If
             Else
                 Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-                ExportPNG = False
+                imgSavedOK = False
             End If
             
-        Else
-            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, outputColorDepth)
         End If
+        
+        'If other mechanisms failed, attempt to export using GDI+.  (Note that this pathway is *not* preferred,
+        ' as GDI+ forcibly writes problematic color data chunks and it performs no adaptive filtering so file sizes
+        ' are enormous, but hey - it's better than not writing a PNG at all, right?)
+        If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, outputColorDepth)
+        
+        ExportPNG = imgSavedOK
         
     End If
     

@@ -47,7 +47,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = False
+Private Const PNG_DEBUG_VERBOSE As Boolean = True
 
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
@@ -77,8 +77,8 @@ End Enum
 ' (NOTE: the header type is declared publicly in PD, so we can transfer it to child classes.)
 Private m_Header As PD_PNGHeader
 
-'If warnings are encountered during processing, we push their messages onto a string stack.  (We may
-' decide to report these to the user... I haven't decided yet.  Either way, it's helpful for debugging.)
+'If warnings are encountered during processing, we push their messages onto a string stack.  Loading/saving
+' is typically allowed to continue despite warnings, but these can be helpful for further debugging.
 Private m_Warnings As pdStringStack
 
 'pdStream handles actual byte traversal; it also makes our life much easier!
@@ -125,7 +125,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
     
     'Try to validate the source file
     Dim keepLoading As PD_PNGResult
-    keepLoading = Me.Step1_ValidatePNG(srcFile, checkExtension, offsetInSrcFile)
+    keepLoading = Me.ImportStage1_ValidatePNG(srcFile, checkExtension, offsetInSrcFile)
     
     'As long as warnings at critical, we'll continue to try and load the file.  (Only outright failures
     ' will cause us to abandon the attempt entirely.)
@@ -140,7 +140,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         
         'Parse the original file into chunks.  (Once this is done, we no longer need to maintain an
         ' copy of the original PNG data.)
-        keepLoading = Me.Step2_PreLoadChunks(srcFile)
+        keepLoading = Me.ImportStage2_PreLoadChunks(srcFile)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "PNG > chunk parsing took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -150,7 +150,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         'If all chunks were loaded successfully and minimal validation passed (e.g. a minimal amount of
         ' required chunks are present), go ahead and decompress all relevant chunks, including merging
         ' multiple IDAT chunks (if any) into a single IDAT instance.
-        If (keepLoading < png_Failure) Then keepLoading = Me.Step3_Decompress(srcFile)
+        If (keepLoading < png_Failure) Then keepLoading = Me.ImportStage3_Decompress(srcFile)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "PNG > inflate took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -160,7 +160,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         'All compressed data has now been decompressed.  Our next task is to "un-filter" the IDAT chunk,
         ' which converts the pixel bytestream (which has been "filtered" into some other representation
         ' format) into a raw stream of actual pixel data.
-        If (keepLoading < png_Failure) Then keepLoading = Me.Step4_UnfilterIDAT(srcFile)
+        If (keepLoading < png_Failure) Then keepLoading = Me.ImportStage4_UnfilterIDAT(srcFile)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "PNG > unfiltering IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -168,7 +168,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         End If
         
         'Next, convert the unfiltered IDAT into actual pixel data.
-        If (keepLoading < png_Failure) Then keepLoading = Me.Step5_ConstructImage(srcFile, dstDIB, dstImage)
+        If (keepLoading < png_Failure) Then keepLoading = Me.ImportStage5_ConstructImage(srcFile, dstDIB, dstImage)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "PNG > constructing DIB from IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -176,7 +176,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
         End If
         
         'Finally, perform any weird post-processing due to non-standard gamma or chromaticity chunks
-        If (keepLoading < png_Failure) Then keepLoading = Me.Step6_PostProcessing(srcFile, dstDIB, dstImage)
+        If (keepLoading < png_Failure) Then keepLoading = Me.ImportStage6_PostProcessing(srcFile, dstDIB, dstImage)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "PNG > post-processing (color management, etc) took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -191,7 +191,7 @@ Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImag
 End Function
 
 'The first step toward loading a PNG is validating it.  Do this first, before attempting anything else.
-Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False, Optional ByVal startingOffset As Long = 0) As PD_PNGResult
+Friend Function ImportStage1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False, Optional ByVal startingOffset As Long = 0) As PD_PNGResult
     
     On Error GoTo InternalVBError
     
@@ -268,36 +268,36 @@ Friend Function Step1_ValidatePNG(ByRef srcFile As String, Optional ByVal checkE
     ' running as a compiled exe (as the PNG's failure is simply due to not being a PNG at all, and not due to
     ' any internal problem in this class).
     If (okToProceed >= png_Failure) Then
-        InternalError "Step1_ValidatePNG", "file is not a valid PNG file", False
+        InternalError "ImportStage1_ValidatePNG", "file is not a valid PNG file", False
         If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
     
-    Step1_ValidatePNG = okToProceed
+    ImportStage1_ValidatePNG = okToProceed
     
     Exit Function
 
 'Internal VB errors are always treated as catastrophic failures.
 InternalVBError:
-    InternalError "Step1_ValidatePNG", "internal VB error #" & Err.Number & ": " & Err.Description
+    InternalError "ImportStage1_ValidatePNG", "internal VB error #" & Err.Number & ": " & Err.Description
     If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 1, #" & Err.Number & ": " & Err.Description
-    Step1_ValidatePNG = png_Failure
+    ImportStage1_ValidatePNG = png_Failure
     
 End Function
 
 'After validating the PNG header, we want to preload all chunks into their own containers.  This simplifies
 ' further processing, and it allows us to immediately release the source file.
-Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
+Friend Function ImportStage2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
 
     On Error GoTo InternalVBError
     
-    Step2_PreLoadChunks = png_Success
+    ImportStage2_PreLoadChunks = png_Success
     
     'Failsafe check
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step2_PreLoadChunks", "filename has changed since original validation!"
-        Step2_PreLoadChunks = png_Failure
+        InternalError "ImportStage2_PreLoadChunks", "filename has changed since original validation!"
+        ImportStage2_PreLoadChunks = png_Failure
         Exit Function
     End If
     
@@ -338,7 +338,7 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
             ' was also IDAT.  (The spec requires IDAT chunks to be contiguous in the file.)
             If idatFound Then
                 If (Not m_Chunks(m_NumOfChunks - 1).GetType = "IDAT") Then
-                    Step2_PreLoadChunks = png_Warning
+                    ImportStage2_PreLoadChunks = png_Warning
                     m_Warnings.AddString "IDAT chunks are not contiguous; this file is technically invalid!"
                 End If
             Else
@@ -350,7 +350,7 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         'Create a new chunk to hold this chunk's data
         If (m_NumOfChunks > UBound(m_Chunks)) Then ReDim Preserve m_Chunks(0 To m_NumOfChunks * 2 - 1) As pdPNGChunk
         Set m_Chunks(m_NumOfChunks) = New pdPNGChunk
-        m_Chunks(m_NumOfChunks).CreateChunk chunkType, chunkSize
+        m_Chunks(m_NumOfChunks).CreateChunkForImport chunkType, chunkSize
         
         'The chunk object itself will handle loading the chunk's data
         If (chunkSize > 0) Then m_Chunks(m_NumOfChunks).LoadChunkData m_Stream
@@ -362,7 +362,7 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
         If REQUIRE_CRC_VALIDATION Then
             m_Chunks(m_NumOfChunks).NotifyCRCs testCRC, embeddedCRC
             If (embeddedCRC <> testCRC) Then
-                Step2_PreLoadChunks = png_Warning
+                ImportStage2_PreLoadChunks = png_Warning
                 m_Warnings.AddString "Checksum validation failed on chunk " & CStr(m_NumOfChunks + 1) & " - " & chunkType & " (0x" & Hex$(embeddedCRC) & " expected, 0x" & Hex$(testCRC) & " found)"
             End If
         End If
@@ -387,49 +387,49 @@ Friend Function Step2_PreLoadChunks(ByRef srcFile As String) As PD_PNGResult
     ' correct order - return SUCCESS.
     If (m_NumOfChunks >= 3) Then
         If (m_Chunks(0).GetType <> "IHDR") Then
-            Step2_PreLoadChunks = png_Failure
-            InternalError "Step2_PreLoadChunks", "Required header chunk (IHDR) is missing or not listed as the first chunk in the file"
+            ImportStage2_PreLoadChunks = png_Failure
+            InternalError "ImportStage2_PreLoadChunks", "Required header chunk (IHDR) is missing or not listed as the first chunk in the file"
         ElseIf (m_Chunks(m_NumOfChunks - 1).GetType <> "IEND") Then
-            Step2_PreLoadChunks = png_Failure
-            InternalError "Step2_PreLoadChunks", "Required final chunk (IEND) is missing or not listed as the final chunk in the file"
+            ImportStage2_PreLoadChunks = png_Failure
+            InternalError "ImportStage2_PreLoadChunks", "Required final chunk (IEND) is missing or not listed as the final chunk in the file"
         ElseIf (Not idatFound) Then
-            Step2_PreLoadChunks = png_Failure
-            InternalError "Step2_PreLoadChunks", "No pixel chunks (IDAT) found in the file!"
+            ImportStage2_PreLoadChunks = png_Failure
+            InternalError "ImportStage2_PreLoadChunks", "No pixel chunks (IDAT) found in the file!"
         End If
     End If
     
     Exit Function
     
 InternalVBError:
-    InternalError "Step2_PreLoadChunks", "internal VB error #" & Err.Number & ": " & Err.Description
+    InternalError "ImportStage2_PreLoadChunks", "internal VB error #" & Err.Number & ": " & Err.Description
     If m_Stream.IsOpen Then m_Stream.StopStream True
     
     m_Warnings.AddString "Internal error in step 2, #" & Err.Number & ": " & Err.Description
-    Step2_PreLoadChunks = png_Failure
+    ImportStage2_PreLoadChunks = png_Failure
 
 End Function
 
 'After loading all chunks and releasing the source file, we want to decompress any/all compressed chunks.
 ' While we're at it, we must merge all IDAT blocks into a single instance - they represent a *single*
 ' compressed data stream.
-Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
+Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
     
     On Error GoTo InternalVBError
     
-    Step3_Decompress = png_Success
+    ImportStage3_Decompress = png_Success
     
     'Failsafe check(s)
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step3_Decompress", "filename has changed since original validation!"
-        Step3_Decompress = png_Failure
+        InternalError "ImportStage3_Decompress", "filename has changed since original validation!"
+        ImportStage3_Decompress = png_Failure
     End If
     
     If (m_NumOfChunks < 3) Then
-        InternalError "Step3_Decompress", "not enough chunks to continue!"
-        Step3_Decompress = png_Failure
+        InternalError "ImportStage3_Decompress", "not enough chunks to continue!"
+        ImportStage3_Decompress = png_Failure
     End If
     
-    If (Step3_Decompress >= png_Failure) Then Exit Function
+    If (ImportStage3_Decompress >= png_Failure) Then Exit Function
     
     'If we're still here, it means that we have (at a minimum) the three required chunks for
     ' constructing pixel data, so the file is (likely) valid.  We now want to tackle two tasks:
@@ -494,10 +494,10 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
     'IDAT chunks are the most obnoxious to decompress, because their inflated (normal) size is a
     ' function of the image's dimensions plus its color depth.  This means we need to parse the PNG
     ' header and retrieve some critical bits before continuing.
-    Step3_Decompress = PopulateHeader()
+    ImportStage3_Decompress = PopulateHeader()
     
     'If the header didn't validate, don't decompress anything as the entire file is invalid
-    If (Step3_Decompress < png_Failure) Then
+    If (ImportStage3_Decompress < png_Failure) Then
     
         'The header appears to be valid.  We now need to calculate how much space is required for decompressing.
         Dim reqIDATSize As Long
@@ -559,11 +559,11 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
                 
                 'Decompression failures in IDAT are critical; other decompression failures only raise warnings
                 If (m_Chunks(i).GetType = "IDAT") Then
-                    InternalError "Step3_Decompress", "IDAT decompression failed; PNG file is unreadable."
-                    Step3_Decompress = png_Failure
+                    InternalError "ImportStage3_Decompress", "IDAT decompression failed; PNG file is unreadable."
+                    ImportStage3_Decompress = png_Failure
                 Else
                     m_Warnings.AddString "WARNING: " & m_Chunks(i).GetType & " could not be decompressed.  (I'll still try to salvage pixel data.)"
-                    Step3_Decompress = png_Warning
+                    ImportStage3_Decompress = png_Warning
                 End If
                 
             Else
@@ -576,27 +576,27 @@ Friend Function Step3_Decompress(ByRef srcFile As String) As PD_PNGResult
     Exit Function
     
 InternalVBError:
-    InternalError "Step3_Decompress", "internal VB error #" & Err.Number & ": " & Err.Description
-    Step3_Decompress = png_Failure
+    InternalError "ImportStage3_Decompress", "internal VB error #" & Err.Number & ": " & Err.Description
+    ImportStage3_Decompress = png_Failure
 
 End Function
 
 'Once all relevant chunks have been decompressed, we next need to un-filter each scanline into its original,
 ' unfiltered pixel representation.  This step operates only on bytes, which means it is completely independent
 ' of color-depth or bit-depth.
-Friend Function Step4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResult
+Friend Function ImportStage4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResult
 
     On Error GoTo InternalVBError
     
-    Step4_UnfilterIDAT = png_Success
+    ImportStage4_UnfilterIDAT = png_Success
     
     'Failsafe check(s)
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step4_UnfilterIDAT", "filename has changed since original validation!"
-        Step4_UnfilterIDAT = png_Failure
+        InternalError "ImportStage4_UnfilterIDAT", "filename has changed since original validation!"
+        ImportStage4_UnfilterIDAT = png_Failure
     End If
     
-    If (Step4_UnfilterIDAT >= png_Failure) Then Exit Function
+    If (ImportStage4_UnfilterIDAT >= png_Failure) Then Exit Function
     
     'We are now ready to convert the raw IDAT stream into its original, "unfiltered pixels" state.
     ' IMPORTANTLY, this step operates only on pure bytes - so 1-bpp pixel data will still be 1-bpp after this step.
@@ -620,34 +620,34 @@ Friend Function Step4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResult
     Exit Function
     
 InternalVBError:
-    InternalError "Step4_UnfilterIDAT", "internal VB error #" & Err.Number & ": " & Err.Description
-    Step4_UnfilterIDAT = png_Failure
+    InternalError "ImportStage4_UnfilterIDAT", "internal VB error #" & Err.Number & ": " & Err.Description
+    ImportStage4_UnfilterIDAT = png_Failure
 
 End Function
 
 'Once all relevant chunks have been decompressed, we next need to un-filter each scanline into its original,
 ' unfiltered pixel representation.  This step operates only on bytes, which means it is completely independent
 ' of color-depth or bit-depth.
-Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
+Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
 
     On Error GoTo InternalVBError
     
-    Step5_ConstructImage = png_Success
+    ImportStage5_ConstructImage = png_Success
     
     'Failsafe check(s)
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step5_ConstructImage", "filename has changed since original validation!"
-        Step5_ConstructImage = png_Failure
+        InternalError "ImportStage5_ConstructImage", "filename has changed since original validation!"
+        ImportStage5_ConstructImage = png_Failure
     End If
     
     Dim idatIndex As Long
     idatIndex = Me.GetIndexOfChunk("IDAT")
     If (idatIndex < 0) Or (idatIndex >= m_NumOfChunks) Then
-        InternalError "Step5_ConstructImage", "no IDAT chunk!"
-        Step5_ConstructImage = png_Failure
+        InternalError "ImportStage5_ConstructImage", "no IDAT chunk!"
+        ImportStage5_ConstructImage = png_Failure
     End If
     
-    If (Step5_ConstructImage >= png_Failure) Then Exit Function
+    If (ImportStage5_ConstructImage >= png_Failure) Then Exit Function
     
     'If the image contains a palette (PLTE chunk), now's the time to grab it!
     Dim hasPalette As Boolean, plteIndex As Long, srcColors() As RGBQuad, numColors As Long
@@ -742,7 +742,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         
         'Prep all the required loop values
         Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
-        Dim x As Long, y As Long, xDIB As Long, srcOffset As Long
+        Dim X As Long, Y As Long, xDIB As Long, srcOffset As Long
         imgWidth = m_Header.Width
         imgHeight = m_Header.Height
         xFinal = imgWidth - 1
@@ -778,10 +778,10 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     ' the normal greyscale conversion code afterward.
                     If (trnsRed < 0) Then
                     
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
+                        For Y = 0 To yFinal
+                            srcOffset = Y * xStride + 1
                             dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                        Next y
+                        Next Y
                         normalCopy = True
                         If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
@@ -791,42 +791,42 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     Else
                         
                         'Assign alpha bytes, if any
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
-                        For x = 0 To xFinal
+                        For Y = 0 To yFinal
+                            srcOffset = Y * xStride + 1
+                        For X = 0 To xFinal
                             If (m_Header.BitDepth = 8) Then
-                                g = srcBytes(srcOffset + x)
-                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
+                                g = srcBytes(srcOffset + X)
+                                If (g = trnsRed) Then dstBytes(X * 4 + 3, Y) = 0
                             Else
-                                g = srcBytes(srcOffset + x * 2 + 1)
-                                g = g * 256 + srcBytes(srcOffset + x * 2)
-                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
+                                g = srcBytes(srcOffset + X * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + X * 2)
+                                If (g = trnsRed) Then dstBytes(X * 4 + 3, Y) = 0
                             End If
-                        Next x
-                        Next y
+                        Next X
+                        Next Y
                         
                         'Perform ICC correction on the original source bytes
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
+                        For Y = 0 To yFinal
+                            srcOffset = Y * xStride + 1
                             dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                        Next y
+                        Next Y
                         
                         'Copy ICC-transformed grey bytes into the final RGBA container
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
-                        For x = 0 To xFinal
+                        For Y = 0 To yFinal
+                            srcOffset = Y * xStride + 1
+                        For X = 0 To xFinal
                             If (m_Header.BitDepth = 8) Then
-                                g = srcBytes(srcOffset + x)
+                                g = srcBytes(srcOffset + X)
                             Else
-                                g = srcBytes(srcOffset + x * 2 + 1)
-                                g = g * 256 + srcBytes(srcOffset + x * 2)
+                                g = srcBytes(srcOffset + X * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + X * 2)
                                 g = g \ 256
                             End If
-                            dstBytes(x * 4, y) = g
-                            dstBytes(x * 4 + 1, y) = g
-                            dstBytes(x * 4 + 2, y) = g
-                        Next x
-                        Next y
+                            dstBytes(X * 4, Y) = g
+                            dstBytes(X * 4 + 1, Y) = g
+                            dstBytes(X * 4 + 2, Y) = g
+                        Next X
+                        Next Y
                         
                         normalCopy = False
                         If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
@@ -838,36 +838,36 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 If normalCopy Then
                 
                     'With any ICC handling successfully covered, we can now proceed with normal loading.
-                    For y = 0 To yFinal
+                    For Y = 0 To yFinal
                     
-                        srcOffset = y * xStride + 1
+                        srcOffset = Y * xStride + 1
                         
                         'For performance reasons, separate out 8- and 16-bit handling
                         If (m_Header.BitDepth <= 8) Then
-                            For x = 0 To xFinal
-                                palIndex = srcBytes(srcOffset + x)
-                                xDIB = x * 4
+                            For X = 0 To xFinal
+                                palIndex = srcBytes(srcOffset + X)
+                                xDIB = X * 4
                                 With srcColors(palIndex)
-                                    dstBytes(xDIB, y) = .Blue
-                                    dstBytes(xDIB + 1, y) = .Green
-                                    dstBytes(xDIB + 2, y) = .Red
-                                    dstBytes(xDIB + 3, y) = .Alpha
+                                    dstBytes(xDIB, Y) = .Blue
+                                    dstBytes(xDIB + 1, Y) = .Green
+                                    dstBytes(xDIB + 2, Y) = .Red
+                                    dstBytes(xDIB + 3, Y) = .Alpha
                                 End With
-                            Next x
+                            Next X
                         Else
-                            For x = 0 To xFinal
-                                g = srcBytes(srcOffset + x * 2)
-                                g = g * 256 + srcBytes(srcOffset + x * 2 + 1)
-                                xDIB = x * 4
-                                If (g = trnsRed) Then dstBytes(xDIB + 3, y) = 0
+                            For X = 0 To xFinal
+                                g = srcBytes(srcOffset + X * 2)
+                                g = g * 256 + srcBytes(srcOffset + X * 2 + 1)
+                                xDIB = X * 4
+                                If (g = trnsRed) Then dstBytes(xDIB + 3, Y) = 0
                                 g = g \ 256
-                                dstBytes(x * 4, y) = g
-                                dstBytes(x * 4 + 1, y) = g
-                                dstBytes(x * 4 + 2, y) = g
-                            Next x
+                                dstBytes(X * 4, Y) = g
+                                dstBytes(X * 4 + 1, Y) = g
+                                dstBytes(X * 4 + 2, Y) = g
+                            Next X
                         End If
                         
-                    Next y
+                    Next Y
                     
                 End If
                 
@@ -877,63 +877,63 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 
                 'If an ICC profile is active, apply it in-place to the source data
                 If (Not dstTransform Is Nothing) Then
-                    For y = 0 To yFinal
-                        srcOffset = y * xStride + 1
+                    For Y = 0 To yFinal
+                        srcOffset = Y * xStride + 1
                         dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                    Next y
+                    Next Y
                     If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
                 'Copy ICC-transformed grey bytes into the final RGBA container
-                For y = 0 To yFinal
-                    srcOffset = y * xStride + 1
-                For x = 0 To xFinal
+                For Y = 0 To yFinal
+                    srcOffset = Y * xStride + 1
+                For X = 0 To xFinal
                     If (m_Header.BitDepth = 8) Then
-                        g = srcBytes(srcOffset + x * 2)
-                        a = srcBytes(srcOffset + x * 2 + 1)
+                        g = srcBytes(srcOffset + X * 2)
+                        a = srcBytes(srcOffset + X * 2 + 1)
                     Else
-                        g = srcBytes(srcOffset + x * 4)
-                        g = g * 256 + srcBytes(srcOffset + x * 4 + 1)
+                        g = srcBytes(srcOffset + X * 4)
+                        g = g * 256 + srcBytes(srcOffset + X * 4 + 1)
                         g = g \ 256
-                        a = srcBytes(srcOffset + x * 4 + 2)
-                        a = a * 256 + srcBytes(srcOffset + x * 4 + 3)
+                        a = srcBytes(srcOffset + X * 4 + 2)
+                        a = a * 256 + srcBytes(srcOffset + X * 4 + 3)
                         a = a \ 256
                     End If
-                    dstBytes(x * 4, y) = g
-                    dstBytes(x * 4 + 1, y) = g
-                    dstBytes(x * 4 + 2, y) = g
-                    dstBytes(x * 4 + 3, y) = a
-                Next x
-                Next y
+                    dstBytes(X * 4, Y) = g
+                    dstBytes(X * 4 + 1, Y) = g
+                    dstBytes(X * 4 + 2, Y) = g
+                    dstBytes(X * 4 + 3, Y) = a
+                Next X
+                Next Y
             
                 okToProceed = True
                 
             Case png_Indexed
                 
-                For y = 0 To yFinal
-                    srcOffset = y * xStride + 1
-                For x = 0 To xFinal
+                For Y = 0 To yFinal
+                    srcOffset = Y * xStride + 1
+                For X = 0 To xFinal
                     
-                    palIndex = srcBytes(srcOffset + x)
-                    xDIB = x * 4
+                    palIndex = srcBytes(srcOffset + X)
+                    xDIB = X * 4
                     
                     With srcColors(palIndex)
-                        dstBytes(xDIB, y) = .Blue
-                        dstBytes(xDIB + 1, y) = .Green
-                        dstBytes(xDIB + 2, y) = .Red
-                        dstBytes(xDIB + 3, y) = .Alpha
+                        dstBytes(xDIB, Y) = .Blue
+                        dstBytes(xDIB + 1, Y) = .Green
+                        dstBytes(xDIB + 2, Y) = .Red
+                        dstBytes(xDIB + 3, Y) = .Alpha
                     End With
                     
-                Next x
-                Next y
+                Next X
+                Next Y
                 
                 'With the indexed image successfully constructed as a full 32-bit RGBA image, we now need to handle
                 ' the ICC profile (if any).  We only do this if the image contained an embedded profile; otherwise,
                 ' the pixel data is already good to go.
                 If (Not dstTransform Is Nothing) Then
-                    For y = 0 To yFinal
-                        dstTransform.ApplyTransformToScanline VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth
-                    Next y
+                    For Y = 0 To yFinal
+                        dstTransform.ApplyTransformToScanline VarPtr(dstBytes(0, Y)), VarPtr(dstBytes(0, Y)), imgWidth
+                    Next Y
                     If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
@@ -944,12 +944,12 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 'If LittleCMS is available, use it for faster byte swizzling
                 If (Not dstTransform Is Nothing) Then
                     
-                    For y = 0 To yFinal
+                    For Y = 0 To yFinal
                     
-                        srcOffset = y * xStride + 1
+                        srcOffset = Y * xStride + 1
                         
                         'Use LittleCMS to perform swizzling for us
-                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, Y)), imgWidth
                         
                         'If a tRNS chunk specified a transparent color, we need to find and detect transparent colors -
                         ' but importantly, we need to scan the *original* bytes, not the transformed ones (as the
@@ -957,29 +957,29 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         If trnsHandlingRequired Then
                             
                             If (m_Header.BitDepth = 8) Then
-                                For x = 0 To xFinal
-                                    r = srcBytes(srcOffset + x * 3)
-                                    g = srcBytes(srcOffset + x * 3 + 1)
-                                    b = srcBytes(srcOffset + x * 3 + 2)
-                                    If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
-                                Next x
+                                For X = 0 To xFinal
+                                    r = srcBytes(srcOffset + X * 3)
+                                    g = srcBytes(srcOffset + X * 3 + 1)
+                                    b = srcBytes(srcOffset + X * 3 + 2)
+                                    If (RGB(r, g, b) = trnsCheck) Then dstBytes(X * 4 + 3, Y) = 0
+                                Next X
                             Else
                                 Dim newR As Long, newG As Long, newB As Long
-                                For x = 0 To xFinal
-                                    newR = srcBytes(srcOffset + x * 6)
-                                    newR = (newR * 256) + srcBytes(srcOffset + x * 6 + 1)
-                                    newG = srcBytes(srcOffset + x * 6 + 2)
-                                    newG = (newG * 256) + srcBytes(srcOffset + x * 6 + 3)
-                                    newB = srcBytes(srcOffset + x * 6 + 4)
-                                    newB = (newB * 256) + srcBytes(srcOffset + x * 6 + 5)
-                                    If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
-                                Next x
+                                For X = 0 To xFinal
+                                    newR = srcBytes(srcOffset + X * 6)
+                                    newR = (newR * 256) + srcBytes(srcOffset + X * 6 + 1)
+                                    newG = srcBytes(srcOffset + X * 6 + 2)
+                                    newG = (newG * 256) + srcBytes(srcOffset + X * 6 + 3)
+                                    newB = srcBytes(srcOffset + X * 6 + 4)
+                                    newB = (newB * 256) + srcBytes(srcOffset + X * 6 + 5)
+                                    If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(X * 4 + 3, Y) = 0
+                                Next X
                             End If
                             
                         '/End tRNS handling
                         End If
                     
-                    Next y
+                    Next Y
                     
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
@@ -989,33 +989,33 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
                 Else
                 
-                    For y = 0 To yFinal
-                        srcOffset = y * xStride + 1
-                    For x = 0 To xFinal
+                    For Y = 0 To yFinal
+                        srcOffset = Y * xStride + 1
+                    For X = 0 To xFinal
                         
                         'Byte order has to be swapped to BGRA
                         If (m_Header.BitDepth = 8) Then
-                            r = srcBytes(srcOffset + x * 3)
-                            g = srcBytes(srcOffset + x * 3 + 1)
-                            b = srcBytes(srcOffset + x * 3 + 2)
-                            If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
+                            r = srcBytes(srcOffset + X * 3)
+                            g = srcBytes(srcOffset + X * 3 + 1)
+                            b = srcBytes(srcOffset + X * 3 + 2)
+                            If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(X * 4 + 3, Y) = 0
                         Else
-                            r = srcBytes(srcOffset + x * 6)
-                            r = r * 256 + srcBytes(srcOffset + x * 6 + 1)
-                            g = srcBytes(srcOffset + x * 6 + 2)
-                            g = g * 256 + srcBytes(srcOffset + x * 6 + 3)
-                            b = srcBytes(srcOffset + x * 6 + 4)
-                            b = b * 256 + srcBytes(srcOffset + x * 6 + 5)
-                            If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
+                            r = srcBytes(srcOffset + X * 6)
+                            r = r * 256 + srcBytes(srcOffset + X * 6 + 1)
+                            g = srcBytes(srcOffset + X * 6 + 2)
+                            g = g * 256 + srcBytes(srcOffset + X * 6 + 3)
+                            b = srcBytes(srcOffset + X * 6 + 4)
+                            b = b * 256 + srcBytes(srcOffset + X * 6 + 5)
+                            If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(X * 4 + 3, Y) = 0
                         End If
                         
-                        xDIB = x * 4
-                        dstBytes(xDIB, y) = b \ 256
-                        dstBytes(xDIB + 1, y) = g \ 256
-                        dstBytes(xDIB + 2, y) = r \ 256
+                        xDIB = X * 4
+                        dstBytes(xDIB, Y) = b \ 256
+                        dstBytes(xDIB + 1, Y) = g \ 256
+                        dstBytes(xDIB + 2, Y) = r \ 256
                         
-                    Next x
-                    Next y
+                    Next X
+                    Next Y
                     
                 End If
                 
@@ -1027,10 +1027,10 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                 ' into a single step.
                 If imgHasEmbeddedICC Then
                     
-                    For y = 0 To yFinal
+                    For Y = 0 To yFinal
                     
-                        srcOffset = y * xStride + 1
-                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
+                        srcOffset = Y * xStride + 1
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, Y)), imgWidth
                         
                         'On 16-bit data, we have to do some housekeeping to compensate for a LittleCMS bug.
                         ' LittleCMS normally swaps endianness just fine - *except* for alpha channels, as they
@@ -1048,7 +1048,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         '    Next x
                         'End If
                         
-                    Next y
+                    Next Y
                     
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
@@ -1069,10 +1069,10 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                         scanStart = dstDIB.GetDIBPointer
                         scanWidth = dstDIB.GetDIBStride
                     
-                        For y = 0 To yFinal
+                        For Y = 0 To yFinal
                             
-                            srcOffset = y * xStride + 1
-                            dstSA1D.pvData = scanStart + y * scanWidth
+                            srcOffset = Y * xStride + 1
+                            dstSA1D.pvData = scanStart + Y * scanWidth
                             
                             'Start by copying the unfiltered IDAT as-is into the destination DIB.
                             ' (Green and alpha bytes are already in the correct position; we only need
@@ -1080,13 +1080,13 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                             CopyMemoryStrict VarPtr(dstBytesLine(0)), VarPtr(srcBytes(srcOffset)), imgWidth * 4
                             
                             'Manually swizzle r/b
-                            For x = 0 To xFinal * 4 Step 4
-                                r = dstBytesLine(x)
-                                dstBytesLine(x) = dstBytesLine(x + 2)
-                                dstBytesLine(x + 2) = r
-                            Next x
+                            For X = 0 To xFinal * 4 Step 4
+                                r = dstBytesLine(X)
+                                dstBytesLine(X) = dstBytesLine(X + 2)
+                                dstBytesLine(X + 2) = r
+                            Next X
                             
-                        Next y
+                        Next Y
                         
                         dstDIB.UnwrapArrayFromDIB dstBytesLine
                         
@@ -1094,18 +1094,18 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
                     ' doesn't natively support ushorts.
                     Else
                     
-                        For y = 0 To yFinal
-                            srcOffset = y * xStride + 1
-                        For x = 0 To xFinal
+                        For Y = 0 To yFinal
+                            srcOffset = Y * xStride + 1
+                        For X = 0 To xFinal
                             
-                            xDIB = x * 4
-                            dstBytes(xDIB, y) = srcBytes(srcOffset + x * 8 + 4)
-                            dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 8 + 2)
-                            dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 8)
-                            dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 8 + 6)
+                            xDIB = X * 4
+                            dstBytes(xDIB, Y) = srcBytes(srcOffset + X * 8 + 4)
+                            dstBytes(xDIB + 1, Y) = srcBytes(srcOffset + X * 8 + 2)
+                            dstBytes(xDIB + 2, Y) = srcBytes(srcOffset + X * 8)
+                            dstBytes(xDIB + 3, Y) = srcBytes(srcOffset + X * 8 + 6)
                             
-                        Next x
-                        Next y
+                        Next X
+                        Next Y
                     
                     End If
                     
@@ -1119,7 +1119,7 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
         dstDIB.UnwrapArrayFromDIB dstBytes
         m_Chunks(idatIndex).BorrowData.UnwrapArrayFromMemoryStream srcBytes
         
-        If okToProceed Then Step5_ConstructImage = png_Success Else Step5_ConstructImage = png_Failure
+        If okToProceed Then ImportStage5_ConstructImage = png_Success Else ImportStage5_ConstructImage = png_Failure
     
     End If
     
@@ -1131,22 +1131,22 @@ Friend Function Step5_ConstructImage(ByRef srcFile As String, ByRef dstDIB As pd
     Exit Function
     
 InternalVBError:
-    InternalError "Step5_ConstructImage", "internal VB error #" & Err.Number & ": " & Err.Description
-    Step5_ConstructImage = png_Failure
+    InternalError "ImportStage5_ConstructImage", "internal VB error #" & Err.Number & ": " & Err.Description
+    ImportStage5_ConstructImage = png_Failure
 End Function
 
 'Once image data has been fully constructed, the last thing we need to do is check for any esoteric chunks that affect
 ' the final image presentation (like gamma or chromaticity conversions).  For 99% of images, this step won't do a thing.
-Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
+Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As PD_PNGResult
 
     On Error GoTo InternalVBError
     
-    Step6_PostProcessing = png_Success
+    ImportStage6_PostProcessing = png_Success
     
     'Failsafe check(s)
     If Strings.StringsNotEqual(m_SourceFilename, srcFile, False) Then
-        InternalError "Step6_PostProcessing", "filename has changed since original validation!"
-        Step6_PostProcessing = png_Failure
+        InternalError "ImportStage6_PostProcessing", "filename has changed since original validation!"
+        ImportStage6_PostProcessing = png_Failure
     End If
     
     'Look for DPI information
@@ -1181,7 +1181,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     ' As such, we don't need to deal with them here - and in fact, we can bail if they were handled previously,
     ' as they take precedence over all other corrective functions.
     If (dstDIB.GetColorManagementState <> cms_NoManagement) Then
-        Step6_PostProcessing = png_Success
+        ImportStage6_PostProcessing = png_Success
         Exit Function
     End If
     
@@ -1190,7 +1190,7 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     ' (Gamma in particular is important, as sRGB doesn't use a standard exponent curve, so you can't use a
     ' gAMA chunk to replicate it correctly.)
     If (Me.GetIndexOfChunk("sRGB") >= 0) Then
-        Step6_PostProcessing = png_Success
+        ImportStage6_PostProcessing = png_Success
         Exit Function
     End If
     
@@ -1303,8 +1303,311 @@ Friend Function Step6_PostProcessing(ByRef srcFile As String, ByRef dstDIB As pd
     Exit Function
     
 InternalVBError:
-    InternalError "Step6_PostProcessing", "internal VB error #" & Err.Number & ": " & Err.Description
-    Step6_PostProcessing = png_Failure
+    InternalError "ImportStage6_PostProcessing", "internal VB error #" & Err.Number & ": " & Err.Description
+    ImportStage6_PostProcessing = png_Failure
+End Function
+
+'Simplified wrapper to save a PNG automatically.
+Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB, Optional ByVal cmpLevel As Long = -1) As PD_PNGResult
+    
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError "SavePNG", "invalid function parameters"
+        SavePNG_Simple = False
+        Exit Function
+    End If
+    
+    'Failsafe check only; PD enforces safe overwriting in a parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, , , OptimizeSequentialAccess
+    
+    Dim startTime As Currency, firstStartTime As Currency
+    VBHacks.GetHighResTime startTime
+    firstStartTime = startTime
+    
+    'Prep a header; this contains standard IHDR information, and storing it module-level prevents us from
+    ' needing to pass it to individual functions over-and-over
+    ' TODO: pull this data from a passed param string, obviously.
+    With m_Header
+        .Width = srcImage.GetDIBWidth
+        .Height = srcImage.GetDIBHeight
+        .BitDepth = 8
+        .BitsPerPixel = .BitDepth * 4
+        .ColorType = png_TruecolorAlpha
+        .Interlaced = False
+    End With
+    
+    'Start by writing out a basic PNG header.
+    Dim keepGoing As PD_PNGResult
+    keepGoing = Me.ExportStep1_StartFile(cStream, srcImage)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > initialization " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+        
+    'All subsequent writes must be written as standalone chunks.  Note that chunks contain more than just "data" -
+    ' they also embed length markers, chunk IDs (4-byte ASCII strings), and checksums.  Most of these tedious
+    ' sub-tasks are automatically handled by the pdPNGChunk class.
+    
+    'PNG files must start with a special "IHDR" chunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream, srcImage)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > IHDR creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Pixel data must be filtered before compression.  We use a temporary pdPNGChunk object to do this for us,
+    ' as it already contains a bunch of code related to un-filtering pixel data.
+    Dim tmpChunk As pdPNGChunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > byte filtering took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Filtered pixel data can now be added in the form of an IDAT chunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, srcImage, tmpChunk, cmpLevel)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > deflate + write IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'PNG files end with a special "IEND" chunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream, srcImage)
+    
+    'The write is finished.  Close the file handle and exit.
+    Dim finalFileSize As Long
+    finalFileSize = cStream.GetStreamSize()
+    
+    cStream.StopStream
+    Set cStream = Nothing
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > IEND + finalize data took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    PDDebug.LogAction "PNG export took: " & VBHacks.GetTimeDiffNowAsString(firstStartTime)
+    PDDebug.LogAction "Final PNG size is " & Files.GetFormattedFileSize(finalFileSize)
+    
+    SavePNG_Simple = keepGoing
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError "SavePNG_Simple", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SavePNG_Simple = False
+    
+End Function
+
+Friend Function ExportStep1_StartFile(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+    
+    'Start with the PNG "magic numbers".  From the spec:
+    ' 5.2 PNG signature
+    ' The first eight bytes of a PNG datastream always contain the following (decimal) values:
+    ' 137 80 78 71 13 10 26 10
+    cStream.WriteLong_BE &H89504E47
+    cStream.WriteLong_BE &HD0A1A0A
+    
+    ExportStep1_StartFile = png_Success
+    
+End Function
+
+'Make sure you have populated the module-level m_Header struct before calling this function!
+Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+
+    'Initialize a chunk object
+    Dim dstChunk As pdPNGChunk
+    Set dstChunk = New pdPNGChunk
+    
+    'The header is always 13-bytes long.  (Note that we never include length, chunk type, or CRC lengths -
+    ' the chunk class handles all that for us.)
+    dstChunk.CreateChunkForExport "IHDR", 13
+    
+    'Write image width/height
+    dstChunk.BorrowData.WriteLong_BE m_Header.Width
+    dstChunk.BorrowData.WriteLong_BE m_Header.Height
+    
+    'Next come five PNG-specific bytes:
+    
+    'Bit depth (1, 2, 4, 8, 16)
+    dstChunk.BorrowData.WriteByte m_Header.BitDepth
+    
+    'Colour type (0, 2, 3, 4, 6)
+    dstChunk.BorrowData.WriteByte m_Header.ColorType
+    
+    'Compression method (always 0)
+    dstChunk.BorrowData.WriteByte 0
+    
+    'Filter method (always 0)
+    dstChunk.BorrowData.WriteByte 0
+    
+    'Interlace method (0 or 1)
+    dstChunk.BorrowData.WriteByte IIf(m_Header.Interlaced, 1, 0)
+    
+    'Finalize the chunk and copy its contents into the final stream
+    dstChunk.FinalizeChunk
+    cStream.WriteStream dstChunk.BorrowData
+    
+    ExportStep2_WriteIHDR = png_Success
+    
+End Function
+
+'Make sure you have populated the module-level m_Header struct before calling this function!
+Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk) As PD_PNGResult
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'First, we need to generate a PNG-compatible layout of image data.  In a normal 32-bpp RGBA image, this simply
+    ' requires us to swizzle red and blue channels.  For other bit-depths, however, we need to produce the proper
+    ' bit-stream here.
+    Dim finalBytes() As Byte, sizeOfPngBytes As Long
+    
+    'At present, we produce a full copy of the image in the required bit-depth and layout.  In the future,
+    ' it may be nice to handle this on a per-scanline basis, to avoid the need for massive up-front
+    ' memory allocations (especially when working with HDR modes).
+    
+    'TODO: separate handling by bit-depth
+    sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 4
+    ReDim finalBytes(0 To sizeOfPngBytes - 1) As Byte
+    
+    'For 32-bpp data, copy over the DIB data as-is, then perform a fast swizzle
+    CopyMemoryStrict VarPtr(finalBytes(0)), srcImage.GetDIBPointer, sizeOfPngBytes
+    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long
+    Dim xLimit As Long, yOffset As Long
+    srcStride = srcImage.GetDIBStride
+    srcHeightInPixels = srcImage.GetDIBHeight
+    xLimit = srcStride - 1
+    
+    Dim X As Long, Y As Long
+    For Y = 0 To srcHeightInPixels - 1
+        yOffset = Y * srcStride
+        For X = 0 To xLimit Step 4
+            tmpByte = finalBytes(yOffset + X)
+            finalBytes(yOffset + X) = finalBytes(yOffset + X + 2)
+            finalBytes(yOffset + X + 2) = tmpByte
+        Next X
+    Next Y
+    
+    'Note that we no longer require the original DIB; we can safely free it before continuing
+    srcImage.EraseDIB True
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "- IDAT creation: prepping pixel data took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    End If
+    
+    'The temporary chunk handles the actual filtering for us
+    If (tmpChunk Is Nothing) Then Set tmpChunk = New pdPNGChunk
+    If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), srcStride) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
+    
+End Function
+
+'This function requires a temporary chunk object that has already filtered pixel bytes; this is handled by export step 3,
+' which *MUST* be called before calling this function.
+Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByVal cmpLevel As Long = -1) As PD_PNGResult
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Get a pointer and length of the filtered bytes
+    Dim srcPtr As Long, srcLen As Long
+    tmpChunk.GetFilteredBytesData srcPtr, srcLen
+    
+    'Prep a temporary buffer to receive the compressed bytes
+    Dim tmpBytes() As Byte
+    
+    'Perform compression.  Note that a libdeflate setting of 7 correlates pretty closely to a final
+    ' deflate stream size of zlib level 9.  At matching levels, however, libdeflate will always produce
+    ' *faster* results.  (And of course, if you ratchet its level up to a max of 12 you'll get extremely
+    ' good compression, at some penalty to processing speed.)
+    Dim cmpSize As Long
+    If (cmpLevel < 0) Then
+        cmpLevel = Compression.GetDefaultCompressionLevel(cf_Zlib)
+    ElseIf (cmpLevel > Compression.GetMaxCompressionLevel(cf_Zlib)) Then
+        cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
+    End If
+    
+    PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
+    Compression.CompressPtrToDstArray tmpBytes, cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'We're done with the temporary chunk, and because it consumes a *lot* of memory, free it immediately
+    Set tmpChunk = Nothing
+    
+    'Normally, we would use a temporary chunk object to write the actual chunk data (including CRC calculation).
+    ' Because IDAT chunks are potentially enormous, however, we want to manually embed the final, compressed data
+    ' stream directly inside the target file.
+    
+    'Start with data length
+    cStream.WriteLong_BE cmpSize
+    
+    'Next, the chunk name
+    cStream.WriteString_ASCII "IDAT"
+    
+    'Next, the data itself
+    cStream.WriteBytesFromPointer VarPtr(tmpBytes(0)), cmpSize
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Finally, a CRC value.  We need to manually calculate this, and the calculation must include the
+    ' chunk name (but not its length).  Start by calculating a CRC for the chunk name.
+    Dim nameBytes() As Byte
+    nameBytes = StrConv("IDAT", vbFromUnicode)
+    
+    Dim crcBase As Long, crcFinal As Long
+    crcBase = Plugin_libdeflate.GetCrc32(0&, 0&, 0&, True)
+    crcBase = Plugin_libdeflate.GetCrc32(VarPtr(nameBytes(0)), 4&, crcBase, False)
+    
+    'Next, compute a CRC over the compressed data - but make sure we pass the *existing* CRC value
+    ' to ensure a correct final value!
+    crcFinal = Plugin_libdeflate.GetCrc32(VarPtr(tmpBytes(0)), cmpSize, crcBase, False)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Write the final CRC out to file
+    cStream.WriteLong_BE crcFinal
+    
+    ExportStep4_WriteIDAT = png_Success
+    
+End Function
+
+'Make sure you have populated the module-level m_Header struct before calling this function!
+Friend Function ExportStep5_WriteIEND(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+
+    'Initialize a chunk object
+    Dim dstChunk As pdPNGChunk
+    Set dstChunk = New pdPNGChunk
+    
+    'The end chunk is always 0-bytes long.  (Note that we never include length, chunk type, or CRC lengths -
+    ' the chunk class handles all that for us.)
+    dstChunk.CreateChunkForExport "IEND", 0
+    
+    'Immediately finalize the chunk and copy its contents into the final stream
+    dstChunk.FinalizeChunk
+    cStream.WriteStream dstChunk.BorrowData
+    
+    ExportStep5_WriteIEND = png_Success
+    
 End Function
 
 'For non-paletted images (e.g. 16-bpp or more), call this function to convert an interlaced IDAT stream
@@ -1361,7 +1664,7 @@ Private Sub DeInterlaceNonPaletteData()
     'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
     Dim srcBytes() As Byte, srcSA As SafeArray1D
     
-    Dim x As Long, y As Long, j As Long
+    Dim X As Long, Y As Long, j As Long
     Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
     Dim srcPxOffset As Long, newStride As Long
     
@@ -1402,19 +1705,19 @@ Private Sub DeInterlaceNonPaletteData()
             srcPxOffset = 0
             
             'Place all pixels in this chunk
-            For y = startOffsetY To yFinal Step yLineOffset
+            For Y = startOffsetY To yFinal Step yLineOffset
                 
                 'On each y-line (including the first one), advance the pixel offset by 1 to account
                 ' for the filter byte that prepends each PNG scanline.
                 srcPxOffset = srcPxOffset + 1
                 
-            For x = startOffsetX To xFinal Step xLineOffset
+            For X = startOffsetX To xFinal Step xLineOffset
                 For j = 0 To bppLoop
-                    dstBytes(1 + (y * newStride) + (x * BytesPerPixel) + j) = srcBytes(srcPxOffset)
+                    dstBytes(1 + (Y * newStride) + (X * BytesPerPixel) + j) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
                 Next j
-            Next x
-            Next y
+            Next X
+            Next Y
             
             'Unwrap the temporary source array and free the source chunk - it's no longer needed!
             tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
@@ -1552,7 +1855,7 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     If (srcLcmsFormat <> 0) And (dstLcmsFormat <> 0) And iccRequired Then
         Set dstTransform = New pdLCMSTransform
         If (Not dstTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcLcmsFormat, dstLcmsFormat, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA)) Then
-            m_Warnings.AddString "WARNING!  pdPNG.Step5_ConstructImage failed to create a valid ICC transform.  Color management disabled for this image."
+            m_Warnings.AddString "WARNING!  pdPNG.ImportStage5_ConstructImage failed to create a valid ICC transform.  Color management disabled for this image."
             Set dstTransform = Nothing
         End If
     End If
@@ -1623,7 +1926,7 @@ Private Sub UpsampleLowBitDepthData()
         'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
         Dim srcBytes() As Byte, srcSA As SafeArray1D
         
-        Dim x As Long, y As Long
+        Dim X As Long, Y As Long
         Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
         Dim srcPxOffset As Long, newStride As Long
         
@@ -1663,17 +1966,17 @@ Private Sub UpsampleLowBitDepthData()
                 srcPxOffset = 0
                 
                 'Place all pixels in this chunk
-                For y = startOffsetY To yFinal Step yLineOffset
+                For Y = startOffsetY To yFinal Step yLineOffset
                     
                     'On each y-line (including the first one), advance the pixel offset by 1 to account
                     ' for the filter byte that prepends each PNG scanline.
                     srcPxOffset = srcPxOffset + 1
                     
-                For x = startOffsetX To xFinal Step xLineOffset
-                    dstBytes(1 + (y * newStride) + x) = srcBytes(srcPxOffset)
+                For X = startOffsetX To xFinal Step xLineOffset
+                    dstBytes(1 + (Y * newStride) + X) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
-                Next x
-                Next y
+                Next X
+                Next Y
                 
                 'Unwrap the temporary source array and free the source chunk - it's no longer needed!
                 tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
@@ -1737,7 +2040,7 @@ Private Sub SeparateInterlacedIDATs(ByRef dstChunks() As pdPNGChunk, Optional By
             
             'Initialize the new chunk and prep its internal buffer to the required size
             Set dstChunks(i) = New pdPNGChunk
-            dstChunks(i).CreateChunk "IDAT", sizeOfPass
+            dstChunks(i).CreateChunkForImport "IDAT", sizeOfPass
             
             'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
             ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
@@ -1777,7 +2080,7 @@ End Sub
 ' to process it further, back it up before calling this!
 Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As Long, ByVal yFinal As Long, ByVal xStride As Long) As Long
     
-    Dim x As Long, y As Long, i As Long, curByte As Byte
+    Dim X As Long, Y As Long, i As Long, curByte As Byte
     
     'We'll use pdStream to generate a new, 8-bpp version of the image; then we can use our standard 8-bpp
     ' decode functions on 1, 2, 4-bpp data.
@@ -1808,14 +2111,14 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
             bitFlags(7) = 1
             
             'We want to focus on the bytes relevant to the current scanline only
-            For y = 0 To yFinal
+            For Y = 0 To yFinal
             
                 'Move past the filter byte
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                         
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For x = 0 To xStride - 2
+                For X = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -1829,9 +2132,9 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         End If
                         
                     Next i
-                Next x
+                Next X
                 
-            Next y
+            Next Y
                     
         Case 2
             
@@ -1843,14 +2146,14 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
             shiftTable(3) = 1
                     
             'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-            For y = 0 To yFinal
+            For Y = 0 To yFinal
             
                 'Move past the filter byte (which has already been dealt with in a previous step)
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                 
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For x = 0 To xStride - 2
+                For X = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -1864,20 +2167,20 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         End If
                         
                     Next i
-                Next x
-            Next y
+                Next X
+            Next Y
             
         Case 4
         
             'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-            For y = 0 To yFinal
+            For Y = 0 To yFinal
             
                 'Move past the filter byte (which has already been dealt with in a previous step)
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                         
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For x = 0 To xStride - 2
+                For X = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -1890,8 +2193,8 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         numPixelsProcessed = numPixelsProcessed + 1
                     End If
                     
-                Next x
-            Next y
+                Next X
+            Next Y
     
     End Select
     

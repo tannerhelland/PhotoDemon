@@ -15,14 +15,15 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
 'Copyright 2018-2019 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 23/April/18
-'Last update: new helper function for cHRM chunks
+'Last updated: 08/March/19
+'Last update: start merging code for writing chunks
 '
-'pdPNG leans on this class to handle the actual storage (and deciphering) of certain PNG chunks.
-' This simplifies the decode process because we only deal with the chunks that matter to PD,
-' and it gives us an convenient way to do things like concatenate IDAT chunks post-load.
-' (PNG allows image data to be split over multiple IDAT chunks, which is perhaps useful for
-' streaming over a network connection, but is pointless for loading files from a local drive.)
+'pdPNG leans on this class to handle storage, parsing, and creation of certain PNG chunks.
+' This simplifies both encoding and decoding because the PNG spec requires insane things like
+' CRC calculation over chunk contents (including parts of the chunk header), so data is easier
+' to validate when pre-assembled.  Similarly, some image contents can be split across multiple
+' chunks, and standalone chunk classes provide a convenient way to concatenate such data into
+' a "final" form.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -30,6 +31,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
+' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
+' classes have their own version of this constant.)
+Private Const PNG_DEBUG_VERBOSE As Boolean = True
 
 'Chunk-specific enums
 Private Enum PD_PNGFilter
@@ -49,12 +55,22 @@ Private m_Type As String
 Private m_Data As pdStream, m_Size As Long
 Private m_CRCRuntime As Long, m_CRCEmbedded As Long
 
-'Internal PD flag; we use this for different things at different times, so it's meaning varies
+'Internal PD flag; we use this for different things at different times, so it's meaning varies.
+' It's basically just an easy way for us to divide up chunks into groups for further processing.
 Private m_Flagged As Boolean
+
+'When exporting PNG data, we store the results of our filtering inside a temporary array.  This array is not used
+' during PNG importing.
+Private m_FilteredSize As Long
+Private m_FilteredBytes() As Byte
 
 Friend Function GetType() As String
     GetType = m_Type
 End Function
+
+Friend Sub SetType(ByRef newType As String)
+    m_Type = newType
+End Sub
 
 Friend Function GetFlag() As Boolean
     GetFlag = m_Flagged
@@ -65,8 +81,8 @@ Friend Sub SetFlag(ByVal flagState As Boolean)
 End Sub
 
 'I deliberately call this function "BorrowData" instead of "GetData" as a reminder that the stream is
-' *not* duplicated - it is the same stream, so any position manipulations need to be considered, because this
-' object won't reset them after-the-fact!
+' *not* duplicated - it is the same stream, so any position manipulations need to be considered,
+' because this object won't reset them after-the-fact!
 Friend Function BorrowData() As pdStream
     Set BorrowData = m_Data
 End Function
@@ -83,9 +99,83 @@ Friend Function GetDataSize() As Long
     GetDataSize = m_Size
 End Function
 
-'To create a new chunk, notify this class of the chunk type and length.  Note that you don't actually load
-' the chunk data in this step - that happens separately.
-Friend Sub CreateChunk(ByRef chunkType As String, ByVal chunkSize As Long)
+'To allocate a new chunk during PNG exoirt, notify this class of the expected chunk type and length.
+' Note that you won't actually pass the chunk data in this step - that happens separately.  (Note that
+' you also don't need to specify chunk size up-front - but if you know the expected data length
+' in advance, notifying us helps us know how much memory to allocate, instead of relying on dynamic
+' allocations as-we-go.)
+'
+'Note that this function automatically sets aside 12-bytes for chunk length, name, and CRC, and it
+' will automatically embed the chunk type where it goes in the stream.  This greatly simplifies the
+' subsequent process of calculating a CRC value.
+'
+'When loading a PNG, use the separate "CreateChunkForImport" function, which behaves differently.
+Friend Sub CreateChunkForExport(ByRef chunkType As String, Optional ByVal chunkSize As Long = 0)
+    
+    m_Type = chunkType
+    m_Size = chunkSize
+    
+    'Even if the chunk size is zero, we still want to start a stream object (in case we merge additional
+    ' chunks into this one).
+    Set m_Data = New pdStream
+    m_Data.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , m_Size + 12
+    
+    'Unlike at import time, we actually want to include the chunk length, type, and data in the
+    ' stream's contents (instead of splitting these out into member variables).  Note that it's
+    ' fine if the user doesn't supply chunk length up front - we will automatically come back in
+    ' and fill this value *after* assembling the chunk itself.
+    m_Data.WriteLong_BE chunkSize
+    m_Data.WriteString_ASCII chunkType
+    
+    'The stream now points at where the actual chunk data begins.  It is up to the user to perform
+    ' any subsequent writes.
+    
+End Sub
+
+'After all chunk data has been added to the stream, call this function to immediately calculate and
+' embed a CRC value for this chunk, and write a final length value to the start of the chunk stream.
+' 0-length chunks are handled automatically - but note that this function *still* needs to be called,
+' as PNGs require CRCs even for 0-length chunks (because the CRC is still calculated over the chunk
+' type byte, and we still have to forcibly declare a length of "0").
+Friend Sub FinalizeChunk()
+    
+    'Failsafe chunk for stream length; we must have at least 8 embedded bytes:
+    ' 4b chunk length + 4b chunk descriptor
+    If (m_Data.GetStreamSize >= 8) Then
+        
+        'Grab a pointer to byte 4 (0-based) in the chunk; CRC calculation starts here, on the first
+        ' byte of the chunk type descriptor.  (The first 4 bytes of the chunk are a length descriptor,
+        ' and they are *not* included in the CRC calculation.)
+        Dim pBase As Long
+        pBase = m_Data.Peek_PointerOnly(4)
+        
+        Dim finalCRC As Long
+        finalCRC = Plugin_libdeflate.GetCrc32(pBase, m_Data.GetStreamSize - 4)
+        
+        'Write the CRC value to the end of the stream, then embed a final length value before exiting
+        m_Data.WriteLong_BE finalCRC
+        
+        Dim pBackup As Long
+        pBackup = m_Data.GetPosition()
+        
+        m_Data.SetPosition 0, FILE_BEGIN
+        m_Data.WriteLong_BE (m_Data.GetStreamSize - 12)
+        m_Data.SetPosition pBackup, FILE_BEGIN
+        
+    Else
+        InternalError "WriteCRCNow", "Chunk size too small"
+    End If
+
+End Sub
+
+'To allocate a new chunk during PNG import, notify this class of the expected chunk type and length.
+' Note that you won't actually load the chunk data in this step - that happens separately.  (Note that
+' you also don't need to specify chunk size up-front - but seeing as you should know the size of a chunk
+' in advance, notifying us helps us know how much memory to allocate, instead of relying on dynamic
+' allocations as-we-go.)
+'
+'When saving a PNG, use the separate "CreateChunkForExport" function, which behaves differently.
+Friend Sub CreateChunkForImport(ByRef chunkType As String, Optional ByVal chunkSize As Long = 0)
     
     m_Type = chunkType
     m_Size = chunkSize
@@ -393,7 +483,7 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                 
                 'Initialize the new chunk and prep its internal buffer to the required size
                 Set tmpChunk = New pdPNGChunk
-                tmpChunk.CreateChunk "IDAT", sizeOfPass
+                tmpChunk.CreateChunkForImport "IDAT", sizeOfPass
                 
                 'Use the size of this pass to "extract" the relevant portion of the original IDAT stream
                 ' into the temporary chunk's internal buffer.  (Note that, like all .Read* functions, this call
@@ -454,10 +544,10 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
         Dim p As Long, pa As Long, pb As Long, pc As Long
         
-        Dim x As Long, y As Long, yOffset As Long
-        For y = 0 To yFinal
+        Dim X As Long, Y As Long, yOffset As Long
+        For Y = 0 To yFinal
         
-            yOffset = y * xStride
+            yOffset = Y * xStride
             
             'Filtering changes based on the "filter byte" at this position
             Select Case srcBytes(yOffset)
@@ -469,50 +559,50 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                 Case png_Sub
                 
                     yOffset = yOffset + 1
-                    For x = pxOffset To xStride - 2
-                        prevValue = srcBytes(yOffset + x - pxOffset)
-                        curValue = srcBytes(yOffset + x)
-                        srcBytes(yOffset + x) = (curValue + prevValue) And 255
-                    Next x
+                    For X = pxOffset To xStride - 2
+                        prevValue = srcBytes(yOffset + X - pxOffset)
+                        curValue = srcBytes(yOffset + X)
+                        srcBytes(yOffset + X) = (curValue + prevValue) And 255
+                    Next X
                     
                 '"Up" filtering filters according to the pixel above
                 Case png_Up
                     
                     'First line has no "previous" line; values are absolute.
-                    If (y <> 0) Then
+                    If (Y <> 0) Then
                         yOffset = yOffset + 1
-                        For x = 0 To xStride - 2
-                            prevValue = srcBytes(yOffset + x - xStride)
-                            curValue = srcBytes(yOffset + x)
-                            srcBytes(yOffset + x) = (curValue + prevValue) And 255
-                        Next x
+                        For X = 0 To xStride - 2
+                            prevValue = srcBytes(yOffset + X - xStride)
+                            curValue = srcBytes(yOffset + X)
+                            srcBytes(yOffset + X) = (curValue + prevValue) And 255
+                        Next X
                     End If
                     
                 '"Average" filtering filters according to the average between the previous pixel and the pixel above
                 Case png_Average
                 
                     yOffset = yOffset + 1
-                    For x = 0 To xStride - 2
-                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
-                        If (y > 0) Then prevValue2 = srcBytes(yOffset + x - xStride) Else prevValue2 = 0
-                        curValue = srcBytes(yOffset + x)
-                        srcBytes(yOffset + x) = (curValue + ((prevValue + prevValue2) \ 2)) And 255
-                    Next x
+                    For X = 0 To xStride - 2
+                        If (X >= pxOffset) Then prevValue = srcBytes(yOffset + X - pxOffset) Else prevValue = 0
+                        If (Y > 0) Then prevValue2 = srcBytes(yOffset + X - xStride) Else prevValue2 = 0
+                        curValue = srcBytes(yOffset + X)
+                        srcBytes(yOffset + X) = (curValue + ((prevValue + prevValue2) \ 2)) And 255
+                    Next X
                 
                 '"Paeth" uses an external formula
                 Case png_Paeth
                 
                     yOffset = yOffset + 1
-                    For x = 0 To xStride - 2
-                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
-                        If (y > 0) Then
-                            prevValue2 = srcBytes(yOffset + x - xStride)
-                            If (x >= pxOffset) Then prevValue3 = srcBytes(yOffset + x - xStride - pxOffset) Else prevValue3 = 0
+                    For X = 0 To xStride - 2
+                        If (X >= pxOffset) Then prevValue = srcBytes(yOffset + X - pxOffset) Else prevValue = 0
+                        If (Y > 0) Then
+                            prevValue2 = srcBytes(yOffset + X - xStride)
+                            If (X >= pxOffset) Then prevValue3 = srcBytes(yOffset + X - xStride - pxOffset) Else prevValue3 = 0
                         Else
                             prevValue2 = 0
                             prevValue3 = 0
                         End If
-                        curValue = srcBytes(yOffset + x)
+                        curValue = srcBytes(yOffset + X)
                         
                         'The Paeth predictor was previously used as a separate function, but inlining it
                         ' provides a slight performance boost.  (Also, the function itself is simple - it just
@@ -527,18 +617,301 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                             If (pb <= pc) Then p = prevValue2 Else p = prevValue3
                         End If
                         
-                        srcBytes(yOffset + x) = (curValue + p) And 255
+                        srcBytes(yOffset + X) = (curValue + p) And 255
                         
-                    Next x
+                    Next X
             
             End Select
             
-        Next y
+        Next Y
         
         m_Data.UnwrapArrayFromMemoryStream srcBytes
         
     End If
     
+End Function
+
+'When writing PNG data, call this function to produce a filtered PNG stream ready for exporting.
+' It is up to the caller to prepare the source data for
+'
+'RETURNS: TRUE if unfiltering was successful.  FALSE is a critical error; you must suspend processing after receiving it.
+Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByVal srcPtr As Long, ByVal srcStride As Long) As Boolean
+    
+    'Because this function is a potential time sink (especially during batch processes), it has been heavily profiled.
+    ' To activate profile logging, set the class-level PNG_DEBUG_VERBOSE constant to TRUE.
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'These values will ultimately be supplied by the export dialog (and/or an "automatic settings" AI)
+    Dim imgColorType As PD_PNGColorType, imgBitDepth As Long
+    imgColorType = srcHeader.ColorType
+    imgBitDepth = srcHeader.BitDepth
+    
+    'We now want to assemble a temporary staging area for filtering pixel data.  The precise structure
+    ' of this data is dependent on the outgoing bit-depth and color type of the image.
+    Dim dstStride As Long
+    Dim srcWidthInPixels As Long, srcHeightInPixels As Long
+    srcWidthInPixels = srcHeader.Width
+    srcHeightInPixels = srcHeader.Height
+    
+    'Calculate the required size of the staging area
+    dstStride = srcStride + 1
+    m_FilteredSize = dstStride * srcHeightInPixels
+    ReDim m_FilteredBytes(0 To m_FilteredSize - 1) As Byte
+    
+    'Offset the destination pointer by 1; this is critical as we need to set aside the *first byte*
+    ' in every line for declaring the filter type.
+    Dim dstPtr As Long
+    dstPtr = VarPtr(m_FilteredBytes(0)) + 1
+    
+    'The data is now ready for further processing.  The PNG spec allows for several different
+    ' filtering strategies.  Because each line in the image is filtered uniquely, it is common to
+    ' test multiple filters on each line, then use the one with the smallest variance.  (This is
+    ' likely - but not guaranteed - to produce better DEFLATE results.)  For more details,
+    ' refer to the "definitive PNG guide" by the PNG spec authors, available here (link good as of March 2019):
+    ' http://www.libpng.org/pub/png/book/chapter09.html#png.ch09.div.1
+    '
+    'Note also that filtering is always performed on the original image data (not against already-filtered
+    ' pixel data), which is why a temporary staging copy of the original image is so helpful.
+    
+    'Multi-channel images (or images with multi-byte channel values) require offsets during the
+    ' unfilter phase.  This allows e.g. red values to filter against preceding red values, green against
+    ' green, etc.
+    Dim pxOffset As Long
+    If (imgColorType = png_Greyscale) Then
+        pxOffset = imgBitDepth \ 8
+    ElseIf (imgColorType = png_GreyscaleAlpha) Then
+        pxOffset = (imgBitDepth * 2) \ 8
+    ElseIf (imgColorType = png_Truecolor) Then
+        pxOffset = (imgBitDepth * 3) \ 8
+    ElseIf (imgColorType = png_TruecolorAlpha) Then
+        pxOffset = (imgBitDepth * 4) \ 8
+    End If
+    If (pxOffset < 1) Then pxOffset = 1
+    
+    'If heuristics are active, we will try to find the best filter for each line in the image.
+    ' (If heuristics are *not* active, we'll just default to "none" filtering.)
+    ' In PD, this value will be passed to this function; for now, hard-code it to TRUE so we can
+    ' fuzz it thoroughly.
+    Dim useHeuristics As Boolean
+    useHeuristics = True
+    
+    'If heuristics are in use, we want to run an inner loop that tests all filters from NONE through PAETH.
+    ' If heuristics are *not* in use, however, we don't want to loop at all - so set the start and end
+    ' filter test to the same ID.
+    Dim startFilter As PD_PNGFilter, endFilter As PD_PNGFilter, curFilter As PD_PNGFilter
+    startFilter = png_None
+    If useHeuristics Then endFilter = png_Paeth Else endFilter = png_None
+    
+    'Prepare a second staging area, capable of holding one scanline of each filter type.
+    ' (When heuristics are active, we'll manually produce a filtered scanline of each type,
+    ' then analyze each to determine which produces the "best" result for a given line.
+    ' That line will then be used as the final version.)
+    Dim dstFilterBytes() As Byte
+    ReDim dstFilterBytes(0 To dstStride * 5 - 1) As Byte
+    
+    Dim dstPtrFilter As Long
+    dstPtrFilter = VarPtr(dstFilterBytes(0)) + 1
+    
+    'Populate default filter bytes at the beginning of each line in the testing array
+    For curFilter = png_None To png_Paeth
+        dstFilterBytes(dstStride * curFilter) = curFilter
+    Next curFilter
+    
+    'If heuristics are active, we'll calculate a pseudo-variance for each row.  We also want to calculate
+    ' a "threshold" for said variance; if the variance for a given row falls beneath this, we won't bother
+    ' testing additional filters, as the current variance is so low that DEFLATE is likely to perform
+    ' great anyway.  (This biases our implementation toward filter type NONE, which is also ideal from
+    ' a perf standpoint.)
+    '
+    'The current threshold is simply the image width in bytes.  This allows solid-color-lines
+    ' (either black or white) to be "skipped" by the filter test routine.
+    Dim curVariance As Long, varianceThreshold As Long
+    varianceThreshold = 0   'srcStride
+    
+    'The PNG spec hypothesizes that a better heuristic might weight the filter type in favor of the
+    ' filter used on the previous line, with the assumption that rapid filter type changes may actually
+    ' work *against* good DEFLATE results (because the entire image is compressed as one contiguous
+    ' DEFLATE stream).  I've experimented with this but found the results unpredictable; as such, this
+    ' feature is *not* currently enabled.  See below for how to enable it if curious, however.
+    Dim bestVariance As Long, bestFilter As PD_PNGFilter, lastFilter As PD_PNGFilter
+    lastFilter = png_None
+    
+    'Filtering calculations for some filter modes require access to the *unfiltered* data of
+    ' the previous line.  Because it's space-ineffecient to store a full copy of the image,
+    ' we'll simply keep a running update of the untouched current and previous line, for use
+    ' with the filter calculations themselves.
+    Dim srcOrigPixels() As Byte
+    ReDim srcOrigPixels(0 To dstStride * 2 - 1) As Byte
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "- IDAT creation: staging allocation(s) took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    Dim X As Long, Y As Long, yOffset As Long
+    Dim filterStrideOffset As Long, tmpSrcPtr As Long
+    Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
+    Dim p As Long, pa As Long, pb As Long, pc As Long
+    
+    For Y = 0 To srcHeightInPixels - 1
+        
+        'Reset all scanline-specific values
+        yOffset = Y * dstStride + 1
+        tmpSrcPtr = srcPtr + Y * srcStride
+        bestVariance = &H7FFFFFFF
+        
+        'Copy the unmodified source pixels for this line as-is into the testing array, so that any pixels
+        ' that *don't* get overwritten (common for e.g. boundary pixels) are already populated with
+        ' correct values.  This spares us doing complicated boundary checks on the inner loop.
+        CopyMemoryStrict dstPtrFilter, tmpSrcPtr, dstStride - 1
+        CopyMemoryStrict dstPtrFilter + dstStride, tmpSrcPtr, dstStride - 1
+        CopyMemoryStrict dstPtrFilter + dstStride * 2, tmpSrcPtr, dstStride - 1
+        CopyMemoryStrict dstPtrFilter + dstStride * 3, tmpSrcPtr, dstStride - 1
+        CopyMemoryStrict dstPtrFilter + dstStride * 4, tmpSrcPtr, dstStride - 1
+        
+        'Similarly, before continuing, make a "safe" copy of the unfiltered values of both the
+        ' current and previous line.
+        CopyMemoryStrict VarPtr(srcOrigPixels(0)), VarPtr(srcOrigPixels(dstStride)), dstStride
+        CopyMemoryStrict VarPtr(srcOrigPixels(dstStride)) + 1, tmpSrcPtr, dstStride
+        
+        'Iterate through all filter types, producing a complete filtered scanline for each.
+        For curFilter = startFilter To endFilter
+            
+            filterStrideOffset = dstStride * curFilter
+            
+            Select Case curFilter
+                    
+                'The staging area contains "none" data by default - see above.
+                Case png_None
+                    
+                '"Sub" filters according to the previous pixel in the same scanline
+                Case png_Sub
+                    For X = pxOffset + 1 To dstStride - 1
+                        prevValue = srcOrigPixels(dstStride + X - pxOffset)
+                        curValue = srcOrigPixels(dstStride + X)
+                        dstFilterBytes(X + filterStrideOffset) = (curValue - prevValue) And &HFF&
+                    Next X
+                    
+                '"Up" filters according to the same pixel in the previous scanline
+                Case png_Up
+                    For X = 1 To dstStride - 1
+                        prevValue = srcOrigPixels(X)
+                        curValue = srcOrigPixels(dstStride + X)
+                        dstFilterBytes(X + filterStrideOffset) = (curValue - prevValue) And &HFF&
+                    Next X
+                
+                '"Average" filters according to the average between the previous pixel (same scanline)
+                ' and the pixel above
+                Case png_Average
+                    For X = 1 To dstStride - 1
+                        If (X > pxOffset) Then prevValue = srcOrigPixels(dstStride + X - pxOffset) Else prevValue = 0
+                        prevValue2 = srcOrigPixels(X)
+                        curValue = srcOrigPixels(dstStride + X)
+                        dstFilterBytes(X + filterStrideOffset) = (curValue - ((prevValue + prevValue2) \ 2)) And &HFF&
+                    Next X
+                
+                '"Paeth" attempts to minimize the intensity gradient between pixels by analyzing three
+                ' neighboring values (above-left/above/left) and producing a new predictor on-the-fly.
+                Case png_Paeth
+                
+                    For X = 1 To dstStride - 1
+                    
+                        If (X > pxOffset) Then
+                            prevValue = srcOrigPixels(dstStride + X - pxOffset)
+                            prevValue3 = srcOrigPixels(X - pxOffset)
+                        Else
+                            prevValue = 0
+                            prevValue3 = 0
+                        End If
+                        
+                        prevValue2 = srcOrigPixels(X)
+                        
+                        p = prevValue + prevValue2 - prevValue3
+                        pa = Abs(p - prevValue)
+                        pb = Abs(p - prevValue2)
+                        pc = Abs(p - prevValue3)
+                        
+                        If (pa <= pb) Then
+                            If (pa <= pc) Then p = prevValue Else p = prevValue3
+                        Else
+                            If (pb <= pc) Then p = prevValue2 Else p = prevValue3
+                        End If
+                        
+                        curValue = srcOrigPixels(dstStride + X)
+                        dstFilterBytes(X + filterStrideOffset) = (curValue - p) And &HFF&
+                        
+                    Next X
+            
+            End Select
+            
+            'When heuristics are active, we want to calculate the variance of the current row;
+            ' if it is better than our "best" variance calculation so far, mark the current filter
+            ' as the "best" filter for this row.
+            If useHeuristics Then
+            
+                'Find the variance of the finished, filtered row.  This currently uses the unmodified
+                ' recommendation from the PNG spec, specifically: "the filtered bytes are treated as
+                ' signed values - that is, any value over 127 is treated as negative; 128 becomes -128
+                ' and 255 becomes -1. The absolute value of each is then summed, and the filter type
+                ' that produces the smallest sum is chosen."
+                curVariance = 0
+                For X = dstStride * curFilter + 1 To (dstStride * (curFilter + 1)) - 1
+                    curValue = dstFilterBytes(X)
+                    If (curValue < 128) Then curVariance = curVariance + curValue Else curVariance = curVariance + (256 - curValue)
+                Next X
+                
+                'Give a bonus to the last-used filter, if any.  This is currently disabled pending
+                ' further testing; see above for additional remarks.
+                'If (curFilter = lastFilter) Then curVariance = Int(curVariance * 0.8 + 0.5)
+                
+                'If the variance of this line is "good enough", exit now, without testing other methods.
+                ' (This allows us to skip some testing rounds on e.g. scanlines of identical color.)
+                If (curVariance <= varianceThreshold) Then
+                    bestFilter = curFilter
+                    Exit For
+                
+                'This line has high variance.  Update the running "best" variance value among those tested.
+                Else
+                    If (curFilter = png_None) Then
+                        bestVariance = curVariance
+                        bestFilter = curFilter
+                    Else
+                        If (curVariance < bestVariance) Then
+                            bestVariance = curVariance
+                            bestFilter = curFilter
+                        End If
+                    End If
+                End If
+            
+            'If heuristics are *not* in use, mark the only calculated filter as the "best" one.
+            Else
+                bestFilter = curFilter
+            End If
+        
+        Next curFilter
+        
+        'Copy the filtered line with the best results back into the m_FilterBytes array.
+        CopyMemoryStrict VarPtr(m_FilteredBytes(Y * dstStride)), dstPtrFilter - 1 + (bestFilter * dstStride), dstStride
+        lastFilter = bestFilter
+        
+    Next Y
+    
+    If PNG_DEBUG_VERBOSE Then
+        If (startFilter <> endFilter) Then
+            PDDebug.LogAction "- IDAT creation: filtering (with heuristics) took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        Else
+            PDDebug.LogAction "- IDAT creation: filtering (type " & CStr(startFilter) & " only) took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        End If
+    End If
+    
+    FilterChunk = True
+    
+End Function
+
+Friend Function GetFilteredBytesData(ByRef dstPtr As Long, ByRef dstLength As Long)
+    dstPtr = VarPtr(m_FilteredBytes(0))
+    dstLength = m_FilteredSize
 End Function
 
 'If this chunk is a PLTE chunk, use this function to retrieve a palette.  (By default, all alpha values will be set to 255.)
@@ -730,3 +1103,11 @@ Friend Function GetTRNSData(ByRef dstPalette() As RGBQuad, ByRef dstTransRed As 
     End If
 
 End Function
+
+Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
+    If UserPrefs.GenerateDebugLogs Then
+        If writeDebugLog Then PDDebug.LogAction "pdPNGChunk." & funcName & "() reported an error: " & errDescription
+    Else
+        Debug.Print "pdPNGChunk." & funcName & "() reported an error: " & errDescription
+    End If
+End Sub

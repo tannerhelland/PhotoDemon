@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.395</langversion>
+<langversion>6.7.396</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -12607,11 +12607,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation>escribir PNG entrelazado</translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>nivel de compresión</translation>
 </phrase>
@@ -12696,7 +12691,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Estas configuraciones de optimización con pérdida redujeron el tamaño del archivo en %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15721,10 +15716,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>

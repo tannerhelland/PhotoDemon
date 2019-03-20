@@ -1682,11 +1682,20 @@ Private Sub MnuTest_Click()
     'Filters_Scientific.InternalFFTTest
     
     'Want to test a new dialog?  Call it here, using a line like the following:
-    'showPDDialog vbModal, FormToTest
+    'ShowPDDialog vbModal, FormToTest
     
-    'Plugin_Cairo.TestOnActiveImage
-    'UIImages.TestCacheOnly
+    Dim dstFile As String
+    dstFile = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\PNG types\big\test_out.png"
+
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
+    Dim tmpDIB As pdDIB
+    PDImages.GetActiveImage.GetCompositedImage tmpDIB, False
+    
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    Debug.Print cPNG.SavePNG_Simple(dstFile, tmpDIB, 12)
+
 End Sub
 
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.

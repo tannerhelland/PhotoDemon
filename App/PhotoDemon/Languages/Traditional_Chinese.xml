@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.62</langversion>
+<langversion>7.0.63</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -12557,11 +12557,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>壓縮層級</translation>
 </phrase>
@@ -12646,7 +12641,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>最佳化設定減少檔案 %1 大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15664,10 +15659,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>

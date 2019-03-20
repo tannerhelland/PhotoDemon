@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.904</langversion>
+<langversion>7.2.905</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12610,11 +12610,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation>PNG mit Interlacing schreiben</translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>Kompressionslevel</translation>
 </phrase>
@@ -12699,7 +12694,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße bis %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15725,10 +15720,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>

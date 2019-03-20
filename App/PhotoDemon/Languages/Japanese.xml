@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.83</langversion>
+<langversion>1.0.84</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12604,11 +12604,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation>インターレースPNGを書き込む</translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>圧縮レベル</translation>
 </phrase>
@@ -12693,7 +12688,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>これらの損失の多い最適化設定は、ファイルサイズを％1減らしました。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15718,10 +15713,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>

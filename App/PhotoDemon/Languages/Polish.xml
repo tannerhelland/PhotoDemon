@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.70</langversion>
+<langversion>7.0.71</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12588,11 +12588,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation>zapisz z przeplotem PNG</translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>poziom kompresji</translation>
 </phrase>
@@ -12677,7 +12672,7 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <translation>Ustawienie stratne optymalizacji zmniejszają rozmiar pliku przez %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15699,10 +15694,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>

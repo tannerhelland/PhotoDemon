@@ -1434,6 +1434,8 @@ End Function
 Friend Function GetLookupTable(ByRef dstArray() As Long, Optional ByVal sizeOfTable As Long = 1024) As Boolean
 
     'Use GDI+ to render a 1-byte-tall sample of the current gradient.
+    ' (Note that we deliberately set the DIB to be 1-pixel larger than the actual size of the
+    ' lookup table; this lets us skip specialized edge-handling workarounds for GDI+ rendering bugs).
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.CreateBlank sizeOfTable, 1, 32, 0, 0

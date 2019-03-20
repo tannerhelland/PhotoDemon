@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3375</langversion>
+<langversion>6.8.3376</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -12590,11 +12590,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>write interlaced PNG</original>
-<translation>levelet váltott PNG</translation>
-</phrase>
-
-<phrase>
 <original>compression level</original>
 <translation>tömörítési szint</translation>
 </phrase>
@@ -12679,7 +12674,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Ezek veszteséges optimalizálási beállítások csökkenthető a fájlméret %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 41 phrases. 19 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15700,10 +15695,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2188 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12402 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12399 total words. -->
 
 </pdData>
