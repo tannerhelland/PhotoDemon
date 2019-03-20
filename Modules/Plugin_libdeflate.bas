@@ -167,13 +167,13 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal constDstSize
     DecompressPtrToPtr = LibDeflateDecompress(constDstPtr, constDstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cmpFormat, allowFallbacks)
 End Function
 
-Public Function GetCrc32(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal startValue As Long = 0&) As Long
+Public Function GetCrc32(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal startValue As Long = 0&, Optional ByVal calcStartForMe As Boolean = True) As Long
     
     'Get an initial default "seed"
-    If (startValue = 0) Then startValue = CallCDeclW(libdeflate_crc32, vbLong, 0&, 0&, 0&)
+    If calcStartForMe Then startValue = CallCDeclW(libdeflate_crc32, vbLong, 0&, 0&, 0&)
     
     'Use the seed to calculate an actual Crc32
-    GetCrc32 = CallCDeclW(libdeflate_crc32, vbLong, startValue, srcPtr, srcLen)
+    If (srcPtr <> 0) Then GetCrc32 = CallCDeclW(libdeflate_crc32, vbLong, startValue, srcPtr, srcLen) Else GetCrc32 = startValue
     
 End Function
 
