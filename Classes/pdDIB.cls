@@ -1872,9 +1872,9 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Dim i As Long
         For i = 0 To 255
             If applyPremultiplication Then
-                intToFloat(i) = i * ONE_DIV_255
+                intToFloat(i) = CSng(CDbl(i) * ONE_DIV_255)
             Else
-                If (i <> 0) Then intToFloat(i) = 255# / i
+                If (i <> 0) Then intToFloat(i) = CSng(255# / CDbl(i))
             End If
         Next i
         
@@ -1890,7 +1890,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         
         Dim x As Long, y As Long
         Dim r As Long, g As Long, b As Long
-        Dim tmpAlpha As Byte, tmpAlphaModifier As Double
+        Dim tmpAlpha As Byte, tmpAlphaModifier As Single
         
         'Loop through the image, converting alpha as we go
         For y = initY To finalY
@@ -1923,9 +1923,9 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
                         tmpAlphaModifier = intToFloat(tmpAlpha)
                         
                         'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                        r = (r * tmpAlphaModifier)
-                        g = (g * tmpAlphaModifier)
-                        b = (b * tmpAlphaModifier)
+                        r = Int(r * tmpAlphaModifier + 0.5!)
+                        g = Int(g * tmpAlphaModifier + 0.5!)
+                        b = Int(b * tmpAlphaModifier + 0.5!)
                         
                         dibPixels(x) = b
                         dibPixels(x + 1) = g
@@ -1949,15 +1949,15 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
                         tmpAlphaModifier = intToFloat(tmpAlpha)
                         
                         'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                        r = (r * tmpAlphaModifier)
-                        g = (g * tmpAlphaModifier)
-                        b = (b * tmpAlphaModifier)
+                        r = Int(r * tmpAlphaModifier + 0.5!)
+                        g = Int(g * tmpAlphaModifier + 0.5!)
+                        b = Int(b * tmpAlphaModifier + 0.5!)
                         
                         'Unfortunately, OOB checks are necessary for malformed DIBs
                         If (r > 255) Then r = 255
                         If (g > 255) Then g = 255
                         If (b > 255) Then b = 255
-                                        
+                        
                         dibPixels(x) = b
                         dibPixels(x + 1) = g
                         dibPixels(x + 2) = r
