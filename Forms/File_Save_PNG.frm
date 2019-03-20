@@ -68,7 +68,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   0
          Width           =   6975
          _ExtentX        =   12303
@@ -81,7 +81,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   360
          Width           =   6975
          _ExtentX        =   12303
@@ -95,7 +95,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   2
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   720
          Width           =   6975
          _ExtentX        =   12303
@@ -104,6 +104,89 @@ Begin VB.Form dialog_ExportPNG
          FontBold        =   -1  'True
          FontSize        =   12
          Value           =   0   'False
+      End
+      Begin PhotoDemon.pdContainer picContainer 
+         Height          =   3255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1200
+         Visible         =   0   'False
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   5741
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   0
+            Left            =   480
+            Top             =   720
+            Width           =   2340
+            _ExtentX        =   4128
+            _ExtentY        =   450
+            Caption         =   "fast, larger file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdSlider sldCompression 
+            Height          =   735
+            Left            =   360
+            TabIndex        =   8
+            Top             =   0
+            Width           =   6615
+            _ExtentX        =   11668
+            _ExtentY        =   1296
+            Caption         =   "compression level"
+            Max             =   9
+            Value           =   3
+            GradientColorRight=   1703935
+            NotchPosition   =   2
+            NotchValueCustom=   3
+         End
+         Begin PhotoDemon.pdColorSelector clsBackground 
+            Height          =   375
+            Left            =   5400
+            TabIndex        =   9
+            Top             =   2280
+            Width           =   1455
+            _ExtentX        =   2566
+            _ExtentY        =   661
+            FontSize        =   10
+            ShowMainWindowColor=   0   'False
+         End
+         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
+            Height          =   375
+            Left            =   360
+            TabIndex        =   10
+            Top             =   2310
+            Width           =   4935
+            _ExtentX        =   8705
+            _ExtentY        =   661
+            Caption         =   "embed background color (bKGD chunk)"
+            Value           =   0   'False
+         End
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   1
+            Left            =   2880
+            Top             =   720
+            Width           =   2580
+            _ExtentX        =   4551
+            _ExtentY        =   450
+            Alignment       =   1
+            Caption         =   "slow, smaller file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
+            Height          =   1095
+            Left            =   360
+            TabIndex        =   12
+            Top             =   1110
+            Width           =   6615
+            _ExtentX        =   11668
+            _ExtentY        =   1931
+            Caption         =   "optimization (OptiPNG)"
+         End
       End
       Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
@@ -118,7 +201,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdColorDepth clrDepth 
             Height          =   5055
             Left            =   360
-            TabIndex        =   25
+            TabIndex        =   24
             Top             =   0
             Width           =   6615
             _ExtentX        =   11668
@@ -145,106 +228,12 @@ Begin VB.Form dialog_ExportPNG
             _ExtentY        =   5741
          End
       End
-      Begin PhotoDemon.pdContainer picContainer 
-         Height          =   3255
-         Index           =   0
-         Left            =   120
-         TabIndex        =   7
-         Top             =   1200
-         Visible         =   0   'False
-         Width           =   7095
-         _ExtentX        =   12515
-         _ExtentY        =   5741
-         Begin PhotoDemon.pdLabel lblHint 
-            Height          =   255
-            Index           =   0
-            Left            =   480
-            Top             =   720
-            Width           =   2340
-            _ExtentX        =   4128
-            _ExtentY        =   450
-            Caption         =   "fast, larger file"
-            FontItalic      =   -1  'True
-            FontSize        =   9
-         End
-         Begin PhotoDemon.pdCheckBox chkInterlace 
-            Height          =   375
-            Left            =   360
-            TabIndex        =   9
-            Top             =   2355
-            Width           =   6495
-            _ExtentX        =   11456
-            _ExtentY        =   661
-            Caption         =   "write interlaced PNG"
-            Value           =   0   'False
-         End
-         Begin PhotoDemon.pdSlider sldCompression 
-            Height          =   735
-            Left            =   360
-            TabIndex        =   8
-            Top             =   0
-            Width           =   6615
-            _ExtentX        =   11668
-            _ExtentY        =   1296
-            Caption         =   "compression level"
-            Max             =   9
-            Value           =   3
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   3
-         End
-         Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   375
-            Left            =   5400
-            TabIndex        =   10
-            Top             =   2760
-            Width           =   1455
-            _ExtentX        =   2566
-            _ExtentY        =   661
-            FontSize        =   10
-            ShowMainWindowColor=   0   'False
-         End
-         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
-            Height          =   375
-            Left            =   360
-            TabIndex        =   11
-            Top             =   2790
-            Width           =   4935
-            _ExtentX        =   8705
-            _ExtentY        =   661
-            Caption         =   "embed background color (bKGD chunk)"
-            Value           =   0   'False
-         End
-         Begin PhotoDemon.pdLabel lblHint 
-            Height          =   255
-            Index           =   1
-            Left            =   2880
-            Top             =   720
-            Width           =   2580
-            _ExtentX        =   4551
-            _ExtentY        =   450
-            Alignment       =   1
-            Caption         =   "slow, smaller file"
-            FontItalic      =   -1  'True
-            FontSize        =   9
-         End
-         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
-            Height          =   1095
-            Left            =   360
-            TabIndex        =   13
-            Top             =   1110
-            Width           =   6615
-            _ExtentX        =   11668
-            _ExtentY        =   1931
-            Caption         =   "optimization (OptiPNG)"
-         End
-      End
    End
    Begin PhotoDemon.pdContainer picCategory 
       Height          =   6375
       Index           =   1
       Left            =   5880
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   1320
       Width           =   7095
       _ExtentX        =   12515
@@ -252,7 +241,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdButton cmdUpdateLossyPreview 
          Height          =   615
          Left            =   360
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   3480
          Width           =   6615
          _ExtentX        =   11668
@@ -263,7 +252,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -275,7 +264,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdCheckBox chkOptimizeDither 
          Height          =   375
          Left            =   360
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   1080
          Width           =   6495
          _ExtentX        =   11456
@@ -285,7 +274,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltTargetQuality 
          Height          =   735
          Left            =   360
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   1560
          Width           =   6615
          _ExtentX        =   11668
@@ -300,7 +289,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdCheckBox chkOptimizeLossy 
          Height          =   375
          Left            =   360
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   630
          Width           =   6735
          _ExtentX        =   12515
@@ -310,7 +299,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLossyPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   2310
          Width           =   6615
          _ExtentX        =   11668
@@ -324,7 +313,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLosslessPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   4800
          Width           =   6615
          _ExtentX        =   11668
@@ -390,7 +379,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   4320
          Width           =   6975
          _ExtentX        =   12303
@@ -560,7 +549,6 @@ Private Sub cmdBar_ResetClick()
     
     'General panel settings
     sldCompression.Value = sldCompression.NotchValueCustom
-    chkInterlace.Value = False
     
     If (Not m_SrcImage Is Nothing) Then
         If m_SrcImage.ImgStorage.DoesKeyExist("pngBackgroundColor") Then
@@ -742,7 +730,6 @@ Private Function GetExportParamString() As String
     
         'Start with the standard PNG settings, which are consistent across all standard PNG types
         If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
-        cParams.AddParam "PNGInterlacing", chkInterlace.Value
         cParams.AddParam "PNGBackgroundColor", clsBackground.Color
         cParams.AddParam "PNGCreateBkgdChunk", chkEmbedBackground.Value
         cParams.AddParam "PNGStandardOptimization", btsStandardOptimize.ListIndex
