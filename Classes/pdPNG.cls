@@ -1506,6 +1506,11 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
         sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 4 * (m_Header.BitDepth \ 8)
     ElseIf (m_Header.ColorType = png_Truecolor) Then
         sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 3 * (m_Header.BitDepth \ 8)
+    ElseIf (m_Header.ColorType = png_GreyscaleAlpha) Then
+        sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 2 * (m_Header.BitDepth \ 8)
+    ElseIf (m_Header.ColorType = png_Greyscale) Then
+        sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * (m_Header.BitDepth \ 8)
+        'TODO: bit-depths < 8
     'ElseIf...
     End If
     
@@ -1515,14 +1520,14 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long
     Dim x As Long, y As Long
     
-    'Some color-depths (e.g. HDR )require us to directly reference discrete pixels inside the
+    'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
     ' source DIB; we cannot accelerate the process using pointer-based math
     Dim srcBytes() As Byte, srcSA1D As SafeArray1D
     
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'For 32-bpp data, copy over the DIB data as-is, then perform a fast swizzle
+    'RGBA data
     If (m_Header.ColorType = png_TruecolorAlpha) Then
         
         '32-bpp path
@@ -1553,7 +1558,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
             
             For y = 0 To srcHeightInPixels - 1
                 
-                yDstOffset = y * dstStride * 2
+                yDstOffset = y * dstStride
                 
                 'Wrap an array around the source data
                 srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
@@ -1575,7 +1580,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
             
         End If
     
-    'For 24-bpp data, we need to manually copy and swizzle, while stripping out alpha data
+    'RGB data
     ElseIf (m_Header.ColorType = png_Truecolor) Then
         
         'Start by downsampling the source DIB to 24-bpp, using whatever backcolor the caller requested
@@ -1614,11 +1619,11 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
         
             srcStride = srcImage.GetDIBStride
             dstStride = srcImage.GetDIBWidth * 6
-            xLimit = srcStride - 1
+            xLimit = (srcImage.GetDIBWidth - 1) * 3
             
             For y = 0 To srcHeightInPixels - 1
                 
-                yDstOffset = y * dstStride * 2
+                yDstOffset = y * dstStride
                 
                 'Wrap an array around the source data
                 srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
@@ -1630,6 +1635,69 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
                     finalBytes(yDstOffset + x * 2 + 2) = srcBytes(x + 1)
                     finalBytes(yDstOffset + x * 2 + 4) = srcBytes(x)
                     
+                Next x
+                
+            Next y
+            
+            'Make sure our array is unwrapped from the source data
+            srcImage.UnwrapArrayFromDIB srcBytes
+            
+        End If
+        
+    'Grayscale
+    ElseIf (m_Header.ColorType = png_Greyscale) Then
+    
+        'Retrieve a grayscale-only copy of the source image's bytes
+        Dim grayBytes() As Byte
+        DIBs.GetDIBGrayscaleMap srcImage, grayBytes, False
+        
+        'Cheap copy for 8-bits, manual transfer for 16
+        If (m_Header.BitDepth = 8) Then
+            dstStride = srcImage.GetDIBWidth
+            CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayBytes(0, 0)), sizeOfPngBytes
+        ElseIf (m_Header.BitDepth = 16) Then
+        
+            dstStride = srcImage.GetDIBWidth * 2
+            xLimit = (srcImage.GetDIBWidth - 1)
+            
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride
+                
+                For x = 0 To xLimit
+                    finalBytes(yDstOffset + x * 2) = grayBytes(x, y)
+                Next x
+                
+            Next y
+            
+            'Make sure our array is unwrapped from the source data
+            srcImage.UnwrapArrayFromDIB srcBytes
+            
+        End If
+    
+    'Greyscale + alpha
+    ElseIf (m_Header.ColorType = png_GreyscaleAlpha) Then
+    
+        'Retrieve a grayscale-only copy of the source image's bytes
+        Dim grayAlphaBytes() As Byte
+        DIBs.GetDIBGrayscaleAndAlphaMap srcImage, grayAlphaBytes
+        
+        'Cheap copy for 8-bits, manual transfer for 16
+        If (m_Header.BitDepth = 8) Then
+            dstStride = srcImage.GetDIBWidth * 2
+            CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayAlphaBytes(0, 0)), sizeOfPngBytes
+        ElseIf (m_Header.BitDepth = 16) Then
+        
+            dstStride = srcImage.GetDIBWidth * 4
+            xLimit = (srcImage.GetDIBWidth * 2 - 1)
+            
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride
+                
+                For x = 0 To xLimit Step 2
+                    finalBytes(yDstOffset + x * 2) = grayAlphaBytes(x, y)
+                    finalBytes(yDstOffset + x * 2 + 2) = grayAlphaBytes(x + 1, y)
                 Next x
                 
             Next y

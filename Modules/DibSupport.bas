@@ -381,6 +381,76 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
 
 End Function
 
+'Given a DIB, return a 2D Byte array of the DIB's luminance values, side-by-side with preserved alpha values.
+'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
+'ALSO NOTE: this function does not support progress reports, by design.
+Public Function GetDIBGrayscaleAndAlphaMap(ByRef srcDIB As pdDIB, ByRef dstGrayAlphaArray() As Byte) As Boolean
+    
+    'Make sure the DIB exists
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    'Make sure the source DIB isn't empty
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+    
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim imageData() As Byte
+        Dim tmpSA As SafeArray2D
+        PrepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+            
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        
+        'Prep the destination array
+        ReDim dstGrayAlphaArray(initX To finalX * 2 + 1, initY To finalY) As Byte
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim quickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim r As Long, g As Long, b As Long, grayVal As Long
+        Dim minVal As Long, maxVal As Long
+        minVal = 255
+        maxVal = 0
+            
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            quickVal = x * qvDepth
+        For y = initY To finalY
+                
+            'Get the source pixel color values
+            b = imageData(quickVal, y)
+            g = imageData(quickVal + 1, y)
+            r = imageData(quickVal + 2, y)
+            
+            'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+            grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+            If (grayVal > 255) Then grayVal = 255
+            
+            'Cache the value
+            dstGrayAlphaArray(x * 2, y) = grayVal
+            dstGrayAlphaArray(x * 2 + 1, y) = imageData(quickVal + 3, y)
+            
+        Next y
+        Next x
+        
+        'Safely deallocate imageData()
+        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+                
+        GetDIBGrayscaleAndAlphaMap = True
+        
+    Else
+        Debug.Print "WARNING! Non-existent DIB passed to getDIBGrayscaleMap."
+        GetDIBGrayscaleAndAlphaMap = False
+    End If
+
+End Function
+
 'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.  The final DIB will be
 ' fully opaque, by design.  If you want to treat the grayscale values as alpha values, use the matching
 ' alpha-based function, below.

@@ -1414,37 +1414,50 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
             desiredAlphaStatus = PDAS_ComplicatedAlpha
             
-            'PNG supports 8-bpp grayscale + 8-bpp alpha as a valid channel combination.  Unfortunately, FreeImage has
-            ' no way of generating such an image.  We must fall back to 32-bpp mode.
             If forceGrayscale Then
-                outputColorDepth = 32
-                forceGrayscale = False
+                If (outputColorDepth = 8) Then
+                    outputColorDepth = 16
+                ElseIf (outputColorDepth = 16) Then
+                    outputColorDepth = 32
+                End If
             Else
-                If (outputColorDepth = 24) Then outputColorDepth = 32
-                If (outputColorDepth = 48) Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then
+                    outputColorDepth = 32
+                ElseIf (outputColorDepth = 48) Then
+                    outputColorDepth = 64
+                End If
             End If
             
         ElseIf ParamsEqual(outputAlphaModel, "none") Then
             desiredAlphaStatus = PDAS_NoAlpha
             If (Not forceGrayscale) Then
-                If outputColorDepth = 64 Then outputColorDepth = 48
-                If outputColorDepth = 32 Then outputColorDepth = 24
+                If (outputColorDepth = 64) Then
+                    outputColorDepth = 48
+                ElseIf (outputColorDepth = 32) Then
+                    outputColorDepth = 24
+                End If
             End If
             outputPNGCutoff = 0
             
         ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
             desiredAlphaStatus = PDAS_BinaryAlpha
             If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then
+                    outputColorDepth = 32
+                ElseIf (outputColorDepth = 48) Then
+                    outputColorDepth = 64
+                End If
             End If
             
         ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
             desiredAlphaStatus = PDAS_NewAlphaFromColor
             outputPNGCutoff = outputPNGColor
             If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+                If (outputColorDepth = 24) Then
+                    outputColorDepth = 32
+                ElseIf (outputColorDepth = 48) Then
+                    outputColorDepth = 64
+                End If
             End If
         End If
             
@@ -1472,14 +1485,44 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
             
-            '32-bit RGBA images are currently written using our own encoder.  Note that libdeflate supports compression
+            'Certain color formats are currently written using our own encoder.  Note that libdeflate supports compression
             ' levels up to "12", unlike zlib's "9".  Levels 10-12 are slow but capable of producing extremely small files.
-            If ((outputColorDepth = 32) Or (outputColorDepth = 64)) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
-                PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-            ElseIf ((outputColorDepth = 24) Or (outputColorDepth = 48)) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_NoAlpha) Then
-                PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+            If (Not forceGrayscale) Then
+                If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
+                    If (outputColorDepth = 32) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    ElseIf (outputColorDepth = 64) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    End If
+                ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
+                    If (outputColorDepth = 24) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    ElseIf (outputColorDepth = 48) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    End If
+                End If
+            Else
+                If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
+                    If (outputColorDepth = 16) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    ElseIf (outputColorDepth = 32) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    End If
+                ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
+                    If (outputColorDepth = 8) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    ElseIf (outputColorDepth = 16) Then
+                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    End If
+                End If
             End If
             
             If imgSavedOK And PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
