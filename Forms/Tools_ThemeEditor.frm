@@ -458,10 +458,10 @@ Private Sub cmdExport_Click()
         Dim cmpLookup() As Byte
         ReDim cmpLookup(0 To 255) As Byte
         
-        Dim X As Long, Y As Long
-        For X = 0 To 255
-            cmpLookup(X) = (X \ 5) * 5
-        Next X
+        Dim x As Long, y As Long
+        For x = 0 To 255
+            cmpLookup(x) = (x \ 5) * 5
+        Next x
         
         'Start adding resources.  Resources are stored in a predefined format that describes how the icons are
         ' to be treated at load-time.  (Generally speaking, we apply specific post-processing based on the
@@ -540,11 +540,11 @@ Private Sub cmdExport_Click()
                         If DIBs.RetrieveTransparencyTable(tmpDIB, tmpBytes) Then
                         
                             'Apply our previously calculated lookup table to the transparency bytes
-                            For Y = 0 To tmpDIB.GetDIBHeight - 1
-                            For X = 0 To tmpDIB.GetDIBWidth - 1
-                                tmpBytes(X, Y) = cmpLookup(tmpBytes(X, Y))
-                            Next X
-                            Next Y
+                            For y = 0 To tmpDIB.GetDIBHeight - 1
+                            For x = 0 To tmpDIB.GetDIBWidth - 1
+                                tmpBytes(x, y) = cmpLookup(tmpBytes(x, y))
+                            Next x
+                            Next y
                             
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                             
