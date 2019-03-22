@@ -544,10 +544,10 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
         Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
         Dim p As Long, pa As Long, pb As Long, pc As Long
         
-        Dim X As Long, Y As Long, yOffset As Long
-        For Y = 0 To yFinal
+        Dim x As Long, y As Long, yOffset As Long
+        For y = 0 To yFinal
         
-            yOffset = Y * xStride
+            yOffset = y * xStride
             
             'Filtering changes based on the "filter byte" at this position
             Select Case srcBytes(yOffset)
@@ -559,50 +559,50 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                 Case png_Sub
                 
                     yOffset = yOffset + 1
-                    For X = pxOffset To xStride - 2
-                        prevValue = srcBytes(yOffset + X - pxOffset)
-                        curValue = srcBytes(yOffset + X)
-                        srcBytes(yOffset + X) = (curValue + prevValue) And 255
-                    Next X
+                    For x = pxOffset To xStride - 2
+                        prevValue = srcBytes(yOffset + x - pxOffset)
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + prevValue) And 255
+                    Next x
                     
                 '"Up" filtering filters according to the pixel above
                 Case png_Up
                     
                     'First line has no "previous" line; values are absolute.
-                    If (Y <> 0) Then
+                    If (y <> 0) Then
                         yOffset = yOffset + 1
-                        For X = 0 To xStride - 2
-                            prevValue = srcBytes(yOffset + X - xStride)
-                            curValue = srcBytes(yOffset + X)
-                            srcBytes(yOffset + X) = (curValue + prevValue) And 255
-                        Next X
+                        For x = 0 To xStride - 2
+                            prevValue = srcBytes(yOffset + x - xStride)
+                            curValue = srcBytes(yOffset + x)
+                            srcBytes(yOffset + x) = (curValue + prevValue) And 255
+                        Next x
                     End If
                     
                 '"Average" filtering filters according to the average between the previous pixel and the pixel above
                 Case png_Average
                 
                     yOffset = yOffset + 1
-                    For X = 0 To xStride - 2
-                        If (X >= pxOffset) Then prevValue = srcBytes(yOffset + X - pxOffset) Else prevValue = 0
-                        If (Y > 0) Then prevValue2 = srcBytes(yOffset + X - xStride) Else prevValue2 = 0
-                        curValue = srcBytes(yOffset + X)
-                        srcBytes(yOffset + X) = (curValue + ((prevValue + prevValue2) \ 2)) And 255
-                    Next X
+                    For x = 0 To xStride - 2
+                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                        If (y > 0) Then prevValue2 = srcBytes(yOffset + x - xStride) Else prevValue2 = 0
+                        curValue = srcBytes(yOffset + x)
+                        srcBytes(yOffset + x) = (curValue + ((prevValue + prevValue2) \ 2)) And 255
+                    Next x
                 
                 '"Paeth" uses an external formula
                 Case png_Paeth
                 
                     yOffset = yOffset + 1
-                    For X = 0 To xStride - 2
-                        If (X >= pxOffset) Then prevValue = srcBytes(yOffset + X - pxOffset) Else prevValue = 0
-                        If (Y > 0) Then
-                            prevValue2 = srcBytes(yOffset + X - xStride)
-                            If (X >= pxOffset) Then prevValue3 = srcBytes(yOffset + X - xStride - pxOffset) Else prevValue3 = 0
+                    For x = 0 To xStride - 2
+                        If (x >= pxOffset) Then prevValue = srcBytes(yOffset + x - pxOffset) Else prevValue = 0
+                        If (y > 0) Then
+                            prevValue2 = srcBytes(yOffset + x - xStride)
+                            If (x >= pxOffset) Then prevValue3 = srcBytes(yOffset + x - xStride - pxOffset) Else prevValue3 = 0
                         Else
                             prevValue2 = 0
                             prevValue3 = 0
                         End If
-                        curValue = srcBytes(yOffset + X)
+                        curValue = srcBytes(yOffset + x)
                         
                         'The Paeth predictor was previously used as a separate function, but inlining it
                         ' provides a slight performance boost.  (Also, the function itself is simple - it just
@@ -617,13 +617,13 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
                             If (pb <= pc) Then p = prevValue2 Else p = prevValue3
                         End If
                         
-                        srcBytes(yOffset + X) = (curValue + p) And 255
+                        srcBytes(yOffset + x) = (curValue + p) And 255
                         
-                    Next X
+                    Next x
             
             End Select
             
-        Next Y
+        Next y
         
         m_Data.UnwrapArrayFromMemoryStream srcBytes
         
@@ -703,6 +703,10 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     startFilter = png_None
     If useHeuristics Then endFilter = png_Paeth Else endFilter = png_None
     
+    'TESTING ONLY: want to use just one filter for the entire image?  Set it here.
+    'startFilter = png_Up
+    'endFilter = png_Up
+    
     'Prepare a second staging area, capable of holding one scanline of each filter type.
     ' (When heuristics are active, we'll manually produce a filtered scanline of each type,
     ' then analyze each to determine which produces the "best" result for a given line.
@@ -749,16 +753,16 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
         VBHacks.GetHighResTime startTime
     End If
     
-    Dim X As Long, Y As Long, yOffset As Long
+    Dim x As Long, y As Long, yOffset As Long
     Dim filterStrideOffset As Long, tmpSrcPtr As Long
     Dim curValue As Long, prevValue As Long, prevValue2 As Long, prevValue3 As Long
     Dim p As Long, pa As Long, pb As Long, pc As Long
     
-    For Y = 0 To srcHeightInPixels - 1
+    For y = 0 To srcHeightInPixels - 1
         
         'Reset all scanline-specific values
-        yOffset = Y * dstStride + 1
-        tmpSrcPtr = srcPtr + Y * srcStride
+        yOffset = y * dstStride + 1
+        tmpSrcPtr = srcPtr + y * srcStride
         bestVariance = &H7FFFFFFF
         
         'Copy the unmodified source pixels for this line as-is into the testing array, so that any pixels
@@ -787,45 +791,45 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
                     
                 '"Sub" filters according to the previous pixel in the same scanline
                 Case png_Sub
-                    For X = pxOffset + 1 To dstStride - 1
-                        prevValue = srcOrigPixels(dstStride + X - pxOffset)
-                        curValue = srcOrigPixels(dstStride + X)
-                        dstFilterBytes(X + filterStrideOffset) = (curValue - prevValue) And &HFF&
-                    Next X
+                    For x = pxOffset + 1 To dstStride - 1
+                        prevValue = srcOrigPixels(dstStride + x - pxOffset)
+                        curValue = srcOrigPixels(dstStride + x)
+                        dstFilterBytes(x + filterStrideOffset) = (curValue - prevValue) And &HFF&
+                    Next x
                     
                 '"Up" filters according to the same pixel in the previous scanline
                 Case png_Up
-                    For X = 1 To dstStride - 1
-                        prevValue = srcOrigPixels(X)
-                        curValue = srcOrigPixels(dstStride + X)
-                        dstFilterBytes(X + filterStrideOffset) = (curValue - prevValue) And &HFF&
-                    Next X
+                    For x = 1 To dstStride - 1
+                        prevValue = srcOrigPixels(x)
+                        curValue = srcOrigPixels(dstStride + x)
+                        dstFilterBytes(x + filterStrideOffset) = (curValue - prevValue) And &HFF&
+                    Next x
                 
                 '"Average" filters according to the average between the previous pixel (same scanline)
                 ' and the pixel above
                 Case png_Average
-                    For X = 1 To dstStride - 1
-                        If (X > pxOffset) Then prevValue = srcOrigPixels(dstStride + X - pxOffset) Else prevValue = 0
-                        prevValue2 = srcOrigPixels(X)
-                        curValue = srcOrigPixels(dstStride + X)
-                        dstFilterBytes(X + filterStrideOffset) = (curValue - ((prevValue + prevValue2) \ 2)) And &HFF&
-                    Next X
+                    For x = 1 To dstStride - 1
+                        If (x > pxOffset) Then prevValue = srcOrigPixels(dstStride + x - pxOffset) Else prevValue = 0
+                        prevValue2 = srcOrigPixels(x)
+                        curValue = srcOrigPixels(dstStride + x)
+                        dstFilterBytes(x + filterStrideOffset) = (curValue - ((prevValue + prevValue2) \ 2)) And &HFF&
+                    Next x
                 
                 '"Paeth" attempts to minimize the intensity gradient between pixels by analyzing three
                 ' neighboring values (above-left/above/left) and producing a new predictor on-the-fly.
                 Case png_Paeth
                 
-                    For X = 1 To dstStride - 1
+                    For x = 1 To dstStride - 1
                     
-                        If (X > pxOffset) Then
-                            prevValue = srcOrigPixels(dstStride + X - pxOffset)
-                            prevValue3 = srcOrigPixels(X - pxOffset)
+                        If (x > pxOffset) Then
+                            prevValue = srcOrigPixels(dstStride + x - pxOffset)
+                            prevValue3 = srcOrigPixels(x - pxOffset)
                         Else
                             prevValue = 0
                             prevValue3 = 0
                         End If
                         
-                        prevValue2 = srcOrigPixels(X)
+                        prevValue2 = srcOrigPixels(x)
                         
                         p = prevValue + prevValue2 - prevValue3
                         pa = Abs(p - prevValue)
@@ -838,10 +842,10 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
                             If (pb <= pc) Then p = prevValue2 Else p = prevValue3
                         End If
                         
-                        curValue = srcOrigPixels(dstStride + X)
-                        dstFilterBytes(X + filterStrideOffset) = (curValue - p) And &HFF&
+                        curValue = srcOrigPixels(dstStride + x)
+                        dstFilterBytes(x + filterStrideOffset) = (curValue - p) And &HFF&
                         
-                    Next X
+                    Next x
             
             End Select
             
@@ -856,10 +860,10 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
                 ' and 255 becomes -1. The absolute value of each is then summed, and the filter type
                 ' that produces the smallest sum is chosen."
                 curVariance = 0
-                For X = dstStride * curFilter + 1 To (dstStride * (curFilter + 1)) - 1
-                    curValue = dstFilterBytes(X)
+                For x = dstStride * curFilter + 1 To (dstStride * (curFilter + 1)) - 1
+                    curValue = dstFilterBytes(x)
                     If (curValue < 128) Then curVariance = curVariance + curValue Else curVariance = curVariance + (256 - curValue)
-                Next X
+                Next x
                 
                 'Give a bonus to the last-used filter, if any.  This is currently disabled pending
                 ' further testing; see above for additional remarks.
@@ -892,10 +896,10 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
         Next curFilter
         
         'Copy the filtered line with the best results back into the m_FilterBytes array.
-        CopyMemoryStrict VarPtr(m_FilteredBytes(Y * dstStride)), dstPtrFilter - 1 + (bestFilter * dstStride), dstStride
+        CopyMemoryStrict VarPtr(m_FilteredBytes(y * dstStride)), dstPtrFilter - 1 + (bestFilter * dstStride), dstStride
         lastFilter = bestFilter
         
-    Next Y
+    Next y
     
     If PNG_DEBUG_VERBOSE Then
         If (startFilter <> endFilter) Then

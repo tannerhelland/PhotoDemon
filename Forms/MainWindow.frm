@@ -1679,6 +1679,8 @@ End Sub
 
 Private Sub MnuTest_Click()
     
+    On Error GoTo StopTestImmediately
+    
     'Filters_Scientific.InternalFFTTest
     
     'Want to test a new dialog?  Call it here, using a line like the following:
@@ -1686,15 +1688,16 @@ Private Sub MnuTest_Click()
     
     Dim dstFile As String
     dstFile = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\PNG types\big\test_out.png"
-
-    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
     Dim tmpDIB As pdDIB
     PDImages.GetActiveImage.GetCompositedImage tmpDIB, False
     
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
-    Debug.Print cPNG.SavePNG_Simple(dstFile, tmpDIB, 12)
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    Debug.Print cPNG.SavePNG_Simple(dstFile, tmpDIB, png_TruecolorAlpha, 8, 12)
+    
+StopTestImmediately:
 
 End Sub
 
@@ -2809,7 +2812,7 @@ FormMainLoadError:
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If (Not g_AllowDragAndDrop) Then Exit Sub
@@ -2822,7 +2825,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
     
     'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
     ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.

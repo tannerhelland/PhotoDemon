@@ -295,7 +295,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
         
-        Dim X As Long, Y As Long, finalX As Long, finalY As Long
+        Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 3
@@ -316,12 +316,12 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         Dim colorFound As Boolean
             
         'Apply the filter
-        For Y = 0 To finalY
-        For X = 0 To finalX Step 3
+        For y = 0 To finalY
+        For x = 0 To finalX Step 3
             
-            b = srcPixels(X, Y)
-            g = srcPixels(X + 1, Y)
-            r = srcPixels(X + 2, Y)
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
             
             chkValue = RGB(r, g, b)
             colorFound = False
@@ -345,9 +345,9 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
                 End If
             End If
             
-        Next X
+        Next x
             If numUniqueColors > 256 Then Exit For
-        Next Y
+        Next y
         
         CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
         
@@ -408,7 +408,6 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
 
 End Function
 
-
 'Given a 32-bpp source (the source *MUST BE 32-bpp*, but its alpha channel can be constant), fill four inputs:
 ' 1) netColorCount: an integer on the range [1, 257].  257 = more than 256 unique colors
 ' 2) isGrayscale: TRUE if the image consists of only gray shades
@@ -429,14 +428,17 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
 
-        Dim X As Long, Y As Long, finalX As Long, finalY As Long
+        Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
 
         Dim uniqueColors() As RGBQuad
         ReDim uniqueColors(0 To 255) As RGBQuad
-
+        
+        'Because PD uses premultiplied alpha, we can set an "impossible" color value as the default value
+        ' for the unique colors array; this allows us to match black correctly.
+        ' TODO: use a hash table or something smarter than a naive array
         Dim i As Long
         For i = 0 To 255
             uniqueColors(i).Red = 1
@@ -455,14 +457,14 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         Dim r As Long, g As Long, b As Long, a As Long
         Dim colorFound As Boolean
 
-        'Apply the filter
-        For Y = 0 To finalY
-        For X = 0 To finalX Step 4
+        'Look for unique colors
+        For y = 0 To finalY
+        For x = 0 To finalX Step 4
             
-            b = srcPixels(X, Y)
-            g = srcPixels(X + 1, Y)
-            r = srcPixels(X + 2, Y)
-            a = srcPixels(X + 3, Y)
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            a = srcPixels(x + 3, y)
             
             If (a < 255) Then
                 non255Alpha = True
@@ -504,9 +506,9 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                 
             End If
             
-        Next X
+        Next x
             If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
-        Next Y
+        Next y
 
         CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
 
@@ -517,7 +519,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         isMonochrome = False
 
         'Further checks are only relevant if the image contains 256 colors or less
-        If numUniqueColors <= 256 Then
+        If (numUniqueColors <= 256) Then
 
             'Check for grayscale images
             If (numUniqueColors <= 256) Then
@@ -1121,9 +1123,9 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 Dim gammaCorrection As Double
                 gammaCorrection = 1# / (1# / 2.2)
                 
-                Dim X As Long, Y As Long
+                Dim x As Long, y As Long
                 
-                For Y = 0 To iHeight
+                For y = 0 To iHeight
                     
                     'Point a 1D VB array at this scanline
                     With srcSA
@@ -1131,22 +1133,22 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                         .cDims = 1
                         .lBound = 0
                         .cElements = iScanWidth
-                        .pvData = FreeImage_GetScanline(fi_FloatDIB, Y)
+                        .pvData = FreeImage_GetScanline(fi_FloatDIB, y)
                     End With
                     CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
                     
                     'Iterate through this line, converting values as we go
-                    For X = 0 To iLoopWidth
+                    For x = 0 To iLoopWidth
                         
                         'Retrieve the source values
-                        srcF = srcImageData(X)
+                        srcF = srcImageData(x)
                         
                         'Apply 1/2.2 gamma correction
-                        If srcF > 0 Then srcImageData(X) = srcF ^ gammaCorrection
+                        If srcF > 0 Then srcImageData(x) = srcF ^ gammaCorrection
                         
-                    Next X
+                    Next x
                     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-                Next Y
+                Next y
                 
                 'With gamma properly accounted for, we can finally write the image out to file.
                 ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, dstFile, 0)
@@ -1472,12 +1474,15 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
             '32-bit RGBA images are currently written using our own encoder.  Note that libdeflate supports compression
             ' levels up to "12", unlike zlib's "9".  Levels 10-12 are slow but capable of producing extremely small files.
-            If (outputColorDepth = 32) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
+            If ((outputColorDepth = 32) Or (outputColorDepth = 64)) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
                 PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+            ElseIf ((outputColorDepth = 24) Or (outputColorDepth = 48)) And (Not forceGrayscale) And (desiredAlphaStatus = PDAS_NoAlpha) Then
+                PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
             End If
             
-            If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
+            If imgSavedOK And PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
                 Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
             End If
             

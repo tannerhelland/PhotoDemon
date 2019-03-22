@@ -742,7 +742,7 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
         
         'Prep all the required loop values
         Dim imgWidth As Long, imgHeight As Long, xFinal As Long, yFinal As Long
-        Dim X As Long, Y As Long, xDIB As Long, srcOffset As Long
+        Dim x As Long, y As Long, xDIB As Long, srcOffset As Long
         imgWidth = m_Header.Width
         imgHeight = m_Header.Height
         xFinal = imgWidth - 1
@@ -778,10 +778,10 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                     ' the normal greyscale conversion code afterward.
                     If (trnsRed < 0) Then
                     
-                        For Y = 0 To yFinal
-                            srcOffset = Y * xStride + 1
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
                             dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                        Next Y
+                        Next y
                         normalCopy = True
                         If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                     
@@ -791,42 +791,42 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                     Else
                         
                         'Assign alpha bytes, if any
-                        For Y = 0 To yFinal
-                            srcOffset = Y * xStride + 1
-                        For X = 0 To xFinal
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
+                        For x = 0 To xFinal
                             If (m_Header.BitDepth = 8) Then
-                                g = srcBytes(srcOffset + X)
-                                If (g = trnsRed) Then dstBytes(X * 4 + 3, Y) = 0
+                                g = srcBytes(srcOffset + x)
+                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
                             Else
-                                g = srcBytes(srcOffset + X * 2 + 1)
-                                g = g * 256 + srcBytes(srcOffset + X * 2)
-                                If (g = trnsRed) Then dstBytes(X * 4 + 3, Y) = 0
+                                g = srcBytes(srcOffset + x * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + x * 2)
+                                If (g = trnsRed) Then dstBytes(x * 4 + 3, y) = 0
                             End If
-                        Next X
-                        Next Y
+                        Next x
+                        Next y
                         
                         'Perform ICC correction on the original source bytes
-                        For Y = 0 To yFinal
-                            srcOffset = Y * xStride + 1
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
                             dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                        Next Y
+                        Next y
                         
                         'Copy ICC-transformed grey bytes into the final RGBA container
-                        For Y = 0 To yFinal
-                            srcOffset = Y * xStride + 1
-                        For X = 0 To xFinal
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
+                        For x = 0 To xFinal
                             If (m_Header.BitDepth = 8) Then
-                                g = srcBytes(srcOffset + X)
+                                g = srcBytes(srcOffset + x)
                             Else
-                                g = srcBytes(srcOffset + X * 2 + 1)
-                                g = g * 256 + srcBytes(srcOffset + X * 2)
+                                g = srcBytes(srcOffset + x * 2 + 1)
+                                g = g * 256 + srcBytes(srcOffset + x * 2)
                                 g = g \ 256
                             End If
-                            dstBytes(X * 4, Y) = g
-                            dstBytes(X * 4 + 1, Y) = g
-                            dstBytes(X * 4 + 2, Y) = g
-                        Next X
-                        Next Y
+                            dstBytes(x * 4, y) = g
+                            dstBytes(x * 4 + 1, y) = g
+                            dstBytes(x * 4 + 2, y) = g
+                        Next x
+                        Next y
                         
                         normalCopy = False
                         If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
@@ -838,36 +838,36 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 If normalCopy Then
                 
                     'With any ICC handling successfully covered, we can now proceed with normal loading.
-                    For Y = 0 To yFinal
+                    For y = 0 To yFinal
                     
-                        srcOffset = Y * xStride + 1
+                        srcOffset = y * xStride + 1
                         
                         'For performance reasons, separate out 8- and 16-bit handling
                         If (m_Header.BitDepth <= 8) Then
-                            For X = 0 To xFinal
-                                palIndex = srcBytes(srcOffset + X)
-                                xDIB = X * 4
+                            For x = 0 To xFinal
+                                palIndex = srcBytes(srcOffset + x)
+                                xDIB = x * 4
                                 With srcColors(palIndex)
-                                    dstBytes(xDIB, Y) = .Blue
-                                    dstBytes(xDIB + 1, Y) = .Green
-                                    dstBytes(xDIB + 2, Y) = .Red
-                                    dstBytes(xDIB + 3, Y) = .Alpha
+                                    dstBytes(xDIB, y) = .Blue
+                                    dstBytes(xDIB + 1, y) = .Green
+                                    dstBytes(xDIB + 2, y) = .Red
+                                    dstBytes(xDIB + 3, y) = .Alpha
                                 End With
-                            Next X
+                            Next x
                         Else
-                            For X = 0 To xFinal
-                                g = srcBytes(srcOffset + X * 2)
-                                g = g * 256 + srcBytes(srcOffset + X * 2 + 1)
-                                xDIB = X * 4
-                                If (g = trnsRed) Then dstBytes(xDIB + 3, Y) = 0
+                            For x = 0 To xFinal
+                                g = srcBytes(srcOffset + x * 2)
+                                g = g * 256 + srcBytes(srcOffset + x * 2 + 1)
+                                xDIB = x * 4
+                                If (g = trnsRed) Then dstBytes(xDIB + 3, y) = 0
                                 g = g \ 256
-                                dstBytes(X * 4, Y) = g
-                                dstBytes(X * 4 + 1, Y) = g
-                                dstBytes(X * 4 + 2, Y) = g
-                            Next X
+                                dstBytes(x * 4, y) = g
+                                dstBytes(x * 4 + 1, y) = g
+                                dstBytes(x * 4 + 2, y) = g
+                            Next x
                         End If
                         
-                    Next Y
+                    Next y
                     
                 End If
                 
@@ -877,63 +877,63 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 
                 'If an ICC profile is active, apply it in-place to the source data
                 If (Not dstTransform Is Nothing) Then
-                    For Y = 0 To yFinal
-                        srcOffset = Y * xStride + 1
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
                         dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(srcBytes(srcOffset)), imgWidth
-                    Next Y
+                    Next y
                     If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
                 'Copy ICC-transformed grey bytes into the final RGBA container
-                For Y = 0 To yFinal
-                    srcOffset = Y * xStride + 1
-                For X = 0 To xFinal
+                For y = 0 To yFinal
+                    srcOffset = y * xStride + 1
+                For x = 0 To xFinal
                     If (m_Header.BitDepth = 8) Then
-                        g = srcBytes(srcOffset + X * 2)
-                        a = srcBytes(srcOffset + X * 2 + 1)
+                        g = srcBytes(srcOffset + x * 2)
+                        a = srcBytes(srcOffset + x * 2 + 1)
                     Else
-                        g = srcBytes(srcOffset + X * 4)
-                        g = g * 256 + srcBytes(srcOffset + X * 4 + 1)
+                        g = srcBytes(srcOffset + x * 4)
+                        g = g * 256 + srcBytes(srcOffset + x * 4 + 1)
                         g = g \ 256
-                        a = srcBytes(srcOffset + X * 4 + 2)
-                        a = a * 256 + srcBytes(srcOffset + X * 4 + 3)
+                        a = srcBytes(srcOffset + x * 4 + 2)
+                        a = a * 256 + srcBytes(srcOffset + x * 4 + 3)
                         a = a \ 256
                     End If
-                    dstBytes(X * 4, Y) = g
-                    dstBytes(X * 4 + 1, Y) = g
-                    dstBytes(X * 4 + 2, Y) = g
-                    dstBytes(X * 4 + 3, Y) = a
-                Next X
-                Next Y
+                    dstBytes(x * 4, y) = g
+                    dstBytes(x * 4 + 1, y) = g
+                    dstBytes(x * 4 + 2, y) = g
+                    dstBytes(x * 4 + 3, y) = a
+                Next x
+                Next y
             
                 okToProceed = True
                 
             Case png_Indexed
                 
-                For Y = 0 To yFinal
-                    srcOffset = Y * xStride + 1
-                For X = 0 To xFinal
+                For y = 0 To yFinal
+                    srcOffset = y * xStride + 1
+                For x = 0 To xFinal
                     
-                    palIndex = srcBytes(srcOffset + X)
-                    xDIB = X * 4
+                    palIndex = srcBytes(srcOffset + x)
+                    xDIB = x * 4
                     
                     With srcColors(palIndex)
-                        dstBytes(xDIB, Y) = .Blue
-                        dstBytes(xDIB + 1, Y) = .Green
-                        dstBytes(xDIB + 2, Y) = .Red
-                        dstBytes(xDIB + 3, Y) = .Alpha
+                        dstBytes(xDIB, y) = .Blue
+                        dstBytes(xDIB + 1, y) = .Green
+                        dstBytes(xDIB + 2, y) = .Red
+                        dstBytes(xDIB + 3, y) = .Alpha
                     End With
                     
-                Next X
-                Next Y
+                Next x
+                Next y
                 
                 'With the indexed image successfully constructed as a full 32-bit RGBA image, we now need to handle
                 ' the ICC profile (if any).  We only do this if the image contained an embedded profile; otherwise,
                 ' the pixel data is already good to go.
                 If (Not dstTransform Is Nothing) Then
-                    For Y = 0 To yFinal
-                        dstTransform.ApplyTransformToScanline VarPtr(dstBytes(0, Y)), VarPtr(dstBytes(0, Y)), imgWidth
-                    Next Y
+                    For y = 0 To yFinal
+                        dstTransform.ApplyTransformToScanline VarPtr(dstBytes(0, y)), VarPtr(dstBytes(0, y)), imgWidth
+                    Next y
                     If srcImgProfileGood Then dstDIB.SetColorManagementState cms_ProfileConverted
                 End If
                 
@@ -944,12 +944,12 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 'If LittleCMS is available, use it for faster byte swizzling
                 If (Not dstTransform Is Nothing) Then
                     
-                    For Y = 0 To yFinal
+                    For y = 0 To yFinal
                     
-                        srcOffset = Y * xStride + 1
+                        srcOffset = y * xStride + 1
                         
                         'Use LittleCMS to perform swizzling for us
-                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, Y)), imgWidth
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
                         
                         'If a tRNS chunk specified a transparent color, we need to find and detect transparent colors -
                         ' but importantly, we need to scan the *original* bytes, not the transformed ones (as the
@@ -957,29 +957,29 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                         If trnsHandlingRequired Then
                             
                             If (m_Header.BitDepth = 8) Then
-                                For X = 0 To xFinal
-                                    r = srcBytes(srcOffset + X * 3)
-                                    g = srcBytes(srcOffset + X * 3 + 1)
-                                    b = srcBytes(srcOffset + X * 3 + 2)
-                                    If (RGB(r, g, b) = trnsCheck) Then dstBytes(X * 4 + 3, Y) = 0
-                                Next X
+                                For x = 0 To xFinal
+                                    r = srcBytes(srcOffset + x * 3)
+                                    g = srcBytes(srcOffset + x * 3 + 1)
+                                    b = srcBytes(srcOffset + x * 3 + 2)
+                                    If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
+                                Next x
                             Else
                                 Dim newR As Long, newG As Long, newB As Long
-                                For X = 0 To xFinal
-                                    newR = srcBytes(srcOffset + X * 6)
-                                    newR = (newR * 256) + srcBytes(srcOffset + X * 6 + 1)
-                                    newG = srcBytes(srcOffset + X * 6 + 2)
-                                    newG = (newG * 256) + srcBytes(srcOffset + X * 6 + 3)
-                                    newB = srcBytes(srcOffset + X * 6 + 4)
-                                    newB = (newB * 256) + srcBytes(srcOffset + X * 6 + 5)
-                                    If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(X * 4 + 3, Y) = 0
-                                Next X
+                                For x = 0 To xFinal
+                                    newR = srcBytes(srcOffset + x * 6)
+                                    newR = (newR * 256) + srcBytes(srcOffset + x * 6 + 1)
+                                    newG = srcBytes(srcOffset + x * 6 + 2)
+                                    newG = (newG * 256) + srcBytes(srcOffset + x * 6 + 3)
+                                    newB = srcBytes(srcOffset + x * 6 + 4)
+                                    newB = (newB * 256) + srcBytes(srcOffset + x * 6 + 5)
+                                    If (newR = trnsRed) And (newG = trnsGreen) And (newB = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
+                                Next x
                             End If
                             
                         '/End tRNS handling
                         End If
                     
-                    Next Y
+                    Next y
                     
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
@@ -989,33 +989,33 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 'Failsafe pure-VB transform, in the unlikely event LittleCMS is unavailable
                 Else
                 
-                    For Y = 0 To yFinal
-                        srcOffset = Y * xStride + 1
-                    For X = 0 To xFinal
+                    For y = 0 To yFinal
+                        srcOffset = y * xStride + 1
+                    For x = 0 To xFinal
                         
                         'Byte order has to be swapped to BGRA
                         If (m_Header.BitDepth = 8) Then
-                            r = srcBytes(srcOffset + X * 3)
-                            g = srcBytes(srcOffset + X * 3 + 1)
-                            b = srcBytes(srcOffset + X * 3 + 2)
-                            If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(X * 4 + 3, Y) = 0
+                            r = srcBytes(srcOffset + x * 3)
+                            g = srcBytes(srcOffset + x * 3 + 1)
+                            b = srcBytes(srcOffset + x * 3 + 2)
+                            If trnsHandlingRequired Then If (RGB(r, g, b) = trnsCheck) Then dstBytes(x * 4 + 3, y) = 0
                         Else
-                            r = srcBytes(srcOffset + X * 6)
-                            r = r * 256 + srcBytes(srcOffset + X * 6 + 1)
-                            g = srcBytes(srcOffset + X * 6 + 2)
-                            g = g * 256 + srcBytes(srcOffset + X * 6 + 3)
-                            b = srcBytes(srcOffset + X * 6 + 4)
-                            b = b * 256 + srcBytes(srcOffset + X * 6 + 5)
-                            If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(X * 4 + 3, Y) = 0
+                            r = srcBytes(srcOffset + x * 6)
+                            r = r * 256 + srcBytes(srcOffset + x * 6 + 1)
+                            g = srcBytes(srcOffset + x * 6 + 2)
+                            g = g * 256 + srcBytes(srcOffset + x * 6 + 3)
+                            b = srcBytes(srcOffset + x * 6 + 4)
+                            b = b * 256 + srcBytes(srcOffset + x * 6 + 5)
+                            If trnsHandlingRequired Then If (r = trnsRed) And (g = trnsGreen) And (b = trnsBlue) Then dstBytes(x * 4 + 3, y) = 0
                         End If
                         
-                        xDIB = X * 4
-                        dstBytes(xDIB, Y) = b \ 256
-                        dstBytes(xDIB + 1, Y) = g \ 256
-                        dstBytes(xDIB + 2, Y) = r \ 256
+                        xDIB = x * 4
+                        dstBytes(xDIB, y) = b \ 256
+                        dstBytes(xDIB + 1, y) = g \ 256
+                        dstBytes(xDIB + 2, y) = r \ 256
                         
-                    Next X
-                    Next Y
+                    Next x
+                    Next y
                     
                 End If
                 
@@ -1027,10 +1027,10 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 ' into a single step.
                 If imgHasEmbeddedICC Then
                     
-                    For Y = 0 To yFinal
+                    For y = 0 To yFinal
                     
-                        srcOffset = Y * xStride + 1
-                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, Y)), imgWidth
+                        srcOffset = y * xStride + 1
+                        dstTransform.ApplyTransformToScanline VarPtr(srcBytes(srcOffset)), VarPtr(dstBytes(0, y)), imgWidth
                         
                         'On 16-bit data, we have to do some housekeeping to compensate for a LittleCMS bug.
                         ' LittleCMS normally swaps endianness just fine - *except* for alpha channels, as they
@@ -1048,7 +1048,7 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                         '    Next x
                         'End If
                         
-                    Next Y
+                    Next y
                     
                     'Because color-management has been handled, we need to mark the destination DIB accordingly.
                     ' (Note that we only do this if the color profile was embedded in the source image; if the
@@ -1069,10 +1069,10 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                         scanStart = dstDIB.GetDIBPointer
                         scanWidth = dstDIB.GetDIBStride
                     
-                        For Y = 0 To yFinal
+                        For y = 0 To yFinal
                             
-                            srcOffset = Y * xStride + 1
-                            dstSA1D.pvData = scanStart + Y * scanWidth
+                            srcOffset = y * xStride + 1
+                            dstSA1D.pvData = scanStart + y * scanWidth
                             
                             'Start by copying the unfiltered IDAT as-is into the destination DIB.
                             ' (Green and alpha bytes are already in the correct position; we only need
@@ -1080,13 +1080,13 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                             CopyMemoryStrict VarPtr(dstBytesLine(0)), VarPtr(srcBytes(srcOffset)), imgWidth * 4
                             
                             'Manually swizzle r/b
-                            For X = 0 To xFinal * 4 Step 4
-                                r = dstBytesLine(X)
-                                dstBytesLine(X) = dstBytesLine(X + 2)
-                                dstBytesLine(X + 2) = r
-                            Next X
+                            For x = 0 To xFinal * 4 Step 4
+                                r = dstBytesLine(x)
+                                dstBytesLine(x) = dstBytesLine(x + 2)
+                                dstBytesLine(x + 2) = r
+                            Next x
                             
-                        Next Y
+                        Next y
                         
                         dstDIB.UnwrapArrayFromDIB dstBytesLine
                         
@@ -1094,18 +1094,18 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                     ' doesn't natively support ushorts.
                     Else
                     
-                        For Y = 0 To yFinal
-                            srcOffset = Y * xStride + 1
-                        For X = 0 To xFinal
+                        For y = 0 To yFinal
+                            srcOffset = y * xStride + 1
+                        For x = 0 To xFinal
                             
-                            xDIB = X * 4
-                            dstBytes(xDIB, Y) = srcBytes(srcOffset + X * 8 + 4)
-                            dstBytes(xDIB + 1, Y) = srcBytes(srcOffset + X * 8 + 2)
-                            dstBytes(xDIB + 2, Y) = srcBytes(srcOffset + X * 8)
-                            dstBytes(xDIB + 3, Y) = srcBytes(srcOffset + X * 8 + 6)
+                            xDIB = x * 4
+                            dstBytes(xDIB, y) = srcBytes(srcOffset + x * 8 + 4)
+                            dstBytes(xDIB + 1, y) = srcBytes(srcOffset + x * 8 + 2)
+                            dstBytes(xDIB + 2, y) = srcBytes(srcOffset + x * 8)
+                            dstBytes(xDIB + 3, y) = srcBytes(srcOffset + x * 8 + 6)
                             
-                        Next X
-                        Next Y
+                        Next x
+                        Next y
                     
                     End If
                     
@@ -1308,7 +1308,7 @@ InternalVBError:
 End Function
 
 'Simplified wrapper to save a PNG automatically.
-Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB, Optional ByVal cmpLevel As Long = -1) As PD_PNGResult
+Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB, Optional ByVal outColorType As PD_PNGColorType = png_TruecolorAlpha, Optional ByVal outBitsPerChannel As Long = 8, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
     
     On Error GoTo CouldNotSaveFile
     
@@ -1334,12 +1334,30 @@ Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB,
     ' needing to pass it to individual functions over-and-over
     ' TODO: pull this data from a passed param string, obviously.
     With m_Header
+        
         .Width = srcImage.GetDIBWidth
         .Height = srcImage.GetDIBHeight
-        .BitDepth = 8
-        .BitsPerPixel = .BitDepth * 4
-        .ColorType = png_TruecolorAlpha
+        .BitDepth = outBitsPerChannel
+        .ColorType = outColorType
+        
+        'From color type and bit-depth, determine a "friendly" representation of bits-per-pixel
+        Select Case outColorType
+            Case png_Indexed
+                .BitsPerPixel = outBitsPerChannel
+            Case png_Greyscale
+                .BitsPerPixel = outBitsPerChannel
+            Case png_GreyscaleAlpha
+                .BitsPerPixel = outBitsPerChannel * 2
+            Case png_Truecolor
+                .BitsPerPixel = outBitsPerChannel * 3
+            Case png_TruecolorAlpha
+                .BitsPerPixel = outBitsPerChannel * 4
+        End Select
+        
+        'We never write interlaced PNGs, because interlaced PNGs are much larger and entirely pointless in
+        ' the 21st century.
         .Interlaced = False
+        
     End With
     
     'Start by writing out a basic PNG header.
@@ -1366,7 +1384,7 @@ Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB,
     'Pixel data must be filtered before compression.  We use a temporary pdPNGChunk object to do this for us,
     ' as it already contains a bunch of code related to un-filtering pixel data.
     Dim tmpChunk As pdPNGChunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk, fullParamString)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > byte filtering took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1463,7 +1481,7 @@ Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream, ByRef srcImage 
 End Function
 
 'Make sure you have populated the module-level m_Header struct before calling this function!
-Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk) As PD_PNGResult
+Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -1473,31 +1491,155 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     ' bit-stream here.
     Dim finalBytes() As Byte, sizeOfPngBytes As Long
     
+    'Prep a parameter parser, as certain bit-depth and color mode combinations may require specialized pixel handling
+    ' (e.g. compositing against a specific backcolor).
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString fullParamString
+    
     'At present, we produce a full copy of the image in the required bit-depth and layout.  In the future,
     ' it may be nice to handle this on a per-scanline basis, to avoid the need for massive up-front
     ' memory allocations (especially when working with HDR modes).
     
     'TODO: separate handling by bit-depth
-    sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 4
+    If (m_Header.ColorType = png_TruecolorAlpha) Then
+        sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 4 * (m_Header.BitDepth \ 8)
+    ElseIf (m_Header.ColorType = png_Truecolor) Then
+        sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 3 * (m_Header.BitDepth \ 8)
+    'ElseIf...
+    End If
+    
+    'Prepare the buffer that will hold the color-mode-processed bytes
     ReDim finalBytes(0 To sizeOfPngBytes - 1) As Byte
+    Dim tmpByte As Byte, dstStride As Long, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long
+    Dim x As Long, y As Long
+    
+    'Some color-depths (e.g. HDR )require us to directly reference discrete pixels inside the
+    ' source DIB; we cannot accelerate the process using pointer-based math
+    Dim srcBytes() As Byte, srcSA1D As SafeArray1D
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
     
     'For 32-bpp data, copy over the DIB data as-is, then perform a fast swizzle
-    CopyMemoryStrict VarPtr(finalBytes(0)), srcImage.GetDIBPointer, sizeOfPngBytes
-    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long
-    Dim xLimit As Long, yOffset As Long
-    srcStride = srcImage.GetDIBStride
-    srcHeightInPixels = srcImage.GetDIBHeight
-    xLimit = srcStride - 1
+    If (m_Header.ColorType = png_TruecolorAlpha) Then
+        
+        '32-bpp path
+        If (m_Header.BitDepth = 8) Then
+        
+            'Copy over *all* DIB data
+            CopyMemoryStrict VarPtr(finalBytes(0)), srcImage.GetDIBPointer, sizeOfPngBytes
+            
+            srcStride = srcImage.GetDIBStride
+            dstStride = srcStride
+            xLimit = srcStride - 1
+            
+            For y = 0 To srcHeightInPixels - 1
+                yDstOffset = y * dstStride
+                For x = 0 To xLimit Step 4
+                    tmpByte = finalBytes(yDstOffset + x)
+                    finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
+                    finalBytes(yDstOffset + x + 2) = tmpByte
+                Next x
+            Next y
+            
+        '64-bpp path
+        ElseIf (m_Header.BitDepth = 16) Then
+        
+            srcStride = srcImage.GetDIBStride
+            dstStride = srcStride * 2
+            xLimit = srcStride - 1
+            
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride * 2
+                
+                'Wrap an array around the source data
+                srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
+                
+                For x = 0 To xLimit Step 4
+                    
+                    'Swizzle R and B as part of the copy
+                    finalBytes(yDstOffset + x * 2) = srcBytes(x + 2)
+                    finalBytes(yDstOffset + x * 2 + 2) = srcBytes(x + 1)
+                    finalBytes(yDstOffset + x * 2 + 4) = srcBytes(x)
+                    finalBytes(yDstOffset + x * 2 + 6) = srcBytes(x + 3)
+                    
+                Next x
+                
+            Next y
+            
+            'Make sure our array is unwrapped from the source data
+            srcImage.UnwrapArrayFromDIB srcBytes
+            
+        End If
     
-    Dim X As Long, Y As Long
-    For Y = 0 To srcHeightInPixels - 1
-        yOffset = Y * srcStride
-        For X = 0 To xLimit Step 4
-            tmpByte = finalBytes(yOffset + X)
-            finalBytes(yOffset + X) = finalBytes(yOffset + X + 2)
-            finalBytes(yOffset + X + 2) = tmpByte
-        Next X
-    Next Y
+    'For 24-bpp data, we need to manually copy and swizzle, while stripping out alpha data
+    ElseIf (m_Header.ColorType = png_Truecolor) Then
+        
+        'Start by downsampling the source DIB to 24-bpp, using whatever backcolor the caller requested
+        srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
+        
+        '24-bpp path
+        If (m_Header.BitDepth = 8) Then
+            
+            'Calculate stride manually for source and destination lines
+            srcStride = srcImage.GetDIBStride
+            dstStride = srcImage.GetDIBWidth * 3
+            xLimit = dstStride - 1
+            
+            'Next, we want to copy all byte data into place - but note that the Windows DIB will have a different
+            ' stride than the PNG DIB (which does *not* pad to increments of 4).
+            For y = 0 To srcHeightInPixels - 1
+                
+                ySrcOffset = y * srcStride
+                yDstOffset = y * dstStride
+                srcPtr = srcImage.GetDIBPointer + ySrcOffset
+                
+                'Copy the source line of bytes into place
+                CopyMemoryStrict VarPtr(finalBytes(yDstOffset)), srcPtr, dstStride
+                
+                'Swizzle r/b manually
+                For x = 0 To xLimit Step 3
+                    tmpByte = finalBytes(yDstOffset + x)
+                    finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
+                    finalBytes(yDstOffset + x + 2) = tmpByte
+                Next x
+                
+            Next y
+            
+        '48-bpp path
+        ElseIf (m_Header.BitDepth = 16) Then
+        
+            srcStride = srcImage.GetDIBStride
+            dstStride = srcImage.GetDIBWidth * 6
+            xLimit = srcStride - 1
+            
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride * 2
+                
+                'Wrap an array around the source data
+                srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
+                
+                For x = 0 To xLimit Step 3
+                    
+                    'Swizzle R and B as part of the copy
+                    finalBytes(yDstOffset + x * 2) = srcBytes(x + 2)
+                    finalBytes(yDstOffset + x * 2 + 2) = srcBytes(x + 1)
+                    finalBytes(yDstOffset + x * 2 + 4) = srcBytes(x)
+                    
+                Next x
+                
+            Next y
+            
+            'Make sure our array is unwrapped from the source data
+            srcImage.UnwrapArrayFromDIB srcBytes
+            
+        End If
+        
+    End If
     
     'Note that we no longer require the original DIB; we can safely free it before continuing
     srcImage.EraseDIB True
@@ -1508,7 +1650,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'The temporary chunk handles the actual filtering for us
     If (tmpChunk Is Nothing) Then Set tmpChunk = New pdPNGChunk
-    If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), srcStride) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
+    If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), dstStride) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
     
 End Function
 
@@ -1664,7 +1806,7 @@ Private Sub DeInterlaceNonPaletteData()
     'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
     Dim srcBytes() As Byte, srcSA As SafeArray1D
     
-    Dim X As Long, Y As Long, j As Long
+    Dim x As Long, y As Long, j As Long
     Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
     Dim srcPxOffset As Long, newStride As Long
     
@@ -1705,19 +1847,19 @@ Private Sub DeInterlaceNonPaletteData()
             srcPxOffset = 0
             
             'Place all pixels in this chunk
-            For Y = startOffsetY To yFinal Step yLineOffset
+            For y = startOffsetY To yFinal Step yLineOffset
                 
                 'On each y-line (including the first one), advance the pixel offset by 1 to account
                 ' for the filter byte that prepends each PNG scanline.
                 srcPxOffset = srcPxOffset + 1
                 
-            For X = startOffsetX To xFinal Step xLineOffset
+            For x = startOffsetX To xFinal Step xLineOffset
                 For j = 0 To bppLoop
-                    dstBytes(1 + (Y * newStride) + (X * BytesPerPixel) + j) = srcBytes(srcPxOffset)
+                    dstBytes(1 + (y * newStride) + (x * BytesPerPixel) + j) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
                 Next j
-            Next X
-            Next Y
+            Next x
+            Next y
             
             'Unwrap the temporary source array and free the source chunk - it's no longer needed!
             tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
@@ -1926,7 +2068,7 @@ Private Sub UpsampleLowBitDepthData()
         'We'll also wrap an array around each chunk's stream, but this is handled inside the loop
         Dim srcBytes() As Byte, srcSA As SafeArray1D
         
-        Dim X As Long, Y As Long
+        Dim x As Long, y As Long
         Dim startOffsetX As Long, startOffsetY As Long, xLineOffset As Long, yLineOffset As Long
         Dim srcPxOffset As Long, newStride As Long
         
@@ -1966,17 +2108,17 @@ Private Sub UpsampleLowBitDepthData()
                 srcPxOffset = 0
                 
                 'Place all pixels in this chunk
-                For Y = startOffsetY To yFinal Step yLineOffset
+                For y = startOffsetY To yFinal Step yLineOffset
                     
                     'On each y-line (including the first one), advance the pixel offset by 1 to account
                     ' for the filter byte that prepends each PNG scanline.
                     srcPxOffset = srcPxOffset + 1
                     
-                For X = startOffsetX To xFinal Step xLineOffset
-                    dstBytes(1 + (Y * newStride) + X) = srcBytes(srcPxOffset)
+                For x = startOffsetX To xFinal Step xLineOffset
+                    dstBytes(1 + (y * newStride) + x) = srcBytes(srcPxOffset)
                     srcPxOffset = srcPxOffset + 1
-                Next X
-                Next Y
+                Next x
+                Next y
                 
                 'Unwrap the temporary source array and free the source chunk - it's no longer needed!
                 tmpChunks(i).BorrowData.UnwrapArrayFromMemoryStream srcBytes
@@ -2080,7 +2222,7 @@ End Sub
 ' to process it further, back it up before calling this!
 Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As Long, ByVal yFinal As Long, ByVal xStride As Long) As Long
     
-    Dim X As Long, Y As Long, i As Long, curByte As Byte
+    Dim x As Long, y As Long, i As Long, curByte As Byte
     
     'We'll use pdStream to generate a new, 8-bpp version of the image; then we can use our standard 8-bpp
     ' decode functions on 1, 2, 4-bpp data.
@@ -2111,14 +2253,14 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
             bitFlags(7) = 1
             
             'We want to focus on the bytes relevant to the current scanline only
-            For Y = 0 To yFinal
+            For y = 0 To yFinal
             
                 'Move past the filter byte
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                         
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For X = 0 To xStride - 2
+                For x = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -2132,9 +2274,9 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         End If
                         
                     Next i
-                Next X
+                Next x
                 
-            Next Y
+            Next y
                     
         Case 2
             
@@ -2146,14 +2288,14 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
             shiftTable(3) = 1
                     
             'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-            For Y = 0 To yFinal
+            For y = 0 To yFinal
             
                 'Move past the filter byte (which has already been dealt with in a previous step)
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                 
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For X = 0 To xStride - 2
+                For x = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -2167,20 +2309,20 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         End If
                         
                     Next i
-                Next X
-            Next Y
+                Next x
+            Next y
             
         Case 4
         
             'Unlike other methods, we want to extract the bytes relevant to the current scanline only
-            For Y = 0 To yFinal
+            For y = 0 To yFinal
             
                 'Move past the filter byte (which has already been dealt with in a previous step)
                 tmpStream.WriteByte srcStream.ReadByte()
                 numPixelsProcessed = 0
                         
                 'Read through (numOfBytesPerLine) entries, pushing values into the new stream as we go
-                For X = 0 To xStride - 2
+                For x = 0 To xStride - 2
                 
                     curByte = srcStream.ReadByte()
                     
@@ -2193,8 +2335,8 @@ Private Function UpsampleIDATChunk(ByRef srcChunk As pdPNGChunk, ByVal xFinal As
                         numPixelsProcessed = numPixelsProcessed + 1
                     End If
                     
-                Next X
-            Next Y
+                Next x
+            Next y
     
     End Select
     
