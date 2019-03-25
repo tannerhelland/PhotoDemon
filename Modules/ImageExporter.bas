@@ -152,39 +152,59 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                 
                 'Non-truecolor images are less pleasant to work with, as the presence of alpha complicates everything.
                 Else
-                
-                    'If the image contains meaningful alpha channel data, we have two output options
-                    If (currentAlphaStatus <> PDAS_NoAlpha) Then
-                        
-                        'If the alpha is "complicated" (meaning it contains more values than just 0 or 255), we must fall back to
-                        ' 32-bpp output modes, regardless of color status.  (PNG supports more fine-grained results than this,
-                        ' but FreeImage does not, so our hands are tied.)
-                        If (currentAlphaStatus = PDAS_ComplicatedAlpha) Then
-                            AutoDetectOutputColorDepth = 32
-                        
-                        'If the alpha is *not* complicated - meaning it consists of only 0 or 255 values - we can use
-                        ' an 8-bpp output mode, with a designated transparent color.
+                    
+                    If isGrayscale Then
+                    
+                        'TODO: detect 1/2/4/8 properly
+                        AutoDetectOutputColorDepth = 8
+                    
+                    'Output color depth depends on the number of unique RGBA combinations only
+                    Else
+                        If (uniqueColorCount <= 2) Then
+                            AutoDetectOutputColorDepth = 1
+                        ElseIf (uniqueColorCount <= 4) Then
+                            AutoDetectOutputColorDepth = 2
+                        ElseIf (uniqueColorCount <= 16) Then
+                            AutoDetectOutputColorDepth = 4
                         Else
                             AutoDetectOutputColorDepth = 8
                         End If
-                    
-                    Else
-                        If isMonochrome Then
-                            AutoDetectOutputColorDepth = 1
-                        Else
-                            'Subsequent FreeImage testing in March 2018 shows that 4-bit PNG output may get
-                            ' converted to 4-bit grayscale.  There may be a way to avoid this, but I don't know
-                            ' it at present; as such, I'm suspending 4-bpp output until further notice.
-                            
-                            'I'm debating whether to provide 4-bpp as an output depth.  It has limited usage, and there
-                            ' are complications with binary alpha... this is marked as TODO for now
-                            'If (uniqueColorCount <= 16) Then
-                            '    AutoDetectOutputColorDepth = 4
-                            'Else
-                                AutoDetectOutputColorDepth = 8
-                            'End If
-                        End If
                     End If
+'
+'                    'If the image contains meaningful alpha channel data, we have two output options
+'                    If (currentAlphaStatus <> PDAS_NoAlpha) Then
+'
+'                        'If the alpha is "complicated" (meaning it contains more values than just 0 or 255), we must fall back to
+'                        ' 32-bpp output modes, regardless of color status.  (PNG supports more fine-grained results than this,
+'                        ' but FreeImage does not, so our hands are tied.)
+'                        If (currentAlphaStatus = PDAS_ComplicatedAlpha) Then
+'                            AutoDetectOutputColorDepth = 32
+'
+'                        'If the alpha is *not* complicated - meaning it consists of only 0 or 255 values - we can use
+'                        ' an 8-bpp output mode, with a designated transparent color.
+'                        Else
+'                            AutoDetectOutputColorDepth = 8
+'                        End If
+'
+'                    Else
+'                        If isMonochrome Then
+'                            AutoDetectOutputColorDepth = 1
+'                        Else
+'                            'Subsequent FreeImage testing in March 2018 shows that 4-bit PNG output may get
+'                            ' converted to 4-bit grayscale.  There may be a way to avoid this, but I don't know
+'                            ' it at present; as such, I'm suspending 4-bpp output until further notice.
+'
+'                            'I'm debating whether to provide 4-bpp as an output depth.  It has limited usage, and there
+'                            ' are complications with binary alpha... this is marked as TODO for now
+'                            'If (uniqueColorCount <= 16) Then
+'                            '    AutoDetectOutputColorDepth = 4
+'                            'Else
+'                                AutoDetectOutputColorDepth = 8
+'                                Debug.Print "here?"
+'
+'                            'End If
+'                        End If
+'                    End If
                 End If
             
             'PNM supports only non-alpha modes, but the file extension should really be changed to match the output depth
@@ -1488,23 +1508,22 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             'Certain color formats are currently written using our own encoder.  Note that libdeflate supports compression
             ' levels up to "12", unlike zlib's "9".  Levels 10-12 are slow but capable of producing extremely small files.
             If (Not forceGrayscale) Then
-                If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
-                    If (outputColorDepth = 32) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    ElseIf (outputColorDepth = 64) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    End If
-                ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
-                    If (outputColorDepth = 24) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    ElseIf (outputColorDepth = 48) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    End If
+                
+                PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                
+                If (outputColorDepth = 64) Then
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                ElseIf (outputColorDepth = 48) Then
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                ElseIf (outputColorDepth = 32) Then
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                ElseIf (outputColorDepth = 24) Then
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                Else
+                    If (outputColorDepth < 8) Then outputColorDepth = 8
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Indexed, outputColorDepth, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
                 End If
+                
             Else
                 If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
                     If (outputColorDepth = 16) Then
@@ -1526,7 +1545,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
             If imgSavedOK And PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
-                Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
+                'Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
             End If
             
         End If

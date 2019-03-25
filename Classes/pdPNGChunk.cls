@@ -635,7 +635,7 @@ End Function
 ' It is up to the caller to prepare the source data for
 '
 'RETURNS: TRUE if unfiltering was successful.  FALSE is a critical error; you must suspend processing after receiving it.
-Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByVal srcPtr As Long, ByVal srcStride As Long) As Boolean
+Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByVal srcPtr As Long, ByVal srcStride As Long, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterOptimal) As Boolean
     
     'Because this function is a potential time sink (especially during batch processes), it has been heavily profiled.
     ' To activate profile logging, set the class-level PNG_DEBUG_VERBOSE constant to TRUE.
@@ -690,22 +690,59 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     If (pxOffset < 1) Then pxOffset = 1
     
     'If heuristics are active, we will try to find the best filter for each line in the image.
-    ' (If heuristics are *not* active, we'll just default to "none" filtering.)
-    ' In PD, this value will be passed to this function; for now, hard-code it to TRUE so we can
-    ' fuzz it thoroughly.
-    Dim useHeuristics As Boolean
-    useHeuristics = True
+    ' This adds processing time to the final process (about 1 second per 20-25 megapixels of RGBA data),
+    ' so it is almost always beneficial.  Note, however, that the spec recommends *against* using filter
+    ' on certain types of pixel data - e.g. indexed data is unlikely to benefit from filtering.
+    '
+    'Heuristics, per the spec, use a (greatly simplified) variance calculation that treats the
+    ' difference between neighboring values as a signed value.  Because VB doesn't support signed
+    ' byte types, calculate a quick lut to avoid branches on the inner loop.
+    Dim useHeuristics As Boolean, heurTable() As Long
+    ReDim heurTable(0 To 255) As Long
+    Dim i As Long
+    For i = 0 To 255
+        If (i < 128) Then
+            heurTable(i) = i
+        Else
+            heurTable(i) = 256 - i
+        End If
+    Next i
     
     'If heuristics are in use, we want to run an inner loop that tests all filters from NONE through PAETH.
-    ' If heuristics are *not* in use, however, we don't want to loop at all - so set the start and end
-    ' filter test to the same ID.
+    ' If heuristics are *not* in use, however, we don't want to loop at all - so we'll set the start and
+    ' end filter to the same ID, effectively nullifying the inner loop.
     Dim startFilter As PD_PNGFilter, endFilter As PD_PNGFilter, curFilter As PD_PNGFilter
-    startFilter = png_None
-    If useHeuristics Then endFilter = png_Paeth Else endFilter = png_None
     
-    'TESTING ONLY: want to use just one filter for the entire image?  Set it here.
-    'startFilter = png_Up
-    'endFilter = png_Up
+    'From the incoming filter strategy parameter, figure out which actual filters we want to use
+    If (useFilterStrategy = png_FilterNone) Then
+        useHeuristics = False
+        startFilter = png_None
+        endFilter = png_None
+    ElseIf (useFilterStrategy = png_FilterFast) Then
+        useHeuristics = True
+        startFilter = png_None
+        endFilter = png_Up
+    ElseIf (useFilterStrategy = png_FilterOptimal) Then
+        useHeuristics = True
+        startFilter = png_None
+        endFilter = png_Paeth
+    ElseIf (useFilterStrategy = png_FilterSubOnly) Then
+        useHeuristics = False
+        startFilter = png_Sub
+        endFilter = png_Sub
+    ElseIf (useFilterStrategy = png_FilterUpOnly) Then
+        useHeuristics = False
+        startFilter = png_Up
+        endFilter = png_Up
+    ElseIf (useFilterStrategy = png_FilterAverageOnly) Then
+        useHeuristics = False
+        startFilter = png_Average
+        endFilter = png_Average
+    ElseIf (useFilterStrategy = png_FilterPaethOnly) Then
+        useHeuristics = False
+        startFilter = png_Paeth
+        endFilter = png_Paeth
+    End If
     
     'Prepare a second staging area, capable of holding one scanline of each filter type.
     ' (When heuristics are active, we'll manually produce a filtered scanline of each type,
@@ -861,8 +898,7 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
                 ' that produces the smallest sum is chosen."
                 curVariance = 0
                 For x = dstStride * curFilter + 1 To (dstStride * (curFilter + 1)) - 1
-                    curValue = dstFilterBytes(x)
-                    If (curValue < 128) Then curVariance = curVariance + curValue Else curVariance = curVariance + (256 - curValue)
+                    curVariance = curVariance + heurTable(dstFilterBytes(x))
                 Next x
                 
                 'Give a bonus to the last-used filter, if any.  This is currently disabled pending
