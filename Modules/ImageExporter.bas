@@ -40,6 +40,11 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     
     Dim colorCheckSuccessful As Boolean: colorCheckSuccessful = False
     
+    'If the outgoing image has 256 colors or less, we want to populate a color table with the auto-detected palette.
+    ' This can be used to assess things like "4-bit grayscale" modes, which require us to validate individual
+    ' grayscale values (to ensure they match 4-bit encoding patterns).
+    Dim outPalette() As RGBQuad
+    
     'If the incoming image is already 24-bpp, we can skip the alpha-processing steps entirely.  However, it is not
     ' necessary for the caller to do this.  PD will provide correct results either way.
     If (srcDIB.GetDIBColorDepth = 24) Then
@@ -49,7 +54,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     
     'If the incoming image is 32-bpp, we will run additional alpha channel heuristics
     Else
-        colorCheckSuccessful = AutoDetectColors_32BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome, currentAlphaStatus)
+        colorCheckSuccessful = AutoDetectColors_32BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome, currentAlphaStatus, outPalette)
         isTrueColor = (uniqueColorCount > 256)
     End If
     
@@ -153,12 +158,40 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                 'Non-truecolor images are less pleasant to work with, as the presence of alpha complicates everything.
                 Else
                     
-                    If isGrayscale Then
-                    
-                        'TODO: detect 1/2/4/8 properly
+                    If isMonochrome Then
+                        AutoDetectOutputColorDepth = 1
+                        
+                    ElseIf isGrayscale Then
+                            
+                        'Assume 8-bit output by default; we'll perform additional tests to clarify whether
+                        ' 1/2/4-bit data can be used instead.
                         AutoDetectOutputColorDepth = 8
-                    
-                    'Output color depth depends on the number of unique RGBA combinations only
+                        
+                        Dim i As Long, badValueFound As Boolean
+                        badValueFound = False
+                        
+                        'Check 2-bit
+                        If (uniqueColorCount <= 4) Then
+                            For i = 0 To uniqueColorCount - 1
+                                If (outPalette(i).Red Mod 85 <> 0) Then
+                                    badValueFound = False
+                                    Exit For
+                                End If
+                            Next i
+                            If (Not badValueFound) Then AutoDetectOutputColorDepth = 2
+                        
+                        'Check 4-bit
+                        ElseIf (uniqueColorCount <= 16) Then
+                            For i = 0 To uniqueColorCount - 1
+                                If (outPalette(i).Red Mod 17 <> 0) Then
+                                    badValueFound = False
+                                    Exit For
+                                End If
+                            Next i
+                            If (Not badValueFound) Then AutoDetectOutputColorDepth = 4
+                        End If
+                        
+                    'For non-grayscale images, output color depth depends on the number of unique RGBA combinations only.
                     Else
                         If (uniqueColorCount <= 2) Then
                             AutoDetectOutputColorDepth = 1
@@ -436,7 +469,7 @@ End Function
 '
 'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
 ' it a 24-bpp image!)
-Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef isMonochrome As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS) As Boolean
+Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef isMonochrome As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS, ByRef uniqueColors() As RGBQuad) As Boolean
 
     AutoDetectColors_32BPPSource = False
 
@@ -452,8 +485,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
-
-        Dim uniqueColors() As RGBQuad
+        
         ReDim uniqueColors(0 To 255) As RGBQuad
         
         'Because PD uses premultiplied alpha, we can set an "impossible" color value as the default value
@@ -565,15 +597,32 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             'End grayscale check
             End If
 
-            'If the image is grayscale and it only contains two colors, check for monochrome next
-            ' (where monochrome = pure black and pure white, only).
-            If isGrayscale And (numUniqueColors <= 2) Then
+            'Grayscale images have some restrictions that paletted images do not (e.g. they cannot have
+            ' variable per-index alpha values).  Check for these now.
+            If isGrayscale Then
                 
-                If ((uniqueColors(0).Red = 0) And (uniqueColors(0).Green = 0) And (uniqueColors(0).Blue = 0)) Or ((uniqueColors(0).Red = 255) And (uniqueColors(0).Green = 255) And (uniqueColors(0).Blue = 255)) Then
-                    If ((uniqueColors(1).Red = 0) And (uniqueColors(1).Green = 0) And (uniqueColors(1).Blue = 0)) Or ((uniqueColors(1).Red = 255) And (uniqueColors(1).Green = 255) And (uniqueColors(1).Blue = 255)) Then isMonochrome = True
+                'In the case of PNGs, grayscale images are not allowed to have variable transparency values.
+                ' (This is likely true for other image formats as well - or at least, it's universal enough
+                ' that we don't need to deviate according to image format.)  Note that values of 0 are okay;
+                ' these can be encoded using an alternate tRNS chunk.
+                '
+                'If there are any alpha values on the range [1, 254], consider this a non-grayscale image.
+                If nonBinaryAlpha Then
+                    isGrayscale = False
+                
+                'If the image doesn't contain weird alpha values, look for monochrome data specifically.
+                Else
+                    
+                    'Check monochrome; monochrome images must only contain pure black and pure white.
+                    If (numUniqueColors <= 2) Then
+                        If ((uniqueColors(0).Red = 0) And (uniqueColors(0).Green = 0) And (uniqueColors(0).Blue = 0)) Or ((uniqueColors(0).Red = 255) And (uniqueColors(0).Green = 255) And (uniqueColors(0).Blue = 255)) Then
+                            If ((uniqueColors(1).Red = 0) And (uniqueColors(1).Green = 0) And (uniqueColors(1).Blue = 0)) Or ((uniqueColors(1).Red = 255) And (uniqueColors(1).Green = 255) And (uniqueColors(1).Blue = 255)) Then isMonochrome = True
+                        End If
+                    End If
+                    
                 End If
                 
-            'End monochrome check
+            'End "special" grayscale mode checks
             End If
 
         'End "If 256 colors or less..."
@@ -1534,13 +1583,13 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                         imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
                     End If
                 ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
-                    If (outputColorDepth = 8) Then
+                    'If (outputColorDepth = 8) Then
                         PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    ElseIf (outputColorDepth = 16) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    End If
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, outputColorDepth, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    'ElseIf (outputColorDepth = 16) Then
+                    '    PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                    '    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    'End If
                 End If
             End If
             

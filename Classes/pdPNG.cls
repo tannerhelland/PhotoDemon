@@ -1551,6 +1551,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     ReDim finalBytes(0 To sizeOfPngBytes - 1) As Byte
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
     Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long
+    Dim curOffset As Long, dstOffsetX As Long
     Dim x As Long, y As Long
     
     'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
@@ -1684,7 +1685,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
         Dim grayBytes() As Byte
         DIBs.GetDIBGrayscaleMap srcImage, grayBytes, False
         
-        'Cheap copy for 8-bits, manual transfer for 16
+        'Cheap copy for 8-bits, manual transfer for 16, special encoding for sub-8-bit
         If (m_Header.BitDepth = 8) Then
             dstStride = srcImage.GetDIBWidth
             CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayBytes(0, 0)), sizeOfPngBytes
@@ -1706,6 +1707,90 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
             'Make sure our array is unwrapped from the source data
             srcImage.UnwrapArrayFromDIB srcBytes
             
+        ElseIf (m_Header.BitDepth = 4) Then
+        
+            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+            ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
+            xLimit = (srcImage.GetDIBWidth - 1)
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride
+                
+                For x = 0 To xLimit
+                    dstOffsetX = yDstOffset + x \ 2
+                    tmpByte = grayBytes(x, y) \ 17
+                    If (x And 1) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                    Else
+                        finalBytes(dstOffsetX) = tmpByte * 16
+                    End If
+                Next x
+                
+            Next y
+            
+        ElseIf (m_Header.BitDepth = 2) Then
+        
+            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+            xLimit = (srcImage.GetDIBWidth - 1)
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride
+                curOffset = 0
+                
+                For x = 0 To xLimit
+                    dstOffsetX = yDstOffset + x \ 4
+                    tmpByte = grayBytes(x, y) \ 85
+                    If (curOffset = 0) Then
+                        finalBytes(dstOffsetX) = tmpByte * 64
+                    ElseIf (curOffset = 1) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
+                    ElseIf (curOffset = 2) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
+                    Else
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                    End If
+                    curOffset = curOffset + 1
+                    If (curOffset > 3) Then curOffset = 0
+                Next x
+                
+            Next y
+        
+        ElseIf (m_Header.BitDepth = 1) Then
+        
+            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+            ' TODO: build a lut of multipliers; use that instead of branches
+            xLimit = (srcImage.GetDIBWidth - 1)
+            For y = 0 To srcHeightInPixels - 1
+                
+                yDstOffset = y * dstStride
+                curOffset = 0
+                
+                For x = 0 To xLimit
+                    dstOffsetX = yDstOffset + x \ 8
+                    If (grayBytes(x, y) < 128) Then tmpByte = 0 Else tmpByte = 1
+                    If (curOffset = 0) Then
+                        finalBytes(dstOffsetX) = tmpByte * 128
+                    ElseIf (curOffset = 1) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 64)
+                    ElseIf (curOffset = 2) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 32)
+                    ElseIf (curOffset = 3) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
+                    ElseIf (curOffset = 4) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 8)
+                    ElseIf (curOffset = 5) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
+                    ElseIf (curOffset = 6) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 2)
+                    ElseIf (curOffset = 7) Then
+                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                    End If
+                    curOffset = curOffset + 1
+                    If (curOffset > 7) Then curOffset = 0
+                Next x
+                
+            Next y
+        
         End If
     
     'Greyscale + alpha
@@ -1810,8 +1895,6 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
         If (m_Header.BitDepth = 8) Then
             CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(imgPixels(0, 0)), sizeOfPngBytes
         ElseIf (m_Header.BitDepth = 4) Then
-            
-            Dim curOffset As Long, dstOffsetX As Long
             
             'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
             ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
