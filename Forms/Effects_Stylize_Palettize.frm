@@ -328,7 +328,7 @@ Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub UpdateTransparencyOptions()
-    sldAlphaCutoff.Visible = (btsAlpha.ListIndex = 1)
+    sldAlphaCutoff.Visible = (btsAlpha.ListIndex = 2)
 End Sub
 
 Private Sub btsMethod_Click(ByVal buttonIndex As Long)
@@ -397,9 +397,10 @@ Private Sub Form_Load()
     btsMethod.AddItem "NeuQuant", 2
     btsMethod.ListIndex = 0
     
-    btsAlpha.AddItem "full", 0
-    btsAlpha.AddItem "binary", 1
-    btsAlpha.AddItem "none", 2
+    btsAlpha.AddItem "auto", 0
+    btsAlpha.AddItem "full", 1
+    btsAlpha.AddItem "binary", 2
+    btsAlpha.AddItem "none", 3
     btsAlpha.ListIndex = 0
     UpdateTransparencyOptions
     
@@ -462,9 +463,15 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     Dim finalBackColor As Long
     finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
     
-    Dim outputAlphaMode As PD_ALPHA_STATUS
-    If Strings.StringsEqual(cParams.GetString("alphamode", "full"), "full", True) Then
+    Dim outputAlphaMode As PD_ALPHA_STATUS, useAlphaInPalette As Boolean
+    useAlphaInPalette = False
+    
+    If Strings.StringsEqual(cParams.GetString("alphamode", "auto"), "auto", True) Then
         outputAlphaMode = PDAS_ComplicatedAlpha
+        useAlphaInPalette = (quantMethod = PDCQ_MedianCut)
+    ElseIf Strings.StringsEqual(cParams.GetString("alphamode", "full"), "full", True) Then
+        outputAlphaMode = PDAS_ComplicatedAlpha
+        useAlphaInPalette = (quantMethod = PDCQ_MedianCut)
     ElseIf Strings.StringsEqual(cParams.GetString("alphamode", "full"), "binary", True) Then
         outputAlphaMode = PDAS_BinaryAlpha
     Else
@@ -475,7 +482,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     alphaCutoff = cParams.GetLong("alphacutoff", 64)
     
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , useAlphaInPalette
     
     If (Not toPreview) Then
         SetProgBarMax workingDIB.GetDIBHeight * 2
@@ -519,21 +526,29 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     
     If (quantMethod = PDCQ_MedianCut) Then
     
-        'Resize the target DIB to a smaller size
-        Dim smallDIB As pdDIB
-        DIBs.ResizeDIBByPixelCount workingDIB, smallDIB, 500000
-        
-        'Generate an optimal palette
-        Palettes.GetOptimizedPalette smallDIB, finalPalette, paletteSize
+        'Generate an optimal palette, and if alpha is involved, use it as part of the calculation.
+        If useAlphaInPalette Then
+            Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize
+        Else
+            Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize
+        End If
         
         'Preserve black and white, as necessary
-        If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, smallDIB
+        If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
         
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            If useAlphaInPalette Then
+                Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            End If
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            If useAlphaInPalette Then
+                Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
+            End If
         End If
     
     Else
@@ -569,7 +584,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
             FreeImage_Unload fi_DIB8
             
             'Preserve black and white, as necessary
-            If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, smallDIB
+            If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
             
             'Apply the generated palette to our target image, using the method requested
             If (finalPaletteCount <> 0) Then
@@ -584,7 +599,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
     End If
     
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, useAlphaInPalette
     
 End Sub
 
@@ -817,10 +832,12 @@ Private Function GetToolParamString() As String
         
         Select Case btsAlpha.ListIndex
             Case 0
-                .AddParam "alphamode", "full"
+                .AddParam "alphamode", "auto"
             Case 1
-                .AddParam "alphamode", "binary"
+                .AddParam "alphamode", "full"
             Case 2
+                .AddParam "alphamode", "binary"
+            Case 3
                 .AddParam "alphamode", "none"
         End Select
         

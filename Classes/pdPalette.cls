@@ -1666,7 +1666,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
     'Start by writing a few standard lines, kind of like a header
     With dstText
         .AppendLine "GIMP Palette"
-        If (Len(m_Palettes(useGroupIndex).GetPaletteName()) <> 0) Then .AppendLine "Name: " & m_Palettes(useGroupIndex).GetPaletteName()
+        If (LenB(m_Palettes(useGroupIndex).GetPaletteName()) <> 0) Then .AppendLine "Name: " & m_Palettes(useGroupIndex).GetPaletteName()
         .AppendLine "#"
         If addPDCredit Then
             .AppendLine "# " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(https://photodemon.org)")
@@ -1687,7 +1687,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
             
             'I realize that use of a tab char here is odd, but the palette files that ship with GIMP files
             ' all use tab delimiters (instead of spaces) before the color name.  I don't know why.
-            If (Len(.ColorName) <> 0) Then colorLine = colorLine & vbTab & .ColorName
+            If (LenB(.ColorName) <> 0) Then colorLine = colorLine & vbTab & .ColorName
         End With
         
         dstText.AppendLine colorLine
@@ -1734,10 +1734,11 @@ Friend Function SavePalettePaintDotNet(ByRef dstFile As String, Optional ByVal u
     Dim i As Long, tmpPaletteEntry As PDPaletteEntry, colorLine As String
     
     'Note that Paint.NET palettes also top out at 96 colors; < 96 colors are okay (as the remaining entries
-    ' will be filled with white by Paint.NET, but > 96 is disallowed.
+    ' will be filled with white by Paint.NET, but > 96 is disallowed.  If you want to enforce this,
+    ' uncomment the boundary check below.
     Dim numColorsBound As Long
     numColorsBound = m_Palettes(useGroupIndex).GetNumOfColors()
-    If (numColorsBound > 96) Then numColorsBound = 96
+    'If (numColorsBound > 96) Then numColorsBound = 96
     
     For i = 0 To numColorsBound - 1
         

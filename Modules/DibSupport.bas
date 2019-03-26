@@ -1412,7 +1412,7 @@ Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdD
             GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpolationType, , True, , True
             
             ResizeDIBByPixelCount = True
-        
+            
         End If
     
     End If

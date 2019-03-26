@@ -75,10 +75,43 @@ Friend Function BuildTree(ByRef srcPalette() As RGBQuad, ByVal numColorsToUse As
     
 End Function
 
+'Pass an entire palette to this method; the tree will be automatically constructed accordingly.
+Friend Function BuildTreeIncAlpha(ByRef srcPalette() As RGBQuad, ByVal numColorsToUse As Long) As Boolean
+    
+    BuildTreeIncAlpha = (numColorsToUse > 0)
+    
+    If BuildTreeIncAlpha Then
+    
+        Set m_Root = New pdKDTreeNode
+        
+        'Transfer the source palette into a "cache" type, so we can store original palette indices
+        ' into the KD-tree (instead of just bare RGBQuads)
+        Dim tmpCache() As PDPaletteCache
+        ReDim tmpCache(0 To numColorsToUse - 1) As PDPaletteCache
+        
+        Dim i As Long
+        For i = 0 To numColorsToUse - 1
+            tmpCache(i).ColorValue = srcPalette(i)
+            tmpCache(i).OrigIndex = i
+        Next i
+        
+        'For best performance, users should request a balanced tree.  This imposes a tree creation penalty,
+        ' but subsequent nearest-neighbor queries are *much* faster.
+        m_Root.InsertNodeBalancedIncAlpha tmpCache, 0
+        
+    End If
+    
+End Function
+
 'Given some source color, return the best color match from the tree
 Friend Function GetNearestColor(ByRef srcColor As RGBQuad) As RGBQuad
     m_BestDistance = LONG_MAX
     If (Not m_Root Is Nothing) Then m_Root.NearestColor srcColor, GetNearestColor, m_BestDistance
+End Function
+
+Friend Function GetNearestColorIncAlpha(ByRef srcColor As RGBQuad) As RGBQuad
+    m_BestDistance = LONG_MAX
+    If (Not m_Root Is Nothing) Then m_Root.NearestColorIncAlpha srcColor, GetNearestColorIncAlpha, m_BestDistance
 End Function
 
 'Given some source color, return an index into the original source palette of the palette entry
@@ -89,6 +122,17 @@ Friend Function GetNearestPaletteIndex(ByRef srcColor As RGBQuad) As Long
         Dim tmpResult As PDPaletteCache
         m_Root.NearestPaletteIndex srcColor, tmpResult, m_BestDistance
         GetNearestPaletteIndex = tmpResult.OrigIndex
+    End If
+End Function
+
+'Given some source color, return an index into the original source palette of the palette entry
+' that most closely matches the requested color.
+Friend Function GetNearestPaletteIndexIncAlpha(ByRef srcColor As RGBQuad) As Long
+    m_BestDistance = LONG_MAX
+    If (Not m_Root Is Nothing) Then
+        Dim tmpResult As PDPaletteCache
+        m_Root.NearestPaletteIndexIncAlpha srcColor, tmpResult, m_BestDistance
+        GetNearestPaletteIndexIncAlpha = tmpResult.OrigIndex
     End If
 End Function
 
