@@ -478,26 +478,30 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         PDDebug.LogAction "Analyzing color count of 32-bpp image..."
         
         Dim srcPixels() As Byte, tmpSA As SafeArray2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
-
+        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+        
         Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalY = srcDIB.GetDIBHeight - 1
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
         
-        ReDim uniqueColors(0 To 255) As RGBQuad
+        'Use a dedicated color counting class to collect a palette for this image
+        Dim cColorTree As pdColorCount
+        Set cColorTree = New pdColorCount
+        cColorTree.SetAlphaTracking True
+        
+        'ReDim uniqueColors(0 To 255) As RGBQuad
         
         'Because PD uses premultiplied alpha, we can set an "impossible" color value as the default value
         ' for the unique colors array; this allows us to match black correctly.
         ' TODO: use a hash table or something smarter than a naive array
         Dim i As Long
-        For i = 0 To 255
-            uniqueColors(i).Red = 1
-            uniqueColors(i).Green = 1
-            uniqueColors(i).Blue = 0
-            uniqueColors(i).Alpha = 1
-        Next i
+        'For i = 0 To 255
+        '    uniqueColors(i).Red = 1
+        '    uniqueColors(i).Green = 1
+        '    uniqueColors(i).Blue = 0
+        '    uniqueColors(i).Alpha = 1
+        'Next i
 
         'Total number of unique colors counted so far
         Dim numUniqueColors As Long, non255Alpha As Boolean, nonBinaryAlpha As Boolean
@@ -525,35 +529,13 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             
             'Until we find at least 257 unique colors, we need to keep checking individual pixels
             If (numUniqueColors <= 256) Then
+                If cColorTree.AddColor(r, g, b, a) Then numUniqueColors = numUniqueColors + 1
                 
-                colorFound = False
-                
-                'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
-                For i = 0 To numUniqueColors - 1
-                    If (uniqueColors(i).Red = r) Then
-                        If (uniqueColors(i).Green = g) Then
-                            If (uniqueColors(i).Blue = b) Then
-                                If (uniqueColors(i).Alpha = a) Then
-                                    colorFound = True
-                                    Exit For
-                                End If
-                            End If
-                        End If
-                    End If
-                Next i
-    
-                'If colorFound is still false, store this value in the array and increment our color counter
-                If (Not colorFound) Then
-                    If (numUniqueColors >= 256) Then
-                        numUniqueColors = 257
-                        If nonBinaryAlpha Then Exit For
-                    Else
-                        uniqueColors(numUniqueColors).Red = r
-                        uniqueColors(numUniqueColors).Green = g
-                        uniqueColors(numUniqueColors).Blue = b
-                        uniqueColors(numUniqueColors).Alpha = a
-                        numUniqueColors = numUniqueColors + 1
-                    End If
+                'Once more than 256 colors have been found, we no longer need to count colors, because we
+                ' already know the image must be exported as 24-bit (or higher)
+                If (numUniqueColors > 256) Then
+                    numUniqueColors = 257
+                    If nonBinaryAlpha Then Exit For
                 End If
                 
             End If
@@ -561,9 +543,9 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         Next x
             If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
         Next y
-
-        CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
-
+        
+        srcDIB.UnwrapArrayFromDIB srcPixels
+        
         netColorCount = numUniqueColors
 
         'By default, we assume that an image is neither monochrome nor grayscale
@@ -572,38 +554,37 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
         'Further checks are only relevant if the image contains 256 colors or less
         If (numUniqueColors <= 256) Then
+            
+            'Retrieve the current color palette for this image
+            Debug.Print "getting palette?"
+            cColorTree.GetPalette uniqueColors
+            
+            'Next, we want to see if the image is grayscale
+            isGrayscale = True
 
-            'Check for grayscale images
-            If (numUniqueColors <= 256) Then
-
-                isGrayscale = True
-
-                'Loop through all available colors
-                For i = 0 To numUniqueColors - 1
-                    
-                    'If any of the components do not match, this is not a grayscale image
-                    If (uniqueColors(i).Red <> uniqueColors(i).Green) Then
+            'Loop through all palette entries
+            For i = 0 To numUniqueColors - 1
+                
+                'If any of the components do not match, this is not a grayscale image
+                If (uniqueColors(i).Red <> uniqueColors(i).Green) Then
+                    isGrayscale = False
+                    Exit For
+                Else
+                    If (uniqueColors(i).Blue <> uniqueColors(i).Red) Or (uniqueColors(i).Blue <> uniqueColors(i).Green) Then
                         isGrayscale = False
                         Exit For
-                    Else
-                        If (uniqueColors(i).Blue <> uniqueColors(i).Red) Or (uniqueColors(i).Blue <> uniqueColors(i).Green) Then
-                            isGrayscale = False
-                            Exit For
-                        End If
                     End If
+                End If
 
-                Next i
-
-            'End grayscale check
-            End If
-
+            Next i
+            
             'Grayscale images have some restrictions that paletted images do not (e.g. they cannot have
             ' variable per-index alpha values).  Check for these now.
             If isGrayscale Then
                 
                 'In the case of PNGs, grayscale images are not allowed to have variable transparency values.
                 ' (This is likely true for other image formats as well - or at least, it's universal enough
-                ' that we don't need to deviate according to image format.)  Note that values of 0 are okay;
+                ' that we don't need to deviate according to image format.)  Note that values of 0 may be okay;
                 ' these can be encoded using an alternate tRNS chunk.
                 '
                 'If there are any alpha values on the range [1, 254], consider this a non-grayscale image.

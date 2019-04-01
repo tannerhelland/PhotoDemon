@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.189</langversion>
+<langversion>1.0.190</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -520,13 +520,15 @@ If проблемот продолжи, ве молиме да го пријав
 </phrase>
 
 <phrase>
-<original>Total unique colors: %1</original>
-<translation>Вкупно уникатни бои: %1</translation>
+<original>Total colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>This image contains %1 unique colors.</original>
-<translation>Оваа слика содржи %1 уникатни бои.</translation>
+<original>This image contains %1 unique colors (RGB).
+
+This image contains %2 unique color + opacity values (RGBA).</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10815,7 +10817,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15716,12 +15718,18 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdColorCount.cls -->
+
+<!-- pdColorCount.cls contains 0 phrases. -->
+
+<!-- END text for pdColorCount.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
-<!-- These 2623 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4812 phrases. -->
+<!-- 2189 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12405 total words. -->
 
 </pdData>

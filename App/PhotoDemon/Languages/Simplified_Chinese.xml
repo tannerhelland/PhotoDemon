@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.699</langversion>
+<langversion>7.2.700</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -520,13 +520,15 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Total unique colors: %1</original>
-<translation>全部唯一颜色：%1</translation>
+<original>Total colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>This image contains %1 unique colors.</original>
-<translation>此图像包含%1的独特色彩。</translation>
+<original>This image contains %1 unique colors (RGB).
+
+This image contains %2 unique color + opacity values (RGBA).</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10809,7 +10811,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>警告！ 调色板文件无效。</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 36 phrases. 19 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -15702,12 +15704,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdColorCount.cls -->
+
+<!-- pdColorCount.cls contains 0 phrases. -->
+
+<!-- END text for pdColorCount.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2188 are duplicates, so only 2623 unique phrases have been written to file. -->
-<!-- These 2623 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4812 phrases. -->
+<!-- 2189 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12405 total words. -->
 
 </pdData>
