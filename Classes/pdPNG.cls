@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2019 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 09/January/19
-'Last update: added support for loading PNGs directly from memory; this is used by the new OpenRaster parser
-'             to quickly decompress PNG streams coming from the ORA's zip container.
+'Last updated: 02/April/19
+'Last update: major clean-up of export pre-filter code
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -25,17 +24,14 @@ Attribute VB_Exposed = False
 ' the official PNG reference library, so it must be well-constructed, right?  It wouldn't do something asinine
 ' like implementing error-handling via setjmp/longjmp, would it?  Oh wait - it would?  @#$#$^@#$#^*^!!)
 '
-'After wasting dozens of hours fighting 3rd-party libraries, I gave up and wrote my own PNG parser.
-' PhotoDemon needs fairly intricate access to PNG internals - during both reading and writing - and given
-' the format's current ubiquity for images < 24-bpp, it makes sense to handle PNGs manually.  Since we ship
-' zLib anyway due to legacy compression tasks, we have everything we need to do this, and it frees me from
-' the nightmare of trying to make legacy C-libraries work with VB6.
+'After wasting dozens of hours fighting 3rd-party libraries, I gave up and wrote my own PNG import/export
+' library. PhotoDemon needs fairly intricate access to PNG internals - during both reading and writing -
+' and given the format's current ubiquity for images < 24-bpp, it makes sense to handle PNGs manually.
+' As an added bonus, PD can use libdeflate instead of zlib for de/compression tasks, allowing it to both
+' create smaller PNG files, and have faster de/compression times than libpng offers.
 '
-'At present, this class only supports PNG importing.  Exporting is a WIP.  I may revisit the API design after
-' finalizing export tasks.
-'
-'As of v7.2 nightly builds, this class *is* used as PD's primary PNG importer.  If you encounter bugs,
-' please let me know so I can resolve them before 7.2 stable releases.
+'As of v7.2 nightly builds, this class *is* used as PD's primary PNG importer and exporter.  If you encounter
+' bugs or surprises, please let me know so I can resolve them before 7.2 stable releases.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -71,17 +67,18 @@ End Enum
 #End If
 
 Public Enum PD_PNG_FilterStrategy
-    png_FilterNone = 0
+    png_FilterAuto = 0
     png_FilterFast = 1
     png_FilterOptimal = 2
-    png_FilterSubOnly = 3
-    png_FilterUpOnly = 4
-    png_FilterAverageOnly = 5
-    png_FilterPaethOnly = 6
+    png_FilterNone = 3
+    png_FilterSubOnly = 4
+    png_FilterUpOnly = 5
+    png_FilterAverageOnly = 6
+    png_FilterPaethOnly = 7
 End Enum
 
 #If False Then
-    Private Const png_FilterNone = 0, png_FilterFast = 1, png_FilterOptimal = 2, png_FilterSubOnly = 3, png_FilterUpOnly = 4, png_FilterAverageOnly = 5, png_FilterPaethOnly = 6
+    Private Const png_FilterAuto = 0, png_FilterFast = 1, png_FilterOptimal = 2, png_FilterNone = 3, png_FilterSubOnly = 4, png_FilterUpOnly = 5, png_FilterAverageOnly = 6, png_FilterPaethOnly = 7
 #End If
 
 'PNGs use a standard header, which we convert into this VB-friendly version.  Note that not all information
@@ -1514,7 +1511,8 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'At present, we produce a full copy of the image in the required bit-depth and layout.  In the future,
     ' it may be nice to handle this on a per-scanline basis, to avoid the need for massive up-front
-    ' memory allocations (especially when working with HDR modes).
+    ' memory allocations (especially when working with HDR modes).  Note, however, that this would require
+    ' a different solution than libdeflate as it does *not* expose a streaming API.
     If (m_Header.ColorType = png_TruecolorAlpha) Then
         sizeOfPngBytes = srcImage.GetDIBWidth * srcImage.GetDIBHeight * 4 * (m_Header.BitDepth \ 8)
     ElseIf (m_Header.ColorType = png_Truecolor) Then
@@ -1538,7 +1536,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
             If (dstStride < 1) Then
                 dstStride = 1
             Else
-                If (dstStride * 8) \ m_Header.BitDepth < srcImage.GetDIBWidth Then dstStride = dstStride + 1
+                If ((dstStride * 8) \ m_Header.BitDepth < srcImage.GetDIBWidth) Then dstStride = dstStride + 1
             End If
             
             sizeOfPngBytes = dstStride * srcImage.GetDIBHeight
@@ -1549,456 +1547,579 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'Prepare the buffer that will hold the color-mode-processed bytes
     ReDim finalBytes(0 To sizeOfPngBytes - 1) As Byte
-    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
-    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long
-    Dim curOffset As Long, dstOffsetX As Long
-    Dim x As Long, y As Long
-    
-    'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
-    ' source DIB; we cannot accelerate the process using pointer-based math
-    Dim srcBytes() As Byte, srcSA1D As SafeArray1D
-    
-    'Some params are identical for all image types (such as number of scanlines)
-    srcHeightInPixels = srcImage.GetDIBHeight
     
     'RGBA data
     If (m_Header.ColorType = png_TruecolorAlpha) Then
+        ExportStep3_FilterBytes = Step3Helper_TruecolorAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
         
-        '32-bpp path
-        If (m_Header.BitDepth = 8) Then
-        
-            'Copy over *all* DIB data
-            CopyMemoryStrict VarPtr(finalBytes(0)), srcImage.GetDIBPointer, sizeOfPngBytes
-            
-            srcStride = srcImage.GetDIBStride
-            dstStride = srcStride
-            xLimit = srcStride - 1
-            
-            For y = 0 To srcHeightInPixels - 1
-                yDstOffset = y * dstStride
-                For x = 0 To xLimit Step 4
-                    tmpByte = finalBytes(yDstOffset + x)
-                    finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
-                    finalBytes(yDstOffset + x + 2) = tmpByte
-                Next x
-            Next y
-            
-        '64-bpp path
-        ElseIf (m_Header.BitDepth = 16) Then
-        
-            srcStride = srcImage.GetDIBStride
-            dstStride = srcStride * 2
-            xLimit = srcStride - 1
-            
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                'Wrap an array around the source data
-                srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
-                
-                For x = 0 To xLimit Step 4
-                    
-                    'Swizzle R and B as part of the copy
-                    finalBytes(yDstOffset + x * 2) = srcBytes(x + 2)
-                    finalBytes(yDstOffset + x * 2 + 2) = srcBytes(x + 1)
-                    finalBytes(yDstOffset + x * 2 + 4) = srcBytes(x)
-                    finalBytes(yDstOffset + x * 2 + 6) = srcBytes(x + 3)
-                    
-                Next x
-                
-            Next y
-            
-            'Make sure our array is unwrapped from the source data
-            srcImage.UnwrapArrayFromDIB srcBytes
-            
-        End If
-    
     'RGB data
     ElseIf (m_Header.ColorType = png_Truecolor) Then
-        
-        'Start by downsampling the source DIB to 24-bpp, using whatever backcolor the caller requested
-        srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
-        
-        '24-bpp path
-        If (m_Header.BitDepth = 8) Then
-            
-            'Calculate stride manually for source and destination lines
-            srcStride = srcImage.GetDIBStride
-            dstStride = srcImage.GetDIBWidth * 3
-            xLimit = dstStride - 1
-            
-            'Next, we want to copy all byte data into place - but note that the Windows DIB will have a different
-            ' stride than the PNG DIB (which does *not* pad to increments of 4).
-            For y = 0 To srcHeightInPixels - 1
-                
-                ySrcOffset = y * srcStride
-                yDstOffset = y * dstStride
-                srcPtr = srcImage.GetDIBPointer + ySrcOffset
-                
-                'Copy the source line of bytes into place
-                CopyMemoryStrict VarPtr(finalBytes(yDstOffset)), srcPtr, dstStride
-                
-                'Swizzle r/b manually
-                For x = 0 To xLimit Step 3
-                    tmpByte = finalBytes(yDstOffset + x)
-                    finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
-                    finalBytes(yDstOffset + x + 2) = tmpByte
-                Next x
-                
-            Next y
-            
-        '48-bpp path
-        ElseIf (m_Header.BitDepth = 16) Then
-        
-            srcStride = srcImage.GetDIBStride
-            dstStride = srcImage.GetDIBWidth * 6
-            xLimit = (srcImage.GetDIBWidth - 1) * 3
-            
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                'Wrap an array around the source data
-                srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
-                
-                For x = 0 To xLimit Step 3
-                    
-                    'Swizzle R and B as part of the copy
-                    finalBytes(yDstOffset + x * 2) = srcBytes(x + 2)
-                    finalBytes(yDstOffset + x * 2 + 2) = srcBytes(x + 1)
-                    finalBytes(yDstOffset + x * 2 + 4) = srcBytes(x)
-                    
-                Next x
-                
-            Next y
-            
-            'Make sure our array is unwrapped from the source data
-            srcImage.UnwrapArrayFromDIB srcBytes
-            
-        End If
+        ExportStep3_FilterBytes = Step3Helper_Truecolor(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
         
     'Grayscale
     ElseIf (m_Header.ColorType = png_Greyscale) Then
-    
-        'Retrieve a grayscale-only copy of the source image's bytes
-        Dim grayBytes() As Byte
-        DIBs.GetDIBGrayscaleMap srcImage, grayBytes, False
+        ExportStep3_FilterBytes = Step3Helper_Grayscale(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
         
-        'Cheap copy for 8-bits, manual transfer for 16, special encoding for sub-8-bit
-        If (m_Header.BitDepth = 8) Then
-            dstStride = srcImage.GetDIBWidth
-            CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayBytes(0, 0)), sizeOfPngBytes
-        ElseIf (m_Header.BitDepth = 16) Then
-        
-            dstStride = srcImage.GetDIBWidth * 2
-            xLimit = (srcImage.GetDIBWidth - 1)
-            
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                For x = 0 To xLimit
-                    finalBytes(yDstOffset + x * 2) = grayBytes(x, y)
-                Next x
-                
-            Next y
-            
-            'Make sure our array is unwrapped from the source data
-            srcImage.UnwrapArrayFromDIB srcBytes
-            
-        ElseIf (m_Header.BitDepth = 4) Then
-        
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 2
-                    tmpByte = grayBytes(x, y) \ 17
-                    If (x And 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
-                    Else
-                        finalBytes(dstOffsetX) = tmpByte * 16
-                    End If
-                Next x
-                
-            Next y
-            
-        ElseIf (m_Header.BitDepth = 2) Then
-        
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                curOffset = 0
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 4
-                    tmpByte = grayBytes(x, y) \ 85
-                    If (curOffset = 0) Then
-                        finalBytes(dstOffsetX) = tmpByte * 64
-                    ElseIf (curOffset = 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
-                    ElseIf (curOffset = 2) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
-                    Else
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
-                    End If
-                    curOffset = curOffset + 1
-                    If (curOffset > 3) Then curOffset = 0
-                Next x
-                
-            Next y
-        
-        ElseIf (m_Header.BitDepth = 1) Then
-        
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            ' TODO: build a lut of multipliers; use that instead of branches
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                curOffset = 0
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 8
-                    If (grayBytes(x, y) < 128) Then tmpByte = 0 Else tmpByte = 1
-                    If (curOffset = 0) Then
-                        finalBytes(dstOffsetX) = tmpByte * 128
-                    ElseIf (curOffset = 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 64)
-                    ElseIf (curOffset = 2) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 32)
-                    ElseIf (curOffset = 3) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
-                    ElseIf (curOffset = 4) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 8)
-                    ElseIf (curOffset = 5) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
-                    ElseIf (curOffset = 6) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 2)
-                    ElseIf (curOffset = 7) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
-                    End If
-                    curOffset = curOffset + 1
-                    If (curOffset > 7) Then curOffset = 0
-                Next x
-                
-            Next y
-        
-        End If
-    
     'Greyscale + alpha
     ElseIf (m_Header.ColorType = png_GreyscaleAlpha) Then
-    
-        'Retrieve a grayscale-only copy of the source image's bytes
-        Dim grayAlphaBytes() As Byte
-        DIBs.GetDIBGrayscaleAndAlphaMap srcImage, grayAlphaBytes
+        ExportStep3_FilterBytes = Step3Helper_GrayscaleAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
         
-        'Cheap copy for 8-bits, manual transfer for 16
-        If (m_Header.BitDepth = 8) Then
-            dstStride = srcImage.GetDIBWidth * 2
-            CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayAlphaBytes(0, 0)), sizeOfPngBytes
-        ElseIf (m_Header.BitDepth = 16) Then
-        
-            dstStride = srcImage.GetDIBWidth * 4
-            xLimit = (srcImage.GetDIBWidth * 2 - 1)
-            
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                For x = 0 To xLimit Step 2
-                    finalBytes(yDstOffset + x * 2) = grayAlphaBytes(x, y)
-                    finalBytes(yDstOffset + x * 2 + 2) = grayAlphaBytes(x + 1, y)
-                Next x
-                
-            Next y
-            
-            'Make sure our array is unwrapped from the source data
-            srcImage.UnwrapArrayFromDIB srcBytes
-            
-        End If
-    
     'Indexed
     ElseIf (m_Header.ColorType = png_Indexed) Then
-    
-        'Retrieve a copy of the image and its palette.  (TODO: the image may need to be forcibly converted
-        ' to 8-bpp, if the user manually requested 8-bpp output; if that happens, we need to reduce
-        ' bit-depth here instead of assuming it's already available.)
-        Dim imgPixels() As Byte, imgPalette() As RGBQuad, numColors As Long
-        numColors = DIBs.GetDIBAs8bpp_RGBA(srcImage, imgPalette, imgPixels)
-        
-        'TODO: if the image has more than 256 colors, we need to forcibly reduce it
-        If (numColors > 256) Then
-        
-        End If
-        
-        'Before passing pixel data off to the encoder, we need to write a palette and transparency chunk.
-        Dim palChunk As pdPNGChunk
-        Set palChunk = New pdPNGChunk
-        palChunk.CreateChunkForExport "PLTE", numColors * 3
-        
-        With palChunk.BorrowData
-        
-            Dim i As Long
-            For i = 0 To numColors - 1
-                .WriteByte imgPalette(i).Red
-                .WriteByte imgPalette(i).Green
-                .WriteByte imgPalette(i).Blue
-            Next i
-            
-        End With
-        
-        palChunk.FinalizeChunk
-        
-        cStream.WriteStream palChunk.BorrowData
-        Set palChunk = Nothing
-        
-        'If any of the palette indices are non-zero, we also need to write a tRNS chunk
-        Dim palHasTransparency As Boolean
-        palHasTransparency = False
-        
-        For i = 0 To numColors - 1
-            If (imgPalette(i).Alpha <> 255) Then
-                palHasTransparency = True
-                Exit For
-            End If
-        Next i
-        
-        If palHasTransparency Then
-        
-            Dim trnsChunk As pdPNGChunk
-            Set trnsChunk = New pdPNGChunk
-            trnsChunk.CreateChunkForExport "tRNS", numColors
-                
-            With trnsChunk.BorrowData
-                For i = 0 To numColors - 1
-                    .WriteByte imgPalette(i).Alpha
-                Next i
-            End With
-            
-            trnsChunk.FinalizeChunk
-            cStream.WriteStream trnsChunk.BorrowData
-            Set trnsChunk = Nothing
-            
-        End If
-        
-        'Finally, we need to copy the pixel data into the final "ready to write" buffer.  For 8-bpp data,
-        ' this is as simple as CopyMemory.  For lower bit-depths, we need to transform the data into
-        ' its appropriate final bitness.
-        If (m_Header.BitDepth = 8) Then
-            CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(imgPixels(0, 0)), sizeOfPngBytes
-        ElseIf (m_Header.BitDepth = 4) Then
-            
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 2
-                    If (x And 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
-                    Else
-                        finalBytes(dstOffsetX) = imgPixels(x, y) * 16
-                    End If
-                Next x
-                
-            Next y
-            
-        ElseIf (m_Header.BitDepth = 2) Then
-        
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                curOffset = 0
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 4
-                    If (curOffset = 0) Then
-                        finalBytes(dstOffsetX) = imgPixels(x, y) * 64
-                    ElseIf (curOffset = 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 16)
-                    ElseIf (curOffset = 2) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 4)
-                    Else
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
-                    End If
-                    curOffset = curOffset + 1
-                    If (curOffset > 3) Then curOffset = 0
-                Next x
-                
-            Next y
-        
-        ElseIf (m_Header.BitDepth = 1) Then
-        
-            'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
-            xLimit = (srcImage.GetDIBWidth - 1)
-            For y = 0 To srcHeightInPixels - 1
-                
-                yDstOffset = y * dstStride
-                curOffset = 0
-                
-                For x = 0 To xLimit
-                    dstOffsetX = yDstOffset + x \ 8
-                    If (curOffset = 0) Then
-                        finalBytes(dstOffsetX) = imgPixels(x, y) * 128
-                    ElseIf (curOffset = 1) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 64)
-                    ElseIf (curOffset = 2) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 32)
-                    ElseIf (curOffset = 3) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 16)
-                    ElseIf (curOffset = 4) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 8)
-                    ElseIf (curOffset = 5) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 4)
-                    ElseIf (curOffset = 6) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 2)
-                    ElseIf (curOffset = 7) Then
-                        finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
-                    End If
-                    curOffset = curOffset + 1
-                    If (curOffset > 7) Then curOffset = 0
-                Next x
-                
-            Next y
-        
-        End If
-        
-        'Note that dstStride was already set in a previous step, as part of calculating the size of the final
-        ' PNG byte stream.
+        ExportStep3_FilterBytes = Step3Helper_Indexed(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, cParams)
     
     End If
     
-    'Note that we no longer require the original DIB; we can safely free it before continuing
+    'Note that we no longer require the original DIB; we can safely free it before continuing.
+    ' (NOTE: in the future, we may want to iterate multiple output types to find the best one; consider keeping
+    ' the image around in that case?)
     srcImage.EraseDIB True
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "- IDAT creation: prepping pixel data took " & VBHacks.GetTimeDiffNowAsString(startTime)
     End If
     
-    'TODO: from param string, figure out filter strategy.  (These options aren't exposed to the user yet.)
+    'From the original param string, determine a filter strategy.
     Dim useFilterStrategy As PD_PNG_FilterStrategy
-    If (m_Header.ColorType = png_Indexed) Then
-        useFilterStrategy = png_FilterNone
-    Else
-        useFilterStrategy = png_FilterOptimal
+    useFilterStrategy = cParams.GetLong("PNGFilterStrategy", png_FilterAuto)
+    
+    'Per the spec, indexed-mode images don't usually benefit from automatic filtering.  In the future, perhaps we could
+    ' still test fixed filters to see if compression improves?
+    If (useFilterStrategy = png_FilterAuto) Then
+        If (m_Header.ColorType = png_Indexed) Then
+            useFilterStrategy = png_FilterNone
+        Else
+            useFilterStrategy = png_FilterOptimal
+        End If
     End If
     
     'The temporary chunk handles the actual filtering for us
     If (tmpChunk Is Nothing) Then Set tmpChunk = New pdPNGChunk
     If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), dstStride, useFilterStrategy) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
+    
+End Function
+
+'Various helper functions for prepping pixel data pre-filtering follow.  Note that source pixel data is never guaranteed
+' to already match the requested color model - for example, the user can request that a color image be exported as grayscale.
+' As such, analyses may have to be performed to determine how to best cram the original pixel data into the requested
+' export format.  (Similarly, the source pixel data *may* already be in a compatible export format - so don't do silly
+' things like forcibly quantize image data without first checking to see if it's already 256-color compatible!)
+'
+'The main thing each prep function needs to do is fill a finalBytes array (at the appropriate size), and populate a
+' dstStride value that defines the stride of each line in the finalBytes array (which is actually declared as a 1D array).
+' The stride value is critical because PNG filters operate on scanlines, so we need to know the distance between scanlines.
+'
+'Note that the finalBytes() array will already be initialized to the size specified by sizeOfPngBytes; this is performed
+' externally as a convenience to the caller, so they can simply proceed with filling the array.
+Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+    
+    'TrueColor+Alpha mode supports 32/64-bpp output
+    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long
+    Dim xLimit As Long, yDstOffset As Long, curOffset As Long
+    Dim x As Long, y As Long
+    
+    'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
+    ' source DIB; we cannot accelerate the process using pointer-based math, alas.
+    Dim srcBytes() As Byte, srcSA1D As SafeArray1D
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
+    
+    '32-bpp path
+    If (m_Header.BitDepth = 8) Then
+    
+        'Copy over *all* DIB data
+        CopyMemoryStrict VarPtr(finalBytes(0)), srcImage.GetDIBPointer, sizeOfPngBytes
+        
+        srcStride = srcImage.GetDIBStride
+        dstStride = srcStride
+        xLimit = srcStride - 1
+        
+        For y = 0 To srcHeightInPixels - 1
+            yDstOffset = y * dstStride
+            For x = 0 To xLimit Step 4
+                tmpByte = finalBytes(yDstOffset + x)
+                finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
+                finalBytes(yDstOffset + x + 2) = tmpByte
+            Next x
+        Next y
+        
+    '64-bpp path
+    ElseIf (m_Header.BitDepth = 16) Then
+    
+        srcStride = srcImage.GetDIBStride
+        dstStride = srcStride * 2
+        xLimit = srcStride - 1
+        
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            
+            'Wrap an array around the source data
+            srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
+            
+            For x = 0 To xLimit Step 4
+                
+                'Swizzle R and B as part of the copy
+                curOffset = yDstOffset + x * 2
+                finalBytes(curOffset) = srcBytes(x + 2)
+                finalBytes(curOffset + 2) = srcBytes(x + 1)
+                finalBytes(curOffset + 4) = srcBytes(x)
+                finalBytes(curOffset + 6) = srcBytes(x + 3)
+                
+            Next x
+            
+        Next y
+        
+        'Make sure our array is unwrapped from the source data
+        srcImage.UnwrapArrayFromDIB srcBytes
+        
+    End If
+    
+    Step3Helper_TruecolorAlpha = png_Success
+
+End Function
+
+Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+    
+    'TrueColor mode supports 24/48-bpp output
+    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, curOffset As Long
+    Dim x As Long, y As Long
+    
+    'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
+    ' source DIB; we cannot accelerate the process using pointer-based math, alas.
+    Dim srcBytes() As Byte, srcSA1D As SafeArray1D
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
+    
+    'TODO: handle binary alpha
+    
+    'Start by downsampling the source DIB to 24-bpp, using whatever backcolor the caller requested
+    srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
+    
+    '24-bpp path
+    If (m_Header.BitDepth = 8) Then
+        
+        'Calculate stride manually for source and destination lines
+        srcStride = srcImage.GetDIBStride
+        dstStride = srcImage.GetDIBWidth * 3
+        xLimit = dstStride - 1
+        
+        'Next, we want to copy all byte data into place - but note that the Windows DIB will have a different
+        ' stride than the PNG DIB (which does *not* pad to increments of 4).
+        For y = 0 To srcHeightInPixels - 1
+            
+            ySrcOffset = y * srcStride
+            yDstOffset = y * dstStride
+            srcPtr = srcImage.GetDIBPointer + ySrcOffset
+            
+            'Copy the source line of bytes into place
+            CopyMemoryStrict VarPtr(finalBytes(yDstOffset)), srcPtr, dstStride
+            
+            'Swizzle r/b manually
+            For x = 0 To xLimit Step 3
+                tmpByte = finalBytes(yDstOffset + x)
+                finalBytes(yDstOffset + x) = finalBytes(yDstOffset + x + 2)
+                finalBytes(yDstOffset + x + 2) = tmpByte
+            Next x
+            
+        Next y
+        
+    '48-bpp path
+    ElseIf (m_Header.BitDepth = 16) Then
+    
+        srcStride = srcImage.GetDIBStride
+        dstStride = srcImage.GetDIBWidth * 6
+        xLimit = (srcImage.GetDIBWidth - 1) * 3
+        
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            
+            'Wrap an array around the source data
+            srcImage.WrapArrayAroundScanline srcBytes, srcSA1D, y
+            
+            For x = 0 To xLimit Step 3
+                
+                'Swizzle R and B as part of the copy
+                curOffset = yDstOffset + x * 2
+                finalBytes(curOffset) = srcBytes(x + 2)
+                finalBytes(curOffset + 2) = srcBytes(x + 1)
+                finalBytes(curOffset + 4) = srcBytes(x)
+                
+            Next x
+            
+        Next y
+        
+        'Make sure our array is unwrapped from the source data
+        srcImage.UnwrapArrayFromDIB srcBytes
+        
+    End If
+        
+    Step3Helper_Truecolor = png_Success
+    
+End Function
+
+Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+    
+    'Grayscale mode supports 1/2/4/8/16-bit output
+    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, dstOffsetX As Long, curOffset As Long
+    Dim x As Long, y As Long
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
+    
+    'Pull some color-depth specific data into its own parser
+    Dim cParamsDepth As pdParamXML
+    Set cParamsDepth = New pdParamXML
+    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
+    
+    'TODO: handle binary alpha, if specified
+    
+    'If it isn't already, composite the source image against the specified backcolor
+    srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
+    
+    'Retrieve a grayscale-only copy of the source image's bytes.  (Note that this will forcibly convert the
+    ' pixel data to grayscale if it isn't already, so it doesn't really matter whether the data is already gray!)
+    Dim grayBytes() As Byte
+    DIBs.GetDIBGrayscaleMapEx srcImage, grayBytes, cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    
+    'Cheap copy for 8-bits, manual transfer for 16, special encoding for sub-8-bit
+    If (m_Header.BitDepth = 8) Then
+        dstStride = srcImage.GetDIBWidth
+        CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayBytes(0, 0)), sizeOfPngBytes
+    ElseIf (m_Header.BitDepth = 16) Then
+    
+        dstStride = srcImage.GetDIBWidth * 2
+        xLimit = (srcImage.GetDIBWidth - 1)
+        
+        For y = 0 To srcHeightInPixels - 1
+            yDstOffset = y * dstStride
+            For x = 0 To xLimit
+                finalBytes(yDstOffset + x * 2) = grayBytes(x, y)
+            Next x
+        Next y
+    
+    ElseIf (m_Header.BitDepth = 4) Then
+    
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 2
+                tmpByte = grayBytes(x, y) \ 17
+                If (x And 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                Else
+                    finalBytes(dstOffsetX) = tmpByte * 16
+                End If
+            Next x
+            
+        Next y
+        
+    ElseIf (m_Header.BitDepth = 2) Then
+    
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            curOffset = 0
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 4
+                tmpByte = grayBytes(x, y) \ 85
+                If (curOffset = 0) Then
+                    finalBytes(dstOffsetX) = tmpByte * 64
+                ElseIf (curOffset = 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
+                ElseIf (curOffset = 2) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
+                Else
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                End If
+                curOffset = curOffset + 1
+                If (curOffset > 3) Then curOffset = 0
+            Next x
+            
+        Next y
+    
+    ElseIf (m_Header.BitDepth = 1) Then
+    
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        ' TODO: build a lut of multipliers; use that instead of branches
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            curOffset = 0
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 8
+                If (grayBytes(x, y) < 128) Then tmpByte = 0 Else tmpByte = 1
+                If (curOffset = 0) Then
+                    finalBytes(dstOffsetX) = tmpByte * 128
+                ElseIf (curOffset = 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 64)
+                ElseIf (curOffset = 2) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 32)
+                ElseIf (curOffset = 3) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 16)
+                ElseIf (curOffset = 4) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 8)
+                ElseIf (curOffset = 5) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 4)
+                ElseIf (curOffset = 6) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (tmpByte * 2)
+                ElseIf (curOffset = 7) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or tmpByte
+                End If
+                curOffset = curOffset + 1
+                If (curOffset > 7) Then curOffset = 0
+            Next x
+            
+        Next y
+    
+    End If
+    
+    Step3Helper_Grayscale = png_Success
+    
+End Function
+
+Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+    
+    'Grayscale+Alpha mode supports 16/32-bpp output
+    Dim srcHeightInPixels As Long
+    Dim xLimit As Long, yDstOffset As Long, curOffset As Long
+    Dim x As Long, y As Long
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
+    
+    'Retrieve a grayscale+alpha copy of the source image's bytes
+    Dim grayAlphaBytes() As Byte
+    DIBs.GetDIBGrayscaleAndAlphaMap srcImage, grayAlphaBytes
+    
+    'Cheap copy for 8-bits, manual transfer for 16
+    If (m_Header.BitDepth = 8) Then
+        dstStride = srcImage.GetDIBWidth * 2
+        CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(grayAlphaBytes(0, 0)), sizeOfPngBytes
+    ElseIf (m_Header.BitDepth = 16) Then
+    
+        dstStride = srcImage.GetDIBWidth * 4
+        xLimit = (srcImage.GetDIBWidth * 2 - 1)
+        
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            
+            For x = 0 To xLimit Step 2
+                curOffset = yDstOffset + x * 2
+                finalBytes(curOffset) = grayAlphaBytes(x, y)
+                finalBytes(curOffset + 2) = grayAlphaBytes(x + 1, y)
+            Next x
+            
+        Next y
+        
+    End If
+    
+    Step3Helper_GrayscaleAlpha = png_Success
+    
+End Function
+
+'Unlike other modes, indexed color images require a reference to the underlying pdStream object because they must
+' write a separate palette chunk (and perhaps an optional transparency chunk)
+Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+    
+    'Indexed mode supports 1/2/4/8-bit output
+    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
+    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, dstOffsetX As Long, curOffset As Long
+    Dim x As Long, y As Long
+    
+    'Unlike other color modes, note that dstStride has already been calculated for us; this was necessary
+    ' to size the finalBytes() array.
+    
+    'Some params are identical for all image types (such as number of scanlines)
+    srcHeightInPixels = srcImage.GetDIBHeight
+    
+    'Pull some color-depth specific data into its own parser
+    Dim cParamsDepth As pdParamXML
+    Set cParamsDepth = New pdParamXML
+    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
+    
+    'Retrieve a copy of the image and its palette.  (TODO: the image may need to be forcibly converted
+    ' to 8-bpp, if the user manually requested 8-bpp output; if that happens, we need to reduce
+    ' bit-depth here instead of assuming it's already available.)
+    Dim imgPixels() As Byte, imgPalette() As RGBQuad, numColors As Long
+    numColors = DIBs.GetDIBAs8bpp_RGBA(srcImage, imgPalette, imgPixels)
+    
+    'If the source image has more than the user's requested color count (256 by default), we need to
+    ' forcibly reduce it before continuing.
+    Dim maxColorCount As Long
+    maxColorCount = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    If (maxColorCount > 256) Then maxColorCount = 256
+    
+    If (numColors > maxColorCount) Then
+        numColors = DIBs.GetDIBAs8bpp_RGBA_Forcibly(srcImage, imgPalette, imgPixels, maxColorCount)
+    End If
+    
+    'Before passing pixel data off to the encoder, we need to write a palette and transparency chunk.
+    Dim palChunk As pdPNGChunk
+    Set palChunk = New pdPNGChunk
+    palChunk.CreateChunkForExport "PLTE", numColors * 3
+    
+    With palChunk.BorrowData
+    
+        Dim i As Long
+        For i = 0 To numColors - 1
+            .WriteByte imgPalette(i).Red
+            .WriteByte imgPalette(i).Green
+            .WriteByte imgPalette(i).Blue
+        Next i
+        
+    End With
+    
+    palChunk.FinalizeChunk
+    
+    cStream.WriteStream palChunk.BorrowData
+    Set palChunk = Nothing
+    
+    'If any of the palette indices are non-zero, we also need to write a tRNS chunk
+    Dim palHasTransparency As Boolean
+    palHasTransparency = False
+    
+    For i = 0 To numColors - 1
+        If (imgPalette(i).Alpha <> 255) Then
+            palHasTransparency = True
+            Exit For
+        End If
+    Next i
+    
+    If palHasTransparency Then
+    
+        Dim trnsChunk As pdPNGChunk
+        Set trnsChunk = New pdPNGChunk
+        trnsChunk.CreateChunkForExport "tRNS", numColors
+        
+        'The spec comments that the tRNS chunk doesn't need to be the same size as the palette chunk.
+        ' Any palette entries without a matching tRNS entry are assumed to have opacity 255.  Because of
+        ' this quirk, let's scan the palette from the *end* and look for the first non-255 value.
+        ' (This may allow us to shave a few bytes off the file by not writing redundant 255s to the table.)
+        Dim trnsTerminal As Long
+        For i = numColors - 1 To 0 Step -1
+            If (imgPalette(i).Alpha <> 255) Then
+                trnsTerminal = i
+                Exit For
+            End If
+        Next i
+        
+        With trnsChunk.BorrowData
+            For i = 0 To trnsTerminal
+                .WriteByte imgPalette(i).Alpha
+            Next i
+        End With
+        
+        trnsChunk.FinalizeChunk
+        cStream.WriteStream trnsChunk.BorrowData
+        Set trnsChunk = Nothing
+        
+    End If
+    
+    'Finally, we need to copy the pixel data into the final "ready to write" buffer.  For 8-bpp data,
+    ' this is as simple as CopyMemory.  For lower bit-depths, we need to transform the data into
+    ' its appropriate final bitness.
+    If (m_Header.BitDepth = 8) Then
+        CopyMemoryStrict VarPtr(finalBytes(0)), VarPtr(imgPixels(0, 0)), sizeOfPngBytes
+    ElseIf (m_Header.BitDepth = 4) Then
+        
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        ' (TODO: remove inner loop division by pre-calculating a lut with scanline indices)
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 2
+                If (x And 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
+                Else
+                    finalBytes(dstOffsetX) = imgPixels(x, y) * 16
+                End If
+            Next x
+            
+        Next y
+        
+    ElseIf (m_Header.BitDepth = 2) Then
+    
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            curOffset = 0
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 4
+                If (curOffset = 0) Then
+                    finalBytes(dstOffsetX) = imgPixels(x, y) * 64
+                ElseIf (curOffset = 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 16)
+                ElseIf (curOffset = 2) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 4)
+                Else
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
+                End If
+                curOffset = curOffset + 1
+                If (curOffset > 3) Then curOffset = 0
+            Next x
+            
+        Next y
+    
+    ElseIf (m_Header.BitDepth = 1) Then
+    
+        'Because VB lacks shift operators (uuuugh) we have to write these bytes idiotically.
+        xLimit = (srcImage.GetDIBWidth - 1)
+        For y = 0 To srcHeightInPixels - 1
+            
+            yDstOffset = y * dstStride
+            curOffset = 0
+            
+            For x = 0 To xLimit
+                dstOffsetX = yDstOffset + x \ 8
+                If (curOffset = 0) Then
+                    finalBytes(dstOffsetX) = imgPixels(x, y) * 128
+                ElseIf (curOffset = 1) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 64)
+                ElseIf (curOffset = 2) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 32)
+                ElseIf (curOffset = 3) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 16)
+                ElseIf (curOffset = 4) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 8)
+                ElseIf (curOffset = 5) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 4)
+                ElseIf (curOffset = 6) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or (imgPixels(x, y) * 2)
+                ElseIf (curOffset = 7) Then
+                    finalBytes(dstOffsetX) = finalBytes(dstOffsetX) Or imgPixels(x, y)
+                End If
+                curOffset = curOffset + 1
+                If (curOffset > 7) Then curOffset = 0
+            Next x
+            
+        Next y
+    
+    End If
+    
+    Step3Helper_Indexed = png_Success
     
 End Function
 

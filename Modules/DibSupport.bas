@@ -381,6 +381,87 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
 
 End Function
 
+'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional number of gray shades can also be specified (max 256).
+'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
+'ALSO NOTE: this function does not support progress reports, by design.
+Public Function GetDIBGrayscaleMapEx(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal numOfShades As Long = 256) As Boolean
+    
+    'Make sure the DIB exists
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    'Make sure the source DIB isn't empty
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+    
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim imageData() As Byte
+        Dim tmpSA As SafeArray2D
+        PrepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+        
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        
+        'Prep the destination array
+        ReDim dstGrayArray(initX To finalX, initY To finalY) As Byte
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim quickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim r As Long, g As Long, b As Long, grayVal As Long
+            
+        'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
+        Dim conversionFactor As Double
+        If (numOfShades > 256) Then numOfShades = 256
+        If (numOfShades < 2) Then numOfShades = 2
+        conversionFactor = (255# / (numOfShades - 1))
+        
+        'Build a look-up table for our custom grayscale conversion results
+        Dim gLookup(0 To 255) As Byte
+        
+        For x = 0 To 255
+            grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
+            If (grayVal > 255) Then grayVal = 255
+            gLookup(x) = grayVal And &HFF&
+        Next x
+            
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            quickVal = x * qvDepth
+        For y = initY To finalY
+                
+            'Get the source pixel color values
+            b = imageData(quickVal, y)
+            g = imageData(quickVal + 1, y)
+            r = imageData(quickVal + 2, y)
+            
+            'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+            grayVal = (213 * r + 715 * g + 72 * b) * 0.001
+            If (grayVal > 255) Then grayVal = 255
+            
+            'Cache the value
+            dstGrayArray(x, y) = gLookup(grayVal)
+            
+        Next y
+        Next x
+        
+        'Safely deallocate imageData()
+        CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+        
+        GetDIBGrayscaleMapEx = True
+        
+    Else
+        Debug.Print "WARNING! Non-existent DIB passed to getDIBGrayscaleMap."
+        GetDIBGrayscaleMapEx = False
+    End If
+
+End Function
+
 'Given a DIB, return a 2D Byte array of the DIB's luminance values, side-by-side with preserved alpha values.
 'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
 'ALSO NOTE: this function does not support progress reports, by design.
@@ -1226,8 +1307,9 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
     
 End Function
 
-'Assuming a DIB has 256 colors or less (which you can confirm with the function above, if you need to), call this function
-' to return two arrays: a palette array, and a one-byte-per-pixel palette array (with dimensions matching the original image).
+'Assuming a source DIB already contains 256 unique RGBA quads (or less), call this function to return two arrays:
+' a palette array (RGB quads), and a one-byte-per-pixel palettized image array (with dimensions matching the
+' original image).
 '
 'At present, this function is *not* optimized.  A naive palette search is used.  Also, the destination palette is in
 ' RGBA format (so alpha *does* matter when calculating colors.)
@@ -1319,6 +1401,98 @@ Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As R
         srcDIB.UnwrapArrayFromDIB srcPixels
         
         GetDIBAs8bpp_RGBA = numColors
+        
+    End If
+    
+End Function
+
+'If a DIB does not already have 256 colors (or less), you can call this function to forcibly return an optimized palette for
+' the DIB (at the requested color count) and a matching one-byte-per-pixel palettized image array (with dimensions matching the
+' original image).
+'
+'The returned palette will be in RGBA format (so alpha *does* matter when calculating colors.)
+'
+'RETURNS: number of colors in the destination palette (1-based).  If the image already contains less than the requested
+' number of colors, the return value is a safe way to identify that.  If the return is 0, the function failed.
+Public Function GetDIBAs8bpp_RGBA_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, ByRef dstPixels() As Byte, Optional ByVal maxSizeOfPalette As Long = 256) As Long
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
+        
+        'Start by retrieving an optimized RGBA palette for the image in question
+        If Palettes.GetOptimizedPaletteIncAlpha(srcDIB, dstPalette, maxSizeOfPalette) Then
+        
+            'A palette was successfully generated.  We now want to match each pixel in the original image
+            ' to the palette we've generated, and return the result.
+            ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
+            
+            Dim srcPixels() As Byte, tmpSA As SafeArray1D
+            
+            Dim pxSize As Long
+            pxSize = srcDIB.GetDIBColorDepth \ 8
+            
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, xOffset As Long
+            initX = 0
+            initY = 0
+            finalX = srcDIB.GetDIBWidth - 1
+            finalY = srcDIB.GetDIBHeight - 1
+            
+            'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+            ' searching for contiguous matching colors.
+            Dim lastColor As Long: lastColor = -1
+            Dim lastAlpha As Long: lastAlpha = -1
+            Dim r As Long, g As Long, b As Long, a As Long
+            
+            Dim tmpQuad As RGBQuad, newIndex As Long, lastIndex As Long
+            lastIndex = -1
+            
+            'Build the initial tree
+            Dim kdTree As pdKDTree
+            Set kdTree = New pdKDTree
+            kdTree.BuildTreeIncAlpha dstPalette, UBound(dstPalette) + 1
+            
+            'Start matching pixels
+            For y = 0 To finalY
+                srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+            For x = 0 To finalX
+                
+                xOffset = x * pxSize
+                b = srcPixels(xOffset)
+                g = srcPixels(xOffset + 1)
+                r = srcPixels(xOffset + 2)
+                If (pxSize = 4) Then a = srcPixels(xOffset + 3) Else a = 255
+                
+                'If this pixel matches the last pixel we tested, reuse our previous match results
+                If ((RGB(r, g, b) <> lastColor) Or (a <> lastAlpha)) Then
+                    
+                    tmpQuad.Red = r
+                    tmpQuad.Green = g
+                    tmpQuad.Blue = b
+                    tmpQuad.Alpha = a
+                    
+                    'Ask the tree for its best match
+                    newIndex = kdTree.GetNearestPaletteIndexIncAlpha(tmpQuad)
+                    
+                    lastColor = RGB(r, g, b)
+                    lastAlpha = a
+                    lastIndex = newIndex
+                    
+                Else
+                    newIndex = lastIndex
+                End If
+                
+                'Mark the matched index in the destination array
+                dstPixels(x, y) = newIndex
+                
+            Next x
+            Next y
+            
+            srcDIB.UnwrapArrayFromDIB srcPixels
+            
+            GetDIBAs8bpp_RGBA_Forcibly = UBound(dstPalette) + 1
+    
+        End If
         
     End If
     
