@@ -56,7 +56,7 @@ Begin VB.Form dialog_ExportPNG
       _ExtentY        =   13361
    End
    Begin PhotoDemon.pdContainer picCategory 
-      Height          =   6375
+      Height          =   6495
       Index           =   0
       Left            =   5880
       TabIndex        =   3
@@ -68,7 +68,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   0
          Width           =   6975
          _ExtentX        =   12303
@@ -81,7 +81,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   360
          Width           =   6975
          _ExtentX        =   12303
@@ -95,7 +95,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   2
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   720
          Width           =   6975
          _ExtentX        =   12303
@@ -106,7 +106,7 @@ Begin VB.Form dialog_ExportPNG
          Value           =   0   'False
       End
       Begin PhotoDemon.pdContainer picContainer 
-         Height          =   3255
+         Height          =   2535
          Index           =   0
          Left            =   120
          TabIndex        =   7
@@ -114,7 +114,17 @@ Begin VB.Form dialog_ExportPNG
          Visible         =   0   'False
          Width           =   7095
          _ExtentX        =   12515
-         _ExtentY        =   5741
+         _ExtentY        =   4471
+         Begin PhotoDemon.pdDropDown cboOptimize 
+            Height          =   855
+            Left            =   360
+            TabIndex        =   24
+            Top             =   1080
+            Width           =   6615
+            _ExtentX        =   11668
+            _ExtentY        =   1508
+            Caption         =   "compression optimization"
+         End
          Begin PhotoDemon.pdLabel lblHint 
             Height          =   255
             Index           =   0
@@ -136,17 +146,17 @@ Begin VB.Form dialog_ExportPNG
             _ExtentX        =   11668
             _ExtentY        =   1296
             Caption         =   "compression level"
-            Max             =   9
-            Value           =   3
+            Max             =   12
+            Value           =   9
             GradientColorRight=   1703935
             NotchPosition   =   2
-            NotchValueCustom=   3
+            NotchValueCustom=   9
          End
          Begin PhotoDemon.pdColorSelector clsBackground 
             Height          =   375
             Left            =   5400
             TabIndex        =   9
-            Top             =   2280
+            Top             =   2040
             Width           =   1455
             _ExtentX        =   2566
             _ExtentY        =   661
@@ -157,7 +167,7 @@ Begin VB.Form dialog_ExportPNG
             Height          =   375
             Left            =   360
             TabIndex        =   10
-            Top             =   2310
+            Top             =   2070
             Width           =   4935
             _ExtentX        =   8705
             _ExtentY        =   661
@@ -177,16 +187,6 @@ Begin VB.Form dialog_ExportPNG
             FontItalic      =   -1  'True
             FontSize        =   9
          End
-         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
-            Height          =   1095
-            Left            =   360
-            TabIndex        =   12
-            Top             =   1110
-            Width           =   6615
-            _ExtentX        =   11668
-            _ExtentY        =   1931
-            Caption         =   "optimization (OptiPNG)"
-         End
       End
       Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
@@ -201,7 +201,7 @@ Begin VB.Form dialog_ExportPNG
          Begin PhotoDemon.pdColorDepth clrDepth 
             Height          =   5055
             Left            =   360
-            TabIndex        =   24
+            TabIndex        =   23
             Top             =   0
             Width           =   6615
             _ExtentX        =   11668
@@ -230,7 +230,7 @@ Begin VB.Form dialog_ExportPNG
       End
    End
    Begin PhotoDemon.pdContainer picCategory 
-      Height          =   6375
+      Height          =   6495
       Index           =   1
       Left            =   5880
       TabIndex        =   11
@@ -238,11 +238,24 @@ Begin VB.Form dialog_ExportPNG
       Width           =   7095
       _ExtentX        =   12515
       _ExtentY        =   11245
+      Begin PhotoDemon.pdHyperlink hypWebOptimized 
+         Height          =   255
+         Index           =   0
+         Left            =   0
+         Top             =   4110
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "lossy optimization is provided by pngquant"
+         FontSize        =   9
+         URL             =   "https://pngquant.org/"
+      End
       Begin PhotoDemon.pdButton cmdUpdateLossyPreview 
          Height          =   615
          Left            =   360
-         TabIndex        =   20
-         Top             =   3480
+         TabIndex        =   19
+         Top             =   3360
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1085
@@ -252,7 +265,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
@@ -264,8 +277,8 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdCheckBox chkOptimizeDither 
          Height          =   375
          Left            =   360
-         TabIndex        =   16
-         Top             =   1080
+         TabIndex        =   15
+         Top             =   1005
          Width           =   6495
          _ExtentX        =   11456
          _ExtentY        =   661
@@ -274,8 +287,8 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltTargetQuality 
          Height          =   735
          Left            =   360
-         TabIndex        =   14
-         Top             =   1560
+         TabIndex        =   13
+         Top             =   1440
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1296
@@ -289,7 +302,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdCheckBox chkOptimizeLossy 
          Height          =   375
          Left            =   360
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   630
          Width           =   6735
          _ExtentX        =   12515
@@ -299,8 +312,8 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLossyPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   15
-         Top             =   2310
+         TabIndex        =   14
+         Top             =   2190
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1296
@@ -313,8 +326,8 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLosslessPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   17
-         Top             =   4800
+         TabIndex        =   16
+         Top             =   5160
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1296
@@ -329,7 +342,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   2
          Left            =   510
-         Top             =   3090
+         Top             =   2970
          Width           =   2580
          _ExtentX        =   4551
          _ExtentY        =   450
@@ -341,7 +354,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   3
          Left            =   3180
-         Top             =   3090
+         Top             =   2970
          Width           =   2655
          _ExtentX        =   4683
          _ExtentY        =   450
@@ -354,7 +367,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   4
          Left            =   525
-         Top             =   5580
+         Top             =   5910
          Width           =   2580
          _ExtentX        =   4551
          _ExtentY        =   450
@@ -366,7 +379,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   5
          Left            =   3180
-         Top             =   5580
+         Top             =   5910
          Width           =   2655
          _ExtentX        =   4683
          _ExtentY        =   450
@@ -379,14 +392,27 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   19
-         Top             =   4320
+         TabIndex        =   18
+         Top             =   4680
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
          Caption         =   "lossless optimization options"
          FontBold        =   -1  'True
          FontSize        =   12
+      End
+      Begin PhotoDemon.pdHyperlink hypWebOptimized 
+         Height          =   255
+         Index           =   1
+         Left            =   0
+         Top             =   6240
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "lossless optimization is provided by OptiPNG"
+         FontSize        =   9
+         URL             =   "http://optipng.sourceforge.net/"
       End
    End
 End
@@ -604,12 +630,20 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     m_ActiveTitleBar = 0
     UpdateStandardTitlebars
     
-    'Populate lossless optimization options
-    btsStandardOptimize.AddItem "none", 0
-    btsStandardOptimize.AddItem "basic (default)", 1
-    btsStandardOptimize.AddItem "moderate", 2
-    btsStandardOptimize.AddItem "maximum", 3
-    btsStandardOptimize.ListIndex = 1
+    'Populate filter strategy options
+    cboOptimize.Clear
+    cboOptimize.SetAutomaticRedraws False
+    cboOptimize.AddItem "automatic", 0
+    cboOptimize.AddItem "optimize: fast filters", 1
+    cboOptimize.AddItem "optimize: all filters", 2
+    cboOptimize.AddItem "single filter: none", 3
+    cboOptimize.AddItem "single filter: sub", 4
+    cboOptimize.AddItem "single filter: up", 5
+    cboOptimize.AddItem "single filter: average", 6
+    cboOptimize.AddItem "single filter: paeth", 7
+    cboOptimize.AssignTooltip "PNG files support different compression strategies (called ""filters"").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression."
+    cboOptimize.ListIndex = 0
+    cboOptimize.SetAutomaticRedraws True, True
     
     'Populate web-optimized options
     EnableLossyOptimizationOptions
@@ -732,12 +766,12 @@ Private Function GetExportParamString() As String
         If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
         cParams.AddParam "PNGBackgroundColor", clsBackground.Color
         cParams.AddParam "PNGCreateBkgdChunk", chkEmbedBackground.Value
-        cParams.AddParam "PNGStandardOptimization", btsStandardOptimize.ListIndex
+        cParams.AddParam "PNGFilterStrategy", cboOptimize.ListIndex
         
         'Next come all the messy color-depth possibilities
         cParams.AddParam "PNGColorDepth", clrDepth.GetAllSettings
         
-    'Remember: web-optimized parameters must not use any UI elements not visible from the web-optimization panel!
+    'Remember: web-optimized parameters must not use any UI elements from the "normal" settings panel!
     Else
     
         cParams.AddParam "PNGOptimizeLossy", chkOptimizeLossy.Value
@@ -879,7 +913,7 @@ Private Sub UpdatePreviewSource()
     
 End Sub
 
-Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
+Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean
     ParamsEqual = Strings.StringsEqual(param1, param2, True)
 End Function
 
@@ -986,12 +1020,13 @@ Private Sub ReflowWebOptimizePanel()
     lblHint(3).Visible = isVisible
     chkOptimizeDither.Visible = isVisible
     cmdUpdateLossyPreview.Visible = isVisible
+    hypWebOptimized(0).Visible = isVisible
     
     'Determine a vertical offset for the bottom part of the panel, contingent on the top panel being open or shut
     If isVisible Then
-        offsetY = cmdUpdateLossyPreview.GetTop + cmdUpdateLossyPreview.GetHeight + FixDPI(16)
+        offsetY = hypWebOptimized(0).GetTop + hypWebOptimized(0).GetHeight + Interface.FixDPI(16)
     Else
-        offsetY = ttlWebOptimize(0).GetTop + ttlWebOptimize(0).GetHeight + FixDPI(16)
+        offsetY = ttlWebOptimize(0).GetTop + ttlWebOptimize(0).GetHeight + Interface.FixDPI(16)
     End If
     
     'Show/hide the lossless compression options
@@ -999,15 +1034,18 @@ Private Sub ReflowWebOptimizePanel()
     isVisible = ttlWebOptimize(1).Value
     
     If isVisible Then
-        offsetY = ttlWebOptimize(1).GetTop + ttlWebOptimize(1).GetHeight + FixDPI(6)
+        offsetY = ttlWebOptimize(1).GetTop + ttlWebOptimize(1).GetHeight + Interface.FixDPI(6)
         sltLosslessPerformance.SetTop offsetY
-        offsetY = sltLosslessPerformance.GetTop + sltLosslessPerformance.GetHeight + FixDPI(3)
+        offsetY = sltLosslessPerformance.GetTop + sltLosslessPerformance.GetHeight + Interface.FixDPI(3)
         lblHint(4).SetTop offsetY
         lblHint(5).SetTop offsetY
+        offsetY = offsetY + lblHint(5).GetHeight + Interface.FixDPI(8)
+        hypWebOptimized(1).SetTop offsetY
     End If
     
     sltLosslessPerformance.Visible = isVisible
     lblHint(4).Visible = isVisible
     lblHint(5).Visible = isVisible
+    hypWebOptimized(1).Visible = isVisible
     
 End Sub

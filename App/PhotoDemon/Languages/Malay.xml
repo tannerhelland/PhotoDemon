@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3377</langversion>
+<langversion>6.8.3378</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -752,7 +752,7 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 <translation>Jimat tidak dapat diselesaikan tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 27 phrases. 21 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 25 phrases. 19 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -3034,6 +3034,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
+
+<!-- BEGIN text for pdColorCount.cls -->
+
+<!-- pdColorCount.cls contains 0 phrases. -->
+
+<!-- END text for pdColorCount.cls-->
 
 <!-- BEGIN text for pdColorSearch.cls -->
 
@@ -12600,33 +12606,8 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>metadata settings</original>
-<translation>tetapan metadata</translation>
-</phrase>
-
-<phrase>
-<original>fast, larger file</original>
-<translation>cepat, fail besar</translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>tahap mampatan</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>warna latar belakang embed (bKGD sebahagian)</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>perlahan, fail yang lebih kecil</translation>
-</phrase>
-
-<phrase>
-<original>optimization (OptiPNG)</original>
-<translation>pengoptimuman (OptiPNG)</translation>
+<original>lossy optimization is provided by pngquant</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12660,8 +12641,43 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>fast, larger file</original>
+<translation>cepat, fail besar</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>perlahan, fail yang lebih kecil</translation>
+</phrase>
+
+<phrase>
 <original>lossless optimization options</original>
 <translation>pilihan Lossless pengoptimuman</translation>
+</phrase>
+
+<phrase>
+<original>lossless optimization is provided by OptiPNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation>tetapan metadata</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>tahap mampatan</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>warna latar belakang embed (bKGD sebahagian)</translation>
 </phrase>
 
 <phrase>
@@ -12675,13 +12691,48 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>basic (default)</original>
-<translation>asas (lalai)</translation>
+<original>automatic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>moderate</original>
-<translation>sederhana</translation>
+<original>optimize: fast filters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimize: all filters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single filter: none</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single filter: sub</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single filter: up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single filter: average</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single filter: paeth</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12694,7 +12745,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Tetapan pengoptimuman lossy mengurangkan saiz fail dengan %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 40 phrases. 19 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15718,18 +15769,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdColorCount.cls -->
-
-<!-- pdColorCount.cls contains 0 phrases. -->
-
-<!-- END text for pdColorCount.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2623</phrasecount>
+<phrasecount>2632</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4812 phrases. -->
-<!-- 2189 are duplicates, so only 2623 unique phrases have been written to file. -->
-<!-- These 2623 phrases contain approximately 12405 total words. -->
+<!-- As of this build, PhotoDemon contains 4817 phrases. -->
+<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
+<!-- These 2632 phrases contain approximately 12472 total words. -->
 
 </pdData>

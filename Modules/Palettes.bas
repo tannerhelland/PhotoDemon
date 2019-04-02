@@ -79,10 +79,6 @@ End Type
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.
-'
-'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
-' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
-' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~500,000 pixels.
 Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance) As Boolean
     
     'Do not request less than two colors in the final palette!
@@ -148,8 +144,8 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
             Next i
             
             'Ask the stack with the largest net variance to split itself in half.  (Note that the stack object
-            ' itself decides which axis is most appropriate for splitting; typically this is the axis - channel -
-            ' with the largest variance.)
+            ' itself decides which axis is most appropriate for splitting; typically this is the axis -
+            ' e.g. channel - with the largest variance.)
             'Debug.Print "Largest variance was " & maxVariance & ", found in stack #" & mvIndex & " (total stack count is " & stackCount & ")"
             If (maxVariance > 0!) Then
                 pxStack(mvIndex).Split pxStack(stackCount)

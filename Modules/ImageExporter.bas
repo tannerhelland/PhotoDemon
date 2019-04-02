@@ -1356,13 +1356,16 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportPNG = False
         End If
         
-    'As of 7.0, standard-mode PNGs support a ton of user-editable parameters.
+    'Regular PNGs (e.g. non-web-optimized) still have a ton of settings that must be addressed.
     Else
         
         'First come the PNG-specific settings (compression level, chunks, etc)
         Dim pngCompressionLevel As Long, pngInterlacing As Boolean
-        pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 3)
-        pngInterlacing = cParams.GetBool("PNGInterlacing", False)
+        pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 9)
+        
+        'Interlacing is currently forcibly disabled, as it is unsupported in major web browsers (the images will
+        ' still load but they are not displayed progressively) and it tends to greatly increase file size.
+        'pngInterlacing = cParams.GetBool("PNGInterlacing", False)
         
         Dim pngBackgroundColor As Long, pngCreateBkgdChunk As Boolean
         pngBackgroundColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
@@ -1375,13 +1378,18 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         Dim outputColorModel As String
         outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
         
-        'If the output color model is "gray", note that we will apply a forcible grayscale conversion prior to export
+        'Some color modes support color counts on the range [2, 256].  If an image isn't already at the
+        ' specified color count, we will forcibly convert it.
+        Dim outputPaletteSize As Long
+        outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+        
+        'If the output color model is "gray", we will forcibly apply a grayscale conversion prior to export
         Dim forceGrayscale As Boolean
         forceGrayscale = ParamsEqual(outputColorModel, "gray")
         
         'From the color depth requests, calculate an actual, numeric color depth.
         ' (This includes checks like -- if we are forcibly outputting a grayscale image, set the bit-depth to 8-bpp to match.)
-        Dim outputColorDepth As Long, outputPaletteSize As Long, outputColorDepthName As String
+        Dim outputColorDepth As Long, outputColorDepthName As String
         If forceGrayscale Then
         
             outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
@@ -1390,10 +1398,22 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 outputColorDepth = 16
             ElseIf ParamsEqual(outputColorDepthName, "Gray_Monochrome") Then
                 outputColorDepth = 1
-            Else
-                outputColorDepth = 8
-            End If
             
+            'Anything else is a [2, 256] color count grayscale image.  Look for specific bit-depth possibilities
+            ' and handle them specially.
+            Else
+                If (outputPaletteSize = 16) Then
+                    outputColorDepth = 4
+                ElseIf (outputPaletteSize = 4) Then
+                    outputColorDepth = 2
+                ElseIf (outputPaletteSize = 2) Then
+                    outputColorDepth = 1
+                Else
+                    outputColorDepth = 8
+                End If
+            End If
+        
+        'Grayscale is not being forced, so assume a color image
         Else
         
             outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
@@ -1401,14 +1421,20 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             If ParamsEqual(outputColorDepthName, "Color_HDR") Then
                 outputColorDepth = 48
             ElseIf ParamsEqual(outputColorDepthName, "Color_Indexed") Then
-                outputColorDepth = 8
+                If (outputPaletteSize <= 2) Then
+                    outputColorDepth = 1
+                ElseIf (outputPaletteSize <= 4) Then
+                    outputColorDepth = 2
+                ElseIf (outputPaletteSize <= 16) Then
+                    outputColorDepth = 4
+                Else
+                    outputColorDepth = 8
+                End If
             Else
                 outputColorDepth = 24
             End If
             
         End If
-        
-        outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
         
         'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only 0 or 255 values),
         ' require additional settings.  We always retrieve all values, even if we don't plan on using them.
@@ -1458,12 +1484,12 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         End If
         
         'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
-        ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
-        ' us to workaround some FreeImage deficiencies, so these depths may not match what PNG formally supports.
+        ' depth that correctly represents the combination of color depth + alpha depth.
         If ParamsEqual(outputAlphaModel, "full") Then
         
             desiredAlphaStatus = PDAS_ComplicatedAlpha
             
+            'PNGs support a dedicated grayscale+alpha mode
             If forceGrayscale Then
                 If (outputColorDepth = 8) Then
                     outputColorDepth = 16
@@ -1511,7 +1537,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
         End If
             
-        'Monochrome depths require special treatment if alpha is active
+        'Monochrome depths require special treatment if alpha is active.
+        ' (TODO: handle this more elegantly)
         If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
             outputColorDepth = 8
             outputPaletteSize = 2
@@ -1520,17 +1547,9 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         Dim imgSavedOK As Boolean
         imgSavedOK = False
         
-        'TODO: if output parameters are supported, use our own internal PNG encoder - it produces
-        ' smaller PNGs than either FreeImage or GDI+.
-        
-        'PD's internal exporter is currently being migrated over from a separate, standalone project.
-        ' To make testing easier, I am migrating it in pieces, roughly corresponding to color depth/format
-        ' coverage (e.g. 32-bit RGBA images to start, than additional formats being added as testing
-        ' verifies correctness).  As such, we currently branch according to color depth and model, but this
-        ' mechanism will evaporate as coverage improves.
-        Const USE_INTERNAL_PNG_ENCODER As Boolean = True
-        
-        If (Not imgSavedOK) And USE_INTERNAL_PNG_ENCODER Then
+        'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
+        ' and format coverage than either FreeImage or GDI+.
+        If (Not imgSavedOK) Then
             
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
@@ -1541,91 +1560,53 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 
                 PDDebug.LogAction "Using internal PNG encoder for this operation..."
                 
+                'HDR RGBA
                 If (outputColorDepth = 64) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, pngCompressionLevel, formatParams) < png_Failure)
+                
+                'HDR RGB
                 ElseIf (outputColorDepth = 48) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, pngCompressionLevel, formatParams) < png_Failure)
+                
+                'Standard RGBA
                 ElseIf (outputColorDepth = 32) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, pngCompressionLevel, formatParams) < png_Failure)
+                
+                'Standard RGB
                 ElseIf (outputColorDepth = 24) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, pngCompressionLevel, formatParams) < png_Failure)
+                
+                'Indexed
                 Else
-                    If (outputColorDepth < 8) Then outputColorDepth = 8
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Indexed, outputColorDepth, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Indexed, outputColorDepth, pngCompressionLevel, formatParams) < png_Failure)
                 End If
                 
             Else
+                
                 If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
+                    
+                    'Standard grayscale+alpha
                     If (outputColorDepth = 16) Then
                         PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 8, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 8, pngCompressionLevel, formatParams) < png_Failure)
+                    
+                    'HDR grayscale+alpha
                     ElseIf (outputColorDepth = 32) Then
                         PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
+                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 16, pngCompressionLevel, formatParams) < png_Failure)
                     End If
+                    
+                'Grayscale
                 ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
-                    'If (outputColorDepth = 8) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, outputColorDepth, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    'ElseIf (outputColorDepth = 16) Then
-                    '    PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                    '    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, 16, Int(pngCompressionLevel * 1.333 + 0.5)) < png_Failure)
-                    'End If
+                    PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, outputColorDepth, pngCompressionLevel, formatParams) < png_Failure)
                 End If
-            End If
-            
-            If imgSavedOK And PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
-                'Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
+                
             End If
             
         End If
         
-        'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
-        ' so the FreeImage path is definitely preferred!
-        If (Not imgSavedOK) And ImageFormats.IsFreeImageEnabled Then
-            
-            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
-            
-            'FreeImage supports the embedding of a bkgd chunk; this doesn't make a lot of sense in modern image development,
-            ' but it is part of the PNG spec, so we provide it as an option
-            If pngCreateBkgdChunk Then
-                Dim rQuad As RGBQuad
-                rQuad.Red = Colors.ExtractRed(pngBackgroundColor)
-                rQuad.Green = Colors.ExtractGreen(pngBackgroundColor)
-                rQuad.Blue = Colors.ExtractBlue(pngBackgroundColor)
-                FreeImage_SetBackgroundColor fi_DIB, rQuad
-            End If
-            
-            'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
-            ' request RLE encoding from FreeImage.
-            Dim pngFlags As Long: pngFlags = PNG_DEFAULT
-            If (pngCompressionLevel = 0) Then pngFlags = pngFlags Or PNG_Z_NO_COMPRESSION Else pngFlags = pngFlags Or pngCompressionLevel
-            If pngInterlacing Then pngFlags = pngFlags Or PNG_INTERLACED
-            
-            'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
-            If (fi_DIB <> 0) Then
-                imgSavedOK = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, pngFlags)
-                FreeImage_Unload fi_DIB
-                If imgSavedOK Then
-                    ExportDebugMsg "Export to " & sFileType & " appears successful."
-                    
-                    'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
-                    ' of converting existing PNG images to these more compact formats.  Engage it now.
-                    If PluginManager.IsPluginCurrentlyEnabled(CCP_OptiPNG) And (pngStandardOptimizeLevel > 0) Then
-                        Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
-                    End If
-                    
-                Else
-                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-                End If
-            Else
-                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-                imgSavedOK = False
-            End If
-            
-        End If
-        
-        'If other mechanisms failed, attempt to export using GDI+.  (Note that this pathway is *not* preferred,
+        'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,
         ' as GDI+ forcibly writes problematic color data chunks and it performs no adaptive filtering so file sizes
         ' are enormous, but hey - it's better than not writing a PNG at all, right?)
         If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, outputColorDepth)

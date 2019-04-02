@@ -75,10 +75,11 @@ Public Enum PD_QuantizeMode
     pdqs_MinMax = 0
     pdqs_Variance = 1
     pdqs_VarPlusMedian = 2
+    pdqs_VarPlusVolume = 3
 End Enum
 
 #If False Then
-    Private Const pdqs_MinMax = 0, pdqs_Variance = 1, pdqs_VarPlusMedian = 2
+    Private Const pdqs_MinMax = 0, pdqs_Variance = 1, pdqs_VarPlusMedian = 2, pdqs_VarPlusVolume = 3
 #End If
 
 'As a performance optimization, quantize mode must be specified prior to actually adding pixels to the stack.
@@ -245,27 +246,15 @@ Private Sub CalculateMinMax(Optional ByVal includeAlpha As Boolean = False)
     Dim i As Long
     For i = 0 To m_NumOfColors - 1
         With m_Colors(i)
-            If (.Red < m_RMin) Then
-                m_RMin = .Red
-            ElseIf (.Red > m_RMax) Then
-                m_RMax = .Red
-            End If
-            If (.Green < m_GMin) Then
-                m_GMin = .Green
-            ElseIf (.Green > m_GMax) Then
-                m_GMax = .Green
-            End If
-            If (.Blue < m_BMin) Then
-                m_BMin = .Blue
-            ElseIf (.Blue > m_BMax) Then
-                m_BMax = .Blue
-            End If
+            If (.Red < m_RMin) Then m_RMin = .Red
+            If (.Red > m_RMax) Then m_RMax = .Red
+            If (.Green < m_GMin) Then m_GMin = .Green
+            If (.Green > m_GMax) Then m_GMax = .Green
+            If (.Blue < m_BMin) Then m_BMin = .Blue
+            If (.Blue > m_BMax) Then m_BMax = .Blue
             If includeAlpha Then
-                If (.Alpha < m_AMin) Then
-                    m_AMin = .Blue
-                ElseIf (.Alpha > m_AMax) Then
-                    m_AMax = .Blue
-                End If
+                If (.Alpha < m_AMin) Then m_AMin = .Alpha
+                If (.Alpha > m_AMax) Then m_AMax = .Alpha
             End If
         End With
     Next i
@@ -326,6 +315,18 @@ Friend Sub GetVariance_Alpha(ByRef dstRV As Single, ByRef dstGV As Single, ByRef
             dstAV = m_VarianceA * tmpDivisor
         End If
         
+        If (m_QuantizeMode = pdqs_VarPlusVolume) Then
+            Dim tmpVolume As Double
+            If (m_NumOfColors > 1) Then
+                tmpVolume = CDbl(m_RMax - m_RMin) * CDbl(m_GMax - m_GMin) * CDbl(m_BMax - m_BMin) * CDbl(m_AMax - m_AMin)
+                tmpVolume = Sqr(tmpVolume)
+            End If
+            dstRV = dstRV * tmpVolume
+            dstGV = dstGV * tmpVolume
+            dstBV = dstBV * tmpVolume
+            dstAV = dstAV * tmpVolume
+        End If
+        
     End If
     
 End Sub
@@ -375,7 +376,7 @@ Friend Sub Split(ByRef dstStack As pdMedianCut)
             If (gDiff > bDiff) Then SplitG dstStack, (m_GMax + m_GMin) \ 2 Else SplitB dstStack, (m_BMax + m_BMin) \ 2
         End If
     
-    ElseIf (m_QuantizeMode = pdqs_Variance) Then
+    ElseIf (m_QuantizeMode = pdqs_Variance) Or (m_QuantizeMode = pdqs_VarPlusVolume) Then
         
         'Split by mean:
         If (rDiff > gDiff) Then
@@ -429,7 +430,7 @@ Friend Sub SplitIncludingAlpha(ByRef dstStack As pdMedianCut)
             SplitA dstStack, (m_AMax + m_AMin) \ 2, True
         End If
         
-    ElseIf (m_QuantizeMode = pdqs_Variance) Then
+    ElseIf (m_QuantizeMode = pdqs_Variance) Or (m_QuantizeMode = pdqs_VarPlusVolume) Then
         
         If (maxDiff = rDiff) Then
             SplitR dstStack, Int(m_MeanR), True
@@ -547,7 +548,7 @@ Friend Sub GetAverageColor(ByRef r As Long, ByRef g As Long, ByRef b As Long)
             g = gTotal \ m_NumOfColorsAdded
             b = bTotal \ m_NumOfColorsAdded
             
-        ElseIf (m_QuantizeMode = pdqs_Variance) Then
+        ElseIf (m_QuantizeMode = pdqs_Variance) Or (m_QuantizeMode = pdqs_VarPlusVolume) Then
         
             If (Not m_VarianceUpToDate) Then UpdateVarianceTrackers
             
@@ -595,7 +596,7 @@ Friend Sub GetAverageColorAndAlpha(ByRef r As Long, ByRef g As Long, ByRef b As 
             b = bTotal \ m_NumOfColorsAdded
             a = aTotal \ m_NumOfColorsAdded
             
-        ElseIf (m_QuantizeMode = pdqs_Variance) Then
+        ElseIf (m_QuantizeMode = pdqs_Variance) Or (m_QuantizeMode = pdqs_VarPlusVolume) Then
         
             If (Not m_VarianceUpToDate) Then UpdateVarianceTrackers True
             
@@ -805,6 +806,9 @@ Private Sub UpdateVarianceTrackers(Optional ByVal includeAlpha As Boolean = Fals
         End If
         
     End If
+    
+    'Calculate volume as necessary
+    If (m_QuantizeMode = pdqs_VarPlusVolume) Then CalculateMinMax includeAlpha
     
     'Variance is now up-to-date for this cube
     m_VarianceUpToDate = True
