@@ -116,6 +116,18 @@ Private Const INIT_NUM_OF_CHUNKS As Long = 8
 Private m_NumOfChunks As Long
 Private m_Chunks() As pdPNGChunk
 
+'When exporting the image, we need to cache various export parameters to share between export functions.
+' (This is required to maintain chunk order, as some chunk data must be written in specific places -
+' e.g. "after the palette but before the pixel data".)
+Private m_EmbedBkgdColor As Boolean, m_BkgdColor As Long
+Private m_ImgPalette() As RGBQuad, m_ImgColorCount As Long, m_ImgMaxColorCount As Long
+Private m_WriteTrns As Boolean, m_TrnsValueR As Long, m_TrnsValueG As Long, m_TrnsValueB As Long
+
+'When exporting a PNG, the only method guaranteed to save losslessly is "fully automatic mode",
+' where PD is allowed to choose the best export settings for the current image.  If any export
+' settings are forcibly changed by the user, we may need to modify the image to fit those parameters.
+Private m_ExportChangesAllowed As Boolean
+
 'Simplified wrapper to load a PNG automatically.
 Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
     
@@ -672,9 +684,31 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
     trnsRed = -1: trnsGreen = -1: trnsBlue = -1
     
     If (m_Header.ColorType = png_Indexed) Or (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_Truecolor) Then
+        
         trnsIndex = Me.GetIndexOfChunk("tRNS")
         hasTransparency = (trnsIndex >= 0)
         If hasTransparency Then hasTransparency = m_Chunks(trnsIndex).GetTRNSData(srcColors, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
+        
+        'In grayscale images, the transparent color is scaled to the current bit-depth.  So e.g. a 4-bit grayscale
+        ' image will have 15 as its maximum transparency index.  When constructing a grayscale palette for upsampling,
+        ' we want to use the *final* grayscale value - so upscale the corresponding transparency value now
+        If hasTransparency And (m_Header.ColorType = png_Greyscale) Then
+            
+            Dim grayScaleFactor As Long
+            grayScaleFactor = 1
+            If (m_Header.BitDepth = 1) Then
+                grayScaleFactor = 255
+            ElseIf (m_Header.BitDepth = 2) Then
+                grayScaleFactor = 85
+            ElseIf (m_Header.BitDepth = 4) Then
+                grayScaleFactor = 17
+            End If
+            trnsRed = trnsRed * grayScaleFactor
+            trnsGreen = trnsGreen * grayScaleFactor
+            trnsBlue = trnsBlue * grayScaleFactor
+            
+        End If
+        
     End If
     
     'Because the tRNS chunk may update the contents of the palette (because it can store a table of
@@ -1318,8 +1352,10 @@ InternalVBError:
     ImportStage6_PostProcessing = png_Failure
 End Function
 
-'Simplified wrapper to save a PNG automatically.
-Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB, Optional ByVal outColorType As PD_PNGColorType = png_TruecolorAlpha, Optional ByVal outBitsPerChannel As Long = 8, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
+'Simplified wrapper to save a PNG automatically.  I recommend setting outColorType to png_AutoColorType and
+' outBitsPerChannel to 0; this allows the class to auto-detect the best output settings for the source
+' image's data (and thus produce the smallest output file).
+Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
     
     On Error GoTo CouldNotSaveFile
     
@@ -1327,6 +1363,12 @@ Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB,
         InternalError "SavePNG", "invalid function parameters"
         SavePNG_Simple = False
         Exit Function
+    End If
+    
+    'Before proceeding, if the output requires image analysis (due to "automatic" color mode / bit-depth detection,
+    ' or the presence of a full PD-compatible parameter string), perform those analyses before proceeding further.
+    If (outColorType = png_AutoColorType) Or (outBitsPerChannel = 0) Or (LenB(fullParamString) <> 0) Then
+        SetupExportSettings srcImage, srcPDImage, outColorType, outBitsPerChannel, fullParamString
     End If
     
     'Failsafe check only; PD enforces safe overwriting in a parent function.
@@ -1350,6 +1392,8 @@ Friend Function SavePNG_Simple(ByRef dstFile As String, ByRef srcImage As pdDIB,
         .Height = srcImage.GetDIBHeight
         .BitDepth = outBitsPerChannel
         .ColorType = outColorType
+        
+        PDDebug.LogAction "Writing PNG color type " & outColorType & " with channel bit-depth " & outBitsPerChannel
         
         'From color type and bit-depth, determine a "friendly" representation of bits-per-pixel
         Select Case outColorType
@@ -1437,6 +1481,649 @@ CouldNotSaveFile:
     SavePNG_Simple = False
     
 End Function
+
+'Prior to exporting a PNG, this function needs to be called to setup a bunch of image-specific export settings.
+' Specifically, it'll analyze the source image to determine things like appropriate output color mode and
+' bit-depth settings.
+Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdImage, ByRef outColorType As PD_PNGColorType, ByRef outBitsPerChannel As Long, ByRef fullParamString As String)
+    
+    m_ExportChangesAllowed = False
+    
+    'Regardless of output settings, we want to analyze the image to determine its current color makeup.
+    ' This analysis informs subsequent steps, and by performing it upfront we can reuse things like the
+    ' image's palette (if any) because the auto-detector will produce a working copy.
+    Dim currentAlphaStatus As PD_ALPHA_STATUS, isGrayscale As Boolean, isMonochrome As Boolean
+    Export_AnalyzeImage srcImage, m_ImgColorCount, isGrayscale, isMonochrome, currentAlphaStatus, m_ImgPalette
+    
+    'Grayscale images have special requirements for 1/2/4-bit modes, so we don't care about their current color count.
+    ' (A precise analysis of bit-depth will happen later in the function.)
+    If isGrayscale Then
+        m_ImgMaxColorCount = 256
+    Else
+        m_ImgMaxColorCount = m_ImgColorCount
+    End If
+    
+    Dim isTrueColor As Boolean
+    isTrueColor = (m_ImgColorCount > 256) And (Not isGrayscale)
+    
+    Dim hasOrigTrnsColor As Boolean, origTrnsColor As Long
+    hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("pngTransparentColor")
+    If hasOrigTrnsColor Then
+        origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("pngTransparentColor", 0)
+        m_TrnsValueR = Colors.ExtractRed(origTrnsColor)
+        m_TrnsValueG = Colors.ExtractGreen(origTrnsColor)
+        m_TrnsValueB = Colors.ExtractBlue(origTrnsColor)
+    End If
+    
+    'PNGs support 2- and 4-bit grayscale data; if an image is already grayscale, quickly analyze the palette
+    ' to determine if it meets 2- or 4-bit criteria.
+    Dim isGrayscaleSpecialBitDepth As Long, numPaletteAlphaNon255Non0 As Long, numPaletteAlphaZero As Long
+    If isGrayscale Then
+        isGrayscaleSpecialBitDepth = GetPreciseGrayBitDepth()
+        If (m_ImgColorCount <= 256) Then CountPaletteAlphaEntries numPaletteAlphaNon255Non0, numPaletteAlphaZero
+    End If
+    
+    'We now know what the image's current color count is, whether it's true grayscale or monochrome, and what the
+    ' status of its alpha channel is.  Keep an eye on these parameters as we progress through the function,
+    ' because they'll be reused when making decisions about export settings.
+    
+    'Prep a parameter parser for the source XML.
+    ' (See the PNG export dialog for details on how the XML string is generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString fullParamString
+    
+    'Some color-depth-specific parameters are stored in their own XML packet. (This is because they are handled
+    ' by a standalone color depth control that's shared between multiple export dialogs.)
+    Dim cParamsDepth As pdParamXML
+    Set cParamsDepth = New pdParamXML
+    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
+    
+    'Interlacing is currently forcibly disabled, as it is unsupported in major web browsers (the images will
+    ' still load but they are not displayed progressively) and it tends to greatly increase file size.
+    'Dim pngInterlacing As Boolean
+    'pngInterlacing = cParams.GetBool("PNGInterlacing", False)
+    
+    'Background color and chunk creation need to be detected up front, as they must be added to the PNG file
+    ' in a specific order ("After PLTE; before IDAT" per the spec)
+    m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+    m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
+    
+    'Next come various color-depth and alpha mode settings
+    Dim outputColorModel As String, outputGrayscale As Boolean, outputPaletteSize As Long
+    outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
+    outputGrayscale = Strings.StringsEqual(outputColorModel, "gray", True)
+    outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    
+    'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only
+    ' 0 or 255 values), require additional settings.  We always retrieve all values, even if we don't plan on
+    ' using them.
+    Dim outputAlphaModel As String, outputAlphaCutoff As Long, outputAlphaColor As Long
+    outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto")
+    outputAlphaCutoff = cParams.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+    outputAlphaColor = cParams.GetLong("ColorDepth_AlphaColor", vbMagenta)
+    
+    'Look for any requests to forcibly output a specific color or grayscale color depth
+    Dim outputColorDepthName As String, outputHDR As Boolean, outputMonochrome As Boolean, outputIndexed As Boolean
+    If outputGrayscale Then
+        outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
+        outputHDR = Strings.StringsEqual(outputColorDepthName, "Gray_HDR", True)
+        outputMonochrome = Strings.StringsEqual(outputColorDepthName, "Gray_Monochrome", True)
+    Else
+        outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
+        outputHDR = Strings.StringsEqual(outputColorDepthName, "Color_HDR", True)
+        outputIndexed = Strings.StringsEqual(outputColorDepthName, "Color_Indexed")
+    End If
+    
+    'In 99% of cases, the user will just want "automatic" output mode detection for color and alpha;
+    ' look for these settings next.
+    Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
+    autoColorModeActive = Strings.StringsEqual(outputColorModel, "auto", True)
+    autoTransparencyModeActive = Strings.StringsEqual(outputAlphaModel, "auto", True)
+    
+    Dim outputAlphaMode As PD_ALPHA_STATUS
+    If autoTransparencyModeActive Then
+        outputAlphaMode = currentAlphaStatus
+    Else
+        If Strings.StringsEqual(outputAlphaModel, "full", True) Then
+            outputAlphaMode = PDAS_ComplicatedAlpha
+        ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
+            outputAlphaMode = PDAS_NoAlpha
+        ElseIf Strings.StringsEqual(outputAlphaModel, "bycolor", True) Or Strings.StringsEqual(outputAlphaModel, "bycutoff", True) Then
+            outputAlphaMode = PDAS_BinaryAlpha
+        Else
+            outputAlphaMode = PDAS_ComplicatedAlpha
+        End If
+    End If
+    
+    'If saving is *not* in fully automatic mode (meaning the user has forcibly set a color model, bit-depth,
+    ' or transparency model), we are allowed to modify pixel data to fit their parameters.
+    m_ExportChangesAllowed = (Not autoColorModeActive) Or (Not autoTransparencyModeActive)
+    
+    'We now know enough (finally) to construct an output color model and suggested bit-depth.  Whew!
+    Dim i As Long
+    
+    'First, handle the automatic case(s)
+    If autoColorModeActive Then
+        
+        'First, images without alpha data
+        If (outputAlphaMode = PDAS_NoAlpha) Then
+            
+            'If the image doesn't have alpha data, we definitely don't want to write a transparency chunk!
+            m_WriteTrns = False
+            
+            If isTrueColor Then
+                outColorType = png_Truecolor
+                outBitsPerChannel = 8
+            Else
+                If isGrayscale Then
+                    outColorType = png_Greyscale
+                    outBitsPerChannel = isGrayscaleSpecialBitDepth
+                Else
+                    outColorType = png_Indexed
+                    If (m_ImgColorCount <= 2) Then
+                        outBitsPerChannel = 1
+                    ElseIf (m_ImgColorCount <= 4) Then
+                        outBitsPerChannel = 2
+                    ElseIf (m_ImgColorCount <= 16) Then
+                        outBitsPerChannel = 4
+                    Else
+                        outBitsPerChannel = 8
+                    End If
+                End If
+            End If
+            
+        'Complicated (full) alpha
+        ElseIf (outputAlphaMode = PDAS_ComplicatedAlpha) Then
+        
+            If isTrueColor Then
+                outColorType = png_TruecolorAlpha
+                outBitsPerChannel = 8
+            Else
+            
+                If isGrayscale Then
+                    
+                    outBitsPerChannel = 8
+                    
+                    'Grayscale can be written out to file in a few different ways, depending on the presence of
+                    ' alpha data.
+                    ' 1) If there are more than 257 grayscale + alpha combinations in the image, we must write the
+                    '    image as gray+alpha
+                    If (m_ImgColorCount > 256) Then
+                        outColorType = png_GreyscaleAlpha
+                    
+                    'If there are 256 or less unique grayscale + alpha combinations, we can actually write this
+                    ' as a paletted image (instead of requiring a full additional alpha channel).
+                    Else
+                        
+                        outColorType = png_Indexed
+                        
+                        'Monochrome is a weird exception, as we can write the image as monochrome if either black or white
+                        ' is transparent, but not both.
+                        If (m_ImgColorCount <= 2) Then
+                            outBitsPerChannel = 1
+                        ElseIf (m_ImgColorCount <= 4) Then
+                            outBitsPerChannel = 2
+                        ElseIf (m_ImgColorCount <= 16) Then
+                            outBitsPerChannel = 4
+                        Else
+                            outBitsPerChannel = 8
+                        End If
+                        
+                    End If
+                    
+                'If the image is not grayscale, and not true color, it must be paletted
+                Else
+                    outColorType = png_Indexed
+                    If (m_ImgColorCount <= 2) Then
+                        outBitsPerChannel = 1
+                    ElseIf (m_ImgColorCount <= 4) Then
+                        outBitsPerChannel = 2
+                    ElseIf (m_ImgColorCount <= 16) Then
+                        outBitsPerChannel = 4
+                    Else
+                        outBitsPerChannel = 8
+                    End If
+                End If
+                
+            End If
+        
+        'Binary alpha (meaning the image only contains alpha values that are 0 or 255, nothing in-between).
+        ' In many cases, we can write this data as 24-bit and simply "flag" a single color as transparent.
+        ' Sometimes, however, we'll need to fall back to full alpha coverage (for example, if the image is
+        ' grayscale but all 256 gray shades are in use in opaque pixels - then we have to use a full
+        ' alpha channel).
+        Else
+            
+            Dim trnsTable() As Byte
+            m_WriteTrns = False
+            
+            Dim cCount As pdColorCount
+            
+            If isTrueColor Then
+                
+                'In true color images, we need to find a unique, unused color to use as our transparent color.
+                ' In the (extremely rare) case that this proves impossible, we'll fall back to writing a
+                ' standard 32-bpp image.
+                outColorType = png_Truecolor
+                outBitsPerChannel = 8
+                
+                'Start by creating a color count object for this image, and note that we *don't* want to track alpha.
+                ' (Alpha = 0 always uses pure black in PD images because we require premultiplied alpha.)
+                DIBs.GetDIBColorCountObject srcImage, cCount, False
+                
+                'Next, query the object for an unused color, and start the search with the image's original
+                ' transparent color (if any; if it didn't supply one, we'll just start at black).
+                If cCount.DoesColorExist(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+                    
+                    'The original transparent color now appears in the image, which means we can't use it for export.
+                    ' We need to find a new one.
+                    If cCount.GetUnusedColor(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+                        
+                        'A new, unused color was found.  Use it to add transparency to the image.
+                        m_WriteTrns = True
+                    
+                    'By some (horrifying) miracle, all 16.7 million colors are used in this image.  We can't use a tRNS
+                    ' chunk to write transparency data; fall back to 32-bit RGBA
+                    Else
+                        outColorType = png_TruecolorAlpha
+                    End If
+                
+                'The original transparent color does not appear in the image!  Use it as our transparent color.
+                Else
+                    m_WriteTrns = True
+                End If
+                
+                'If we can still use a transparent color, downsample the image now, and replace any transparent pixels
+                ' with the designated color.
+                If (outColorType = png_Truecolor) Then
+                    DIBs.RetrieveTransparencyTable srcImage, trnsTable
+                    DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_BkgdColor
+                End If
+            
+            'Not truecolor, which leaves grayscale and indexed modes
+            Else
+            
+                If isGrayscale Then
+                    
+                    outBitsPerChannel = 8
+                    
+                    'Grayscale can be written out to file in a few different ways, depending on the way the alpha
+                    ' data is presented.
+                    
+                    ' 1) If there are more than 256 grayscale + alpha combinations in the image, we must write the
+                    '    image as gray+full alpha channel.  (This can happen if all 256 shades of gray are used in
+                    '    an image, *and* full transparency is also used somewhere - no "unused" gray shades exist
+                    '    to use as a transparent color flag.)
+                    If (m_ImgColorCount > 256) Then
+                        outColorType = png_GreyscaleAlpha
+                    
+                    'If there are 256 or less unique grayscale + alpha combinations, we can successfully write
+                    ' the grayscale image, because at least one unused shade exists which we can "steal" for
+                    ' our transparency flag.
+                    Else
+                        
+                        outColorType = png_Greyscale
+                        outBitsPerChannel = 8
+                        m_WriteTrns = True
+                        
+                        'The target grayscale bit-depth presents a problem, as we may need to "bump" up the
+                        ' bit-depth by one to free up a shade that we can use as a transparency marker.
+                        If (isGrayscaleSpecialBitDepth < 8) Then
+                            
+                            'Calculate a bit-depth table.  We need to see if there are any gray shades in the current
+                            ' bit-depth table that are unused; if there are, we can steal them to use as a transparency
+                            ' flag.
+                            Dim numShadesAvailable As Long
+                            numShadesAvailable = 2 ^ isGrayscaleSpecialBitDepth
+                            
+                            Dim gDivisor As Long
+                            gDivisor = 255 \ (numShadesAvailable - 1)
+                            
+                            Dim colFound() As Byte
+                            ReDim colFound(0 To numShadesAvailable - 1) As Byte
+                            For i = 0 To m_ImgColorCount - 1
+                                If (m_ImgPalette(i).Alpha > 0) Then colFound(m_ImgPalette(i).Green \ gDivisor) = 1
+                            Next i
+                            
+                            'Test the original transparent color (if any); we want to give it priority.
+                            If (colFound(m_TrnsValueG \ gDivisor) <> 0) Then
+                                
+                                Dim mustUpsample As Boolean
+                                mustUpsample = True
+                                
+                                'See if another value is available for use.
+                                For i = 0 To numShadesAvailable - 1
+                                    If (colFound(i) = 0) Then
+                                        m_TrnsValueG = i * gDivisor
+                                        mustUpsample = False
+                                        Exit For
+                                    End If
+                                Next i
+                                
+                                'If the requested color isn't available, we have no choice but to save at a higher
+                                ' bit-depth.  In some cases we can just bump up the bit-depth to the next level,
+                                ' but in others (e.g. 2-bits to 4-bits) we can't, as the available colors don't
+                                ' map cleanly.
+                                If mustUpsample Then
+                                
+                                    If (isGrayscaleSpecialBitDepth = 1) Then
+                                        outBitsPerChannel = 2
+                                        m_TrnsValueG = 85
+                                    Else
+                                        outBitsPerChannel = 8
+                                        m_TrnsValueG = 1
+                                    End If
+                                
+                                'Upsampling isn't required; use the marked transparent color and exit
+                                Else
+                                    outBitsPerChannel = isGrayscaleSpecialBitDepth
+                                End If
+                            
+                            'The original transparent color does not appear in the image; reuse it!
+                            Else
+                                outBitsPerChannel = isGrayscaleSpecialBitDepth
+                            End If
+                            
+                            'We now have a transparency color we can use.  Apply it now.
+                            DIBs.RetrieveTransparencyTable srcImage, trnsTable
+                            DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_BkgdColor
+                            
+                        '8-bit grayscale is simpler.
+                        Else
+                                
+                            'As with a color image, we need to find an unused value in the grayscale palette.  Note that
+                            ' the color of transparent pixels will always be black (due to premultiplication), so we
+                            ' can't just grab the transparent shade from the existing palette (in case opaque black is
+                            ' also used in the image).
+                            ReDim colFound(0 To 255) As Byte
+                            For i = 0 To m_ImgColorCount - 1
+                                If (m_ImgPalette(i).Alpha > 0) Then colFound(m_ImgPalette(i).Green) = 1
+                            Next i
+                            
+                            'Test the original transparent color (if any); we want to give it priority.
+                            If (colFound(m_TrnsValueG) <> 0) Then
+                            
+                                'Grab the first value that *isn't* used
+                                For i = 0 To 255
+                                    If (colFound(i) = 0) Then
+                                        m_TrnsValueG = i
+                                        Exit For
+                                    End If
+                                Next i
+                            
+                            End If
+                            
+                            'We now have a transparency color we can use.  Apply it now.
+                            DIBs.RetrieveTransparencyTable srcImage, trnsTable
+                            DIBs.ApplyBinaryTransparencyTableColor srcImage, trnsTable, RGB(m_TrnsValueG, m_TrnsValueG, m_TrnsValueG), m_BkgdColor
+                            
+                        End If
+                        
+                    End If
+                
+                'Indexed color images require no special treatment.
+                Else
+                    outColorType = png_Indexed
+                    If (m_ImgColorCount <= 2) Then
+                        outBitsPerChannel = 1
+                    ElseIf (m_ImgColorCount <= 4) Then
+                        outBitsPerChannel = 2
+                    ElseIf (m_ImgColorCount <= 16) Then
+                        outBitsPerChannel = 4
+                    Else
+                        outBitsPerChannel = 8
+                    End If
+                End If
+                
+            End If
+        
+        'End current alpha status check
+        End If
+    
+    'The color model is *not* automatic; use the user's requested mode instead.
+    Else
+        
+        'First, images without alpha data
+        If (outputAlphaMode = PDAS_NoAlpha) Then
+        
+            If outputGrayscale Then
+                outColorType = png_Greyscale
+                If outputHDR Then
+                    outBitsPerChannel = 16
+                ElseIf outputMonochrome Then
+                    outBitsPerChannel = 1
+                Else
+                    m_ImgMaxColorCount = outputPaletteSize
+                    If (outputPaletteSize = 2) Then
+                        outBitsPerChannel = 1
+                    ElseIf (outputPaletteSize = 4) Then
+                        outBitsPerChannel = 2
+                    ElseIf (outputPaletteSize = 16) Then
+                        outBitsPerChannel = 4
+                    Else
+                        outBitsPerChannel = 8
+                    End If
+                End If
+            Else
+                outColorType = png_Truecolor
+                If outputHDR Then
+                    outBitsPerChannel = 16
+                ElseIf outputIndexed Then
+                    m_ImgMaxColorCount = outputPaletteSize
+                    outColorType = png_Indexed
+                    If (outputPaletteSize <= 2) Then
+                        outBitsPerChannel = 1
+                    ElseIf (outputPaletteSize <= 4) Then
+                        outBitsPerChannel = 2
+                    ElseIf (outputPaletteSize <= 16) Then
+                        outBitsPerChannel = 4
+                    Else
+                        outBitsPerChannel = 8
+                    End If
+                Else
+                    outBitsPerChannel = 8
+                End If
+            End If
+            
+        'Binary alpha is not currently handled; TODO!
+        Else
+        
+            If outputGrayscale Then
+                outColorType = png_GreyscaleAlpha
+                If outputHDR Then
+                    outBitsPerChannel = 16
+                Else
+                    outBitsPerChannel = 8
+                End If
+            Else
+                outColorType = png_TruecolorAlpha
+                If outputHDR Then
+                    outBitsPerChannel = 16
+                Else
+                    outBitsPerChannel = 8
+                End If
+            End If
+            
+        End If
+    
+    End If
+
+End Sub
+
+'The module-level m_ImgColorCount and m_ImgPalette values must be populated before calling this function.
+Private Sub CountPaletteAlphaEntries(ByRef numNon255Or0 As Long, ByRef numZero As Long)
+    
+    Dim i As Long
+    For i = 0 To m_ImgColorCount - 1
+        If (m_ImgPalette(i).Alpha < 255) Then
+            If (m_ImgPalette(i).Alpha = 0) Then
+                numZero = numZero + 1
+            Else
+                numNon255Or0 = numNon255Or0 + 1
+            End If
+        End If
+    Next i
+
+End Sub
+
+'The module-level m_ImgColorCount and m_ImgPalette values must be populated before calling this function.
+Private Function GetPreciseGrayBitDepth() As Long
+
+    GetPreciseGrayBitDepth = 8
+    Dim i As Long, badValueFound As Boolean
+    
+    'Check 1-bit
+    If (m_ImgColorCount <= 2) Then
+        badValueFound = False
+        For i = 0 To m_ImgColorCount - 1
+            If (m_ImgPalette(i).Red <> 0) And (m_ImgPalette(i).Red <> 255) Then
+                badValueFound = True
+                Exit For
+            End If
+        Next i
+        If (Not badValueFound) Then GetPreciseGrayBitDepth = 1
+    End If
+    
+    'Check 2-bit
+    If (m_ImgColorCount <= 4) And (GetPreciseGrayBitDepth = 8) Then
+        badValueFound = False
+        For i = 0 To m_ImgColorCount - 1
+            If (m_ImgPalette(i).Red Mod 85 <> 0) Then
+                badValueFound = True
+                Exit For
+            End If
+        Next i
+        If (Not badValueFound) Then GetPreciseGrayBitDepth = 2
+    End If
+    
+    'Check 4-bit
+    If (m_ImgColorCount <= 16) And (GetPreciseGrayBitDepth = 8) Then
+        badValueFound = False
+        For i = 0 To m_ImgColorCount - 1
+            If (m_ImgPalette(i).Red Mod 17 <> 0) Then
+                badValueFound = True
+                Exit For
+            End If
+        Next i
+        If (Not badValueFound) Then GetPreciseGrayBitDepth = 4
+    End If
+    
+End Function
+
+'Given a 32-bpp source (the source *MUST BE 32-bpp*, but its alpha channel can be constant), fill various critical
+' pieces of information about the image's color+opacity makeup:
+' 1) netColorCount: an integer on the range [1, 257].  257 = more than 256 unique colors
+' 2) isGrayscale: TRUE if the image consists of only gray shades
+' 3) isMonochrome: TRUE if the image consists of only black and white
+' 4) currentAlphaStatus: custom enum describing the alpha channel contents of the image
+' 5) uniqueColors(): if the image contains 256 unique color + opacity combinations (or less), this will return an exact palette
+'
+'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
+' it a 24-bpp image!)
+Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef isMonochrome As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS, ByRef uniqueColors() As RGBQuad)
+
+    PDDebug.LogAction "Analyzing image prior to PNG export..."
+    
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, pxSize As Long
+    finalY = srcDIB.GetDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    If (srcDIB.GetDIBColorDepth = 32) Then pxSize = 4 Else pxSize = 3
+    finalX = finalX * pxSize
+    
+    'Use a dedicated color counting class to collect a palette for this image.  (Note that in a PNG context,
+    ' "color" means "RGBA quad", not "RGB triplet".)
+    Dim cColorTree As pdColorCount
+    Set cColorTree = New pdColorCount
+    cColorTree.SetAlphaTracking True
+    
+    Dim i As Long
+    
+    'Total number of unique colors counted so far
+    Dim numUniqueColors As Long, non255Alpha As Boolean, nonBinaryAlpha As Boolean
+    numUniqueColors = 0
+    non255Alpha = False
+    nonBinaryAlpha = False
+    
+    isGrayscale = True
+    isMonochrome = True
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim colorFound As Boolean
+    
+    'Look for unique colors
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX Step pxSize
+        
+        b = srcPixels(x)
+        g = srcPixels(x + 1)
+        r = srcPixels(x + 2)
+        If (pxSize = 4) Then a = srcPixels(x + 3) Else a = 255
+        
+        'First, look for non-binary alpha
+        If (Not nonBinaryAlpha) Then
+            If (a < 255) Then
+                non255Alpha = True
+                If (a > 0) Then nonBinaryAlpha = True
+            End If
+        End If
+        
+        'Until we find at least 257 unique colors, we need to investigate colors more closely
+        If (numUniqueColors <= 256) Then
+        
+            If cColorTree.AddColor(r, g, b, a) Then numUniqueColors = numUniqueColors + 1
+            
+            'Once more than 256 colors have been found, we no longer need to count colors, because we
+            ' already know the image must be exported as 24-bit (or higher).  Note, however, that we
+            ' may need to continue analyzing the image to look for unique alpha values.
+            If (numUniqueColors > 256) Then numUniqueColors = 257
+            
+        End If
+        
+        If (r <> g) Or (g <> b) Or (r <> b) Then isGrayscale = False
+        If isGrayscale Then
+            If (RGB(r, g, b) <> vbWhite) And (RGB(r, g, b) <> vbBlack) Then isMonochrome = False
+        End If
+        
+        'If an image looks grayscale (so far), or if we haven't found alpha values other than 0 and 255,
+        ' or we haven't found more than 256 unique colors, we need to keep scanning the image.
+        If (Not isGrayscale) And nonBinaryAlpha And (numUniqueColors > 256) Then Exit For
+        
+    Next x
+        If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcPixels
+    
+    'If the image is not grayscale, we know it is also not monochrome
+    netColorCount = numUniqueColors
+    If (Not isGrayscale) Then isMonochrome = False
+    
+    'Further checks are only relevant if the image contains 256 colors or less
+    If (numUniqueColors <= 256) Then
+        
+        'Retrieve the current color palette for this image
+        cColorTree.GetPalette uniqueColors
+        
+    'End "If 256 colors or less..."
+    End If
+    
+    'Convert our individual alpha trackers into the single "currentAlphaStatus" output, then exit
+    If non255Alpha Then
+        If nonBinaryAlpha Then
+            currentAlphaStatus = PDAS_ComplicatedAlpha
+        Else
+            currentAlphaStatus = PDAS_BinaryAlpha
+        End If
+    Else
+        currentAlphaStatus = PDAS_NoAlpha
+    End If
+    
+End Sub
 
 Friend Function ExportStep1_StartFile(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
     
@@ -1550,23 +2237,23 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'RGBA data
     If (m_Header.ColorType = png_TruecolorAlpha) Then
-        ExportStep3_FilterBytes = Step3Helper_TruecolorAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
+        ExportStep3_FilterBytes = Step3Helper_TruecolorAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride)
         
     'RGB data
     ElseIf (m_Header.ColorType = png_Truecolor) Then
-        ExportStep3_FilterBytes = Step3Helper_Truecolor(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
+        ExportStep3_FilterBytes = Step3Helper_Truecolor(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
         
     'Grayscale
     ElseIf (m_Header.ColorType = png_Greyscale) Then
-        ExportStep3_FilterBytes = Step3Helper_Grayscale(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
+        ExportStep3_FilterBytes = Step3Helper_Grayscale(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
         
     'Greyscale + alpha
     ElseIf (m_Header.ColorType = png_GreyscaleAlpha) Then
-        ExportStep3_FilterBytes = Step3Helper_GrayscaleAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride, cParams)
+        ExportStep3_FilterBytes = Step3Helper_GrayscaleAlpha(srcImage, finalBytes, sizeOfPngBytes, dstStride)
         
     'Indexed
     ElseIf (m_Header.ColorType = png_Indexed) Then
-        ExportStep3_FilterBytes = Step3Helper_Indexed(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, cParams)
+        ExportStep3_FilterBytes = Step3Helper_Indexed(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
     
     End If
     
@@ -1611,7 +2298,7 @@ End Function
 '
 'Note that the finalBytes() array will already be initialized to the size specified by sizeOfPngBytes; this is performed
 ' externally as a convenience to the caller, so they can simply proceed with filling the array.
-Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'TrueColor+Alpha mode supports 32/64-bpp output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long
@@ -1680,7 +2367,7 @@ Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef final
 
 End Function
 
-Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'TrueColor mode supports 24/48-bpp output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
@@ -1694,10 +2381,11 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef finalBytes
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'TODO: handle binary alpha
+    'If the caller wants us to write a tRNS chunk, do so now.
+    If m_WriteTrns Then WriteTRNSNow cStream
     
     'Start by downsampling the source DIB to 24-bpp, using whatever backcolor the caller requested
-    srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
+    If (srcImage.GetDIBColorDepth <> 24) Then srcImage.ConvertTo24bpp m_BkgdColor
     
     '24-bpp path
     If (m_Header.BitDepth = 8) Then
@@ -1762,7 +2450,7 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef finalBytes
     
 End Function
 
-Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'Grayscale mode supports 1/2/4/8/16-bit output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
@@ -1772,20 +2460,16 @@ Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef finalBytes
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'Pull some color-depth specific data into its own parser
-    Dim cParamsDepth As pdParamXML
-    Set cParamsDepth = New pdParamXML
-    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
-    
-    'TODO: handle binary alpha, if specified
+    'If the caller wants us to write a tRNS chunk, do so now.
+    If m_WriteTrns Then WriteTRNSNow cStream
     
     'If it isn't already, composite the source image against the specified backcolor
-    srcImage.ConvertTo24bpp cParams.GetLong("PNGBackgroundColor", vbWhite)
+    srcImage.ConvertTo24bpp m_BkgdColor
     
     'Retrieve a grayscale-only copy of the source image's bytes.  (Note that this will forcibly convert the
     ' pixel data to grayscale if it isn't already, so it doesn't really matter whether the data is already gray!)
     Dim grayBytes() As Byte
-    DIBs.GetDIBGrayscaleMapEx srcImage, grayBytes, cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    DIBs.GetDIBGrayscaleMapEx srcImage, grayBytes, m_ImgMaxColorCount
     
     'Cheap copy for 8-bits, manual transfer for 16, special encoding for sub-8-bit
     If (m_Header.BitDepth = 8) Then
@@ -1893,7 +2577,7 @@ Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef finalBytes
     
 End Function
 
-Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'Grayscale+Alpha mode supports 16/32-bpp output
     Dim srcHeightInPixels As Long
@@ -1936,7 +2620,7 @@ End Function
 
 'Unlike other modes, indexed color images require a reference to the underlying pdStream object because they must
 ' write a separate palette chunk (and perhaps an optional transparency chunk)
-Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, ByRef cParams As pdParamXML) As PD_PNGResult
+Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'Indexed mode supports 1/2/4/8-bit output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
@@ -1949,11 +2633,6 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'Pull some color-depth specific data into its own parser
-    Dim cParamsDepth As pdParamXML
-    Set cParamsDepth = New pdParamXML
-    cParamsDepth.SetParamString cParams.GetString("PNGColorDepth")
-    
     'Retrieve a copy of the image and its palette.  (TODO: the image may need to be forcibly converted
     ' to 8-bpp, if the user manually requested 8-bpp output; if that happens, we need to reduce
     ' bit-depth here instead of assuming it's already available.)
@@ -1963,7 +2642,7 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     'If the source image has more than the user's requested color count (256 by default), we need to
     ' forcibly reduce it before continuing.
     Dim maxColorCount As Long
-    maxColorCount = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+    maxColorCount = m_ImgMaxColorCount
     If (maxColorCount > 256) Then maxColorCount = 256
     
     If (numColors > maxColorCount) Then
@@ -2122,6 +2801,48 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     Step3Helper_Indexed = png_Success
     
 End Function
+
+'After populating all class-level tRNS data, call this function to immediately write the actual tRNS chunk.
+' (Note that tRNS order matters: it needs to be after PLTE but before IDAT.)
+Private Sub WriteTRNSNow(ByRef cStream As pdStream)
+
+    Dim tmpChunk As pdPNGChunk
+    Set tmpChunk = New pdPNGChunk
+    
+    tmpChunk.CreateChunkForExport "tRNS"
+    
+    If (m_Header.ColorType = png_Truecolor) Then
+        If (m_Header.BitDepth = 8) Then
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueR
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueG
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueB
+        ElseIf (m_Header.BitDepth = 16) Then
+            tmpChunk.BorrowData.WriteIntU_BE m_TrnsValueR * 256
+            tmpChunk.BorrowData.WriteIntU_BE m_TrnsValueG * 256
+            tmpChunk.BorrowData.WriteIntU_BE m_TrnsValueB * 256
+        End If
+    
+    ElseIf (m_Header.ColorType = png_Greyscale) Then
+        If (m_Header.BitDepth = 8) Then
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueG
+        ElseIf (m_Header.BitDepth = 16) Then
+            tmpChunk.BorrowData.WriteIntU_BE m_TrnsValueG * 256
+        ElseIf (m_Header.BitDepth = 4) Then
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueG \ 17
+        ElseIf (m_Header.BitDepth = 2) Then
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueG \ 85
+        ElseIf (m_Header.BitDepth = 1) Then
+            tmpChunk.BorrowData.WriteInt_BE m_TrnsValueG \ 255
+        End If
+    
+    'Paletted images write tRNS data without our help; look there for data on how it constructs its specialized
+    ' tRNS entry.
+    End If
+    
+    tmpChunk.FinalizeChunk
+    cStream.WriteStream tmpChunk.BorrowData
+    
+End Sub
 
 'This function requires a temporary chunk object that has already filtered pixel bytes; this is handled by export step 3,
 ' which *MUST* be called before calling this function.
@@ -3003,6 +3724,39 @@ Friend Function GetBackgroundColor() As Long
     
     Else
         GetBackgroundColor = -1
+    End If
+    
+End Function
+
+'Return the image's transparent color, if any.  Only relevant on grayscale and truecolor type PNGs.
+' RETURNS: FALSE if no chunk exists; TRUE (with a filled dstColor value) otherwise.  For a grayscale image, the grayscale
+' "shade" is automatically expanded to its RGB equivalent.
+Friend Function GetTransparentColor(ByRef dstColor As Long, Optional ByVal scaleTo8Bits As Boolean = True) As Boolean
+    
+    GetTransparentColor = False
+    
+    'If a tRNS chunk exists, retrieve its information, too.  (Note that we only check for tRNS under certain
+    ' color type combinations; in particular, it is forbidden if the image contains a full alpha channel.)
+    Dim hasTransparency As Boolean, trnsRed As Long, trnsGreen As Long, trnsBlue As Long
+    trnsRed = -1: trnsGreen = -1: trnsBlue = -1
+    
+    If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_Truecolor) Then
+        
+        Dim trnsIndex As Long
+        trnsIndex = Me.GetIndexOfChunk("tRNS")
+        If (trnsIndex >= 0) Then
+            Dim tmpPal() As RGBQuad
+            GetTransparentColor = m_Chunks(trnsIndex).GetTRNSData(tmpPal, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
+            If GetTransparentColor Then
+                If scaleTo8Bits And (m_Header.BitDepth = 16) Then
+                    trnsRed = trnsRed \ 257
+                    trnsGreen = trnsGreen \ 257
+                    trnsBlue = trnsBlue \ 257
+                End If
+                dstColor = RGB(trnsRed, trnsGreen, trnsBlue)
+            End If
+        End If
+        
     End If
     
 End Function

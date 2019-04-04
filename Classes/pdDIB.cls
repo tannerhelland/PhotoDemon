@@ -1589,8 +1589,7 @@ Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SafeArray1D)
     End With
 End Sub
 
-'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
-' images itself, this is necessary to give transparent images a white background.
+'Pre-composite an image with an alpha-channel against a background color.
 Friend Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.

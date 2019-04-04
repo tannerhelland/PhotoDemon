@@ -267,6 +267,50 @@ Public Function IsDIBTransparent(ByRef srcDIB As pdDIB) As Boolean
         
 End Function
 
+'Given a DIB, return a pdColorCount object describing the contents of said image.
+Public Function GetDIBColorCountObject(ByRef srcDIB As pdDIB, ByRef dstColorCount As pdColorCount, Optional ByVal countRGBA As Boolean = True) As Boolean
+
+    Set dstColorCount = New pdColorCount
+    dstColorCount.SetAlphaTracking countRGBA
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim qvDepth As Long
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Iterate through all pixels, counting unique values as we go.
+    For y = initY To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step qvDepth
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
+        a = imageData(x + 3)
+        dstColorCount.AddColor r, g, b, a
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB imageData
+    
+    GetDIBColorCountObject = True
+    
+End Function
+
 'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
 ' stretches from 0 to 255.
 'NOTE: to improve performance, this function does not deal with alpha premultiplication *at all*.  It's up to the caller to handle that.
@@ -1132,6 +1176,105 @@ Public Function ApplyBinaryTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTra
             srcDIB.UnwrapArrayFromDIB iData
             
             ApplyBinaryTransparencyTable = True
+            
+        End If
+    Else
+        Debug.Print "WARNING!  pdDIB.ApplyBinaryTransparencyTable() requires a 32-bpp DIB to operate correctly."
+    End If
+    
+End Function
+
+'Given a binary transparency table (e.g. a byte array at the same dimensions as the image, with only values 0 or 255),
+' apply said transparency table to the current DIB.  Unlike the normal function, this one replaces transparent pixels
+' with a designated transparent color.  (This is useful when exporting PNGs.)
+Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef srcTransparencyTable() As Byte, ByVal trnsColor As Long, Optional ByVal newBackgroundColor As Long = vbWhite) As Boolean
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            Dim iData() As Byte, tmpSA As SafeArray1D
+            Dim alphaPremultiplied As Boolean: alphaPremultiplied = srcDIB.GetAlphaPremultiplication
+            
+            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
+            Dim tmpAlpha As Double
+            
+            'Transparent pixels are replaced with the designated transparent color
+            Dim trnsR As Long, trnsG As Long, trnsB As Long
+            trnsR = Colors.ExtractRed(trnsColor)
+            trnsG = Colors.ExtractGreen(trnsColor)
+            trnsB = Colors.ExtractBlue(trnsColor)
+            
+            'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
+            ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+            Dim intToFloat() As Single
+            ReDim intToFloat(0 To 255) As Single
+            Dim i As Long
+            For i = 0 To 255
+                If alphaPremultiplied Then
+                    intToFloat(i) = 1 - (i / 255)
+                Else
+                    intToFloat(i) = i / 255
+                End If
+            Next i
+            
+            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
+            Dim backR As Long, backG As Long, backB As Long
+            backR = Colors.ExtractRed(newBackgroundColor)
+            backG = Colors.ExtractGreen(newBackgroundColor)
+            backB = Colors.ExtractBlue(newBackgroundColor)
+                
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+                srcDIB.WrapArrayAroundScanline iData, tmpSA, y
+            For x = 0 To finalX
+                
+                xLookup = x * 4
+                
+                'If the transparency table is 0, replace this pixel with the designated transparent color
+                If srcTransparencyTable(x, y) = 0 Then
+                    iData(xLookup) = trnsB
+                    iData(xLookup + 1) = trnsG
+                    iData(xLookup + 2) = trnsR
+                    iData(xLookup + 3) = 255
+                
+                'Otherwise, make this pixel fully opaque and composite it against the specified backcolor
+                Else
+                    chkB = iData(xLookup)
+                    chkG = iData(xLookup + 1)
+                    chkR = iData(xLookup + 2)
+                    chkAlpha = iData(xLookup + 3)
+                    
+                    If (chkAlpha <> 255) Then
+                        tmpAlpha = intToFloat(chkAlpha)
+                        
+                        If alphaPremultiplied Then
+                            iData(xLookup) = backB * tmpAlpha + chkB
+                            iData(xLookup + 1) = backG * tmpAlpha + chkG
+                            iData(xLookup + 2) = backR * tmpAlpha + chkR
+                        Else
+                            iData(xLookup) = Colors.BlendColors(chkB, backB, tmpAlpha)
+                            iData(xLookup + 1) = Colors.BlendColors(chkG, backG, tmpAlpha)
+                            iData(xLookup + 2) = Colors.BlendColors(chkR, backR, tmpAlpha)
+                        End If
+                        
+                        iData(xLookup + 3) = 255
+                    End If
+                    
+                End If
+                
+            Next x
+            Next y
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            srcDIB.UnwrapArrayFromDIB iData
+            
+            ApplyBinaryTransparencyTableColor = True
             
         End If
     Else

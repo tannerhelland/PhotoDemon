@@ -272,6 +272,40 @@ Private Function AllocateNode(ByVal startValue As Long, Optional ByVal useSmallC
     m_NumOfEntries = m_NumOfEntries + 1
 End Function
 
+'After counting colors, you can use this function to see if a specified color exists in the color tree.
+Friend Function DoesColorExist(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Boolean
+    
+    DoesColorExist = False
+    
+    If (Me.GetUniqueRGBACount > 0) Then
+        
+        If (m_Colors(0).ceChildIndices(srcR) <> 0) Then
+            
+            'R exists in the tree...
+            Dim gIndex As Long
+            gIndex = m_Colors(0).ceChildIndices(srcR)
+            If (gIndex <> 0) And (srcG <= UBound(m_Colors(gIndex).ceChildIndices)) Then
+                
+                'G exists in the tree...
+                Dim bIndex As Long
+                bIndex = m_Colors(gIndex).ceChildIndices(srcG)
+                If (bIndex <> 0) And (srcB <= UBound(m_Colors(bIndex).ceChildIndices)) Then
+                    
+                    'B exists in the tree...
+                    Dim aIndex As Long
+                    aIndex = m_Colors(bIndex).ceChildIndices(srcB)
+                    DoesColorExist = (aIndex <> 0)
+                
+                End If
+                
+            End If
+        
+        End If
+        
+    End If
+
+End Function
+
 'After counting colors, you can use this function to retrieve a matching palette, e.g. a list of every
 ' color in the tree.  (While this works on any size color tree, this function is primarily designed
 ' for use on images with 256 colors or less.)
@@ -380,6 +414,77 @@ Friend Function GetUniqueRGBACount() As Long
     Else
         GetUniqueRGBACount = m_NumOfRGBTriplets
     End If
+End Function
+
+'After counting colors, you can use this function to find an unused color in the current tree.
+' (This is extremely helpful during PNG export, to try and find a good tRNS candidate.)
+Friend Function GetUnusedColor(ByRef dstRed As Long, ByRef dstGreen As Long, ByRef dstBlue As Long) As Boolean
+    
+    If (Me.GetUniqueRGBACount > 0) Then
+        
+        GetUnusedColor = True
+        
+        Dim r As Long, g As Long, b As Long
+        Dim rIndex As Long, gIndex As Long, bIndex As Long, aIndex As Long
+        
+        'Iterate encountered r values
+        For r = 0 To 255
+            
+            'This red value is unused in the image.  Return any arbitrary green/blue value and exit.
+            If (m_Colors(0).ceChildIndices(r) = 0) Then
+                dstRed = r
+                dstGreen = 0
+                dstBlue = 0
+                Exit Function
+            
+            'This red value is used, but maybe we can find a green/blue pair it isn't
+            ' paired with.
+            Else
+                
+                gIndex = m_Colors(0).ceChildIndices(r)
+                For g = 0 To UBound(m_Colors(gIndex).ceChildIndices)
+                    
+                    'This green value is unused in the image.  Return any arbitrary blue value and exit.
+                    If (m_Colors(gIndex).ceChildIndices(g) = 0) Then
+                        dstRed = r
+                        dstGreen = g
+                        dstBlue = 0
+                        Exit Function
+                    
+                    'This green value is used, but maybe we can find a blue value it isn't
+                    ' paired with.
+                    Else
+                    
+                        bIndex = m_Colors(gIndex).ceChildIndices(g)
+                        For b = 0 To UBound(m_Colors(bIndex).ceChildIndices)
+                            
+                            'This blue value is unused in the image.  Return it and exit.
+                            If (m_Colors(bIndex).ceChildIndices(b) = 0) Then
+                                dstRed = r
+                                dstGreen = g
+                                dstBlue = b
+                                Exit Function
+                            End If
+                            
+                        Next b
+                    
+                    End If
+                    
+                Next g
+                
+            End If
+            
+        Next r
+        
+        'If by some miracle we reach this point, it means every single RGB triple is used in this image
+        ' (so the image must have at least 16.7 million pixels - interesting?).  Return false.
+        GetUnusedColor = False
+    
+    'A count hasn't been performed yet, so no color data exists
+    Else
+        GetUnusedColor = False
+    End If
+
 End Function
 
 Friend Sub SetAlphaTracking(ByVal newState As Boolean)

@@ -740,17 +740,19 @@ Public Type PAINTSTRUCT
     rgbReserved(0 To 31) As Byte
 End Type
 
-'PNG handling requires special types
+'PNG handling requires special types.
 Public Enum PD_PNGColorType
     png_Greyscale = 0
     png_Truecolor = 2
     png_Indexed = 3
     png_GreyscaleAlpha = 4
     png_TruecolorAlpha = 6
+    png_AutoColorType = 8   'USED ONLY AT EXPORT TIME, to indicate to the encoder that it is allowed
+                            ' to choose the best color type for the source image.
 End Enum
 
 #If False Then
-    Private Const png_Greyscale = 0, png_Truecolor = 2, png_Indexed = 3, png_GreyscaleAlpha = 4, png_TruecolorAlpha = 6
+    Private Const png_Greyscale = 0, png_Truecolor = 2, png_Indexed = 3, png_GreyscaleAlpha = 4, png_TruecolorAlpha = 6, png_AutoColorType = 8
 #End If
 
 Public Type PD_PNGHeader

@@ -1686,17 +1686,6 @@ Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest
     
-    Dim dstFile As String
-    dstFile = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\PNG types\big\test_out.png"
-    
-    Dim tmpDIB As pdDIB
-    PDImages.GetActiveImage.GetCompositedImage tmpDIB, False
-    
-    Dim cPNG As pdPNG
-    Set cPNG = New pdPNG
-    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
-    Debug.Print cPNG.SavePNG_Simple(dstFile, tmpDIB, png_TruecolorAlpha, 8, 12)
-    
 StopTestImmediately:
 
 End Sub

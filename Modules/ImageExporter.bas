@@ -35,8 +35,8 @@ End Enum
 '  the incoming DIB to 24-bpp *prior* to calling this function; that will improve performance by skipping alpha
 '  heuristics entirely.  Similarly, for a format like GIF, this function will return 8-bpp as the recommended
 '  color depth, *but you still need to deal with the alpha result*.  You may need to forcibly crop alpha to 0 and 255
-'  prior to exporting the GIF; PD provides a dialog for this.
-Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False) As Long
+'  prior to exporting the GIF; PD provides a built-in function for this.
+Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False, Optional ByRef goodTransparentColor As Long = vbBlack) As Long
     
     Dim colorCheckSuccessful As Boolean: colorCheckSuccessful = False
     
@@ -461,11 +461,13 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
 
 End Function
 
-'Given a 32-bpp source (the source *MUST BE 32-bpp*, but its alpha channel can be constant), fill four inputs:
+'Given a 32-bpp source (the source *MUST BE 32-bpp*, but its alpha channel can be constant), fill various critical
+' pieces of information about the image's color+opacity makeup:
 ' 1) netColorCount: an integer on the range [1, 257].  257 = more than 256 unique colors
 ' 2) isGrayscale: TRUE if the image consists of only gray shades
 ' 3) isMonochrome: TRUE if the image consists of only black and white
 ' 4) currentAlphaStatus: custom enum describing the alpha channel contents of the image
+' 5) uniqueColors(): if the image contains 256 unique color + opacity combinations (or less), this will return an exact palette
 '
 'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
 ' it a 24-bpp image!)
@@ -490,19 +492,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         Set cColorTree = New pdColorCount
         cColorTree.SetAlphaTracking True
         
-        'ReDim uniqueColors(0 To 255) As RGBQuad
-        
-        'Because PD uses premultiplied alpha, we can set an "impossible" color value as the default value
-        ' for the unique colors array; this allows us to match black correctly.
-        ' TODO: use a hash table or something smarter than a naive array
         Dim i As Long
-        'For i = 0 To 255
-        '    uniqueColors(i).Red = 1
-        '    uniqueColors(i).Green = 1
-        '    uniqueColors(i).Blue = 0
-        '    uniqueColors(i).Alpha = 1
-        'Next i
-
+        
         'Total number of unique colors counted so far
         Dim numUniqueColors As Long, non255Alpha As Boolean, nonBinaryAlpha As Boolean
         numUniqueColors = 0
@@ -556,7 +547,6 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         If (numUniqueColors <= 256) Then
             
             'Retrieve the current color palette for this image
-            Debug.Print "getting palette?"
             cColorTree.GetPalette uniqueColors
             
             'Next, we want to see if the image is grayscale
@@ -1359,190 +1349,10 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'Regular PNGs (e.g. non-web-optimized) still have a ton of settings that must be addressed.
     Else
         
-        'First come the PNG-specific settings (compression level, chunks, etc)
-        Dim pngCompressionLevel As Long, pngInterlacing As Boolean
+        'The only settings we need to extract here is compression level; everything else is handled automatically
+        ' by the PNG export class.
+        Dim pngCompressionLevel As Long
         pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 9)
-        
-        'Interlacing is currently forcibly disabled, as it is unsupported in major web browsers (the images will
-        ' still load but they are not displayed progressively) and it tends to greatly increase file size.
-        'pngInterlacing = cParams.GetBool("PNGInterlacing", False)
-        
-        Dim pngBackgroundColor As Long, pngCreateBkgdChunk As Boolean
-        pngBackgroundColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
-        pngCreateBkgdChunk = cParams.GetBool("PNGCreateBkgdChunk", False)
-        
-        Dim pngStandardOptimizeLevel As Long
-        pngStandardOptimizeLevel = cParams.GetLong("PNGStandardOptimization", 1)
-        
-        'Next come the various color-depth and alpha modes
-        Dim outputColorModel As String
-        outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto")
-        
-        'Some color modes support color counts on the range [2, 256].  If an image isn't already at the
-        ' specified color count, we will forcibly convert it.
-        Dim outputPaletteSize As Long
-        outputPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
-        
-        'If the output color model is "gray", we will forcibly apply a grayscale conversion prior to export
-        Dim forceGrayscale As Boolean
-        forceGrayscale = ParamsEqual(outputColorModel, "gray")
-        
-        'From the color depth requests, calculate an actual, numeric color depth.
-        ' (This includes checks like -- if we are forcibly outputting a grayscale image, set the bit-depth to 8-bpp to match.)
-        Dim outputColorDepth As Long, outputColorDepthName As String
-        If forceGrayscale Then
-        
-            outputColorDepthName = cParamsDepth.GetString("ColorDepth_GrayDepth", "Gray_Standard")
-            
-            If ParamsEqual(outputColorDepthName, "Gray_HDR") Then
-                outputColorDepth = 16
-            ElseIf ParamsEqual(outputColorDepthName, "Gray_Monochrome") Then
-                outputColorDepth = 1
-            
-            'Anything else is a [2, 256] color count grayscale image.  Look for specific bit-depth possibilities
-            ' and handle them specially.
-            Else
-                If (outputPaletteSize = 16) Then
-                    outputColorDepth = 4
-                ElseIf (outputPaletteSize = 4) Then
-                    outputColorDepth = 2
-                ElseIf (outputPaletteSize = 2) Then
-                    outputColorDepth = 1
-                Else
-                    outputColorDepth = 8
-                End If
-            End If
-        
-        'Grayscale is not being forced, so assume a color image
-        Else
-        
-            outputColorDepthName = cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard")
-            
-            If ParamsEqual(outputColorDepthName, "Color_HDR") Then
-                outputColorDepth = 48
-            ElseIf ParamsEqual(outputColorDepthName, "Color_Indexed") Then
-                If (outputPaletteSize <= 2) Then
-                    outputColorDepth = 1
-                ElseIf (outputPaletteSize <= 4) Then
-                    outputColorDepth = 2
-                ElseIf (outputPaletteSize <= 16) Then
-                    outputColorDepth = 4
-                Else
-                    outputColorDepth = 8
-                End If
-            Else
-                outputColorDepth = 24
-            End If
-            
-        End If
-        
-        'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only 0 or 255 values),
-        ' require additional settings.  We always retrieve all values, even if we don't plan on using them.
-        Dim outputAlphaModel As String
-        outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto")
-        
-        Dim outputPNGCutoff As Long, outputPNGColor As Long
-        outputPNGCutoff = cParams.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-        outputPNGColor = cParams.GetLong("ColorDepth_AlphaColor", vbMagenta)
-        
-        'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
-        ' color-depth and alpha-detection values now.
-        Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
-        autoColorModeActive = ParamsEqual(outputColorModel, "auto")
-        autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
-        
-        Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        If autoColorModeActive Or autoTransparencyModeActive Then
-            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
-            ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
-        Else
-            currentAlphaStatus = PDAS_ComplicatedAlpha
-        End If
-        
-        'From the automatic values, construct matching output values
-        If autoColorModeActive Then
-            outputColorDepth = autoColorDepth
-            forceGrayscale = isGrayscale
-            If (Not isTrueColor) Then outputPaletteSize = netColorCount
-        End If
-        
-        'Convert the auto-detected transparency mode to a usable string parameter.  (We need this later in the function,
-        ' so we can combine color depth and alpha depth into a single usable bit-depth.)
-        If autoTransparencyModeActive Then
-            desiredAlphaStatus = currentAlphaStatus
-            If desiredAlphaStatus = PDAS_NoAlpha Then
-                outputAlphaModel = "none"
-            ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
-                outputAlphaModel = "bycutoff"
-            ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
-                outputAlphaModel = "bycolor"
-            ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
-                outputAlphaModel = "full"
-            Else
-                outputAlphaModel = "full"
-            End If
-        End If
-        
-        'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
-        ' depth that correctly represents the combination of color depth + alpha depth.
-        If ParamsEqual(outputAlphaModel, "full") Then
-        
-            desiredAlphaStatus = PDAS_ComplicatedAlpha
-            
-            'PNGs support a dedicated grayscale+alpha mode
-            If forceGrayscale Then
-                If (outputColorDepth = 8) Then
-                    outputColorDepth = 16
-                ElseIf (outputColorDepth = 16) Then
-                    outputColorDepth = 32
-                End If
-            Else
-                If (outputColorDepth = 24) Then
-                    outputColorDepth = 32
-                ElseIf (outputColorDepth = 48) Then
-                    outputColorDepth = 64
-                End If
-            End If
-            
-        ElseIf ParamsEqual(outputAlphaModel, "none") Then
-            desiredAlphaStatus = PDAS_NoAlpha
-            If (Not forceGrayscale) Then
-                If (outputColorDepth = 64) Then
-                    outputColorDepth = 48
-                ElseIf (outputColorDepth = 32) Then
-                    outputColorDepth = 24
-                End If
-            End If
-            outputPNGCutoff = 0
-            
-        ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
-            desiredAlphaStatus = PDAS_BinaryAlpha
-            If (Not forceGrayscale) Then
-                If (outputColorDepth = 24) Then
-                    outputColorDepth = 32
-                ElseIf (outputColorDepth = 48) Then
-                    outputColorDepth = 64
-                End If
-            End If
-            
-        ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
-            desiredAlphaStatus = PDAS_NewAlphaFromColor
-            outputPNGCutoff = outputPNGColor
-            If (Not forceGrayscale) Then
-                If (outputColorDepth = 24) Then
-                    outputColorDepth = 32
-                ElseIf (outputColorDepth = 48) Then
-                    outputColorDepth = 64
-                End If
-            End If
-        End If
-            
-        'Monochrome depths require special treatment if alpha is active.
-        ' (TODO: handle this more elegantly)
-        If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
-            outputColorDepth = 8
-            outputPaletteSize = 2
-        End If
         
         Dim imgSavedOK As Boolean
         imgSavedOK = False
@@ -1551,65 +1361,18 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         ' and format coverage than either FreeImage or GDI+.
         If (Not imgSavedOK) Then
             
+            PDDebug.LogAction "Using internal PNG encoder for this operation..."
+                
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
-            
-            'Certain color formats are currently written using our own encoder.  Note that libdeflate supports compression
-            ' levels up to "12", unlike zlib's "9".  Levels 10-12 are slow but capable of producing extremely small files.
-            If (Not forceGrayscale) Then
-                
-                PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                
-                'HDR RGBA
-                If (outputColorDepth = 64) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 16, pngCompressionLevel, formatParams) < png_Failure)
-                
-                'HDR RGB
-                ElseIf (outputColorDepth = 48) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 16, pngCompressionLevel, formatParams) < png_Failure)
-                
-                'Standard RGBA
-                ElseIf (outputColorDepth = 32) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_TruecolorAlpha, 8, pngCompressionLevel, formatParams) < png_Failure)
-                
-                'Standard RGB
-                ElseIf (outputColorDepth = 24) Then
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Truecolor, 8, pngCompressionLevel, formatParams) < png_Failure)
-                
-                'Indexed
-                Else
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Indexed, outputColorDepth, pngCompressionLevel, formatParams) < png_Failure)
-                End If
-                
-            Else
-                
-                If (desiredAlphaStatus = PDAS_ComplicatedAlpha) Then
-                    
-                    'Standard grayscale+alpha
-                    If (outputColorDepth = 16) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 8, pngCompressionLevel, formatParams) < png_Failure)
-                    
-                    'HDR grayscale+alpha
-                    ElseIf (outputColorDepth = 32) Then
-                        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                        imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_GreyscaleAlpha, 16, pngCompressionLevel, formatParams) < png_Failure)
-                    End If
-                    
-                'Grayscale
-                ElseIf (desiredAlphaStatus = PDAS_NoAlpha) Then
-                    PDDebug.LogAction "Using internal PNG encoder for this operation..."
-                    imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, png_Greyscale, outputColorDepth, pngCompressionLevel, formatParams) < png_Failure)
-                End If
-                
-            End If
+            imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
             
         End If
         
         'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,
         ' as GDI+ forcibly writes problematic color data chunks and it performs no adaptive filtering so file sizes
         ' are enormous, but hey - it's better than not writing a PNG at all, right?)
-        If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, outputColorDepth)
+        If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, dstFile, P2_FFE_PNG, 32)
         
         ExportPNG = imgSavedOK
         

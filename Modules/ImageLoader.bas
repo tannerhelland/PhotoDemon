@@ -1160,6 +1160,10 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
         dstImage.SetOriginalAlpha cPNG.HasAlpha()
         If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
+        If cPNG.HasChunk("tRNS") Then
+            Dim trnsColor As Long
+            If cPNG.GetTransparentColor(trnsColor) Then dstImage.ImgStorage.AddEntry "pngTransparentColor", trnsColor
+        End If
         
         'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
         dstDIB.SetAlphaPremultiplication True
