@@ -822,24 +822,24 @@ Public Function ApplyAlphaCutoff_Ex(ByRef srcDIB As pdDIB, ByRef dstTransparency
             
             If (cutOff = 0) Then
                 FillMemory VarPtr(dstTransparencyTable(0)), srcDIB.GetDIBWidth * srcDIB.GetDIBHeight, 255
+                ApplyAlphaCutoff_Ex = True
                 Exit Function
             End If
             
-            Dim iData() As Byte, tmpSA As SafeArray2D
-            srcDIB.WrapArrayAroundDIB iData, tmpSA
+            Dim iData() As Byte, tmpSA As SafeArray1D
             
             Dim chkAlpha As Byte
-                
+            
             'Loop through the image, checking alphas as we go
             For y = 0 To finalY
+                srcDIB.WrapArrayAroundScanline iData, tmpSA, y
             For x = 0 To finalX
                 
-                chkAlpha = iData(x * 4 + 3, y)
+                chkAlpha = iData(x * 4 + 3)
                 
-                'If the alpha value is less than the cutoff, mark this pixel for exploration
+                'If the alpha value is less than the cutoff, make it transparent.  Otherwise, make it opaque.
                 If (chkAlpha < cutOff) Then
                     dstTransparencyTable(x, y) = 0
-                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against the requested background
                 Else
                     dstTransparencyTable(x, y) = 255
                 End If
@@ -878,7 +878,7 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
             targetG = Colors.ExtractGreen(srcColor)
             targetB = Colors.ExtractBlue(srcColor)
             
-            'This function require unpremultiplied alpha
+            'This function requires unpremultiplied alpha
             Dim needToResetPremultiplication As Boolean: needToResetPremultiplication = False
             If srcDIB.GetAlphaPremultiplication Then
                 srcDIB.SetAlphaPremultiplication False
@@ -1159,9 +1159,9 @@ Public Function ApplyBinaryTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTra
                             iData(xLookup + 1, y) = backG * tmpAlpha + chkG
                             iData(xLookup + 2, y) = backR * tmpAlpha + chkR
                         Else
-                            iData(xLookup, y) = Colors.BlendColors(chkB, backB, tmpAlpha)
-                            iData(xLookup + 1, y) = Colors.BlendColors(chkG, backG, tmpAlpha)
-                            iData(xLookup + 2, y) = Colors.BlendColors(chkR, backR, tmpAlpha)
+                            iData(xLookup, y) = Colors.BlendColors(backB, chkB, tmpAlpha)
+                            iData(xLookup + 1, y) = Colors.BlendColors(backG, chkG, tmpAlpha)
+                            iData(xLookup + 2, y) = Colors.BlendColors(backR, chkR, tmpAlpha)
                         End If
                         
                         iData(xLookup + 3, y) = 255
@@ -1217,9 +1217,9 @@ Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef s
             Dim i As Long
             For i = 0 To 255
                 If alphaPremultiplied Then
-                    intToFloat(i) = 1 - (i / 255)
+                    intToFloat(i) = 1! - (CSng(i) / 255!)
                 Else
-                    intToFloat(i) = i / 255
+                    intToFloat(i) = CSng(i) / 255!
                 End If
             Next i
             
@@ -1228,7 +1228,7 @@ Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef s
             backR = Colors.ExtractRed(newBackgroundColor)
             backG = Colors.ExtractGreen(newBackgroundColor)
             backB = Colors.ExtractBlue(newBackgroundColor)
-                
+            
             'Loop through the image, checking alphas as we go
             For y = 0 To finalY
                 srcDIB.WrapArrayAroundScanline iData, tmpSA, y
@@ -1237,7 +1237,7 @@ Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef s
                 xLookup = x * 4
                 
                 'If the transparency table is 0, replace this pixel with the designated transparent color
-                If srcTransparencyTable(x, y) = 0 Then
+                If (srcTransparencyTable(x, y) = 0) Then
                     iData(xLookup) = trnsB
                     iData(xLookup + 1) = trnsG
                     iData(xLookup + 2) = trnsR
@@ -1251,6 +1251,7 @@ Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef s
                     chkAlpha = iData(xLookup + 3)
                     
                     If (chkAlpha <> 255) Then
+                    
                         tmpAlpha = intToFloat(chkAlpha)
                         
                         If alphaPremultiplied Then
@@ -1258,12 +1259,13 @@ Public Function ApplyBinaryTransparencyTableColor(ByRef srcDIB As pdDIB, ByRef s
                             iData(xLookup + 1) = backG * tmpAlpha + chkG
                             iData(xLookup + 2) = backR * tmpAlpha + chkR
                         Else
-                            iData(xLookup) = Colors.BlendColors(chkB, backB, tmpAlpha)
-                            iData(xLookup + 1) = Colors.BlendColors(chkG, backG, tmpAlpha)
-                            iData(xLookup + 2) = Colors.BlendColors(chkR, backR, tmpAlpha)
+                            iData(xLookup) = Colors.BlendColors(backB, chkB, tmpAlpha)
+                            iData(xLookup + 1) = Colors.BlendColors(backG, chkG, tmpAlpha)
+                            iData(xLookup + 2) = Colors.BlendColors(backR, chkR, tmpAlpha)
                         End If
                         
                         iData(xLookup + 3) = 255
+                        
                     End If
                     
                 End If

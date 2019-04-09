@@ -76,6 +76,26 @@ Public Type PDPaletteCache
     OrigIndex As Long
 End Type
 
+'Given a source palette and an arbitrary RGB value, return the best-matching palette index.
+' This function is intended for one-off use only; for best performance, you should integrate
+' pdKDTree directly into your function.
+Public Function GetNearestIndexRGB(ByRef srcPalette() As RGBQuad, ByVal srcColor As Long, Optional ByVal numOfColors As Long = -1) As Long
+
+    If (numOfColors <= 0) Then numOfColors = UBound(srcPalette) + 1
+    
+    Dim cTree As pdKDTree
+    Set cTree = New pdKDTree
+    cTree.BuildTree srcPalette, numOfColors
+    
+    Dim tmpColor As RGBQuad
+    tmpColor.Red = Colors.ExtractRed(srcColor)
+    tmpColor.Green = Colors.ExtractGreen(srcColor)
+    tmpColor.Blue = Colors.ExtractBlue(srcColor)
+    tmpColor.Alpha = 255
+    GetNearestIndexRGB = cTree.GetNearestPaletteIndex(tmpColor)
+    
+End Function
+
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.

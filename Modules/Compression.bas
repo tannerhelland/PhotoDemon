@@ -211,7 +211,16 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     If (cmpFormat = cf_None) Then
         'Do nothing; the catch at the end of the function will handle this case for us
     ElseIf (cmpFormat = cf_Zlib) Then
+        
+        'libdeflate doesn't expose a "0" compression mode (it's treated as "default" compression),
+        ' so for now, silently switch to compression mode 1.
+        If (compressionLevel = 0) Then compressionLevel = 1
         CompressPtrToPtr = Plugin_libdeflate.CompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cf_Zlib)
+            
+        'Want to compare against zLib?  FreeImage exposes a zlib default compress call
+        'dstSizeInBytes = FreeImage_ZLibCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
+        CompressPtrToPtr = (dstSizeInBytes <> 0)
+        
     ElseIf (cmpFormat = cf_Zstd) Then
         CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (cmpFormat = cf_Lz4) Then

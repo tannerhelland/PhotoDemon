@@ -217,6 +217,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     Else
     
         Message "Save canceled."
+        EndSaveProcess
         
         'If FreeImage failed, it should have provided detailed information on the problem.  Present it to the user, in hopes that
         ' they might use it to rectify the situation (or least notify us of what went wrong!)
@@ -226,11 +227,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             fiErrorList = Plugin_FreeImage.GetFreeImageErrors
             
             'Display the error message
-            EndSaveProcess
             PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbOKOnly, "Image save error", fiErrorList
             
         Else
-            EndSaveProcess
             PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbOKOnly, "Image save error"
         End If
         

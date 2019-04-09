@@ -374,15 +374,21 @@ Friend Function GetXMLSafeName(ByRef srcString As String) As String
     
     'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
     Const validChars As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:"
+    Const underscoreChar As String = "_"
     
     'Loop through the source string and replace any invalid characters with underscore
-    Dim i As Long
+    Dim i As Long, newString As pdString
+    Set newString = New pdString
     
     For i = 1 To Len(GetXMLSafeName)
         If (InStr(1, validChars, Mid$(GetXMLSafeName, i, 1)) = 0) Then
-            GetXMLSafeName = Left$(GetXMLSafeName, i - 1) & "_" & Right$(GetXMLSafeName, Len(GetXMLSafeName) - i)
+            newString.Append underscoreChar
+        Else
+            newString.Append Mid$(GetXMLSafeName, i, 1)
         End If
     Next i
+    
+    GetXMLSafeName = newString.ToString()
     
 End Function
 

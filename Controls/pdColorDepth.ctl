@@ -618,7 +618,7 @@ Private Sub ReflowColorPanel()
     curHeight = ucSupport.GetBackBufferHeight
     
     Dim yOffset As Long, yPadding As Long
-    yPadding = FixDPI(8)
+    yPadding = Interface.FixDPI(8)
     yOffset = cboColorModel.GetTop + cboColorModel.GetHeight + yPadding
     
     If cboDepthColor.Visible Then

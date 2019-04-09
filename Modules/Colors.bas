@@ -74,20 +74,20 @@ End Function
 
 'Extract the red, green, or blue value from an RGB() Long
 Public Function ExtractRed(ByVal currentColor As Long) As Long
-    ExtractRed = currentColor And 255
+    ExtractRed = currentColor And &HFF&
 End Function
 
 Public Function ExtractGreen(ByVal currentColor As Long) As Long
-    ExtractGreen = (currentColor \ 256) And 255
+    ExtractGreen = (currentColor \ 256) And &HFF&
 End Function
 
 Public Function ExtractBlue(ByVal currentColor As Long) As Long
-    ExtractBlue = (currentColor \ 65536) And 255
+    ExtractBlue = (currentColor \ 65536) And &HFF&
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Public Function BlendColors(ByVal Color1 As Byte, ByVal Color2 As Byte, ByVal mixRatio As Double) As Byte
-    BlendColors = ((1# - mixRatio) * Color1) + (mixRatio * Color2)
+Public Function BlendColors(ByVal Color1 As Long, ByVal Color2 As Long, ByVal mixRatio As Single) As Byte
+    BlendColors = Int((1! - mixRatio) * CSng(Color1) + 0.5!) + Int(mixRatio * CSng(Color2) + 0.5!)
 End Function
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead

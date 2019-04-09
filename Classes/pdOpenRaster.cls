@@ -575,30 +575,20 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
     
     Dim pngBytes() As Byte
     
-    'There are currently two ways to save an in-memory PNG: FreeImage, or GDI+.  GDI+ adds a bunch of
-    ' unwanted PNG chunks (sRGB, cHRM) which fuck up the subsequent PNG's display on color-managed software.
-    ' FreeImage doesn't do this, so we preferentially use it if available.
-    If ImageFormats.IsFreeImageEnabled() Then
-        
-        Dim hFICopy As Long, savedSize As Long
-        hFICopy = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
-        If (hFICopy <> 0) Then
-            If Outside_FreeImageV3.FreeImage_SaveToMemoryEx(FIF_PNG, hFICopy, pngBytes, FISO_PNG_Z_DEFAULT_COMPRESSION, True, savedSize) Then
-                
-                If (savedSize <> UBound(pngBytes) + 1) Then ReDim Preserve pngBytes(0 To savedSize - 1) As Byte
-                
-                'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
-                ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
-                ' additional compression atop that gains little, but eats up a ton of time.
-                AddImageToZipAsPNG = m_ZipArchive.AddFile(File:=pngBytes, Name:=pathInsideZip, Level:=0&)
-                If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
-                
-            Else
-                InternalError "AddImageToZipAsPNG", "Couldn't use FreeImage to save """ & pathInsideZip & """ as PNG"
-            End If
-        Else
-            InternalError "AddImageToZipAsPNG", "Couldn't generate FreeImage handle for """ & pathInsideZip & """"
-        End If
+    'We preferentially use our own internal PNG encoder, as it's both faster than FreeImage *and* it
+    ' produces smaller files.  (If for some reason the export fails, we'll silently fall back to GDI+.
+    ' GDI+ adds a bunch of unwanted PNG chunks - sRGB, cHRM - which fuck up the subsequent PNG's display
+    ' on color-managed software, and it compresses terribly - but that pathway is only an emergency
+    ' fallback, so it should never trigger!)
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    If (cPNG.SavePNG_ToMemory(pngBytes, srcDIB, Nothing, , , 9) < png_Failure) Then
+
+        'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
+        ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an
+        ' additional compression atop that gains little, but eats up a ton of time.
+        AddImageToZipAsPNG = m_ZipArchive.AddFile(File:=pngBytes, Name:=pathInsideZip, Level:=0&)
+        If (Not AddImageToZipAsPNG) Then InternalError "AddImageToZipAsPNG", "Couldn't add """ & pathInsideZip & """ to zip file"
         
     Else
         

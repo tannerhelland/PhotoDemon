@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.907</langversion>
+<langversion>7.2.1019</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -522,14 +522,16 @@ Wenn das Problem bestehen bleibt, melden Sie es bitte den Entwicklern von PhotoD
 
 <phrase>
 <original>Total colors: %1</original>
-<translation></translation>
+<translation>Farben insgesamt: %1</translation>
 </phrase>
 
 <phrase>
 <original>This image contains %1 unique colors (RGB).
 
 This image contains %2 unique color + opacity values (RGBA).</original>
-<translation></translation>
+<translation>Dieses Bild enthält %1 eindeutige Farben (RGB).
+
+Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 </phrase>
 
 <phrase>
@@ -1612,17 +1614,17 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Ordered (Bayer 4x4)</original>
-<translation>Geordnet (Bayer 4x4)</translation>
+<translation>Angeordnet (Bayer 4x4)</translation>
 </phrase>
 
 <phrase>
 <original>Ordered (Bayer 8x8)</original>
-<translation>Geordnet (Bayer 8x8)</translation>
+<translation>Angeordnet (Bayer 8x8)</translation>
 </phrase>
 
 <phrase>
 <original>Single neighbor</original>
-<translation>Neighbor einzeln</translation>
+<translation>Einzelner Neighbor</translation>
 </phrase>
 
 <phrase>
@@ -4045,7 +4047,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>auto</original>
-<translation>Autom.</translation>
+<translation>Auto</translation>
 </phrase>
 
 <phrase>
@@ -12430,7 +12432,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Super compression, very poor image quality (256:1)</original>
-<translation>Super-Kompression, sehr schlechte Bildqualität (256:1)</translation>
+<translation>Super Kompression, sehr schlechte Bildqualität (256:1)</translation>
 </phrase>
 
 <phrase>
@@ -12557,7 +12559,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Super compression, very poor image quality (20)</original>
-<translation>Super-Kompression, sehr schlechte Bildqualität (20)</translation>
+<translation>Super Kompression, sehr schlechte Bildqualität (20)</translation>
 </phrase>
 
 <!-- File_Save_JXR.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12609,7 +12611,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>lossy optimization is provided by pngquant</original>
-<translation></translation>
+<translation>Verlustbehaftete Optimierung wird von pngquant bereitgestellt</translation>
 </phrase>
 
 <phrase>
@@ -12659,7 +12661,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
-<translation></translation>
+<translation>Verlustfreie Optimierung wird von OptiPNG bereitgestellt</translation>
 </phrase>
 
 <phrase>
@@ -12669,7 +12671,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>compression optimization</original>
-<translation></translation>
+<translation>Kompressionsoptimierung</translation>
 </phrase>
 
 <phrase>
@@ -12694,47 +12696,47 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>automatic</original>
-<translation></translation>
+<translation>Automatisch</translation>
 </phrase>
 
 <phrase>
 <original>optimize: fast filters</original>
-<translation></translation>
+<translation>Optimieren: Schnelle Filter</translation>
 </phrase>
 
 <phrase>
 <original>optimize: all filters</original>
-<translation></translation>
+<translation>Optimieren: Alle Filter</translation>
 </phrase>
 
 <phrase>
 <original>single filter: none</original>
-<translation></translation>
+<translation>Einzelner Filter: Keine</translation>
 </phrase>
 
 <phrase>
 <original>single filter: sub</original>
-<translation></translation>
+<translation>Einzelner Filter: Sub</translation>
 </phrase>
 
 <phrase>
 <original>single filter: up</original>
-<translation></translation>
+<translation>Einzelner Filter: Up</translation>
 </phrase>
 
 <phrase>
 <original>single filter: average</original>
-<translation></translation>
+<translation>Einzelner Filter: Durchschnitt</translation>
 </phrase>
 
 <phrase>
 <original>single filter: paeth</original>
-<translation></translation>
+<translation>Einzelner Filter: Pfad</translation>
 </phrase>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation></translation>
+<translation>PNG-Dateien unterstützen verschiedene Kompressionsstrategien ("Filter" genannt). Die intelligente Filterauswahl führt zu einer besseren Kompression. Verwenden Sie die automatische Einstellung, damit PhotoDemon multiple Strategien testen kann, und wählen automatisch diejenige aus, die die beste Kompression erzielt.</translation>
 </phrase>
 
 <phrase>
@@ -13746,7 +13748,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlusfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer automatisch erhöhten Versionsnummer, falls erforderlich).</translation>
+<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer automatisch erhöhten Versionsnummer, falls erforderlich).</translation>
 </phrase>
 
 <phrase>

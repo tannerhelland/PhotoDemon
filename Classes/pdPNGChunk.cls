@@ -159,7 +159,7 @@ Friend Sub FinalizeChunk()
         pBackup = m_Data.GetPosition()
         
         m_Data.SetPosition 0, FILE_BEGIN
-        m_Data.WriteLong_BE (m_Data.GetStreamSize - 12)
+        m_Data.WriteLong_BE (m_Data.GetStreamSize() - 12)
         m_Data.SetPosition pBackup, FILE_BEGIN
         
     Else
@@ -649,12 +649,12 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     
     'We now want to assemble a temporary staging area for filtering pixel data.  The precise structure
     ' of this data is dependent on the outgoing bit-depth and color type of the image.
-    Dim dstStride As Long
     Dim srcWidthInPixels As Long, srcHeightInPixels As Long
     srcWidthInPixels = srcHeader.Width
     srcHeightInPixels = srcHeader.Height
     
     'Calculate the required size of the staging area
+    Dim dstStride As Long
     dstStride = srcStride + 1
     m_FilteredSize = dstStride * srcHeightInPixels
     ReDim m_FilteredBytes(0 To m_FilteredSize - 1) As Byte
@@ -805,16 +805,16 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
         'Copy the unmodified source pixels for this line as-is into the testing array, so that any pixels
         ' that *don't* get overwritten (common for e.g. boundary pixels) are already populated with
         ' correct values.  This spares us doing complicated boundary checks on the inner loop.
-        CopyMemoryStrict dstPtrFilter, tmpSrcPtr, dstStride - 1
-        CopyMemoryStrict dstPtrFilter + dstStride, tmpSrcPtr, dstStride - 1
-        CopyMemoryStrict dstPtrFilter + dstStride * 2, tmpSrcPtr, dstStride - 1
-        CopyMemoryStrict dstPtrFilter + dstStride * 3, tmpSrcPtr, dstStride - 1
-        CopyMemoryStrict dstPtrFilter + dstStride * 4, tmpSrcPtr, dstStride - 1
+        CopyMemoryStrict dstPtrFilter, tmpSrcPtr, srcStride
+        CopyMemoryStrict dstPtrFilter + dstStride, tmpSrcPtr, srcStride
+        CopyMemoryStrict dstPtrFilter + dstStride * 2, tmpSrcPtr, srcStride
+        CopyMemoryStrict dstPtrFilter + dstStride * 3, tmpSrcPtr, srcStride
+        CopyMemoryStrict dstPtrFilter + dstStride * 4, tmpSrcPtr, srcStride
         
         'Similarly, before continuing, make a "safe" copy of the unfiltered values of both the
         ' current and previous line.
         CopyMemoryStrict VarPtr(srcOrigPixels(0)), VarPtr(srcOrigPixels(dstStride)), dstStride
-        CopyMemoryStrict VarPtr(srcOrigPixels(dstStride)) + 1, tmpSrcPtr, dstStride
+        CopyMemoryStrict VarPtr(srcOrigPixels(dstStride)) + 1, tmpSrcPtr, srcStride
         
         'Iterate through all filter types, producing a complete filtered scanline for each.
         For curFilter = startFilter To endFilter

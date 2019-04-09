@@ -1365,7 +1365,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
-            imgSavedOK = (cPNG.SavePNG_Simple(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
+            imgSavedOK = (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
             
         End If
         
