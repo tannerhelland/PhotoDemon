@@ -582,7 +582,7 @@ Private Function AddImageToZipAsPNG(ByRef srcDIB As pdDIB, ByRef pathInsideZip A
     ' fallback, so it should never trigger!)
     Dim cPNG As pdPNG
     Set cPNG = New pdPNG
-    If (cPNG.SavePNG_ToMemory(pngBytes, srcDIB, Nothing, , , 9) < png_Failure) Then
+    If (cPNG.SavePNG_ToMemory(pngBytes, srcDIB, Nothing, , , 9, , png_FilterAuto) <> 0) Then
 
         'Add the PNG stream to the zip file.  At present, we mimic GIMPs implementation and do *NOT* request
         ' DEFLATE compression.  This is because the PNG file is already compressed using DEFLATE, and an

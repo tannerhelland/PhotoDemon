@@ -67,6 +67,7 @@ End Enum
 #End If
 
 Public Enum PD_PNG_FilterStrategy
+    png_FilterUndefined = -1    'If you don't understand filter strategy, pass this; PD will handle the rest for you
     png_FilterAuto = 0
     png_FilterFast = 1
     png_FilterOptimal = 2
@@ -78,7 +79,7 @@ Public Enum PD_PNG_FilterStrategy
 End Enum
 
 #If False Then
-    Private Const png_FilterAuto = 0, png_FilterFast = 1, png_FilterOptimal = 2, png_FilterNone = 3, png_FilterSubOnly = 4, png_FilterUpOnly = 5, png_FilterAverageOnly = 6, png_FilterPaethOnly = 7
+    Private Const png_FilterUndefined = -1, png_FilterAuto = 0, png_FilterFast = 1, png_FilterOptimal = 2, png_FilterNone = 3, png_FilterSubOnly = 4, png_FilterUpOnly = 5, png_FilterAverageOnly = 6, png_FilterPaethOnly = 7
 #End If
 
 'PNGs use a standard header, which we convert into this VB-friendly version.  Note that not all information
@@ -1478,10 +1479,13 @@ CouldNotSaveFile:
     
 End Function
 
-'Simplified wrapper to save a PNG automatically.  I recommend setting outColorType to png_AutoColorType and
-' outBitsPerChannel to 0; this allows the class to auto-detect the best output settings for the source
-' image's data (and thus produce the smallest output file).
-Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdDIB, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
+'Simplified wrapper to save a PNG to a byte array.  Unlike the SavePNG_ToFile function, this one returns the size of the
+' saved PNG data.  (For perf reasons, it will *not* reallocate dstArray() unless absolutely necessary.)
+' I recommend setting outColorType to png_AutoColorType and outBitsPerChannel to 0; this allows the class to auto-detect
+' the best output settings for the source image's data (and thus produce the smallest output file).
+'
+'Returns: 0 if unsuccessful, some other integer >= 0 describing the size of the data in dstArray() if successful.
+Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdDIB, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterUndefined) As Long
     
     On Error GoTo CouldNotSaveFile
     
@@ -1561,7 +1565,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     'Pixel data must be filtered before compression.  We use a temporary pdPNGChunk object to do this for us,
     ' as it already contains a bunch of code related to un-filtering pixel data.
     Dim tmpChunk As pdPNGChunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk, fullParamString)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk, fullParamString, useFilterStrategy)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > byte filtering took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1579,11 +1583,16 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     'PNG files end with a special "IEND" chunk
     If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream, srcImage)
     
-    'The write is finished.  Close the file handle and exit.
+    'The write is finished.  Copy the complete stream into the destination array.
     Dim finalFileSize As Long
     finalFileSize = cStream.GetStreamSize()
     
-    ReDim dstArray(0 To finalFileSize - 1) As Byte
+    If VBHacks.IsArrayInitialized(dstArray) Then
+        If (UBound(dstArray) < finalFileSize - 1) Then ReDim dstArray(0 To finalFileSize - 1) As Byte
+    Else
+        ReDim dstArray(0 To finalFileSize - 1) As Byte
+    End If
+    
     CopyMemoryStrict VarPtr(dstArray(0)), cStream.Peek_PointerOnly(0), finalFileSize
     
     cStream.StopStream
@@ -1597,7 +1606,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     PDDebug.LogAction "PNG export took: " & VBHacks.GetTimeDiffNowAsString(firstStartTime)
     PDDebug.LogAction "Final PNG size is " & Files.GetFormattedFileSize(finalFileSize)
     
-    SavePNG_ToMemory = keepGoing
+    If (keepGoing < png_Failure) Then SavePNG_ToMemory = finalFileSize Else SavePNG_ToMemory = 0
     
     Exit Function
     
@@ -2467,7 +2476,7 @@ Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream, ByRef srcImage 
 End Function
 
 'Make sure you have populated the module-level m_Header struct before calling this function!
-Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
+Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByRef fullParamString As String = vbNullString, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterUndefined) As PD_PNGResult
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -2548,15 +2557,14 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     'Note that we no longer require the original DIB; we can safely free it before continuing.
     ' (NOTE: in the future, we may want to iterate multiple output types to find the best one; consider keeping
     ' the image around in that case?)
-    'srcImage.EraseDIB True
+    srcImage.EraseDIB True
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "- IDAT creation: prepping pixel data took " & VBHacks.GetTimeDiffNowAsString(startTime)
     End If
     
-    'From the original param string, determine a filter strategy.
-    Dim useFilterStrategy As PD_PNG_FilterStrategy
-    useFilterStrategy = cParams.GetLong("PNGFilterStrategy", png_FilterAuto)
+    'From the original param string, determine a filter strategy (unless overridden by the caller).
+    If (useFilterStrategy = png_FilterUndefined) Or (LenB(fullParamString) <> 0) Then useFilterStrategy = cParams.GetLong("PNGFilterStrategy", png_FilterAuto)
     
     'Per the spec, indexed-mode images don't usually benefit from automatic filtering.  In the future, perhaps we could
     ' still test fixed filters to see if compression improves?
