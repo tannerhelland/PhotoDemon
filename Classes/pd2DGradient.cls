@@ -1003,6 +1003,24 @@ Friend Sub ResetAllProperties()
     
 End Sub
 
+Friend Sub ReverseGradient()
+    
+    If (m_NumOfPoints < 2) Then Exit Sub
+    
+    'Make sure points are sorted
+    If (Not m_IsSorted) Then SortGradientArray
+    
+    Dim i As Long
+    For i = 0 To m_NumOfPoints - 1
+        m_GradientPoints(i).PointPosition = 1! - m_GradientPoints(i).PointPosition
+    Next i
+    
+    'Sort again
+    m_IsSorted = False
+    SortGradientArray
+    
+End Sub
+
 'Sort the gradient array in ascending order.  This greatly simplifies the process of creating a matching brush.
 ' (TODO: optimize the algorithm to pre-check for a sorted array; most of the time, that will be the case, so we can
 '        skip the sorting step entirely.)
@@ -1357,8 +1375,8 @@ Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpaci
     
 End Function
 
-'Given a position on the range [0, 1], return the gradient color at that position.  Note that a linear, non-reflected
-' gradient shape is always assumed, by design.
+'Given a position on the range [0, 1], return the gradient color at that position.  Note that a linear,
+' non-reflected gradient shape is always assumed, by design.
 Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA As RGBQuad) As Boolean
 
     'Make sure we have a filled, sorted input array

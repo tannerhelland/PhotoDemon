@@ -388,7 +388,7 @@ Private Sub UpdateControlLayout()
             
             If m_ShowMainWindowColor Then
                 .Right = bWidth - 2
-                .Left = .Right - FixDPI(24)
+                .Left = .Right - Interface.FixDPI(24)
             Else
                 .Right = bWidth + 10
                 .Left = bWidth + 9
@@ -397,8 +397,8 @@ Private Sub UpdateControlLayout()
         End With
         
         With m_PrimaryColorRect
+            .Left = Interface.FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
-            .Left = FixDPI(8)
             .Bottom = bHeight - 2
             If m_ShowMainWindowColor Then .Right = m_SecondaryColorRect.Left Else .Right = bWidth - 2
         End With

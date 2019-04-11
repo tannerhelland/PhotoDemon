@@ -31,16 +31,19 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Selector custom control
 'Copyright 2015-2019 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 01/February/16
-'Last update: finalize theming support
+'Last updated: 11/April/19
+'Last update: add a dedicated "reverse gradient" button to the control
 '
-'This thin user control is basically an empty control that when clicked, displays a gradient editor window.  If a
-' gradient is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "GradientChanged"
-' event.
+'This thin user control is basically an empty control that when clicked, displays a gradient editor window.
+' If a gradient is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a
+' "GradientChanged" event.
 '
-'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
-' command bar user control, as it easily supports gradient reset/randomize/preset events.  It is also nice to be able
-' to update a single master function for gradient selection, then have the change propagate to all tool windows.
+'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction
+' with the command bar user control, as it easily supports gradient reset/randomize/preset events.  It is
+' also nice to update a single master function for gradient selection, then have the change propagate to
+' all tool windows.
+'
+'The actual gradient functionality of the control comes from the pd2dGradient class - look there for details.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -70,6 +73,9 @@ Private isDialogLive As Boolean
 'The rectangle where the gradient preview is actually rendered, and a boolean to track whether the mouse is inside that rect
 Private m_GradientRect As RectF, m_MouseInsideGradientRect As Boolean, m_MouseDownGradientRect As Boolean
 
+'A secondary rect with a clickable button; the user can click this button to reverse the current gradient
+Private m_ReverseRect As RectF, m_MouseInsideReverseRect As Boolean, m_MouseDownReverseRect As Boolean
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -82,9 +88,11 @@ Attribute ucSupport.VB_VarHelpID = -1
 '  class, rather than treating every imaginable variant as a separate constant.)
 Private Enum PDGS_COLOR_LIST
     [_First] = 0
-    PDGS_Border = 0
-    [_Last] = 0
-    [_Count] = 1
+    PDGS_Arrows = 0
+    PDGS_Border = 1
+    PDGS_ButtonFill = 2
+    [_Last] = 2
+    [_Count] = 3
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -139,7 +147,7 @@ Public Property Get Gradient() As String
     Gradient = m_curGradient
 End Property
 
-Public Property Let Gradient(ByVal NewGradient As String)
+Public Property Let Gradient(ByRef NewGradient As String)
     m_curGradient = NewGradient
     RedrawBackBuffer
     RaiseEvent GradientChanged
@@ -151,14 +159,68 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 'Outside functions can call this to force a display of the gradient selection window
 Public Sub DisplayGradientSelection()
     RaiseGradientDialog
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     UpdateMousePosition x, y
-    If m_MouseInsideGradientRect Then RaiseGradientDialog
+    
+    If m_MouseInsideGradientRect Then
+        RaiseGradientDialog
+    ElseIf m_MouseInsideReverseRect Then
+        
+        'Create a temporary gradient object, use it to reverse the current gradient,
+        ' then redraw the control and notify any parent object(s)
+        Dim tmpGradient As pd2DGradient
+        Set tmpGradient = New pd2DGradient
+        tmpGradient.CreateGradientFromString m_curGradient
+        tmpGradient.ReverseGradient
+        m_curGradient = tmpGradient.GetGradientAsString()
+        RedrawBackBuffer
+        RaiseEvent GradientChanged
+        
+    End If
+    
 End Sub
 
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
@@ -189,8 +251,10 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     UpdateMousePosition x, y
     If m_MouseInsideGradientRect Then
         m_MouseDownGradientRect = True
-        RedrawBackBuffer
+    ElseIf m_MouseInsideReverseRect Then
+        m_MouseDownReverseRect = True
     End If
+    If m_MouseInsideGradientRect Or m_MouseInsideReverseRect Then RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -210,12 +274,14 @@ End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_MouseDownGradientRect = False
+    m_MouseDownReverseRect = False
     RedrawBackBuffer
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
     m_MouseInsideGradientRect = PDMath.IsPointInRectF(mouseX, mouseY, m_GradientRect)
-    If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    m_MouseInsideReverseRect = PDMath.IsPointInRectF(mouseX, mouseY, m_ReverseRect)
+    If m_MouseInsideGradientRect Or m_MouseInsideReverseRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -318,20 +384,34 @@ Private Sub UpdateControlLayout()
     If ucSupport.IsCaptionActive Then
         
         'The clickable area is placed relative to the caption
-        With m_GradientRect
-            .Left = FixDPI(8)
+        With m_ReverseRect
             .Top = ucSupport.GetCaptionBottom + 2
-            .Width = (bWidth - 2) - .Left
+            .Left = (bWidth - 2) - .Width
+            .Width = Interface.FixDPI(24)
+            .Height = (bHeight - 2) - .Top
+        End With
+        
+        With m_GradientRect
+            .Left = Interface.FixDPI(8)
+            .Top = ucSupport.GetCaptionBottom + 2
+            .Width = m_ReverseRect.Left - .Left
             .Height = (bHeight - 2) - .Top
         End With
         
     'If there's no caption, allow the clickable portion to fill the entire control
     Else
         
+        With m_ReverseRect
+            .Top = 1
+            .Height = (bHeight - 2) - .Top
+            .Width = Interface.FixDPI(24)
+            .Left = (bWidth - 2) - .Left
+        End With
+        
         With m_GradientRect
             .Left = 1
             .Top = 1
-            .Width = (bWidth - 2) - .Left
+            .Width = m_ReverseRect.Left - .Left
             .Height = (bHeight - 2) - .Top
         End With
         
@@ -376,12 +456,50 @@ Private Sub RedrawBackBuffer()
         ' This isn't ideal, but we'll live with it for now as the alternative is messy.)
         ucSupport.RequestBufferColorManagement VarPtr(m_GradientRect)
         
-        'Draw borders around the brush results.
+        'Fill the "reverse" button with the proper color (depending on its mouseover status)
+        Dim fillColor As Long
+        fillColor = m_Colors.RetrieveColor(PDGS_ButtonFill, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ReverseRect, fillColor
+        
+        'Always start by drawing inactive borders around both "buttons" on the control
         Dim outlineColor As Long, outlineWidth As Long
-        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect Or ucSupport.DoIHaveFocus)
-        If m_MouseInsideGradientRect Or ucSupport.DoIHaveFocus Then outlineWidth = 3 Else outlineWidth = 1
+        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, False, False)
+        outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
-       
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ReverseRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        
+        'Next, draw highlight borders around either button if they have focus
+        outlineWidth = 3
+        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, True, True)
+        If m_MouseInsideGradientRect Then
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        ElseIf m_MouseInsideReverseRect Then
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ReverseRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        ElseIf ucSupport.DoIHaveFocus Then
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        End If
+        
+        'Finally, draw arrows to indicate the "reverse" purpose of the button.
+        Dim arrowColor As Long
+        arrowColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownReverseRect, m_MouseInsideReverseRect)
+        
+        Dim cPen As pd2DPen, cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        Drawing2D.QuickCreateSolidPen cPen, 1!, arrowColor
+        cPen.SetPenEndCap P2_LC_ArrowAnchor
+        
+        Dim arrFirstPoint As PointFloat, arrSecondPoint As PointFloat
+        arrFirstPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.2!)
+        arrSecondPoint.x = m_ReverseRect.Left + (m_ReverseRect.Width * 0.8!)
+        arrFirstPoint.y = m_ReverseRect.Top + Int(m_ReverseRect.Height * 0.42!) + 0.5!
+        arrSecondPoint.y = arrFirstPoint.y
+        
+        PD2D.DrawLineF_FromPtF cSurface, cPen, arrFirstPoint, arrSecondPoint
+        arrFirstPoint.y = m_ReverseRect.Top + Int(m_ReverseRect.Height * 0.58!) + 0.5!
+        arrSecondPoint.y = arrFirstPoint.y
+        PD2D.DrawLineF_FromPtF cSurface, cPen, arrSecondPoint, arrFirstPoint
+        
     End If
     
     'Paint the final result to the screen, as relevant
@@ -398,7 +516,11 @@ End Sub
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
-    m_Colors.LoadThemeColor PDGS_Border, "Border", IDE_BLACK
+    With m_Colors
+        .LoadThemeColor PDGS_Arrows, "Arrows", IDE_BLACK
+        .LoadThemeColor PDGS_Border, "Border", IDE_BLACK
+        .LoadThemeColor PDGS_ButtonFill, "ButtonFill", IDE_WHITE
+    End With
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.

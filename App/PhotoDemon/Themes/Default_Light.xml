@@ -263,10 +263,17 @@
 			</PDFXPreview>
 			
 			<PDGradientSelector>
+				<Arrows>TextDark</Arrows>
+				<Arrows-disabled>TextDark</Arrows-disabled>
+				<Arrows-active>TextInvert</Arrows-active>
+				<Arrows-hover>TextDefault</Arrows-hover>
 				<Border></Border>
 				<Border-active></Border-active>
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>AccentUltralight</ButtonFill-hover>
 			</PDGradientSelector>
 			
 			<PDHistory>
