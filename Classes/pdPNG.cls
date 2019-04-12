@@ -690,18 +690,26 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
         ' we want to use the *final* grayscale value - so upscale the corresponding transparency value now
         If hasTransparency And (m_Header.ColorType = png_Greyscale) Then
             
-            Dim grayScaleFactor As Long
+            Dim grayScaleFactor As Long, grayScaleLimit As Long, grayScaleWarning As Boolean
             grayScaleFactor = 1
+            
             If (m_Header.BitDepth = 1) Then
+                grayScaleLimit = 1
                 grayScaleFactor = 255
             ElseIf (m_Header.BitDepth = 2) Then
+                grayScaleLimit = 3
                 grayScaleFactor = 85
             ElseIf (m_Header.BitDepth = 4) Then
+                grayScaleLimit = 15
                 grayScaleFactor = 17
             End If
-            trnsRed = trnsRed * grayScaleFactor
-            trnsGreen = trnsGreen * grayScaleFactor
-            trnsBlue = trnsBlue * grayScaleFactor
+            
+            'Check for badly encoded tRNS values; malformed writers may write an unscaled value, and if found,
+            ' we want to mimic libpng and attempt to salvage it with a warning
+            If (trnsRed <= grayScaleLimit) Then trnsRed = trnsRed * grayScaleFactor Else grayScaleWarning = True
+            If (trnsGreen <= grayScaleLimit) Then trnsGreen = trnsGreen * grayScaleFactor Else grayScaleWarning = True
+            If (trnsBlue <= grayScaleLimit) Then trnsBlue = trnsBlue * grayScaleFactor Else grayScaleWarning = True
+            If grayScaleWarning Then PDDebug.LogAction "WARNING: PNG has malformed tRNS chunk; attempting to load anyway..."
             
         End If
         
