@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.337</langversion>
+<langversion>6.6.339</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Veri Windows Terdeteksi</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Menginisialisasi Semua Direktori Program</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Memuat Semua Peraturan Pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Memindai Berkas Bahasa</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Memilih Bahasa Untuk Di Gunakan</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Menerapkan Bahasa Yang Di Pilih</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Inisialisasi Mesin Tema</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Menganalisis Setup Monitor Saat</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Memuat Pustaka impor/Ekspor</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Membangun cache font</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>Inisialisasi antarmuka clipboard</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Inisialisasi Mesin Viewport</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Inisialisasi Window Manager</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Inisialisasi Alat Gambar</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Inisialisasi Antar Muka Pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Mempersiapkan Menu Program</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1576,12 +1496,17 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1665,7 +1590,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3618,7 +3543,7 @@ Please masukkan nilai berangka.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10745,6 +10670,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>pengaturan dasar</translation>
 </phrase>
@@ -10767,16 +10707,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>alpha cut-off</original>
 <translation>alpha cut-off</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10829,7 +10759,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12612,6 +12542,36 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>pengaturan metadata</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>cepat, file lebih besar</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>tingkat kompresi</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>embed warna latar belakang (bKGD chunk)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>lambat, file yang lebih kecil</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12647,16 +12607,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>cepat, file lebih besar</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>lambat, file yang lebih kecil</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>pilihan optimasi tanpa rugi</translation>
 </phrase>
@@ -12664,26 +12614,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>pengaturan metadata</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>tingkat kompresi</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>embed warna latar belakang (bKGD chunk)</translation>
 </phrase>
 
 <phrase>
@@ -15777,10 +15707,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

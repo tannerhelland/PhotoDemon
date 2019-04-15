@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.73</langversion>
+<langversion>7.0.75</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Wykrywanie wersji Windows®</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Inicjowanie wszystkich katalogów programu</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Ładowanie wszystkich ustawień użytkownika</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Skanowanie plików językowych</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Określenie języka do użycia</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Zastosowanie wybranego języka</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Inicjowanie motywu aparatu</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Analizowanie obecnej konfiguracji monitora</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Ładowanie biblioteki import/export</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Budowanie pamięci czcionek</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>Inicjowanie interfejsu schowka</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Inicjowanie okienka ekranu</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Inicjowanie menedżera okien</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Inicjowanie narzędzi obrazów</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Inicjowanie interfejsu użytkownika</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Przygotowanie menu programu</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1565,12 +1485,17 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1654,7 +1579,7 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 <translation>Atkinson/Klasyczne Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3601,7 +3526,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10720,6 +10645,21 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>podstawowe ustawienia</translation>
 </phrase>
@@ -10742,16 +10682,6 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <phrase>
 <original>alpha cut-off</original>
 <translation>alpha cut-off</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10804,7 +10734,7 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12586,6 +12516,36 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>ustawienia metadanych</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>szybki, duży plik</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>poziom kompresji</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>osadź kolor tła (bKGD fragment)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>powolny, mały plik</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12621,16 +12581,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>szybki, duży plik</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>powolny, mały plik</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>opcje optymalizacji bezstratnej</translation>
 </phrase>
@@ -12638,26 +12588,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>ustawienia metadanych</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>poziom kompresji</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>osadź kolor tła (bKGD fragment)</translation>
 </phrase>
 
 <phrase>
@@ -15747,10 +15677,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

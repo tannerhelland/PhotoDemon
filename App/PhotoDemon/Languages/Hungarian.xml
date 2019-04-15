@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3378</langversion>
+<langversion>6.8.3380</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Észlelése Windows' verzió</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Inicializálása minden programot könyvtárak</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Betöltése az összes felhasználói beállítást</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Szkennelés nyelvi fájlok</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Annak meghatározása, hogy milyen nyelven használja</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Alkalmazása kiválasztott nyelven</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Inicializálása téma motor</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Elemezve a jelenlegi monitor beállítás</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Betöltése import/export könyvtár</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Építési font cache</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>Inicializálása vágólapra interfész</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Inicializálása nézetablak motor</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Inicializálása ablakkezelő</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Inicializálása kép szerszámok</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Inicializálása felhasználói felület</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Felkészülés program menük</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1569,12 +1489,17 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1658,7 +1583,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3605,7 +3530,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10722,6 +10647,21 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>alapbeállítások</translation>
 </phrase>
@@ -10744,16 +10684,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <phrase>
 <original>alpha cut-off</original>
 <translation>alfa cut-off</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10806,7 +10736,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12588,6 +12518,36 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>metaadat beállításaiban</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>gyors, nagy fájlt</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>tömörítési szint</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>embed háttérszín (bKGD darab)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>lassú, kisebb lesz a fájl</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12623,16 +12583,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>gyors, nagy fájlt</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>lassú, kisebb lesz a fájl</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>veszteségmentes optimalizálási lehetőségek</translation>
 </phrase>
@@ -12640,26 +12590,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>metaadat beállításaiban</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>tömörítési szint</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>embed háttérszín (bKGD darab)</translation>
 </phrase>
 
 <phrase>
@@ -15748,10 +15678,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

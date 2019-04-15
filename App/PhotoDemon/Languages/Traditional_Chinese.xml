@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.65</langversion>
+<langversion>7.0.67</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>正在檢查 Windows® 版本</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>正在初始化所有程式目錄</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>正在載入所有使用者設定</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>正在掃描語言檔案</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>正在判斷要使用何種語言</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>正在套用所選語言</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>正在初始化佈景主題引擎</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>正在分析目前螢幕設定</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>正在載入匯入 / 匯出程式庫</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>正在建立字型快取</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>正在初始化剪貼簿介面</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>正在初始化檢視區引擎</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>正在初始化視窗管理員</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>正在初始化影像工具</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>正在初始化使用者介面</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>正在準備程式選單</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1549,13 +1469,18 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation>Paint.NET 色票</translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation>PaintShop Pro 色票</translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
-<translation>Paint.NET 色票</translation>
+<original>PhotoDemon Palette</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1638,7 +1563,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation></translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3575,7 +3500,7 @@ Please enter a numeric value.</original>
 <translation>色票已由 PhotoDemon %1 匯出</translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10696,6 +10621,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation>色票於此檔案</translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation>選取一個色票檔案</translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>基礎設定</translation>
 </phrase>
@@ -10718,16 +10658,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>alpha cut-off</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation>色票於此檔案</translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation>選取一個色票檔案</translation>
 </phrase>
 
 <phrase>
@@ -10780,7 +10710,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>警告! 色票檔案無效。</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12555,6 +12485,36 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>中繼資料設定</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>快速，檔案較大</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>壓縮層級</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>嵌入背景色彩 (bKGD chunk)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>緩慢，檔案較小</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12590,16 +12550,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>快速，檔案較大</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>緩慢，檔案較小</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>不失真最佳化選項</translation>
 </phrase>
@@ -12607,26 +12557,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>中繼資料設定</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>壓縮層級</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>嵌入背景色彩 (bKGD chunk)</translation>
 </phrase>
 
 <phrase>
@@ -15712,10 +15642,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

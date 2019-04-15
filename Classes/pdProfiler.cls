@@ -182,7 +182,7 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     Set reportString = New pdString
     
     'Give the report a title
-    reportString.AppendLine "-- pdProfiler report for " & Chr$(34) & m_Events(0).Name & Chr$(34) & " --"
+    reportString.AppendLine "-- pdProfiler report for " & ChrW$(34) & m_Events(0).Name & ChrW$(34) & " --"
     
     'Note the data as well
     reportString.AppendLine "(Report updated at " & Format$(Now, "hh:mm:ss AM/PM") & " on " & Format$(Now, "dd-mmmm-yy") & ")"
@@ -232,7 +232,7 @@ Friend Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
                 uncertaintyValue = Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))
             End If
             
-            reportString.AppendLine vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms"
+            reportString.AppendLine vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " " & ChrW$(&HB1) & " " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms"
             
         Next i
         

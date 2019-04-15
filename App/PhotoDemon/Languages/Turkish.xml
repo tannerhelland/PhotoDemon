@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3378</langversion>
+<langversion>6.8.3380</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Tespit Windows' sürümü</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Tüm program dizinleri başlatılıyor</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>tüm kullanıcı ayarlarını yükleniyor</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>dil dosyaları için tarama</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>hangi dilde belirlenmesi kullanmak için</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Seçilen dili uygulamak</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Başlatılıyor tema motoru</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Geçerli monitör kurulumu analiz</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>ithalat/ihracat kitaplıkları yüklemek</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Bina yazı tipi önbellek</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>panoya arayüzü başlatılıyor</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Başlatılıyor görünüm motoru</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>pencere yöneticisi başlatılıyor</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>görüntü araçları başlatılıyor</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>kullanıcı arayüzü başlatılıyor</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Program menüleri hazırlama</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1571,12 +1491,17 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1660,7 +1585,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <translation>Atkinson/Klasik Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3613,7 +3538,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10732,6 +10657,21 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>Temel ayarlar</translation>
 </phrase>
@@ -10754,16 +10694,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <phrase>
 <original>alpha cut-off</original>
 <translation>alfa kesme</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10816,7 +10746,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12598,6 +12528,36 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>Meta veri ayarları</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>hızlı, büyük dosya</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>sıkıştırma seviyesi</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>Arka plan rengini embed (bKGD yığın)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>Yavaş, daha küçük dosya</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12633,16 +12593,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>hızlı, büyük dosya</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>Yavaş, daha küçük dosya</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>kayıpsız iyileştirme seçenekleri</translation>
 </phrase>
@@ -12650,26 +12600,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>Meta veri ayarları</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>sıkıştırma seviyesi</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>Arka plan rengini embed (bKGD yığın)</translation>
 </phrase>
 
 <phrase>
@@ -15758,10 +15688,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

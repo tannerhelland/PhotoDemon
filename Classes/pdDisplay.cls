@@ -316,7 +316,7 @@ Friend Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
                     monSerial = vbNullString
                     For i = (startOffset + 4) To (startOffset + 17)
                         If (m_EDID(i) <> 0) Then
-                            monChar = Chr(m_EDID(i))
+                            monChar = ChrW$(m_EDID(i))
                             If (monChar = vbLf) Or (monChar = vbCr) Then monChar = " "
                             monSerial = monSerial & monChar
                         End If

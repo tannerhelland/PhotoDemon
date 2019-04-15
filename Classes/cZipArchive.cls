@@ -950,7 +950,7 @@ Private Function pvEnumFiles(sFolder As String, sMask As String, ByVal eAttrib A
         Do
             If eAttrib > 0 And (uData.dwFileAttributes And eAttrib) <> 0 _
                     Or eAttrib < 0 And (uData.dwFileAttributes And -eAttrib) = 0 Then
-                sFile = Left$(uData.cFileName, InStr(uData.cFileName, Chr$(0)) - 1)
+                sFile = Left$(uData.cFileName, InStr(uData.cFileName, ChrW$(0)) - 1)
                 If sFile <> "." And sFile <> ".." Then
                     pvEnumFiles.Add PathCombine(sFolder, sFile)
                 End If

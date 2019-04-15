@@ -381,7 +381,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                     '    For i = 0 To numTagsReceived - 1
                     '        CopyMemory tmpTag, m_ScriptTags(i), 4
                     '        With tmpTag
-                    '            tmpString = Chr$(.byte1) & Chr$(.byte2) & Chr$(.byte3) & Chr$(.byte4)
+                    '            tmpString = ChrW$(.byte1) & ChrW$(.byte2) & ChrW$(.byte3) & ChrW$(.byte4)
                     '        End With
                     '        Debug.Print tmpString
                     '    Next i

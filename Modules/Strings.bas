@@ -830,7 +830,7 @@ Public Function TrimNull(ByRef origString As String) As String
 
     'Find a null char, if any
     Dim nullPosition As Long
-    nullPosition = InStr(1, origString, Chr$(0), vbBinaryCompare)
+    nullPosition = InStr(1, origString, ChrW$(0), vbBinaryCompare)
     
     If (nullPosition > 0) Then
        TrimNull = Left$(origString, nullPosition - 1)

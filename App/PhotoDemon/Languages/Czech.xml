@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3378</langversion>
+<langversion>6.8.3380</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Detekce verze systému Windows'</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Inicializace všech adresářů programů</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Nahrávání všech nastavení uživatele</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Skenování jazykových souborů</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Určení jazyka, který chcete používat</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Použití vybraného jazyka</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Inicializace motoru motivů</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Analýza nastavení aktuálního monitoru</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Načítání importu</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Vytváření mezipaměti fontů</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>Inicializace rozhraní schránky</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Inicializace motoru pohledu</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Inicializace správce oken</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Inicializace obrazových nástrojů</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Inicializace uživatelského rozhraní</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Příprava programových nabídek</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1575,12 +1495,17 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1664,7 +1589,7 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <translation>Atkinson</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3615,7 +3540,7 @@ Při zadání číselné hodnoty.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10735,6 +10660,21 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>základní nastavení</translation>
 </phrase>
@@ -10757,16 +10697,6 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <phrase>
 <original>alpha cut-off</original>
 <translation>Alfa cut-off</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10819,7 +10749,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12602,6 +12532,36 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>Nastavení metadat</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>Rychlý, větší soubor</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>Úroveň komprese</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>Vložit barvu pozadí (blok bKGD)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>Pomalý, menší soubor</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12637,16 +12597,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>Rychlý, větší soubor</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>Pomalý, menší soubor</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>Bezztrátové možnosti optimalizace</translation>
 </phrase>
@@ -12654,26 +12604,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>Nastavení metadat</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>Úroveň komprese</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>Vložit barvu pozadí (blok bKGD)</translation>
 </phrase>
 
 <phrase>
@@ -15765,10 +15695,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.395</langversion>
+<langversion>6.7.397</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Détection version de Windows®</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Initialisation dossiers du programme</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Chargement des paramètres utilisateur</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Recherche de fichiers de langue</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Déterminer la langue à utiliser</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Appliquer la langue sélectionnée</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Initialisation de Moteur de thème </translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Analyser la configuration du moniteur en cours</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Chargement bibliothèques import/export</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>Création de cache de polices</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>Initialisation de l'interface du presse-papiers</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Initialisation de fenêtre du moteur</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Initialisation gestionnaire de fenêtre</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Initialisation des outils d'image</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Initialisation de l'interface utilisateur</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Préparation de menus du programme</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1576,12 +1496,17 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
+<original>PhotoDemon Palette</original>
 <translation></translation>
 </phrase>
 
@@ -1665,7 +1590,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <translation>Atkinson / Macintosh Classic</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3617,7 +3542,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10739,6 +10664,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>Paramètres de base</translation>
 </phrase>
@@ -10761,16 +10701,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>alpha cut-off</original>
 <translation>coupure alpha</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -10823,7 +10753,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12605,6 +12535,36 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>paramètres de métadonnées</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>fichier rapide et plus volumineux</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>niveau de compression</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>intégrer la couleur de fond (bloc bKGD)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>fichier lent et plus petit</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12640,16 +12600,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>fichier rapide et plus volumineux</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>fichier lent et plus petit</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>options d'optimisation sans perte</translation>
 </phrase>
@@ -12657,26 +12607,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>paramètres de métadonnées</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>niveau de compression</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>intégrer la couleur de fond (bloc bKGD)</translation>
 </phrase>
 
 <phrase>
@@ -15771,10 +15701,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>

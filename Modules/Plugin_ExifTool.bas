@@ -1379,7 +1379,7 @@ Public Sub KillStrandedExifToolInstances()
     Do While (rProcessFound <> 0)
     
         'Retrieve the EXE name of this process
-        i = InStr(1, uProcess.szExeFile, Chr$(0))
+        i = InStr(1, uProcess.szExeFile, ChrW$(0))
         szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
         
         'If the process name is "exiftool.exe", terminate it

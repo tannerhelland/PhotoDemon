@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.63</langversion>
+<langversion>1.0.65</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -15,87 +15,7 @@
 
 <!-- BEGIN text for Main.bas -->
 
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Windows 버전 감지</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>모든 프로그램 디렉토리 초기화하기</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>모든 사용자 설정로드</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>언어 파일 검색</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>사용할 언어 결정</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>선택한 언어 적용</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>테마 엔진 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>현재 모니터 설정 분석</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>가져 오기로드 중</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>글꼴 캐시 작성</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>클립 보드 인터페이스 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>뷰포트 엔진 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>창 관리자 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>이미지 도구 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>사용자 인터페이스 초기화 중</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>프로그램 메뉴 준비하기</translation>
-</phrase>
-
-<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
+<!-- Main.bas contains 0 phrases. -->
 
 <!-- END text for Main.bas-->
 
@@ -1574,13 +1494,18 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Paint.NET Palette</original>
+<translation>Paint.NET 팔레트</translation>
+</phrase>
+
+<phrase>
 <original>PaintShop Pro Palette</original>
 <translation>PaintShop Pro Palette</translation>
 </phrase>
 
 <phrase>
-<original>Paint.NET Palette</original>
-<translation>Paint.NET 팔레트</translation>
+<original>PhotoDemon Palette</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1663,7 +1588,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>Atkinson</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 25 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -3614,7 +3539,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>PhotoDemon  %1에서 내 보낸 팔레트</translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -10734,6 +10659,21 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>use palette's alpha values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palettes in this file</original>
+<translation>이 파일의 팔레트</translation>
+</phrase>
+
+<phrase>
+<original>choose a palette file</original>
+<translation>팔레트 파일을 선택하십시오</translation>
+</phrase>
+
+<phrase>
 <original>basic settings</original>
 <translation>기본 설정</translation>
 </phrase>
@@ -10756,16 +10696,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <phrase>
 <original>alpha cut-off</original>
 <translation>알파 컷오프</translation>
-</phrase>
-
-<phrase>
-<original>palettes in this file</original>
-<translation>이 파일의 팔레트</translation>
-</phrase>
-
-<phrase>
-<original>choose a palette file</original>
-<translation>팔레트 파일을 선택하십시오</translation>
 </phrase>
 
 <phrase>
@@ -10818,7 +10748,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>경고! 팔레트 파일이 유효하지 않습니다.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 37 phrases. 20 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12601,6 +12531,36 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>metadata settings</original>
+<translation>메타 데이터 설정</translation>
+</phrase>
+
+<phrase>
+<original>compression optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>빠르고 큰 파일</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>압축 수준</translation>
+</phrase>
+
+<phrase>
+<original>embed background color (bKGD chunk)</original>
+<translation>배경 색상 포함 (bKGD 덩어리)</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>느리고 작은 파일</translation>
+</phrase>
+
+<phrase>
 <original>lossy optimization is provided by pngquant</original>
 <translation></translation>
 </phrase>
@@ -12636,16 +12596,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>빠르고 큰 파일</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>느리고 작은 파일</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>무손실 최적화 옵션</translation>
 </phrase>
@@ -12653,26 +12603,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata settings</original>
-<translation>메타 데이터 설정</translation>
-</phrase>
-
-<phrase>
-<original>compression optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>압축 수준</translation>
-</phrase>
-
-<phrase>
-<original>embed background color (bKGD chunk)</original>
-<translation>배경 색상 포함 (bKGD 덩어리)</translation>
 </phrase>
 
 <phrase>
@@ -15765,10 +15695,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2632</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4817 phrases. -->
-<!-- 2185 are duplicates, so only 2632 unique phrases have been written to file. -->
-<!-- These 2632 phrases contain approximately 12472 total words. -->
+<!-- As of this build, PhotoDemon contains 4808 phrases. -->
+<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12425 total words. -->
 
 </pdData>
