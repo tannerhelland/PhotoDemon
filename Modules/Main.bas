@@ -178,7 +178,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Check Windows version"
-    LoadMessage "Detecting Windows® version..."
+    LogStartupEvent "Detecting Windows version..."
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
     If OS.IsWin7OrLater Then OS.StartWin7PlusFeatures
@@ -195,14 +195,14 @@ Public Function ContinueLoadingProgram() As Boolean
     ' Similarly, if the user has done something stupid, like unzip PD inside a system folder, the preferences manager will
     ' auto-detect this and silently redirect program settings to the appropriate user folder.  A flag will also be set, so we
     ' can warn the user about this behavior after the program finishes loading.)
-    LoadMessage "Initializing all program directories..."
+    LogStartupEvent "Initializing all program directories..."
     
     'This is one of the few functions where failures force PD to exit immediately.
     ContinueLoadingProgram = UserPrefs.InitializePaths()
     If (Not ContinueLoadingProgram) Then Exit Function
     
     'Now, ask the preferences handler to load all other user settings from the preferences file.
-    LoadMessage "Loading all user settings..."
+    LogStartupEvent "Loading all user settings..."
     UserPrefs.LoadUserSettings
     
     'Mark the Macro recorder as "not recording"
@@ -261,19 +261,19 @@ Public Function ContinueLoadingProgram() As Boolean
     perfCheck.MarkEvent "Initialize translation engine"
     Set g_Language = New pdTranslate
     
-    LoadMessage "Scanning for language files..."
+    LogStartupEvent "Scanning for language files..."
     
     'Before doing anything else, check to see what languages are available in the language folder.
     ' (Note that this function will also populate the Languages menu, though it won't place a checkmark next to an entry yet.)
     g_Language.CheckAvailableLanguages
         
-    LoadMessage "Determining which language to use..."
+    LogStartupEvent "Determining which language to use..."
         
     'Next, determine which language to use.  (This function will take into account the system language at first-run, so it can
     ' estimate which language to present to the user.)
     g_Language.DetermineLanguage
     
-    LoadMessage "Applying selected language..."
+    LogStartupEvent "Applying selected language..."
     
     'Apply that language to the program.  This involves loading the translation file into memory, which can take a bit of time,
     ' but it only needs to be done once.  From that point forward, any text requests will operate on the in-memory copy of the file.
@@ -286,7 +286,7 @@ Public Function ContinueLoadingProgram() As Boolean
     
     'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
     perfCheck.MarkEvent "Initialize theme engine"
-    LoadMessage "Initializing theme engine..."
+    LogStartupEvent "Initializing theme engine..."
     
     Set g_Themer = New pdTheme
     
@@ -304,7 +304,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Detect displays"
-    LoadMessage "Analyzing current monitor setup..."
+    LogStartupEvent "Analyzing current monitor setup..."
     
     Set g_Displays = New pdDisplays
     g_Displays.RefreshDisplays
@@ -358,7 +358,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Load import and export libraries"
-    LoadMessage "Loading import/export libraries..."
+    LogStartupEvent "Loading import/export libraries..."
     
     'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
     ImageFormats.GenerateInputFormats
@@ -370,7 +370,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Build font cache"
-    LoadMessage "Building font cache..."
+    LogStartupEvent "Building font cache..."
         
     'PD currently builds two font caches:
     ' 1) A name-only list of all fonts currently installed.  This is used to populate font dropdown boxes.
@@ -387,7 +387,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize pdClipboardMain"
-    LoadMessage "Initializing clipboard interface..."
+    LogStartupEvent "Initializing clipboard interface..."
     Set g_Clipboard = New pdClipboardMain
     
     
@@ -396,7 +396,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize viewport engine"
-    LoadMessage "Initializing viewport engine..."
+    LogStartupEvent "Initializing viewport engine..."
     
     'Create the program's primary zoom handler
     Set g_Zoom = New pdZoom
@@ -423,7 +423,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize window manager"
-    LoadMessage "Initializing window manager..."
+    LogStartupEvent "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
     
     'Register the main form
@@ -465,7 +465,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize tools"
-    LoadMessage "Initializing image tools..."
+    LogStartupEvent "Initializing image tools..."
     
     'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance, and it saves a bit of memory
     ' if a user doesn't use a tool during a given session.
@@ -479,7 +479,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Initialize UI"
-    LoadMessage "Initializing user interface..."
+    LogStartupEvent "Initializing user interface..."
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     IconsAndCursors.SetThunderMainIcon
@@ -523,7 +523,7 @@ Public Function ContinueLoadingProgram() As Boolean
     '*************************************************************************************************************************************
     
     perfCheck.MarkEvent "Prep developer menus"
-    LoadMessage "Preparing program menus..."
+    LogStartupEvent "Preparing program menus..."
     
     'In debug modes, certain developer and experimental menus will be enabled.
     Dim debugMenuVisibility As Boolean

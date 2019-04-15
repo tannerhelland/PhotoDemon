@@ -729,7 +729,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
 End Function
 
 'This routine sets the message on the splash screen (used only when the program is first started)
-Public Sub LoadMessage(ByVal sMsg As String)
+Public Sub LogStartupEvent(ByRef sMsg As String)
     
     Static loadProgress As Long
         
