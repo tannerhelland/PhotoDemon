@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon KD-Tree for fast palette matching
 'Copyright 2018-2019 by Tanner Helland
 'Created: 28/January/18
-'Last updated: 22/February/18
-'Last update: add support for retrieving colors by their original palette index (instead of bare RGBQuads)
+'Last updated: 26/March/19
+'Last update: add a dedicated RGBA mode, for fast matching of full RGBA quads
 'Dependencies: pdKDTreeNode
 '
 'K-D trees (https://en.wikipedia.org/wiki/K-d_tree) are a data structure well-designed for sorting large collections
@@ -28,14 +28,16 @@ Attribute VB_Exposed = False
 ' cost-prohibitive past ~16 colors, and given the impossibility of sorting RGB data in a meaningful way,
 ' standard search and/or sort approaches breakdown.
 '
-'KD trees, on the other hand, really shine with 3D data (like RGB coordinates).  For pathologically bad cases,
-' PD's KD-tree color matcher is basically identical in performance to GDI's GetNearestPaletteIndex() function,
-' while for well-distributed 3D data (e.g. palettes with many different shades of color) PD's implementation can
-' be up to a full order of magnitude faster, with even larger gains if the palette size is larger than 256 colors.
+'KD trees, on the other hand, really shine with multidimensional data (like RGB/A coordinates).  For pathologically
+' bad cases, PD's KD-tree color matcher is basically identical in performance to GDI's GetNearestPaletteIndex()
+' function, while for well-distributed 3D data (e.g. palettes with many different shades of color) PD's
+' implementation can be up to a full order of magnitude faster, with even larger gains if the palette size is
+' larger than 256 colors, or if you need RGBA matching (which GDI doesn't implement at all).
 '
-'Anyway, while this implementation is specifically designed around 3D RGB data (for performance reasons), it would
-' be trivial to adopt the code for any other k-dimensional data.  I may look at this in the future for effects
-' built off coordinate math (like stained glass / crystallize and their underlying Voronoi engine).
+'Anyway, while this implementation is specifically designed around 3D RGB and 4D RGBA data (for performance reasons),
+' it would be trivial to adopt the code for any other k-dimensional data.  I may look at this in the future for
+' effects built off coordinate math (like stained glass / crystallize and their underlying Voronoi engine) as it
+' could provide meaningful perf improvements without some of the restrictions of our current Voronoi implementation.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

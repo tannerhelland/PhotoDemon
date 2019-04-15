@@ -209,6 +209,14 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
         ' (Note that we manually reset our palette collection between attempts, in case a load routine failed
         '  mid-way through a load attempt.)
         
+        'Look for PD's internal palette format
+        If (Not LoadPaletteFromFile) Then
+            m_NumOfGroups = startIndex
+            m_Palettes(m_NumOfGroups).Reset
+            LoadPaletteFromFile = LoadPalettePhotoDemon(srcFile, cStream, removeDuplicateColors, retainOriginalColorOrder)
+            If LoadPaletteFromFile Then cStream.StopStream True
+        End If
+        
         'Look for Adobe's basic color table format
         If (Not LoadPaletteFromFile) Then
             m_NumOfGroups = startIndex
@@ -1334,6 +1342,145 @@ BadPaintShopProPalette:
 
 End Function
 
+'PhotoDemon palettes are simple text files.  Unlike other palette formats, they provide full support for:
+' - Unlimited color counts
+' - RGBA values
+' - Color names
+' ...while still being human-readable text files.
+'
+'This format is roughly modeled after Paint.NET palette files; see the SavePalettePhotoDemon function
+' for a complete description of the minor changes we've made.
+Private Function LoadPalettePhotoDemon(ByRef srcFile As String, ByRef srcStream As pdStream, Optional ByVal removeDuplicateColors As Boolean = False, Optional ByVal retainOriginalColorOrder As Boolean = True) As Boolean
+
+    On Error GoTo BadPDPalette
+    
+    If (srcStream Is Nothing) Then Exit Function
+    
+    'While we'll also validate the first line of the palette file, we may as well validate the file extension as well.
+    ' (PD itself will never write palettes with a different extension, and we don't want to encourage other software
+    '  doing that either.)
+    Dim failsafeCheck As Boolean: failsafeCheck = True
+    If (LenB(srcFile) <> 0) Then failsafeCheck = Strings.StringsEqual(Files.FileGetExtension(srcFile), "pdpalette", True)
+    
+    If failsafeCheck Then
+        
+        'Because PD palettes are just text files, it's easiest to parse them as strings
+        srcStream.SetPosition 0, FILE_BEGIN
+        
+        Dim rawFileString As String
+        rawFileString = srcStream.ReadString_UTF8(srcStream.GetStreamSize())
+        
+        If (LenB(rawFileString) <> 0) Then
+            
+            'To simplify processing, convert the string into a "stack" of "lines".
+            Dim fileLines As pdStringStack
+            Set fileLines = New pdStringStack
+            fileLines.CreateFromMultilineString rawFileString
+            
+            'Validate the first line of the stack
+            If Strings.StringsEqual(Trim$(fileLines.GetString(0)), "# PhotoDemon palette", True) Then
+                
+                '(Normally we would pop lines like a stack, but the user may want to preserve the
+                ' original palette order - in which case we need to also process the text lines in
+                ' their original file order.)
+                Dim i As Long, curLine As String
+                For i = 0 To fileLines.GetNumOfStrings - 1
+                    
+                    'Retrieve the current line and trim any leading or trailing whitespace
+                    curLine = Trim$(fileLines.GetString(i))
+                    
+                    'Ignore null-length lines
+                    If (LenB(curLine) <> 0) Then
+                        
+                        'Comment lines start with a "#" - these can be completely ignored
+                        If Strings.StringsEqual(Left$(curLine, 1), "#", False) Then
+                            'Do nothing
+                        
+                        'Any other line should be treated as an RGBA hex entry, with an optional trailing color name.
+                        ' (There is never a prepended #, 0x, or other hex indicator.)
+                        ElseIf (Len(curLine) >= 6) Then
+                            
+                            Dim tmpQuad As RGBQuad, colorName As String
+                            
+                            'VB6 error handling is a nightmare, alas...
+                            On Error GoTo BadLineColor
+                            
+                            'Fill the RGB entries directly
+                            With tmpQuad
+                                .Red = CByte("&h" & Mid$(curLine, 1, 2))
+                                .Green = CByte("&h" & Mid$(curLine, 3, 2))
+                                .Blue = CByte("&h" & Mid$(curLine, 5, 2))
+                                
+                                'Alpha is optional, but PD will always write it
+                                If (Len(curLine) >= 8) Then
+                                    
+                                    'Ensure this isn't just an RGB line with an appended name
+                                    If (LCase$(Mid$(curLine, 7, 2)) <> " ") Then .Alpha = CByte("&h" & Mid$(curLine, 7, 2))
+                                    
+                                End If
+                            End With
+                            
+                            'Color names are always optional.  Look for a space in the current string, and if one exists,
+                            ' take all characters after it (trimming blank padding on either side).
+                            If (InStr(1, curLine, " ", vbBinaryCompare) <> 0) Then
+                                colorName = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, " ", vbBinaryCompare)))
+                            Else
+                                colorName = vbNullString
+                            End If
+                            
+                            'Resume normal VB6 error handling, then add this color to the collection
+                            On Error GoTo 0
+                            m_Palettes(m_NumOfGroups).AddColor tmpQuad, colorName
+                            
+BadLineColor:
+                        End If
+                        
+                    End If
+                
+                Next i
+                
+            'If the first line doesn't validate, this is not a valid PD palette file; do nothing
+            Else
+            
+            End If
+                
+            'If we haven't errored out, consider this a valid parse if we found any valid colors
+            LoadPalettePhotoDemon = (m_Palettes(m_NumOfGroups).GetNumOfColors() > 0)
+            
+            'If the load was successful, assign a fake palette name using the filename
+            If LoadPalettePhotoDemon Then
+            
+                m_Palettes(m_NumOfGroups).SetPaletteName Files.FileGetName(srcFile, True)
+                m_Palettes(m_NumOfGroups).SetPaletteFilename srcFile
+                
+                'If original color order is not required, we can sort the palette prior to removing
+                ' duplicate palette entries; this makes the process much faster.
+                If removeDuplicateColors Then
+                    If retainOriginalColorOrder Then
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates
+                    Else
+                        m_Palettes(m_NumOfGroups).SortFixedOrder
+                        m_Palettes(m_NumOfGroups).FindAndRemoveDuplicates_Fast
+                    End If
+                End If
+            
+                m_NumOfGroups = m_NumOfGroups + 1
+                
+            End If
+            
+        Else
+            LoadPalettePhotoDemon = False
+        End If
+        
+    End If
+    
+    Exit Function
+    
+BadPDPalette:
+    LoadPalettePhotoDemon = False
+
+End Function
+
 'Given a path to a .act file (Adobe Color Table), write the designated palette group to the file.
 ' - An existing .act file with the same name, if one exists, will be overwritten.
 Friend Function SavePaletteAdobeColorTable(ByRef dstFile As String, Optional ByVal useGroupIndex As Long = 0) As Boolean
@@ -1458,7 +1605,7 @@ Friend Function SavePaletteAdobeSwatch(ByRef dstFile As String, Optional ByVal s
                     
                     'Retrieve the color name, if any
                     Dim srcColorName As String
-                    srcColorName = tmpPalEntry.ColorName
+                    srcColorName = tmpPalEntry.colorName
                     
                     'Write the length of this color's name
                     Dim colorLen As Long
@@ -1594,7 +1741,7 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
                 tmpPaletteEntry = m_Palettes(i).GetPaletteEntry(j)
                 
                 nameLengthInBytes = 2
-                If (LenB(tmpPaletteEntry.ColorName) <> 0) Then nameLengthInBytes = nameLengthInBytes + LenB(tmpPaletteEntry.ColorName) + 2
+                If (LenB(tmpPaletteEntry.colorName) <> 0) Then nameLengthInBytes = nameLengthInBytes + LenB(tmpPaletteEntry.colorName) + 2
                 colorBlockLength = 18 + nameLengthInBytes
                 
                 'Write our calculated block length
@@ -1603,8 +1750,8 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
                 'Write name length and the name itself, if any.  (Confusingly, note that the name length is
                 ' in *WCHARS*, not BYTES.
                 If (nameLengthInBytes > 2) Then
-                    dstData.WriteInt_BE Len(tmpPaletteEntry.ColorName) + 1
-                    dstData.WriteString_UnicodeBE tmpPaletteEntry.ColorName, True
+                    dstData.WriteInt_BE Len(tmpPaletteEntry.colorName) + 1
+                    dstData.WriteString_UnicodeBE tmpPaletteEntry.colorName, True
                 Else
                     dstData.WriteInt_BE 0
                 End If
@@ -1687,7 +1834,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
             
             'I realize that use of a tab char here is odd, but the palette files that ship with GIMP files
             ' all use tab delimiters (instead of spaces) before the color name.  I don't know why.
-            If (LenB(.ColorName) <> 0) Then colorLine = colorLine & vbTab & .ColorName
+            If (LenB(.colorName) <> 0) Then colorLine = colorLine & vbTab & .colorName
         End With
         
         dstText.AppendLine colorLine
@@ -1821,6 +1968,85 @@ Friend Function SavePalettePaintShopPro(ByRef dstFile As String, Optional ByVal 
     
 BadPaintShopProPalette:
    SavePalettePaintShopPro = False
+
+End Function
+
+'I don't like to invent my own formats, but palettes are one of those weird ones where every existing format
+' has a bunch of irritating limitations and/or inconsistencies.  As such, for internal tools especially it's
+' useful to have a predictable palette format with guaranteed behavior on things like alpha bytes.
+'
+'The format of a PD palette is similar to Paint.NET, with colors being simple hex strings, but we also
+' add support for unlimited color counts (even > 256 because that's no problem internally, and it makes it
+' easier to apply things like retro palettes for systems with 4096 color counts), color names, and other
+' palette features.
+'
+'Note that the palette files are ultimately UTF-8 encoded (no BOM) with Windows line endings (CRLF).
+Friend Function SavePalettePhotoDemon(ByRef dstFile As String, Optional ByVal useGroupIndex As Long = 0, Optional ByVal addPDCredit As Boolean = True, Optional ByVal forceAlphaTo255 As Boolean = False) As Boolean
+
+    On Error GoTo BadPDPalette
+    
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'PhotoDemon palettes are just text files, and pdString makes it easy to efficiently assemble an in-memory string
+    Dim dstText As pdString
+    Set dstText = New pdString
+    
+    'Start by writing a standard header
+    With dstText
+        
+        'This opening line *IS CURRENTLY REQUIRED*; it makes it much easier for us to correctly identify
+        ' a palette file, without relying on complicated heuristics
+        .AppendLine "# PhotoDemon palette"
+        
+        'Any #-prefixed line following the first is considered a comment line.
+        ' You can stick whatever you want in them and PD will ignore it
+        If addPDCredit Then .AppendLine "#  " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(https://photodemon.org)")
+        
+    End With
+    
+    'Next come all the colors.  RGBA values and color names (if any) are fully supported
+    Dim i As Long, tmpPaletteEntry As PDPaletteEntry, colorLine As String
+    
+    Dim numColorsBound As Long
+    numColorsBound = m_Palettes(useGroupIndex).GetNumOfColors()
+    
+    For i = 0 To numColorsBound - 1
+        
+        tmpPaletteEntry = m_Palettes(useGroupIndex).GetPaletteEntry(i)
+        colorLine = String$(8, 0)
+        
+        'Colors are written in RGBA format.  A few notes:
+        ' - alpha can be omitted (full opacity will be assumed), but PD always writes it
+        ' - case of hex chars doesn't matter, but PD always writes lower-case
+        ' - shortened strings are not allowed - the hex string must be 6 chars (RGB) or 8 chars (RGBA), no exceptions
+        ' - if a color name exists, add a single space after the RGB/A string, followed by the color name.
+        '   (No restrictions are currently placed on color names; the text is ultimately written as UTF-8 so
+        '    valid Unicode of any size is theoretically okay!)
+        Mid$(colorLine, 1, 2) = LCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Red))
+        Mid$(colorLine, 3, 2) = LCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Green))
+        Mid$(colorLine, 5, 2) = LCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Blue))
+        If forceAlphaTo255 Then
+            Mid$(colorLine, 7, 2) = "ff"
+        Else
+            Mid$(colorLine, 7, 2) = LCase$(Colors.GetTwoCharHexFromByte(tmpPaletteEntry.ColorValue.Alpha))
+        End If
+        
+        'If the color has a name, append it after a space char
+        If (LenB(m_Palettes(useGroupIndex).GetPaletteEntry(i).colorName) <> 0) Then colorLine = colorLine & " " & m_Palettes(useGroupIndex).GetPaletteEntry(i).colorName
+        
+        dstText.AppendLine colorLine
+        
+    Next i
+    
+    'That's all there is to it!  Write the finished string out to file.
+    Dim finalText As String
+    finalText = dstText.ToString()
+    SavePalettePhotoDemon = Files.FileSaveAsText(finalText, dstFile, True, False)
+    
+    Exit Function
+    
+BadPDPalette:
+    SavePalettePhotoDemon = False
 
 End Function
 

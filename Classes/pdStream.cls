@@ -809,6 +809,25 @@ Friend Function ReadString_UnknownEncoding(ByVal numOfBytes As Long) As String
 
 End Function
 
+'Read a series of UTF-8 bytes from the stream, and return them as a standard BSTR.
+' If the requested length is invalid (i.e. it extends beyond the end of the stream), a partial string will be returned.
+Friend Function ReadString_UTF8(ByVal numOfBytes As Long) As String
+    
+    If m_Open Then
+        
+        Dim tmpBytes() As Byte, trueByteCount As Long
+        trueByteCount = Me.ReadBytes(tmpBytes, numOfBytes, True)
+        
+        If (trueByteCount > 0) Then
+            ReadString_UTF8 = Strings.StringFromUTF8Ptr(VarPtr(tmpBytes(0)), trueByteCount)
+        Else
+            ReadString_UTF8 = vbNullString
+        End If
+        
+    End If
+
+End Function
+
 'Reduce the buffer to its exact size.  This is *strongly* discouraged if you intend on writing more data to the stream,
 ' as extra allocations are guaranteed after a trim.
 '

@@ -27,12 +27,13 @@ Public Enum PD_PaletteFormat
     pdpf_AdobeColorTable = 1
     pdpf_AdobeSwatchExchange = 2
     pdpf_GIMP = 3
-    pdpf_PSP = 4
-    pdpf_PaintDotNet = 5
+    pdpf_PaintDotNet = 4
+    pdpf_PSP = 5
+    pdpf_PhotoDemon = 6
 End Enum
 
 #If False Then
-    Private Const pdpf_AdobeColorSwatch = 0, pdpf_AdobeColorTable = 1, pdpf_AdobeSwatchExchange = 2, pdpf_GIMP = 3, pdpf_PSP = 4, pdpf_PaintDotNet = 5
+    Private Const pdpf_AdobeColorSwatch = 0, pdpf_AdobeColorTable = 1, pdpf_AdobeSwatchExchange = 2, pdpf_GIMP = 3, pdpf_PaintDotNet = 4, pdpf_PSP = 5, pdpf_PhotoDemon = 6
 #End If
 
 'Used for more accurate color distance comparisons (using human eye sensitivity as a rough guide, while staying in
@@ -68,7 +69,7 @@ Private Declare Function GetNearestPaletteIndex Lib "gdi32" (ByVal hPalette As L
 ' - Color name.  Some palette formats provide per-color names; some do not.  This value may be null.
 Public Type PDPaletteEntry
     ColorValue As RGBQuad
-    ColorName As String
+    colorName As String
 End Type
 
 Public Type PDPaletteCache
@@ -1766,13 +1767,15 @@ Public Function DisplayPaletteLoadDialog(ByRef srcFilename As String, ByRef dstF
     
     Dim cdFilter As pdString
     Set cdFilter = New pdString
-    cdFilter.Append g_Language.TranslateMessage("All supported palettes") & "|*.aco;*.act;*.ase;*.gpl;*.pal;*.psppalette;*.txt|"
+    cdFilter.Append g_Language.TranslateMessage("All supported palettes") & "|*.aco;*.act;*.ase;*.gpl;*.pal;*.pdpalette;*.psppalette;*.txt|"
+    
     cdFilter.Append g_Language.TranslateMessage("Adobe Color Swatch") & " (.aco)|*.aco|"
     cdFilter.Append g_Language.TranslateMessage("Adobe Color Table") & " (.act)|*.act|"
     cdFilter.Append g_Language.TranslateMessage("Adobe Swatch Exchange") & " (.ase)|*.ase|"
     cdFilter.Append g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
-    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal, .psppalette)|*.pal;*.psppalette|"
     cdFilter.Append g_Language.TranslateMessage("Paint.NET Palette") & " (.txt)|*.txt|"
+    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal, .psppalette)|*.pal;*.psppalette|"
+    cdFilter.Append g_Language.TranslateMessage("PhotoDemon Palette") & " (.pdpalette)|*.pdpalette|"
     cdFilter.Append g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
@@ -1841,13 +1844,15 @@ Public Function DisplayPaletteSaveDialog(ByRef srcImage As pdImage, ByRef dstFil
     cdFilterExtensions.Append ".ase|"
     cdFilter.Append g_Language.TranslateMessage("GIMP Palette") & " (.gpl)|*.gpl|"
     cdFilterExtensions.Append ".gpl|"
-    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal)|*.pal|"
-    cdFilterExtensions.Append ".pal|"
     cdFilter.Append g_Language.TranslateMessage("Paint.NET Palette") & " (.txt)|*.txt|"
     cdFilterExtensions.Append ".txt"
+    cdFilter.Append g_Language.TranslateMessage("PaintShop Pro Palette") & " (.pal)|*.pal|"
+    cdFilterExtensions.Append ".pal|"
+    cdFilter.Append g_Language.TranslateMessage("PhotoDemon Palette") & " (.pdpalette)|*.pdpalette|"
+    cdFilterExtensions.Append ".pdpalette|"
     
     Dim cdIndex As PD_PaletteFormat
-    cdIndex = UserPrefs.GetPref_Long("Saving", "Palette Format", pdpf_AdobeSwatchExchange) + 1
+    cdIndex = UserPrefs.GetPref_Long("Saving", "Palette Format", pdpf_PhotoDemon) + 1
     
     '3) What palette name to suggest.  At present, we just reuse the current image's name.
     Dim palFileName As String
@@ -1932,8 +1937,12 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
                     If (optColors < cPalette.GetPaletteColorCount()) Then cPalette.SetNewPaletteCount optColors
                 Else
                     Dim tmpDIB As pdDIB, tmpQuads() As RGBQuad
-                    srcImage.GetCompositedImage tmpDIB, False
-                    If Palettes.GetOptimizedPalette(tmpDIB, tmpQuads, optColors, pdqs_Variance) Then cPalette.CreateFromPaletteArray tmpQuads, UBound(tmpQuads) + 1
+                    srcImage.GetCompositedImage tmpDIB, True
+                    If Palettes.GetOptimizedPaletteIncAlpha(tmpDIB, tmpQuads, optColors, pdqs_Variance) Then
+                        Palettes.SetPaletteAlphaPremultiplication False, tmpQuads
+                        cPalette.CreateFromPaletteArray tmpQuads, UBound(tmpQuads) + 1
+                    End If
+                    Set tmpDIB = Nothing
                 End If
                 
                 'Palette name won't always be used, but retrieve and set it anyway
@@ -1979,6 +1988,8 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
                         ExportCurrentImagePalette = cPalette.SavePalettePaintDotNet(dstFilename, , , False)
                     ElseIf (dstFormat = pdpf_PSP) Then
                         ExportCurrentImagePalette = cPalette.SavePalettePaintShopPro(dstFilename)
+                    Else
+                        ExportCurrentImagePalette = cPalette.SavePalettePhotoDemon(dstFilename)
                     End If
                     
                 End If
@@ -2013,4 +2024,107 @@ Public Sub PopulateDitheringDropdown(ByRef dstDropDown As pdDropDown)
     dstDropDown.AddItem "Sierra Lite", 10
     dstDropDown.AddItem "Atkinson / Classic Macintosh", 11
     dstDropDown.SetAutomaticRedraws True
+End Sub
+
+'If you don't want to deal with alpha values, use this function to forcibly set all alpha values in a palette to 255
+' (or any other arbitrary value)
+Public Sub SetFixedAlpha(ByRef srcQuads() As RGBQuad, Optional ByVal newAlpha As Byte = 255)
+    Dim i As Long
+    For i = 0 To UBound(srcQuads)
+        srcQuads(i).Alpha = newAlpha
+    Next i
+End Sub
+
+'If a palette includes alpha values, it can be helpful to forcibly set alpha premultiplication
+Public Sub SetPaletteAlphaPremultiplication(ByVal applyPremultiplication As Boolean, ByRef srcQuads() As RGBQuad)
+        
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
+    'Although most palettes are small (256 colors or less), PD supports "unlimited" palette sizes.
+    ' As a perf failsafe, use a LUT for the conversion.
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        If applyPremultiplication Then
+            intToFloat(i) = CSng(CDbl(i) * ONE_DIV_255)
+        Else
+            If (i <> 0) Then intToFloat(i) = CSng(255# / CDbl(i))
+        End If
+    Next i
+    
+    Dim r As Long, g As Long, b As Long
+    Dim tmpAlpha As Byte, tmpAlphaModifier As Single
+    
+    For i = 0 To UBound(srcQuads)
+        
+        'Retrieve alpha for the current pixel
+        tmpAlpha = srcQuads(i).Alpha
+        
+        'Branch according to applying or removing premultiplication
+        If applyPremultiplication Then
+        
+            'When applying premultiplication, we can ignore fully opaque pixels
+            If (tmpAlpha <> 255) Then
+            
+                'We can shortcut the calculation of full transparent pixels (they are made black)
+                If (tmpAlpha = 0) Then
+                    srcQuads(i).Red = 0
+                    srcQuads(i).Green = 0
+                    srcQuads(i).Blue = 0
+                Else
+            
+                    r = srcQuads(i).Red
+                    g = srcQuads(i).Green
+                    b = srcQuads(i).Blue
+                    
+                    tmpAlphaModifier = intToFloat(tmpAlpha)
+                    
+                    'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                    r = Int(r * tmpAlphaModifier + 0.5!)
+                    g = Int(g * tmpAlphaModifier + 0.5!)
+                    b = Int(b * tmpAlphaModifier + 0.5!)
+                    
+                    srcQuads(i).Red = r
+                    srcQuads(i).Green = g
+                    srcQuads(i).Blue = b
+                    
+                End If
+            
+            End If
+        
+        Else
+            
+            'When removing premultiplication, we can ignore fully opaque and fully transparent values.
+            ' (Note that VB doesn't short-circuit AND statements, so we manually nest the IFs.)
+            If (tmpAlpha <> 255) Then
+                If (tmpAlpha <> 0) Then
+                
+                    r = srcQuads(i).Red
+                    g = srcQuads(i).Green
+                    b = srcQuads(i).Blue
+                    
+                    tmpAlphaModifier = intToFloat(tmpAlpha)
+                    
+                    'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                    r = Int(r * tmpAlphaModifier + 0.5!)
+                    g = Int(g * tmpAlphaModifier + 0.5!)
+                    b = Int(b * tmpAlphaModifier + 0.5!)
+                    
+                    'Unfortunately, OOB checks are necessary for malformed colors
+                    If (r > 255) Then r = 255
+                    If (g > 255) Then g = 255
+                    If (b > 255) Then b = 255
+                    
+                    srcQuads(i).Red = r
+                    srcQuads(i).Green = g
+                    srcQuads(i).Blue = b
+                    
+                End If
+            End If
+        
+        End If
+        
+    Next i
+    
 End Sub

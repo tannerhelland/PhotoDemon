@@ -52,6 +52,94 @@ Begin VB.Form FormPalettize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.pdContainer pnlQuantize 
+      Height          =   5175
+      Index           =   1
+      Left            =   5880
+      TabIndex        =   2
+      Top             =   960
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   9128
+      Begin PhotoDemon.pdCheckBox chkMatchAlpha 
+         Height          =   375
+         Left            =   210
+         TabIndex        =   22
+         Top             =   3090
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   661
+         Caption         =   "use palette's alpha values"
+      End
+      Begin PhotoDemon.pdListBox lstPalettes 
+         Height          =   2175
+         Left            =   120
+         TabIndex        =   19
+         Top             =   840
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   3836
+         Caption         =   "palettes in this file:"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdButton cmdLoadPalette 
+         Height          =   495
+         Left            =   5400
+         TabIndex        =   17
+         Top             =   345
+         Width           =   615
+         _ExtentX        =   1085
+         _ExtentY        =   873
+         Caption         =   "..."
+      End
+      Begin PhotoDemon.pdTextBox txtPalette 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   16
+         Top             =   390
+         Width           =   4815
+         _ExtentX        =   8493
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   255
+         Left            =   120
+         Top             =   0
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   450
+         Caption         =   "choose a palette file:"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdDropDown cboDither 
+         Height          =   700
+         Index           =   1
+         Left            =   120
+         TabIndex        =   18
+         Top             =   3480
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1244
+         Caption         =   "dithering"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdSlider sldDitherAmount 
+         Height          =   700
+         Index           =   1
+         Left            =   120
+         TabIndex        =   21
+         Top             =   4380
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1244
+         Caption         =   "dithering amount"
+         FontSizeCaption =   11
+         Max             =   100
+         Value           =   100
+         GradientColorRight=   1703935
+         DefaultValue    =   100
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlQuantize 
       Height          =   5280
       Index           =   0
       Left            =   5880
@@ -211,84 +299,6 @@ Begin VB.Form FormPalettize
          End
       End
    End
-   Begin PhotoDemon.pdContainer pnlQuantize 
-      Height          =   5175
-      Index           =   1
-      Left            =   5880
-      TabIndex        =   2
-      Top             =   960
-      Width           =   6375
-      _ExtentX        =   11245
-      _ExtentY        =   9128
-      Begin PhotoDemon.pdListBox lstPalettes 
-         Height          =   2535
-         Left            =   120
-         TabIndex        =   19
-         Top             =   840
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   4471
-         Caption         =   "palettes in this file:"
-         FontSizeCaption =   11
-      End
-      Begin PhotoDemon.pdButton cmdLoadPalette 
-         Height          =   495
-         Left            =   5400
-         TabIndex        =   17
-         Top             =   345
-         Width           =   615
-         _ExtentX        =   1085
-         _ExtentY        =   873
-         Caption         =   "..."
-      End
-      Begin PhotoDemon.pdTextBox txtPalette 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   16
-         Top             =   390
-         Width           =   4815
-         _ExtentX        =   8493
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   255
-         Left            =   120
-         Top             =   0
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   450
-         Caption         =   "choose a palette file:"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.pdDropDown cboDither 
-         Height          =   700
-         Index           =   1
-         Left            =   120
-         TabIndex        =   18
-         Top             =   3480
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   1244
-         Caption         =   "dithering"
-         FontSizeCaption =   11
-      End
-      Begin PhotoDemon.pdSlider sldDitherAmount 
-         Height          =   700
-         Index           =   1
-         Left            =   120
-         TabIndex        =   21
-         Top             =   4380
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   1244
-         Caption         =   "dithering amount"
-         FontSizeCaption =   11
-         Max             =   100
-         Value           =   100
-         GradientColorRight=   1703935
-         DefaultValue    =   100
-      End
-   End
 End
 Attribute VB_Name = "FormPalettize"
 Attribute VB_GlobalNameSpace = False
@@ -350,6 +360,10 @@ End Sub
 Private Sub cboDither_Click(Index As Integer)
     UpdatePreview
     UpdateColorBleedVisibility
+End Sub
+
+Private Sub chkMatchAlpha_Click()
+    UpdatePreview
 End Sub
 
 Private Sub chkPreserveWB_Click()
@@ -634,8 +648,11 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     Dim ditherAmount As Double
     ditherAmount = cParams.GetDouble("ditheramount", 100#) / 100#
     
+    Dim matchAlpha As Boolean
+    matchAlpha = cParams.GetBool("palettefilematchalpha", False)
+    
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , matchAlpha
     
     If (Not toPreview) Then
         SetProgBarMax workingDIB.GetDIBHeight
@@ -649,18 +666,32 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
         
         m_Palette.CopyPaletteToArray finalPalette, srcPaletteIndex
         
+        If matchAlpha Then
+            Palettes.SetPaletteAlphaPremultiplication True, finalPalette
+        Else
+            Palettes.SetFixedAlpha finalPalette, 255
+        End If
+        
         If (Not toPreview) Then Message "Applying new palette to image..."
         
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
-            Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight
+            If matchAlpha Then
+                Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight
+            End If
         Else
-            Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight
+            If matchAlpha Then
+                Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight
+            Else
+                Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight
+            End If
         End If
         
     End If
     
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    EffectPrep.FinalizeImageData toPreview, dstPic, matchAlpha
     
 End Sub
 
@@ -846,6 +877,7 @@ Private Function GetToolParamString() As String
         '"From file" data comes next
         .AddParam "palettefile", txtPalette.Text
         .AddParam "palettefileindex", lstPalettes.ListIndex
+        .AddParam "palettefilematchalpha", chkMatchAlpha.Value
         
         'Some options are shared between the two methods
         .AddParam "dithering", cboDither(btsOptions.ListIndex).ListIndex
