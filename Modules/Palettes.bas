@@ -240,9 +240,32 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     ' that's a good compromise between performance and quality.
     pxStack(0).SetQuantizeMode quantMode
     
+    Dim r As Long, g As Long, b As Long, a As Long
+    
     For y = 0 To finalY
     For x = 0 To finalX Step pxSize
-        pxStack(0).AddColor_RGBA srcPixels(x + 2, y), srcPixels(x + 1, y), srcPixels(x, y), srcPixels(x + 3, y)
+        
+        b = srcPixels(x, y)
+        g = srcPixels(x + 1, y)
+        r = srcPixels(x + 2, y)
+        a = srcPixels(x + 3, y)
+        
+        'If you want to apply any heuristics to pre-reduce RGBA complexity, this is the place to do it.
+        ' At present, we primarily reduce the complexity of alpha bytes; they tend to not influence
+        ' final image appearance nearly as much as RGB data, so we can pre-filter alpha into set
+        ' groups to minimize how much it impacts color tree complexity.
+        
+        'Reduce very low-opacity values to zero, and note that we must supply premultiplied values
+        ' as RGBA matching works *way* better with premultiplied data
+        If (a < 8) Then
+            r = 0
+            g = 0
+            b = 0
+            a = 0
+        End If
+        
+        pxStack(0).AddColor_RGBA r, g, b, a
+        
     Next x
     Next y
     

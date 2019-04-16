@@ -60,7 +60,12 @@ Private Const INITIAL_STACK_SIZE As Long = 256
 Private Const CUSTOM_WEIGHT_RED As Single = 0.33!     '0.299
 Private Const CUSTOM_WEIGHT_GREEN As Single = 0.42!   '0.587
 Private Const CUSTOM_WEIGHT_BLUE As Single = 0.25!    '0.114
-Private Const CUSTOM_WEIGHT_ALPHA As Single = 0.25!   '0.5
+
+'Alpha is similarly tricky, as alpha variance in a few antialiased pixels can overwhelm variance tracking for
+' the image as a whole... but reduce it too much, and antialiased edges get aggressively matched by color
+' instead of opacity.  In a perfect world, we'd probably want to do something like sample areas of color,
+' then construct a palette from that - consider it to-do!
+Private Const CUSTOM_WEIGHT_ALPHA As Single = 0.75!   '0.5
 
 Private Type RGBStackItem
     Red As Byte

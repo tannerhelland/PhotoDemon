@@ -533,11 +533,6 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
     Dim finalPalette() As RGBQuad, finalPaletteCount As Long
     
-    If (Not toPreview) Then
-        SetProgBarVal workingDIB.GetDIBHeight
-        Message "Applying new palette to image..."
-    End If
-    
     If (quantMethod = PDCQ_MedianCut) Then
     
         'Generate an optimal palette, and if alpha is involved, use it as part of the calculation.
@@ -549,6 +544,11 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
         'Preserve black and white, as necessary
         If preserveWhiteBlack Then Palettes.EnsureBlackAndWhiteInPalette finalPalette, workingDIB
+        
+        If (Not toPreview) Then
+            SetProgBarVal workingDIB.GetDIBHeight
+            Message "Applying new palette to image..."
+        End If
         
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
@@ -566,6 +566,11 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         End If
     
     Else
+        
+        If (Not toPreview) Then
+            SetProgBarVal workingDIB.GetDIBHeight
+            Message "Applying new palette to image..."
+        End If
         
         'Apply all color and transparency changes simultaneously
         Dim fiQuantMode As FREE_IMAGE_QUANTIZE
