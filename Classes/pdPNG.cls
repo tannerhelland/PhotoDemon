@@ -121,7 +121,7 @@ Private m_Chunks() As pdPNGChunk
 ' (This is required to maintain chunk order, as some chunk data must be written in specific places -
 ' e.g. "after the palette but before the pixel data".)
 Private m_EmbedBkgdColor As Boolean, m_BkgdColor As Long
-Private m_ImgPalette() As RGBQuad, m_ImgColorCount As Long, m_ImgMaxColorCount As Long
+Private m_ImgPalette() As RGBQuad, m_ImgColorCount As Long, m_ImgMaxColorCount As Long, m_ImgPaletteSafe As Boolean
 Private m_WriteTrns As Boolean, m_TrnsValueR As Long, m_TrnsValueG As Long, m_TrnsValueB As Long
 
 'Simplified wrapper to load a PNG automatically.
@@ -1824,6 +1824,9 @@ Private Sub SetupExportSettings(ByRef srcImage As pdDIB, ByRef srcPDImage As pdI
                 
                 'Auto color mode is *not* active; forcibly reduce the image to an optimal palette
                 Else
+                    outColorType = png_Indexed
+                    outBitsPerChannel = 8
+                    m_ImgPaletteSafe = True
                     Palettes.GetOptimizedPalette srcImage, m_ImgPalette, outputPaletteSize
                     Palettes.ApplyPaletteToImage_KDTree srcImage, m_ImgPalette, True
                 End If
@@ -1987,6 +1990,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
                 outBitsPerChannel = isGrayscaleSpecialBitDepth
             Else
                 outColorType = png_Indexed
+                m_ImgPaletteSafe = True
                 If (m_ImgColorCount <= 2) Then
                     outBitsPerChannel = 1
                 ElseIf (m_ImgColorCount <= 4) Then
@@ -2024,6 +2028,10 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
                     
                     outColorType = png_Indexed
                     
+                    'Note that the module-level image palette is safe; the indexer uses this value to determine
+                    ' whether it needs to forcibly downsample an image to 8-bit indexed color.
+                    m_ImgPaletteSafe = True
+                    
                     'Monochrome is a weird exception, as we can write the image as monochrome if either black or white
                     ' is transparent, but not both.
                     If (m_ImgColorCount <= 2) Then
@@ -2041,6 +2049,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
             'If the image is not grayscale, and not true color, it must be paletted
             Else
                 outColorType = png_Indexed
+                m_ImgPaletteSafe = True
                 If (m_ImgColorCount <= 2) Then
                     outBitsPerChannel = 1
                 ElseIf (m_ImgColorCount <= 4) Then
@@ -2241,6 +2250,7 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
             'Indexed color images require no special treatment.
             Else
                 outColorType = png_Indexed
+                m_ImgPaletteSafe = True
                 If (m_ImgColorCount <= 2) Then
                     outBitsPerChannel = 1
                 ElseIf (m_ImgColorCount <= 4) Then
@@ -2413,6 +2423,15 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
         
         'Retrieve the current color palette for this image
         cColorTree.GetPalette uniqueColors
+        
+        'Sort the palette from "least opaque" to "most opaque"; PNGs only require transparency data
+        ' for non-opaque palette entries, so we can shave a few bytes by ordering the palette table
+        ' so that any/all 255 entries occur at the table's tail.
+        Dim cPaletteSort As pdPaletteChild
+        Set cPaletteSort = New pdPaletteChild
+        cPaletteSort.CreateFromRGBQuads uniqueColors
+        cPaletteSort.SortByChannel 3    '0 = red, 1 = green, 2 = blue, 3 = alpha
+        cPaletteSort.CopyRGBQuadsToArray uniqueColors
         
     'End "If 256 colors or less..."
     End If
@@ -3014,9 +3033,16 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'Retrieve a copy of the image and its palette.
+    'Retrieve a copy of the image and its palette.  If the module-level palette was previously marked
+    ' as "safe", it means the image analyzer has already produced a palette for us.  (If "auto" output
+    ' settings are selected, the analyzer has to produce a palette anyway to determine how many
+    ' unique colors are in the image - so we can just reuse it now!
     Dim imgPixels() As Byte, imgPalette() As RGBQuad, numColors As Long
-    numColors = DIBs.GetDIBAs8bpp_RGBA(srcImage, imgPalette, imgPixels)
+    If m_ImgPaletteSafe Then
+        numColors = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(srcImage, m_ImgPalette, imgPixels)
+    Else
+        numColors = DIBs.GetDIBAs8bpp_RGBA(srcImage, imgPalette, imgPixels)
+    End If
     
     'If the source image has more than the user's requested color count (256 by default), we need to
     ' forcibly reduce it before continuing.
@@ -3025,13 +3051,21 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     If (maxColorCount > 256) Then maxColorCount = 256
     
     If (numColors > maxColorCount) Then
+        m_ImgPaletteSafe = False
         numColors = DIBs.GetDIBAs8bpp_RGBA_Forcibly(srcImage, imgPalette, imgPixels, maxColorCount)
     End If
     
     'Overwrite the module-level m_ImgPalette with the palette we just generated; if we don't do this,
-    ' subsequent steps (like writing a bKGD chunk) will produce bad data.
-    ReDim m_ImgPalette(0 To numColors - 1) As RGBQuad
-    CopyMemoryStrict VarPtr(m_ImgPalette(0)), VarPtr(imgPalette(0)), numColors * 4
+    ' subsequent steps (like writing a bKGD chunk) will produce bad data.  (Similarly, if we're using a
+    ' palette calculated in a *previous* step, we need to make sure it syncs up with the one we're
+    ' about to embed in the PNG file.)
+    If m_ImgPaletteSafe Then
+        ReDim imgPalette(0 To numColors - 1) As RGBQuad
+        CopyMemoryStrict VarPtr(imgPalette(0)), VarPtr(m_ImgPalette(0)), numColors * 4
+    Else
+        ReDim m_ImgPalette(0 To numColors - 1) As RGBQuad
+        CopyMemoryStrict VarPtr(m_ImgPalette(0)), VarPtr(imgPalette(0)), numColors * 4
+    End If
     
     'Before passing pixel data off to the encoder, we need to write a palette (and possibly transparency) chunk.
     Dim palChunk As pdPNGChunk

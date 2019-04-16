@@ -69,7 +69,7 @@ Private Declare Function GetNearestPaletteIndex Lib "gdi32" (ByVal hPalette As L
 ' - Color name.  Some palette formats provide per-color names; some do not.  This value may be null.
 Public Type PDPaletteEntry
     ColorValue As RGBQuad
-    colorName As String
+    ColorName As String
 End Type
 
 Public Type PDPaletteCache
@@ -319,6 +319,16 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
         pxStack(0).CopyStackToRGBQuad dstPalette, True
         GetOptimizedPaletteIncAlpha = True
     End If
+    
+    'If the palette retrieval process was successful, sort the palette from "least alpha" to "most alpha";
+    ' this typically produces a slightly smaller final file size (as PNG, for example, only requires you to
+    ' write non-255 values to its transparency segment; any unspecified values are assumed to be opaque).
+    ' (Note that this step is not required; a "default order" palette is perfectly valid.)
+    Dim cPaletteSorter As pdPaletteChild
+    Set cPaletteSorter = New pdPaletteChild
+    cPaletteSorter.CreateFromRGBQuads dstPalette
+    cPaletteSorter.SortByChannel 3                  '0 = red, 1 = green, 2 = blue, 3 = alpha
+    cPaletteSorter.CopyRGBQuadsToArray dstPalette
     
 End Function
 

@@ -1643,6 +1643,90 @@ Public Function GetDIBAs8bpp_RGBA_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPalet
     
 End Function
 
+'Assuming a source DIB already contains 256 unique RGBA quads (or less), and you already know its palette
+' (common at image export time, especially if e.g. the user has requested "use original file palette" or similar),
+' call this function to return a one-byte-per-pixel palettized image array (with dimensions matching the original
+' image) with all source bytes matched against their best-case palette equivalent.
+'
+'RETURNS: number of colors in the supplied palette (1-based).  This is to preserve compatibility with the other
+' palette generating functions in this module.
+Public Function GetDIBAs8bpp_RGBA_SrcPalette(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad, ByRef dstPixels() As Byte) As Long
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
+        
+        Dim srcPixels() As Byte, tmpSA As SafeArray2D
+        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+        
+        Dim pxSize As Long
+        pxSize = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBStride - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        
+        ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
+        
+        'Copy the supplied palette into a KD-tree; this lets us match colors much more quickly
+        Dim cTree As pdKDTree
+        Set cTree = New pdKDTree
+        cTree.BuildTreeIncAlpha srcPalette, UBound(srcPalette) + 1
+        
+        Dim r As Long, g As Long, b As Long, a As Long, i As Long
+        Dim tmpQuad As RGBQuad, newIndex As Long, lastIndex As Long
+        Dim lastColor As Long: lastColor = -1
+        Dim lastAlpha As Long: lastAlpha = -1
+        
+        'To avoid division on the inner loop, build a lut for x indices
+        Dim xLookup() As Long
+        ReDim xLookup(0 To finalX) As Long
+        For x = 0 To finalX Step pxSize
+            xLookup(x) = x \ pxSize
+        Next x
+    
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+            
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            a = srcPixels(x + 3, y)
+            
+            'If this pixel matches the last pixel we tested, reuse our previous match results
+            If ((RGB(r, g, b) <> lastColor) Or (a <> lastAlpha)) Then
+                
+                tmpQuad.Red = r
+                tmpQuad.Green = g
+                tmpQuad.Blue = b
+                tmpQuad.Alpha = a
+                
+                'Ask the tree for its best match
+                newIndex = cTree.GetNearestPaletteIndexIncAlpha(tmpQuad)
+                
+                lastColor = RGB(r, g, b)
+                lastAlpha = a
+                lastIndex = newIndex
+                
+            Else
+                newIndex = lastIndex
+            End If
+            
+            dstPixels(xLookup(x), y) = newIndex
+            
+        Next x
+        Next y
+        
+        srcDIB.UnwrapArrayFromDIB srcPixels
+        
+        GetDIBAs8bpp_RGBA_SrcPalette = UBound(srcPalette) + 1
+        
+    End If
+    
+End Function
+
 'Given a palette, color count, and source palette index array, construct a matching 32-bpp DIB.
 '
 'IMPORTANT NOTE!  The destination DIB needs to be already constructed to match the source data's width and height.

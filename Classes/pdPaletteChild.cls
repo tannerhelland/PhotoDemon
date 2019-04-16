@@ -313,7 +313,7 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
     Dim pSort() As PaletteSort
     ReDim pSort(0 To m_NumOfColors - 1) As PaletteSort
     
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, a As Long
     
     Dim i As Long
     For i = 0 To m_NumOfColors - 1
@@ -322,6 +322,7 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
             r = .Red
             g = .Green
             b = .Blue
+            a = .Alpha
         End With
         
         pSort(i).pOrigIndex = i
@@ -330,8 +331,10 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
             pSort(i).pSortCriteria = r
         ElseIf (channelIndex = 1) Then
             pSort(i).pSortCriteria = g
-        Else
+        ElseIf (channelIndex = 2) Then
             pSort(i).pSortCriteria = b
+        Else
+            pSort(i).pSortCriteria = a
         End If
         
     Next i
