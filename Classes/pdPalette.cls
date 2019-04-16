@@ -1400,7 +1400,7 @@ Private Function LoadPalettePhotoDemon(ByRef srcFile As String, ByRef srcStream 
                         ' (There is never a prepended #, 0x, or other hex indicator.)
                         ElseIf (Len(curLine) >= 6) Then
                             
-                            Dim tmpQuad As RGBQuad, colorName As String
+                            Dim tmpQuad As RGBQuad, srcColorName As String
                             
                             'VB6 error handling is a nightmare, alas...
                             On Error GoTo BadLineColor
@@ -1423,14 +1423,14 @@ Private Function LoadPalettePhotoDemon(ByRef srcFile As String, ByRef srcStream 
                             'Color names are always optional.  Look for a space in the current string, and if one exists,
                             ' take all characters after it (trimming blank padding on either side).
                             If (InStr(1, curLine, " ", vbBinaryCompare) <> 0) Then
-                                colorName = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, " ", vbBinaryCompare)))
+                                srcColorName = Trim$(Right$(curLine, Len(curLine) - InStr(1, curLine, " ", vbBinaryCompare)))
                             Else
-                                colorName = vbNullString
+                                srcColorName = vbNullString
                             End If
                             
                             'Resume normal VB6 error handling, then add this color to the collection
                             On Error GoTo 0
-                            m_Palettes(m_NumOfGroups).AddColor tmpQuad, colorName
+                            m_Palettes(m_NumOfGroups).AddColor tmpQuad, srcColorName
                             
 BadLineColor:
                         End If
@@ -1605,7 +1605,7 @@ Friend Function SavePaletteAdobeSwatch(ByRef dstFile As String, Optional ByVal s
                     
                     'Retrieve the color name, if any
                     Dim srcColorName As String
-                    srcColorName = tmpPalEntry.colorName
+                    srcColorName = tmpPalEntry.ColorName
                     
                     'Write the length of this color's name
                     Dim colorLen As Long
@@ -1741,7 +1741,7 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
                 tmpPaletteEntry = m_Palettes(i).GetPaletteEntry(j)
                 
                 nameLengthInBytes = 2
-                If (LenB(tmpPaletteEntry.colorName) <> 0) Then nameLengthInBytes = nameLengthInBytes + LenB(tmpPaletteEntry.colorName) + 2
+                If (LenB(tmpPaletteEntry.ColorName) <> 0) Then nameLengthInBytes = nameLengthInBytes + LenB(tmpPaletteEntry.ColorName) + 2
                 colorBlockLength = 18 + nameLengthInBytes
                 
                 'Write our calculated block length
@@ -1750,8 +1750,8 @@ Friend Function SavePaletteAdobeSwatchExchange(ByRef dstFile As String) As Boole
                 'Write name length and the name itself, if any.  (Confusingly, note that the name length is
                 ' in *WCHARS*, not BYTES.
                 If (nameLengthInBytes > 2) Then
-                    dstData.WriteInt_BE Len(tmpPaletteEntry.colorName) + 1
-                    dstData.WriteString_UnicodeBE tmpPaletteEntry.colorName, True
+                    dstData.WriteInt_BE Len(tmpPaletteEntry.ColorName) + 1
+                    dstData.WriteString_UnicodeBE tmpPaletteEntry.ColorName, True
                 Else
                     dstData.WriteInt_BE 0
                 End If
@@ -1834,7 +1834,7 @@ Friend Function SavePaletteGIMP(ByRef dstFile As String, Optional ByVal useGroup
             
             'I realize that use of a tab char here is odd, but the palette files that ship with GIMP files
             ' all use tab delimiters (instead of spaces) before the color name.  I don't know why.
-            If (LenB(.colorName) <> 0) Then colorLine = colorLine & vbTab & .colorName
+            If (LenB(.ColorName) <> 0) Then colorLine = colorLine & vbTab & .ColorName
         End With
         
         dstText.AppendLine colorLine
@@ -2000,7 +2000,7 @@ Friend Function SavePalettePhotoDemon(ByRef dstFile As String, Optional ByVal us
         
         'Any #-prefixed line following the first is considered a comment line.
         ' You can stick whatever you want in them and PD will ignore it
-        If addPDCredit Then .AppendLine "#  " & g_Language.TranslateMessage("palette exported by PhotoDemon %1", "(https://photodemon.org)")
+        If addPDCredit Then .AppendLine "# palette exported by PhotoDemon " & Updates.GetPhotoDemonVersion() & ", https://photodemon.org"
         
     End With
     
@@ -2032,7 +2032,7 @@ Friend Function SavePalettePhotoDemon(ByRef dstFile As String, Optional ByVal us
         End If
         
         'If the color has a name, append it after a space char
-        If (LenB(m_Palettes(useGroupIndex).GetPaletteEntry(i).colorName) <> 0) Then colorLine = colorLine & " " & m_Palettes(useGroupIndex).GetPaletteEntry(i).colorName
+        If (LenB(m_Palettes(useGroupIndex).GetPaletteEntry(i).ColorName) <> 0) Then colorLine = colorLine & " " & m_Palettes(useGroupIndex).GetPaletteEntry(i).ColorName
         
         dstText.AppendLine colorLine
         

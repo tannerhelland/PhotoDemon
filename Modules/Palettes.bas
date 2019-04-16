@@ -195,6 +195,7 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
             dstPalette(i).Red = newR
             dstPalette(i).Green = newG
             dstPalette(i).Blue = newB
+            dstPalette(i).Alpha = 255
         Next i
         
         GetOptimizedPalette = True
@@ -202,6 +203,9 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     'If there are less than [numOfColors] unique colors in the image, simply copy the existing stack into a palette
     Else
         pxStack(0).CopyStackToRGBQuad dstPalette
+        For i = 0 To UBound(dstPalette)
+            dstPalette(i).Alpha = 255
+        Next i
         GetOptimizedPalette = True
     End If
     

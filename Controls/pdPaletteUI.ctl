@@ -31,12 +31,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Palette-based Color Selector
 'Copyright 2018-2019 by Tanner Helland
 'Created: 14/February/18
-'Last updated: 16/February/18
-'Last update: wrap up initial build
+'Last updated: 16/April/19
+'Last update: add option for displaying alpha in palette entries; this isn't always wanted, but in the
+'             Export > Palette window, it's critical for displaying user-friendly results
 '
 'In February 2018, PD gained extensive support for various palette file formats.  (Or as they call 'em in
 ' Adobe parlance: swatches.)  This UC exists to make it easier for the user to see all available palette colors,
 ' and rapidly select colors from a set list.
+'
+'In most cases, palettes should probably be treated as RGB-only entities... but there are rare cases where
+' RGBA palette data is useful.  (Web-optimized PNGs are one such place.)  This control can handle both cases,
+' but if you want full RGBA handling, you'll need to manually set the relevant property at design-time.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -78,6 +83,10 @@ Private m_PaletteItemSelected As Long
 
 'Fast palette matching comes courtesy of a dedicated KD-tree class
 Private m_ColorLookup As pdKDTree
+
+'By default, this class only displays RGB triplets with assumed opacity of 255.  If you want full RGBA handling,
+' this must be set to TRUE (currently exposed via property).
+Private m_UseRGBA As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -238,6 +247,18 @@ Public Property Let PaletteIndex(ByVal newIndex As Long)
                 RedrawBackBuffer
             End If
         End If
+    End If
+End Property
+
+Public Property Get UseRGBA() As Boolean
+    UseRGBA = m_UseRGBA
+End Property
+
+Public Property Let UseRGBA(ByVal newState As Boolean)
+    If (newState <> m_UseRGBA) Then
+        m_UseRGBA = newState
+        PropertyChanged "UseRGBA"
+        RedrawBackBuffer
     End If
 End Property
 
@@ -433,8 +454,15 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             
             'Construct hex and RGB string representations of the target color
             Dim hexString As String, rgbString As String, indexString As String
-            hexString = "#" & UCase$(Colors.GetHexStringFromRGB(targetColor))
-            rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", tmpPal.ColorValue.Red, tmpPal.ColorValue.Green, tmpPal.ColorValue.Blue)
+            
+            If m_UseRGBA Then
+                hexString = "#" & UCase$(Colors.GetHexStringFromRGB(targetColor)) & UCase$(Hex$(tmpPal.ColorValue.Alpha))
+                rgbString = g_Language.TranslateMessage("RGBA(%1, %2, %3, %4)", tmpPal.ColorValue.Red, tmpPal.ColorValue.Green, tmpPal.ColorValue.Blue, tmpPal.ColorValue.Alpha)
+            Else
+                hexString = "#" & UCase$(Colors.GetHexStringFromRGB(targetColor))
+                rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", tmpPal.ColorValue.Red, tmpPal.ColorValue.Green, tmpPal.ColorValue.Blue)
+            End If
+            
             indexString = g_Language.TranslateMessage("index %1", m_PaletteItemHovered)
             Me.AssignTooltip hexString & vbCrLf & rgbString & vbCrLf & indexString, tmpPal.ColorName, True
             
@@ -471,6 +499,7 @@ Private Sub UserControl_InitProperties()
     Me.Caption = vbNullString
     Me.FontSize = 12
     Me.PaletteFile = vbNullString
+    Me.UseRGBA = False
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -483,6 +512,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Me.Caption = .ReadProperty("Caption", vbNullString)
         Me.FontSize = .ReadProperty("FontSize", 12)
         Me.PaletteFile = .ReadProperty("PaletteFile", vbNullString)
+        Me.UseRGBA = .ReadProperty("UseRGBA", False)
     End With
 End Sub
 
@@ -495,6 +525,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Caption", ucSupport.GetCaptionText, vbNullString
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
         .WriteProperty "PaletteFile", Me.PaletteFile, vbNullString
+        .WriteProperty "UseRGBA", m_UseRGBA, False
     End With
 End Sub
 
@@ -679,8 +710,18 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
             
             'Fill the rects already created for each palette entry
             For i = 0 To colorLoopMax
+            
                 cBrush.SetBrushColor m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColorAsLong(i)
+                
+                If m_UseRGBA Then
+                    With m_PaletteRects(i)
+                        GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, .Left, .Top, .Width, .Height, g_CheckerboardPattern, bufferDC, True
+                    End With
+                    cBrush.SetBrushOpacity CSng(m_Palette.ChildPalette(m_ChildPaletteIndex).GetPaletteColor(i).Alpha) / 2.55!
+                End If
+                
                 PD2D.FillRectangleF_FromRectF cSurface, cBrush, m_PaletteRects(i)
+                
             Next i
             
             'Next, draw borders around each palette entry

@@ -87,6 +87,7 @@ Begin VB.Form dialog_ExportPalette
       _ExtentX        =   7646
       _ExtentY        =   9975
       Caption         =   "palette contents"
+      UseRGBA         =   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsPalette 
       Height          =   1050
@@ -243,6 +244,10 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing, Optional ByV
     m_DstFormat = palFormat
     m_DstFilename = dstFilename
     
+    'Set the preview window's alpha handling status based on the output format; many palette formats
+    ' do not support opacity, so we want to preview opacity conditionally.
+    palPreview.UseRGBA = (palFormat = pdpf_PhotoDemon) Or (palFormat = pdpf_PaintDotNet)
+    
     'Cache a copy of the fully composited image (if any)
     If (Not srcImage Is Nothing) Then
         
@@ -363,7 +368,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         
             'Current
             Case 0
-                If Palettes.GetOptimizedPalette(tmpDIB, tmpQuad, numColors, pdqs_Variance) Then
+                If Palettes.GetOptimizedPaletteIncAlpha(tmpDIB, tmpQuad, numColors, pdqs_Variance) Then
                     Set m_PreviewPalette = New pdPalette
                     m_PreviewPalette.CreateFromPaletteArray tmpQuad, UBound(tmpQuad) + 1
                 End If

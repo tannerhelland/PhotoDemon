@@ -4103,10 +4103,12 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
             
             Case P2_BrushColor
                 tmpOpacity = GetGDIPlusBrushProperty(hBrush, P2_BrushOpacity)
+                If (tmpOpacity > 100!) Then tmpOpacity = 100!
                 SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
                 
             Case P2_BrushOpacity
                 tmpColor = GetGDIPlusBrushProperty(hBrush, P2_BrushColor)
+                If (newSetting > 100!) Then newSetting = 100!
                 SetGDIPlusBrushProperty = (GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
             Case P2_BrushTextureWrapMode
