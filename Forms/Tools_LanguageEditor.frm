@@ -297,7 +297,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdListBox lstPhrases 
          Height          =   5175
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   360
          Width           =   4455
          _ExtentX        =   7858
@@ -306,7 +306,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdDropDown cboPhraseFilter 
          Height          =   375
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   6000
          Width           =   4455
          _ExtentX        =   7858
@@ -431,7 +431,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdListBox lstLanguages 
          Height          =   4575
          Left            =   840
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   1560
          Width           =   10695
          _ExtentX        =   18865
@@ -482,14 +482,6 @@ Begin VB.Form FormLanguageEditor
          FontSize        =   12
          ForeColor       =   4210752
       End
-   End
-   Begin VB.Label lblCommandBar 
-      BackColor       =   &H00C0C0C0&
-      Height          =   900
-      Left            =   0
-      TabIndex        =   21
-      Top             =   8220
-      Width           =   15375
    End
 End
 Attribute VB_Name = "FormLanguageEditor"

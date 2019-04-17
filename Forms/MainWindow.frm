@@ -2526,9 +2526,6 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
             'If the action requires an open image, check for that first
             If .IsImageRequired(acceleratorIndex) Then
                 If (Not PDImages.IsImageActive()) Then Exit Sub
-                If Not (FormLanguageEditor Is Nothing) Then
-                    If FormLanguageEditor.Visible Then Exit Sub
-                End If
             End If
             
             'If this action is associated with a menu, make sure that corresponding menu is enabled
