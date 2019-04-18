@@ -694,7 +694,12 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
-        
+            
+            'Same goes for gradient tools
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+            
         End Select
         
     End If
@@ -720,6 +725,11 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
+            'Same goes for gradient tools
+            Case PAINT_GRADIENT
+                Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+            
         End Select
         
     End If

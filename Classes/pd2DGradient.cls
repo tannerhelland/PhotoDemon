@@ -450,6 +450,18 @@ Friend Function GetLastColor() As Long
     End If
 End Function
 
+Friend Function GetLastColorQuad() As RGBQuad
+    If (m_NumOfPoints > 0) Then
+        If (Not m_IsSorted) Then SortGradientArray
+        With GetLastColorQuad
+            .Red = Colors.ExtractRed(m_GradientPoints(m_NumOfPoints - 1).PointRGB)
+            .Green = Colors.ExtractGreen(m_GradientPoints(m_NumOfPoints - 1).PointRGB)
+            .Blue = Colors.ExtractBlue(m_GradientPoints(m_NumOfPoints - 1).PointRGB)
+            .Alpha = Int(m_GradientPoints(m_NumOfPoints - 1).PointOpacity * 2.55 + 0.5)
+        End With
+    End If
+End Function
+
 Friend Function GetNumOfNodes() As Long
     GetNumOfNodes = m_NumOfPoints
 End Function

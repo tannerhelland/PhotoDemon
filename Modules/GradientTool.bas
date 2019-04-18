@@ -62,26 +62,28 @@ End Enum
 
 Public Enum PD_GradientRepeat
     gr_None = 0
-    gr_Wrap = 1
-    gr_Reflect = 2
+    gr_Clamp = 1
+    gr_Wrap = 2
+    gr_Reflect = 3
 End Enum
 
 #If False Then
-    Private Const gr_None = 0, gr_Wrap = 1, gr_Reflect = 2
+    Private Const gr_None = 0, gr_Clamp = 1, gr_Wrap = 2, gr_Reflect = 3
 #End If
 
 Public Enum PD_GradientShape
     gs_Linear = 0
     gs_Reflection = 1
     gs_Radial = 2
-    gs_Square = 3
-    gs_Diamond = 4
-    gs_Conical = 5
-    gs_Spiral = 6
+    gs_Spherical = 3
+    gs_Square = 4
+    gs_Diamond = 5
+    gs_Conical = 6
+    gs_Spiral = 7
 End Enum
 
 #If False Then
-    Private Const gs_Linear = 0, gs_Reflection = 1, gs_Radial = 2, gs_Square = 3, gs_Diamond = 4, gs_Conical = 5
+    Private Const gs_Linear = 0, gs_Reflection = 1, gs_Radial = 2, gs_Spherical = 3, gs_Square = 4, gs_Diamond = 5, gs_Conical = 6, gs_Spiral = 7
 #End If
 
 'Gradient attributes are stored in these variables
@@ -111,6 +113,13 @@ Private m_GradientGdip As pd2DGradient, m_GradientCairo As pd2DGradientCairo
 
 'Other gradient parameters, as relevant
 Private m_Angle As Single
+Private m_RadialOffset As Single
+
+'To avoid the case where the user releases a shift/ctrl/alt modifier near the same time as
+' _MouseUp, we cache key state during MouseMove events and ensure that the final render always
+' uses the key state of the last MouseMove event - *not* the keystate at _MouseUp, which may
+' be different.
+Private m_KeyModifiers As ShiftConstants
 
 'When our internal gradient renderer is uses, we don't want to manually interpolate gradient
 ' values for every point on-the-fly, as that's crazy slow.  Instead, we pre-generate a gradient
@@ -123,7 +132,7 @@ Private m_Angle As Single
 'Note that we also cache the "last" color in the gradient; this accelerates the default "clamped"
 ' edge mode, as we can bypass the lookup table entirely for points outside the gradient's boundary.
 Private Const MAX_LOOKUP_RESOLUTION As Long = 8192
-Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As Long
+Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As Long, m_LastGradColorQuad As RGBQuad
 
 'To improve canvas responsiveness, this module can render specialized "fast" previews during
 ' UI interactions, then silently switch to full "accurate" rendering on _MouseUp.  When fast previews
@@ -151,6 +160,10 @@ Public Function GetGradientOpacity() As Single
     GetGradientOpacity = m_GradientOpacity
 End Function
 
+Public Function GetGradientRadialOffset() As Single
+    GetGradientRadialOffset = m_RadialOffset
+End Function
+
 Public Function GetGradientRepeat() As PD_GradientRepeat
     GetGradientRepeat = m_GradientRepeat
 End Function
@@ -175,6 +188,10 @@ End Sub
 
 Public Sub SetGradientOpacity(ByVal newOpacity As Single)
     If (newOpacity <> m_GradientOpacity) Then m_GradientOpacity = newOpacity
+End Sub
+
+Public Sub SetGradientRadialOffset(ByVal newOffset As Single)
+    If (newOffset <> m_RadialOffset) Then m_RadialOffset = newOffset
 End Sub
 
 Public Sub SetGradientRepeat(ByVal newRepeat As PD_GradientRepeat)
@@ -227,8 +244,8 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
-    If (Not PDImages.IsImageActive()) Then Exit Sub
-    If m_GradientRendering Then Exit Sub
+    If (Not PDImages.IsImageActive()) Then Exit Sub                 'No images loaded
+    If m_GradientRendering Then Exit Sub                            'Render already in progress
     m_GradientRendering = True
     
     m_MouseX = srcX
@@ -262,6 +279,8 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
             m_GradientCairo.CreateGradientFromGdipGradientString toolpanel_Gradient.grdPrimary.Gradient()
             m_GradientCairo.SetGradientShape P2_GS_Linear
             
+            'Note: Cairo does not support "none" vs "clamp" wrap modes the same way that our internal
+            ' renderers do
             Select Case m_GradientRepeat
                 Case gr_None
                     m_GradientCairo.SetGradientExtend ce_ExtendPad
@@ -277,6 +296,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
             m_GradientGdip.CreateGradientFromString toolpanel_Gradient.grdPrimary.Gradient()
             m_GradientGdip.SetGradientShape P2_GS_Linear
             
+            'Note: GDI+ does not support wrap modes the same way that our internal renderers do
             Select Case m_GradientRepeat
                 Case gr_None
                     'Clamp mode is not supported by GDI+, so we lie and set a functional mode
@@ -305,6 +325,7 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
             
             m_GradientGdip.GetLookupTable m_GradLookup, m_LookupResolution
             m_LastGradColor = m_GradientGdip.GetLastColor()
+            m_LastGradColorQuad = m_GradientGdip.GetLastColorQuad()
             
         End If
         
@@ -314,6 +335,38 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     If m_PointsInitialized Then
         m_Points(1).x = srcX
         m_Points(1).y = srcY
+    End If
+    
+    'To ensure the final _MouseUp event keystate matches the keystate of any previous events,
+    ' we cache key state during _MouseMove and reuse the last-known state on _MouseUp.
+    Dim ctrlKeyDown As Boolean
+    If (Not isLastStroke) Then m_KeyModifiers = Shift
+    ctrlKeyDown = ((m_KeyModifiers And vbCtrlMask) = vbCtrlMask)
+    
+    'If the CTRL key has been pressed, we want to lock the angle between the first point and second point
+    ' to an increment of 15 degrees.
+    If ctrlKeyDown And m_PointsInitialized Then
+    
+        Dim curAngle As Double, curDistance As Double
+        curDistance = PDMath.DistanceTwoPoints(m_Points(0).x, m_Points(0).y, m_Points(1).x, m_Points(1).y)
+        curAngle = PDMath.Atan2(m_Points(1).y - m_Points(0).y, m_Points(1).x - m_Points(0).x)
+        
+        'Lock the angle to the nearest multiple of 15 degrees.  (I got this idea from GIMP; 15 degrees is
+        ' nice because it covers all major rotational values: 0, 15, 30, 45, 60, 75, 90.)
+        Dim curAngleDegrees As Double, curAngleModulo As Double
+        curAngleDegrees = PDMath.RadiansToDegrees(curAngle)
+        curAngleModulo = PDMath.Modulo(curAngleDegrees, 15#)
+        
+        curAngleDegrees = curAngleDegrees - curAngleModulo
+        If (curAngleModulo >= 7.5) Then curAngleDegrees = curAngleDegrees + 15#
+        curAngle = PDMath.DegreesToRadians(curAngleDegrees)
+        
+        'Remap the point in question to the newly calculated angle
+        Dim newX As Single, newY As Single
+        PDMath.RotatePointAroundPoint m_Points(0).x + curDistance, m_Points(0).y, m_Points(0).x, m_Points(0).y, curAngle, newX, newY
+        m_Points(1).x = newX
+        m_Points(1).y = newY
+        
     End If
     
     'Notify the scratch layer of our updates
@@ -531,6 +584,14 @@ Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As Po
     cBrush.SetBoundaryRect boundsRect
     cBrush.SetBrushGradientAllSettings m_GradientGdip.GetGradientAsString()
     
+    'Because GDI+ is glitchy with certain wrap modes, we need to manually request custom wrap modes
+    ' when natively unsupported modes are used
+    If (m_GradientRepeat = gr_None) Then
+        cBrush.SetBrushGradientWrapMode P2_WM_TileFlipXY
+    ElseIf (m_GradientRepeat = gr_Clamp) Then
+        cBrush.SetBrushGradientWrapMode P2_WM_TileFlipXY
+    End If
+    
     Dim slWidth As Single, slHeight As Single
     slWidth = dstDIB.GetDIBWidth()
     slHeight = dstDIB.GetDIBHeight()
@@ -540,7 +601,7 @@ Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As Po
     
     'If the wrap mode is a mode unsupported by GDI+ (e.g. "extend/clamp"), we now need to manually
     ' overwrite the gradient in certain areas.
-    If (m_GradientRepeat = gr_None) Then
+    If (m_GradientRepeat = gr_Clamp) Or (m_GradientRepeat = gr_None) Then
     
         'To overwrite the ends of the gradient (which have been forcibly tiled by GDI+),
         ' we need to perform some manual calculations.
@@ -582,6 +643,12 @@ Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As Po
         m_GradientGdip.GetColorAtPosition_RGBA 0!, srcColor
         
         Set cBrush = New pd2DBrush
+        If (m_GradientRepeat = gr_None) Then
+            srcColor.Red = 0
+            srcColor.Green = 0
+            srcColor.Blue = 0
+            srcColor.Alpha = 0
+        End If
         Drawing2D.QuickCreateSolidBrush cBrush, RGB(srcColor.Red, srcColor.Green, srcColor.Blue), srcColor.Alpha / 2.55!
         PD2D.FillPolygonF_FromPtF cSurface, cBrush, 4, VarPtr(clipPoly(0))
         
@@ -600,6 +667,12 @@ Private Sub GdipRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint As Po
         
         'Fill the new clip area with the last color in the gradient
         If (m_GradientShape = gs_Linear) Then m_GradientGdip.GetColorAtPosition_RGBA 1!, srcColor
+        If (m_GradientRepeat = gr_None) Then
+            srcColor.Red = 0
+            srcColor.Green = 0
+            srcColor.Blue = 0
+            srcColor.Alpha = 0
+        End If
         Drawing2D.QuickCreateSolidBrush cBrush, RGB(srcColor.Red, srcColor.Green, srcColor.Blue), srcColor.Alpha / 2.55!
         PD2D.FillPolygonF_FromPtF cSurface, cBrush, 4, VarPtr(clipPoly(0))
         
@@ -619,8 +692,22 @@ Private Sub InternalRenderer(ByRef firstPoint As PointFloat, ByRef secondPoint A
     'On final renders, display a progress bar (as the render may take up to 500 ms on large images)
     If isFullSizeRender Then ProgressBars.SetProgBarMax dstDIB.GetDIBHeight
     
+    'If the repeat mode is "clamp", perform a fast fill of the back buffer now.
+    ' (Note that linear mode does *not* require this, as it clamps differently.)
+    If (m_GradientRepeat = gr_Clamp) And (m_GradientShape <> gs_Linear) Then
+        Dim cBrush As pd2DBrush, cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDIB cSurface, dstDIB, False
+        cSurface.SetSurfaceCompositing P2_CM_Overwrite
+        Drawing2D.QuickCreateSolidBrush cBrush, RGB(m_LastGradColorQuad.Red, m_LastGradColorQuad.Green, m_LastGradColorQuad.Blue), m_LastGradColorQuad.Alpha / 2.55
+        PD2D.FillRectangleI cSurface, cBrush, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
+        Set cBrush = Nothing
+        Set cSurface = Nothing
+    End If
+    
     If (m_GradientShape = gs_Radial) Then
         InternalRender_Radial firstPoint, secondPoint, dstDIB, isFullSizeRender
+    ElseIf (m_GradientShape = gs_Spherical) Then
+        InternalRender_Spherical firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Square) Then
         InternalRender_Square firstPoint, secondPoint, dstDIB, isFullSizeRender
     ElseIf (m_GradientShape = gs_Diamond) Then
@@ -662,6 +749,8 @@ Private Sub InternalRender_Conical(ByRef firstPoint As PointFloat, ByRef secondP
     ' vs asymmetrical conical patterns.
     Dim conLimit As Double
     If (m_GradientRepeat = gr_None) Then
+        conLimit = PI_DOUBLE
+    ElseIf (m_GradientRepeat = gr_Clamp) Then
         conLimit = PI_DOUBLE
     ElseIf (m_GradientRepeat = gr_Wrap) Then
         conLimit = PI
@@ -725,16 +814,20 @@ End Sub
 Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
 
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradDistance As Long
-    gradDistance = Abs(firstPoint.x - secondPoint.x) + Abs(firstPoint.y - secondPoint.y)
-    If (gradDistance < 1) Then gradDistance = 1
+    Dim gradDistance As Double
+    gradDistance = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
+    If (gradDistance < 1#) Then gradDistance = 1#
+    
+    Dim gradAngle As Double
+    gradAngle = -1# * PDMath.Atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x)
+    
+    'For performance reasons, we want to cache the cos and sin of the angle in question
+    Dim sinAngle As Double, cosAngle As Double
+    sinAngle = Sin(gradAngle)
+    cosAngle = Cos(gradAngle)
     
     Dim lutBound As Long
     lutBound = m_LookupResolution - 1
-    
-    Dim oX As Long, oY As Long
-    oX = firstPoint.x
-    oY = firstPoint.y
     
     'Construct a mapping between gradient distance and lookup table size
     Dim mapAdjust As Double
@@ -753,16 +846,28 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Long, curColor As Long, luIndex As Long, yFast As Long
+    Dim curDistance As Double, curColor As Long, luIndex As Long, yFast As Double
+    Dim centerX As Double, centerY As Double, newX As Double, newY As Double
+    centerX = firstPoint.x
+    centerY = firstPoint.y
     
     For y = 0 To yBound
+        
         dstSA.pvData = dstPtr + dstStride * y
-        yFast = Abs(y - oY)
+        
+        'Because y-terms do not change for the length of this scanline, precalculate what we can
+        yFast = CDbl(y) - centerY
+        
     For x = 0 To xBound
         
-        'Calculate square distance, and remap it (with rounding) to a lookup table index
-        curDistance = Abs(x - oX) + yFast
-        luIndex = Int(CDbl(curDistance) * mapAdjust + 0.5)
+        'Rotate this point around the origin (where the user's first clicked point is the origin) by the
+        ' same angle as the gradient line; the "diamond" is then calculated using manhattan distance.
+        ' (Note that multiple terms here could be pre-cached into luts for an even bigger perf boost.)
+        newX = cosAngle * (CDbl(x) - centerX) - sinAngle * yFast + centerX
+        newY = cosAngle * yFast + sinAngle * (CDbl(x) - centerX) + centerY
+        
+        curDistance = Abs(newX - centerX) + Abs(newY - centerY)
+        luIndex = Int(curDistance * mapAdjust + 0.5)
         
         'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
         If (curDistance > gradDistance) Then
@@ -770,9 +875,13 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
             'Edge mode handling here
             Select Case m_GradientRepeat
                 
-                'None: paint as the terminal gradient color
+                'None: ignore pixel
                 Case gr_None
-                    curColor = m_LastGradColor
+                    GoTo NextPixel
+                    
+                'Clamp: paint as the terminal gradient color.  (This was handled in a previous step.)
+                Case gr_Clamp
+                    GoTo NextPixel
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect
@@ -794,6 +903,8 @@ Private Sub InternalRender_Diamond(ByRef firstPoint As PointFloat, ByRef secondP
         'No further interpolation is required.  (In the future, we could add a dithering
         ' element here, but for now let's just focus on getting the gradient itself rendered OK.)
         dstPixels(x) = curColor
+        
+NextPixel:
         
     Next x
         If isFullSizeRender Then
@@ -853,9 +964,13 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
             'Edge mode handling here
             Select Case m_GradientRepeat
                 
-                'None: paint as the terminal gradient color
+                'None: ignore pixel
                 Case gr_None
-                    curColor = m_LastGradColor
+                    GoTo NextPixel
+                    
+                'Clamp: paint as the terminal gradient color.  (This was handled in a previous step.)
+                Case gr_Clamp
+                    GoTo NextPixel
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect
@@ -877,6 +992,147 @@ Private Sub InternalRender_Radial(ByRef firstPoint As PointFloat, ByRef secondPo
         'No further interpolation is required.  (In the future, we could add a dithering
         ' element here, but for now let's just focus on getting the gradient itself rendered OK.)
         dstPixels(x) = curColor
+        
+NextPixel:
+        
+    Next x
+        If isFullSizeRender Then
+            If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
+        End If
+    Next y
+    
+    dstDIB.UnwrapLongArrayFromDIB dstPixels
+    
+End Sub
+
+'Math for this offset radial renderer was developed with help from the pixman project (MIT-licensed).
+' Pixman's algebraic solution is also used by other major renderers, including Skia. See http://pixman.org/
+' for details, especially https://github.com/freedesktop/pixman/blob/master/pixman/pixman-radial-gradient.c
+' for an excellent breakdown of the required geometry.
+Private Sub InternalRender_Spherical(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
+    
+    'Before doing anything else, calculate some helpful geometry shortcuts
+    Dim gradDistance As Double
+    gradDistance = PDMath.DistanceTwoPoints(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y)
+    If (gradDistance <= 1#) Then gradDistance = 1#
+    
+    Dim lutBound As Long
+    lutBound = m_LookupResolution - 1
+    
+    Dim oX As Double, oY As Double
+    oX = firstPoint.x
+    oY = firstPoint.y
+    
+    'Construct a mapping between gradient distance and lookup table size
+    Dim mapAdjust As Double
+    mapAdjust = CDbl(lutBound) / gradDistance
+    
+    'Wrap an array around the destination DIB
+    Dim x As Long, y As Long, xBound As Long, yBound As Long
+    Dim dstPixels() As Long, dstSA As SafeArray1D, dstPtr As Long, dstStride As Long
+    dstPtr = dstDIB.GetDIBPointer
+    dstStride = dstDIB.GetDIBStride
+    dstDIB.WrapLongArrayAroundScanline dstPixels, dstSA, 0
+    xBound = dstDIB.GetDIBWidth - 1
+    yBound = dstDIB.GetDIBHeight - 1
+    
+    'If this is a full-size render, it may take a second or two, so prep progress bars notifiers
+    Dim progBarInterval As Long
+    progBarInterval = ProgressBars.FindBestProgBarValue()
+    
+    Dim curDistance As Double, curColor As Long, luIndex As Long
+    Dim dx As Double, dy As Double, cX1 As Double, cY1 As Double
+    
+    'Gradients are typically specified as two circles, each with independent radii and center points.
+    ' To simplify mouse interactions for the user, we automatically produce the internal circle
+    ' center point "on the fly" and force its radius to 0; this simplifies some subsequent calculations.
+    dx = secondPoint.x - firstPoint.x
+    dy = secondPoint.y - firstPoint.y
+    cX1 = firstPoint.x + (dx * m_RadialOffset)
+    cY1 = firstPoint.y + (dy * m_RadialOffset)
+    
+    'cX1/cY1 now describe the center point of the first circle; cX2/cY2 describe the center point of
+    ' the second (outer) circle, with radius = distance of the user's mouse drag
+    Dim cX2 As Double, cY2 As Double
+    cX2 = firstPoint.x: cY2 = firstPoint.y
+    
+    Dim cdx As Double, cdy As Double
+    cdx = cX2 - cX1
+    cdy = cY2 - cY1
+    
+    'The following math involves some messy solutions for calculating distance between the two circles
+    ' we've constructed.  Thank you to the authors of the MIT-licensed pixman project for their helpful
+    ' breakdown of this technique.
+    Dim a As Double, invA As Double, b As Double, c As Double, t As Double
+    a = cdx * cdx + cdy * cdy - gradDistance * gradDistance
+    If (a <> 0#) Then invA = 1# / a
+    
+    For y = 0 To yBound
+        dstSA.pvData = dstPtr + dstStride * y
+    For x = 0 To xBound
+        
+        'The goal here is simple enough: we want to scale the radius by some factor that's
+        ' contingent on the angle of the current point.  (Points lying close to the user-drawn
+        ' gradient line are scaled very little, while points on the opposite side of the
+        ' "circle" are scaled more.)
+        
+        'Note that the actual required calculations are more complex than the ones used here;
+        ' we shortcut certain elements because the radius of the inset circle is always forced
+        ' to 0 in PD.
+        b = (x - cX1) * cdx + (y - cY1) * cdy
+        c = (x - cX1) * (x - cX1) + (y - cY1) * (y - cY1)
+        curDistance = (b * b - a * c)
+        
+        'We need to calculate Sqr, so ensure we have a non-zero value
+        If (curDistance < 0.0000001) Then curDistance = 0.0000001
+        t = (b - Sqr(curDistance)) * invA
+        
+        'Failsafe check to prevent OOB errors when indexing into the LUT
+        If (t < 0) Then t = 0#
+        
+        'Convert the lookup to a color in our prebuilt lookup table, then update the distance
+        ' tracker to reflect the value of t.  (The distance tracker is used to determine pixel
+        ' handling when pixels fall outside the radial boundary; this is contingent on the
+        ' user's edge handling mode.)
+        luIndex = Int(t * lutBound + 0.5)
+        curDistance = t * gradDistance
+        
+        'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
+        If (curDistance > gradDistance) Then
+            
+            'Edge mode handling here
+            Select Case m_GradientRepeat
+                
+                'None: ignore pixel
+                Case gr_None
+                    GoTo NextPixel
+                    
+                'Clamp: paint as the terminal gradient color.  (This was handled in a previous step.)
+                Case gr_Clamp
+                    GoTo NextPixel
+                
+                'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
+                Case gr_Reflect
+                    luIndex = luIndex - lutBound
+                    luIndex = (luIndex And (lutBound * 2)) - lutBound
+                    If (luIndex < 0) Then luIndex = -luIndex
+                    curColor = m_GradLookup(luIndex)
+                
+                'Wrap: re-map the calculated index mod the number of items in the lookup table
+                Case gr_Wrap
+                    curColor = m_GradLookup(luIndex And lutBound)
+                
+            End Select
+            
+        Else
+            curColor = m_GradLookup(luIndex)
+        End If
+        
+        'No further interpolation is required.  (In the future, we could add a dithering
+        ' element here, but for now let's just focus on getting the gradient itself rendered OK.)
+        dstPixels(x) = curColor
+        
+NextPixel:
         
     Next x
         If isFullSizeRender Then
@@ -947,15 +1203,14 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
         curAngle = curAngle - gradAngle
         curAngle = PDMath.Modulo(curAngle, PI_DOUBLE)
         
-        If (m_GradientRepeat = gr_None) Then
+        If (m_GradientRepeat = gr_None) Or (m_GradientRepeat = gr_Clamp) Then
             
             'Calculate the spiral
             curDistance = curDistance + curAngle * gradAngleMapping
             
-            'If the point lies outside the first spiral in the pattern, force it to the
-            ' terminal gradient color
+            'If the point lies outside the first spiral in the pattern, skip this pixel
             If (curDistance > gradDistance) Then
-                curColor = m_LastGradColor
+                GoTo NextPixel
             Else
                 luIndex = Int(curDistance * mapAdjust + 0.5)
                 curColor = m_GradLookup(luIndex)
@@ -987,6 +1242,8 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
         ' element here, but for now let's just focus on getting the gradient itself rendered OK.)
         dstPixels(x) = curColor
         
+NextPixel:
+
     Next x
         If isFullSizeRender Then
             If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y
@@ -998,10 +1255,23 @@ Private Sub InternalRender_Spiral(ByRef firstPoint As PointFloat, ByRef secondPo
 End Sub
 
 Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPoint As PointFloat, ByRef dstDIB As pdDIB, Optional ByVal isFullSizeRender As Boolean = True)
-
+    
+    'Calculate the angle of the user's current line
+    Dim gradAngle As Double
+    gradAngle = -1# * PDMath.Atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x)
+    
+    'For performance reasons, we want to cache the cos and sin of the angle in question
+    Dim sinAngle As Double, cosAngle As Double
+    sinAngle = Sin(gradAngle)
+    cosAngle = Cos(gradAngle)
+    
+    'Rotate the current line to angle (0)
+    Dim newX As Single, newY As Single
+    PDMath.RotatePointAroundPoint secondPoint.x, secondPoint.y, firstPoint.x, firstPoint.y, gradAngle, newX, newY
+    
     'Before doing anything else, calculate some helpful geometry shortcuts
-    Dim gradDistance As Long
-    gradDistance = PDMath.Max2Int(Abs(firstPoint.x - secondPoint.x), Abs(firstPoint.y - secondPoint.y))
+    Dim gradDistance As Single
+    gradDistance = PDMath.Max2Int(Abs(firstPoint.x - newX), Abs(firstPoint.y - newY))
     If (gradDistance < 1) Then gradDistance = 1
     
     Dim lutBound As Long
@@ -1028,15 +1298,36 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
     Dim progBarInterval As Long
     progBarInterval = ProgressBars.FindBestProgBarValue()
     
-    Dim curDistance As Long, curColor As Long, luIndex As Long, yFast As Long
+    Dim curDistance As Double, curColor As Long, luIndex As Long, yFast As Double
+    Dim centerX As Double, centerY As Double
+    centerX = firstPoint.x
+    centerY = firstPoint.y
     
     For y = 0 To yBound
+    
         dstSA.pvData = dstPtr + dstStride * y
-        yFast = Abs(y - oY)
+        
+        'Because y-terms do not change for the length of this scanline, precalculate what we can
+        yFast = CDbl(y) - centerY
+        
     For x = 0 To xBound
         
-        'Calculate square distance, and remap it (with rounding) to a lookup table index
-        curDistance = PDMath.Max2Int(Abs(x - oX), yFast)
+        'Rotate this point around the origin (where the user's first clicked point is the origin) by the
+        ' same angle as the gradient line; the "square" is then calculated using the largest absolute value
+        ' of either the x-delta or y-delta of the corresponding line.
+        ' (Note that multiple terms here could be pre-cached into luts for an even bigger perf boost.)
+        newX = cosAngle * (CDbl(x) - centerX) - sinAngle * yFast + centerX
+        newY = cosAngle * yFast + sinAngle * (CDbl(x) - centerX) + centerY
+        
+        newX = Abs(newX - centerX)
+        newY = Abs(newY - centerY)
+        
+        If newX > newY Then
+            curDistance = newX
+        Else
+            curDistance = newY
+        End If
+        
         luIndex = Int(CDbl(curDistance) * mapAdjust + 0.5)
         
         'Pixels beyond the edge of the user-drawn line must be handled according to the current wrap setting
@@ -1045,9 +1336,13 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
             'Edge mode handling here
             Select Case m_GradientRepeat
                 
-                'None: paint as the terminal gradient color
+                'None: ignore pixel
                 Case gr_None
-                    curColor = m_LastGradColor
+                    GoTo NextPixel
+                    
+                'Clamp: paint as the terminal gradient color.  (This was handled in a previous step.)
+                Case gr_Clamp
+                    GoTo NextPixel
                 
                 'Reflect: shift phase by 1, remap to [-1, 1], and reflect negative values
                 Case gr_Reflect
@@ -1070,6 +1365,8 @@ Private Sub InternalRender_Square(ByRef firstPoint As PointFloat, ByRef secondPo
         ' element here, but for now let's just focus on getting the gradient itself rendered OK.)
         dstPixels(x) = curColor
         
+NextPixel:
+
     Next x
         If isFullSizeRender Then
             If ((y And progBarInterval) = 0) Then ProgressBars.SetProgBarVal y

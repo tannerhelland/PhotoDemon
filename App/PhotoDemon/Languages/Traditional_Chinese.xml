@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.67</langversion>
+<langversion>7.0.68</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -3500,7 +3500,7 @@ Please enter a numeric value.</original>
 <translation>色票已由 PhotoDemon %1 匯出</translation>
 </phrase>
 
-<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -4396,11 +4396,16 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdPaletteUI.ctl -->
 
 <phrase>
+<original>RGBA(%1, %2, %3, %4)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>index %1</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdPaletteUI.ctl-->
 
@@ -10710,7 +10715,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>警告! 色票檔案無效。</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -13891,12 +13896,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>spherical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>conical</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>spiral</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
 <translation></translation>
 </phrase>
 
@@ -13910,7 +13925,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15642,10 +15657,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2618</phrasecount>
+<phrasecount>2621</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4808 phrases. -->
-<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
-<!-- These 2618 phrases contain approximately 12425 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
+<!-- These 2621 phrases contain approximately 12427 total words. -->
 
 </pdData>

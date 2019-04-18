@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.193</langversion>
+<langversion>1.0.194</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3542,7 +3542,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPalette.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPalette.cls-->
 
@@ -4437,11 +4437,16 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdPaletteUI.ctl -->
 
 <phrase>
+<original>RGBA(%1, %2, %3, %4)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>index %1</original>
 <translation></translation>
 </phrase>
 
-<!-- pdPaletteUI.ctl contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdPaletteUI.ctl-->
 
@@ -10753,7 +10758,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 38 phrases. 20 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -13942,12 +13947,22 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>spherical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>conical</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>spiral</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
 <translation></translation>
 </phrase>
 
@@ -13961,7 +13976,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -15701,10 +15716,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2618</phrasecount>
+<phrasecount>2621</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4808 phrases. -->
-<!-- 2190 are duplicates, so only 2618 unique phrases have been written to file. -->
-<!-- These 2618 phrases contain approximately 12425 total words. -->
+<!-- As of this build, PhotoDemon contains 4811 phrases. -->
+<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
+<!-- These 2621 phrases contain approximately 12427 total words. -->
 
 </pdData>

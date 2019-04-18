@@ -77,6 +77,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Old Abiquiu Photographic
 * [Paul Bourke](http://paulbourke.net/miscellaneous/)
 * Peter Burn
+* [pixman library](http://pixman.org/)
 * Plinio C Garcia
 * [Portablefreeware.com](http://www.portablefreeware.com/forums/viewtopic.php?t=21652)
 * [Raj Chaudhuri](https://github.com/rajch)

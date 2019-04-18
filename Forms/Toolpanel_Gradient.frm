@@ -26,6 +26,22 @@ Begin VB.Form toolpanel_Gradient
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdSlider sldOffset 
+      Height          =   615
+      Left            =   7950
+      TabIndex        =   6
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   2340
+      _ExtentX        =   4128
+      _ExtentY        =   1085
+      FontSizeCaption =   10
+      Min             =   -99
+      Max             =   99
+      SigDigits       =   1
+      Value           =   75
+      DefaultValue    =   75
+   End
    Begin PhotoDemon.pdGradientSelector grdPrimary 
       Height          =   1215
       Left            =   120
@@ -142,6 +158,7 @@ Private Sub cboSetting_Click(Index As Integer)
         'Shape
         Case 2
             Tools_Gradient.SetGradientShape cboSetting(Index).ListIndex
+            sldOffset.Visible = (cboSetting(Index).ListIndex = gs_Spherical)
         
         'Wrap
         Case 3
@@ -163,19 +180,21 @@ Private Sub Form_Load()
     cboSetting(2).AddItem "linear", 0
     cboSetting(2).AddItem "reflection", 1
     cboSetting(2).AddItem "radial", 2
-    cboSetting(2).AddItem "square", 3
-    cboSetting(2).AddItem "diamond", 4
-    cboSetting(2).AddItem "conical", 5
-    cboSetting(2).AddItem "spiral", 6
+    cboSetting(2).AddItem "spherical", 3
+    cboSetting(2).AddItem "square", 4
+    cboSetting(2).AddItem "diamond", 5
+    cboSetting(2).AddItem "conical", 6
+    cboSetting(2).AddItem "spiral", 7
     cboSetting(2).ListIndex = 0
     cboSetting(2).SetAutomaticRedraws True, True
     
     cboSetting(3).SetAutomaticRedraws False
     cboSetting(3).Clear
     cboSetting(3).AddItem "none", 0
-    cboSetting(3).AddItem "wrap", 1
-    cboSetting(3).AddItem "reflect", 2
-    cboSetting(3).ListIndex = 0
+    cboSetting(3).AddItem "clamp", 1
+    cboSetting(3).AddItem "wrap", 2
+    cboSetting(3).AddItem "reflect", 3
+    cboSetting(3).ListIndex = 1
     cboSetting(3).SetAutomaticRedraws True, True
     
     'Load any last-used settings for this form
@@ -209,6 +228,10 @@ Public Sub UpdateAgainstCurrentTheme()
 
 End Sub
 
+Private Sub sldOffset_Change()
+    Tools_Gradient.SetGradientRadialOffset sldOffset.Value * 0.01
+End Sub
+
 Private Sub sldSetting_Change(Index As Integer)
     
     Select Case Index
@@ -228,6 +251,7 @@ Public Sub SyncAllGradientSettingsToUI()
     Tools_Gradient.SetGradientAlphaMode cboSetting(1).ListIndex
     Tools_Gradient.SetGradientShape cboSetting(2).ListIndex
     Tools_Gradient.SetGradientRepeat cboSetting(3).ListIndex
+    Tools_Gradient.SetGradientRadialOffset sldOffset.Value * 0.01
 End Sub
 
 'If you want to synchronize all UI elements to match current paintgradient settings, use this function
@@ -237,4 +261,5 @@ Public Sub SyncUIToAllGradientSettings()
     cboSetting(1).ListIndex = Tools_Gradient.GetGradientAlphaMode()
     cboSetting(2).ListIndex = Tools_Gradient.GetGradientShape()
     cboSetting(3).ListIndex = Tools_Gradient.GetGradientRepeat()
+    sldOffset.Value = Tools_Gradient.GetGradientRadialOffset * 100#
 End Sub

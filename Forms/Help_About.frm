@@ -370,6 +370,7 @@ Private Sub Form_Load()
     GenerateContributor "Paul Bourke", "http://paulbourke.net/miscellaneous/"
     GenerateContributor "Peter Burn"
     GenerateContributor "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+    GenerateContributor "pixman library", "http://pixman.org/"
     GenerateContributor "Plinio C Garcia"
     GenerateContributor "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652"
     GenerateContributor "Raj Chaudhuri", "https://github.com/rajch"
