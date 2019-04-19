@@ -1,8 +1,10 @@
+#define RT_MANIFEST 24
+
 // Icon for the main application
 AAA				ICON		PHOTO_all.ico
 
 // Manifest
-1				MANIFEST	PhotoDemon.exe.manifest
+1				RT_MANIFEST	PhotoDemon.exe.manifest
 
 // Essential resources follow
 // (These are things that PD requires for a successful run - this does *not* include stuff like translation files,
