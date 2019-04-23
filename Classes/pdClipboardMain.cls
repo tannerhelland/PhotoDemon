@@ -15,14 +15,15 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2019 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 27/October/17
-'Last update: fix drag/drop from Firefox, which broke at some point in the past (idk when)
+'Last updated: 23/April/19
+'Last update: replace FreeImage PNG encoder with pdPNG; this produces much faster PNG copies
 '
-'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
-' object, which includes a ton of specialized helper functions.  Look there for details.
+'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here,
+' but in the separate pdClipboard object, which includes a ton of specialized helper functions.
+' Look there for details.
 '
-'Special thanks go out to LaVolpe for his very helpful work in coercing VB into accepting Unicode-friendly drag/drop targets.
-' In particular, these two references were invaluable:
+'Special thanks go out to LaVolpe for his very helpful work in coercing VB into accepting
+' Unicode-friendly drag/drop targets. In particular, these two references were invaluable:
 ' http://www.vbforums.com/showthread.php?637335-RESOLVED-Drag-amp-Drop-file-from-compressed-folder&p=3943417&viewfull=1#post3943417
 ' http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
 '
@@ -47,7 +48,7 @@ Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
 '**************************************************************************
 
 'Some format constants are not inherently defined by VB; we cache these at load-time
-Private CF_FILECONTENTS As Integer, CF_FILEGROUPDESCRIPTORW As Integer
+Private CF_FileContents As Integer, CF_FileGroupDescriptorW As Integer
 
 'Some specialized structs are required for parsing various clipboard bitmap formats
 Private Type BITMAPFILEHEADER
@@ -300,25 +301,29 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     
     'Notify the clipboard of the formats we are willing to copy "on-demand"
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
+        
         m_Clipboard.ClearClipboard
         m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
         m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
         m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
         m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
         
-        'So an interesting story about CF_DIB.  PD is perfectly capable of rendering CF_DIB images to the clipboard, but at present,
-        ' we choose not to enable this.  Why?  Microsoft Paint will preferentially accept a CF_DIB image over any other format on
-        ' the clipboard.  This would be okay if Paint recognized alpha channels, but because it doesn't, we would need to downsample
-        ' PD's 32-bpp images to 24-bpp.  However, this would incorrectly generate a 24-bpp copy for software that *does* recognize
-        ' 32-bpp CF_DIB entries.  To minimize the risk of a screwed-up end result, PD only registers CF_BITMAP and CF_DIBv5 formats
-        ' to the clipboard (plus PNG, obviously).  It's assumed that any program clever enough to recognize CF_DIBv5 also has a
+        'So an interesting story about CF_DIB.  PD is perfectly capable of rendering CF_DIB images
+        ' to the clipboard, but at present, we choose not to enable this.  Why?  Microsoft Paint will
+        ' preferentially accept a CF_DIB image over any other format on the clipboard.  This would be
+        ' okay if Paint recognized alpha channels, but because it doesn't, we would need to downsample
+        ' PD's 32-bpp images to 24-bpp.  However, this would incorrectly generate a 24-bpp copy for
+        ' software that *does* recognize 32-bpp CF_DIB entries.  To minimize the risk of a screwed-up
+        ' end result, PD only registers CF_BITMAP and CF_DIBv5 formats to the clipboard (plus PNG,
+        ' obviously).  It's assumed that any program clever enough to recognize CF_DIBv5 also has a
         ' contingency plan for alpha bytes, whereas the same can't be said for CF_DIB, unfortunately.
         '
-        'As always, PNG is the preferred interchange format for images.  If you use a program that doesn't copy/paste PNG-format data,
-        ' get them to fix their software!
+        'As always, PNG is the preferred interchange format for images.  If you use a program that
+        ' doesn't copy/paste PNG-format data, get them to fix their software!
         'm_Clipboard.SetClipboardData_DelayedRendering CF_DIB
         
         m_Clipboard.ClipboardClose
+        
     End If
     
     'Unlock the UI
@@ -1067,8 +1072,8 @@ Friend Function IsObjectDragDroppable(ByRef Data As DataObject) As Boolean
         If Data.GetFormat(vbCFFiles) Then IsObjectDragDroppable = True
         If Data.GetFormat(vbCFText) Then IsObjectDragDroppable = True
         If Data.GetFormat(vbCFBitmap) Then IsObjectDragDroppable = True
-        If Data.GetFormat(CF_FILECONTENTS) Then IsObjectDragDroppable = True
-        If Data.GetFormat(CF_FILEGROUPDESCRIPTORW) Then IsObjectDragDroppable = True
+        If Data.GetFormat(CF_FileContents) Then IsObjectDragDroppable = True
+        If Data.GetFormat(CF_FileGroupDescriptorW) Then IsObjectDragDroppable = True
     End If
     
 End Function
@@ -1089,8 +1094,8 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     ' warning on the frist format, it's probably premature as we'll just grab a subsequent format.)
     Dim numSourcesAvailable As Long
     If Data.GetFormat(vbCFText) Then numSourcesAvailable = numSourcesAvailable + 1
-    If Data.GetFormat(CF_FILECONTENTS) Then numSourcesAvailable = numSourcesAvailable + 1
-    If Data.GetFormat(CF_FILEGROUPDESCRIPTORW) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(CF_FileContents) Then numSourcesAvailable = numSourcesAvailable + 1
+    If Data.GetFormat(CF_FileGroupDescriptorW) Then numSourcesAvailable = numSourcesAvailable + 1
     If Data.GetFormat(vbCFFiles) Then numSourcesAvailable = numSourcesAvailable + 1
     If Data.GetFormat(vbCFBitmap) Then numSourcesAvailable = numSourcesAvailable + 1
     
@@ -1103,7 +1108,7 @@ Friend Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     
     'If we can't find text, look for file content or descriptor flags.  These are received when dragging from
     ' .zip files, and we can use them to manually reconstruct image files.
-    If (Data.GetFormat(CF_FILECONTENTS) Or Data.GetFormat(CF_FILEGROUPDESCRIPTORW)) And (Not dragWasSuccessful) Then
+    If (Data.GetFormat(CF_FileContents) Or Data.GetFormat(CF_FileGroupDescriptorW)) And (Not dragWasSuccessful) Then
         dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer)
     End If
     
@@ -1269,7 +1274,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
     
     'Note that PD will validate the data object before passing it, but better safe than sorry
     If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
-    If (Not OLEDragDrop_DataObject.GetFormat(CF_FILECONTENTS)) And (Not OLEDragDrop_DataObject.GetFormat(CF_FILEGROUPDESCRIPTORW)) Then Exit Function
+    If (Not OLEDragDrop_DataObject.GetFormat(CF_FileContents)) And (Not OLEDragDrop_DataObject.GetFormat(CF_FileGroupDescriptorW)) Then Exit Function
     
     'This function basically handles the task of hacking around the DataObject's VTable, and manually retrieving pointers
     ' to the original, unmodified Unicode filenames in the Data object.  We then overwrite the OUT filename strings with
@@ -1277,7 +1282,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
     ' non-ANSI chars.
     Dim fmtEtc As FORMATETC
     With fmtEtc
-        .cfFormat = CF_FILEGROUPDESCRIPTORW
+        .cfFormat = CF_FileGroupDescriptorW
         .lIndex = -1                  ' -1 means "we want everything"
         .TYMED = TYMED_HGLOBAL        ' TYMED_HGLOBAL means we want to use "hGlobal" as the transfer medium
         .dwAspect = DVASPECT_CONTENT  ' dwAspect is used to request extra metadata (like an icon representation) - we want the actual data
@@ -1319,7 +1324,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
             
             'We've been handed a list of file descriptors.  For each valid descriptor, we want to retrieve a matching
             ' file content object.  We'l request these as IStreams to simplify the creation of temporary files.
-            fmtEtc.cfFormat = CF_FILECONTENTS
+            fmtEtc.cfFormat = CF_FileContents
             fmtEtc.TYMED = TYMED_HGLOBAL
             Vars(1) = VarPtr(fMedium)
             
@@ -1771,58 +1776,37 @@ Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
 
 End Sub
 
-'Place a PNG on the clipboard.  This function assumes that the caller has already unstashed previously saved clipboard data,
-' and thoroughly validated it.  If you haven't done that, this function will fail.
-' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller to handle that.
+'Place a PNG on the clipboard.  This function assumes that the caller has already unstashed previously
+' saved clipboard data, and thoroughly validated it.  If you haven't done that, this function will fail.
+' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller
+' to handle that.
 Private Sub RenderClipboard_PNG()
     
     On Error GoTo RenderClipboardPNG_Failure
                 
     'The stashed DIB will likely have premultiplied alpha.  Un-premultiply it now.
-    If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
+    If m_ClipboardDIB.GetAlphaPremultiplication() Then m_ClipboardDIB.SetAlphaPremultiplication False
     
-    'FreeImage is used to perform the PNG transformation.  (We could use GDI+, but FreeImage is easier.)
-    If ImageFormats.IsFreeImageEnabled() Then
-        
-        PDDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
-        
-        'Most systems will already have PNG available as a setting; the AddFormat function will detect this
-        Dim PNGID As Long
-        PNGID = m_Clipboard.AddClipboardFormat("PNG")
-        
-        PDDebug.LogAction "Clipboard copy update: creating FreeImage handle..."
-        
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ClipboardDIB, True)
-        
-        'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
-        If (fi_DIB <> 0) Then
-        
-            PDDebug.LogAction "Clipboard copy update: saving PNG to byte array..."
-            
-            Dim pngArray() As Byte
-            Dim fi_Check As Long
-            fi_Check = FreeImage_SaveToMemoryEx(PDIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, False)
-            
-            'If the save was successful, hand the new PNG byte array to the clipboard
-            If fi_Check Then
-                PDDebug.LogAction "Clipboard copy update: uploading PNG to clipboard..."
-                If m_Clipboard.SetClipboardBinaryData(PNGID, pngArray) Then PDDebug.LogAction "Clipboard copy update: PNG clipboard operation complete."
-            End If
-            
-            'Before exiting, restore the original scanline order
-            Outside_FreeImageV3.FreeImage_FlipVertically fi_DIB
-            
-            'Release FreeImage's copy of the image
-            FreeImage_Unload fi_DIB
-            
-        Else
-            PDDebug.LogAction "WARNING!  During ClipboardCopy, FreeImage was unable to create a handle around the target DIB.  PNG format abandoned."
-        End If
-        
+    PDDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
+    
+    'Most systems will already have PNG available as a setting; the AddFormat function will detect this
+    Dim pngID As Long
+    pngID = m_Clipboard.AddClipboardFormat("PNG")
+    
+    PDDebug.LogAction "Clipboard copy update: using pdPNG to produce PNG stream..."
+    
+    'Use our awesome homebrew PNG encoder to quickly produce a PNG stream from the source image data
+    Dim pngArray() As Byte, sizePngStream As Long
+    
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    sizePngStream = cPNG.SavePNG_ToMemory(dstArray:=pngArray, srcImage:=m_ClipboardDIB, srcPDImage:=Nothing, outColorType:=png_TruecolorAlpha, outBitsPerChannel:=8, cmpLevel:=1, useFilterStrategy:=png_FilterNone)
+    
+    If (sizePngStream <> 0) Then
+        PDDebug.LogAction "Clipboard copy update: uploading PNG to clipboard..."
+        If m_Clipboard.SetClipboardBinaryData(pngID, pngArray) Then PDDebug.LogAction "Clipboard copy update: PNG clipboard operation complete."
     Else
-        PDDebug.LogAction "WARNING!  Prior to rendering PNG clipboard data, FreeImage was unloaded.  PNG copy abandoned."
+        PDDebug.LogAction "WARNING!  During ClipboardCopy, pdPNG failed to produce a usable PNG stream.  PNG format abandoned."
     End If
     
 RenderClipboardPNG_Failure:
@@ -2033,8 +2017,8 @@ Private Sub Class_Initialize()
     'While it's not exactly time-consuming to retrieve custom clipboard formats, we may as well cache a few common ones.
     ' (This is made cumbersome by a lack of an unsigned Int format; as such, we have to jiggle the values around to prevent
     '  VB from throwing "out of range" errors inside the IDE.)
-    CF_FILECONTENTS = m_Clipboard.AddClipboardFormat("FileContents") And &H7FFF& Or &H8000
-    CF_FILEGROUPDESCRIPTORW = m_Clipboard.AddClipboardFormat("FileGroupDescriptorW") And &H7FFF& Or &H8000
+    CF_FileContents = m_Clipboard.AddClipboardFormat("FileContents") And &H7FFF& Or &H8000
+    CF_FileGroupDescriptorW = m_Clipboard.AddClipboardFormat("FileGroupDescriptorW") And &H7FFF& Or &H8000
     
 End Sub
 

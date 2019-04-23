@@ -26,7 +26,7 @@ Attribute VB_Exposed = False
 ' have come to realize that the class is extremely bug-prone.  API returns are not always checked correctly, and when
 ' they are, they are handled out-of-order in various If/Then branches, so failure states result in things like memory
 ' objects not being released.  Worse still, the class mixes a bunch of different coding styles together (e.g. 1-based
-' arrays in some places 0-based in others), which makes interop prone to all kinds of failures.  The class is also
+' arrays in some places, 0-based in others), which makes interop prone to all kinds of failures.  The class is also
 ' not Unicode-compatible, it uses a bunch of deprecated constants for 16-bit support (!!!), and it's missing support
 ' for new system-defined formats that have been around since XP (like DIBv5).
 '
