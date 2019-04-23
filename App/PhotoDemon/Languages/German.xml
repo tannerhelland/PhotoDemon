@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1022</langversion>
+<langversion>7.2.1065</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1509,7 +1509,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>PhotoDemon Palette</original>
-<translation></translation>
+<translation>PhotoDemon Palette</translation>
 </phrase>
 
 <phrase>
@@ -4443,7 +4443,7 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 
 <phrase>
 <original>RGBA(%1, %2, %3, %4)</original>
-<translation></translation>
+<translation>RGBA (%1, %2, %3, %4)</translation>
 </phrase>
 
 <phrase>
@@ -10676,7 +10676,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use palette's alpha values</original>
-<translation></translation>
+<translation>Alphawerte der Palette verwenden</translation>
 </phrase>
 
 <phrase>
@@ -10761,7 +10761,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation>WARNUNG! Palette ist ungültig.</translation>
+<translation>WARNUNG! Palettendatei ungültig.</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -13952,7 +13952,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>spherical</original>
-<translation></translation>
+<translation>Sphärisch</translation>
 </phrase>
 
 <phrase>
@@ -13967,7 +13967,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>clamp</original>
-<translation></translation>
+<translation>Anheften</translation>
 </phrase>
 
 <phrase>
