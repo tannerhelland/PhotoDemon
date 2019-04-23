@@ -754,7 +754,7 @@ End Function
 'Quickly save a DIB to file in PNG format.  At present, this is only used when forwarding image data
 ' to the Windows Photo Printer object.  (All internal quick-saves use PD-specific formats, which are
 ' much faster to read/write.)
-Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As pdDIB) As Boolean
+Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As pdDIB, Optional ByVal forceTo24bppRGB As Boolean = False) As Boolean
 
     'Perform a few failsafe checks
     If (srcDIB Is Nothing) Then
@@ -766,46 +766,28 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         QuickSaveDIBAsPNG = False
         Exit Function
     End If
-
-    'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
-    If ImageFormats.IsFreeImageEnabled() Then
-        
-        'PD exclusively uses premultiplied alpha for internal DIBs (unless image processing math dictates otherwise).
-        ' Saved files always use non-premultiplied alpha.  If the source image is premultiplied, we want to create a
-        ' temporary non-premultiplied copy.
-        Dim alphaWasChanged As Boolean
-        If srcDIB.GetAlphaPremultiplication Then
-            srcDIB.SetAlphaPremultiplication False
-            alphaWasChanged = True
-        End If
-        
-        'Convert the temporary DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
     
-        'Use that handle to save the image to PNG format
-        If (fi_DIB <> 0) Then
-            Dim fi_Check As Long
-            
-            'Output the PNG file at the proper color depth
-            Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-            If (srcDIB.GetDIBColorDepth = 24) Then fi_OutputColorDepth = FICD_24BPP Else fi_OutputColorDepth = FICD_32BPP
-            
-            'Ask FreeImage to write the thumbnail out to file
-            fi_Check = FreeImage_SaveEx(fi_DIB, dstFilename, PDIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
-            If (Not fi_Check) Then PDDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (FreeImage_SaveEx silent fail)."
-            
-        Else
-            PDDebug.LogAction "Saving.QuickSaveDIBAsPNG via FreeImage failed (blank handle)."
-        End If
-        
-        If alphaWasChanged Then srcDIB.SetAlphaPremultiplication True
-        
-    'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
-    Else
-        If (Not GDIPlusQuickSavePNG(dstFilename, srcDIB)) Then PDDebug.LogAction "Saving.QuickSaveDIBAsPNG via GDI+ failed (unspecified GDI+ error)."
+    'PD exclusively uses premultiplied alpha for internal DIBs (unless image processing math dictates otherwise).
+    ' Saved files always use non-premultiplied alpha.  If the source image is premultiplied, we want to create a
+    ' temporary non-premultiplied copy.
+    Dim alphaWasChanged As Boolean
+    If srcDIB.GetAlphaPremultiplication Then
+        srcDIB.SetAlphaPremultiplication False
+        alphaWasChanged = True
     End If
-
+    
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    If forceTo24bppRGB Then
+        QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, png_Truecolor, 8, 3) < png_Failure)
+    Else
+        QuickSaveDIBAsPNG = (cPNG.SavePNG_ToFile(dstFilename, srcDIB, Nothing, png_TruecolorAlpha, 8, 3) < png_Failure)
+    End If
+    
+    If (Not QuickSaveDIBAsPNG) Then PDDebug.LogAction "Saving.QuickSaveDIBAsPNG failed (pdPNG couldn't write the file?)."
+    
+    If alphaWasChanged Then srcDIB.SetAlphaPremultiplication True
+    
 End Function
 
 'Some image formats can take a long time to write, especially if the image is large.  As a failsafe, call this function prior to

@@ -123,7 +123,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     PDImages.GetActiveImage.GetCompositedImage tmpDIB, False
-    If tmpDIB.GetDIBColorDepth <> 24 Then tmpDIB.ConvertTo24bpp
+    tmpDIB.CompositeBackgroundColor 255, 255, 255
     
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String
@@ -131,7 +131,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
     PDDebug.LogAction "Preparing to print: " & tmpFilename
     
     'Write the temporary DIB out to a temporary PNG file, then free it
-    Saving.QuickSaveDIBAsPNG tmpFilename, tmpDIB
+    Saving.QuickSaveDIBAsPNG tmpFilename, tmpDIB, True
     Set tmpDIB = Nothing
     
     'Store the print state, so we can perform clean-up as necessary at shutdown time
