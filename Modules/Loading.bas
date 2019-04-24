@@ -587,7 +587,24 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         ' parsing criteria during the master load function, but for quick-loading, we can simply grab the raw image buffer portion.
         Case "PDTMP"
             loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
+        
+        Case "PSD", "PSB"
+            Dim cPSD As pdPSD
+            Set cPSD = New pdPSD
+            If cPSD.IsFilePSD(imagePath) Then loadSuccessful = (cPSD.LoadPSD(imagePath, tmpPDImage, targetDIB) < psd_Failure)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
+        Case "ORA"
+            Dim cORA As pdOpenRaster
+            Set cORA = New pdOpenRaster
+            If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
+        Case "PNG"
+            Dim cPNG As pdPNG
+            Set cPNG = New pdPNG
+            loadSuccessful = (cPNG.LoadPNG_Simple(imagePath, tmpPDImage, targetDIB) < png_Failure)
+        
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
         ' VB's internal LoadPicture function.
         Case Else

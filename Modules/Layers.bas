@@ -268,20 +268,20 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
             'Forcibly convert the new layer to 32bpp
-            If tmpDIB.GetDIBColorDepth = 24 Then tmpDIB.ConvertTo32bpp
+            If (tmpDIB.GetDIBColorDepth = 24) Then tmpDIB.ConvertTo32bpp
             
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
             newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
-            If Len(customLayerName) = 0 Then
+            If (LenB(customLayerName) = 0) Then
                 PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
             Else
                 PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
             End If
             
-            Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
+            'Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
             
             'Notify the parent image that the entire image now needs to be recomposited
             PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
