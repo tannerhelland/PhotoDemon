@@ -96,8 +96,8 @@ Attribute VB_Exposed = False
 'Image Outline Effect Dialog
 'Copyright 2017-2019 by Tanner Helland
 'Created: 05/January/17
-'Last updated: 01/August/17
-'Last update: fix potential OOB error on "alpha" edge mode
+'Last updated: 24/April/19
+'Last update: fix outline size in "preview" mode - it needs to be scaled by the preview's zoom
 '
 'I actually built this algorithm for internal purposes, because it's helpful to render outlines around various
 ' resource PNGs to ensure they stand out against variable background colors.  Since the effect works well, I
@@ -244,6 +244,15 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     
     Set cPen = New pd2DPen
     cPen.SetPenPropertiesFromXML edgeStyle
+    
+    'In preview mode, reduce the width of the pen proportionally
+    If toPreview Then
+        Dim curWidth As Single
+        curWidth = cPen.GetPenWidth()
+        curWidth = curWidth * curDIBValues.previewModifier
+        If (curWidth < 1!) Then curWidth = 1!
+        cPen.SetPenWidth curWidth
+    End If
     
     PD2D.DrawPath cSurface, cPen, finalPath
     Set cPen = Nothing: Set cSurface = Nothing
