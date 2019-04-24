@@ -1443,8 +1443,9 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     
     'Pixel data must be filtered before compression.  We use a temporary pdPNGChunk object to do this for us,
     ' as it already contains a bunch of code related to un-filtering pixel data.
-    Dim tmpChunk As pdPNGChunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk, fullParamString)
+    Dim tmpChunk As pdPNGChunk, filterStrategy As PD_PNG_FilterStrategy
+    If (cmpLevel = 0) Then filterStrategy = png_FilterNone Else filterStrategy = png_FilterUndefined
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, srcImage, tmpChunk, fullParamString, filterStrategy)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > byte filtering took " & VBHacks.GetTimeDiffNowAsString(startTime)

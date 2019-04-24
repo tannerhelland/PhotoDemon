@@ -425,8 +425,8 @@ Attribute VB_Exposed = False
 'PNG export dialog
 'Copyright 2012-2019 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 15/March/17
-'Last update: finally solve (I hope?) persistent layout reflow issues
+'Last updated: 24/April/19
+'Last update: remove any remaining dependence on FreeImage; all PNG duties are now handled by our homebrew PNG engine
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -441,10 +441,6 @@ Private m_SrcImage As pdImage
 
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
-
-'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
-' but note that it must be regenerated whenever the preview source is regenerated.
-Private m_FIHandle As Long
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -520,7 +516,6 @@ Private Sub UpdatePreviewButtonText()
 End Sub
 
 Private Sub clrDepth_Change()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -535,7 +530,6 @@ Private Sub clrDepth_SizeChanged()
 End Sub
 
 Private Sub clsBackground_ColorChanged()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -600,7 +594,6 @@ Private Sub cmdBar_ResetClick()
     mtdManager.Reset
     
     cmdBar.MarkPreviewStatus True
-    UpdatePreviewSource
     UpdatePreview
     
 End Sub
@@ -654,7 +647,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
-    If (Not ImageFormats.IsFreeImageEnabled()) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    If (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Next, prepare various controls on the metadata panel
     mtdManager.SetParentImage m_SrcImage, PDIF_PNG
@@ -670,7 +663,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdateBkgdColorVisibility
     
     'Update the preview
-    UpdatePreviewSource
     UpdatePreview
     
     'Apply translations and visual themes
@@ -703,14 +695,13 @@ Private Sub cmdUpdateLossyPreview_Click()
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'Create a FreeImage copy of the current preview image
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
-        
-        'Write that image out to a temporary file
+        'Write the image out to a temporary file
         Dim tmpFilename As String
-        tmpFilename = Files.RequestTempFile()
-        If FreeImage_Save(FIF_PNG, m_FIHandle, tmpFilename, FISO_PNG_Z_BEST_SPEED) Then
+        tmpFilename = Files.RequestTempFile() & ".png"
+        
+        Dim cPNG As pdPNG
+        Set cPNG = New pdPNG
+        If (cPNG.SavePNG_ToFile(tmpFilename, workingDIB, Nothing, png_TruecolorAlpha, 8, 0) < png_Failure) Then
             
             'Retrieve the size of the base PNG file
             Dim oldFileSize As Long
@@ -748,7 +739,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 Private Function GetExportParamString() As String
@@ -795,19 +785,19 @@ Private Sub pdFxPreview_ColorSelected()
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
-    UpdatePreviewSource
     UpdatePreview
 End Sub
 
-'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color,
-' changing the output color depth), you must call this function to generate a new preview DIB.  Note that you *do not*
-' need to call this function for format-specific changes (e.g. compression settings).
-Private Sub UpdatePreviewSource()
+Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean
+    ParamsEqual = Strings.StringsEqual(param1, param2, True)
+End Function
 
-    If (Not m_CompositedImage Is Nothing) Then
+Private Sub UpdatePreview()
+
+    If (cmdBar.PreviewsAllowed And clrDepth.IsValid) And (Not m_SrcImage Is Nothing) And (Not m_CompositedImage Is Nothing) Then
         
-        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
-        ' since the last preview.  Prep a new preview now.
+        'Because the user can change the preview viewport, we can't guarantee that the preview region
+        ' hasn't changed since the last preview.  Prep a new preview base image now.
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
@@ -822,111 +812,77 @@ Private Sub UpdatePreviewSource()
         Set cParamsDepth = New pdParamXML
         cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", vbNullString)
         
-        'Color and grayscale modes require different processing, so start there
-        Dim forceGrayscale As Boolean
-        forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
+        'Retrieve color and alpha model for this preview; everything else extends from these
+        Dim outputColorModel As String, outputAlphaModel As String
+        outputColorModel = cParamsDepth.GetString("ColorDepth_ColorModel", "Auto", True)
+        outputAlphaModel = cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto", True)
+    
+        'Before doing anything else, figure out how to handle alpha.
+        Dim previewAlphaMode As PD_ALPHA_STATUS
+        If Strings.StringsEqual(outputAlphaModel, "full", True) Then
+            previewAlphaMode = PDAS_ComplicatedAlpha
+        ElseIf Strings.StringsEqual(outputAlphaModel, "none", True) Then
+            previewAlphaMode = PDAS_NoAlpha
+        ElseIf Strings.StringsEqual(outputAlphaModel, "bycutoff", True) Then
+            previewAlphaMode = PDAS_BinaryAlpha
+        ElseIf Strings.StringsEqual(outputAlphaModel, "bycolor", True) Then
+            previewAlphaMode = PDAS_NewAlphaFromColor
+        Else
+            previewAlphaMode = PDAS_ComplicatedAlpha
+        End If
         
-        'For 8-bit modes, grab a palette size.  (This parameter will be ignored in other color modes.)
-        Dim newPaletteSize As Long
+        Dim bkgdColor As Long, trnsTable() As Byte
+        bkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+        
+        Dim outputAlphaCutoff As Long, outputAlphaColor As Long
+        outputAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+        outputAlphaColor = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbMagenta)
+    
+        'If the caller wants alpha removed, do so now.
+        If (previewAlphaMode = PDAS_NoAlpha) Then
+            workingDIB.CompositeBackgroundColor Colors.ExtractRed(bkgdColor), Colors.ExtractGreen(bkgdColor), Colors.ExtractBlue(bkgdColor)
+            
+        ElseIf (previewAlphaMode = PDAS_BinaryAlpha) Then
+            DIBs.ApplyAlphaCutoff_Ex workingDIB, trnsTable, outputAlphaCutoff
+            DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
+        
+        ElseIf (previewAlphaMode = PDAS_NewAlphaFromColor) Then
+            DIBs.MakeColorTransparent_Ex workingDIB, trnsTable, outputAlphaColor
+            DIBs.ApplyBinaryTransparencyTable workingDIB, trnsTable, bkgdColor
+        
+        'Other alpha modes require no changes on our part
+        Else
+        
+        End If
+        
+        'With alpha handled successfully, we now need to handle grayscale and/or palette requirements
+        Dim forceGrayscale As Boolean, forceIndexed As Boolean, newPaletteSize As Long
+        forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
+        forceIndexed = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed")
         newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+        If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then newPaletteSize = 2
+        
+        If forceGrayscale Then
+            DIBs.MakeDIBGrayscale workingDIB, newPaletteSize
+            
+        ElseIf forceIndexed Then
+            Dim newPalette() As RGBQuad
+            Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
+            Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, newPalette, True
+        End If
         
         'If the image is in "use original settings" mode, we will need to forcibly overwrite various
         ' settings to match the original file's settings.)
-        Dim useOrigMode As Boolean
-        useOrigMode = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Original"), "Original")
-        
-        'Convert the text-only descriptors of color depth into a meaningful bpp value
-        Dim newColorDepth As Long
-        
-        If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Auto") Then
-            newColorDepth = 32
-        Else
-            
-            If useOrigMode Then
-                newColorDepth = m_SrcImage.GetOriginalColorDepth()
-                forceGrayscale = m_SrcImage.GetOriginalGrayscale()
-            End If
-            
-            'HDR modes do not need to be previewed, so we forcibly downsample them here
-            If forceGrayscale Then
-                
-                newColorDepth = 8
-                
-                If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then
-                    newPaletteSize = 2
-                End If
-                
-            Else
-                
-                If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed") Then
-                    newColorDepth = 8
-                Else
-                    newColorDepth = 32
-                End If
-                
-            End If
-        
-        End If
-        
-        'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
-        Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
-        
-        If useOrigMode Then
-            
-            If m_SrcImage.GetOriginalAlpha Then
-                desiredAlphaMode = PDAS_ComplicatedAlpha
-                If (newColorDepth = 24) Then newColorDepth = 32
-            Else
-                desiredAlphaMode = PDAS_NoAlpha
-                If (newColorDepth = 32) Then newColorDepth = 24
-            End If
-            
-        Else
-        
-            If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
-                desiredAlphaMode = PDAS_ComplicatedAlpha
-                If (newColorDepth = 24) Then newColorDepth = 32
-            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
-                desiredAlphaMode = PDAS_NoAlpha
-                If (newColorDepth = 32) Then newColorDepth = 24
-                desiredAlphaCutoff = 0
-            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
-                desiredAlphaMode = PDAS_BinaryAlpha
-                desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
-                If (newColorDepth = 24) Then newColorDepth = 32
-            ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
-                desiredAlphaMode = PDAS_NewAlphaFromColor
-                desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
-                If (newColorDepth = 24) Then newColorDepth = 32
-            End If
-            
-        End If
-        
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        ' (TODO!)
+        'Dim useOrigMode As Boolean
+        'useOrigMode = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Original"), "Original")
         
         'In "use original file settings" mode, we need to steal a palette copy from the source image
-        Dim tmpPalette As pdPalette
-        If (useOrigMode And m_SrcImage.HasOriginalPalette) Then m_SrcImage.GetOriginalPalette tmpPalette
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("ColorDepth_CompositeColor", vbWhite), forceGrayscale, newPaletteSize, , True, , tmpPalette)
+        ' (TODO!)
+        'Dim tmpPalette As pdPalette
+        'If (useOrigMode And m_SrcImage.HasOriginalPalette) Then m_SrcImage.GetOriginalPalette tmpPalette
         
-    End If
-    
-End Sub
-
-Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean
-    ParamsEqual = Strings.StringsEqual(param1, param2, True)
-End Function
-
-Private Sub UpdatePreview()
-
-    If (cmdBar.PreviewsAllowed And ImageFormats.IsFreeImageEnabled() And clrDepth.IsValid And (Not m_SrcImage Is Nothing)) Then
-        
-        'Make sure the preview source is up-to-date
-        If (m_FIHandle = 0) Then UpdatePreviewSource
-        
-        'Retrieve a PNG-saved version of the current preview image
-        workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_PNG) Then FinalizeNonstandardPreview pdFxPreview, True
+        EffectPrep.FinalizeNonstandardPreview pdFxPreview, True
         
     End If
     
