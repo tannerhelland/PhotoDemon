@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.66</langversion>
+<langversion>1.0.67</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10664,6 +10664,21 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>quantization method</original>
+<translation>양자화 방법</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation>흰색과 검은 색을 보존한다.</translation>
+</phrase>
+
+<phrase>
+<original>palette type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use palette's alpha values</original>
 <translation></translation>
 </phrase>
@@ -10676,31 +10691,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <phrase>
 <original>choose a palette file</original>
 <translation>팔레트 파일을 선택하십시오</translation>
-</phrase>
-
-<phrase>
-<original>basic settings</original>
-<translation>기본 설정</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>고급 설정</translation>
-</phrase>
-
-<phrase>
-<original>quantization method</original>
-<translation>양자화 방법</translation>
-</phrase>
-
-<phrase>
-<original>preserve white and black</original>
-<translation>흰색과 검은 색을 보존한다.</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>알파 컷오프</translation>
 </phrase>
 
 <phrase>
@@ -10729,8 +10719,13 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>이진</translation>
+<original>color only (RGB)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color and opacity (RGBA)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10753,7 +10748,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>경고! 팔레트 파일이 유효하지 않습니다.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12291,6 +12286,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>alpha cut-off</original>
+<translation>알파 컷오프</translation>
+</phrase>
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>투명한 색 (선택할 이미지를 마우스 오른쪽 단추로 클릭)</translation>
 </phrase>
@@ -12310,7 +12310,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>색상으로</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12515,11 +12515,16 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>binary</original>
+<translation>이진</translation>
+</phrase>
+
+<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -12533,6 +12538,16 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>PNG type</original>
 <translation>PNG 유형</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>기본 설정</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>고급 설정</translation>
 </phrase>
 
 <phrase>
@@ -12675,7 +12690,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>이러한 손실 최적화 설정은 파일 크기를  %1 줄였습니다.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15710,10 +15725,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4804 phrases. -->
+<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12436 total words. -->
 
 </pdData>

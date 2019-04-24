@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.340</langversion>
+<langversion>6.6.341</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -10675,6 +10675,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>quantization method</original>
+<translation>metode kuantisasi</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation>melestarikan putih dan hitam</translation>
+</phrase>
+
+<phrase>
+<original>palette type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use palette's alpha values</original>
 <translation></translation>
 </phrase>
@@ -10687,31 +10702,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>choose a palette file</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>basic settings</original>
-<translation>pengaturan dasar</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>pengaturan lanjutan</translation>
-</phrase>
-
-<phrase>
-<original>quantization method</original>
-<translation>metode kuantisasi</translation>
-</phrase>
-
-<phrase>
-<original>preserve white and black</original>
-<translation>melestarikan putih dan hitam</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>alpha cut-off</translation>
 </phrase>
 
 <phrase>
@@ -10740,8 +10730,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>biner</translation>
+<original>color only (RGB)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color and opacity (RGBA)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10764,7 +10759,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12302,6 +12297,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>alpha cut-off</original>
+<translation>alpha cut-off</translation>
+</phrase>
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>warna transparan (klik kanan gambar untuk memilih)</translation>
 </phrase>
@@ -12321,7 +12321,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>dengan warna</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12526,11 +12526,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>binary</original>
+<translation>biner</translation>
+</phrase>
+
+<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -12544,6 +12549,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <phrase>
 <original>PNG type</original>
 <translation>Tipe PNG</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>pengaturan dasar</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>pengaturan lanjutan</translation>
 </phrase>
 
 <phrase>
@@ -12686,7 +12701,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Pengaturan optimasi lossy ini mengurangi ukuran file sebesar %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15722,10 +15737,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4804 phrases. -->
+<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12436 total words. -->
 
 </pdData>

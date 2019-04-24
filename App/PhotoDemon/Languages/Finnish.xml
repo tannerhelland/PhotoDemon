@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3381</langversion>
+<langversion>6.8.3382</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10663,6 +10663,21 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>quantization method</original>
+<translation>kvantisointimenetelmän</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation>säilyttää valkoinen ja musta</translation>
+</phrase>
+
+<phrase>
+<original>palette type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use palette's alpha values</original>
 <translation></translation>
 </phrase>
@@ -10675,31 +10690,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <phrase>
 <original>choose a palette file</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>basic settings</original>
-<translation>Perus asetukset</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>Lisäasetukset</translation>
-</phrase>
-
-<phrase>
-<original>quantization method</original>
-<translation>kvantisointimenetelmän</translation>
-</phrase>
-
-<phrase>
-<original>preserve white and black</original>
-<translation>säilyttää valkoinen ja musta</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>alfa cut-off</translation>
 </phrase>
 
 <phrase>
@@ -10728,8 +10718,13 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>binääri</translation>
+<original>color only (RGB)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color and opacity (RGBA)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10752,7 +10747,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12290,6 +12285,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>alpha cut-off</original>
+<translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>läpinäkyvä väri (hiiren kakkospainikkeella kuvaa valita)</translation>
 </phrase>
@@ -12309,7 +12309,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>värin</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12514,11 +12514,16 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>binary</original>
+<translation>binääri</translation>
+</phrase>
+
+<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -12532,6 +12537,16 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <phrase>
 <original>PNG type</original>
 <translation>PNG tyyppi</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>Perus asetukset</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>Lisäasetukset</translation>
 </phrase>
 
 <phrase>
@@ -12674,7 +12689,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Nämä häviöllinen optimointiasetuksia pienentää tiedostoa %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15710,10 +15725,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4804 phrases. -->
+<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12436 total words. -->
 
 </pdData>

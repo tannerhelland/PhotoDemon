@@ -3,15 +3,14 @@ Attribute VB_Name = "Palettes"
 'PhotoDemon's Master Palette Interface
 'Copyright 2017-2019 by Tanner Helland
 'Created: 12/January/17
-'Last updated: 31/January/18
-'Last update: finish work on KD-tree palette matcher, which is both faster and more accurate than GDI matching
+'Last updated: 24/April/19
+'Last update: finalize expansion of alpha-capable (RGBA) palette generators
 '
-'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary source images,
-' and also applying arbitrary palettes to images.  In the future, I expect it to include a lot more interesting
-' palette code, including swatch imports from a variety of external sources.
+'This module contains a bunch of helper algorithms for generating optimal palettes from arbitrary
+' source images, and also applying arbitrary palettes to images.
 '
-'In the meantime, please note that this module has quite a few dependencies.  In particular, it performs
-' no quantization (and relatively little palette-matching) on its own.  This is primarily delegated to helper classes.
+'Please note that this module has quite a few dependencies.  In particular, it performs no quantization
+' (and relatively little palette-matching) on its own.  This is primarily delegated to helper classes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -100,7 +99,7 @@ End Function
 'Given a source image, an (empty) destination palette array, and a color count, return an optimized palette using
 ' the source image as the reference.  A modified median-cut system is used, and it achieves a very nice
 ' combination of performance, low memory usage, and high-quality output.
-Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance) As Boolean
+Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
@@ -117,6 +116,14 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     finalX = srcDIB.GetDIBStride - 1
     finalY = srcDIB.GetDIBHeight - 1
     
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
     'Add all pixels from the source image to a base color stack
     Dim pxStack() As pdMedianCut
     ReDim pxStack(0 To numOfColors - 1) As pdMedianCut
@@ -130,6 +137,12 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
     For x = 0 To finalX Step pxSize
         pxStack(0).AddColor_RGB srcPixels(x + 2, y), srcPixels(x + 1, y), srcPixels(x, y)
     Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
     Next y
     
     srcDIB.UnwrapArrayFromDIB srcPixels
@@ -218,7 +231,7 @@ End Function
 'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
 ' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
 ' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~500,000 pixels.
-Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance) As Boolean
+Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQuad, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMode As PD_QuantizeMode = pdqs_Variance, Optional ByVal suppressMessages As Boolean = True, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Do not request less than two colors in the final palette!
     If (numOfColors < 2) Then numOfColors = 2
@@ -234,6 +247,14 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     initY = 0
     finalX = srcDIB.GetDIBStride - 1
     finalY = srcDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates a
+    ' refresh interval based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
     
     'Add all pixels from the source image to a base color stack
     Dim pxStack() As pdMedianCut
@@ -271,6 +292,12 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
         pxStack(0).AddColor_RGBA r, g, b, a
         
     Next x
+        If (Not suppressMessages) Then
+            If (y And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
     Next y
     
     srcDIB.UnwrapArrayFromDIB srcPixels

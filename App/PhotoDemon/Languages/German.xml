@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1065</langversion>
+<langversion>7.2.1066</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10675,6 +10675,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>quantization method</original>
+<translation>Quantisierungsmethode</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation>Weiß und Schwarz beibehalten</translation>
+</phrase>
+
+<phrase>
+<original>palette type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use palette's alpha values</original>
 <translation>Alphawerte der Palette verwenden</translation>
 </phrase>
@@ -10687,31 +10702,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>choose a palette file</original>
 <translation>Eine Palettendatei wählen</translation>
-</phrase>
-
-<phrase>
-<original>basic settings</original>
-<translation>Grundeinstellungen</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>Erweiterte Einstellungen</translation>
-</phrase>
-
-<phrase>
-<original>quantization method</original>
-<translation>Quantisierungsmethode</translation>
-</phrase>
-
-<phrase>
-<original>preserve white and black</original>
-<translation>Weiß und Schwarz beibehalten</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>Alpha (Cut-off)</translation>
 </phrase>
 
 <phrase>
@@ -10740,8 +10730,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>Binär</translation>
+<original>color only (RGB)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color and opacity (RGBA)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10764,7 +10759,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>WARNUNG! Palettendatei ungültig.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12300,6 +12295,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
+<original>alpha cut-off</original>
+<translation>Alpha (Cut-off)</translation>
+</phrase>
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>Transparente Farbe (zum Auswählen Rechtsklick auf Bild)</translation>
 </phrase>
@@ -12319,7 +12319,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Nach Farbe</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12524,11 +12524,16 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
+<original>binary</original>
+<translation>Binär</translation>
+</phrase>
+
+<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -12542,6 +12547,16 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <phrase>
 <original>PNG type</original>
 <translation>PNG-Typ</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>Grundeinstellungen</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>Erweiterte Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -12684,7 +12699,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße bis %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15720,10 +15735,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4804 phrases. -->
+<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12436 total words. -->
 
 </pdData>

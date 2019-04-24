@@ -3,7 +3,7 @@ Begin VB.Form FormPalettize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Palettize"
-   ClientHeight    =   7020
+   ClientHeight    =   7710
    ClientLeft      =   45
    ClientTop       =   390
    ClientWidth     =   12315
@@ -19,7 +19,7 @@ Begin VB.Form FormPalettize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   468
+   ScaleHeight     =   514
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
@@ -37,19 +37,117 @@ Begin VB.Form FormPalettize
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6270
+      Top             =   6960
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6105
+      Height          =   6705
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   11827
+   End
+   Begin PhotoDemon.pdContainer pnlQuantize 
+      Height          =   6000
+      Index           =   0
+      Left            =   5880
+      TabIndex        =   3
+      Top             =   960
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   10583
+      Begin PhotoDemon.pdColorSelector clsBackground 
+         Height          =   855
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2160
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1508
+         Caption         =   "background color"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdSlider sldDitherAmount 
+         Height          =   735
+         Index           =   0
+         Left            =   120
+         TabIndex        =   12
+         Top             =   5160
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1296
+         Caption         =   "dithering amount"
+         FontSizeCaption =   11
+         Max             =   100
+         Value           =   100
+         GradientColorRight=   1703935
+         DefaultValue    =   100
+      End
+      Begin PhotoDemon.pdDropDown cboDither 
+         Height          =   735
+         Index           =   0
+         Left            =   120
+         TabIndex        =   13
+         Top             =   4320
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1296
+         Caption         =   "dithering"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdSlider sldPalette 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   14
+         Top             =   3120
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1296
+         Caption         =   "palette size"
+         FontSizeCaption =   11
+         Min             =   2
+         Max             =   256
+         Value           =   256
+         GradientColorRight=   1703935
+         NotchPosition   =   2
+         NotchValueCustom=   256
+      End
+      Begin PhotoDemon.pdButtonStrip btsMethod 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   15
+         Top             =   1080
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1720
+         Caption         =   "quantization method"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdCheckBox chkPreserveWB 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   16
+         Top             =   3885
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   661
+         Caption         =   "preserve white and black"
+      End
+      Begin PhotoDemon.pdButtonStrip btsAlpha 
+         Height          =   975
+         Left            =   120
+         TabIndex        =   17
+         Top             =   0
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   1720
+         Caption         =   "palette type"
+         FontSizeCaption =   11
+      End
    End
    Begin PhotoDemon.pdContainer pnlQuantize 
       Height          =   5175
@@ -63,7 +161,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdCheckBox chkMatchAlpha 
          Height          =   375
          Left            =   210
-         TabIndex        =   22
+         TabIndex        =   10
          Top             =   3090
          Width           =   5895
          _ExtentX        =   10398
@@ -73,7 +171,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdListBox lstPalettes 
          Height          =   2175
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   8
          Top             =   840
          Width           =   6015
          _ExtentX        =   10610
@@ -84,7 +182,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdButton cmdLoadPalette 
          Height          =   495
          Left            =   5400
-         TabIndex        =   17
+         TabIndex        =   6
          Top             =   345
          Width           =   615
          _ExtentX        =   1085
@@ -94,7 +192,7 @@ Begin VB.Form FormPalettize
       Begin PhotoDemon.pdTextBox txtPalette 
          Height          =   375
          Left            =   360
-         TabIndex        =   16
+         TabIndex        =   5
          Top             =   390
          Width           =   4815
          _ExtentX        =   8493
@@ -114,7 +212,7 @@ Begin VB.Form FormPalettize
          Height          =   700
          Index           =   1
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   7
          Top             =   3480
          Width           =   6015
          _ExtentX        =   10610
@@ -126,7 +224,7 @@ Begin VB.Form FormPalettize
          Height          =   700
          Index           =   1
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   9
          Top             =   4380
          Width           =   6015
          _ExtentX        =   10610
@@ -137,166 +235,6 @@ Begin VB.Form FormPalettize
          Value           =   100
          GradientColorRight=   1703935
          DefaultValue    =   100
-      End
-   End
-   Begin PhotoDemon.pdContainer pnlQuantize 
-      Height          =   5280
-      Index           =   0
-      Left            =   5880
-      TabIndex        =   3
-      Top             =   960
-      Width           =   6375
-      _ExtentX        =   11245
-      _ExtentY        =   9313
-      Begin PhotoDemon.pdTitle ttlStandard 
-         Height          =   375
-         Index           =   0
-         Left            =   0
-         TabIndex        =   14
-         Top             =   0
-         Width           =   6315
-         _ExtentX        =   11139
-         _ExtentY        =   661
-         Caption         =   "basic settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdTitle ttlStandard 
-         Height          =   375
-         Index           =   1
-         Left            =   0
-         TabIndex        =   15
-         Top             =   360
-         Width           =   6315
-         _ExtentX        =   11139
-         _ExtentY        =   661
-         Caption         =   "advanced settings"
-         FontSize        =   12
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdContainer pnlBasic 
-         Height          =   4095
-         Index           =   0
-         Left            =   120
-         TabIndex        =   5
-         Top             =   840
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   7223
-         Begin PhotoDemon.pdSlider sldDitherAmount 
-            Height          =   735
-            Index           =   0
-            Left            =   120
-            TabIndex        =   20
-            Top             =   3300
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1296
-            Caption         =   "dithering amount"
-            FontSizeCaption =   11
-            Max             =   100
-            Value           =   100
-            GradientColorRight=   1703935
-            DefaultValue    =   100
-         End
-         Begin PhotoDemon.pdDropDown cboDither 
-            Height          =   735
-            Index           =   0
-            Left            =   120
-            TabIndex        =   6
-            Top             =   2400
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1296
-            Caption         =   "dithering"
-            FontSizeCaption =   11
-         End
-         Begin PhotoDemon.pdSlider sldPalette 
-            Height          =   735
-            Left            =   120
-            TabIndex        =   7
-            Top             =   1200
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1296
-            Caption         =   "palette size"
-            FontSizeCaption =   11
-            Min             =   2
-            Max             =   256
-            Value           =   256
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   256
-         End
-         Begin PhotoDemon.pdButtonStrip btsMethod 
-            Height          =   1095
-            Left            =   120
-            TabIndex        =   8
-            Top             =   0
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1931
-            Caption         =   "quantization method"
-            FontSizeCaption =   11
-         End
-         Begin PhotoDemon.pdCheckBox chkPreserveWB 
-            Height          =   375
-            Left            =   240
-            TabIndex        =   9
-            Top             =   1965
-            Width           =   5895
-            _ExtentX        =   10398
-            _ExtentY        =   661
-            Caption         =   "preserve white and black"
-         End
-      End
-      Begin PhotoDemon.pdContainer pnlBasic 
-         Height          =   3375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   10
-         Top             =   840
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   5953
-         Begin PhotoDemon.pdButtonStrip btsAlpha 
-            Height          =   1095
-            Left            =   120
-            TabIndex        =   11
-            Top             =   1200
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1931
-            Caption         =   "transparency"
-            FontSizeCaption =   11
-         End
-         Begin PhotoDemon.pdSlider sldAlphaCutoff 
-            Height          =   855
-            Left            =   120
-            TabIndex        =   12
-            Top             =   2400
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1508
-            Caption         =   "alpha cut-off"
-            FontSizeCaption =   11
-            Max             =   254
-            SliderTrackStyle=   1
-            Value           =   64
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   64
-         End
-         Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   1095
-            Left            =   120
-            TabIndex        =   13
-            Top             =   0
-            Width           =   6015
-            _ExtentX        =   10610
-            _ExtentY        =   1931
-            Caption         =   "background color"
-            FontSize        =   11
-         End
       End
    End
 End
@@ -323,9 +261,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to avoid recursive setting changes
-Private m_ActiveTitleBar As Long, m_PanelChangesActive As Boolean
-
 'When loading a palette from file, the pdPalette class handles all the actual parsing
 Private m_Palette As pdPalette
 
@@ -333,12 +268,51 @@ Private m_Palette As pdPalette
 Private m_PalettePath As String, m_PaletteFileSize As Long
 
 Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
-    UpdateTransparencyOptions
+    ReflowFirstPanel
     UpdatePreview
 End Sub
 
-Private Sub UpdateTransparencyOptions()
-    sldAlphaCutoff.Visible = (btsAlpha.ListIndex = 2)
+Private Sub ReflowFirstPanel()
+    
+    'PD currently supports two palette types: RGB and RGBA.  RGBA doesn't require some settings
+    ' (like quantizer - as only one is supported - or background color), so we need to reflow the
+    ' interface depending on the current palette type.
+    Dim rgbPaletteMode As Boolean
+    rgbPaletteMode = (btsAlpha.ListIndex = 0)
+    
+    Dim yOffset As Long, yPadding As Long
+    yPadding = Interface.FixDPI(6)
+    yOffset = btsAlpha.GetTop + btsAlpha.GetHeight + yPadding
+    
+    'Only expose quantization method in RGB mode
+    btsMethod.Visible = rgbPaletteMode
+    If rgbPaletteMode Then
+        btsMethod.SetTop yOffset
+        yOffset = yOffset + btsMethod.GetHeight + yPadding
+    End If
+    
+    'Palette size and "preserve black and white" are always available
+    sldPalette.SetTop yOffset
+    yOffset = yOffset + sldPalette.GetHeight + yPadding
+    chkPreserveWB.SetTop yOffset
+    yOffset = yOffset + chkPreserveWB.GetHeight + yPadding
+    
+    'Dithering mode and strength are always available
+    cboDither(0).SetTop yOffset
+    yOffset = yOffset + cboDither(0).GetHeight + yPadding
+    
+    If sldDitherAmount(0).Visible Then
+        sldDitherAmount(0).SetTop yOffset
+        yOffset = yOffset + sldDitherAmount(0).GetHeight + yPadding
+    End If
+    
+    'Finally, only expose background color in RGB mode
+    clsBackground.Visible = rgbPaletteMode
+    If rgbPaletteMode Then
+        clsBackground.SetTop yOffset
+        yOffset = yOffset + clsBackground.GetHeight + yPadding
+    End If
+    
 End Sub
 
 Private Sub btsMethod_Click(ByVal buttonIndex As Long)
@@ -358,8 +332,13 @@ Private Sub UpdateVisiblePanel()
 End Sub
 
 Private Sub cboDither_Click(Index As Integer)
+    SetDitherVisibility Index
     UpdatePreview
-    UpdateColorBleedVisibility
+End Sub
+
+Private Sub SetDitherVisibility(ByVal srcIndex As Long)
+    sldDitherAmount(srcIndex).Visible = (cboDither(srcIndex).ListIndex <> 0)
+    If (srcIndex = 0) Then ReflowFirstPanel
 End Sub
 
 Private Sub chkMatchAlpha_Click()
@@ -387,7 +366,6 @@ Private Sub cmdBar_ResetClick()
     btsMethod.ListIndex = 0
     clsBackground.Color = vbWhite
     btsAlpha.ListIndex = 0
-    sldAlphaCutoff.Value = sldAlphaCutoff.NotchValueCustom
     UpdatePreview
 End Sub
 
@@ -411,28 +389,17 @@ Private Sub Form_Load()
     btsMethod.AddItem "NeuQuant", 2
     btsMethod.ListIndex = 0
     
-    btsAlpha.AddItem "auto", 0
-    btsAlpha.AddItem "full", 1
-    btsAlpha.AddItem "binary", 2
-    btsAlpha.AddItem "none", 3
-    btsAlpha.ListIndex = 0
-    UpdateTransparencyOptions
-    
     Dim i As Long
     For i = cboDither.lBound To cboDither.UBound
         Palettes.PopulateDitheringDropdown cboDither(i)
         cboDither(i).ListIndex = 6
     Next i
+    SetDitherVisibility 0
     
-    UpdateColorBleedVisibility
-    
-    'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
-    ttlStandard(0).Value = True
-    m_ActiveTitleBar = 0
-    UpdateStandardTitlebars
-    
-    'UpdateMasterPanelVisibility
-    UpdateStandardPanelVisibility
+    btsAlpha.AddItem "color only (RGB)", 0
+    btsAlpha.AddItem "color and opacity (RGBA)", 1
+    btsAlpha.ListIndex = 0
+    ReflowFirstPanel
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -453,13 +420,21 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     Set cParams = New pdParamXML
     cParams.SetParamString toolParams
     
+    Dim useRGBAQuantizer As Boolean
+    useRGBAQuantizer = cParams.GetBool("useAlpha", False)
+    
+    'The only quantizer that (currently) supports RGBA output is our homebrew median cut quantizer
     Dim quantMethod As PD_COLOR_QUANTIZE
-    If Strings.StringsEqual(cParams.GetString("method", "mediancut"), "neuquant", True) Then
-        quantMethod = PDCQ_Neuquant
-    ElseIf Strings.StringsEqual(cParams.GetString("method", "mediancut"), "wu", True) Then
-        quantMethod = PDCQ_Wu
-    Else
+    If useRGBAQuantizer Then
         quantMethod = PDCQ_MedianCut
+    Else
+        If Strings.StringsEqual(cParams.GetString("quantizer", "mediancut"), "neuquant", True) Then
+            quantMethod = PDCQ_Neuquant
+        ElseIf Strings.StringsEqual(cParams.GetString("quantizer", "mediancut"), "wu", True) Then
+            quantMethod = PDCQ_Wu
+        Else
+            quantMethod = PDCQ_MedianCut
+        End If
     End If
     
     Dim paletteSize As Long
@@ -477,26 +452,8 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     Dim finalBackColor As Long
     finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
     
-    Dim outputAlphaMode As PD_ALPHA_STATUS, useAlphaInPalette As Boolean
-    useAlphaInPalette = False
-    
-    If Strings.StringsEqual(cParams.GetString("alphamode", "auto"), "auto", True) Then
-        outputAlphaMode = PDAS_ComplicatedAlpha
-        useAlphaInPalette = (quantMethod = PDCQ_MedianCut)
-    ElseIf Strings.StringsEqual(cParams.GetString("alphamode", "full"), "full", True) Then
-        outputAlphaMode = PDAS_ComplicatedAlpha
-        useAlphaInPalette = (quantMethod = PDCQ_MedianCut)
-    ElseIf Strings.StringsEqual(cParams.GetString("alphamode", "full"), "binary", True) Then
-        outputAlphaMode = PDAS_BinaryAlpha
-    Else
-        outputAlphaMode = PDAS_NoAlpha
-    End If
-    
-    Dim alphaCutoff As Long
-    alphaCutoff = cParams.GetLong("alphacutoff", 64)
-    
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , useAlphaInPalette
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , useRGBAQuantizer
     
     If (Not toPreview) Then
         SetProgBarMax workingDIB.GetDIBHeight * 2
@@ -510,24 +467,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     End If
     
     'If the caller doesn't want transparency, composite the image against the specified backcolor *in advance*.
-    Dim currentAlphaState As PD_ALPHA_STATUS
-    currentAlphaState = PDAS_ComplicatedAlpha
-    
-    If (outputAlphaMode = PDAS_NoAlpha) Then
-        workingDIB.CompositeBackgroundColor Colors.ExtractRed(finalBackColor), Colors.ExtractGreen(finalBackColor), Colors.ExtractBlue(finalBackColor)
-        currentAlphaState = PDAS_NoAlpha
-        
-    'Similarly, if they want binary alpha treatment, apply that now as well.
-    ElseIf (outputAlphaMode = PDAS_BinaryAlpha) Then
-        
-        Dim transTable() As Byte
-        ReDim transTable(0 To 255) As Byte
-        DIBs.ApplyAlphaCutoff_Ex workingDIB, transTable, alphaCutoff
-        DIBs.ApplyBinaryTransparencyTable workingDIB, transTable, finalBackColor
-        
-        currentAlphaState = PDAS_BinaryAlpha
-        
-    End If
+    If (Not useRGBAQuantizer) Then workingDIB.CompositeBackgroundColor Colors.ExtractRed(finalBackColor), Colors.ExtractGreen(finalBackColor), Colors.ExtractBlue(finalBackColor)
     
     'Branch according to internal or plugin-based quantization methods.  Note that if the user does *NOT* want
     ' dithering, we can use the plugin to apply the palette as well, trimming processing time a bit.
@@ -536,10 +476,10 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
     If (quantMethod = PDCQ_MedianCut) Then
     
         'Generate an optimal palette, and if alpha is involved, use it as part of the calculation.
-        If useAlphaInPalette Then
-            Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize
+        If useRGBAQuantizer Then
+            Palettes.GetOptimizedPaletteIncAlpha workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
         Else
-            Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize
+            Palettes.GetOptimizedPalette workingDIB, finalPalette, paletteSize, , toPreview, workingDIB.GetDIBHeight * 2, 0
         End If
         
         'Preserve black and white, as necessary
@@ -552,13 +492,13 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
         'Apply said palette to the image
         If (ditherMethod = PDDM_None) Then
-            If useAlphaInPalette Then
+            If useRGBAQuantizer Then
                 Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             Else
                 Palettes.ApplyPaletteToImage_KDTree workingDIB, finalPalette, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             End If
         Else
-            If useAlphaInPalette Then
+            If useRGBAQuantizer Then
                 Palettes.ApplyPaletteToImage_Dithered_IncAlpha workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
             Else
                 Palettes.ApplyPaletteToImage_Dithered workingDIB, finalPalette, ditherMethod, ditherAmount, toPreview, workingDIB.GetDIBHeight * 2, workingDIB.GetDIBHeight
@@ -577,7 +517,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         If (quantMethod = PDCQ_Wu) Then fiQuantMode = FIQ_WUQUANT Else fiQuantMode = FIQ_NNQUANT
         
         Dim fi_DIB8 As Long
-        fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, outputAlphaMode, currentAlphaState, alphaCutoff, finalBackColor, , paletteSize, , , fiQuantMode)
+        fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, PDAS_NoAlpha, PDAS_ComplicatedAlpha, , finalBackColor, , paletteSize, , , fiQuantMode)
         FreeImage_FlipVertically fi_DIB8
         
         'If the caller does *not* want dithering, copy the (already palettized) FreeImage DIB over our
@@ -618,7 +558,7 @@ Private Sub ApplyRuntimePalettizeEffect(ByVal toolParams As String, Optional ByV
         
     End If
     
-    EffectPrep.FinalizeImageData toPreview, dstPic, useAlphaInPalette
+    EffectPrep.FinalizeImageData toPreview, dstPic, useRGBAQuantizer
     
 End Sub
 
@@ -700,13 +640,6 @@ Private Sub ApplyPaletteFromFile(ByVal toolParams As String, Optional ByVal toPr
     
 End Sub
 
-Private Sub UpdateColorBleedVisibility()
-    Dim i As Long
-    For i = cboDither.lBound To cboDither.UBound
-        sldDitherAmount(i).Visible = (cboDither(i).ListIndex <> 0)
-    Next i
-End Sub
-
 Private Sub lstPalettes_Click()
     UpdatePreview
 End Sub
@@ -716,70 +649,12 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub sldAlphaCutoff_Change()
-    UpdatePreview
-End Sub
-
 Private Sub sldDitherAmount_Change(Index As Integer)
     UpdatePreview
 End Sub
 
 Private Sub sldPalette_Change()
     UpdatePreview
-End Sub
-
-Private Sub ttlStandard_Click(Index As Integer, ByVal newState As Boolean)
-
-    If newState Then m_ActiveTitleBar = Index
-    pnlBasic(Index).Visible = newState
-    
-    If (Not m_PanelChangesActive) Then
-        If newState Then UpdateStandardTitlebars Else UpdateStandardPanelVisibility
-    End If
-    
-End Sub
-
-Private Sub UpdateStandardTitlebars()
-    
-    m_PanelChangesActive = True
-    
-    '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
-    Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
-        ttlStandard(i).Value = (i = m_ActiveTitleBar)
-        pnlBasic(i).Visible = ttlStandard(i).Value
-    Next i
-    
-    'Because window visibility changes involve a number of window messages, let the message pump catch up.
-    ' (We need window visibility finalized, because we need to query things like window size in order to
-    '  reflow the current dialog layout.)
-    DoEvents
-    UpdateStandardPanelVisibility
-    
-    m_PanelChangesActive = False
-    
-End Sub
-
-Private Sub UpdateStandardPanelVisibility()
-    
-    'Reflow the interface to match
-    Dim yPos As Long, yPadding As Long
-    yPos = 0
-    yPadding = Interface.FixDPI(8)
-    
-    Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
-    
-        ttlStandard(i).SetTop yPos
-        yPos = yPos + ttlStandard(i).GetHeight + yPadding
-        
-        If ttlStandard(i).Value Then
-            pnlBasic(i).SetTop yPos
-            yPos = yPos + pnlBasic(i).GetHeight + yPadding
-        End If
-        
-    Next i
-    
 End Sub
 
 'This function simply sorts incoming palettize requests by type, then calls the appropriate sub-function to actually
@@ -851,33 +726,26 @@ Private Function GetToolParamString() As String
     
     With cParams
         
+        '"Generate optimal" vs "from file"
         .AddParam "mode", btsOptions.ListIndex
         
+        'RGB vs RGBA palette
+        .AddParam "useAlpha", CBool(btsAlpha.ListIndex = 1)
+        
+        'Quantizer only matters for RGB palettes but we write it regardless.  (Perhaps in the future
+        ' we can support different quantizers for RGBA palettes.)
         Select Case btsMethod.ListIndex
             Case 0
-                .AddParam "method", "MedianCut"
+                .AddParam "quantizer", "MedianCut"
             Case 1
-                .AddParam "method", "Wu"
+                .AddParam "quantizer", "Wu"
             Case 2
-                .AddParam "method", "NeuQuant"
+                .AddParam "quantizer", "NeuQuant"
         End Select
         
         .AddParam "palettesize", sldPalette.Value
         .AddParam "preservewhiteblack", chkPreserveWB.Value
         .AddParam "backgroundcolor", clsBackground.Color
-        
-        Select Case btsAlpha.ListIndex
-            Case 0
-                .AddParam "alphamode", "auto"
-            Case 1
-                .AddParam "alphamode", "full"
-            Case 2
-                .AddParam "alphamode", "binary"
-            Case 3
-                .AddParam "alphamode", "none"
-        End Select
-        
-        .AddParam "alphacutoff", sldAlphaCutoff.Value
         
         '"From file" data comes next
         .AddParam "palettefile", txtPalette.Text
@@ -898,4 +766,3 @@ End Function
 Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then Me.ApplyPalettizeEffect GetToolParamString, True, pdFxPreview
 End Sub
-

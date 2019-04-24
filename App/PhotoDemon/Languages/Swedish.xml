@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3381</langversion>
+<langversion>6.8.3382</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10665,6 +10665,21 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
 
 <phrase>
+<original>quantization method</original>
+<translation>kvantisering metod</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation>bevara vit och svart</translation>
+</phrase>
+
+<phrase>
+<original>palette type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use palette's alpha values</original>
 <translation></translation>
 </phrase>
@@ -10677,31 +10692,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>choose a palette file</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>basic settings</original>
-<translation>grund inställningar</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings</original>
-<translation>avancerade inställningar</translation>
-</phrase>
-
-<phrase>
-<original>quantization method</original>
-<translation>kvantisering metod</translation>
-</phrase>
-
-<phrase>
-<original>preserve white and black</original>
-<translation>bevara vit och svart</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>alfa cut-off</translation>
 </phrase>
 
 <phrase>
@@ -10730,8 +10720,13 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>binär</translation>
+<original>color only (RGB)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color and opacity (RGBA)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10754,7 +10749,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 39 phrases. 21 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -12291,6 +12286,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>alpha cut-off</original>
+<translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>transparent färg (högerklicka  bilden för att välja)</translation>
 </phrase>
@@ -12310,7 +12310,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>efter färg</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12515,11 +12515,16 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>binary</original>
+<translation>binär</translation>
+</phrase>
+
+<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -12533,6 +12538,16 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <phrase>
 <original>PNG type</original>
 <translation>PNG typ</translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation>grund inställningar</translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>avancerade inställningar</translation>
 </phrase>
 
 <phrase>
@@ -12675,7 +12690,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Dessa förstörande optimeringsinställningar  minska filstorleken med %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15711,10 +15726,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2621</phrasecount>
+<phrasecount>2624</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4811 phrases. -->
-<!-- 2190 are duplicates, so only 2621 unique phrases have been written to file. -->
-<!-- These 2621 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4804 phrases. -->
+<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
+<!-- These 2624 phrases contain approximately 12436 total words. -->
 
 </pdData>
