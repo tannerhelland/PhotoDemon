@@ -34,10 +34,10 @@ Begin VB.Form toolbar_Layers
       Index           =   0
       Left            =   240
       TabIndex        =   3
-      Top             =   1560
+      Top             =   3840
       Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   1085
+      _extentx        =   4471
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -46,10 +46,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   0
       Top             =   60
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "overview"
-      Draggable       =   -1  'True
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "search"
+      draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -58,10 +58,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   960
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "layers"
-      Draggable       =   -1  'True
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "color selector"
+      draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -70,30 +70,52 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   2
       Top             =   480
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "color selector"
-      Draggable       =   -1  'True
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "overview"
+      draggable       =   -1  'True
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
       Index           =   1
       Left            =   240
       TabIndex        =   4
-      Top             =   2280
+      Top             =   4560
       Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   1085
+      _extentx        =   4471
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
       Index           =   2
       Left            =   240
       TabIndex        =   5
-      Top             =   3000
+      Top             =   5280
       Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   1085
+      _extentx        =   4471
+      _extenty        =   1085
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   270
+      Index           =   3
+      Left            =   120
+      TabIndex        =   6
+      Top             =   1440
+      Width           =   3495
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "layers"
+      draggable       =   -1  'True
+   End
+   Begin PhotoDemon.pdContainer ctlContainer 
+      Height          =   615
+      Index           =   3
+      Left            =   240
+      TabIndex        =   7
+      Top             =   6000
+      Width           =   2535
+      _extentx        =   4471
+      _extenty        =   1085
    End
 End
 Attribute VB_Name = "toolbar_Layers"
@@ -105,8 +127,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Right-side ("Layers") Toolbar
 'Copyright 2014-2019 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 23/February/18
-'Last update: finalize work on vertically resizable panels
+'Last updated: 25/April/19
+'Last update: add the "search" panel, which is a little tricky because it isn't resizable (unlike other panels)
 '
 'For historical reasons, I call this the "layers" toolbar, but it actually encompasses everything that appears on
 ' the right-side toolbar.  Most of the code in this window is dedicated to supporting collapsible/resizable panels,
@@ -166,15 +188,21 @@ Private Sub Form_Load()
     'Initialize panel height values.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
     '  space remains after the panels above it are positioned.)
-    Dim pnlDefaultHeight As Long, targetHeight As Long
+    Dim pnlDefaultHeight As Long, targetHeight As Long, pnlHeightSearch As Long
+    pnlHeightSearch = Interface.FixDPI(24)
     pnlDefaultHeight = Interface.FixDPI(100)
     
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
         If UserPrefs.IsReady Then
             targetHeight = UserPrefs.GetPref_Long("Toolbox", "RightPanelSize" & CStr(i + 1), pnlDefaultHeight)
+            If (i = 0) Then targetHeight = pnlHeightSearch
         Else
-            targetHeight = pnlDefaultHeight
+            If (i = 0) Then
+                targetHeight = pnlHeightSearch
+            Else
+                targetHeight = pnlDefaultHeight
+            End If
         End If
         ctlContainer(i).SetHeight targetHeight
     Next i
@@ -191,24 +219,27 @@ Private Sub Form_Load()
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     
-    Load layerpanel_Navigator
-    m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Navigator.hWnd
-    layerpanel_Navigator.Show
+    Load layerpanel_Search
+    m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Search.hWnd
+    layerpanel_Search.Show
+    PDDebug.LogTiming "right toolbox / search panel", VBHacks.GetTimerDifferenceNow(startTime)
+    VBHacks.GetHighResTime startTime
     
+    Load layerpanel_Navigator
+    m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Navigator.hWnd
+    layerpanel_Navigator.Show
     PDDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     Load layerpanel_Colors
-    m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
+    m_WindowSync.SynchronizeWindows ctlContainer(2).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
-    
     PDDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
-    
     PDDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
     VBHacks.GetHighResTime startTime
     
@@ -267,6 +298,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Set m_WindowSync = Nothing
         
         'Unload all child forms
+        Unload layerpanel_Search
         Unload layerpanel_Navigator
         Unload layerpanel_Colors
         Unload layerpanel_Layers
@@ -347,7 +379,7 @@ Private Sub ttlPanel_MouseDownCustom(Index As Integer, ByVal Button As PDMouseBu
     'Only panels after the first one can be resized (as the first panel sits at the top of the toolbox, and it must
     ' always remain aligned there).  Note also that dragging a titlebar resizes the panel *above* this one
     ' (hence the -1 on the line below).
-    If (Index > 0) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then
+    If (Index > 1) And (Not g_WindowManager Is Nothing) And ((Button And pdLeftButton) <> 0) Then
         m_PanelResizeActive = Index - 1
         m_PanelStartHeight = ctlContainer(m_PanelResizeActive).GetHeight
         m_NetResizeAmount = 0
@@ -389,7 +421,7 @@ Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
     ' the layer box, regardless of whether it's visible or not.
     layerpanel_Layers.ForceRedraw True, layerID
     
-    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+    If ttlPanel(1).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
     'pdDebug.LogAction "toolbar_Layers.NotifyLayerChange finished in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
@@ -397,7 +429,7 @@ End Sub
 'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel
 ' affected by viewport changes is the navigator panel.
 Public Sub NotifyViewportChange()
-    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
+    If ttlPanel(1).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
 End Sub
 
 Public Sub ResetInterface()
@@ -405,7 +437,11 @@ Public Sub ResetInterface()
     'Reset all panels to their default heights
     Dim i As Long
     For i = 0 To m_NumOfPanels - 1
-        ctlContainer(i).SetHeight Interface.FixDPI(100)
+        If (i = 0) Then
+            ctlContainer(i).SetHeight Interface.FixDPI(24)
+        Else
+            ctlContainer(i).SetHeight Interface.FixDPI(100)
+        End If
         ttlPanel(i).Value = True
     Next i
     
@@ -421,7 +457,7 @@ Private Sub ReflowInterface()
         
     'We need to wait for the main form to initialize before reflowing our interface; otherwise, we can't guarantee that
     ' this form is even the right size!
-    If Not FormMain.ToolbarsAllowedToReflow Then Exit Sub
+    If (Not FormMain.ToolbarsAllowedToReflow) Then Exit Sub
         
     'If the form is invisible (due to minimize or something else), just exit now
     Dim formWidth As Long, formHeight As Long
@@ -452,6 +488,9 @@ Private Sub ReflowInterface()
     MIN_PANEL_SIZE = Interface.FixDPI(70)
     MAX_PANEL_SIZE = Interface.FixDPI(320)
     MIN_LAYER_PANEL_SIZE = Interface.FixDPI(173)
+    
+    Dim FIXED_PANEL_SIZE_SEARCH As Long
+    FIXED_PANEL_SIZE_SEARCH = Interface.FixDPI(24)
     
     'We now calculate the toolbar's layout in two passes.  First, we calculate new layout rects for all objects on
     ' the form (including titlebars and containers).  Next, we validate all positions by ensuring that all visible
@@ -495,6 +534,12 @@ Private Sub ReflowInterface()
                     tmpHeight = (formHeight - yOffset)
                     pnlRects(i).Height = tmpHeight
                     
+                'The top panel (the search panel) is also handled specially, as it remains a fixed size no matter what.
+                ElseIf (i = 0) Then
+                
+                    pnlRects(i).Height = FIXED_PANEL_SIZE_SEARCH
+                
+                'All other panels
                 Else
                 
                     'If a panel is in the midst of a user-initiated resize, let's calculate its height as the sum of
@@ -675,6 +720,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = Fal
     'Pass the theme update request to any active child forms.
     ' (Note that we don't have to do this on our initial load, because the panels will automatically
     ' theme themselves.)
+    If ((Not layerpanel_Search Is Nothing) And (Not isFirstLoad)) Then layerpanel_Search.UpdateAgainstCurrentTheme
     If ((Not layerpanel_Navigator Is Nothing) And (Not isFirstLoad)) Then layerpanel_Navigator.UpdateAgainstCurrentTheme
     If ((Not layerpanel_Colors Is Nothing) And (Not isFirstLoad)) Then layerpanel_Colors.UpdateAgainstCurrentTheme
     If ((Not layerpanel_Layers Is Nothing) And (Not isFirstLoad)) Then layerpanel_Layers.UpdateAgainstCurrentTheme
@@ -682,4 +728,9 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = Fal
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     ReflowInterface
     
+End Sub
+
+Public Sub SetFocusToSearchBox()
+    If (Not ttlPanel(0).Value) Then ttlPanel(0).Value = True
+    layerpanel_Search.SetFocusToSearchBox
 End Sub

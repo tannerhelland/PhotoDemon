@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.341</langversion>
+<langversion>6.6.342</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -13552,6 +13552,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
+<original>search</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color selector</original>
+<translation>pemilih warna</translation>
+</phrase>
+
+<phrase>
 <original>overview</original>
 <translation>ikhtisar</translation>
 </phrase>
@@ -13561,12 +13571,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>lapisan</translation>
 </phrase>
 
-<phrase>
-<original>color selector</original>
-<translation>pemilih warna</translation>
-</phrase>
-
-<!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -15735,12 +15740,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2624</phrasecount>
+<phrasecount>2625</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4804 phrases. -->
-<!-- 2180 are duplicates, so only 2624 unique phrases have been written to file. -->
-<!-- These 2624 phrases contain approximately 12436 total words. -->
+<!-- As of this build, PhotoDemon contains 4805 phrases. -->
+<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
+<!-- These 2625 phrases contain approximately 12437 total words. -->
 
 </pdData>

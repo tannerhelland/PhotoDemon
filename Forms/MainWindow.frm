@@ -2569,6 +2569,10 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
             toolbar_Toolbox.SelectNewTool PAINT_FILL
         ElseIf Strings.StringsEqual(keyName, "tool_activate_gradient", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
+        
+        'Search
+        ElseIf Strings.StringsEqual(keyName, "tool_search", True) Then
+            toolbar_Layers.SetFocusToSearchBox
             
         'Menus
         ElseIf Strings.StringsEqual(keyName, "Preferences", True) Then

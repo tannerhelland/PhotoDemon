@@ -839,19 +839,19 @@ End Sub
 
 'Return a list of searchable menu strings.  Matches to this list can then be passed back to this module and
 ' matched against their respective menu(s).
-Public Function GetSearchableMenuList(ByRef dstStack As pdStringStack, Optional ByVal ignoreDisabledMenus As Boolean = True) As Boolean
+Public Function GetSearchableMenuList(ByRef dstStack As pdStringStack, Optional ByVal ignoreDisabledMenus As Boolean = True, Optional ByVal restrictToThisTopMenuIndex As Long = -1) As Boolean
     
     Set dstStack = New pdStringStack
     
-    Dim i As Long
+    Dim i As Long, allowedToAdd As Boolean
     For i = 0 To m_NumOfMenus - 1
         If (LenB(m_Menus(i).me_TextSearchable) <> 0) Then
             
-            If ignoreDisabledMenus Then
-                If Menus.IsMenuEnabled(m_Menus(i).me_Name) Then dstStack.AddString m_Menus(i).me_TextSearchable
-            Else
-                dstStack.AddString m_Menus(i).me_TextSearchable
-            End If
+            allowedToAdd = True
+            If ignoreDisabledMenus Then allowedToAdd = Menus.IsMenuEnabled(m_Menus(i).me_Name)
+            If (restrictToThisTopMenuIndex >= 0) Then allowedToAdd = allowedToAdd And (m_Menus(i).me_TopMenu = restrictToThisTopMenuIndex)
+            
+            If allowedToAdd Then dstStack.AddString m_Menus(i).me_TextSearchable
             
         End If
     Next i
@@ -958,6 +958,9 @@ Public Sub InitializeAllHotkeys()
     
         .Enabled = True
         
+        'Special hotkeys
+        .AddAccelerator vbKeyF, vbCtrlMask, "tool_search", , False, False, False
+        
         'Tool hotkeys (e.g. keys not associated with menus)
         .AddAccelerator vbKeyH, , "tool_activate_hand", , , , False
         .AddAccelerator vbKeyM, , "tool_activate_move", , , , False
@@ -1011,7 +1014,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyZ, vbCtrlMask, "Undo", "edit_undo", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyY, vbCtrlMask, "Redo", "edit_redo", True, True, False, UNDO_Nothing
         
-        .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
+        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Repeat last action", "edit_repeat", True, True, False, UNDO_Image
         
         .AddAccelerator vbKeyX, vbCtrlMask, "Cut", "edit_cut", True, True, False, UNDO_Image
         
