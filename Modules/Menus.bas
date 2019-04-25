@@ -18,17 +18,19 @@ Attribute VB_Name = "Menus"
 Option Explicit
 
 Private Type PD_MenuEntry
-    ME_TopMenu As Long                      'Top-level index of this menu
-    ME_SubMenu As Long                      'Sub-menu index of this menu (if any)
-    ME_SubSubMenu As Long                   'Sub-sub-menu index of this menu (if any)
-    ME_HotKeyCode As KeyCodeConstants       'Hotkey, if any, associated with this menu
-    ME_HotKeyShift As ShiftConstants        'Hotkey shift modifiers, if any, associated with this menu
-    ME_HotKeyTextTranslated As String       'Hotkey text, with translations (if any) always applied.
-    ME_Name As String                       'Name of this menu (must be unique)
-    ME_ResImage As String                   'Name of this menu's image, as stored in PD's central resource file
-    ME_TextEn As String                     'Text of this menu, in English
-    ME_TextTranslated As String             'Text of this menu, as translated by the current language
-    ME_TextFinal As String                  'Final on-screen appearance of the text, with translations and accelerator applied
+    me_TopMenu As Long                      'Top-level index of this menu
+    me_SubMenu As Long                      'Sub-menu index of this menu (if any)
+    me_SubSubMenu As Long                   'Sub-sub-menu index of this menu (if any)
+    me_HotKeyCode As KeyCodeConstants       'Hotkey, if any, associated with this menu
+    me_HotKeyShift As ShiftConstants        'Hotkey shift modifiers, if any, associated with this menu
+    me_HotKeyTextTranslated As String       'Hotkey text, with translations (if any) always applied.
+    me_Name As String                       'Name of this menu (must be unique)
+    me_ResImage As String                   'Name of this menu's image, as stored in PD's central resource file
+    me_TextEn As String                     'Text of this menu, in English
+    me_TextTranslated As String             'Text of this menu, as translated by the current language
+    me_TextFinal As String                  'Final on-screen appearance of the text, with translations and accelerator applied
+    me_HasChildren As Boolean               'Is this a non-clickable menu (e.g. it only exists to open a child menu?)
+    me_TextSearchable As String             'String to use in search results.  Has the form "TopMenu > ChildMenu > MyMenuName"
 End Type
 
 'https://msdn.microsoft.com/en-us/library/windows/desktop/ms647578(v=vs.85).aspx
@@ -556,6 +558,11 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 10, 9
     AddMenuItem "&About...", "help_about", 10, 10, , "help_about"
     
+    'After all menu items have been added, we need to manually go through and fill the "has children" boolean
+    ' for each menu entry.  (This is important because we use it when producing a searchable list of menu items,
+    ' as we don't want to return un-clickable menu names in that list.)
+    FinalizeMenuProperties
+    
 End Sub
 
 'Internal helper function for adding a menu entry to the running collection.  Note that PD menus support a number of non-standard properties,
@@ -571,15 +578,57 @@ Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, By
     End If
     
     With m_Menus(m_NumOfMenus)
-        .ME_Name = menuName
-        .ME_TextEn = menuTextEn
-        .ME_TopMenu = topMenuID
-        .ME_SubMenu = subMenuID
-        .ME_SubSubMenu = subSubMenuID
-        .ME_ResImage = menuImageName
+        .me_Name = menuName
+        .me_TextEn = menuTextEn
+        .me_TopMenu = topMenuID
+        .me_SubMenu = subMenuID
+        .me_SubSubMenu = subSubMenuID
+        .me_ResImage = menuImageName
     End With
     
     m_NumOfMenus = m_NumOfMenus + 1
+
+End Sub
+
+'After adding all menu items to the master table, call this function to iterate through the final list and
+' auto-populate some helpful menu properties (e.g. the "has children" bool)
+Private Sub FinalizeMenuProperties()
+
+    'First, we want to determine whether each menu has child menus.  This is important for producing
+    ' menu search results, as we don't want to return "un-clickable" menus - e.g. top-level menus,
+    ' or second-level menus that only exist as parents for a child menu.
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+    
+        'Ensure we have an (i+1) menu index available
+        If (i < m_NumOfMenus - 1) Then
+        
+            With m_Menus(i)
+            
+                'Look for top-level menus first.  They always have child menus.
+                If (.me_SubMenu = MENU_NONE) Then
+                    .me_HasChildren = True
+                
+                'Look for second-level menus with children.
+                Else
+                    If (.me_SubSubMenu = MENU_NONE) Then
+                        If (m_Menus(i + 1).me_SubSubMenu <> MENU_NONE) Then .me_HasChildren = True
+                    End If
+                
+                'Third-level menus are *always* clickable in PhotoDemon, so we don't need an additional Else.
+                End If
+            
+            End With
+        
+        'The last menu is always Help > About.  It's clickable.
+        Else
+            m_Menus(i).me_HasChildren = False
+        End If
+    
+    Next i
+    
+    'All child flags have been successfully marked.  Note that we can't generate menu search strings here;
+    ' that can only happen *after* localization has been applied.
 
 End Sub
 
@@ -589,9 +638,9 @@ Public Sub ApplyIconsToMenus()
 
     Dim i As Long
     For i = 0 To m_NumOfMenus - 1
-        If (Len(m_Menus(i).ME_ResImage) <> 0) Then
+        If (Len(m_Menus(i).me_ResImage) <> 0) Then
             With m_Menus(i)
-                IconsAndCursors.AddMenuIcon .ME_ResImage, .ME_TopMenu, .ME_SubMenu, .ME_SubSubMenu
+                IconsAndCursors.AddMenuIcon .me_ResImage, .me_TopMenu, .me_SubMenu, .me_SubSubMenu
             End With
         End If
     Next i
@@ -616,17 +665,17 @@ Public Sub RequestCaptionChange_ByName(ByVal menuName As String, ByVal newCaptio
             
                 'Store the new caption and apply translations as necessary
                 If captionIsAlreadyTranslated Or (g_Language Is Nothing) Then
-                    .ME_TextTranslated = newCaptionEn
+                    .me_TextTranslated = newCaptionEn
                 Else
-                    .ME_TextEn = newCaptionEn
-                    .ME_TextTranslated = g_Language.TranslateMessage(newCaptionEn)
+                    .me_TextEn = newCaptionEn
+                    .me_TextTranslated = g_Language.TranslateMessage(newCaptionEn)
                 End If
                 
                 'Deal with trailing accelerator text, if any
-                If (Len(.ME_HotKeyTextTranslated) <> 0) Then
-                    .ME_TextFinal = .ME_TextTranslated & vbTab & .ME_HotKeyTextTranslated
+                If (Len(.me_HotKeyTextTranslated) <> 0) Then
+                    .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
                 Else
-                    .ME_TextFinal = .ME_TextTranslated
+                    .me_TextFinal = .me_TextTranslated
                 End If
                 
                 'Relay the changed text to the API copy of our menu
@@ -670,28 +719,28 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
             With m_Menus(i)
                 
                 'Ignore separator entries, obviously
-                If Strings.StringsNotEqual(.ME_Name, "-", False) Then
+                If (.me_Name <> "-") Then
                 
                     'Update the actual caption text
-                    If (LenB(.ME_TextEn) <> 0) Then
+                    If (LenB(.me_TextEn) <> 0) Then
                     
-                        .ME_TextTranslated = g_Language.TranslateMessage(.ME_TextEn)
+                        .me_TextTranslated = g_Language.TranslateMessage(.me_TextEn)
                     
                         'Update the appended hotkey text, if any
-                        If (.ME_HotKeyCode <> 0) Then
-                            .ME_HotKeyTextTranslated = GetHotkeyText(.ME_HotKeyCode, .ME_HotKeyShift)
-                            .ME_TextFinal = .ME_TextTranslated & vbTab & .ME_HotKeyTextTranslated
+                        If (.me_HotKeyCode <> 0) Then
+                            .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
+                            .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
                         Else
-                            .ME_TextFinal = .ME_TextTranslated
+                            .me_TextFinal = .me_TextTranslated
                         End If
                         
                     Else
-                        .ME_TextTranslated = vbNullString
-                        .ME_TextFinal = vbNullString
+                        .me_TextTranslated = vbNullString
+                        .me_TextFinal = vbNullString
                     End If
                     
                 Else
-                    .ME_TextFinal = vbNullString
+                    .me_TextFinal = vbNullString
                 End If
                     
             End With
@@ -704,19 +753,19 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
         
             With m_Menus(i)
             
-                If Strings.StringsNotEqual(.ME_Name, "-", False) Then
+                If (.me_Name <> "-") Then
                 
-                    .ME_TextTranslated = .ME_TextEn
+                    .me_TextTranslated = .me_TextEn
                     
-                    If (.ME_HotKeyCode <> 0) Then
-                        .ME_HotKeyTextTranslated = GetHotkeyText(.ME_HotKeyCode, .ME_HotKeyShift)
-                        .ME_TextFinal = .ME_TextTranslated & vbTab & .ME_HotKeyTextTranslated
+                    If (.me_HotKeyCode <> 0) Then
+                        .me_HotKeyTextTranslated = GetHotkeyText(.me_HotKeyCode, .me_HotKeyShift)
+                        .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
                     Else
-                        .ME_TextFinal = .ME_TextTranslated
+                        .me_TextFinal = .me_TextTranslated
                     End If
                     
                 Else
-                    .ME_TextFinal = vbNullString
+                    .me_TextFinal = vbNullString
                 End If
                 
             End With
@@ -727,7 +776,56 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     
     'With all menu captions updated, we now need to relay those changes to the underlying API menu struct
     For i = 0 To m_NumOfMenus - 1
-        If (LenB(m_Menus(i).ME_TextFinal) <> 0) Then UpdateMenuText_ByIndex i
+        If (LenB(m_Menus(i).me_TextFinal) <> 0) Then UpdateMenuText_ByIndex i
+    Next i
+    
+    'We also need to update search strings for all menus
+    Dim mnuNameLvl1 As String, mnuNameLvl2 As String, mnuNameFinal As String, lastLvl2Index As Long
+    For i = 0 To m_NumOfMenus - 1
+        
+        With m_Menus(i)
+            
+            'If this menu has children, we need to update our parent menu name trackers,
+            ' but we *don't* need to produce a search string (as we don't want to return
+            ' un-clickable parent menus in search results).
+            If .me_HasChildren Then
+                
+                .me_TextSearchable = vbNullString
+                
+                lastLvl2Index = .me_SubMenu
+                If (.me_SubMenu = MENU_NONE) Then
+                    mnuNameLvl1 = Replace$(.me_TextTranslated, "&", vbNullString)
+                    mnuNameLvl2 = vbNullString
+                Else
+                    mnuNameLvl2 = Replace$(.me_TextTranslated, "&", vbNullString)
+                End If
+            
+            'This menu does not have children, meaning it's clickable.
+            Else
+                
+                'If this menu doesn't match the last level-2 menu index, reset the level 2 string.
+                ' (This ensures that items following a sub-menu - e.g. File > Print, which comes after
+                ' File > Batch Operations - don't mistakenly pick-up the second-level name of a
+                ' preview menu.)
+                If (.me_SubMenu <> lastLvl2Index) Then mnuNameLvl2 = vbNullString
+                
+                'Make sure this isn't just a menu separator
+                If (.me_Name <> "-") Then
+                
+                    'Append first- and second-level menu names, if any
+                    If (LenB(mnuNameLvl1) <> 0) Then mnuNameFinal = mnuNameLvl1 & " > "
+                    If (LenB(mnuNameLvl2) <> 0) Then mnuNameFinal = mnuNameFinal & mnuNameLvl2 & " > "
+                    mnuNameFinal = mnuNameFinal & Replace$(.me_TextTranslated, "&", vbNullString)
+                    .me_TextSearchable = mnuNameFinal
+                    
+                Else
+                    .me_TextSearchable = vbNullString
+                End If
+            
+            End If
+            
+        End With
+        
     Next i
     
     'Some special menus must be dealt with now; note that some menus are already handled by dedicated callers
@@ -738,6 +836,29 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     If redrawMenuBar Then DrawMenuBar FormMain.hWnd
     
 End Sub
+
+'Return a list of searchable menu strings.  Matches to this list can then be passed back to this module and
+' matched against their respective menu(s).
+Public Function GetSearchableMenuList(ByRef dstStack As pdStringStack, Optional ByVal ignoreDisabledMenus As Boolean = True) As Boolean
+    
+    Set dstStack = New pdStringStack
+    
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+        If (LenB(m_Menus(i).me_TextSearchable) <> 0) Then
+            
+            If ignoreDisabledMenus Then
+                If Menus.IsMenuEnabled(m_Menus(i).me_Name) Then dstStack.AddString m_Menus(i).me_TextSearchable
+            Else
+                dstStack.AddString m_Menus(i).me_TextSearchable
+            End If
+            
+        End If
+    Next i
+    
+    GetSearchableMenuList = (dstStack.GetNumOfStrings > 0)
+    
+End Function
 
 'When the hotkey associated with a menu changes, call this sub to update our internal hotkey trackers.
 ' (We need to know hotkeys so we can render them with the menu captions.)
@@ -757,9 +878,9 @@ Public Sub NotifyMenuHotkey(ByRef menuID As String, ByVal vKeyCode As KeyCodeCon
     Dim i As Long
     For i = 0 To numOfMatches - 1
         With m_Menus(listOfMatches(i))
-            .ME_HotKeyCode = vKeyCode
-            .ME_HotKeyShift = Shift
-            .ME_HotKeyTextTranslated = hotkeyText
+            .me_HotKeyCode = vKeyCode
+            .me_HotKeyShift = Shift
+            .me_HotKeyTextTranslated = hotkeyText
         End With
     Next i
 
@@ -775,7 +896,7 @@ Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
     Dim mnuIndex As Long: mnuIndex = -1
     
     For i = 0 To m_NumOfMenus - 1
-        If Strings.StringsEqual(mnuName, m_Menus(i).ME_Name, True) Then
+        If Strings.StringsEqual(mnuName, m_Menus(i).me_Name, True) Then
             mnuIndex = i
             Exit For
         End If
@@ -783,15 +904,43 @@ Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
     
     If (mnuIndex >= 0) Then
     
-        'Get an hMenu and index for this entry
-        Dim hMenu As Long, hIndex As Long
-        hMenu = GetHMenu_FromIndex(mnuIndex, True)
-        hIndex = GetHMenuIndex(mnuIndex)
+        'We now need to check all parent menus in turn (because they may be disabled, which effectively
+        ' means *we're* disabled too - but the API doesn't calculate that for us.)
         
-        If (hMenu <> 0) Then
-            Dim mFlags As Win32_MenuStateFlags
+        'Start by getting an hMenu for our top-level parent
+        Dim hMenu As Long, hIndex As Long, mFlags As Win32_MenuStateFlags
+        hMenu = GetMenu(FormMain.hWnd)
+        hIndex = m_Menus(mnuIndex).me_TopMenu
+        
+        If (hMenu <> 0) And (hIndex >= 0) Then
             mFlags = GetMenuState(hMenu, hIndex, MF_BYPOSITION)
             IsMenuEnabled = Not ((mFlags And (MF_DISABLED Or MF_GRAYED)) <> 0)
+        End If
+        
+        'If our top-level menu is enabled, check sub-menus, if any
+        If IsMenuEnabled And (m_Menus(mnuIndex).me_SubMenu <> MENU_NONE) Then
+            
+            hMenu = GetSubMenu(hMenu, m_Menus(mnuIndex).me_TopMenu)
+            hIndex = m_Menus(mnuIndex).me_SubMenu
+            
+            If (hMenu <> 0) And (hIndex >= 0) Then
+                mFlags = GetMenuState(hMenu, hIndex, MF_BYPOSITION)
+                IsMenuEnabled = Not ((mFlags And (MF_DISABLED Or MF_GRAYED)) <> 0)
+            End If
+            
+            'If our sub-level menu parent is enabled, check us last (as necessary)
+            If IsMenuEnabled And (m_Menus(mnuIndex).me_SubSubMenu <> MENU_NONE) Then
+            
+                hMenu = GetSubMenu(hMenu, m_Menus(mnuIndex).me_SubMenu)
+                hIndex = m_Menus(mnuIndex).me_SubSubMenu
+                
+                If (hMenu <> 0) And (hIndex >= 0) Then
+                    mFlags = GetMenuState(hMenu, hIndex, MF_BYPOSITION)
+                    IsMenuEnabled = Not ((mFlags And (MF_DISABLED Or MF_GRAYED)) <> 0)
+                End If
+            
+            End If
+            
         End If
         
     Else
@@ -1049,7 +1198,7 @@ Private Sub GetAllMatchingMenuIndices(ByRef menuID As String, ByRef numOfMenus A
     
     Dim i As Long, curIndex As Long
     For i = 0 To m_NumOfMenus - 1
-        If Strings.StringsEqual(menuID, m_Menus(i).ME_Name, True) Then
+        If Strings.StringsEqual(menuID, m_Menus(i).me_Name, True) Then
             menuArray(curIndex) = i
             curIndex = curIndex + 1
             If (curIndex >= MAX_MENU_MATCHES) Then Exit For
@@ -1076,33 +1225,33 @@ Private Sub EraseMenu(ByVal topMenuID As Long, Optional ByVal subMenuID As Long 
     For i = 0 To m_NumOfMenus - 1
     
         'Top menus are always matched
-        If (m_Menus(i).ME_TopMenu = topMenuID) Then
+        If (m_Menus(i).me_TopMenu = topMenuID) Then
             
             'Submenu IDs are only matched if the user specifically requests it
             If (subMenuID <> IGNORE_MENU_ID) Then
                 
                 'Match the submenu ID
-                If (m_Menus(i).ME_SubMenu = subMenuID) Then
+                If (m_Menus(i).me_SubMenu = subMenuID) Then
                     
                     'Match the subsubmenu ID
                     If (subSubMenuID <> IGNORE_MENU_ID) Then
                         
-                        If (m_Menus(i).ME_SubSubMenu = subSubMenuID) Then
-                            m_Menus(i).ME_TopMenu = REMOVED_MENU_ID
-                        ElseIf (subSubMenuID = ALL_MENU_SUBITEMS) And (m_Menus(i).ME_SubSubMenu >= 0) Then
-                            m_Menus(i).ME_TopMenu = REMOVED_MENU_ID
+                        If (m_Menus(i).me_SubSubMenu = subSubMenuID) Then
+                            m_Menus(i).me_TopMenu = REMOVED_MENU_ID
+                        ElseIf (subSubMenuID = ALL_MENU_SUBITEMS) And (m_Menus(i).me_SubSubMenu >= 0) Then
+                            m_Menus(i).me_TopMenu = REMOVED_MENU_ID
                         End If
                     
                     Else
-                        m_Menus(i).ME_TopMenu = REMOVED_MENU_ID
+                        m_Menus(i).me_TopMenu = REMOVED_MENU_ID
                     End If
                     
-                ElseIf (subMenuID = ALL_MENU_SUBITEMS) And (m_Menus(i).ME_SubMenu >= 0) Then
-                    m_Menus(i).ME_TopMenu = REMOVED_MENU_ID
+                ElseIf (subMenuID = ALL_MENU_SUBITEMS) And (m_Menus(i).me_SubMenu >= 0) Then
+                    m_Menus(i).me_TopMenu = REMOVED_MENU_ID
                 End If
             
             Else
-                m_Menus(i).ME_TopMenu = REMOVED_MENU_ID
+                m_Menus(i).me_TopMenu = REMOVED_MENU_ID
             End If
             
         End If
@@ -1115,7 +1264,7 @@ Private Sub EraseMenu(ByVal topMenuID As Long, Optional ByVal subMenuID As Long 
     For i = 0 To m_NumOfMenus - 1
     
         'If this item is set to be deleted, increment our move counter
-        If (m_Menus(i).ME_TopMenu = REMOVED_MENU_ID) Then
+        If (m_Menus(i).me_TopMenu = REMOVED_MENU_ID) Then
             moveOffset = moveOffset + 1
         
         'If this is a valid item, shift it downward in the list
@@ -1305,25 +1454,25 @@ Public Sub UpdateSpecialMenu_RecentMacros()
 End Sub
 
 'Given an index into our menu collection, retrieve a matching hMenu for use with APIs.
-'NOTE!  Validate your menu index before passing it to this function.  For performance reasons, no extra validation is
-' applied to the incoming index.
+'NOTE!  Validate your menu index before passing it to this function.  For performance reasons,
+' no extra validation is applied to the incoming index.
 Private Function GetHMenu_FromIndex(ByVal mnuIndex As Long, Optional ByVal getParentMenu As Boolean = False) As Long
 
     'We always start by retrieving the menu handle for the primary form
     Dim curHMenu As Long, hMenuParent As Long
     curHMenu = GetMenu(FormMain.hWnd)
     hMenuParent = curHMenu
-    
+
     'Next, iterate through submenus until we arrive at the entry we want
-    curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).ME_TopMenu)
-    If (m_Menus(mnuIndex).ME_SubMenu <> MENU_NONE) Then
+    curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).me_TopMenu)
+    If (m_Menus(mnuIndex).me_SubMenu <> MENU_NONE) Then
         
         hMenuParent = curHMenu
-        curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).ME_SubMenu)
-        
-        If (m_Menus(mnuIndex).ME_SubSubMenu <> MENU_NONE) Then
+        curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).me_SubMenu)
+            
+        If (m_Menus(mnuIndex).me_SubSubMenu <> MENU_NONE) Then
             hMenuParent = curHMenu
-            curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).ME_SubSubMenu)
+            curHMenu = GetSubMenu(curHMenu, m_Menus(mnuIndex).me_SubSubMenu)
         End If
         
     End If
@@ -1336,13 +1485,13 @@ End Function
 ' child item in a given menu.  Use this function to simplify the handling of hMenu indices.
 Private Function GetHMenuIndex(ByVal mnuIndex As Long) As Long
 
-    If (m_Menus(mnuIndex).ME_SubMenu = MENU_NONE) Then
-        GetHMenuIndex = m_Menus(mnuIndex).ME_TopMenu
+    If (m_Menus(mnuIndex).me_SubMenu = MENU_NONE) Then
+        GetHMenuIndex = m_Menus(mnuIndex).me_TopMenu
     Else
-        If (m_Menus(mnuIndex).ME_SubSubMenu = MENU_NONE) Then
-            GetHMenuIndex = m_Menus(mnuIndex).ME_SubMenu
+        If (m_Menus(mnuIndex).me_SubSubMenu = MENU_NONE) Then
+            GetHMenuIndex = m_Menus(mnuIndex).me_SubMenu
         Else
-            GetHMenuIndex = m_Menus(mnuIndex).ME_SubSubMenu
+            GetHMenuIndex = m_Menus(mnuIndex).me_SubSubMenu
         End If
     End If
 
@@ -1361,7 +1510,7 @@ Private Sub UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
         Dim tmpMII As Win32_MenuItemInfoW
         tmpMII.cbSize = LenB(tmpMII)
         tmpMII.fMask = MIIM_STRING
-        tmpMII.dwTypeData = StrPtr(m_Menus(mnuIndex).ME_TextFinal)
+        tmpMII.dwTypeData = StrPtr(m_Menus(mnuIndex).me_TextFinal)
         
         SetMenuItemInfoW hMenu, GetHMenuIndex(mnuIndex), 1&, tmpMII
         

@@ -1270,7 +1270,10 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
     
     'If UTF-8 output is requested, generate it now.  (If the conversion fails, we can fall back to a non-UTF8 write.)
     Dim fileBytes() As Byte, lenFileBytes As Long
-    If useUTF8 Then useUTF8 = Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), fileBytes, lenFileBytes, 0&) 'Strings.UTF8FromString(srcString, fileBytes, lenFileBytes)
+    If useUTF8 Then
+        useUTF8 = Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), fileBytes, lenFileBytes, 0&)
+        If (Not useUTF8) Then FSOError "FileSaveAsText", "Strings.UTF8FromStrPtr failed!"
+    End If
     
     If useUTF8 Then
         
@@ -1278,8 +1281,8 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
         Dim hFile As Long
         If Me.FileCreateHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
         
-            'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
-            ' ones vs old Windows-1252 ones.
+            'If requested, write a BOM first.  This is desirable for PD's internal files,
+            ' as it makes it very quick to identify new UTF-8 ones vs old Windows-1252 ones.
             If useUTF8_BOM Then
                 Dim bomMarker(0 To 2) As Byte
                 bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
@@ -1298,8 +1301,8 @@ Friend Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As S
     'If UTF-8 is not requested, allow VB to perform its own innate SBCS conversion
     Else
         
-        'Since we're using a cheap ASCII conversion, we may as well use native VB methods too, by wrapping the
-        ' (potentially Unicode) srcFile with GetShortPathNameW.
+        'Since we're using a cheap ASCII conversion, we may as well use native VB methods too,
+        ' by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
         Dim fileNum As Integer
         fileNum = FreeFile
         

@@ -542,7 +542,7 @@ End Sub
 
 'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.
 ' I also append "--" to the start and end of the string, to help me see if extra whitespace chars are present.
-Friend Sub DEBUG_dumpResultsToImmediateWindow()
+Friend Sub DEBUG_DumpResultsToImmediateWindow()
     
     If (m_NumOfStrings > 0) Then
         Dim i As Long
@@ -552,4 +552,25 @@ Friend Sub DEBUG_dumpResultsToImmediateWindow()
     Else
         Debug.Print " -- String stack is empty -- "
     End If
+    
 End Sub
+
+'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.
+' This function makes it trivial to dump the stack to a standalone file.
+Friend Function DEBUG_DumpResultsToFile(ByRef dstFilename As String) As Boolean
+    
+    Dim finalString As pdString
+    Set finalString = New pdString
+    
+    If (m_NumOfStrings > 0) Then
+        Dim i As Long
+        For i = 0 To m_NumOfStrings - 1
+            finalString.AppendLine m_Strings(i)
+        Next i
+    Else
+        finalString.Append " -- String stack is empty -- "
+    End If
+    
+    DEBUG_DumpResultsToFile = Files.FileSaveAsText(finalString.ToString(), dstFilename, True, True)
+    
+End Function
