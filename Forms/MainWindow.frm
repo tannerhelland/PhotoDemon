@@ -3501,8 +3501,7 @@ Private Sub MnuFile_Click(Index As Integer)
         
         'Revert
         Case 11
-            'TODO: figure out correct Undo behavior for REVERT action
-            Process "Revert", False, , UNDO_Nothing
+            Process "Revert", False, , UNDO_Everything
         
         'Export
         Case 12

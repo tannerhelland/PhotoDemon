@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright 2001-2019 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 10/February/19
-'Last update: track sizes of generated Undo/Redo files; this data is not currently used for anything,
-'             but in the future, it could be a valuable tool in reducing per-session HDD impact
+'Last updated: 26/April/19
+'Last update: modify File > Revert behavior; it now creates a *new* entry on the Undo stack (similar to Photoshop),
+'             which allows the user to move back to a previous state after reverting.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -49,14 +49,14 @@ Attribute VB_Exposed = False
 ' slowness, and complexity of each Undo/Redo file.  To combat this, the Undo/Redo engine was rewritten yet again -
 ' but this time, as a full-featured "diff engine", not unlike what powers Git.  Specifically, PD's Undo/Redo engine
 ' now saves only the minimum amount of data necessary to reconstruct an image from its immediately previous Undo/Redo
-' entry.  This allows for very tiny Undo/Redo files, at a trade-off with a large amount of new complexity in the
+' entry.  This allows for very small Undo/Redo files, at a trade-off with a large amount of new complexity in the
 ' Undo/Redo engine itself.  I believe this approach is the best one possible, so I'm hoping 2014 marks the end of
 ' massive Undo/Redo engine rewrites.  (Fingers crossed.)
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if the user runs out of free
 ' space.  Similarly, clearing the specified TEMP folder in the middle of program operation is a bad idea.  PD will not
-' crash, but as expected, Undo/Redo functionality will cease to work.
+' crash (probably), but as expected, Undo/Redo functionality will stop working.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -402,7 +402,39 @@ Friend Sub RevertToLastSavedState()
     'Failsafe check to make sure the specified index is valid
     If (targetUndoPoint < 1) Then targetUndoPoint = 1
     
-    Me.MoveToSpecificUndoPoint targetUndoPoint
+    'In older versions of PD, we would now simply move the Undo pointer to this index in the stack.
+    ' This is identical to using Edit > Undo History, but with us auto-calculating the index for you.
+    'Me.MoveToSpecificUndoPoint targetUndoPoint
+    
+    'However, in studying Photoshop's implementation of Revert, they actually treat it as an *edit*
+    ' and it gets added to the Undo stack as its own entry!  I actually like this approach better,
+    ' as it protects against actual File > Revert clicks (probably useful, given its proximity to
+    ' File > Save As).
+    
+    'To implement something similar, we need to use a custom hybrid of the MoveToSpecificUndoPoint
+    ' (to restore the correct image data) and a regular Undo event (to add the restored data to
+    ' the stack).
+    
+    'Here is the required code from MoveToSpecificUndoPoint, indented deliberately:
+        Message "Reconstructing image..."
+        
+        'Start by resetting the image to its default state, e.g. Undo 0.
+        ImageImporter.LoadUndo GenerateUndoFilename(0), UNDO_Everything, UNDO_Everything, , True
+        
+        'From this point, we now want to advance the Undo stack to the requested index by applying successive diff entries
+        ' until the final index is reached.
+        If (targetUndoPoint > 1) Then
+        
+            Dim i As Long
+            For i = 1 To targetUndoPoint - 1
+                LoadUndo GenerateUndoFilename(i), m_UndoStack(i).srcProcCall.pcUndoType, m_UndoStack(i).srcProcCall.pcUndoType, m_UndoStack(i).undoLayerID, True
+            Next i
+        
+        End If
+        
+    'The image's pixel data now matches the last-saved copy of the image (or the image's original state,
+    ' if the user hasn't saved it this session).  We don't need to do any further work; PD's standard
+    ' Undo/Redo path will take care of creating a new stack entry at this point.
     
     m_UndoRedoActive = False
     
