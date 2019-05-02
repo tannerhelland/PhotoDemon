@@ -856,19 +856,23 @@ Private Sub UpdatePreview()
         End If
         
         'With alpha handled successfully, we now need to handle grayscale and/or palette requirements
-        Dim forceGrayscale As Boolean, forceIndexed As Boolean, newPaletteSize As Long
-        forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
-        forceIndexed = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed")
-        newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
-        If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then newPaletteSize = 2
-        
-        If forceGrayscale Then
-            DIBs.MakeDIBGrayscale workingDIB, newPaletteSize
+        If Strings.StringsNotEqual(outputColorModel, "auto", True) Then
             
-        ElseIf forceIndexed Then
-            Dim newPalette() As RGBQuad
-            Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
-            Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, newPalette, True
+            Dim forceGrayscale As Boolean, forceIndexed As Boolean, newPaletteSize As Long
+            forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
+            forceIndexed = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed")
+            newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
+            If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then newPaletteSize = 2
+            
+            If forceGrayscale Then
+                DIBs.MakeDIBGrayscale workingDIB, newPaletteSize
+                
+            ElseIf forceIndexed Then
+                Dim newPalette() As RGBQuad
+                Palettes.GetOptimizedPaletteIncAlpha workingDIB, newPalette, newPaletteSize
+                Palettes.ApplyPaletteToImage_IncAlpha_KDTree workingDIB, newPalette, True
+            End If
+            
         End If
         
         'If the image is in "use original settings" mode, we will need to forcibly overwrite various
