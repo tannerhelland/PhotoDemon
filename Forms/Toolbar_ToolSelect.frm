@@ -406,13 +406,17 @@ Private m_ShowCategoryLabels As Boolean
 
 'Button size is also controllable.  In the future, this will result in an actual change to the images used on the buttons.
 ' For now, however, we simply resize the buttons themselves.
-Private Enum PD_TOOLBOX_BUTTON_SIZE
-    PDTBS_SMALL = 0
-    PDTBS_MEDIUM = 1
-    PDTBS_LARGE = 2
+Public Enum PD_ToolboxButtonSize
+    tbs_Small = 0
+    tbs_Medium = 1
+    tbs_Large = 2
 End Enum
 
-Private m_ButtonSize As PD_TOOLBOX_BUTTON_SIZE
+#If False Then
+    Private Const tbs_Small = 0, tbs_Medium = 1, tbs_Large = 2
+#End If
+
+Private m_ButtonSize As PD_ToolboxButtonSize
 
 Private Const BTS_WIDTH_SMALL As Long = 32
 Private Const BTS_WIDTH_MEDIUM As Long = 46
@@ -1192,29 +1196,23 @@ Public Sub ToggleToolCategoryLabels(Optional ByVal newSetting As PD_BOOL = PD_BO
 End Sub
 
 'Used to change the display size of toolbox buttons.  newSize is expected on the range [0, 2] for small, medium, large
-Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw As Boolean = False)
+Public Sub UpdateButtonSize(ByVal newSize As PD_ToolboxButtonSize, Optional ByVal suppressRedraw As Boolean = False)
     
     'Export the updated size to file
     If (Not suppressRedraw) Then UserPrefs.SetPref_Long "Core", "Toolbox Button Size", newSize
     
     'Update our internal size metrics to match
     m_ButtonSize = newSize
-    
-    Select Case m_ButtonSize
-    
-        Case PDTBS_SMALL
-            m_ButtonWidth = FixDPI(BTS_WIDTH_SMALL)
-            m_ButtonHeight = FixDPI(BTS_HEIGHT_SMALL)
-        
-        Case PDTBS_MEDIUM
-            m_ButtonWidth = FixDPI(BTS_WIDTH_MEDIUM)
-            m_ButtonHeight = FixDPI(BTS_HEIGHT_MEDIUM)
-        
-        Case PDTBS_LARGE
-            m_ButtonWidth = FixDPI(BTS_WIDTH_LARGE)
-            m_ButtonHeight = FixDPI(BTS_HEIGHT_LARGE)
-    
-    End Select
+    If (m_ButtonSize = tbs_Small) Then
+        m_ButtonWidth = FixDPI(BTS_WIDTH_SMALL)
+        m_ButtonHeight = FixDPI(BTS_HEIGHT_SMALL)
+    ElseIf (m_ButtonSize = tbs_Medium) Then
+        m_ButtonWidth = FixDPI(BTS_WIDTH_MEDIUM)
+        m_ButtonHeight = FixDPI(BTS_HEIGHT_MEDIUM)
+    Else
+        m_ButtonWidth = FixDPI(BTS_WIDTH_LARGE)
+        m_ButtonHeight = FixDPI(BTS_HEIGHT_LARGE)
+    End If
     
     'Update all buttons to match
     Dim i As Long
@@ -1259,15 +1257,15 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'From the current button size, determine what size we want our various image resources
     Dim buttonImageSize As Long
-    If (m_ButtonSize = PDTBS_SMALL) Then
+    If (m_ButtonSize = tbs_Small) Then
         buttonImageSize = BTS_IMG_SMALL
-    ElseIf (m_ButtonSize = PDTBS_MEDIUM) Then
+    ElseIf (m_ButtonSize = tbs_Medium) Then
         buttonImageSize = BTS_IMG_MEDIUM
-    ElseIf (m_ButtonSize = PDTBS_LARGE) Then
+    ElseIf (m_ButtonSize = tbs_Large) Then
         buttonImageSize = BTS_IMG_LARGE
     End If
     
-    buttonImageSize = FixDPI(buttonImageSize)
+    buttonImageSize = Interface.FixDPI(buttonImageSize)
     
     'Initialize file tool button images
     cmdFile(FILE_NEW).AssignImage "file_new", , buttonImageSize, buttonImageSize
