@@ -15,6 +15,26 @@ Attribute VB_Name = "Filters_Adjustments"
 
 Option Explicit
 
+'Apply basic white-balance correction by stretching the histogram and ignoring pixels above or below
+' a 0.05% threshold, followed by lightweight shadow/highlight extraction.
+Public Sub AutoCorrectImage()
+
+    Message "Auto-correcting colors and lighting..."
+    
+    Dim dstSA As SafeArray2D
+    EffectPrep.PrepImageData dstSA
+    
+    'Ensure the image is white-balanced
+    Filters_Layers.WhiteBalanceDIB 0.05, workingDIB, True
+    
+    'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
+    Filters_Layers.AdjustDIBShadowHighlight 25, 10, -25, 100, 20, 100, 20, workingDIB
+    
+    'Finalize and render the adjusted image
+    EffectPrep.FinalizeImageData
+    
+End Sub
+
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
 Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
@@ -24,29 +44,11 @@ Public Sub AutoWhiteBalance(Optional ByVal effectParams As String = vbNullString
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SafeArray2D
     EffectPrep.PrepImageData dstSA, toPreview, dstPic
     
     Filters_Layers.WhiteBalanceDIB cParams.GetDouble("threshold", 0.05), workingDIB, toPreview
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    EffectPrep.FinalizeImageData toPreview, dstPic
-    
-End Sub
-
-'Correct image contrast by stretching the luminance histogram across the full spectrum
-Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
-    If (Not toPreview) Then Message "Adjusting image contrast..."
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA, toPreview, dstPic
-    
-    Filters_Layers.ContrastCorrectDIB percentIgnore, workingDIB, toPreview
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     EffectPrep.FinalizeImageData toPreview, dstPic
     
 End Sub
@@ -73,10 +75,10 @@ Public Sub MenuInvert()
     ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    Dim tmpSA1D As SafeArray1D, pxData As Long, pxStride As Long
-    workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, initY
-    pxData = tmpSA1D.pvData
-    pxStride = tmpSA1D.cElements
+    Dim tmpSA1d As SafeArray1D, pxData As Long, pxStride As Long
+    workingDIB.WrapArrayAroundScanline imageData, tmpSA1d, initY
+    pxData = tmpSA1d.pvData
+    pxStride = tmpSA1d.cElements
     
     'Images are always 32-bpp
     initX = initX * 4
@@ -84,7 +86,7 @@ Public Sub MenuInvert()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For y = initY To finalY
-        tmpSA1D.pvData = pxData + pxStride * y
+        tmpSA1d.pvData = pxData + pxStride * y
     For x = initX To finalX Step 4
         imageData(x) = 255 Xor imageData(x)
         imageData(x + 1) = 255 Xor imageData(x + 1)
@@ -331,32 +333,32 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
+    initX = curDIBValues.Left * curDIBValues.BytesPerPixel
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * curDIBValues.BytesPerPixel
     finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, maxVal As Long, minVal As Long
         
     'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
-    
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+    For x = initX To finalX Step qvDepth
+        
+        b = imageData(x, y)
+        g = imageData(x + 1, y)
+        r = imageData(x + 2, y)
         
         If useMax Then
             maxVal = Max3Int(r, g, b)
@@ -370,16 +372,16 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
             If b > minVal Then b = 0
         End If
         
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
+        imageData(x, y) = b
+        imageData(x + 1, y) = g
+        imageData(x + 2, y) = r
         
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
     Next x
+        If (y And progBarCheck) = 0 Then
+            If Interface.UserPressedESC() Then Exit For
+            SetProgBarVal y
+        End If
+    Next y
         
     'Safely deallocate imageData()
     CopyMemory ByVal VarPtrArray(imageData), 0&, 4
@@ -387,187 +389,27 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
     
-End Sub
-
-'Automatically enhance image colors.  Basically, find each pixel's gray equivalent, then push
-' each channel away from that point, deepening saturation.
-Public Sub fxAutoEnhanceColors()
-
-    Message "Enhancing colors..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long, gray As Long
-        
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        'Calculate an accurate grayscale equivalent
-        gray = (213 * r + 715 * g + 72 * b) \ 1000
-        
-        'Move each channel away from the gray point
-        r = r + (r - gray) \ 3
-        g = g + (g - gray) \ 3
-        b = b + (b - gray) \ 3
-        
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
-        
-        imageData(quickVal + 2, y) = r
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal, y) = b
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData
-
-End Sub
-
-'Automatically enhance image contrast.  Basically, push each pixel's luminance away from the 127 gray point at a
-' strength proportional to its distance.
-Public Sub fxAutoEnhanceContrast()
-
-    Message "Enhancing contrast..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long, gray As Long
-    
-    'Prepare a look-up table for the adjustment.  Clarity is simply a contrast adjustment limited to midtones.
-    ' Values at 127 are processed most strongly, with a linear decrease as input values approach 0 or 255.
-    ' Also, I reduce the strength of the adjustment by a bit to prevent blowout.
-    Dim contrastLookup() As Byte
-    ReDim contrastLookup(0 To 255) As Byte
-    
-    For x = 0 To 255
-    
-        gray = x + (((x - 127) * 50) \ 100)
-        If gray > 255 Then gray = 255
-        If gray < 0 Then gray = 0
-        
-        contrastLookup(x) = gray
-    
-    Next x
-    
-    'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
-        
-        imageData(quickVal + 2, y) = contrastLookup(r)
-        imageData(quickVal + 1, y) = contrastLookup(g)
-        imageData(quickVal, y) = contrastLookup(b)
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData
-
 End Sub
 
 'Automatically enhance image lighting.  Basically, push each pixel's luminance away from the 127 gray point at a
-' strength inverse to its distance.  This function bears strong similarity to the "clarity" quick-fix adjustment.
-Public Sub fxAutoEnhanceLighting()
+' strength inverse to its distance.  (This function bears strong similarity to the "clarity" quick-fix adjustment.)
+' Follow this with a strong shadow/highlight extraction.
+Public Sub fxAutoEnhance()
 
-    Message "Enhancing lighting..."
+    Message "Auto-enhancing color and lighting..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim imageData() As Byte, tmpSA2d As SafeArray2D, tmpSA1d As SafeArray1D
+    EffectPrep.PrepImageData tmpSA2d
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = ProgressBars.FindBestProgBarValue()
+    Dim imgDepth As Long
+    imgDepth = curDIBValues.BytesPerPixel
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left * imgDepth
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right * imgDepth
+    finalY = curDIBValues.Bottom
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, gray As Long
@@ -582,16 +424,16 @@ Public Sub fxAutoEnhanceLighting()
     
         'The math for this function could be simplified, but as it's only run 256 times, I like to leave it
         ' expanded so I can remember how it works!
-        If x < 127 Then
+        If (x < 127) Then
             gray = x + (x / 127) * (((x - 127) * 50) \ 100) * 0.8
         Else
             gray = x + ((255 - x) / 127) * (((x - 127) * 50) \ 100) * 0.8
         End If
             
         'Crop the lookup value to [0, 255] range
-        If gray > 255 Then
+        If (gray > 255) Then
             gray = 255
-        ElseIf gray < 0 Then
+        ElseIf (gray < 0) Then
             gray = 0
         End If
         
@@ -600,65 +442,29 @@ Public Sub fxAutoEnhanceLighting()
     Next x
     
     'Apply the filter
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1d, y
+    For x = initX To finalX Step imgDepth
         
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
-        imageData(quickVal + 2, y) = contrastLookup(r)
-        imageData(quickVal + 1, y) = contrastLookup(g)
-        imageData(quickVal, y) = contrastLookup(b)
+        imageData(x) = contrastLookup(b)
+        imageData(x + 1) = contrastLookup(g)
+        imageData(x + 2) = contrastLookup(r)
         
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If Interface.UserPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
     Next x
-        
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Next y
+    
+    workingDIB.UnwrapArrayFromDIB imageData
+    
+    'With colors enhanced, proceed with shadow/highlight extraction
+    Filters_Layers.AdjustDIBShadowHighlight 50, 0, -50, 75, 30, 100, 30, workingDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData
 
-End Sub
-
-'Automatically correct shadows and highlights in an image.
-Public Sub fxAutoCorrectShadowsAndHighlights()
-    
-    Message "Adjusting shadows and highlights..."
-    
-    'Make a copy of the current image
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA
-    
-    'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
-    Filters_Layers.AdjustDIBShadowHighlight 75, 10, -60, 100, 20, 100, 20, workingDIB
-    
-    'Finalize and render the adjusted image
-    EffectPrep.FinalizeImageData
-
-End Sub
-
-'Automatically enhance shadows and highlights in an image.
-Public Sub fxAutoEnhanceShadowsAndHighlights()
-
-    Message "Enhancing shadows and highlights..."
-    
-    'Make a copy of the current image
-    Dim dstSA As SafeArray2D
-    EffectPrep.PrepImageData dstSA
-    
-    'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
-    Filters_Layers.AdjustDIBShadowHighlight 100, 33, -100, 75, 30, 100, 30, workingDIB
-    
-    'Finalize and render the adjusted image
-    EffectPrep.FinalizeImageData
-    
 End Sub
 
 'Given an RGBQuad, replace all instances with a different RGBQuad

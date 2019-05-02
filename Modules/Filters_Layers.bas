@@ -397,10 +397,10 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim r As Long, g As Long, b As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim RMax As Byte, gMax As Byte, bMax As Byte
-    Dim RMin As Byte, gMin As Byte, bMin As Byte
-    RMax = 0: gMax = 0: bMax = 0
-    RMin = 255: gMin = 255: bMin = 255
+    Dim rMax As Byte, gMax As Byte, bMax As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte
+    rMax = 0: gMax = 0: bMax = 0
+    rMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore * 0.01
@@ -452,7 +452,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            RMin = r
+            rMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -492,7 +492,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            RMax = r
+            rMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -523,7 +523,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Finally, calculate the difference between max and min for each color
     Dim rDif As Long, gDif As Long, bDif As Long
-    rDif = CLng(RMax) - CLng(RMin)
+    rDif = CLng(rMax) - CLng(rMin)
     gDif = CLng(gMax) - CLng(gMin)
     bDif = CLng(bMax) - CLng(bMin)
     
@@ -531,7 +531,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If (rDif <> 0) Then r = 255# * ((x - RMin) / rDif) Else r = x
+        If (rDif <> 0) Then r = 255# * ((x - rMin) / rDif) Else r = x
         If (gDif <> 0) Then g = 255# * ((x - gMin) / gDif) Else g = x
         If (bDif <> 0) Then b = 255# * ((x - bMin) / bDif) Else b = x
         If (r > 255) Then r = 255
@@ -770,7 +770,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     End If
     
     'Color variables
-    Dim RMin As Long, gMin As Long, bMin As Long
+    Dim rMin As Long, gMin As Long, bMin As Long
     Dim r As Long, g As Long, b As Long
     
     'Prep a one-dimensional safearray for the source image
@@ -811,7 +811,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     For y = initY To finalY
         
         'Find the smallest RGB values in the local vicinity of this pixel
-        RMin = 255
+        rMin = 255
         gMin = 255
         bMin = 255
         
@@ -822,21 +822,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         'Current line
         srcSA1D.pvData = srcBits + y * srcStride
@@ -845,21 +845,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         'Next line
         srcSA1D.pvData = srcBits + (y + 1) * srcStride
@@ -868,21 +868,21 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         r = srcImageData(xOffsetLeft + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffset)
         g = srcImageData(xOffset + 1)
         r = srcImageData(xOffset + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         b = srcImageData(xOffsetRight)
         g = srcImageData(xOffsetRight + 1)
         r = srcImageData(xOffsetRight + 2)
         If (b < bMin) Then bMin = b
         If (g < gMin) Then gMin = g
-        If (r < RMin) Then RMin = r
+        If (r < rMin) Then rMin = r
         
         'Subtract the minimum value from the current pixel value
         srcSA1D.pvData = srcBits + y * srcStride
@@ -891,11 +891,11 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         If blackBackground Then
             dstImageData(xOffset) = srcImageData(xOffset) - bMin
             dstImageData(xOffset + 1) = srcImageData(xOffset + 1) - gMin
-            dstImageData(xOffset + 2) = srcImageData(xOffset + 2) - RMin
+            dstImageData(xOffset + 2) = srcImageData(xOffset + 2) - rMin
         Else
             dstImageData(xOffset) = 255 - (srcImageData(xOffset) - bMin)
             dstImageData(xOffset + 1) = 255 - (srcImageData(xOffset + 1) - gMin)
-            dstImageData(xOffset + 2) = 255 - (srcImageData(xOffset + 2) - RMin)
+            dstImageData(xOffset + 2) = 255 - (srcImageData(xOffset + 2) - rMin)
         End If
         
     Next y

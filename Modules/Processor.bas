@@ -1826,39 +1826,12 @@ End Function
 ' additional return details may be supplied in the returnDetails string parameter.
 Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
     
-    'Auto correct functions
-    If Strings.StringsEqual(processID, "Auto correct color", True) Then
-        Filters_Adjustments.AutoWhiteBalance
+    If Strings.StringsEqual(processID, "Auto correct", True) Then
+        Filters_Adjustments.AutoCorrectImage
         Process_AdjustmentsMenu = True
     
-    ElseIf Strings.StringsEqual(processID, "Auto correct contrast", True) Then
-        Filters_Adjustments.AutoContrastCorrect
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Auto correct lighting", True) Then
-        FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(PDImages.GetActiveImage.GetActiveDIB)
-        Unload FormLevels
-        Process_AdjustmentsMenu = True
-        
-    ElseIf Strings.StringsEqual(processID, "Auto correct shadows and highlights", True) Then
-        Filters_Adjustments.fxAutoCorrectShadowsAndHighlights
-        Process_AdjustmentsMenu = True
-    
-    'Auto enhance functions
-    ElseIf Strings.StringsEqual(processID, "Auto enhance color", True) Then
-        Filters_Adjustments.fxAutoEnhanceColors
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Auto enhance contrast", True) Then
-        Filters_Adjustments.fxAutoEnhanceContrast
-        Process_AdjustmentsMenu = True
-    
-    ElseIf Strings.StringsEqual(processID, "Auto enhance lighting", True) Then
-        Filters_Adjustments.fxAutoEnhanceLighting
-        Process_AdjustmentsMenu = True
-        
-    ElseIf Strings.StringsEqual(processID, "Auto enhance shadows and highlights", True) Then
-        Filters_Adjustments.fxAutoEnhanceShadowsAndHighlights
+    ElseIf Strings.StringsEqual(processID, "Auto enhance", True) Then
+        Filters_Adjustments.fxAutoEnhance
         Process_AdjustmentsMenu = True
     
     'Luminance adjustment functions
