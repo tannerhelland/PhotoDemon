@@ -658,10 +658,9 @@ Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
         Case CCP_EZTwain
             'EZTwain is currently the only supported method for scanners.  (I hope to fix this in the future.)
             ' As such, availability of the scanner UI is based on EZTwain's successful initialization.
-            FormMain.MnuScanImage.Visible = pluginState
-            FormMain.MnuSelectScanner.Visible = pluginState
-            FormMain.MnuImportSepBar1.Visible = pluginState
-        
+            FormMain.MnuFileImport(2).Enabled = pluginState
+            FormMain.MnuFileImport(3).Enabled = pluginState
+            
         Case CCP_FreeImage
             'As of v6.4, PD uses a dedicated callback function to track and report any internal FreeImage errors.
             If pluginState Then Outside_FreeImageV3.FreeImage_InitErrorHandler
