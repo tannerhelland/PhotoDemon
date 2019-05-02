@@ -1308,17 +1308,17 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
     
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
-        Debug.Print "Font settings have changed; attempting to recreate font now..."
+        'Debug.Print "Font settings have changed; attempting to recreate font now..."
         CreateFontObject
     End If
     
     'If the font cache *still* isn't clean, something went horribly wrong
     If (Not m_FontCacheClean) Then
-        Debug.Print "PD failed to create the requested font.  Abandoning render request."
+        'Debug.Print "PD failed to create the requested font.  Abandoning render request."
         RenderTextToDIB = False
         Exit Function
-    Else
-        Debug.Print "Font object looks good.  Proceeding with rendering."
+    'Else
+        'Debug.Print "Font object looks good.  Proceeding with rendering."
     End If
     
     'PD currently supports two rendering modes: WAPI (which uses GDI or GDI+ to render the text, and is thus limited by the settings
