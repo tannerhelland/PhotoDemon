@@ -1249,8 +1249,10 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     Else
         
         'Rasterize just this one layer, and notify the parent image of the change
-        PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).RasterizeVectorData
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, srcLayerIndex
+        If PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).IsLayerVector() Then
+            PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).RasterizeVectorData
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, srcLayerIndex
+        End If
         
     End If
     

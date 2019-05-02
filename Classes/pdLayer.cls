@@ -351,7 +351,7 @@ Friend Sub RasterizeVectorData()
 
     'If the layer is already rasterized, ignore this request
     If Me.IsLayerRaster Then
-        Debug.Print "WARNING!  You just requested rasterization of a raster layer.  Fix this!"
+        Debug.Print "WARNING!  You just requested rasterization of a raster layer (" & Me.GetLayerName() & "). Fix this! "
         Exit Sub
     End If
     
