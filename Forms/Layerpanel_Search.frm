@@ -128,7 +128,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 End Sub
 
 Private Sub srchMain_Click(bestSearchHit As String)
-    Debug.Print bestSearchHit
+    Menus.ProcessDefaultAction_BySearch bestSearchHit
 End Sub
 
 Private Sub srchMain_GotFocusAPI()

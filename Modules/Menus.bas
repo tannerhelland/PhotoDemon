@@ -33,8 +33,8 @@ Private Type PD_MenuEntry
     me_ResImage As String                 'Name of this menu's image, as stored in PD's central resource file
     me_TextEn As String                   'Text of this menu, in English
     me_TextTranslated As String           'Text of this menu, as translated by the current language
-    me_TextFinal As String                'Final on-screen appearance of the text, with translations and accelerator applied
-    me_TextSearchable As String           'String to use in search results.  Has the form "TopMenu > ChildMenu > MyMenuName"
+    me_TextFinal As String                'Final on-screen appearance of the text, with translations and accelerator
+    me_TextSearchable As String           'Localized string for search results.  Uses "TopMenu > ChildMenu > MyMenuName" format.
     me_HasChildren As Boolean             'Is this a non-clickable menu (e.g. it only exists to open a child menu?)
 End Type
 
@@ -1289,6 +1289,26 @@ Public Sub ProcessDefaultAction_ByCaption(ByRef srcMenuCaption As String)
     
     'If the previous loop found no matches, something went horribly wrong
     PDDebug.LogAction "WARNING!  Menus.ProcessDefaultAction_ByCaption couldn't find a match for: " & srcMenuCaption
+
+End Sub
+
+'Given a menu search string, apply the corresponding default processor action.
+Public Sub ProcessDefaultAction_BySearch(ByRef srcSearchText As String)
+    
+    'Search the menu list for a menu caption matching the passed one
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+    
+        'If the captions match, trigger the corresponding default action, then exit immediately
+        If Strings.StringsEqual(srcSearchText, m_Menus(i).me_TextSearchable, True) Then
+            ProcessDefaultAction_ByName m_Menus(i).me_Name
+            Exit Sub
+        End If
+    
+    Next i
+    
+    'If the previous loop found no matches, something went horribly wrong
+    PDDebug.LogAction "WARNING!  Menus.ProcessDefaultAction_BySearch couldn't find a match for: " & srcSearchText
 
 End Sub
 
