@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Podešavanje ravnoteže bijele boje slike</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Podešavanje kontrasta slike</translation>
+<original>Adjusting image white balance</original>
+<translation>Podešavanje ravnoteže bijele boje slike</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ aš problem i dalje postoji, prijavite je programerima PhotoDemona putem photode
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Poboljšavanje boja</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Povećanje kontrasta</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Poboljšavanje osvjetljenja</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Podešavanje sjena i naglašava</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Poboljšavanje sjene i naglašava</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1426,6 +1406,991 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Otvoren</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Zalijepi kao novu sliku</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Skeniranje slike</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Odaberite skener ili fotoaparat</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Uvoz Interneta</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Prikupljanje zaslona</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Blizu</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Zatvori sve</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Uštedjeti</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Spremite kopiju</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Spremi kao</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Vratiti Se</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>Batch čarobnjak</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Otisak</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Izlaz program</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Poništi povijest</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Ponovi posljednju akciju</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Rez</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Izrezati od sloja</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Kopiraj iz sloja</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Lijepljenje kao novi sloj</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>Prazan međuspremnik</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>Duplicirana slika</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Promijenite veličinu slike</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Promijenite veličinu slike koja je svjesna sadržaja</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Veličina platna</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Postavite platno na sloj</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Postavite platno na sve slojeve</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Obrišite prazne granice</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>Ispravite sliku</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Zakrenite sliku 90 u smjeru kazaljke na satu</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Zakrenite sliku 90 suprotno od kazaljke na satu</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Zakrenite sliku 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Arbitražna rotacija slike</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Flip sliku vodoravno</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Flip sliku vertikalno</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Uređivanje metapodataka</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Dodaj novi sloj</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Dodajte prazan sloj</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Dupli sloj</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Novi sloj iz vidljivih slojeva</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Izbriši sloj</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Brisanje skrivenih slojeva</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Spoji sloj gore</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Spoji sloj prema dolje</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Podignite sloj</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>Donji sloj</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Podignite sloj na vrh</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Donji sloj na dno</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>Ispravite sloj</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Zakrenite sloj 90 u smjeru kazaljke na satu</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Zakrenite sloj 90 u smjeru suprotnom od kazaljke na satu</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Zakrenite sloj 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Izvrsna rotacija sloja</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip sloj vodoravno</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Fiksirajte sloj vertikalno</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Vraćanje veličine sloja</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Promijeni veličinu sloja</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Promjena veličine sloja koji prati sadržaj</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Slojeviti sloj za odabir</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Boja do alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Ukloni alfa kanal</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rasterizirati sloj</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rasterizirajte sve slojeve</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Spoji vidljive slojeve</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Poravnajte sliku</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Odaberi sve</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Ukloni odabir</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Invertiranje odabira</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Rastu odabir</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Odabir stezanja</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>Odabir granice</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>Odabir perja</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Oštrenje odabira</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Izbrišite odabrano područje</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Odabir opcije</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Spremi odabir</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Izvezi odabrano područje kao sliku</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Izvezi masku za odabir kao sliku</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Automatski ispraviti</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Automatsko poboljšavanje</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Crno i bijelo</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Svjetlina i kontrast</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>Ravnoteža boja</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Krivulje</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Razine</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Sjena i istaknuti</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Živost Boja</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>Balans bijele boje</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Mješalica kanala</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Maksimalni kanal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minimalni kanal</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Promjena boja (lijevo)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Promjena boja (desno)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Nijansa i zasićenost</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Temperatura</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Boja Za Kosu</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>Kolorizacija</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Zamijenite boju</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sepija</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Ujednačiti</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>Istezanje histograma</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>Film negativan</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Preokrenite nijansu</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Preokrenite RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gama</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Boja do crno-bijele boje</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Crno-Bijelo do sive</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Izlaganje</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Filtar za fotografije</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Uklanjanje efekta crvenih očiju</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>Split toniranje</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Bojica</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>Strip knjiga</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>Oblikovano staklo</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>Film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>Staklene pločice</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoskop</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Moderna umjetnost</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Slikarstvo uljanim bojama</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Plastični omot</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Posterizacija</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>Reljef</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Vitraž</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>Blok poretka</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussova zamagljenost</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Zamućenje površine</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Zamućenje pokreta</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radijalno zamagljivanje</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>Zamućenje zumiranja</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara filtar</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Simetrični najbliži susjed</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Ispravite izobličenje leće</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Krafna</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Primijenite izobličenje leće</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Stisnuti i vrtjeti</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Guranje</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Mreškanje</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Mljackati</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Kovitlanje</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>Valovi</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Razni su iskrivljeni</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>Klesati</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Poboljšajte rubove</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Nađi rubove</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>Filtar raspon</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Prati konturu</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Crno svjetlo</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Cross-zaslon</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Duga</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Sunshine</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilate (maksimalni rang)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (minimalni čin)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Atmosfera</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Magla</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Zapaliti</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Lava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Snijeg</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>Voda</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Dodaj film zrno</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Dodaj RGB buku</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>Anizotropna difuzija</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>Bilateralno zaglađivanje</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmonska sredina</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>Srednji pomak</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Srednja</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>Poluton boje</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Kristalizirati</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mecotinta</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mozaik</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Izoštriti</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Nenamjerna maska</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antički</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>Difuzna</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Obris</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Portret sjaj</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarizovati</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Blizanci</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>Vinjetiranje</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan i zumiranje</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>Perspektiva</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polarna pretvorba</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Rotirati</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Smicanje</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Prilagođeni filtar</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Započni snimanje makronaredbe</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Zaustavite makronaredbu</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Igraj makronaredbu</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Provjera ažuriranja softvera</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Otvorite sve nedavne slike</translation>
 </phrase>
@@ -1445,7 +2410,7 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <translation>Izbriši posljednji popis makronaredbi</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1520,11 +2485,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1589,7 +2549,7 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <translation>Atkinson</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2183,11 +3143,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Ukloni odabir</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Radnja je otkazana.</translation>
 </phrase>
@@ -2204,7 +3159,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Upute za izvješće o pogrešci</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2302,11 +3257,6 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Odabir opcije</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Došlo je do pogreške prilikom pokušaja učitavanja %1. Provjerite je li datoteka važeća datoteka za odabir PhotoDemona.</translation>
 </phrase>
@@ -2367,11 +3317,6 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>Odabir perja</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Odabir perja</translation>
 </phrase>
@@ -2382,18 +3327,8 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Oštrenje odabira</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>Oštrenje odabira</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Rastu odabir</translation>
 </phrase>
 
 <phrase>
@@ -2407,28 +3342,13 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Odabir stezanja</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Skraćivanje odabira</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>Odabir granice</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Pronalaženje granice odabira</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Izbrišite odabrano područje</translation>
 </phrase>
 
 <phrase>
@@ -2456,7 +3376,7 @@ I međuvremenu, pokušajte spremiti sliku u alternativni format. Također možet
 <translation>Pritisnite prvu točku da biste dovršili izbor poligona</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2558,31 +3478,11 @@ Upišite numeričku vrijednost.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>Ispravite sliku</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>Ispravite sloj</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Izbriši sloj</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Dodaj novi sloj</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2599,7 +3499,7 @@ Upišite numeričku vrijednost.</translation>
 <translation>(Nijedan)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2789,7 +3689,17 @@ Upišite numeričku vrijednost.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Ova slika ne sadrži nikakve GPS metapodatke.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Nije pronađen GPS podaci</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3723,7 +4633,7 @@ Upišite numeričku vrijednost.</translation>
 <translation>Slika je uspješno obnovljena.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3855,11 +4765,6 @@ Upišite numeričku vrijednost.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Vratiti Se</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Otvorite lokaciju u Exploreru</translation>
 </phrase>
@@ -3894,7 +4799,7 @@ Upišite numeričku vrijednost.</translation>
 <translation>Centrirajte sliku unutar prozora</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3973,11 +4878,6 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standard</translation>
 </phrase>
@@ -4012,7 +4912,7 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 <translation>nijedan</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4641,6 +5541,12 @@ Možete koristiti i gumb Otvori sliku na lijevoj strani, VBCRLZa datoteku> Otvor
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4688,11 +5594,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Promijenite veličinu slike</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Postavite sliku na zaslon</translation>
 </phrase>
@@ -4717,7 +5618,7 @@ The final value must be between %3 and %4.</original>
 <translation>Promijenite jedinicu veličine slike koja se prikazuje lijevo od ovog okvira</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4797,11 +5698,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Zatvori sve</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>Izvoz</translation>
 </phrase>
@@ -4857,18 +5753,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Poništi povijest</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Rez</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Izrezati od sloja</translation>
 </phrase>
 
 <phrase>
@@ -4877,18 +5763,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Kopiraj iz sloja</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Zalijepi kao novu sliku</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Lijepljenje kao novi sloj</translation>
 </phrase>
 
 <phrase>
@@ -4912,11 +5788,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Veličina platna</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Postavite platno na aktivni sloj</translation>
 </phrase>
@@ -4929,16 +5800,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Obrežite odabir</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Obrišite prazne granice</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Rotirati</translation>
 </phrase>
 
 <phrase>
@@ -4974,16 +5835,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metapodaci</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Uređivanje metapodataka</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5057,16 +5908,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Podignite sloj</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>Donji sloj</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Slojeviti na vrh</translation>
 </phrase>
@@ -5137,16 +5978,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Spoji vidljive slojeve</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Poravnajte sliku</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>Izaberi</translation>
 </phrase>
@@ -5182,11 +6013,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Izoštriti</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Spremi trenutni odabir</translation>
 </phrase>
@@ -5207,88 +6033,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Automatski ispraviti</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Rasvjeta</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Sjene i naglašava</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Automatsko poboljšavanje</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Crno i bijelo</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Svjetlina i kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>Ravnoteža boja</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Krivulje</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Razine</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Živost Boja</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>Balans bijele boje</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanali</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Mješalica kanala</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maksimum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimum</translation>
 </phrase>
 
 <phrase>
@@ -5302,36 +6053,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Nijansa i zasićenost</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Temperatura</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Boja Za Kosu</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>Kolorizacija</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Zamijenite boju</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepija</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>Histogram</translation>
 </phrase>
@@ -5339,11 +6060,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Prikaz</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Ujednačiti</translation>
 </phrase>
 
 <phrase>
@@ -5362,8 +6078,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gama</translation>
+<original>Lighting</original>
+<translation>Rasvjeta</translation>
 </phrase>
 
 <phrase>
@@ -5372,38 +6088,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Boja do crno-bijele boje</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Crno-Bijelo do sive</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fotografija</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Izlaganje</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>Filtri za fotografije</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Uklanjanje efekta crvenih očiju</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Split toniranje</translation>
 </phrase>
 
 <phrase>
@@ -5417,108 +6108,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Bojica</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>Strip knjiga</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Oblikovano staklo (udubljenja)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>Film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>Staklene pločice</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleidoskop</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Moderna umjetnost</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Slikarstvo uljanim bojama</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Plastični omot</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Posterizacija</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>Reljef</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Vitraž</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Zamagliti</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>Blok poretka</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussova zamagljenost</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Zamućenje površine</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Zamućenje pokreta</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radijalno zamagljivanje</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>Zamućenje zumiranja</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara filtar</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Simetrični najbliži susjed</translation>
 </phrase>
 
 <phrase>
@@ -5532,43 +6128,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Krafna</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Leće</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Stisnuti i vrtjeti</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Guranje</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Mreškanje</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Mljackati</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Kovitlanje</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>Valovi</translation>
 </phrase>
 
 <phrase>
@@ -5582,53 +6143,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>Klesati</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Poboljšajte rubove</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Nađi rubove</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>Filtar raspon</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Prati konturu</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Svjetlo i sjena</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Crno svjetlo</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Cross-zaslon</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Duga</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Sunshine</translation>
 </phrase>
 
 <phrase>
@@ -5647,36 +6163,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Atmosfera</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Magla</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Zapaliti</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Lava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metal</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Snijeg</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Podvodni</translation>
 </phrase>
@@ -5687,68 +6173,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Dodaj film zrno</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Dodaj RGB buku</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>Anizotropna difuzija</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>Bilateralni filtar</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmonska sredina</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>Srednji pomak</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Srednja</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pikselizacija</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>Poluton boje</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Kristalizirati</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mecotinta</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mozaik</translation>
 </phrase>
 
 <phrase>
@@ -5762,78 +6193,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antički</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>Difuzna</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Obris</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Portret sjaj</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarizovati</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Blizanci</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>Vinjetiranje</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Transformirati</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan i zumiranje</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>Perspektiva</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polarna pretvorba</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Smicanje</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Prilagođeni filtar</translation>
 </phrase>
 
 <phrase>
@@ -5879,11 +6240,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Zaustavi snimanje</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Igraj makronaredbu</translation>
 </phrase>
 
 <phrase>
@@ -6102,16 +6458,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Započni snimanje makronaredbe</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Zaustavite makronaredbu</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Dostupna je nova verzija programa PhotoDemon. Ažuriranje se automatski obrađuje u pozadini</translation>
 </phrase>
@@ -6149,316 +6495,6 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Filtar za fotografije</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Automatska ispravna boja</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Automatski ispravni kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Automatsko ispravno osvjetljenje</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Automatski ispravite sjene i naglašava</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Automatsko poboljšavanje boje</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Automatsko pojačavanje kontrasta</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Automatsko poboljšavanje osvjetljenja</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto poboljšava sjene i naglašava</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>Batch čarobnjak</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Spoji sloj gore</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Spoji sloj prema dolje</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Slojeviti sloj za odabir</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Brisanje skrivenih slojeva</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Dodajte prazan sloj</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Dupli sloj</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Novi sloj iz vidljivih slojeva</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Podignite sloj na vrh</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Donji sloj na dno</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Zakrenite sloj 90 u smjeru kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Zakrenite sloj 90 u smjeru suprotnom od kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Zakrenite sloj 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Izvrsna rotacija sloja</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip sloj vodoravno</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Fiksirajte sloj vertikalno</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rasterizirati sloj</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rasterizirajte sve slojeve</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Vraćanje veličine sloja</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Promijeni veličinu sloja</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Promjena veličine sloja koji prati sadržaj</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilate (maksimalni rang)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (minimalni čin)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Sjena i istaknuti</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>Oblikovano staklo</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoskop</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Maksimalni kanal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Minimalni kanal</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Promjena boja (lijevo)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Promjena boja (desno)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Ispravite izobličenje leće</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Primijenite izobličenje leće</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Razni su iskrivljeni</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Ponovi posljednju akciju</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Rez</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Zalijepi kao novu sliku</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>Prazan međuspremnik</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Otvoren</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Blizu</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Uštedjeti</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Spremite kopiju</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Spremi kao</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Otisak</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Izlaz program</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Provjera ažuriranja softvera</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>Istezanje histograma</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>Duplicirana slika</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Promijenite veličinu slike koja je svjesna sadržaja</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Postavite platno na sloj</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Postavite platno na sve slojeve</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Flip sliku vodoravno</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Flip sliku vertikalno</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Uvoz Interneta</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Pričekajte dok se novi jezik primijeni</translation>
 </phrase>
@@ -6478,117 +6514,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Jezik je uspješno promijenjen.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Ova slika ne sadrži nikakve GPS metapodatke.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Nije pronađen GPS podaci</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>Voda</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>Film negativan</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Preokrenite nijansu</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Preokrenite RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>Bilateralno zaglađivanje</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Zakrenite sliku 90 u smjeru kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Zakrenite sliku 90 suprotno od kazaljke na satu</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Zakrenite sliku 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Arbitražna rotacija slike</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Skeniranje slike</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Prikupljanje zaslona</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Odaberi sve</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Invertiranje odabira</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Spremi odabir</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Izvezi odabrano područje kao sliku</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Izvezi masku za odabir kao sliku</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Odaberite skener ili fotoaparat</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Nenamjerna maska</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Boja do alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Ukloni alfa kanal</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11635,6 +11561,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Automatsko ispravno osvjetljenje</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>Izlaz </translation>
 </phrase>
@@ -11659,7 +11590,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Procjena preostalog vremena</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13482,7 +13413,7 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <translation>Premjestite sloj prema dolje</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13491,6 +13422,12 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15730,18 +15667,12 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

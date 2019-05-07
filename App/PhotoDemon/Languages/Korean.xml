@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.68</langversion>
+<langversion>1.0.69</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>이미지 화이트 밸런스 조정하기</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>이미지 대비 조정</translation>
+<original>Adjusting image white balance</original>
+<translation>이미지 화이트 밸런스 조정하기</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If 문제가 지속되면 photodemon.org를 통해 PhotoDemon 개발자에게보
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>색상 향상</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>대비 향상시키기</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>조명 강화</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>그림자와 밝은 부분 조정하기</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>그림자와 밝은 부분 강조하기</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1425,6 +1405,991 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>열다</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>새 이미지로 붙여 넣기</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>이미지 스캔</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>스캐너 또는 카메라 선택</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>인터넷 가져 오기</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>화면 캡처</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>닫기</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>모두 닫기</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>구하다</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>사본 저장</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>다른 이름으로 저장</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>돌아가는 것</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>배치 마법사</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>인쇄</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>프로그램 종료</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>기록 실행 취소</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>마지막 작업 반복</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>절단</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>레이어에서 잘라 내기</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>레이어에서 복사</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>새 레이어로 붙여 넣기</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>빈 클립 보드</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>이미지 중복</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>이미지 크기 조정</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>콘텐츠 인식 이미지 크기 조정</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>캔버스 크기</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>캔버스를 레이어에 맞추기</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>캔버스를 모든 레이어에 맞추기</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>빈 테두리 다듬기</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>이미지 직선화</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>이미지를 시계 방향으로 90도 회전하십시오.</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>이미지를 시계 반대 방향으로 90도 회전하십시오.</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>이미지 회전 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>임의의 이미지 회전</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>가로로 뒤집기</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>이미지를 세로로 뒤집기</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>메타 데이터 수정</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation>모든 메타 데이터 제거</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>새 레이어 추가</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>빈 레이어 추가</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>중복 레이어</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>보이는 레이어의 새 레이어</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>레이어 삭제</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>숨겨진 레이어 삭제</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>레이어 병합</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>레이어 병합</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>레이어 올리기</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>하층</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>레이어를 맨 위로 올리기</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>아래에서 아래로</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>레이어 직선화</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>레이어 90을 시계 방향으로 회전합니다.</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>레이어 90을 시계 반대 방향으로 회전</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>레이어 180 회전</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>임의의 레이어 회전</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>수평으로 뒤집기</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>세로로 뒤집기</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>레이어 크기 다시 설정</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>레이어 크기 조정</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>콘텐츠 인식 레이어 크기 변경</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>선택한 레이어 자르기</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>알파에서 색상으로</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>알파 채널 제거</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>레이어 래스터 화</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>모든 레이어 래스터 화</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>보이는 레이어 병합</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>납작한 이미지</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>모두 선택</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>선택 항목 삭제</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>반전 선택</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>성장 선택</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>축소 선택</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>테두리 선택</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>깃털 선택</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>선명도 선택</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>선택한 영역 지우기</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>하중 선택</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>선택 저장</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>선택한 영역을 이미지로 내보내기</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>선택 마스크를 이미지로 내보내기</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>자동 수정</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>자동 보정</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>검정색과 흰색</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>밝기 및 대비</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>색의 균형</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>곡선</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>레벨</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>그림자 및 강조 표시</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>활기찬</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>화이트 밸런스</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>채널 믹서</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>재 채널</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>최대 채널</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>최소 채널</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>색상 이동 (왼쪽)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>색상 이동 (오른쪽)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>색조와 채도</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>온도</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>색조</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>색상 화하다</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>색상 바꾸기</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>세피아</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>같게 하다</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>스트레치 히스토그램</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>필름 부정</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>반전 된 색조</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>RGB 반전</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>감마</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>흑백으로 색상 지정</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>단색에서 회색</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>노출</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>사진 필터</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>적목 현상 제거</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>스플릿 토닝</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>색연필</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>만화책</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>형상 유리</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>필름 누아르</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>유리 타일</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>만화경</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>현대 미술</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>오일 페인팅</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>플라스틱 랩</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>포스터 라이즈</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>구조</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>스테인드 글라스</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>상자 흐림 효과</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>가우스 흐림</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>표면 흐림</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>동작 흐림 효과</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>방사형 흐림 효과</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>줌 흐림 효과</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>쿠와하라 필터</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>대칭 이웃</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>렌즈 왜곡 보정</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>도넛</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>렌즈 왜곡 적용</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>핀치와 소용돌이</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>찌름</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>리플</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>엿 같은</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>소용돌이</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>파도</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>기타 왜곡</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>엠보싱</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>가장자리 강화</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>가장자리 찾기</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>범위 필터</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>윤곽선 추적</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>블랙 라이트</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>교차 스크린</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>무지개</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>햇빛</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>십자형 (최대 랭크)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>에로 데 (최소 순위)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>분위기</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>안개</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>점화하다</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>용암</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>금속</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>눈</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>물</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>필름 그레인 추가</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>RGB 노이즈 추가</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>이방성 확산</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>양면 평활화</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>고조파 평균</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>평균 이동</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>중앙값</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>색상 하프 톤</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>결정화하다</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>파편</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotint</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>모자이크</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>갈다</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>흐릿한 가면</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>고대 미술</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>퍼지다</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>개요</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>팔레 타이즈</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>인물 광선</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>솔라 이즈</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>쌍둥이</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>비네팅</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>초점 이동 및 확대/축소</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>원근법</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>극좌표 변환</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>회전</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>전단</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>스피 리즈</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>맞춤 필터</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>매크로 기록 시작</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>매크로 기록 중지</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>매크로 재생</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>소프트웨어 업데이트 확인</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>최근 이미지 모두 열기</translation>
 </phrase>
@@ -1444,7 +2409,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>최근 매크로 목록 지우기</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1519,11 +2484,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1588,7 +2548,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>Atkinson</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2182,11 +3142,6 @@ Description:  %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>선택 항목 삭제</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>작업이 취소되었습니다.</translation>
 </phrase>
@@ -2203,7 +3158,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>버그보고 지침</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2301,11 +3256,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>하중 선택</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation> %1을 (를로드하는 동안 오류가 발생했습니다. 파일이 유효한 PhotoDemon 선택 파일인지 확인하십시오.</translation>
 </phrase>
@@ -2366,11 +3316,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>깃털 선택</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>페더 링 선택</translation>
 </phrase>
@@ -2381,18 +3326,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>선명도 선택</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>선명 화 선택</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>성장 선택</translation>
 </phrase>
 
 <phrase>
@@ -2406,28 +3341,13 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>축소 선택</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>수축 선택</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>테두리 선택</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>선택 영역 경계 찾기</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>선택한 영역 지우기</translation>
 </phrase>
 
 <phrase>
@@ -2455,7 +3375,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>첫 번째 점을 클릭하여 다각형 선택을 완료하십시오.</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2557,31 +3477,11 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>이미지 직선화</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>레이어 직선화</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>레이어 삭제</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>새 레이어 추가</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2598,7 +3498,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>(없음)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2788,7 +3688,17 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>이 이미지에는 GPS 메타 데이터가 없습니다.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>GPS 데이터가 없습니다.</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3722,7 +4632,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>이미지가 성공적으로 복원되었습니다.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3854,11 +4764,6 @@ P 숫자 값을 입력하십시오.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>돌아가는 것</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>탐색기에서 위치 열기</translation>
 </phrase>
@@ -3893,7 +4798,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>이미지를 뷰포트의 가운데에 배치하십시오.</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3972,11 +4877,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>표준</translation>
 </phrase>
@@ -4011,7 +4911,7 @@ or the File > Open and File > Import menus.</original>
 <translation>없음</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4640,6 +5540,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4687,11 +5593,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>이미지 크기 조정</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>화면에 이미지 맞추기</translation>
 </phrase>
@@ -4716,7 +5617,7 @@ The final value must be between %3 and %4.</original>
 <translation>이미지 크기 단위를이 상자 왼쪽에 표시되도록 변경하십시오.</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4796,11 +5697,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>모두 닫기</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>수출</translation>
 </phrase>
@@ -4856,18 +5752,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>기록 실행 취소</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>절단</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>레이어에서 잘라 내기</translation>
 </phrase>
 
 <phrase>
@@ -4876,18 +5762,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>레이어에서 복사</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>새 이미지로 붙여 넣기</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>새 레이어로 붙여 넣기</translation>
 </phrase>
 
 <phrase>
@@ -4911,11 +5787,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>캔버스 크기</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>캔버스를 활성 레이어에 맞추기</translation>
 </phrase>
@@ -4928,16 +5799,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>자르기 선택</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>빈 테두리 다듬기</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>회전</translation>
 </phrase>
 
 <phrase>
@@ -4973,16 +5834,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>메타 데이터</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>메타 데이터 수정</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation>모든 메타 데이터 제거</translation>
 </phrase>
 
 <phrase>
@@ -5056,16 +5907,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>레이어 올리기</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>하층</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>레이어 위로</translation>
 </phrase>
@@ -5136,16 +5977,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>보이는 레이어 병합</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>납작한 이미지</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>고르다</translation>
 </phrase>
@@ -5181,11 +6012,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>갈다</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>현재 선택 저장</translation>
 </phrase>
@@ -5206,88 +6032,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>자동 수정</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>대조</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>조명</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>그림자 및 하이라이트</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>자동 보정</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>검정색과 흰색</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>밝기 및 대비</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>색의 균형</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>곡선</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>레벨</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>활기찬</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>화이트 밸런스</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>채널</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>채널 믹서</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>재 채널</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>최고</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>최저한의</translation>
 </phrase>
 
 <phrase>
@@ -5301,36 +6052,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>색조와 채도</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>온도</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>색조</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>색상 화하다</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>색상 바꾸기</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>세피아</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>히스토그램</translation>
 </phrase>
@@ -5338,11 +6059,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>디스플레이</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>같게 하다</translation>
 </phrase>
 
 <phrase>
@@ -5361,8 +6077,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>감마</translation>
+<original>Lighting</original>
+<translation>조명</translation>
 </phrase>
 
 <phrase>
@@ -5371,38 +6087,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>흑백으로 색상 지정</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>단색에서 회색</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>사진술</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>노출</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>사진 필터</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>적목 현상 제거</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>스플릿 토닝</translation>
 </phrase>
 
 <phrase>
@@ -5416,108 +6107,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>색연필</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>만화책</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>형상 유리 (함몰)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>필름 누아르</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>유리 타일</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>만화경</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>현대 미술</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>오일 페인팅</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>플라스틱 랩</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>포스터 라이즈</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>구조</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>스테인드 글라스</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>흐림</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>상자 흐림 효과</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>가우스 흐림</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>표면 흐림</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>동작 흐림 효과</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>방사형 흐림 효과</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>줌 흐림 효과</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>쿠와하라 필터</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>대칭 이웃</translation>
 </phrase>
 
 <phrase>
@@ -5531,43 +6127,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>도넛</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>렌즈</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>핀치와 소용돌이</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>찌름</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>리플</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>엿 같은</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>소용돌이</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>파도</translation>
 </phrase>
 
 <phrase>
@@ -5581,53 +6142,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>엠보싱</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>가장자리 강화</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>가장자리 찾기</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>범위 필터</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>윤곽선 추적</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>빛과 그림자</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>블랙 라이트</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>교차 스크린</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>무지개</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>햇빛</translation>
 </phrase>
 
 <phrase>
@@ -5646,36 +6162,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>분위기</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>안개</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>점화하다</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>용암</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>금속</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>눈</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>수중</translation>
 </phrase>
@@ -5686,68 +6172,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>필름 그레인 추가</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>RGB 노이즈 추가</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>이방성 확산</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>양측 필터</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>고조파 평균</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>평균 이동</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>중앙값</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>픽셀 화</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>색상 하프 톤</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>결정화하다</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>파편</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotint</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>모자이크</translation>
 </phrase>
 
 <phrase>
@@ -5761,78 +6192,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>고대 미술</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>퍼지다</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>개요</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>팔레 타이즈</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>인물 광선</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>솔라 이즈</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>쌍둥이</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>비네팅</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>변환</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>초점 이동 및 확대/축소</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>원근법</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>극좌표 변환</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>전단</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>스피 리즈</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>맞춤 필터</translation>
 </phrase>
 
 <phrase>
@@ -5878,11 +6239,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>녹음 중지</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>매크로 재생</translation>
 </phrase>
 
 <phrase>
@@ -6101,16 +6457,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>매크로 기록 시작</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>매크로 기록 중지</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Photodemon의 새 버전을 사용할 수 있습니다. 업데이트가 백그라운드에서 자동으로 처리됩니다.</translation>
 </phrase>
@@ -6148,316 +6494,6 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>사진 필터</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>자동 수정 색상</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>자동 보정 정확도</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>자동으로 올바른 조명</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>자동으로 정확한 그림자 및 하이라이트</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>색상 자동 보정</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>대비 자동 향상</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>자동 조명 강화</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>자동 그림자 및 밝은 부분 강조</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>배치 마법사</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>레이어 병합</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>레이어 병합</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>선택한 레이어 자르기</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>숨겨진 레이어 삭제</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>빈 레이어 추가</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>중복 레이어</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>보이는 레이어의 새 레이어</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>레이어를 맨 위로 올리기</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>아래에서 아래로</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>레이어 90을 시계 방향으로 회전합니다.</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>레이어 90을 시계 반대 방향으로 회전</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>레이어 180 회전</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>임의의 레이어 회전</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>수평으로 뒤집기</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>세로로 뒤집기</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>레이어 래스터 화</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>모든 레이어 래스터 화</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>레이어 크기 다시 설정</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>레이어 크기 조정</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>콘텐츠 인식 레이어 크기 변경</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>십자형 (최대 랭크)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>에로 데 (최소 순위)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>그림자 및 강조 표시</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>형상 유리</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>만화경</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>최대 채널</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>최소 채널</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>색상 이동 (왼쪽)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>색상 이동 (오른쪽)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>렌즈 왜곡 보정</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>렌즈 왜곡 적용</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>기타 왜곡</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>마지막 작업 반복</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>절단</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>새 이미지로 붙여 넣기</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>빈 클립 보드</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>열다</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>닫기</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>구하다</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>사본 저장</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>다른 이름으로 저장</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>인쇄</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>프로그램 종료</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>소프트웨어 업데이트 확인</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>스트레치 히스토그램</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>이미지 중복</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>콘텐츠 인식 이미지 크기 조정</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>캔버스를 레이어에 맞추기</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>캔버스를 모든 레이어에 맞추기</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>가로로 뒤집기</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>이미지를 세로로 뒤집기</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>인터넷 가져 오기</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>새로운 언어가 적용되는 동안 기다려주십시오.</translation>
 </phrase>
@@ -6477,117 +6513,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>언어가 성공적으로 변경되었습니다.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>이 이미지에는 GPS 메타 데이터가 없습니다.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>GPS 데이터가 없습니다.</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>물</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>필름 부정</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>반전 된 색조</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>RGB 반전</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>양면 평활화</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>이미지를 시계 방향으로 90도 회전하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>이미지를 시계 반대 방향으로 90도 회전하십시오.</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>이미지 회전 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>임의의 이미지 회전</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>이미지 스캔</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>화면 캡처</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>모두 선택</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>반전 선택</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>선택 저장</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>선택한 영역을 이미지로 내보내기</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>선택 마스크를 이미지로 내보내기</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>스캐너 또는 카메라 선택</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>흐릿한 가면</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>알파에서 색상으로</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>알파 채널 제거</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11634,6 +11560,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>자동으로 올바른 조명</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>출구</translation>
 </phrase>
@@ -11658,7 +11589,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>예상 남은 시간</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13481,7 +13412,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>레이어 이동</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13490,6 +13421,12 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15728,18 +15665,12 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

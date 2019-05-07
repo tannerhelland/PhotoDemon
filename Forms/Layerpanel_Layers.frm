@@ -326,22 +326,19 @@ End Sub
 'Layer action buttons - move layers up/down, delete layers, etc.
 Private Sub cmdLayerAction_Click(Index As Integer)
 
-    Dim copyOfCurLayerID As Long
-    copyOfCurLayerID = PDImages.GetActiveImage.GetActiveLayerID
-
     Select Case Index
     
         Case LYR_BTN_ADD
-            Process "Add new layer", True
-        
+            Menus.ProcessDefaultAction_ByName "layer_addbasic"
+            
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
-        
+            Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
+            
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
+            Menus.ProcessDefaultAction_ByName "layer_up"
+            
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            Menus.ProcessDefaultAction_ByName "layer_down"
             
     End Select
     

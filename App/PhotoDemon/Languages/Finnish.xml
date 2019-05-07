@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Säätyvä kuvan valkotasapaino</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Kuvan kontrastin säätäminen</translation>
+<original>Adjusting image white balance</original>
+<translation>Säätyvä kuvan valkotasapaino</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If ongelma jatkuu, ilmoita se PhotoDemon kehittäjille kautta photodemon.org/con
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>tehostaminen värit</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>tehostaminen kontrasti</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>tehostaminen valaistus</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Säätäminen varjoja ja korostetaan</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Tehostaminen varjoja ja korostetaan</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1422,6 +1402,991 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Avata</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Liitä uutena kuvana</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Scan kuva</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Valitse skannerin tai kameran</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Internet tuonti</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Kuvakaappaus</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Lähellä</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Sulje kaikki</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Tallentaa</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Tallenna kopio</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Tallenna nimellä</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>palautua</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>erä ohjatun</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Painaa</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Lopeta ohjelma</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Kumoa historia</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Toista viime toiminta</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Leikata</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Leikkaa kerroksesta</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Kopioi kerroksesta</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Liitä uutena kerroksen</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>tyhjä leikepöydälle</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>Monista kuva</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Muuta kuvan kokoa</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Sisältö-tietoinen kuvan kokoa</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Canvas size</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Fit kangas kerrokseen</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Fit kangas kaikkiin kerroksiin</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Trim tyhjä rajojen</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>Suorista kuva</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Kierrä kuvaa 90 myötäpäivään</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Kierrä kuvaa 90 vastapäivään</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Kierrä kuvaa 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Mielivaltaisen kuvan kierto</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Flip kuvan vaakasuunnassa</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Flip kuvaa pystysuorassa</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Edit metadata</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Lisää kerros</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Lisää tyhjä kerros</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Monista Layer</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Uusi kerros näkyvistä kerroksista</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Poista kerros</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Poista piilotasojen</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Yhdistä kerros ylös</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Yhdistä kerros alas</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Nosta kerros</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>alempi kerros</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Nosta kerros alkuun</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Alempi kerros alas</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>Suorista kerros</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Kierrä kerros 90 myötäpäivään</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Kierrä kerros 90 vastapäivään</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Kierrä kerros 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Mielivaltainen kerros kierto</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip kerros vaakasuoraan</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Flip kerros pystysuoraan</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Palauta kerros koko</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Asua kerros</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Sisältö-tietoinen kerroksen kokoa</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Rajaa kerros valinta</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Väri alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Poista alfa-kanava</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rasteroi kerros</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rasteroinut kaikki kerrokset</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Yhdistä näkyvä kerrokset</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Tasoita kuva</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Valitse kaikki</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Poista valinta</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Käänteinen valinta</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Grow valinta</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Shrink valinta</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>border valinta</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>sulka valinta</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>terävöittäminen valinta</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Poista valittu alue</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Load valinta</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Tallenna valinta</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Vie valittu alue kuvana</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Vie valintamaski kuvana</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Automaattisen korjauksen</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Auto parantaa</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Mustavalkoinen</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Kirkkaus ja kontrasti</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>väritasapaino</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>käyrät</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>tasot</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Varjo ja korosta</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibrance</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>valkotasapaino</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>kanavasekoittimeen</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>uudelleenkanavoidaan</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Suurin kanava</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Vähintään kanava</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Shift värit (vasemmalla)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Shift värit (oikealla)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Hue ja kylläisyys</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Lämpötila</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>värisävy</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>väritä</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Vaihda väri</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Seepia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>tasoittaa</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>Stretch histogrammi</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>filminegatiivissa</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Käänteinen värisävy</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Käänteinen RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Väri mustavalkoinen</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Mustavalkoinen tai harmaa</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Valotus</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>kuva suodatin</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Punasilmäisyyden poisto</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>Jaa sävytys</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Värikynä</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>Sarjakuvakirja</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>tajunnut lasia</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>lasitiiltä</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>kaleidoskooppi</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Nykytaide</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Öljymaalaus</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Muovikääre</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Posterisaatio</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>helpotus</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Värjätty lasi</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>laatikko hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussin hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>pinta hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>liikkeessä hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radial blur</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>zoom hämärtää</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara suodatin</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Symmetrinen lähimmän naapurin</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Korjaa linssivääristymän</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Donitsi</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Käytä linssivääristymän</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Nipistä ja pyöritä</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>tuupata</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>väre</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Liiskata</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Kiehkura</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>aallot</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Sekalaiset vääristää</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>painaa kohokirjaimin</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Paranna reunat</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Etsi reunat</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>Range suodatin</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Trace ääriviivat</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Musta valo</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Rajat screen</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Sateenkaari</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>auringonpaiste</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Laajentuva (maksimi sijoitus)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (minimi sijoitus)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>ilmapiiri</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Sumu</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Sytyttää</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Laava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metalli</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Lumi</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>vesi</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Lisää rakeisuutta</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Lisää RGB melu</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>anisotrooppinen diffuusio</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>kahdenväliset tasoitus</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmoninen keskiarvo</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>Mean shift</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Mediaani</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>väri rasterointi</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Kiteytyä</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Katkelma</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>mezzotinto</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mosaiikki</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Terävöittää</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Terävöintimaskin</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antiikki</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>Hajanainen</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>ääriviivat</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Portrait hehku</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>valotus</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>kaksoset</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>vinjetointia</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan ja zoom</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>näkökulma</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polar muuntaminen</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Kiertää</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>leikata</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Mukautettu suodatin</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Aloita makron tallennus</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Lopeta makron tallennus</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Toista makro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Tarkistetaan ohjelmistopäivityksiä</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Avaa kaikki viimeaikaiset kuvat</translation>
 </phrase>
@@ -1441,7 +2406,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <translation>Tyhjennä viimeaikaiset makroluettelossa</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1516,11 +2481,6 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1585,7 +2545,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2179,11 +3139,6 @@ Kuvaus: %2</translation>
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Poista valinta</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Action peruutettu.</translation>
 </phrase>
@@ -2200,7 +3155,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Bug raportti ohjeet</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2298,11 +3253,6 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Load valinta</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Virhe yritettäessä ladata %1. Varmista, että tiedosto on kelvollinen PhotoDemon valinta tiedosto.</translation>
 </phrase>
@@ -2363,11 +3313,6 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>sulka valinta</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>hapsut valinta</translation>
 </phrase>
@@ -2378,18 +3323,8 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>terävöittäminen valinta</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>teroitus valinta</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Grow valinta</translation>
 </phrase>
 
 <phrase>
@@ -2403,28 +3338,13 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Shrink valinta</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Shrinking valinta</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>border valinta</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Löytäminen valintareunus</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Poista valittu alue</translation>
 </phrase>
 
 <phrase>
@@ -2452,7 +3372,7 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 <translation>Valitse ensimmäinen piste loppuun monikulmio valinta</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2554,31 +3474,11 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>Suorista kuva</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>Suorista kerros</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Poista kerros</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Lisää kerros</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2595,7 +3495,7 @@ Please enter a numeric value.</original>
 <translation>(ei mitään)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2785,7 +3685,17 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Tämä kuva ei sisällä GPS metadataa.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Ei GPS-tietoja löytynyt</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3719,7 +4629,7 @@ Please enter a numeric value.</original>
 <translation>Image onnistuneesti palautettu.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3851,11 +4761,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>palautua</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Open paikalla Explorer</translation>
 </phrase>
@@ -3890,7 +4795,7 @@ Please enter a numeric value.</original>
 <translation>Keskittää kuvan sisällä näyttöikkunan</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3970,11 +4875,6 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standardi</translation>
 </phrase>
@@ -4009,7 +4909,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <translation>ei mitään</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4638,6 +5538,12 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4685,11 +5591,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Muuta kuvan kokoa</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Asenna kuvan ruudulla</translation>
 </phrase>
@@ -4714,7 +5615,7 @@ The final value must be between %3 and %4.</original>
 <translation>Muuta kuvakoko laitteen vasemmalla puolella näkyy tämän laatikon</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4794,11 +5695,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Sulje kaikki</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>Viedä</translation>
 </phrase>
@@ -4854,18 +5750,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Kumoa historia</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Leikata</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Leikkaa kerroksesta</translation>
 </phrase>
 
 <phrase>
@@ -4874,18 +5760,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Kopioi kerroksesta</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Liitä uutena kuvana</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Liitä uutena kerroksen</translation>
 </phrase>
 
 <phrase>
@@ -4909,11 +5785,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Canvas size</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Fit kangas aktiiviseen kerrokseen</translation>
 </phrase>
@@ -4926,16 +5797,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Rajaa valintaan</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Trim tyhjä rajojen</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Kiertää</translation>
 </phrase>
 
 <phrase>
@@ -4971,16 +5832,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Edit metadata</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5054,16 +5905,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Nosta kerros</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>alempi kerros</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Layer alkuun</translation>
 </phrase>
@@ -5134,16 +5975,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Yhdistä näkyvä kerrokset</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Tasoita kuva</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>valita</translation>
 </phrase>
@@ -5179,11 +6010,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Terävöittää</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Tallenna nykyinen valinta</translation>
 </phrase>
@@ -5204,88 +6030,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Automaattisen korjauksen</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontrasti</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Valaistus</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Varjoja ja korostaa</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Auto parantaa</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Mustavalkoinen</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Kirkkaus ja kontrasti</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>väritasapaino</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>käyrät</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>tasot</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibrance</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>valkotasapaino</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>kanavat</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>kanavasekoittimeen</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>uudelleenkanavoidaan</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Enimmäismäärä</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Vähimmäismäärä</translation>
 </phrase>
 
 <phrase>
@@ -5299,36 +6050,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Hue ja kylläisyys</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Lämpötila</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>värisävy</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>väritä</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Vaihda väri</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Seepia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>histogrammi</translation>
 </phrase>
@@ -5336,11 +6057,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Näyttö</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>tasoittaa</translation>
 </phrase>
 
 <phrase>
@@ -5359,8 +6075,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>Valaistus</translation>
 </phrase>
 
 <phrase>
@@ -5369,38 +6085,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Väri mustavalkoinen</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Mustavalkoinen tai harmaa</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Valokuvaus</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Valotus</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>photo suodattimet</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Punasilmäisyyden poisto</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Jaa sävytys</translation>
 </phrase>
 
 <phrase>
@@ -5414,108 +6105,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Värikynä</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>Sarjakuvakirja</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Tajunnut lasia (kolhuja)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>lasitiiltä</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>kaleidoskooppi</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Nykytaide</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Öljymaalaus</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Muovikääre</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Posterisaatio</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>helpotus</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Värjätty lasi</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>laatikko hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussin hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>pinta hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>liikkeessä hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radial blur</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>zoom hämärtää</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara suodatin</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Symmetrinen lähimmän naapurin</translation>
 </phrase>
 
 <phrase>
@@ -5529,43 +6125,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Donitsi</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Linssi</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Nipistä ja pyöritä</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>tuupata</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>väre</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Liiskata</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Kiehkura</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>aallot</translation>
 </phrase>
 
 <phrase>
@@ -5579,53 +6140,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>painaa kohokirjaimin</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Paranna reunat</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Etsi reunat</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>Range suodatin</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Trace ääriviivat</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Valo ja varjo</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Musta valo</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Rajat screen</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Sateenkaari</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>auringonpaiste</translation>
 </phrase>
 
 <phrase>
@@ -5644,36 +6160,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>ilmapiiri</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Sumu</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Sytyttää</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Laava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metalli</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Lumi</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Vedenalainen</translation>
 </phrase>
@@ -5684,68 +6170,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Lisää rakeisuutta</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Lisää RGB melu</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>anisotrooppinen diffuusio</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>kahdenväliset suodatin</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmoninen keskiarvo</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>Mean shift</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Mediaani</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pikselöi</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>väri rasterointi</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Kiteytyä</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Katkelma</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>mezzotinto</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mosaiikki</translation>
 </phrase>
 
 <phrase>
@@ -5759,78 +6190,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antiikki</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>Hajanainen</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>ääriviivat</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Portrait hehku</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>valotus</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>kaksoset</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>vinjetointia</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Muuttaa</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan ja zoom</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>näkökulma</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polar muuntaminen</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>leikata</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Mukautettu suodatin</translation>
 </phrase>
 
 <phrase>
@@ -5876,11 +6237,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Lopeta tallennus</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Toista makro</translation>
 </phrase>
 
 <phrase>
@@ -6099,16 +6455,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Aloita makron tallennus</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Lopeta makron tallennus</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Uusi versio PhotoDemon on käytettävissä. Päivitys automaattisesti käsittely taustalla</translation>
 </phrase>
@@ -6147,316 +6493,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>kuva suodatin</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Auto oikea väri</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Auto oikea kontrasti</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Auto oikea valaistus</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Automaattinen oikea varjoja ja korostetaan</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Auto parantaa värejä</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Auto kontrastin tehostamiseksi</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Auto parantaa valaistus</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto parantaa varjoja ja korostetaan</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>erä ohjatun</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Yhdistä kerros ylös</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Yhdistä kerros alas</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Rajaa kerros valinta</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Poista piilotasojen</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Lisää tyhjä kerros</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Monista Layer</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Uusi kerros näkyvistä kerroksista</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Nosta kerros alkuun</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Alempi kerros alas</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Kierrä kerros 90 myötäpäivään</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Kierrä kerros 90 vastapäivään</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Kierrä kerros 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Mielivaltainen kerros kierto</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip kerros vaakasuoraan</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Flip kerros pystysuoraan</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rasteroi kerros</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rasteroinut kaikki kerrokset</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Palauta kerros koko</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Asua kerros</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Sisältö-tietoinen kerroksen kokoa</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Laajentuva (maksimi sijoitus)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (minimi sijoitus)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Varjo ja korosta</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>tajunnut lasia</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>kaleidoskooppi</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Suurin kanava</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Vähintään kanava</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Shift värit (vasemmalla)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Shift värit (oikealla)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Korjaa linssivääristymän</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Käytä linssivääristymän</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Sekalaiset vääristää</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Toista viime toiminta</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Leikata</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Liitä uutena kuvana</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>tyhjä leikepöydälle</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Avata</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Lähellä</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Tallentaa</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Tallenna kopio</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Tallenna nimellä</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Painaa</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Lopeta ohjelma</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Tarkistetaan ohjelmistopäivityksiä</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>Stretch histogrammi</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>Monista kuva</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Sisältö-tietoinen kuvan kokoa</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Fit kangas kerrokseen</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Fit kangas kaikkiin kerroksiin</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Flip kuvan vaakasuunnassa</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Flip kuvaa pystysuorassa</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Internet tuonti</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Odota, kunnes uusi kieli on voimassa</translation>
 </phrase>
@@ -6476,117 +6512,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Kieli vaihdettu.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Tämä kuva ei sisällä GPS metadataa.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Ei GPS-tietoja löytynyt</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>vesi</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>filminegatiivissa</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Käänteinen värisävy</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Käänteinen RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>kahdenväliset tasoitus</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Kierrä kuvaa 90 myötäpäivään</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Kierrä kuvaa 90 vastapäivään</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Kierrä kuvaa 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Mielivaltaisen kuvan kierto</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Scan kuva</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Kuvakaappaus</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Valitse kaikki</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Käänteinen valinta</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Tallenna valinta</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Vie valittu alue kuvana</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Vie valintamaski kuvana</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Valitse skannerin tai kameran</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Terävöintimaskin</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Väri alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Poista alfa-kanava</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11633,6 +11559,11 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Auto oikea valaistus</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>poistuminen</translation>
 </phrase>
@@ -11657,7 +11588,7 @@ Would haluat tallentaa erän lista ennen poistumista?</translation>
 <translation>Arvioidaan jäljellä</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13480,7 +13411,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Siirrä kerros alas</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13489,6 +13420,12 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15728,18 +15665,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

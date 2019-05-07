@@ -25,14 +25,14 @@ Begin VB.Form FormMain
    ScaleWidth      =   1034
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
-      Top             =   2280
+      Top             =   720
       _ExtentX        =   661
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdCanvas MainCanvas 
       Height          =   5055
       Index           =   0
-      Left            =   2640
+      Left            =   720
       TabIndex        =   0
       Top             =   120
       Width           =   5895
@@ -41,7 +41,7 @@ Begin VB.Form FormMain
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
-      Top             =   1680
+      Top             =   120
       _ExtentX        =   873
       _ExtentY        =   873
    End
@@ -76,29 +76,37 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuFile 
          Caption         =   "&Import"
          Index           =   3
-         Begin VB.Menu MnuImportClipboard 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "From clipboard"
+            Index           =   0
          End
-         Begin VB.Menu MnuImportSepBar0 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "-"
+            Index           =   1
          End
-         Begin VB.Menu MnuScanImage 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "From scanner or camera..."
+            Index           =   2
          End
-         Begin VB.Menu MnuSelectScanner 
-            Caption         =   "Select which scanner or camera to use"
+         Begin VB.Menu MnuFileImport 
+            Caption         =   "Select which scanner or camera to use..."
+            Index           =   3
          End
-         Begin VB.Menu MnuImportSepBar1 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "-"
+            Index           =   4
          End
-         Begin VB.Menu MnuImportFromInternet 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "Online image..."
+            Index           =   5
          End
-         Begin VB.Menu MnuImportSepBar2 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "-"
+            Index           =   6
          End
-         Begin VB.Menu MnuScreenCapture 
+         Begin VB.Menu MnuFileImport 
             Caption         =   "Screenshot..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuFile 
@@ -628,42 +636,10 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Auto correct"
          Index           =   0
-         Begin VB.Menu MnuAutoCorrect 
-            Caption         =   "Color"
-            Index           =   0
-         End
-         Begin VB.Menu MnuAutoCorrect 
-            Caption         =   "Contrast"
-            Index           =   1
-         End
-         Begin VB.Menu MnuAutoCorrect 
-            Caption         =   "Lighting"
-            Index           =   2
-         End
-         Begin VB.Menu MnuAutoCorrect 
-            Caption         =   "Shadows and highlights"
-            Index           =   3
-         End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Auto enhance"
          Index           =   1
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Color"
-            Index           =   0
-         End
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Contrast"
-            Index           =   1
-         End
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Lighting"
-            Index           =   2
-         End
-         Begin VB.Menu MnuAutoEnhance 
-            Caption         =   "Shadows and highlights"
-            Index           =   3
-         End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "-"
@@ -721,11 +697,11 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Maximum"
+            Caption         =   "Maximum channel"
             Index           =   3
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Minimum"
+            Caption         =   "Minimum channel"
             Index           =   4
          End
          Begin VB.Menu MnuColorComponents 
@@ -916,7 +892,7 @@ Begin VB.Form FormMain
             Index           =   4
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Kaleiodoscope..."
+            Caption         =   "Kaleidoscope..."
             Index           =   5
          End
          Begin VB.Menu MnuArtistic 
@@ -1654,27 +1630,12 @@ Private Sub m_FocusDetector_LostFocusReliable()
     pdHotkeys.ResetKeyStates
 End Sub
 
+Private Sub MnuFileImport_Click(Index As Integer)
+    Menus.ProcessDefaultAction_ByCaption MnuFileImport(Index).Caption
+End Sub
+
 Private Sub MnuMacroCreate_Click(Index As Integer)
-    
-    Select Case Index
-        
-        'Create from session history
-        Case 0
-            ShowPDDialog vbModal, FormMacroSession
-            
-        '(separator)
-        Case 1
-        
-        'Start recording
-        Case 2
-            Process "Start macro recording", , , UNDO_Nothing
-        
-        'Stop recording
-        Case 3
-            Process "Stop macro recording", True
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuMacroCreate(Index).Caption
 End Sub
 
 Private Sub MnuTest_Click()
@@ -1714,7 +1675,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         
             'The update file downloaded correctly.  Write today's date to the master preferences file, so we can correctly calculate
             ' weekly/monthly update checks for users that require it.
-            Debug.Print "Update file download complete.  Update information has been saved at " & savedToThisFile
+            PDDebug.LogAction "Update file download complete.  Update information has been saved at " & savedToThisFile
             UserPrefs.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
             
             'Retrieve the file contents into a string
@@ -1749,7 +1710,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             End If
             
         Else
-            Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.GetLastErrorNumber & " - " & asyncDownloader.GetLastErrorDescription
+            PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.GetLastErrorNumber & " - " & asyncDownloader.GetLastErrorDescription
         End If
     
     'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
@@ -1766,7 +1727,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             Updates.DisplayUpdateNotification
                         
         Else
-            Debug.Print "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
+            PDDebug.LogAction "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
         End If
         
     End If
@@ -1983,339 +1944,143 @@ End Sub
 
 'Menu: Adjustments -> Photography
 Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Exposure
-        Case 0
-            Process "Exposure", True
-        
-        'HDR
-        Case 1
-            Process "HDR", True
-        
-        'Photo filters
-        Case 2
-            Process "Photo filter", True
-        
-        'Red-eye removal
-        Case 3
-            Process "Red-eye removal", True
-        
-        'Split-toning
-        Case 4
-            Process "Split toning", True
-    
-    End Select
-
-End Sub
-
-Private Sub MnuAutoCorrect_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Color
-        Case 0
-            Process "Auto correct color", , , UNDO_Layer
-        
-        'Contrast
-        Case 1
-            Process "Auto correct contrast", , , UNDO_Layer
-        
-        'Lighting
-        Case 2
-            Process "Auto correct lighting", , , UNDO_Layer
-            
-        'Shadows and highlights
-        Case 3
-            Process "Auto correct shadows and highlights", , , UNDO_Layer
-        
-    End Select
-
-End Sub
-
-Private Sub MnuAutoEnhance_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Color
-        Case 0
-            Process "Auto enhance color", , , UNDO_Layer
-        
-        'Contrast
-        Case 1
-            Process "Auto enhance contrast", , , UNDO_Layer
-        
-        'Lighting
-        Case 2
-            Process "Auto enhance lighting", , , UNDO_Layer
-            
-        'Shadows and highlights
-        Case 3
-            Process "Auto enhance shadows and highlights", , , UNDO_Layer
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuAdjustmentsPhoto(Index).Caption
 End Sub
 
 Private Sub MnuBatch_Click(Index As Integer)
-    
-    Select Case Index
-    
-        Case 0
-            Process "Batch wizard", True
-        
-        Case 1
-            ShowPDDialog vbModal, FormBatchRepair
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuBatch(Index).Caption
 End Sub
 
-Private Sub mnuClearRecentMacros_Click()
+Private Sub MnuClearRecentMacros_Click()
     g_RecentMacros.MRU_ClearList
 End Sub
 
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
-Private Sub mnuDevelopers_Click(Index As Integer)
-    
-    Select Case Index
-    
-        'Theme Editor
-        Case 0
-            ShowPDDialog vbModal, FormThemeEditor
-            
-        'Build theme package
-        Case 1
-            g_Themer.BuildThemePackage
-            
-        '<separator>
-        Case 2
-        
-        'Build standalone package; typically used for resource bundling of random assets
-        Case 3
-            ShowPDDialog vbModal, FormPackage
-            
-    End Select
-
+Private Sub MnuDevelopers_Click(Index As Integer)
+    Menus.ProcessDefaultAction_ByCaption MnuDevelopers(Index).Caption
 End Sub
 
 'Menu: effect > transform actions
 Private Sub MnuEffectTransform_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Pan and zoom
-        Case 0
-            Process "Pan and zoom", True
-            
-        'Perspective (free)
-        Case 1
-            Process "Perspective", True
-        
-        'Polar conversion
-        Case 2
-            Process "Polar conversion", True
-            
-        'Rotate
-        Case 3
-            Process "Rotate", True
-        
-        'Shear
-        Case 4
-            Process "Shear", True
-            
-        'Spherize
-        Case 5
-            Process "Spherize", True
-        
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuEffectTransform(Index).Caption
 End Sub
 
 'Menu: top-level layer actions
 Private Sub MnuLayer_Click(Index As Integer)
 
-    Select Case Index
+    'Menu index 9 is a special exception - it is "Crop to selection", which is identical
+    ' to a command in the Image menu.  We must explicitly request the LAYER version.
+    If (Index = 9) Then
+        Menus.ProcessDefaultAction_ByName "layer_crop"
+    Else
+        Menus.ProcessDefaultAction_ByCaption MnuLayer(Index).Caption
+    End If
     
-        'Add layer (top-level)
-        Case 0
-        
-        'Delete layer (top-level)
-        Case 1
-        
-        '<separator>
-        Case 2
-        
-        'Merge up
-        Case 3
-            Process "Merge layer up", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
-        
-        'Merge down
-        Case 4
-            Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
-        
-        'Order (top-level)
-        Case 5
-        
-        '<separator>
-        Case 6
-        
-        'Orientation (top-level)
-        Case 7
-        
-        'Size (top-level)
-        Case 8
-        
-        'Crop to selection
-        Case 9
-            Process "Crop layer to selection", , , UNDO_Layer
-        
-        '<separator>
-        Case 10
-        
-        'Transparency (top-level)
-        Case 11
-        
-        '<separator>
-        Case 12
-        
-        'Rasterize (top-level)
-        Case 13
-        
-        '<separator>
-        Case 14
-        
-        'Merge visible layers
-        Case 15
-            Process "Merge visible layers", , , UNDO_Image
-        
-        'Flatten layers
-        Case 16
-            Process "Flatten image", True
-        
-    End Select
-
 End Sub
 
 'Menu: remove layers from the image
 Private Sub MnuLayerDelete_Click(Index As Integer)
 
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the Layer > Rasterize menu (e.g. "Current layer"); as such, we must explicitly
+    ' request actions.
     Select Case Index
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
         
         'Delete all hidden layers
         Case 1
-            Process "Delete hidden layers", False, , UNDO_Image_VectorSafe
+            Menus.ProcessDefaultAction_ByName "layer_deletehidden"
         
     End Select
-
+    
 End Sub
 
 'Menu: add a layer to the image
 Private Sub MnuLayerNew_Click(Index As Integer)
 
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the File > Import menu (e.g. "From clipboard"); as such, we must explicitly
+    ' request actions.
     Select Case Index
         
         'Basic layer
         Case 0
-            Process "Add new layer", True
+            Menus.ProcessDefaultAction_ByName "layer_addbasic"
         
         'Blank layer
         Case 1
-            Process "Add blank layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Menus.ProcessDefaultAction_ByName "layer_addblank"
         
         'Duplicate of current layer
         Case 2
-            Process "Duplicate Layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
+            Menus.ProcessDefaultAction_ByName "layer_duplicate"
         
         '<separator>
         Case 3
         
         'Import from clipboard
         Case 4
-            Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
+            Menus.ProcessDefaultAction_ByName "layer_addfromclipboard"
         
         'Import from file
         Case 5
-            Process "New layer from file", True
+            Menus.ProcessDefaultAction_ByName "layer_addfromfile"
             
         'Import from visible layers in current image
         Case 6
-            Process "New layer from visible layers", False, , UNDO_Image_VectorSafe
+            Menus.ProcessDefaultAction_ByName "layer_addfromvisiblelayers"
     
     End Select
-
+    
 End Sub
 
 'Menu: change layer order
 Private Sub MnuLayerOrder_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Raise layer
-        Case 0
-            Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
-        'Lower layer
-        Case 1
-            Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
-        '<separator>
-        Case 2
-        
-        'Raise to top
-        Case 3
-            Process "Raise layer to top", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
-        'Lower to bottom
-        Case 4
-            Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuLayerOrder(Index).Caption
 End Sub
 
 Private Sub MnuLayerOrientation_Click(Index As Integer)
-
+    
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the Image > Orientation menu; as such, we must explicitly request actions
     Select Case Index
     
         'Straighten
         Case 0
-            Process "Straighten layer", True
-        
+            Menus.ProcessDefaultAction_ByName "layer_straighten"
+            
         '<separator>
         Case 1
         
         'Rotate 90
         Case 2
-            Process "Rotate layer 90 clockwise", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_rotate90"
         
         'Rotate 270
         Case 3
-            Process "Rotate layer 90 counter-clockwise", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_rotate270"
         
         'Rotate 180
         Case 4
-            Process "Rotate layer 180", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_rotate180"
         
         'Rotate arbitrary
         Case 5
-            Process "Arbitrary layer rotation", True
+            Menus.ProcessDefaultAction_ByName "layer_rotatearbitrary"
         
         '<separator>
         Case 6
         
         'Flip horizontal
         Case 7
-            Process "Flip layer horizontally", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_fliphorizontal"
         
         'Flip vertical
         Case 8
-            Process "Flip layer vertically", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_flipvertical"
     
     End Select
 
@@ -2323,106 +2088,55 @@ End Sub
 
 Private Sub MnuLayerRasterize_Click(Index As Integer)
     
-    Select Case Index
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the Layer > Delete menu (e.g. "Current layer"); as such, we must explicitly
+    ' request actions.
+     Select Case Index
     
         'Current layer
         Case 0
-            Process "Rasterize layer", , , UNDO_Layer
+            Menus.ProcessDefaultAction_ByName "layer_rasterizecurrent"
             
         'All layers
         Case 1
-            Process "Rasterize all layers", , , UNDO_Image
+            Menus.ProcessDefaultAction_ByName "layer_rasterizeall"
             
     End Select
     
 End Sub
 
 Private Sub MnuLayerSize_Click(Index As Integer)
-
+    
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the Image > Orientation menu; as such, we must explicitly request actions
     Select Case Index
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
+            Menus.ProcessDefaultAction_ByName "layer_resetsize"
         
         '<separator>
         Case 1
             
         'Standard resize
         Case 2
-            Process "Resize layer", True
+            Menus.ProcessDefaultAction_ByName "layer_resize"
         
         'Content-aware resize
         Case 3
-            Process "Content-aware layer resize", True
+            Menus.ProcessDefaultAction_ByName "layer_contentawareresize"
     
     End Select
-
+    
 End Sub
 
 'Light and shadow effect menu
 Private Sub MnuLightShadow_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Black light
-        Case 0
-            Process "Black light", True
-        
-        'Cross-screen (stars)
-        Case 1
-            Process "Cross-screen", True
-        
-        'Rainbow
-        Case 2
-            Process "Rainbow", True
-            
-        'Sunshine
-        Case 3
-            Process "Sunshine", True
-        
-        '<separator>
-        Case 4
-        
-        'Dilate (maximum rank)
-        Case 5
-            Process "Dilate (maximum rank)", True
-        
-        'Erode (minimum rank)
-        Case 6
-            Process "Erode (minimum rank)", True
-        
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuLightShadow(Index).Caption
 End Sub
 
 Private Sub MnuPixelate_Click(Index As Integer)
-    
-    Select Case Index
-    
-        'Color halftone
-        Case 0
-            Process "Color halftone", True
-            
-        'Crystallize
-        Case 1
-            Process "Crystallize", True
-        
-        'Fragment
-        Case 2
-            Process "Fragment", True
-            
-        'Mezzotint
-        Case 3
-            Process "Mezzotint", True
-            
-        'Mosaic (pixelate)
-        Case 4
-            Process "Mosaic", True
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuPixelate(Index).Caption
 End Sub
 
 Private Sub mnuRecentMacros_Click(Index As Integer)
@@ -2437,73 +2151,36 @@ Private Sub mnuRecentMacros_Click(Index As Integer)
 End Sub
 
 Private Sub MnuView_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Fit on screen
-        Case 0
-            CanvasManager.FitOnScreen
-            
-        'Separator
-        Case 1
-        
-        'Zoom in
-        Case 2
-            If FormMain.MainCanvas(0).IsZoomEnabled Then
-                If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
-            End If
-        
-        'Zoom out
-        Case 3
-            If FormMain.MainCanvas(0).IsZoomEnabled Then
-                If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
-            End If
-        
-        'Zoom to value (top level
-        Case 4
-        
-        'Separator
-        Case 5
-        
-        'Show rulers
-        Case 6
-            Dim newRulerState As Boolean
-            newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
-            FormMain.MnuView(6).Checked = newRulerState
-            FormMain.MainCanvas(0).SetRulerVisibility newRulerState
-            
-        'Show status bar
-        Case 7
-            Dim newStatusBarState As Boolean
-            newStatusBarState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
-            FormMain.MnuView(7).Checked = newStatusBarState
-            FormMain.MainCanvas(0).SetStatusBarVisibility newStatusBarState
-        
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuView(Index).Caption
 End Sub
 
 Private Sub MnuWindowToolbox_Click(Index As Integer)
     
+    'Because this is a checkbox-based menu, we handle its commands specially
     Select Case Index
     
         'Toggle toolbox visibility
         Case 0
-            ToggleToolboxVisibility PDT_LeftToolbox
+            Menus.ProcessDefaultAction_ByName "window_displaytoolbox"
         
         '<separator>
         Case 1
         
         'Toggle category labels
         Case 2
-            toolbar_Toolbox.ToggleToolCategoryLabels
+            Menus.ProcessDefaultAction_ByName "window_displaytoolcategories"
         
         '<separator>
         Case 3
         
         'Changes to button size (small, normal, large)
-        Case 4, 5, 6
-            toolbar_Toolbox.UpdateButtonSize Index - 4
+        Case 4
+            Menus.ProcessDefaultAction_ByName "window_smalltoolbuttons"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "window_normaltoolbuttons"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "window_largetoolbuttons"
+             
             
     End Select
     
@@ -2661,8 +2338,8 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         End If
         
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-        If .HotKeyName(acceleratorIndex) = "Next_Image" Then MoveToNextChildWindow True
-        If .HotKeyName(acceleratorIndex) = "Prev_Image" Then MoveToNextChildWindow False
+        If .HotKeyName(acceleratorIndex) = "Next_Image" Then PDImages.MoveToNextImage True
+        If .HotKeyName(acceleratorIndex) = "Prev_Image" Then PDImages.MoveToNextImage False
     
     End With
         
@@ -3008,7 +2685,7 @@ Private Sub Form_Unload(Cancel As Integer)
 
         'Note that there is no need to unload FormMain, as we're about to unload it anyway!
         If Strings.StringsNotEqual(tmpForm.Name, "FormMain", True) Then
-            Debug.Print "Forcibly unloading " & tmpForm.Name
+            PDDebug.LogAction "Forcibly unloading " & tmpForm.Name
             Unload tmpForm
             Set tmpForm = Nothing
         End If
@@ -3050,149 +2727,16 @@ End Sub
 
 'The top-level adjustments menu provides some shortcuts to most-used items.
 Private Sub MnuAdjustments_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Auto correct (top-level)
-        Case 0
-            
-        'Auto enhance (top-level)
-        Case 1
-        
-        '<separator>
-        Case 2
-            
-        'Black and white
-        Case 3
-            Process "Black and white", True
-        
-        'Brightness and contrast
-        Case 4
-            Process "Brightness and contrast", True
-        
-        'Color balance
-        Case 5
-            Process "Color balance", True
-        
-        'Curves
-        Case 6
-            Process "Curves", True
-        
-        'Levels
-        Case 7
-            Process "Levels", True
-        
-        'Shadows and highlights
-        Case 8
-            Process "Shadow and highlight", True
-        
-        'Vibrance
-        Case 9
-            Process "Vibrance", True
-        
-        'White balance
-        Case 10
-            Process "White balance", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuAdjustments(Index).Caption
 End Sub
 
 Private Sub MnuArtistic_Click(Index As Integer)
-
-    Select Case Index
-        
-        Case 0
-            Process "Colored pencil", True
-        
-        Case 1
-            Process "Comic book", True
-            
-        Case 2
-            Process "Figured glass", True
-            
-        Case 3
-            Process "Film noir", True
-        
-        Case 4
-            Process "Glass tiles", True
-        
-        Case 5
-            Process "Kaleidoscope", True
-        
-        Case 6
-            Process "Modern art", True
-        
-        Case 7
-            Process "Oil painting", True
-            
-        Case 8
-            Process "Plastic wrap", True
-            
-        Case 9
-            Process "Posterize", True
-            
-        Case 10
-            Process "Relief", True
-            
-        Case 11
-            Process "Stained glass", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuArtistic(Index).Caption
 End Sub
 
 'All blur filters are handled here
 Private Sub MnuBlurFilter_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Box blur
-        Case 0
-            Process "Box blur", True
-        
-        'Gaussian blur
-        Case 1
-            Process "Gaussian blur", True
-        
-        'Surface Blur
-        Case 2
-            Process "Surface blur", True
-        
-        '<separator>
-        Case 3
-        
-        'Motion blur
-        Case 4
-            Process "Motion blur", True
-        
-        'Radial blur
-        Case 5
-            Process "Radial blur", True
-        
-        'Zoom Blur
-        Case 6
-            Process "Zoom blur", True
-            
-        '<separator>
-        Case 7
-        
-        'Kuwahara
-        Case 8
-            Process "Kuwahara filter", True
-            
-        'Symmetric nearest-neighbor
-        Case 9
-            Process "Symmetric nearest-neighbor", True
-            
-        'Currently unused:
-        
-        'Grid blur
-        'Case X
-        '    Process "Grid blur", , , UNDO_LAYER
-            
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuBlurFilter(Index).Caption
 End Sub
 
 Private Sub MnuClearMRU_Click()
@@ -3201,475 +2745,97 @@ End Sub
 
 'All Color sub-menu entries are handled here.
 Private Sub MnuColor_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Color balance
-        Case 0
-            Process "Color balance", True
-        
-        'White balance
-        Case 1
-            Process "White balance", True
-        
-        '<separator>
-        Case 2
-        
-        'HSL
-        Case 3
-            Process "Hue and saturation", True
-            
-        'Temperature
-        Case 4
-            Process "Temperature", True
-            
-        'Tint
-        Case 5
-            Process "Tint", True
-        
-        'Vibrance
-        Case 6
-            Process "Vibrance", True
-        
-        '<separator>
-        Case 7
-        
-        'Grayscale (black and white)
-        Case 8
-            Process "Black and white", True
-        
-        'Colorize
-        Case 9
-            Process "Colorize", True
-            
-        'Replace color
-        Case 10
-            Process "Replace color", True
-                
-        'Sepia
-        Case 11
-            Process "Sepia", , , UNDO_Layer
-
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuColor(Index).Caption
 End Sub
 
-'All entries in the "Color -> Components sub-menu are handled here"
+'All entries in the Color -> Components sub-menu are handled here
 Private Sub MnuColorComponents_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Channel mixer
-        Case 0
-            Process "Channel mixer", True
-        
-        'Rechannel
-        Case 1
-            Process "Rechannel", True
-            
-        '<separator>
-        Case 2
-        
-        'Max channel
-        Case 3
-            Process "Maximum channel", , , UNDO_Layer
-        
-        'Min channel
-        Case 4
-            Process "Minimum channel", , , UNDO_Layer
-            
-        '<separator>
-        Case 5
-        
-        'Shift colors left
-        Case 6
-            Process "Shift colors (left)", , , UNDO_Layer
-            
-        'Shift colors right
-        Case 7
-            Process "Shift colors (right)", , , UNDO_Layer
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuColorComponents(Index).Caption
 End Sub
 
 Private Sub MnuCustomFilter_Click()
-    Process "Custom filter", True
+    Menus.ProcessDefaultAction_ByName "effects_customfilter"
 End Sub
 
 'All distortion filters happen here
 Private Sub MnuDistortEffects_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Correct existing distortion(s)
-        Case 0
-            Process "Correct lens distortion", True
-        
-        '<separator>
-        Case 1
-        
-        'Donut
-        Case 2
-            Process "Donut", True
-        
-        'Lens
-        Case 3
-            Process "Apply lens distortion", True
-        
-        'Pinch and whirl
-        Case 4
-            Process "Pinch and whirl", True
-        
-        'Poke
-        Case 5
-            Process "Poke", True
-        
-        'Ripple
-        Case 6
-            Process "Ripple", True
-        
-        'Squish (formerly Fixed Perspective)
-        Case 7
-            Process "Squish", True
-        
-        'Swirl
-        Case 8
-            Process "Swirl", True
-        
-        'Waves
-        Case 9
-            Process "Waves", True
-            
-        '<separator>
-        Case 10
-        
-        'Miscellaneous
-        Case 11
-            Process "Miscellaneous distort", True
-        
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuDistortEffects(Index).Caption
 End Sub
 
 Private Sub MnuEdge_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Emboss/engrave
-        Case 0
-            Process "Emboss", True
-         
-        'Enhance edges
-        Case 1
-            Process "Enhance edges", True
-        
-        'Find edges
-        Case 2
-            Process "Find edges", True
-        
-        'Range filter
-        Case 3
-            Process "Range filter", True
-        
-        'Trace contour
-        Case 4
-            Process "Trace contour", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuEdge(Index).Caption
 End Sub
 
 Private Sub MnuEdit_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Undo
-        Case 0
-            Process "Undo", False
-        
-        'Redo
-        Case 1
-            Process "Redo", False
-        
-        'Undo history
-        Case 2
-            Process "Undo history", True
-            
-        '<separator>
-        Case 3
-        
-        'Repeat last
-        Case 4
-            'TODO: figure out Undo handling for "Repeat last action"
-            Process "Repeat last action", False, , UNDO_Image
-            
-        'Fade...
-        Case 5
-            Process "Fade", True
-        
-        '<separator>
-        Case 6
-        
-        'Cut from image
-        Case 7
-            Process "Cut", False, , UNDO_Image, , True
-            
-        'Cut from layer
-        Case 8
-        
-            'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
-            ' we must delete the entire layer.  That requires a backup of the full image contents.
-            If PDImages.GetActiveImage.IsSelectionActive Then
-                Process "Cut from layer", False, , UNDO_Layer, , True
-            Else
-                Process "Cut from layer", False, , UNDO_Image, , True
-            End If
-            
-        'Copy from image
-        Case 9
-            Process "Copy", False, , UNDO_Nothing, , False
-        
-        'Copy from layer
-        Case 10
-            Process "Copy from layer", False, , UNDO_Nothing, , False
-        
-        'Paste as new image
-        Case 11
-            Process "Paste as new image", False, , UNDO_Nothing, , False
-        
-        'Paste as new layer
-        Case 12
-            Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
-        
-        '<separator>
-        Case 13
-        
-        'Empty clipboard
-        Case 14
-            Process "Empty clipboard", False, , UNDO_Nothing, , False
-                
-    
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuEdit(Index).Caption
 End Sub
 
-'All file menu actions are launched from here
 Private Sub MnuFile_Click(Index As Integer)
-
-    Select Case Index
-    
-        'New
-        Case 0
-            Process "New image", True
-        
-        'Open
-        Case 1
-            Process "Open", True
-        
-        '<Open Recent top-level>
-        Case 2
-        
-        '<Import top-level>
-        Case 3
-        
-        '<separator>
-        Case 4
-        
-        'Close
-        Case 5
-            Process "Close", True
-        
-        'Close all
-        Case 6
-            Process "Close all", True
-            
-        '<separator>
-        Case 7
-        
-        'Save
-        Case 8
-            Process "Save", True
-            
-        'Save copy (lossless)
-        Case 9
-            Process "Save copy", , , UNDO_Nothing
-            
-        'Save as
-        Case 10
-            Process "Save as", True
-        
-        'Revert
-        Case 11
-            Process "Revert", False, , UNDO_Everything
-        
-        'Export
-        Case 12
-        
-        '<separator>
-        Case 13
-        
-        'Batch top-level menu
-        Case 14
-        
-        '<separator>
-        Case 15
-        
-        'Print
-        Case 16
-            Process "Print", True
-            
-        '<separator>
-        Case 17
-        
-        'Exit
-        Case 18
-            Process "Exit program", True
-        
-    
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuFile(Index).Caption
 End Sub
 
 Private Sub MnuFileExport_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Export ICC profile
-        Case 0
-            Process "Export color profile", True
-        
-        'Export palette
-        Case 1
-            Process "Export palette", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuFileExport(Index).Caption
 End Sub
 
 'All help menu entries are launched from here
 Private Sub MnuHelp_Click(Index As Integer)
-    
-    Select Case Index
-        
-        'Donations are greatly appreciated!
-        Case 0
-            Web.OpenURL "https://www.patreon.com/photodemon/overview"
-            
-        Case 1
-            Web.OpenURL "https://photodemon.org/donate"
-        
-        '(separator)
-        Case 2
-        
-        'Check for updates
-        Case 3
-            Message "Checking for software updates..."
-            
-            'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
-            ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
-            ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
-            
-        'Submit bug report or feedback
-        Case 4
-            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
-        
-        '(separator)
-        Case 5
-        
-        'PhotoDemon's homepage
-        Case 6
-            Web.OpenURL "http://www.photodemon.org"
-            
-        'Download source code
-        Case 7
-            Web.OpenURL "https://github.com/tannerhelland/PhotoDemon"
-        
-        'Read terms and license agreement
-        Case 8
-            Web.OpenURL "https://photodemon.org/license/"
-        
-        '(separator)
-        Case 9
-        
-        'Display About page
-        Case 10
-            ShowPDDialog vbModal, FormAbout
-        
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuHelp(Index).Caption
 End Sub
 
 Private Sub MnuHistogram_Click(Index As Integer)
-    
-    Select Case Index
-    
-        'Display histogram (TODO: convert to processor?)
-        Case 0
-            ShowPDDialog vbModal, FormHistogram
-            
-        '<separator>
-        Case 1
-        
-        'Equalize
-        Case 2
-            Process "Equalize", True
-        
-        'Stretch
-        Case 3
-            Process "Stretch histogram", , , UNDO_Layer
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuHistogram(Index).Caption
 End Sub
 
 'All top-level Image menu actions are handled here
 Private Sub MnuImage_Click(Index As Integer)
 
+    'Normally we can auto-generate commands from menu names, but the Image menu shares some menu
+    ' commands with the Layer menu (e.g. "Resize", "Crop to Selection"), so we manually request
+    ' actions for most items in this menu.
     Select Case Index
     
         'Duplicate
         Case 0
-            Process "Duplicate image", , , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "image_duplicate"
         
         '<separator>
         Case 1
         
         'Resize
         Case 2
-            Process "Resize image", True
+            Menus.ProcessDefaultAction_ByName "image_resize"
             
         'Content-aware resize
         Case 3
-            Process "Content-aware image resize", True
-        
+            Menus.ProcessDefaultAction_ByName "image_contentawareresize"
+            
         '<separator>
         Case 4
         
         'Canvas resize
         Case 5
-            Process "Canvas size", True
+            Menus.ProcessDefaultAction_ByName "image_canvassize"
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
-        
+            Menus.ProcessDefaultAction_ByName "image_fittolayer"
+            
         'Fit canvas around all layers
         Case 7
-            Process "Fit canvas to all layers", False, , UNDO_ImageHeader
+            Menus.ProcessDefaultAction_ByName "image_fitalllayers"
             
         '<separator>
         Case 8
             
         'Crop to selection
         Case 9
-            Process "Crop", True
+            Menus.ProcessDefaultAction_ByName "image_crop"
             
         'Trim empty borders
         Case 10
-            Process "Trim empty borders", , , UNDO_ImageHeader
-        
+            Menus.ProcessDefaultAction_ByName "image_trim"
+            
         '<separator>
         Case 11
         
@@ -3678,12 +2844,12 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Flip horizontal (mirror)
         Case 13
-            Process "Flip image horizontally", , , UNDO_Image
-        
+            Menus.ProcessDefaultAction_ByName "image_fliphorizontal"
+            
         'Flip vertical
         Case 14
-            Process "Flip image vertically", , , UNDO_Image
-        
+            Menus.ProcessDefaultAction_ByName "image_flipvertical"
+            
         'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
         'Isometric view
         'Case 12
@@ -3697,16 +2863,6 @@ Private Sub MnuImage_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-'This is the exact same thing as "Paste as New Image".  It is provided in two locations for convenience.
-Private Sub MnuImportClipboard_Click()
-    Process "Paste as new image", False, , UNDO_Nothing, , False
-End Sub
-
-'Attempt to import an image from the Internet
-Private Sub MnuImportFromInternet_Click()
-    Process "Internet import", True
 End Sub
 
 'When a language is clicked, immediately activate it
@@ -3739,31 +2895,7 @@ Private Sub mnuLanguages_Click(Index As Integer)
 End Sub
 
 Private Sub MnuLighting_Click(Index As Integer)
-
-    Select Case Index
-            
-        'Brightness/Contrast
-        Case 0
-            Process "Brightness and contrast", True
-        
-        'Curves
-        Case 1
-            Process "Curves", True
-            
-        'Gamma correction
-        Case 2
-            Process "Gamma", True
-            
-        'Levels
-        Case 3
-            Process "Levels", True
-
-        'Shadows/Midtones/Highlights
-        Case 4
-            Process "Shadow and highlight", True
-            
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuLighting(Index).Caption
 End Sub
 
 'Load all images in the current "Recent Files" menu
@@ -3783,316 +2915,89 @@ End Sub
 
 'All metadata sub-menu options are handled here
 Private Sub MnuMetadata_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Browse metadata
-        Case 0
-            Process "Edit metadata", True
-        
-        'Remove all metadata
-        Case 1
-            Process "Remove all metadata", False, , UNDO_ImageHeader
-        
-        'Separator
-        Case 2
-        
-        'Count colors
-        Case 3
-            Process "Count image colors", True
-        
-        'Map photo location
-        Case 4
-            
-            If (Not PDImages.GetActiveImage.ImgMetadata.HasGPSMetadata) Then
-                PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly Or vbInformation, "No GPS data found"
-                Exit Sub
-            End If
-            
-            Dim gMapsURL As String, latString As String, lonString As String
-            If PDImages.GetActiveImage.ImgMetadata.FillLatitudeLongitude(latString, lonString) Then
-                
-                'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
-                                
-                'Note: I find a zoom of 18 ideal, as that is a common level for switching to an "aerial"
-                ' view instead of a satellite view.  Much higher than that and you run the risk of not
-                ' having data available at that high of zoom.
-                gMapsURL = "https://maps.google.com/maps?f=q&z=18&t=h&q=" & latString & "%2c+" & lonString
-                
-                'As a convenience, request Google Maps in the current language
-                If g_Language.TranslationActive Then
-                    gMapsURL = gMapsURL & "&hl=" & g_Language.GetCurrentLanguage()
-                Else
-                    gMapsURL = gMapsURL & "&hl=en"
-                End If
-                
-                'Launch Google maps in the user's browser
-                Web.OpenURL gMapsURL
-                
-            End If
-            
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuMetadata(Index).Caption
 End Sub
 
 Private Sub MnuMonochrome_Click(Index As Integer)
-    
-    Select Case Index
-        
-        'Convert color to monochrome
-        Case 0
-            Process "Color to monochrome", True
-        
-        'Convert Monochrome to gray
-        Case 1
-            Process "Monochrome to gray", True
-        
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuMonochrome(Index).Caption
 End Sub
 
 Private Sub MnuNatureFilter_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Atmosphere
-        Case 0
-            Process "Atmosphere", True
-        
-        'Fog
-        Case 1
-            Process "Fog", True
-        
-        'Ignite
-        Case 2
-            Process "Ignite", True
-        
-        'Lava
-        Case 3
-            Process "Lava", True
-        
-        'Metal (formerly "steel")
-        Case 4
-            Process "Metal", True
-        
-        'Snow
-        Case 5
-            Process "Snow", True
-            
-        'Water
-        Case 6
-            Process "Water", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuNatureFilter(Index).Caption
 End Sub
 
 Private Sub MnuInvert_Click(Index As Integer)
-    
-    Select Case Index
-        
-        'CMYK (film negative)
-        Case 0
-            Process "Film negative", , , UNDO_Layer
-        
-        'Hue
-        Case 1
-            Process "Invert hue", , , UNDO_Layer
-        
-        'RGB (standard)
-        Case 2
-            Process "Invert RGB", , , UNDO_Layer
-    
-    End Select
-    
+    Menus.ProcessDefaultAction_ByCaption MnuInvert(Index).Caption
 End Sub
 
 'All noise filters are handled here
 Private Sub MnuNoise_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Film grain
-        Case 0
-            Process "Add film grain", True
-        
-        'RGB Noise
-        Case 1
-            Process "Add RGB noise", True
-            
-        'Separator
-        Case 2
-        
-        'Anisotropic diffusion
-        Case 3
-            Process "Anisotropic diffusion", True
-        
-        'Bilateral smoothing
-        Case 4
-            Process "Bilateral smoothing", True
-        
-        'Harmonic mean
-        Case 5
-            Process "Harmonic mean", True
-            
-        'Mean shift
-        Case 6
-            Process "Mean shift", True
-        
-        'Median
-        Case 7
-            Process "Median", True
-            
-    End Select
-        
+    Menus.ProcessDefaultAction_ByCaption MnuNoise(Index).Caption
 End Sub
 
 'This is triggered whenever a user clicks on one of the "Most Recent Files" entries
 Public Sub mnuRecDocs_Click(Index As Integer)
-    
-    'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
-    If (Len(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
-    
+    If (LenB(g_RecentFiles.GetFullPath(Index)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(Index)
 End Sub
 
 'All rotation actions are initiated here
 Private Sub MnuRotate_Click(Index As Integer)
 
+    'Normally, we process menu commands by caption, but this menu is unique because it shares
+    ' names with the Layer > Orientation menu; as such, we must explicitly request actions.
     Select Case Index
     
         'Straighten
         Case 0
-            Process "Straighten image", True
-        
+            Menus.ProcessDefaultAction_ByName "image_straighten"
+            
         '<separator>
         Case 1
         
         'Rotate 90
         Case 2
-            Process "Rotate image 90 clockwise", , , UNDO_Image
-        
+            Menus.ProcessDefaultAction_ByName "image_rotate90"
+            
         'Rotate 270
         Case 3
-            Process "Rotate image 90 counter-clockwise", , , UNDO_Image
-        
+            Menus.ProcessDefaultAction_ByName "image_rotate270"
+            
         'Rotate 180
         Case 4
-            Process "Rotate image 180", , , UNDO_Image
-        
+            Menus.ProcessDefaultAction_ByName "image_rotate180"
+            
         'Rotate arbitrary
         Case 5
-            Process "Arbitrary image rotation", True
+            Menus.ProcessDefaultAction_ByName "image_rotatearbitrary"
             
     End Select
             
-End Sub
-
-Private Sub MnuScanImage_Click()
-    Process "Scan image", True
-End Sub
-
-Private Sub MnuScreenCapture_Click()
-    Process "Screen capture", True
 End Sub
 
 'All select menu items are handled here
 Private Sub MnuSelect_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Select all.  (Note that Square Selection is passed as the relevant tool for this action.)
-        Case 0
-            Process "Select all", , , UNDO_Selection
-        
-        'Select none
-        Case 1
-            Process "Remove selection", , , UNDO_Selection
-        
-        'Invert
-        Case 2
-            Process "Invert selection", , , UNDO_Selection
-        
-        '<separator>
-        Case 3
-        
-        'Grow selection
-        Case 4
-            Process "Grow selection", True
-        
-        'Shrink selection
-        Case 5
-            Process "Shrink selection", True
-        
-        'Border selection
-        Case 6
-            Process "Border selection", True
-        
-        'Feather selection
-        Case 7
-            Process "Feather selection", True
-        
-        'Sharpen selection
-        Case 8
-            Process "Sharpen selection", True
-        
-        '<separator>
-        Case 9
-        
-        'Erase selected area
-        Case 10
-            Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
-        
-        '<separator>
-        Case 11
-        
-        'Load selection
-        Case 12
-            Process "Load selection", True
-        
-        'Save current selection
-        Case 13
-            Process "Save selection", True
-            
-        '<Export top-level>
-        Case 14
-            
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuSelect(Index).Caption
 End Sub
 
 'All Select -> Export menu items are handled here
 Private Sub MnuSelectExport_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Export selected area as image
-        Case 0
-            Process "Export selected area as image", True
-        
-        'Export selection mask itself as image
-        Case 1
-            Process "Export selection mask as image", True
-    
-    End Select
-
-End Sub
-
-Private Sub MnuSelectScanner_Click()
-    Process "Select scanner or camera", True
+    Menus.ProcessDefaultAction_ByCaption MnuSelectExport(Index).Caption
 End Sub
 
 'All sharpen filters are handled here
 Private Sub MnuSharpen_Click(Index As Integer)
-
+    
+    'Because the top-level Sharpen menu shares a name with an item in the child Sharpen menu,
+    ' we manually request actions (instead of relying on caption-matching).
     Select Case Index
             
         'Sharpen
         Case 0
-            Process "Sharpen", True
+            Menus.ProcessDefaultAction_ByName "effects_sharpen"
         
         'Unsharp mask
         Case 1
-            Process "Unsharp mask", True
+            Menus.ProcessDefaultAction_ByName "effects_unsharp"
             
     End Select
 
@@ -4100,244 +3005,50 @@ End Sub
 
 'These menu items correspond to specific zoom values
 Private Sub MnuSpecificZoom_Click(Index As Integer)
-
-    'Only attempt to change zoom if the primary zoom box is not currently disabled
-    If FormMain.MainCanvas(0).IsZoomEnabled Then
-
-        Select Case Index
-        
-            Case 0
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 2
-            Case 1
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 4
-            Case 2
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 8
-            Case 3
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 10
-            Case 4
-                FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
-            Case 5
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 14
-            Case 6
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 16
-            Case 7
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 19
-            Case 8
-                FormMain.MainCanvas(0).SetZoomDropDownIndex 21
-                
-        End Select
-
-    End If
-
+    Menus.ProcessDefaultAction_ByCaption MnuSpecificZoom(Index).Caption
 End Sub
 
 'All stylize filters are handled here
 Private Sub MnuStylize_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Antique
-        Case 0
-            Process "Antique", True
-        
-        'Diffuse
-        Case 1
-            Process "Diffuse", True
-            
-        'Outline
-        Case 2
-            Process "Outline", True
-        
-        'Palettize
-        Case 3
-            Process "Palettize", True
-            
-        'Portrait glow
-        Case 4
-            Process "Portrait glow", True
-        
-        'Solarize
-        Case 5
-            Process "Solarize", True
-
-        'Twins
-        Case 6
-            Process "Twins", True
-            
-        'Vignetting
-        Case 7
-            Process "Vignetting", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuStylize(Index).Caption
 End Sub
 
 'All tool menu items are launched from here
 Private Sub mnuTool_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Languages (top-level)
-        Case 0
-        
-        'Language editor
-        Case 1
-            If (Not FormLanguageEditor.Visible) Then
-                pdHotkeys.Enabled = False
-                ShowPDDialog vbModal, FormLanguageEditor
-                pdHotkeys.Enabled = True
-            End If
-            
-        '(separator)
-        Case 2
-        
-        'Theme
-        Case 3
-            DialogManager.PromptUITheme
-        
-        '(separator)
-        Case 4
-        
-        'Create macro (top-level)
-        Case 5
-        
-        'Play saved macro
-        Case 6
-            Process "Play macro", True
-        
-        'Recent macros (top-level)
-        Case 7
-        
-        '(separator)
-        Case 8
-    
-        'Options
-        Case 9
-            ShowPDDialog vbModal, FormOptions
-            
-        'Plugin manager
-        Case 10
-            ShowPDDialog vbModal, FormPluginManager
-            
-        '(separator)
-        Case 11
-        
-        'Developer tools (top-level)
-        Case 12
-            
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuTool(Index).Caption
 End Sub
 
 'Add / Remove / Modify a layer's alpha channel with this menu
 Private Sub MnuLayerTransparency_Click(Index As Integer)
-
-    Select Case Index
-            
-        'Color to alpha
-        Case 0
-            Process "Color to alpha", True
-        
-        'Remove alpha channel
-        Case 1
-            Process "Remove alpha channel", True
-    
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuLayerTransparency(Index).Caption
 End Sub
 
 'All "Window" menu items are handled here
 Private Sub MnuWindow_Click(Index As Integer)
-    
-    Select Case Index
-    
-        '<top-level Primary Toolbox options>
-        Case 0
-            
-        'Show/hide tool options
-        Case 1
-            Toolboxes.ToggleToolboxVisibility PDT_BottomToolbox
-        
-        'Show/hide layer toolbox
-        Case 2
-            Toolboxes.ToggleToolboxVisibility PDT_RightToolbox
-        
-        '<top-level Image tabstrip>
-        Case 3
-        
-        '<separator>
-        Case 4
-        
-        'Reset all toolbox settings
-        Case 5
-            Toolboxes.ResetAllToolboxSettings
-        
-        '<separator>
-        Case 6
-        
-        'Next image
-        Case 7
-            MoveToNextChildWindow True
-            
-        'Previous image
-        Case 8
-            MoveToNextChildWindow False
-
-    End Select
-
+    Menus.ProcessDefaultAction_ByCaption MnuWindow(Index).Caption
 End Sub
 
-'The "Next Image" and "Previous Image" options simply wrap this function.
-Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
-
-    'If one (or zero) images are loaded, ignore this option
-    If (PDImages.GetNumOpenImages() <= 1) Then Exit Sub
-    
-    Dim newIndex As Long
-    newIndex = PDImages.GetNextImageID(PDImages.GetActiveImageID(), moveForward)
-    If (newIndex >= 0) Then ActivatePDImage newIndex, "user requested next/previous image"
-    
-End Sub
-
-'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable under a variety
-' of conditions, and we allow the user to specify any alignment.
+'Unlike other toolbars, the image tabstrip has a more complicated window menu, because it is viewable
+' under a variety of conditions, and we allow the user to specify any alignment.
 Private Sub MnuWindowTabstrip_Click(Index As Integer)
-
     Select Case Index
-    
-        'Always display image tabstrip
         Case 0
-            Interface.ToggleImageTabstripVisibility Index
-        
-        'Display tabstrip for 2+ images (default)
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alwaysshow"
         Case 1
-            Interface.ToggleImageTabstripVisibility Index
-        
-        'Never display image tabstrip
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_shownormal"
         Case 2
-            Interface.ToggleImageTabstripVisibility Index
-        
-        '<separator>
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_nevershow"
         Case 3
-        
-        'Align left
+            '<separator>
         Case 4
-            Interface.ToggleImageTabstripAlignment vbAlignLeft
-        
-        'Align top
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignleft"
         Case 5
-            Interface.ToggleImageTabstripAlignment vbAlignTop
-        
-        'Align right
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_aligntop"
         Case 6
-            Interface.ToggleImageTabstripAlignment vbAlignRight
-        
-        'Align bottom
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignright"
         Case 7
-            Interface.ToggleImageTabstripAlignment vbAlignBottom
-    
+            Menus.ProcessDefaultAction_ByName "window_imagetabstrip_alignbottom"
     End Select
-
 End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,

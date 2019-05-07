@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -322,13 +322,13 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Imbangan putih imej Melaraskan</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Menyesuaikan kontras imej</translation>
+<original>Adjusting image white balance</original>
+<translation>Imbangan putih imej Melaraskan</translation>
 </phrase>
 
 <phrase>
@@ -367,31 +367,11 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>meningkatkan warna</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>meningkatkan Sebaliknya</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>meningkatkan pencahayaan</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Melaraskan bayang-bayang dan sorotan</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Meningkatkan bayang-bayang dan sorotan</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1426,6 +1406,991 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>terbuka</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Tampal sebagai imej baru</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>imej imbasan</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Pilih pengimbas atau kamera</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>import Internet</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Tangkapan skrin</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Tutup</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Tutup semua</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Simpan</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Simpan salinan</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Simpan sebagai</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Kembalikan</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>wizard batch</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Cetak</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>program keluar</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Longgarkan sejarah</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Ulang tindakan lepas</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Cut</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Potong dari lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Salinan dari lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Tampal sebagai lapisan baru...</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>papan klip kosong</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>imej pendua</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Saiz semula imej</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Kandungan-sedar saiz semula imej</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>saiz kanvas</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Kanvas patut lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Kanvas patut untuk semua lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Potong sempadan kosong</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>meluruskan imej</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Putar gambar mengikut arah jam 90</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Imej Putar 90 melawan arah jam</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Putar imej 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Putaran imej sewenang-wenangnya</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Imej Flip mendatar</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Imej Flip menegak</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Edit metadata</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Tambah lapisan baru</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Tambah lapisan kosong</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Lapisan salinan</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Lapisan baru dari lapisan yang kelihatan</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Padam lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Padam lapisan tersembunyi</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Bergabung lapisan sehingga</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Bergabung lapisan bawah</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>meningkatkan lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>lapisan yang lebih rendah</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Meningkatkan lapisan ke atas</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Lapisan yang lebih rendah ke bawah</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>meluruskan lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Berputar mengikut arah jam 90 lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Putar lapisan 90 melawan arah jam</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Lapisan Putar 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Putaran lapisan sewenang-wenangnya</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip lapisan mendatar</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Lapisan Flip menegak</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Saiz lapisan Reset</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Saiz semula lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Lapisan saiz semula kandungan-sedar</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>lapisan tanaman kepada pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Warna alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Buang saluran alpha</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>lapisan rasterize</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rasterize semua lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Bergabung lapisan yang dapat dilihat</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Ratakan imej</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Pilih semua</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Hapuskan pilihan</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Kecualikan pilihan</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Tiada pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Tiada pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>pemilihan sempadan</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>pemilihan Feather</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Tajamkan pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Memadam kawasan yang dipilih</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>pemilihan beban</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Simpan pilihan</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Kawasan Eksport dipilih sebagai imej</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Topeng pemilihan eksport sebagai imej</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Auto betul</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Auto meningkatkan</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Hitam dan putih</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Kecerahan dan kontras</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>keseimbangan warna</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>keluk</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>tahap</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Shadow dan kemuncak</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibrance</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>imbangan putih</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Channel mixer</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>saluran maksimum</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>saluran minimum</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Warna Shift (kiri)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Warna Shift (kanan)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Hue dan tepu</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>suhu</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>Colorize</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>menggantikan warna</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sepia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Samakan</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>histogram Stretch</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>filem negatif</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Kecualikan warna</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Kecualikan RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Warna monokrom</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Monokrom kepada kelabu</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>pendedahan</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>penapis Photo</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>penyingkiran mata merah</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>toning Split</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>pensil berwarna</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>buku komik</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>kaca digambarkan</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>filem noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>jubin kaca</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoscope</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>seni moden</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>lukisan minyak</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Pembalut plastik</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Posterize</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>bantuan</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>kaca berwarna</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>Box kabur</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussian blur</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>kabur permukaan</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>gerakan kabur</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>kabur Radial</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>zoom kabur</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>penapis Kuwahara</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Simetri terdekat jiran</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Herotan kanta betul</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Donut</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Memohon herotan kanta</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Picit dan pusaran</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Poke</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Ripple</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>squish</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Swirl</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>gelombang</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Pelbagai memutarbelitkan</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>Cetak Timbul</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>meningkatkan tepi</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Cari tepi</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>penapis pelbagai</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>kontur Trace</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>cahaya hitam</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Skrin Cross</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Rainbow</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Sunshine</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Membesar (pangkat maksimum)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Menghakis (pangkat minimum)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>suasana</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>kabus</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>menyalakan</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>lava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Salji</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>air</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Tambah filem bijirin</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Tambah bunyi RGB</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>penyebaran anisotropic</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>pelicinan dua hala</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Maksud harmonik</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>anjakan min</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>median</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>warna setengah suara</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>menjadi kenyataan</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotint</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mosaic</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Tajamkan</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>topeng Unsharp</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>antik</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>resap</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Rangka</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Portrait cahaya</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarize</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Twins</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>vignetting</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan dan zum</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>perspektif</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>penukaran Polar</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Putar</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>ricih</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Penapis tersuai</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Memulakan rakaman makro</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Menghentikan rakaman makro</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Main makro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Menyemak kemas kini perisian</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Buka semua imej terkini</translation>
 </phrase>
@@ -1445,7 +2410,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <translation>Senarai jelas makro baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1520,11 +2485,6 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1589,7 +2549,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2185,11 +3145,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Hapuskan pilihan</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Tindakan dibatalkan.</translation>
 </phrase>
@@ -2206,7 +3161,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Arahan laporan pepijat</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2304,11 +3259,6 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>pemilihan beban</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Ralat berlaku semasa cuba untuk memuatkan %1. Sila sahkan bahawa fail adalah fail pemilihan PhotoDemon yang sah.</translation>
 </phrase>
@@ -2369,11 +3319,6 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>pemilihan Feather</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>pemilihan bulu-bulu</translation>
 </phrase>
@@ -2384,18 +3329,8 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Tajamkan pemilihan</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>pemilihan mengasah</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Tiada pemilihan</translation>
 </phrase>
 
 <phrase>
@@ -2409,28 +3344,13 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Tiada pemilihan</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>pemilihan mengecut</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>pemilihan sempadan</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Mencari pilihan sempadan</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Memadam kawasan yang dipilih</translation>
 </phrase>
 
 <phrase>
@@ -2458,7 +3378,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2560,31 +3480,11 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>meluruskan imej</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>meluruskan lapisan</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Padam lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Tambah lapisan baru</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2601,7 +3501,7 @@ Please masukkan nilai berangka.</translation>
 <translation>(Tiada)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2791,7 +3691,17 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Imej ini tidak mengandungi sebarang metadata GPS.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Tiada data GPS didapati</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3725,7 +4635,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Imej berjaya dipulihkan.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3857,11 +4767,6 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Kembalikan</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Lokasi terbuka di Explorer</translation>
 </phrase>
@@ -3896,7 +4801,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Ketengahkan imej dalam viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3976,11 +4881,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standard</translation>
 </phrase>
@@ -4015,7 +4915,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>tiada</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4644,6 +5544,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4691,11 +5597,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Saiz semula imej</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Fit imej pada skrin</translation>
 </phrase>
@@ -4720,7 +5621,7 @@ The final value must be between %3 and %4.</original>
 <translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4800,11 +5701,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Tutup semua</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>eksport</translation>
 </phrase>
@@ -4860,18 +5756,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Longgarkan sejarah</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Cut</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Potong dari lapisan</translation>
 </phrase>
 
 <phrase>
@@ -4880,18 +5766,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Salinan dari lapisan</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Tampal sebagai imej baru</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Tampal sebagai lapisan baru...</translation>
 </phrase>
 
 <phrase>
@@ -4915,11 +5791,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>saiz kanvas</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Kanvas patut lapisan aktif</translation>
 </phrase>
@@ -4932,16 +5803,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Tanaman untuk pemilihan...</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Potong sempadan kosong</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Putar</translation>
 </phrase>
 
 <phrase>
@@ -4977,16 +5838,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>metadata</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Edit metadata</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5060,16 +5911,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>meningkatkan lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>lapisan yang lebih rendah</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Lapisan ke atas</translation>
 </phrase>
@@ -5140,16 +5981,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Bergabung lapisan yang dapat dilihat</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Ratakan imej</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>Pilih</translation>
 </phrase>
@@ -5185,11 +6016,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Tajamkan</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Jimat pemilihan semasa</translation>
 </phrase>
@@ -5210,88 +6036,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Auto betul</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Bandingkan</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>lampu</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Bayang-bayang dan sorotan</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Auto meningkatkan</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Hitam dan putih</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Kecerahan dan kontras</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>keseimbangan warna</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>keluk</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>tahap</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibrance</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>imbangan putih</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>saluran</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Channel mixer</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maksimum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimum</translation>
 </phrase>
 
 <phrase>
@@ -5305,36 +6056,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Hue dan tepu</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>suhu</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>Colorize</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>menggantikan warna</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>histogram</translation>
 </phrase>
@@ -5342,11 +6063,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Paparan</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Samakan</translation>
 </phrase>
 
 <phrase>
@@ -5365,8 +6081,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>gamma</translation>
+<original>Lighting</original>
+<translation>lampu</translation>
 </phrase>
 
 <phrase>
@@ -5375,38 +6091,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Warna monokrom</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Monokrom kepada kelabu</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>fotografi</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>pendedahan</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>penapis Photo</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>penyingkiran mata merah</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>toning Split</translation>
 </phrase>
 
 <phrase>
@@ -5420,108 +6111,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>pensil berwarna</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>buku komik</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Kaca digambarkan (kemek)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>filem noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>jubin kaca</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleiodoscope</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>seni moden</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>lukisan minyak</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Pembalut plastik</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Posterize</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>bantuan</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>kaca berwarna</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Blur</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>Box kabur</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussian blur</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>kabur permukaan</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>gerakan kabur</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>kabur Radial</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>zoom kabur</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>penapis Kuwahara</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Simetri terdekat jiran</translation>
 </phrase>
 
 <phrase>
@@ -5535,43 +6131,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Donut</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lens</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Picit dan pusaran</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Poke</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Ripple</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>squish</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Swirl</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>gelombang</translation>
 </phrase>
 
 <phrase>
@@ -5585,53 +6146,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>Cetak Timbul</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>meningkatkan tepi</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Cari tepi</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>penapis pelbagai</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>kontur Trace</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Cahaya dan bayang-bayang</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>cahaya hitam</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Skrin Cross</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Rainbow</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Sunshine</translation>
 </phrase>
 
 <phrase>
@@ -5650,36 +6166,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>suasana</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>kabus</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>menyalakan</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>lava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metal</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Salji</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Underwater</translation>
 </phrase>
@@ -5690,68 +6176,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Tambah filem bijirin</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Tambah bunyi RGB</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>penyebaran anisotropic</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>penapis dua hala</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Maksud harmonik</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>anjakan min</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>median</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>berpiksel</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>warna setengah suara</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>menjadi kenyataan</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotint</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mosaic</translation>
 </phrase>
 
 <phrase>
@@ -5765,78 +6196,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>antik</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>resap</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Rangka</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Portrait cahaya</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarize</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Twins</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>vignetting</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Transform</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan dan zum</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>perspektif</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>penukaran Polar</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>ricih</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Penapis tersuai</translation>
 </phrase>
 
 <phrase>
@@ -5882,11 +6243,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Hentikan rakaman</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Main makro</translation>
 </phrase>
 
 <phrase>
@@ -6105,16 +6461,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Memulakan rakaman makro</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Menghentikan rakaman makro</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Versi baru PhotoDemon disediakan. Kemas kini secara automatik memproses di latar belakang</translation>
 </phrase>
@@ -6153,316 +6499,6 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>penapis Photo</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Warna Auto betul</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Sebaliknya Auto betul</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Lampu Auto betul</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Auto bayang-bayang yang betul dan sorotan</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Auto meningkatkan warna</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Auto meningkatkan kontras</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Auto meningkatkan pencahayaan</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto meningkatkan bayang-bayang dan sorotan</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>wizard batch</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Bergabung lapisan sehingga</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Bergabung lapisan bawah</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>lapisan tanaman kepada pemilihan</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Padam lapisan tersembunyi</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Tambah lapisan kosong</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Lapisan salinan</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Lapisan baru dari lapisan yang kelihatan</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Meningkatkan lapisan ke atas</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Lapisan yang lebih rendah ke bawah</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Berputar mengikut arah jam 90 lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Putar lapisan 90 melawan arah jam</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Lapisan Putar 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Putaran lapisan sewenang-wenangnya</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip lapisan mendatar</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Lapisan Flip menegak</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>lapisan rasterize</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rasterize semua lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Saiz lapisan Reset</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Saiz semula lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Lapisan saiz semula kandungan-sedar</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Membesar (pangkat maksimum)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Menghakis (pangkat minimum)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Shadow dan kemuncak</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>kaca digambarkan</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoscope</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>saluran maksimum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>saluran minimum</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Warna Shift (kiri)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Warna Shift (kanan)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Herotan kanta betul</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Memohon herotan kanta</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Pelbagai memutarbelitkan</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Ulang tindakan lepas</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Cut</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Tampal sebagai imej baru</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>papan klip kosong</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>terbuka</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Tutup</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Simpan</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Simpan salinan</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Simpan sebagai</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Cetak</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>program keluar</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Menyemak kemas kini perisian</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>histogram Stretch</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>imej pendua</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Kandungan-sedar saiz semula imej</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Kanvas patut lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Kanvas patut untuk semua lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Imej Flip mendatar</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Imej Flip menegak</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>import Internet</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Sila tunggu sementara bahasa baru digunakan</translation>
 </phrase>
@@ -6482,117 +6518,7 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <translation>Bahasa berubah dengan jayanya.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Imej ini tidak mengandungi sebarang metadata GPS.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Tiada data GPS didapati</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>air</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>filem negatif</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Kecualikan warna</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Kecualikan RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>pelicinan dua hala</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Putar gambar mengikut arah jam 90</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Imej Putar 90 melawan arah jam</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Putar imej 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Putaran imej sewenang-wenangnya</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>imej imbasan</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Tangkapan skrin</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Pilih semua</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Kecualikan pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Simpan pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Kawasan Eksport dipilih sebagai imej</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Topeng pemilihan eksport sebagai imej</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Pilih pengimbas atau kamera</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>topeng Unsharp</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Warna alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Buang saluran alpha</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11639,6 +11565,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Lampu Auto betul</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>keluar</translation>
 </phrase>
@@ -11663,7 +11594,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>Menganggarkan masa yang tinggal</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13486,7 +13417,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Pindah ke bawah lapisan</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13495,6 +13426,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15734,18 +15671,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

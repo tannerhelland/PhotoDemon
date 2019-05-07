@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -322,13 +322,13 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Justera bildens vitbalans</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Justera bildkontrast</translation>
+<original>Adjusting image white balance</original>
+<translation>Justera bildens vitbalans</translation>
 </phrase>
 
 <phrase>
@@ -367,31 +367,11 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Förbättra färger</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Förbättrad kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Förbättrad belysning</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Justera skuggor och högdagrar</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Förbättra skuggor och högdagrar</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1422,6 +1402,991 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>öppet</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Klistra in som ny bild</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Skanna bild</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Välj skanner eller kamera</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Internet import</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Screen capture</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Stäng</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Stäng alla</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Spara</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Spara kopia</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Spara som</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Återställ</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>Batch guiden</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Tryckt</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Avsluta programmet</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>ångra historia</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Upprepa den senaste åtgärden</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Skär</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Klipp från lager</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Kopiera från lager</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Klistra in som nytt lager</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>tom Urklipp</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>duplicera bild</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Ändra storlek på bild</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Innehållsmedveten bildstorleksändring</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>kanfas storlek</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Fit duk till lagret</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Anpassa arbetsytan för att alla lager</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Trim tomma gränser</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>Räta bild</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Rotera bilden 90 medsols</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Rotera bilden 90 motsols</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Rotera bild 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Godtyckligt bildrotation</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Vänd bilden horisontellt</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Vänd bilden vertikalt</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>redigera metadata</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Lägg nytt lager</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Lägg tomt lager</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Duplicera lager</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Nytt lager från synliga lager</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Ta bort lager</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Ta bort dolda lager</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Merge skikt upp</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Merge skiktet ned</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Höj skiktet</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>Undre skikt</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Höj skikt till toppen</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Undre skiktet till bottnen</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>Räta skiktet</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Rotera lagret 90 medurs</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Rotera lagret 90 moturs</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Rotera skiktet 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Godtyckliga skiktet rotation</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip skiktet horisontellt</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Flip skiktet vertikalt</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Återställ skiktet storlek</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Ändra storlek på skiktet</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Innehållsmedveten skikt resize</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Gröda skiktet till urvalet</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Färg till alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Ta bort alfakanal</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rastrera skikt</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rastrera alla lager</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Sammanfoga synliga lager</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Platta bild</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Markera alla</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Ta bort markering</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>rymder</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Grow urval</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Krymp urval...</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>markeringsram</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>fjäder urval</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Skärpa urval</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Radera markerade området</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Last urval</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Spara urval</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Exportera markerade området som bild</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Val Exportera mask som bild</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Auto korrekt</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Auto förbättra</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Svart och vitt</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Ljusstyrka och kontrast</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>Färgbalans</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Kurvor</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Nivåer</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Skugga och markera</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Lyster</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>vitbalans</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Kanalblandare</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>kanalisera om</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Maximal kanal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minsta kanal</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Skiftfärger (till vänster)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Shift färger (höger)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Nyans och mättnad</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Temperatur</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>colorize</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Byt färg</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sepia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>utjämna</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>Stretch histogram</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>film negativ</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Invertera nyans</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Invertera RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Färg till svartvitt</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Svartvitt till grått</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Exponering</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Fotofilter...</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>borttagning av röda ögon</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>Split toning</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>färgpenna</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>serietidning</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>figurglas...</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>glas kakel</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoscope</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Modern konst</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>oljemålning</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Plastfolie</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Färgreduktion</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>Relief</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Glasmålning</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>Box oskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussisk oskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Ytoskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Rörelseoskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radial oskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>Zoomoskärpa</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara filtrering</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Symmetrisk närmaste granne</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Korrekt linsförvrängningen</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Munk</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Applicera linsförvrängningen</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Nyp och virvel</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>petar</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Ripple</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>squish</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Swirl</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>vågor</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Diverse snedvrida</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>emboss</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Förbättra kanter</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Hitta kanter</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>intervall filter</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Trace kontur</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Svart ljus</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Cross-skärm</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Rainbow</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Sunshine</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilate (högst rang)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (lägsta rang)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Atmosfär</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>dimma</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Tänd</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Lava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metall</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Snö</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>vatten</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Lägg till filmkorn</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Lägg RGB buller</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>anisotropisk   diffusion</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>Bilateral utjämning</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmoniskt medelvärde</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>genomsnittlig förskjutning</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Median</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>färg halvton</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Kristallisera</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotint</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mosaik</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Skärpa</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Oskarp mask</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antik</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>diffusa</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Outline</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>porträtt glöd</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarize</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>kopplar samman</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>vinjette</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Panorera och zooma</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>perspektiv</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polar omvandling</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Rotera</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Shear</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Sfär</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>filter</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Starta makroinspelning</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Stoppa makroinspelning</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Spela makro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Söka efter programuppdateringar</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Öppna alla nya bilder</translation>
 </phrase>
@@ -1441,7 +2406,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Rensa senaste makro listan</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1516,11 +2481,6 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1585,7 +2545,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Atkinson/klassisk Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2181,11 +3141,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Ta bort markering</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Åtgärd avbryts.</translation>
 </phrase>
@@ -2202,7 +3157,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Bug rapportinstruktioner</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2300,11 +3255,6 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Last urval</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Ett fel inträffade vid försök att läsa in %1. Kontrollera att filen är en giltig PhotoDemon urvalsfilen.</translation>
 </phrase>
@@ -2365,11 +3315,6 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>fjäder urval</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>ludd urval</translation>
 </phrase>
@@ -2380,18 +3325,8 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Skärpa urval</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>Skärpning urval</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Grow urval</translation>
 </phrase>
 
 <phrase>
@@ -2405,28 +3340,13 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Krymp urval...</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Krympning urval</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>markeringsram</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Söka markeringsram</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Radera markerade området</translation>
 </phrase>
 
 <phrase>
@@ -2454,7 +3374,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 <translation>Klicka på den första punkten för att slutföra polygon val</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2556,31 +3476,11 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>Räta bild</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>Räta skiktet</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Ta bort lager</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Lägg nytt lager</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2597,7 +3497,7 @@ Please ange ett numeriskt värde.</translation>
 <translation>(ingen)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2787,7 +3687,17 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Denna bild innehåller inte någon GPS-metadata.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Inga GPS-data som finns...</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3721,7 +4631,7 @@ Please ange ett numeriskt värde.</translation>
 <translation>Bild återställts.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3853,11 +4763,6 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Återställ</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Öppen plats i Utforskaren</translation>
 </phrase>
@@ -3892,7 +4797,7 @@ Please ange ett numeriskt värde.</translation>
 <translation>Centrera bilden i visnings</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3972,11 +4877,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standard</translation>
 </phrase>
@@ -4011,7 +4911,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation>ingen</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4640,6 +5540,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4687,11 +5593,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Ändra storlek på bild</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Montera bilden på skärmen</translation>
 </phrase>
@@ -4716,7 +5617,7 @@ The final value must be between %3 and %4.</original>
 <translation>Ändra bildstorlek enheten visas till vänster på denna ruta</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4796,11 +5697,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Stäng alla</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>export</translation>
 </phrase>
@@ -4856,18 +5752,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>ångra historia</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Skär</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Klipp från lager</translation>
 </phrase>
 
 <phrase>
@@ -4876,18 +5762,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Kopiera från lager</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Klistra in som ny bild</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Klistra in som nytt lager</translation>
 </phrase>
 
 <phrase>
@@ -4911,11 +5787,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>kanfas storlek</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Fit duk till aktiva skiktet</translation>
 </phrase>
@@ -4928,16 +5799,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Beskär till val</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Trim tomma gränser</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Rotera</translation>
 </phrase>
 
 <phrase>
@@ -4973,16 +5834,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>redigera metadata</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5056,16 +5907,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Höj skiktet</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>Undre skikt</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Layer till toppen</translation>
 </phrase>
@@ -5136,16 +5977,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Sammanfoga synliga lager</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Platta bild</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>Välj</translation>
 </phrase>
@@ -5181,11 +6012,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Skärpa</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Spara aktuella markeringen</translation>
 </phrase>
@@ -5206,88 +6032,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Auto korrekt</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Ljus</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Skuggor och högdagrar</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Auto förbättra</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Svart och vitt</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Ljusstyrka och kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>Färgbalans</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Kurvor</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Nivåer</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Lyster</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>vitbalans</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanaler</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Kanalblandare</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>kanalisera om</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maximal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimum</translation>
 </phrase>
 
 <phrase>
@@ -5301,36 +6052,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Nyans och mättnad</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Temperatur</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>colorize</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Byt färg</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>Histogram</translation>
 </phrase>
@@ -5338,11 +6059,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Visa</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>utjämna</translation>
 </phrase>
 
 <phrase>
@@ -5361,8 +6077,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>Ljus</translation>
 </phrase>
 
 <phrase>
@@ -5371,38 +6087,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Färg till svartvitt</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Svartvitt till grått</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fotografi</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Exponering</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>fotofilter</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>borttagning av röda ögon</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Split toning</translation>
 </phrase>
 
 <phrase>
@@ -5416,108 +6107,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>färgpenna</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>serietidning</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Figurglas (bucklor)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>glas kakel</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleiodoscope</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Modern konst</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>oljemålning</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Plastfolie</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Färgreduktion</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>Relief</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Glasmålning</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Blur</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>Box oskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussisk oskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Ytoskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Rörelseoskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radial oskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>Zoomoskärpa</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara filtrering</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Symmetrisk närmaste granne</translation>
 </phrase>
 
 <phrase>
@@ -5531,43 +6127,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Munk</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lins</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Nyp och virvel</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>petar</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Ripple</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>squish</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Swirl</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>vågor</translation>
 </phrase>
 
 <phrase>
@@ -5581,53 +6142,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>emboss</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Förbättra kanter</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Hitta kanter</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>intervall filter</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Trace kontur</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Ljus och skugga</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Svart ljus</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Cross-skärm</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Rainbow</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Sunshine</translation>
 </phrase>
 
 <phrase>
@@ -5646,36 +6162,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Atmosfär</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>dimma</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Tänd</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Lava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metall</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Snö</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Underwater</translation>
 </phrase>
@@ -5686,68 +6172,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Lägg till filmkorn</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Lägg RGB buller</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>anisotropisk   diffusion</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>bilateral filtrering</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmoniskt medelvärde</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>genomsnittlig förskjutning</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Median</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pixelera</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>färg halvton</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Kristallisera</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotint</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mosaik</translation>
 </phrase>
 
 <phrase>
@@ -5761,78 +6192,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antik</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>diffusa</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Outline</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>porträtt glöd</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarize</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>kopplar samman</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>vinjette</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Omvandla</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Panorera och zooma</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>perspektiv</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polar omvandling</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Shear</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Sfär</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>filter</translation>
 </phrase>
 
 <phrase>
@@ -5878,11 +6239,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Stoppa inspelning</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Spela makro</translation>
 </phrase>
 
 <phrase>
@@ -6101,16 +6457,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Starta makroinspelning</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Stoppa makroinspelning</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>En ny version av PhotoDemon är tillgänglig. Uppdateringen automatiskt bearbetning i bakgrunden</translation>
 </phrase>
@@ -6149,316 +6495,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Fotofilter...</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Auto rätt färg</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Auto korrekt kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Auto rätt belysning</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Autokorrigering  skuggor och högdagrar</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Auto förbättra färg</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Auto öka kontrasten</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Auto förbättra belysning</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto förbättra skuggor och högdagrar</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>Batch guiden</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Merge skikt upp</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Merge skiktet ned</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Gröda skiktet till urvalet</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Ta bort dolda lager</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Lägg tomt lager</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Duplicera lager</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Nytt lager från synliga lager</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Höj skikt till toppen</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Undre skiktet till bottnen</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Rotera lagret 90 medurs</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Rotera lagret 90 moturs</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Rotera skiktet 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Godtyckliga skiktet rotation</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip skiktet horisontellt</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Flip skiktet vertikalt</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rastrera skikt</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rastrera alla lager</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Återställ skiktet storlek</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Ändra storlek på skiktet</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Innehållsmedveten skikt resize</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilate (högst rang)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (lägsta rang)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Skugga och markera</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>figurglas...</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoscope</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Maximal kanal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Minsta kanal</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Skiftfärger (till vänster)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Shift färger (höger)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Korrekt linsförvrängningen</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Applicera linsförvrängningen</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Diverse snedvrida</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Upprepa den senaste åtgärden</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Skär</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Klistra in som ny bild</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>tom Urklipp</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>öppet</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Stäng</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Spara</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Spara kopia</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Spara som</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Tryckt</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Avsluta programmet</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Söka efter programuppdateringar</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>Stretch histogram</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>duplicera bild</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Innehållsmedveten bildstorleksändring</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Fit duk till lagret</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Anpassa arbetsytan för att alla lager</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Vänd bilden horisontellt</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Vänd bilden vertikalt</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Internet import</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Vänta medan det nya språket tillämpas</translation>
 </phrase>
@@ -6478,117 +6514,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Språk ändrats.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Denna bild innehåller inte någon GPS-metadata.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Inga GPS-data som finns...</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>vatten</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>film negativ</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Invertera nyans</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Invertera RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>Bilateral utjämning</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Rotera bilden 90 medsols</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Rotera bilden 90 motsols</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Rotera bild 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Godtyckligt bildrotation</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Skanna bild</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Screen capture</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Markera alla</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>rymder</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Spara urval</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Exportera markerade området som bild</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Val Exportera mask som bild</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Välj skanner eller kamera</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Oskarp mask</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Färg till alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Ta bort alfakanal</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11634,6 +11560,11 @@ Would du spara din satslistan innan du avslutar?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Auto rätt belysning</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>Utgång</translation>
 </phrase>
@@ -11658,7 +11589,7 @@ Would du spara din satslistan innan du avslutar?</translation>
 <translation>Att uppskatta återstående tid</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13481,7 +13412,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Flytta skikt ned</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13490,6 +13421,12 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15729,18 +15666,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

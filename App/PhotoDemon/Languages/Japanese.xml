@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.91</langversion>
+<langversion>1.0.92</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>画像のホワイトバランスを調整する</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>画像のコントラストを調整する</translation>
+<original>Adjusting image white balance</original>
+<translation>画像のホワイトバランスを調整する</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If問題が解決しない場合は、photodemon.orgを介してPhotoDemonの開
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>色を強調する</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>コントラストの強化</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>照明の強化</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>シャドウとハイライトの調整</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>シャドウとハイライトの強化</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1426,6 +1406,991 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>開いた</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>新しい画像として貼り付ける</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>スキャン画像</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>スキャナまたはカメラを選択</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>インターネットのインポート</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>画面キャプチャ</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>閉じる</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>すべて閉じる</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>セーブ</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>コピーを保存</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>名前を付けて保存</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>元に戻す</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>バッチウィザード</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>印刷</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>プログラムを終了する</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>履歴を元に戻す</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>最後のアクションを繰り返します。</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>カット</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>レイヤーから切り取る</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>レイヤーからコピーする</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>新しいレイヤーとして貼り付ける</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>空のクリップボード</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>重複した画像</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>イメージのサイズ変更</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>コンテンツ認識イメージのサイズ変更</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>キャンバスサイズ</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>キャンバスをレイヤーに合わせる</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>すべてのレイヤーにキャンバスをフィット</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>空の枠をトリムする</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>イメージを真っ直ぐに</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>画像を時計回りに90度回転する</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>画像を反時計回りに90回転させる</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>画像180を回転する</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>任意の画像の回転</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>水平方向に画像を反転する</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>画像を垂直方向に反転</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>メタデータの編集</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>新しいレイヤーを追加する</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>空白のレイヤーを追加</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>重複レイヤー</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>可視レイヤーからの新しいレイヤー</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>レイヤーを削除する</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>隠れたレイヤーを削除する</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>層をマージする</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>レイヤーをマージする</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>レイヤーを上げる</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>下層</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>レイヤーを上に上げる</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>下層から下層</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>ストレート層</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>層90を時計回りに回転する</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>層90を反時計回りに回転させる</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>層180を回転させる</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>任意のレイヤーの回転</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>レイヤーを水平方向に反転</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>垂直方向にフリップする</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>層のサイズをリセットする</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>レイヤーのサイズ変更</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>コンテンツ対応レイヤーのサイズ変更</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>選択してレイヤーをトリミングする</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>カラーからアルファ</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>アルファチャンネルを削除</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>レイヤーをラスタライズする</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>すべてのレイヤーをラスタライズする</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>可視のレイヤーを結合する</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>画像を平ら</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>すべて選択</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>選択を削除</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>反転選択</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>選択の拡大</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>縮小選択</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>ボーダー選択</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>フェザーの選択</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>シャープ選択</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>選択領域を消去する</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>負荷の選択</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>選択を保存</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>選択した領域をイメージとしてエクスポートする</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>選択マスクをイメージとしてエクスポート</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>自動修正</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>自動強化</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>黒と白</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>明るさとコントラスト</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>カラーバランス</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>曲線</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>レベル</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>影とハイライト</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>バイブランス</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>ホワイトバランス</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>チャンネルミキサー</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>リチャネル</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>最大チャンネル</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>最小チャンネル</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>シフトカラー（左）</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>色をシフト（右）</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>色相と彩度</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>温度</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>色合い</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>カラー化</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>色を交換する</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>セピア</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>イコライズ</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>ストレッチヒストグラム</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>フィルムネガ</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>逆の色相</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Rgbを反転する</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>ガンマ</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>モノクロへの色</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>モノクロからグレー</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>暴露</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>フォトフィルター</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>赤目除去</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>スプリットトーニング</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>色鉛筆</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>コミックブック</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>フィギュアガラス</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>フィルム・ノワール</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>ガラスタイル</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>万華鏡</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>現代美術</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>油絵</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>ラップフィルム</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>ポスターを書く</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>救済</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>ステンドグラス</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>ボックスボケ</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>ガウスぼかし</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>表面のぼかし</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>モーションブラー</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>ラジアルブラー</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>ズームブラー</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>桑原フィルター</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>対称最近接</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>レンズ歪みを修正する</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>ドーナツ</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>レンズ歪みを適用する</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>ピンチと旋回</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>ポーク</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>リップル</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Squish</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>スワール</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>波</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>その他の歪み</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>エンボス</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>エッジを強調する</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>エッジを見つける</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>レンジフィルタ</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>輪郭をトレースする</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>ブラックライト</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>クロススクリーン</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>虹</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>日光</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>ディルート（最大ランク）</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>エロード（最低ランク）</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>雰囲気</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>霧</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>点火</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>溶岩</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>金属</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>雪</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>水</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>フィルムグレインを追加する</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>RGBノイズを追加する</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>異方性拡散</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>バイラテラルスムージング</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>高調波平均</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>平均シフト</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>中央値</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>カラーハーフトーン</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>結晶化する</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>断片</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>メゾチント</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>モザイク</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>シャープ</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>アンシャープマスク</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>アンティーク</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>拡散</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>アウトライン</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>パレタイジング</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>ポートレートグロー</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>ソラリゼーション</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>双子</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>ケラレ</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>パンとズーム</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>展望</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>極座標変換</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>回転する</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>剪断</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>カスタムフィルタ</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>マクロ記録を開始する</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>マクロ記録を停止する</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>マクロを再生</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>ソフトウェア更新の確認</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>最近のすべての画像を開く</translation>
 </phrase>
@@ -1445,7 +2410,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>最近のマクロリストをクリアする</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1520,11 +2485,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1589,7 +2549,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>アトキンソン</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2183,11 +3143,6 @@ Description：％2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>選択を削除</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>アクションがキャンセルされました。</translation>
 </phrase>
@@ -2204,7 +3159,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>バグレポートの指示</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2302,11 +3257,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>負荷の選択</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>％1の読み込み中にエラーが発生しました。 ファイルが有効なPhotoDemon選択ファイルであることを確認してください。</translation>
 </phrase>
@@ -2367,11 +3317,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>フェザーの選択</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>フェザリング選択</translation>
 </phrase>
@@ -2382,18 +3327,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>シャープ選択</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>選択の鮮明化</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>選択の拡大</translation>
 </phrase>
 
 <phrase>
@@ -2407,28 +3342,13 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>縮小選択</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>収縮選択</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>ボーダー選択</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>選択枠を見つける</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>選択領域を消去する</translation>
 </phrase>
 
 <phrase>
@@ -2456,7 +3376,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>最初の点をクリックしてポリゴン選択を完了します</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2558,31 +3478,11 @@ P数値を入力してください。</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>イメージを真っ直ぐに</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>ストレート層</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>レイヤーを削除する</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>新しいレイヤーを追加する</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2599,7 +3499,7 @@ P数値を入力してください。</translation>
 <translation>（なし）</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2789,7 +3689,17 @@ P数値を入力してください。</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>この画像にはGPSメタデータは含まれていません。</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>GPSデータが見つかりません</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3723,7 +4633,7 @@ P数値を入力してください。</translation>
 <translation>イメージは正常に復元されました。</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3855,11 +4765,6 @@ P数値を入力してください。</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>元に戻す</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>エクスプローラで場所を開く</translation>
 </phrase>
@@ -3894,7 +4799,7 @@ P数値を入力してください。</translation>
 <translation>ビューポートの内側に画像を配置する</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3973,11 +4878,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>標準</translation>
 </phrase>
@@ -4012,7 +4912,7 @@ or the File > Open and File > Import menus.</original>
 <translation>なし</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4641,6 +5541,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4688,11 +5594,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>イメージのサイズ変更</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>画面上の画像を合わせる</translation>
 </phrase>
@@ -4717,7 +5618,7 @@ The final value must be between %3 and %4.</original>
 <translation>このボックスの左側に表示される画像サイズの単位を変更する</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4797,11 +5698,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>すべて閉じる</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>輸出する</translation>
 </phrase>
@@ -4857,18 +5753,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>履歴を元に戻す</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>カット</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>レイヤーから切り取る</translation>
 </phrase>
 
 <phrase>
@@ -4877,18 +5763,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>レイヤーからコピーする</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>新しい画像として貼り付ける</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>新しいレイヤーとして貼り付ける</translation>
 </phrase>
 
 <phrase>
@@ -4912,11 +5788,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>キャンバスサイズ</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>キャンバスをアクティブレイヤーに合わせる</translation>
 </phrase>
@@ -4929,16 +5800,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>選択して切り抜く</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>空の枠をトリムする</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>回転する</translation>
 </phrase>
 
 <phrase>
@@ -4974,16 +5835,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>メタデータ</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>メタデータの編集</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5057,16 +5908,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>レイヤーを上げる</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>下層</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>上から上へ</translation>
 </phrase>
@@ -5137,16 +5978,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>可視のレイヤーを結合する</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>画像を平ら</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>選択</translation>
 </phrase>
@@ -5182,11 +6013,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>シャープ</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>現在の選択内容を保存</translation>
 </phrase>
@@ -5207,88 +6033,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>自動修正</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>コントラスト</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>点灯</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>シャドウとハイライト</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>自動強化</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>黒と白</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>明るさとコントラスト</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>カラーバランス</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>曲線</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>レベル</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>バイブランス</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>ホワイトバランス</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>チャンネル</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>チャンネルミキサー</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>リチャネル</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>最大</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>最小</translation>
 </phrase>
 
 <phrase>
@@ -5302,36 +6053,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>色相と彩度</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>温度</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>色合い</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>カラー化</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>色を交換する</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>セピア</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>ヒストグラム</translation>
 </phrase>
@@ -5339,11 +6060,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>表示</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>イコライズ</translation>
 </phrase>
 
 <phrase>
@@ -5362,8 +6078,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>ガンマ</translation>
+<original>Lighting</original>
+<translation>点灯</translation>
 </phrase>
 
 <phrase>
@@ -5372,38 +6088,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>モノクロへの色</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>モノクロからグレー</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>写真</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>暴露</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>フォトフィルター</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>赤目除去</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>スプリットトーニング</translation>
 </phrase>
 
 <phrase>
@@ -5417,108 +6108,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>色鉛筆</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>コミックブック</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>フィギュアガラス（くぼみ）</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>フィルム・ノワール</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>ガラスタイル</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>万華鏡</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>現代美術</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>油絵</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>ラップフィルム</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>ポスターを書く</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>救済</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>ステンドグラス</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>ぼかし</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>ボックスボケ</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>ガウスぼかし</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>表面のぼかし</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>モーションブラー</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>ラジアルブラー</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>ズームブラー</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>桑原フィルター</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>対称最近接</translation>
 </phrase>
 
 <phrase>
@@ -5532,43 +6128,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>ドーナツ</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>レンズ</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>ピンチと旋回</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>ポーク</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>リップル</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Squish</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>スワール</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>波</translation>
 </phrase>
 
 <phrase>
@@ -5582,53 +6143,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>エンボス</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>エッジを強調する</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>エッジを見つける</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>レンジフィルタ</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>輪郭をトレースする</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>光と影</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>ブラックライト</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>クロススクリーン</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>虹</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>日光</translation>
 </phrase>
 
 <phrase>
@@ -5647,36 +6163,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>雰囲気</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>霧</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>点火</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>溶岩</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>金属</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>雪</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>水中</translation>
 </phrase>
@@ -5687,68 +6173,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>フィルムグレインを追加する</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>RGBノイズを追加する</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>異方性拡散</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>バイラテラルフィルタ</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>高調波平均</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>平均シフト</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>中央値</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>ピクセル化する</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>カラーハーフトーン</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>結晶化する</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>断片</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>メゾチント</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>モザイク</translation>
 </phrase>
 
 <phrase>
@@ -5762,78 +6193,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>アンティーク</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>拡散</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>アウトライン</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>パレタイジング</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>ポートレートグロー</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>ソラリゼーション</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>双子</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>ケラレ</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>変換</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>パンとズーム</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>展望</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>極座標変換</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>剪断</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>カスタムフィルタ</translation>
 </phrase>
 
 <phrase>
@@ -5879,11 +6240,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>録音を停止する</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>マクロを再生</translation>
 </phrase>
 
 <phrase>
@@ -6102,16 +6458,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>マクロ記録を開始する</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>マクロ記録を停止する</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Photodemonの新しいバージョンが利用可能です。 アップデートは自動的にバックグラウンドで処理されます</translation>
 </phrase>
@@ -6149,316 +6495,6 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>フォトフィルター</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>自動補正色</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>コントラストの自動補正</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>自動正しい照明</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>シャドウとハイライトの自動補正</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>色を自動的に強調</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>自動的にコントラストを強調する</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>照明の自動強化</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>シャドウとハイライトを自動的に強調</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>バッチウィザード</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>層をマージする</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>レイヤーをマージする</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>選択してレイヤーをトリミングする</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>隠れたレイヤーを削除する</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>空白のレイヤーを追加</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>重複レイヤー</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>可視レイヤーからの新しいレイヤー</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>レイヤーを上に上げる</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>下層から下層</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>層90を時計回りに回転する</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>層90を反時計回りに回転させる</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>層180を回転させる</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>任意のレイヤーの回転</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>レイヤーを水平方向に反転</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>垂直方向にフリップする</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>レイヤーをラスタライズする</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>すべてのレイヤーをラスタライズする</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>層のサイズをリセットする</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>レイヤーのサイズ変更</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>コンテンツ対応レイヤーのサイズ変更</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>ディルート（最大ランク）</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>エロード（最低ランク）</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>影とハイライト</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>フィギュアガラス</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>万華鏡</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>最大チャンネル</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>最小チャンネル</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>シフトカラー（左）</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>色をシフト（右）</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>レンズ歪みを修正する</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>レンズ歪みを適用する</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>その他の歪み</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>最後のアクションを繰り返します。</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>カット</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>新しい画像として貼り付ける</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>空のクリップボード</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>開いた</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>閉じる</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>セーブ</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>コピーを保存</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>名前を付けて保存</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>印刷</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>プログラムを終了する</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>ソフトウェア更新の確認</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>ストレッチヒストグラム</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>重複した画像</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>コンテンツ認識イメージのサイズ変更</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>キャンバスをレイヤーに合わせる</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>すべてのレイヤーにキャンバスをフィット</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>水平方向に画像を反転する</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>画像を垂直方向に反転</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>インターネットのインポート</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>新しい言語が適用されている間お待ちください</translation>
 </phrase>
@@ -6478,117 +6514,7 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>言語が正常に変更されました。</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>この画像にはGPSメタデータは含まれていません。</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>GPSデータが見つかりません</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>水</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>フィルムネガ</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>逆の色相</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Rgbを反転する</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>バイラテラルスムージング</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>画像を時計回りに90度回転する</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>画像を反時計回りに90回転させる</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>画像180を回転する</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>任意の画像の回転</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>スキャン画像</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>画面キャプチャ</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>すべて選択</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>反転選択</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>選択を保存</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>選択した領域をイメージとしてエクスポートする</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>選択マスクをイメージとしてエクスポート</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>スキャナまたはカメラを選択</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>アンシャープマスク</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>カラーからアルファ</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>アルファチャンネルを削除</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11635,6 +11561,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>自動正しい照明</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>出口</translation>
 </phrase>
@@ -11659,7 +11590,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>残り時間の見積もり</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13482,7 +13413,7 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>レイヤーを下に移動</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13491,6 +13422,12 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15729,18 +15666,12 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

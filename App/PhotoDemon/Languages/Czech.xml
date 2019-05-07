@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Nastavení vyvážení bílé obrazu</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Úprava kontrastu obrazu</translation>
+<original>Adjusting image white balance</original>
+<translation>Nastavení vyvážení bílé obrazu</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ Pokud problém přetrvává, oznamte to vývojářům aplikace PhotoDemon prost�
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Zvyšování barev</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Zvýšení kontrastu</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Zvýšení osvětlení</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Nastavení stínů a zvýraznění</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Zvyšuje stíny a zdůrazňuje</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1426,6 +1406,991 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Otevřeno</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Vložte jako nový obrázek</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Skenování obrázku</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Vyberte skener nebo fotoaparát</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Import Internet</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Snímání obrazovky</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Zavřít</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Zavřete všechny</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Uložit</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Uložit kopii</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Uložit jako</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Vrátit Se</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>Dávkový průvodce</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Tisk</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Ukončete program</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Zrušit historii</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Opakujte poslední akci</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Střih</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Odřízněte od vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Kopírovat z vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Vložit jako novou vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>Prázdný schránka</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>Duplicitní obrázek</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Změnit velikost obrázku</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Změna velikosti obrázku</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Velikost plátna</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Přizpůsobte plátno vrstvě</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Fit plátno do všech vrstev</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Ořízněte prázdné ohraničení</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>Vyrovnejte obraz</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Otočit obrázek 90 ve směru hodinových ručiček</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Otočte obraz 90 proti směru hodinových ručiček</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Otočit obrázek 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Volné střídání obrazu</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Překlopte snímek vodorovně</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Otočte obrázek vertikálně</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Upravte metadata</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Přidat novou vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Přidat prázdnou vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Duplicitní vrstva</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Nová vrstva z viditelných vrstev</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Odstranit vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Odstranit skryté vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Sloučit vrstva nahoru</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Sloučit vrstva dolů</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Zvedněte vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>Spodní vrstva</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Zvedněte vrstvu nahoru</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Dolní vrstva dolů</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>Natáhněte vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Otočte vrstvu 90 ve směru hodinových ručiček</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Otočte vrstvu 90 proti směru hodinových ručiček</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Otočte vrstvu 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Úhel rotace libovolné vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Překlopte vrstvu vodorovně</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Překlopte vrstvu vertikálně</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Obnovit velikost vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Změna velikosti vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Zmírnění velikosti obsahu</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Oříznout vrstvu k výběru</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Barva na alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Odstraňte alfa kanál</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rastrujte vrstvu</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rastrujte všechny vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Sloučit viditelné vrstvy</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Ztlumte obraz</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Vybrat vše</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Odstranit výběr</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Obrátit výběr</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Zvyšte výběr</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Zmenšit výběr</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>Výběr okrajů</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>Výběr peří</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Zvyšte výběr</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Vymazat vybranou oblast</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Výběr zatížení</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Uložit výběr</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Exportovat vybranou oblast jako obrázek</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Exportujte masku výběru jako obrázek</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Automaticky korektní</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Automatické vylepšení</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Černý a bílý</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Jas a kontrast</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>Vyvážení barev</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Křivky</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Úrovně</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Stín a zvýrazněte</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibrace</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>Vyvážení bílé</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Kanálový mixér</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Maximální kanál</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minimální kanál</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Barvy posunu (vlevo)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Barvy posunu (vpravo)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Odstín a sytost</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Teplota</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Nádech</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>Zbarvení</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Nahraďte barvu</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sépie</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Vyrovnat</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>Roztáhnout histogram</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>Film negativní</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Invertovat odstín</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Invertujte RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Barevná až černobílá</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Monochromatický až šedý</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Expozice</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Fotografický filtr</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Odstranění efektu červených očí</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>Rozdělte tónování</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Barevná tužka</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>Komiks</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>Skleněné tabule</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>Film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>Skleněné dlaždice</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoskop</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Moderní umění</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Olejomalba</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Plastový obal</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Posterizujte</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>Úleva</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Vitráže</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>Rozmazání rámečku</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussovské rozostření</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Povrchové rozostření</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Rozostření pohybu</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radiální rozostření</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>Zvětšení rozmazání</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara filtr</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Symetrický nejbližší soused</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Správné zkreslení čočky</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Kobliha</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Použijte zkreslení objektivu</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Střílet a vířit</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Strčit</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Vlnění</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Squish</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Vír</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>Vlny</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Různé zkreslení</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>Vytepat</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Vylepšete hrany</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Najděte hrany</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>Rozsah filtru</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Trasování obrysu</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Černé světlo</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Křížová obrazovka</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Duha</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Sluneční Svit</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilatovat (maximální hodnocení)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (minimální hodnost)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Atmosféra</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Mlha</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Zapálit</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Láva</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Kov</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Sníh</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>Voda</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Přidejte zrno filmu</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Přidat šum RGB</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>Anizotropní difúze</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>Bilaterální vyhlazování</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmonický průměr</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>Střední posun</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Medián</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>Barevný polotón</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Krystalizovat</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotint</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mozaika</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Zostřete</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Roztřepte masku</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Starožitné</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>Šířit</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Obrys</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Portrét záře</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarize</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Dvojčata</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>Vignetování</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Posunout a přiblížit</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>Perspektivní</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polární konverze</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Točit Se</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Stříhat</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Vlastní filtr</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Spusťte záznam makra</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Zastavte nahrávání maker</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Hrací makro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Kontrola aktualizací softwaru</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Otevřete všechny poslední snímky</translation>
 </phrase>
@@ -1445,7 +2410,7 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <translation>Vymazat poslední seznam maker</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1520,11 +2485,6 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1589,7 +2549,7 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <translation>Atkinson</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2183,11 +3143,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Odstranit výběr</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Akce byla zrušena.</translation>
 </phrase>
@@ -2204,7 +3159,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Pokyny k hlášení chyb</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2302,11 +3257,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Výběr zatížení</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Při pokusu o načtení %1 došlo k chybě. Ověřte, zda je soubor platný soubor výběru aplikace PhotoDemon.</translation>
 </phrase>
@@ -2367,11 +3317,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>Výběr peří</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Výběr feathering</translation>
 </phrase>
@@ -2382,18 +3327,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Zvyšte výběr</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>Ostření výběru</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Zvyšte výběr</translation>
 </phrase>
 
 <phrase>
@@ -2407,28 +3342,13 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Zmenšit výběr</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Shrnutí výběru</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>Výběr okrajů</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Hledání ohraničení výběru</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Vymazat vybranou oblast</translation>
 </phrase>
 
 <phrase>
@@ -2456,7 +3376,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>Klepnutím na první bod dokončíte výběr mnohoúhelníku</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2558,31 +3478,11 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>Vyrovnejte obraz</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>Natáhněte vrstvu</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Odstranit vrstvu</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Přidat novou vrstvu</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2599,7 +3499,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>(žádný)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2789,7 +3689,17 @@ Při zadání číselné hodnoty.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Tento obrázek neobsahuje žádné metadata GPS.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Nebyly nalezeny žádné údaje GPS</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3723,7 +4633,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>Obraz byl úspěšně obnoven.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3855,11 +4765,6 @@ Při zadání číselné hodnoty.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Vrátit Se</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Otevřete umístění v Průzkumníku</translation>
 </phrase>
@@ -3894,7 +4799,7 @@ Při zadání číselné hodnoty.</translation>
 <translation>Centrování obrazu uvnitř výřezu</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3973,11 +4878,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>Standard</translation>
 </phrase>
@@ -4012,7 +4912,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <translation>žádný</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4641,6 +5541,12 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4688,11 +5594,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Změnit velikost obrázku</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Přizpůsobte obraz na obrazovce</translation>
 </phrase>
@@ -4717,7 +5618,7 @@ The final value must be between %3 and %4.</original>
 <translation>Změňte jednotku velikosti obrázku zobrazenou vlevo od tohoto pole</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4797,11 +5698,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Zavřete všechny</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>Vývozní</translation>
 </phrase>
@@ -4857,18 +5753,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Zrušit historii</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Střih</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Odřízněte od vrstvy</translation>
 </phrase>
 
 <phrase>
@@ -4877,18 +5763,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Kopírovat z vrstvy</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Vložte jako nový obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Vložit jako novou vrstvu</translation>
 </phrase>
 
 <phrase>
@@ -4912,11 +5788,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Velikost plátna</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Fit plátno na aktivní vrstvu</translation>
 </phrase>
@@ -4929,16 +5800,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Oříznout výběr</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Ořízněte prázdné ohraničení</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Točit Se</translation>
 </phrase>
 
 <phrase>
@@ -4974,16 +5835,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Upravte metadata</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5057,16 +5908,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Zvedněte vrstvu</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>Spodní vrstva</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Vrstva nahoru</translation>
 </phrase>
@@ -5137,16 +5978,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Sloučit viditelné vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Ztlumte obraz</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>Vybrat</translation>
 </phrase>
@@ -5182,11 +6013,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Zostřete</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Uložit aktuální výběr</translation>
 </phrase>
@@ -5207,88 +6033,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Automaticky korektní</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Osvětlení</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Stíny a osvětlení</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Automatické vylepšení</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Černý a bílý</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Jas a kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>Vyvážení barev</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Křivky</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Úrovně</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibrace</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>Vyvážení bílé</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanály</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Kanálový mixér</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maximum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimální</translation>
 </phrase>
 
 <phrase>
@@ -5302,36 +6053,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Odstín a sytost</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Teplota</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Nádech</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>Zbarvení</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Nahraďte barvu</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sépie</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>Histogram</translation>
 </phrase>
@@ -5339,11 +6060,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Zobrazit</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Vyrovnat</translation>
 </phrase>
 
 <phrase>
@@ -5362,8 +6078,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>Osvětlení</translation>
 </phrase>
 
 <phrase>
@@ -5372,38 +6088,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Barevná až černobílá</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Monochromatický až šedý</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fotografování</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Expozice</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>Fotografické filtry</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Odstranění efektu červených očí</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Rozdělte tónování</translation>
 </phrase>
 
 <phrase>
@@ -5417,108 +6108,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Barevná tužka</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>Komiks</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Skleněné tabule (zářezy)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>Film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>Skleněné dlaždice</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleidoskop</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Moderní umění</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Olejomalba</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Plastový obal</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Posterizujte</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>Úleva</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Vitráže</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Rozmazat</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>Rozmazání rámečku</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussovské rozostření</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Povrchové rozostření</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Rozostření pohybu</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radiální rozostření</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>Zvětšení rozmazání</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara filtr</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Symetrický nejbližší soused</translation>
 </phrase>
 
 <phrase>
@@ -5532,43 +6128,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Kobliha</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Objektiv</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Střílet a vířit</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Strčit</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Vlnění</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Squish</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Vír</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>Vlny</translation>
 </phrase>
 
 <phrase>
@@ -5582,53 +6143,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>Vytepat</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Vylepšete hrany</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Najděte hrany</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>Rozsah filtru</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Trasování obrysu</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Světlo a stín</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Černé světlo</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Křížová obrazovka</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Duha</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Sluneční Svit</translation>
 </phrase>
 
 <phrase>
@@ -5647,36 +6163,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Atmosféra</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Mlha</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Zapálit</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Láva</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Kov</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Sníh</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Pod Vodou</translation>
 </phrase>
@@ -5687,68 +6173,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Přidejte zrno filmu</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Přidat šum RGB</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>Anizotropní difúze</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>Bilaterální filtr</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmonický průměr</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>Střední posun</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Medián</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pixelate</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>Barevný polotón</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Krystalizovat</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotint</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mozaika</translation>
 </phrase>
 
 <phrase>
@@ -5762,78 +6193,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Starožitné</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>Šířit</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Obrys</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Portrét záře</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarize</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Dvojčata</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>Vignetování</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Přeměnit</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Posunout a přiblížit</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>Perspektivní</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polární konverze</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Stříhat</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Vlastní filtr</translation>
 </phrase>
 
 <phrase>
@@ -5879,11 +6240,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Zastavení nahrávání</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Hrací makro</translation>
 </phrase>
 
 <phrase>
@@ -6102,16 +6458,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Spusťte záznam makra</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Zastavte nahrávání maker</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>K dispozici je nová verze aplikace PhotoDemon. Aktualizace se automaticky zpracovává na pozadí</translation>
 </phrase>
@@ -6149,316 +6495,6 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Fotografický filtr</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Automatické zbarvení</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Automatický správný kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Automatické správné osvětlení</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Automatické stínování a zvýraznění</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Automatické vylepšení barvy</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Automatické vylepšení kontrastu</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Automatické osvětlení</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Automatické vylepšení stínů a zvýraznění</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>Dávkový průvodce</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Sloučit vrstva nahoru</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Sloučit vrstva dolů</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Oříznout vrstvu k výběru</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Odstranit skryté vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Přidat prázdnou vrstvu</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Duplicitní vrstva</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Nová vrstva z viditelných vrstev</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Zvedněte vrstvu nahoru</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Dolní vrstva dolů</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Otočte vrstvu 90 ve směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Otočte vrstvu 90 proti směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Otočte vrstvu 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Úhel rotace libovolné vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Překlopte vrstvu vodorovně</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Překlopte vrstvu vertikálně</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rastrujte vrstvu</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rastrujte všechny vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Obnovit velikost vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Změna velikosti vrstvy</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Zmírnění velikosti obsahu</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilatovat (maximální hodnocení)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (minimální hodnost)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Stín a zvýrazněte</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>Skleněné tabule</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoskop</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Maximální kanál</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Minimální kanál</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Barvy posunu (vlevo)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Barvy posunu (vpravo)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Správné zkreslení čočky</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Použijte zkreslení objektivu</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Různé zkreslení</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Opakujte poslední akci</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Střih</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Vložte jako nový obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>Prázdný schránka</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Otevřeno</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Zavřít</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Uložit</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Uložit kopii</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Uložit jako</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Tisk</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Ukončete program</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Kontrola aktualizací softwaru</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>Roztáhnout histogram</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>Duplicitní obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Změna velikosti obrázku</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Přizpůsobte plátno vrstvě</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Fit plátno do všech vrstev</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Překlopte snímek vodorovně</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Otočte obrázek vertikálně</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Import Internet</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Počkejte, až bude použit nový jazyk</translation>
 </phrase>
@@ -6478,117 +6514,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Jazyk byl úspěšně změněn.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Tento obrázek neobsahuje žádné metadata GPS.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Nebyly nalezeny žádné údaje GPS</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>Voda</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>Film negativní</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Invertovat odstín</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Invertujte RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>Bilaterální vyhlazování</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Otočit obrázek 90 ve směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Otočte obraz 90 proti směru hodinových ručiček</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Otočit obrázek 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Volné střídání obrazu</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Skenování obrázku</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Snímání obrazovky</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Vybrat vše</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Obrátit výběr</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Uložit výběr</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Exportovat vybranou oblast jako obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Exportujte masku výběru jako obrázek</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Vyberte skener nebo fotoaparát</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Roztřepte masku</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Barva na alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Odstraňte alfa kanál</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11635,6 +11561,11 @@ Chcete uložit seznam dávky před ukončením?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Automatické správné osvětlení</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>Výstup</translation>
 </phrase>
@@ -11659,7 +11590,7 @@ Chcete uložit seznam dávky před ukončením?</translation>
 <translation>Odhad zbývajícího času</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13482,7 +13413,7 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <translation>Přesuňte vrstvu dolů</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13491,6 +13422,12 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15728,18 +15665,12 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

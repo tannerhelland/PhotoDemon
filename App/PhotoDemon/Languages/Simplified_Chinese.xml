@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.706</langversion>
+<langversion>7.2.707</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -321,13 +321,13 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>调整图像的白平衡</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>调整图像的对比度</translation>
+<original>Adjusting image white balance</original>
+<translation>调整图像的白平衡</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>加强颜色</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>增强对比度</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>加强照明</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>调整阴影和高光</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>加强阴影和高光</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1419,6 +1399,991 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>打开</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>粘贴为一个新图像</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>扫描图像</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>选择扫描仪或相机</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>互联网导入</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>屏幕捕获</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>关闭</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>全部关闭</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>保存</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>保存复制</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>另存为</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>恢复原状</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation>导出调色板</translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>批处理向导</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>打印</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>退出</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>撤消历史</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>重复上一个操作</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>剪切</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>从层剪切</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>从层复制</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>粘贴为一个新层</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>清空剪贴板</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>复制图像</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>调整图像大小</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>内容识别图像调整</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>画布大小</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>适合画布到层</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>画布适合到所有层</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>修剪空边界</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>拉直图像</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>顺时针90°旋转图像</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>逆时针90°旋转图像</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>旋转图像180度</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>任意图像旋转</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>水平翻转图片</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>垂直翻转图片</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>编辑元数据</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation>删除所有元数据</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>添加一个新的层</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>添加空白层</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>重复层</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>可见层的新层</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>删除层</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>删除隐藏层</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>合并层</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>合并层向下</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>提高层</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>降低层</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>提高层到最上部</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>下移层至底部</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>拉伸层</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>顺时针旋转层90度</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>逆时针旋转层度</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>旋转层180度</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>任意旋转层</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>水平翻转层</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>垂直翻转层</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>重新设置层大小</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>调整层</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>内容识别层调整</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>修剪到选择</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>颜色透明</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>移除 Alpha 通道</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>栅格化图层</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>栅格化所有图层</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>合并可见图层</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>拼合图像</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>全选</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>删除选择</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>反向选择</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>增加选择</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>缩小选择</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>边界选取</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>羽化选项</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>锐化选项</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>删除选定区域</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>加载选择</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>保存选择</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>导出选择区域为一个图像</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>导出选择遮罩为一个图像</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>自动更正</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>自动提升</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>黑白</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>亮度和对比度</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>色彩平衡</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>曲线</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>水平</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>阴影和高光</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>数字振动</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>白平衡</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>通道混合器</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>改变通道</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>最大通道</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>最小通道</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>增强色（左）</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>增强色（右）</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>色相和饱和度</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>温度</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>色彩</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>着色</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>替换颜色</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>乌贼</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>均衡</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>扩展直方图</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>底片</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>反转色调</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>反转 RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>彩色到单色</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>单色到灰色</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>曝光</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>图片过滤</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>去除红眼</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>分离色调</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>彩色铅笔</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>漫画</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>压花玻璃</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>黑色电影</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>玻璃砖</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>万花筒</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>现代艺术</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>油画</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>保鲜膜</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>色调分离</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>浮雕</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>彩绘玻璃</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>方框模糊</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>高斯模糊</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>表面模糊</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>运动模糊</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>径向模糊</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>放大模糊</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>桑原过滤器</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>对称近邻</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>矫正畸变</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>甜甜圈</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>将镜头畸变</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>捏和旋转</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Poke</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>波纹</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>果酱</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>漩涡</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>波浪</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>其他扭曲</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>浮雕</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>增强边缘</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>查找边缘</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>距离滤波器</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>轮廓线</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>黑光</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>横屏</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>彩虹</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>阳光</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>扩张（最高级别）</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>侵蚀（最低等级）</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>大气</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>雾</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>点燃</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>岩浆</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>金属</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>雪花</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>波形</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>添加胶片颗粒</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>添加RGB噪音</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>各项异性扩散</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>双边滤波算法</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>调和平均值</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>均值漂移</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>中值</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>彩色半色调</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>结晶</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>分段</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>铜版雕刻</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>镶嵌</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>锐化</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>反锐化遮罩</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>仿古</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>弥漫性</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>轮廓</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>彩色展示</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>焕发肖像</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>曝光</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Twins</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>渐晕</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>平移和缩放</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>透视</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>极性转换</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>旋转</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>剪切</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>球面</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>自定义滤镜</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>开始录制宏</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>停止录制宏</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>播放宏</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>检查更新</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>打开所有最近的图像</translation>
 </phrase>
@@ -1438,7 +2403,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1513,11 +2478,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation>导出调色板</translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation>正在导出调色板</translation>
 </phrase>
@@ -1582,7 +2542,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>Atkinson / Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2178,11 +3138,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>删除选择</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>操作取消。</translation>
 </phrase>
@@ -2201,7 +3156,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>错误报告的说明</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2299,11 +3254,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>加载选择</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>打开%1时发生错误。请验证该文件是否是有效PhotoDemon文件。</translation>
 </phrase>
@@ -2364,11 +3314,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>羽化选项</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>羽化选择</translation>
 </phrase>
@@ -2379,18 +3324,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>锐化选项</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>锐化选择</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>增加选择</translation>
 </phrase>
 
 <phrase>
@@ -2404,28 +3339,13 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>缩小选择</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>收缩选择</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>边界选取</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>寻找选区边界</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>删除选定区域</translation>
 </phrase>
 
 <phrase>
@@ -2453,7 +3373,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>点击第一个点完成多边形选择</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2554,31 +3474,11 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>拉直图像</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>拉伸层</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>删除层</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>添加一个新的层</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2595,7 +3495,7 @@ Please enter a numeric value.</original>
 <translation>（无）</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2785,7 +3685,17 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>此图像不包含任何GPS元数据。</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>没有 GPS 数据</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3719,7 +4629,7 @@ Please enter a numeric value.</original>
 <translation>成功恢复图像。</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3851,11 +4761,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>恢复原状</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>&X 在浏览器中打开位置</translation>
 </phrase>
@@ -3890,7 +4795,7 @@ Please enter a numeric value.</original>
 <translation>居中在图像视窗内</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3969,11 +4874,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>标准</translation>
 </phrase>
@@ -4008,7 +4908,7 @@ or the File > Open and File > Import menus.</original>
 <translation>无</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4637,6 +5537,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4685,11 +5591,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>调整图像大小</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>适合图像到屏幕</translation>
 </phrase>
@@ -4714,7 +5615,7 @@ The final value must be between %3 and %4.</original>
 <translation>将图像大小单位显示为左边框的值</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4794,11 +5695,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>全部关闭</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>输出</translation>
 </phrase>
@@ -4854,18 +5750,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>撤消历史</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>&T 剪切</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>从层剪切</translation>
 </phrase>
 
 <phrase>
@@ -4874,18 +5760,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>从层复制</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>&P 粘贴为一个新文件</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>粘贴为一个新层</translation>
 </phrase>
 
 <phrase>
@@ -4909,11 +5785,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>画布大小</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>画布适合到当前层</translation>
 </phrase>
@@ -4926,16 +5797,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>裁剪选择图像</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>修剪空边界</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>旋转</translation>
 </phrase>
 
 <phrase>
@@ -4971,16 +5832,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>元数据</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>编辑元数据</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation>删除所有元数据</translation>
 </phrase>
 
 <phrase>
@@ -5054,16 +5905,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>提高层</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>降低层</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>移到顶层</translation>
 </phrase>
@@ -5134,16 +5975,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>合并可见图层</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>拼合图像</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>&S 选择</translation>
 </phrase>
@@ -5179,11 +6010,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>锐化</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>保存当前选区</translation>
 </phrase>
@@ -5204,88 +6030,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>自动更正</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>对比</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>照明</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>阴影和亮点</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>自动提升</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>黑白</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>亮度和对比度</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>色彩平衡</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>曲线</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>水平</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>数字振动</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>白平衡</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>通道</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>通道混合器</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>改变通道</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>最大值</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>最小值</translation>
 </phrase>
 
 <phrase>
@@ -5299,36 +6050,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>色相和饱和度</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>温度</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>色彩</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>着色</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>替换颜色</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>乌贼</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>直方图</translation>
 </phrase>
@@ -5336,11 +6057,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>显示</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>均衡</translation>
 </phrase>
 
 <phrase>
@@ -5359,8 +6075,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>照明</translation>
 </phrase>
 
 <phrase>
@@ -5369,38 +6085,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>彩色到单色</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>单色到灰色</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>摄影</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>曝光</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>照片滤镜</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>去除红眼</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>分离色调</translation>
 </phrase>
 
 <phrase>
@@ -5414,108 +6105,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>彩色铅笔</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>漫画</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>压花玻璃（凹陷）</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>黑色电影</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>玻璃砖</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>万花筒</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>现代艺术</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>油画</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>保鲜膜</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>色调分离</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>浮雕</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>彩绘玻璃</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>模糊</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>方框模糊</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>高斯模糊</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>表面模糊</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>运动模糊</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>径向模糊</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>放大模糊</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>桑原过滤器</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>对称近邻</translation>
 </phrase>
 
 <phrase>
@@ -5529,43 +6125,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>甜甜圈</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>镜片</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>捏和旋转</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Poke</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>波纹</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>果酱</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>漩涡</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>波浪</translation>
 </phrase>
 
 <phrase>
@@ -5579,53 +6140,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>浮雕</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>增强边缘</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>查找边缘</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>距离滤波器</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>轮廓线</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>光影</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>黑光</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>横屏</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>彩虹</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>阳光</translation>
 </phrase>
 
 <phrase>
@@ -5644,36 +6160,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>大气</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>雾</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>点燃</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>岩浆</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>金属</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>雪花</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>水下</translation>
 </phrase>
@@ -5684,68 +6170,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>添加胶片颗粒</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>添加RGB噪音</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>各项异性扩散</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>双向滤波器</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>调和平均值</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>均值漂移</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>中值</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>像素化</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>彩色半色调</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>结晶</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>分段</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>铜版雕刻</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>镶嵌</translation>
 </phrase>
 
 <phrase>
@@ -5759,78 +6190,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>仿古</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>弥漫性</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>轮廓</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>彩色展示</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>焕发肖像</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>曝光</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Twins</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>渐晕</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>转换</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>平移和缩放</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>透视</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>极性转换</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>剪切</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>球面</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>自定义滤镜</translation>
 </phrase>
 
 <phrase>
@@ -5876,11 +6237,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>停止记录</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>播放宏</translation>
 </phrase>
 
 <phrase>
@@ -6099,16 +6455,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>开始录制宏</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>停止录制宏</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>发现 PhotoDemon 新版本。此更新在后台自动处理</translation>
 </phrase>
@@ -6146,316 +6492,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>图片过滤</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>自动校正颜色</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>自动对比度正确</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>自动正确的亮度</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>自动正确的阴影和高光</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>自动增强色彩</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>自动增强对比度</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>自动提升照明</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>自动提升阴影和高光</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>批处理向导</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>合并层</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>合并层向下</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>修剪到选择</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>删除隐藏层</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>添加空白层</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>重复层</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>可见层的新层</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>提高层到最上部</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>下移层至底部</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>顺时针旋转层90度</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>逆时针旋转层度</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>旋转层180度</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>任意旋转层</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>水平翻转层</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>垂直翻转层</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>栅格化图层</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>栅格化所有图层</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>重新设置层大小</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>调整层</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>内容识别层调整</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>扩张（最高级别）</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>侵蚀（最低等级）</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>阴影和高光</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>压花玻璃</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>万花筒</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>最大通道</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>最小通道</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>增强色（左）</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>增强色（右）</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>矫正畸变</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>将镜头畸变</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>其他扭曲</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>重复上一个操作</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>剪切</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>粘贴为一个新图像</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>清空剪贴板</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>打开</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>关闭</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>保存</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>保存复制</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>另存为</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>打印</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>退出</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>检查更新</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>扩展直方图</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>复制图像</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>内容识别图像调整</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>适合画布到层</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>画布适合到所有层</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>水平翻转图片</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>垂直翻转图片</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>互联网导入</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>请稍候，应用新语言</translation>
 </phrase>
@@ -6475,117 +6511,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切换语言成功。</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>此图像不包含任何GPS元数据。</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>没有 GPS 数据</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>波形</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>底片</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>反转色调</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>反转 RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>双边滤波算法</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>顺时针90°旋转图像</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>逆时针90°旋转图像</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>旋转图像180度</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>任意图像旋转</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>扫描图像</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>屏幕捕获</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>全选</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>反向选择</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>保存选择</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>导出选择区域为一个图像</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>导出选择遮罩为一个图像</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>选择扫描仪或相机</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>反锐化遮罩</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>颜色透明</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>移除 Alpha 通道</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11631,6 +11557,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>自动正确的亮度</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>退出</translation>
 </phrase>
@@ -11655,7 +11586,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13476,7 +13407,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>层下移</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13485,6 +13416,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15720,18 +15657,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

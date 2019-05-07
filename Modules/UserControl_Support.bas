@@ -63,13 +63,14 @@ Public Enum PD_ControlType
     pdct_Resize = 42
     pdct_Ruler = 43
     pdct_ScrollBar = 44
-    pdct_Slider = 45
-    pdct_SliderStandalone = 46
-    pdct_Spinner = 47
-    pdct_StatusBar = 48
-    pdct_Strip = 49
-    pdct_TextBox = 50
-    pdct_Title = 51
+    pdct_SearchBar = 45
+    pdct_Slider = 46
+    pdct_SliderStandalone = 47
+    pdct_Spinner = 48
+    pdct_StatusBar = 49
+    pdct_Strip = 50
+    pdct_TextBox = 51
+    pdct_Title = 52
 End Enum
 
 #If False Then
@@ -77,8 +78,8 @@ End Enum
     Private Const pdct_ColorSelector = 10, pdct_ColorVariants = 11, pdct_ColorWheel = 12, pdct_CommandBar = 13, pdct_CommandBarMini = 14, pdct_Container = 15, pdct_Download = 16, pdct_DropDown = 17, pdct_DropDownFont = 18, pdct_FxPreviewCtl = 19
     Private Const pdct_GradientSelector = 20, pdct_History = 21, pdct_Hyperlink = 22, pdct_ImageStrip = 23, pdct_Label = 24, pdct_LayerList = 25, pdct_LayerListInner = 26, pdct_ListBox = 27, pdct_ListBoxOD = 28, pdct_ListBoxView = 29
     Private Const pdct_ListBoxViewOD = 30, pdct_MetadataExport = 31, pdct_Navigator = 32, pdct_NavigatorInner = 33, pdct_PaletteUI = 35, pdct_PenSelector = 36, pdct_PictureBox = 37, pdct_Preview = 38, pdct_ProgressBar = 39
-    Private Const pdct_RadioButton = 40, pdct_RandomizeUI = 41, pdct_Resize = 42, pdct_Ruler = 43, pdct_ScrollBar = 44, pdct_Slider = 45, pdct_SliderStandalone = 46, pdct_Spinner = 47, pdct_StatusBar = 48, pdct_Strip = 49
-    Private Const pdct_TextBox = 50, pdct_Title = 51
+    Private Const pdct_RadioButton = 40, pdct_RandomizeUI = 41, pdct_Resize = 42, pdct_Ruler = 43, pdct_ScrollBar = 44, pdct_SearchBar = 45, pdct_Slider = 46, pdct_SliderStandalone = 47, pdct_Spinner = 48, pdct_StatusBar = 49
+    Private Const pdct_Strip = 50, pdct_TextBox = 51, pdct_Title = 52
 #End If
 
 Public Type PD_LISTITEM
@@ -773,6 +774,8 @@ Public Function GetNameOfControlType(ByVal ctlType As PD_ControlType) As String
             GetNameOfControlType = "pdRuler"
         Case pdct_ScrollBar
             GetNameOfControlType = "pdScrollBar"
+        Case pdct_SearchBar
+            GetNameOfControlType = "pdSearchBar"
         Case pdct_Slider
             GetNameOfControlType = "pdSlider"
         Case pdct_SliderStandalone

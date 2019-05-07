@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -322,13 +322,13 @@ If o problema persistir, por favor denuncie para os desenvolvedores PhotoDemon v
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Ajustar imagem balanço de branco</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Ajustar o contraste da imagem</translation>
+<original>Adjusting image white balance</original>
+<translation>Ajustar imagem balanço de branco</translation>
 </phrase>
 
 <phrase>
@@ -367,31 +367,11 @@ If o problema persistir, por favor denuncie para os desenvolvedores PhotoDemon v
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>cores Melhorar</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Melhorar contraste</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Melhorar a iluminação</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Ajustar sombras e destaques</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Melhorar sombras e destaques</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1426,6 +1406,991 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>aberto</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Colar como nova imagem</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>imagem de digitalização</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Select scanner ou câmera</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>importação Internet</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Captura de tela</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>perto</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Fechar tudo</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>salvar</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Salvar cópia</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>salvar como</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>reverter</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>assistente Batch</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>impressão</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Sair do programa</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>desfazer história</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>A última ação de repetição</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Cut</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Corte da camada</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Cópia da camada</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Cole como nova layer</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>prancheta vazio</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>duplicar imagem</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Redimensionar imagem</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Content-aware redimensionar imagem</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>tamanho da tela</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Canvas Ajustar à camada</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Canvas Fit para todas as camadas</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Apare fronteiras vazias</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>endireitar imagem</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Rodar imagem 90 no sentido horário</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Rodar imagem 90 anti-horário</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Rodar imagem 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Rotação de imagem arbitrária</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Virar imagem horizontalmente</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Virar imagem verticalmente</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Editar metadados</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Adicione nova layer</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Adicionar camada em branco</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Duplicate Layer</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Nova camada de camadas visíveis</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>excluir camada</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Excluir camadas ocultas</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Mesclar camada up</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Mesclar camada para baixo</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Levante camada</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>camada mais baixa</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Levante camada ao topo</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Camada inferior de fundo</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>endireitar camada</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Gire camada 90 no sentido horário</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Gire camada 90 anti-horário</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Camada Girar 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Rotação camada arbitrária</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Camada Virar horizontalmente</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Camada Virar verticalmente</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Tamanho da camada de reset</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>redimensionar camada</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Camada de redimensionamento Content-aware</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>camada de colheita para a seleção</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Cor para alpha</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Remover canal alfa</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Camada texturizada</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rasterize todas as camadas</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Mesclar camadas visíveis</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Achate imagem</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>selecionar todos</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Remova a seleção</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Inverter selecção</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>crescer seleção</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>encolher a seleção</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>seleção de Fronteiras</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>seleção Feather</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Afie seleção</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Apagar área seleccionada</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>seleção de carga</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Salve a seleção</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Exportação área selecionada como imagem</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Máscara de seleção Exportar como imagem</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Auto correta</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Auto aumentar</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Preto e branco</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>O brilho eo contraste</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>equilíbrio de cores</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Curvas</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>níveis</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Sombra e destaque</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibração</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>O balanço de brancos</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>misturador Canal</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>reorientar</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>canal máxima</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>canal mínima</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Mudar as cores (à esquerda)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Deslocamento de cores (à direita)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Matiz e saturação</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>temperatura</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>colorir</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Substituir cor</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>sépia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>igualar</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>histograma Trecho</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>negativo</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Inverter matiz</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Inverter RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>gama</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Cor para monocromático</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Monocromático para cinza</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>exposição</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>filtro de imagens</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>remoção de olhos vermelhos</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>tonificação Dividir</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>lápis colorido</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>livro em quadrinhos</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>vidro figurado</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>Film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>As telhas de vidro</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>caleidoscópio</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>A arte moderna</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>pintura a óleo</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Embalagem de plástico</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>posterizar</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>alívio</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Vitral</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>borrão box</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussian Blur</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>borrão superfície</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>motion blur</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>borrão radial</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>borrão Zoom</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>filtro Kuwahara</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Symmetric-vizinho mais próximo</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Distorção da lente correta</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Rosquinha</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Aplicar distorção da lente</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Pitada e giro</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>cotovelada</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>ondulação</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>sair em jato</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>redemoinho</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>ondulação...</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Diversos distorcer</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>rimar</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Melhore bordas</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Encontre bordas</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>filtro de intervalo</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>contorno rastreamento</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>luz negra</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>-Screen Cruz</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>arco-íris</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Luz do sol</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilatar (rank máximo)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (rank mínimo)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>atmosfera</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>nevoeiro</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Ignite</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>lava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Neve</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>água</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Adicionar grão de filme</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Adicionar ruído RGB</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>difusão anisotrópica</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>suavização bilateral</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Meio harmônico</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>deslocamento médio</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>mediana</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>meio-tom de cor</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Cristalizar</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>fragmento</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>mezzo-tinto</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>mosaico</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>aguçar</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>máscara de nitidez</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>antigo</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>difundir</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>esboço</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>fulgor Retrato</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarize</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Twins</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>Vinhetas</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan e zoom</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>perspectiva</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>conversão Polar</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>rodar</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>tosquiar</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Filtro personalizado</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Iniciar a gravação de macros</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Pare a gravação de macros</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Jogue macro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Verificar atualizações de software</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Abra todas as imagens recentes</translation>
 </phrase>
@@ -1445,7 +2410,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation>Lista macro recente Limpar</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1520,11 +2485,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1589,7 +2549,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2185,11 +3145,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Remova a seleção</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Ação cancelada.</translation>
 </phrase>
@@ -2206,7 +3161,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Instruções de relatório de bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2304,11 +3259,6 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>seleção de carga</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Ocorreu um erro ao tentar carregar %1. Por favor, verifique se o arquivo é um arquivo de seleção PhotoDemon válido.</translation>
 </phrase>
@@ -2369,11 +3319,6 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>seleção Feather</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>seleção feathering</translation>
 </phrase>
@@ -2384,18 +3329,8 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Afie seleção</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>seleção Afiação</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>crescer seleção</translation>
 </phrase>
 
 <phrase>
@@ -2409,28 +3344,13 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>encolher a seleção</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>seleção shrinking</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>seleção de Fronteiras</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Encontrar borda de seleção</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Apagar área seleccionada</translation>
 </phrase>
 
 <phrase>
@@ -2458,7 +3378,7 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 <translation>Clique no primeiro ponto para concluir a seleção polígono</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2560,31 +3480,11 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>endireitar imagem</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>endireitar camada</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>excluir camada</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Adicione nova layer</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2601,7 +3501,7 @@ Please válidos inserir um valor numérico.</translation>
 <translation>(nenhum)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2791,7 +3691,17 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Esta imagem não contém quaisquer metadados GPS.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Não há dados de GPS encontrados</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3725,7 +4635,7 @@ Please válidos inserir um valor numérico.</translation>
 <translation>Imagem restaurada com sucesso.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3857,11 +4767,6 @@ Please válidos inserir um valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>reverter</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Localização Abrir no Explorer</translation>
 </phrase>
@@ -3896,7 +4801,7 @@ Please válidos inserir um valor numérico.</translation>
 <translation>Centralizar a imagem dentro da janela de visualização</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3976,11 +4881,6 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>padrão</translation>
 </phrase>
@@ -4015,7 +4915,7 @@ or os menus File> Open e File> Import.</translation>
 <translation>nenhum</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4644,6 +5544,12 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4691,11 +5597,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Redimensionar imagem</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Coloque a imagem na tela</translation>
 </phrase>
@@ -4720,7 +5621,7 @@ The final value must be between %3 and %4.</original>
 <translation>Alterar o tamanho da unidade de imagem exibida à esquerda da caixa</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4800,11 +5701,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Fechar tudo</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>exportação</translation>
 </phrase>
@@ -4860,18 +5756,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>desfazer história</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Cut</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Corte da camada</translation>
 </phrase>
 
 <phrase>
@@ -4880,18 +5766,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Cópia da camada</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Colar como nova imagem</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Cole como nova layer</translation>
 </phrase>
 
 <phrase>
@@ -4915,11 +5791,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>tamanho da tela</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Canvas Ajustar à camada ativa</translation>
 </phrase>
@@ -4932,16 +5803,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Cortar para seleção</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Apare fronteiras vazias</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>rodar</translation>
 </phrase>
 
 <phrase>
@@ -4977,16 +5838,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadados</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Editar metadados</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5060,16 +5911,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Levante camada</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>camada mais baixa</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Camada para o topo</translation>
 </phrase>
@@ -5140,16 +5981,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Mesclar camadas visíveis</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Achate imagem</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>selecionar</translation>
 </phrase>
@@ -5185,11 +6016,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>aguçar</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Salve a seleção atual</translation>
 </phrase>
@@ -5210,88 +6036,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Auto correta</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Contraste</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>iluminação</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Sombras e destaques</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Auto aumentar</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Preto e branco</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>O brilho eo contraste</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>equilíbrio de cores</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Curvas</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>níveis</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibração</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>O balanço de brancos</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Canais</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>misturador Canal</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>reorientar</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Máximo</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Mínimo</translation>
 </phrase>
 
 <phrase>
@@ -5305,36 +6056,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Matiz e saturação</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>temperatura</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>colorir</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Substituir cor</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>sépia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>Histograma</translation>
 </phrase>
@@ -5342,11 +6063,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Exibição</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>igualar</translation>
 </phrase>
 
 <phrase>
@@ -5365,8 +6081,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>gama</translation>
+<original>Lighting</original>
+<translation>iluminação</translation>
 </phrase>
 
 <phrase>
@@ -5375,38 +6091,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Cor para monocromático</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Monocromático para cinza</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fotografia</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>exposição</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>filtros</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>remoção de olhos vermelhos</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>tonificação Dividir</translation>
 </phrase>
 
 <phrase>
@@ -5420,108 +6111,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>lápis colorido</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>livro em quadrinhos</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Vidro figurado (mossas)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>Film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>As telhas de vidro</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleiodoscope</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>A arte moderna</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>pintura a óleo</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Embalagem de plástico</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>posterizar</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>alívio</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Vitral</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>borrão</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>borrão box</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussian Blur</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>borrão superfície</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>motion blur</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>borrão radial</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>borrão Zoom</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>filtro Kuwahara</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Symmetric-vizinho mais próximo</translation>
 </phrase>
 
 <phrase>
@@ -5535,43 +6131,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Rosquinha</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lente</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Pitada e giro</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>cotovelada</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>ondulação</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>sair em jato</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>redemoinho</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>ondulação...</translation>
 </phrase>
 
 <phrase>
@@ -5585,53 +6146,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>rimar</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Melhore bordas</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Encontre bordas</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>filtro de intervalo</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>contorno rastreamento</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Luz e sombra</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>luz negra</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>-Screen Cruz</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>arco-íris</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Luz do sol</translation>
 </phrase>
 
 <phrase>
@@ -5650,36 +6166,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>atmosfera</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>nevoeiro</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Ignite</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>lava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metal</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Neve</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>subaquático</translation>
 </phrase>
@@ -5690,68 +6176,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Adicionar grão de filme</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Adicionar ruído RGB</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>difusão anisotrópica</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>Filtro bilateral</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Meio harmônico</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>deslocamento médio</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>mediana</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pixelate</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>meio-tom de cor</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Cristalizar</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>fragmento</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>mezzo-tinto</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>mosaico</translation>
 </phrase>
 
 <phrase>
@@ -5765,78 +6196,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>antigo</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>difundir</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>esboço</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>fulgor Retrato</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarize</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Twins</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>Vinhetas</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Transforme</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan e zoom</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>perspectiva</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>conversão Polar</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>tosquiar</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Filtro personalizado</translation>
 </phrase>
 
 <phrase>
@@ -5882,11 +6243,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Pare a gravação</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Jogue macro</translation>
 </phrase>
 
 <phrase>
@@ -6105,16 +6461,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Iniciar a gravação de macros</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Pare a gravação de macros</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Uma nova versão do PhotoDemon está disponível. A atualização é automaticamente o processamento em segundo plano</translation>
 </phrase>
@@ -6153,316 +6499,6 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>filtro de imagens</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Cor correta Auto</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Contraste correto Auto</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Iluminação correta Auto</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Auto sombras e luzes corretas</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Auto realçar a cor</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Auto aumentar o contraste</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Auto melhorar a iluminação</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto melhorar sombras e destaques</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>assistente Batch</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Mesclar camada up</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Mesclar camada para baixo</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>camada de colheita para a seleção</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Excluir camadas ocultas</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Adicionar camada em branco</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Duplicate Layer</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Nova camada de camadas visíveis</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Levante camada ao topo</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Camada inferior de fundo</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Gire camada 90 no sentido horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Gire camada 90 anti-horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Camada Girar 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Rotação camada arbitrária</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Camada Virar horizontalmente</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Camada Virar verticalmente</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Camada texturizada</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rasterize todas as camadas</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Tamanho da camada de reset</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>redimensionar camada</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Camada de redimensionamento Content-aware</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilatar (rank máximo)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (rank mínimo)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Sombra e destaque</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>vidro figurado</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>caleidoscópio</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>canal máxima</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>canal mínima</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Mudar as cores (à esquerda)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Deslocamento de cores (à direita)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Distorção da lente correta</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Aplicar distorção da lente</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Diversos distorcer</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>A última ação de repetição</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Cut</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Colar como nova imagem</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>prancheta vazio</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>aberto</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>perto</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>salvar</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Salvar cópia</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>salvar como</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>impressão</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Sair do programa</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Verificar atualizações de software</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>histograma Trecho</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>duplicar imagem</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Content-aware redimensionar imagem</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Canvas Ajustar à camada</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Canvas Fit para todas as camadas</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Virar imagem horizontalmente</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Virar imagem verticalmente</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>importação Internet</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Por favor aguarde enquanto a nova linguagem é aplicada</translation>
 </phrase>
@@ -6482,117 +6518,7 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 <translation>Idioma alterado com sucesso.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Esta imagem não contém quaisquer metadados GPS.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Não há dados de GPS encontrados</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>água</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>negativo</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Inverter matiz</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Inverter RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>suavização bilateral</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Rodar imagem 90 no sentido horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Rodar imagem 90 anti-horário</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Rodar imagem 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Rotação de imagem arbitrária</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>imagem de digitalização</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Captura de tela</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>selecionar todos</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Inverter selecção</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Salve a seleção</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Exportação área selecionada como imagem</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Máscara de seleção Exportar como imagem</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Select scanner ou câmera</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>máscara de nitidez</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Cor para alpha</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Remover canal alfa</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11638,6 +11564,11 @@ Would mais tarde você quiser salvar a sua lista de lote antes de sair?</transla
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Iluminação correta Auto</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>saída</translation>
 </phrase>
@@ -11662,7 +11593,7 @@ Would mais tarde você quiser salvar a sua lista de lote antes de sair?</transla
 <translation>Estimativa de tempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13485,7 +13416,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>Camada jogada</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13494,6 +13425,12 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15733,18 +15670,12 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

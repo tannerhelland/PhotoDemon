@@ -48,3 +48,34 @@ Public Function GetDomainName(ByRef srcAddress As String) As String
     GetDomainName = strOutput
     
 End Function
+
+Public Sub MapImageLocation()
+
+    If (Not PDImages.GetActiveImage.ImgMetadata.HasGPSMetadata) Then
+        PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly Or vbInformation, "No GPS data found"
+        Exit Sub
+    End If
+    
+    Dim gMapsURL As String, latString As String, lonString As String
+    If PDImages.GetActiveImage.ImgMetadata.FillLatitudeLongitude(latString, lonString) Then
+        
+        'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
+                        
+        'Note: I find a zoom of 18 ideal, as that is a common level for switching to an "aerial"
+        ' view instead of a satellite view.  Much higher than that and you run the risk of not
+        ' having data available at that high of zoom.
+        gMapsURL = "https://maps.google.com/maps?f=q&z=18&t=h&q=" & latString & "%2c+" & lonString
+        
+        'As a convenience, request Google Maps in the current language
+        If g_Language.TranslationActive Then
+            gMapsURL = gMapsURL & "&hl=" & g_Language.GetCurrentLanguage()
+        Else
+            gMapsURL = gMapsURL & "&hl=en"
+        End If
+        
+        'Launch Google maps in the user's default browser
+        Web.OpenURL gMapsURL
+        
+    End If
+    
+End Sub

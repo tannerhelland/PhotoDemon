@@ -174,11 +174,11 @@ Friend Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
                 
                 'Compare two entries, and if the longer one precedes the shorter one, swap them
                 If sortAscending Then
-                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then SwapIndices i, j
+                    If LenB(m_Strings(i)) < LenB(m_Strings(j)) Then SwapIndices i, j
                 
                 'An opposite check is used for descending order.
                 Else
-                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then SwapIndices i, j
+                    If LenB(m_Strings(i)) > LenB(m_Strings(j)) Then SwapIndices i, j
                 End If
                 
             Next j

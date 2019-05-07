@@ -24,7 +24,7 @@ Begin VB.Form layerpanel_Search
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdTextBox txtSearch 
+   Begin PhotoDemon.pdSearchBar srchMain 
       Height          =   255
       Left            =   120
       TabIndex        =   0
@@ -79,7 +79,7 @@ Private Sub ReflowInterface()
 
     'For now, make the search box roughly the same size as the underlying form
     If (Me.ScaleWidth > 10) Then
-        txtSearch.SetPositionAndSize Interface.FixDPI(2), Interface.FixDPI(2), Me.ScaleWidth - Interface.FixDPI(4), txtSearch.GetHeight()
+        srchMain.SetPositionAndSize Interface.FixDPI(2), Interface.FixDPI(2), Me.ScaleWidth - Interface.FixDPI(4), srchMain.GetHeight()
     End If
     
     'Refresh the panel immediately, so the user can see the result of the resize
@@ -119,10 +119,21 @@ Private Sub Form_Resize()
 End Sub
 
 Public Sub SetFocusToSearchBox()
-    txtSearch.SetFocus
-    txtSearch.SelectAll
+    srchMain.SetFocus
+    srchMain.SelectAll
 End Sub
 
 Private Sub lastUsedSettings_ReadCustomPresetData()
-    txtSearch.Text = vbNullString
+    srchMain.Text = vbNullString
+End Sub
+
+Private Sub srchMain_Click(bestSearchHit As String)
+    Debug.Print bestSearchHit
+End Sub
+
+Private Sub srchMain_GotFocusAPI()
+    Debug.Print "search stack generated"
+    Dim searchStack As pdStringStack
+    Menus.GetSearchableMenuList searchStack
+    srchMain.SetSearchList searchStack
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Ayarlama görüntü beyaz dengesi</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>görüntü kontrastını ayarlama</translation>
+<original>Adjusting image white balance</original>
+<translation>Ayarlama görüntü beyaz dengesi</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If alternatif görüntüyü kaydetmeyi deneyin lütfen</translation>
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Geliştirilmesi renkler</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Geliştirilmesi kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Geliştirilmesi aydınlatma</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>gölgeleri ve vurguları ayarlama</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>gölgeleri ve vurguları Geliştirilmesi</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1422,6 +1402,991 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Açık</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Yeni resim olarak yapıştırmak</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>tarama görüntü</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Seç tarayıcı veya kamera</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>İnternet ithalat</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Ekran görüntüsü</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Kapat</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Hepsini kapat</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Kayıt etmek</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Kaydet kopya</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Farklı kaydet</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>dönmek</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>toplu sihirbazı</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>baskı</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Çık programı</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>geçmişi geri al</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Tekrar son eylem</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>kesim</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>katmandan Cut</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>katmana kopyalama</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>yeni bir katman olarak Yapıştır</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>boş panonun</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>yinelenen görüntü</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>görüntüyü yeniden boyutlandırmak</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>İçerik-farkında resim boyutlandırmak</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Tuvalin boyutu</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>katmana sığdır tuval</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>tüm katmanları sığdır tuval</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Boş sınırları Trim</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>düzlefltirmesini</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Görüntüyü 90 saat yönünde döndürmek</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Görüntüyü saat yönünün tersine 90 döndür</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Resim döndürme 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Keyfi görüntü döndürme</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Cilt görüntü yatay</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Resmi dikey olarak çevirme</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Düzenleme meta</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Yeni bir katman ekleyin</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>boş katman ekleyin</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Yinelenen katman</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Görünür katmanlardan yeni katman</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>katmanı silmek</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Gizli katmanları silmek</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>katmanını Birleştirme</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>aşağı tabaka Birleştirme</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>katmanı kaldırın</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>Alt tabaka</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Başa katmanı kaldırın</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>alt Alt tabaka</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>katmanı düzeltin</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>katmanı 90 saat yönünde döndürmek</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>saat yönünün tersine bir tabaka 90 döndürme</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Döndürme tabaka 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Keyfi katman rotasyon</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip katmanı yatay</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Flip katmanı dikey</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Sıfırlama tabaka boyutu</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>katmanı yeniden boyutlandırma</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>İçerik-farkında tabaka yeniden boyutlandırma</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Seçime kırpma katmanı</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>alfa Renk</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Alfa kanalını kaldırın</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rasterleştir katman</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Tüm katmanları rasterleştirmek</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Görünür katmanları birleştirme</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>görüntüyü düzleştirmek</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Hepsini seç</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Kaldır seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Zıt seçim</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>seçim büyümek</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>seçimi daraltmak</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>sınır seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>tüy seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>seçim keskinleştirme</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Seçilen alanı silmek</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>yük seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Kaydet seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>görüntü olarak ihracat Seçilen alan</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>görüntü olarak ihracat seçim maskesi</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Otomatik Düzeltme</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Otomatik geliştirmek</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Siyah ve beyaz</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Parlaklık ve kontrast</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>Renk dengesi</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>eğriler</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Düzeyleri</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Gölge ve vurgu</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Titreşim</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>Beyaz dengesi</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Kanal değiştirici</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>maksimum kanal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>minimum kanal</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Shift renkleri (solda)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Shift renkleri (sağda)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Ton ve doygunluk</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Sıcaklık</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>ton</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>renklendirme</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>rengini değiştirme</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sepya</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>eşitlemek</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>streç histogram</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>negatif film</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>invert renk</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>invert RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gama</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>monokrom renk</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Siyah-beyaz</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Poz</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Fotoğraf filtresi</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Kırmızı göz giderme</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>bölünmüş tonlama</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Renkli kalem</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>çizgi roman</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>figürlü cam</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>Kara film</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>cam karo</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleydoskop</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Modern Sanat</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Yağlı boya</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Plastik ambalaj</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Poster</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>kabartma</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Vitray</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>kutu bulanıklık</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gauss bulanıklığı</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Yüzey bulandırma</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Hareket bulanıklığı</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radyal Bulanıklık</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>zoom bulanıklık</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara filtresi</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Simetrik en yakın komşu</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Doğru lens distorsiyon</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Tatlı çörek</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>mercek deformasyonuna uygula</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Pinch ve girdap</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>kurcalamak</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>dalgalanma</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Ezmek</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Girdap</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>dalgalar</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Çeşitli deforme</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>kabartma yapmak</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>kenarları geliştirin</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Sınırları bul</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>menzil filtresi</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>iz kontur</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Siyah ışık</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Çapraz ekran</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Gökkuşağı</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Gunes isigi</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilate (maksimum seviye)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Aşındırmak (asgari rank)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Atmosfer</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Sis</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Tutuşturmak</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Lav</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Kar</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>Su</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Film tahıl ekle</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>RGB gürültü ekle</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>anizotropik difüzyon</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>ikili yumuşatma</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmonik ortalama</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>ortalama kayma</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Medyan</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>renk yarım ton</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>billurlaştırmak</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>fragman</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>bakır klişe</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mozaik</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>keskinleştirmek</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Flu maske</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antik</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>diffüz</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>taslak</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Paletlemek</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>portre kızdırma</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>güneşte bırakmak</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>ikizler</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>vinyet</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan ve zoom</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>Perspektif</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>polar dönüşüm</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Döndür</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>makaslama</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>özel filtre</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Makro kaydını başlat</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Makro Kaydı durdur</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Oynat makro</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Yazılım güncellemeleri kontrol</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>En son çıkan tüm resimleri aç</translation>
 </phrase>
@@ -1441,7 +2406,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <translation>Clear son makro listesi</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1516,11 +2481,6 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1585,7 +2545,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <translation>Atkinson/Klasik Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2181,11 +3141,6 @@ Açıklama: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Kaldır seçimi</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Eylem iptal edildi.</translation>
 </phrase>
@@ -2202,7 +3157,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Hata raporu talimatları</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2300,11 +3255,6 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>yük seçimi</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation> %1 yüklenmeye çalışılırken bir hata oluştu. dosya geçerli bir PhotoDemon seçim dosyası olduğunu kontrol edin.</translation>
 </phrase>
@@ -2365,11 +3315,6 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>tüy seçimi</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Geçiş yumuşatma seçim</translation>
 </phrase>
@@ -2380,18 +3325,8 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>seçim keskinleştirme</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>Bileme seçimi</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>seçim büyümek</translation>
 </phrase>
 
 <phrase>
@@ -2405,28 +3340,13 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>seçimi daraltmak</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>küçülen seçimi</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>sınır seçimi</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Seçim kenarlığını bulma</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Seçilen alanı silmek</translation>
 </phrase>
 
 <phrase>
@@ -2454,7 +3374,7 @@ In, alternatif bir biçime görüntü kaydetme deneyin. Ayrıca> PhotoDemon geli
 <translation>poligon seçimini tamamlamak için ilk noktayı tıklayın</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2556,31 +3476,11 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>düzlefltirmesini</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>katmanı düzeltin</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>katmanı silmek</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Yeni bir katman ekleyin</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2597,7 +3497,7 @@ Please enter a numeric value.</original>
 <translation>(Yok)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2787,7 +3687,17 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Bu görüntü herhangi bir GPS meta içermiyor.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Hiçbir GPS verileri bulunamadı</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3721,7 +4631,7 @@ Please enter a numeric value.</original>
 <translation>Görüntü başarıyla geri yüklendi.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3853,11 +4763,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>dönmek</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Explorer'da Aç konumu</translation>
 </phrase>
@@ -3892,7 +4797,7 @@ Please enter a numeric value.</original>
 <translation>görünüm içinde görüntüyü ortalamak</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3970,11 +4875,6 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standart</translation>
 </phrase>
@@ -4009,7 +4909,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <translation>Yok</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4638,6 +5538,12 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4685,11 +5591,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>görüntüyü yeniden boyutlandırmak</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Ekrandaki görüntüyü sığdırmak</translation>
 </phrase>
@@ -4714,7 +5615,7 @@ The final value must be between %3 and %4.</original>
 <translation>Bu kutunun solunda görüntülenen resim boyutu birimini değiştirmek</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4794,11 +5695,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Hepsini kapat</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>İhracat</translation>
 </phrase>
@@ -4854,18 +5750,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>geçmişi geri al</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>kesim</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>katmandan Cut</translation>
 </phrase>
 
 <phrase>
@@ -4874,18 +5760,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>katmana kopyalama</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Yeni resim olarak yapıştırmak</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>yeni bir katman olarak Yapıştır</translation>
 </phrase>
 
 <phrase>
@@ -4909,11 +5785,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Tuvalin boyutu</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>aktif katman sığdır tuval</translation>
 </phrase>
@@ -4926,16 +5797,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Seçime kırpma</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Boş sınırları Trim</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Döndür</translation>
 </phrase>
 
 <phrase>
@@ -4971,16 +5832,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Meta veri</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Düzenleme meta</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5054,16 +5905,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>katmanı kaldırın</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>Alt tabaka</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Başa Katman</translation>
 </phrase>
@@ -5134,16 +5975,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Görünür katmanları birleştirme</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>görüntüyü düzleştirmek</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>seçmek</translation>
 </phrase>
@@ -5179,11 +6010,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>keskinleştirmek</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Geçerli seçimi kaydetmek</translation>
 </phrase>
@@ -5204,88 +6030,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Otomatik Düzeltme</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Aydınlatma</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Gölgeler ve golleri</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Otomatik geliştirmek</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Siyah ve beyaz</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Parlaklık ve kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>Renk dengesi</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>eğriler</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Düzeyleri</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Titreşim</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>Beyaz dengesi</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanallar</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Kanal değiştirici</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maksimum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimum</translation>
 </phrase>
 
 <phrase>
@@ -5299,36 +6050,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Ton ve doygunluk</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Sıcaklık</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>ton</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>renklendirme</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>rengini değiştirme</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepya</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>histogram</translation>
 </phrase>
@@ -5336,11 +6057,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Görüntüle</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>eşitlemek</translation>
 </phrase>
 
 <phrase>
@@ -5359,8 +6075,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gama</translation>
+<original>Lighting</original>
+<translation>Aydınlatma</translation>
 </phrase>
 
 <phrase>
@@ -5369,38 +6085,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>monokrom renk</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Siyah-beyaz</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>fotoğrafçılık</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Poz</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>Fotoğraf filtreleri</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Kırmızı göz giderme</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>bölünmüş tonlama</translation>
 </phrase>
 
 <phrase>
@@ -5414,108 +6105,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Renkli kalem</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>çizgi roman</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Figürlü cam (ezik)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>Kara film</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>cam karo</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleydoskop</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Modern Sanat</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Yağlı boya</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Plastik ambalaj</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Poster</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>kabartma</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Vitray</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Bulanıklık</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>kutu bulanıklık</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gauss bulanıklığı</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Yüzey bulandırma</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Hareket bulanıklığı</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radyal Bulanıklık</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>zoom bulanıklık</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara filtresi</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Simetrik en yakın komşu</translation>
 </phrase>
 
 <phrase>
@@ -5529,43 +6125,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Tatlı çörek</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lens</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Pinch ve girdap</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>kurcalamak</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>dalgalanma</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Ezmek</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Girdap</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>dalgalar</translation>
 </phrase>
 
 <phrase>
@@ -5579,53 +6140,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>kabartma yapmak</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>kenarları geliştirin</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Sınırları bul</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>menzil filtresi</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>iz kontur</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Işık ve gölge</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Siyah ışık</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Çapraz ekran</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Gökkuşağı</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Gunes isigi</translation>
 </phrase>
 
 <phrase>
@@ -5644,36 +6160,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Atmosfer</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Sis</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Tutuşturmak</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Lav</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metal</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Kar</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Sualtı</translation>
 </phrase>
@@ -5684,68 +6170,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Film tahıl ekle</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>RGB gürültü ekle</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>anizotropik difüzyon</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>ikili filtre</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmonik ortalama</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>ortalama kayma</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Medyan</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pikselleştir</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>renk yarım ton</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>billurlaştırmak</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>fragman</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>bakır klişe</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mozaik</translation>
 </phrase>
 
 <phrase>
@@ -5759,78 +6190,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antik</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>diffüz</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>taslak</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Paletlemek</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>portre kızdırma</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>güneşte bırakmak</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>ikizler</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>vinyet</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>dönüştürmek</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan ve zoom</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>Perspektif</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>polar dönüşüm</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>makaslama</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>özel filtre</translation>
 </phrase>
 
 <phrase>
@@ -5876,11 +6237,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>kaydı durdur</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Oynat makro</translation>
 </phrase>
 
 <phrase>
@@ -6099,16 +6455,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Makro kaydını başlat</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Makro Kaydı durdur</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>PhotoDemon yeni bir sürümü mevcuttur. güncelleme otomatik olarak arka planda işleyen</translation>
 </phrase>
@@ -6146,316 +6492,6 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Fotoğraf filtresi</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Oto doğru renk</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Oto doğru kontrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Oto doğru aydınlatma</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Oto doğru gölgeler ve golleri</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Otomatik renk geliştirmek</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Otomatik kontrastı arttırmak</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Otomatik aydınlatma geliştirmek</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Oto gölgeleri ve vurguları geliştirmek</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>toplu sihirbazı</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>katmanını Birleştirme</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>aşağı tabaka Birleştirme</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Seçime kırpma katmanı</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Gizli katmanları silmek</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>boş katman ekleyin</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Yinelenen katman</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Görünür katmanlardan yeni katman</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Başa katmanı kaldırın</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>alt Alt tabaka</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>katmanı 90 saat yönünde döndürmek</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>saat yönünün tersine bir tabaka 90 döndürme</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Döndürme tabaka 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Keyfi katman rotasyon</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip katmanı yatay</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Flip katmanı dikey</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rasterleştir katman</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Tüm katmanları rasterleştirmek</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Sıfırlama tabaka boyutu</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>katmanı yeniden boyutlandırma</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>İçerik-farkında tabaka yeniden boyutlandırma</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilate (maksimum seviye)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Aşındırmak (asgari rank)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Gölge ve vurgu</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>figürlü cam</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleydoskop</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>maksimum kanal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>minimum kanal</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Shift renkleri (solda)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Shift renkleri (sağda)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Doğru lens distorsiyon</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>mercek deformasyonuna uygula</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Çeşitli deforme</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Tekrar son eylem</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>kesim</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Yeni resim olarak yapıştırmak</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>boş panonun</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Açık</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Kapat</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Kayıt etmek</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Kaydet kopya</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Farklı kaydet</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>baskı</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Çık programı</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Yazılım güncellemeleri kontrol</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>streç histogram</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>yinelenen görüntü</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>İçerik-farkında resim boyutlandırmak</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>katmana sığdır tuval</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>tüm katmanları sığdır tuval</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Cilt görüntü yatay</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Resmi dikey olarak çevirme</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>İnternet ithalat</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>yeni bir dil uygulanır lütfen bekleyin</translation>
 </phrase>
@@ -6475,117 +6511,7 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 <translation>Dil başarıyla değiştirildi.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Bu görüntü herhangi bir GPS meta içermiyor.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Hiçbir GPS verileri bulunamadı</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>Su</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>negatif film</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>invert renk</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>invert RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>ikili yumuşatma</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Görüntüyü 90 saat yönünde döndürmek</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Görüntüyü saat yönünün tersine 90 döndür</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Resim döndürme 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Keyfi görüntü döndürme</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>tarama görüntü</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Ekran görüntüsü</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Hepsini seç</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Zıt seçim</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Kaydet seçimi</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>görüntü olarak ihracat Seçilen alan</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>görüntü olarak ihracat seçim maskesi</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Seç tarayıcı veya kamera</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Flu maske</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>alfa Renk</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Alfa kanalını kaldırın</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11631,6 +11557,11 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Oto doğru aydınlatma</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>çıkış</translation>
 </phrase>
@@ -11655,7 +11586,7 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 <translation>Kalan süre tahmin</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13478,7 +13409,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>aşağı taşı tabakası</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13487,6 +13418,12 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15721,18 +15658,12 @@ If yamalı vardır.</translation>
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

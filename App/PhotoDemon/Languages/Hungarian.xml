@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3383</langversion>
+<langversion>6.8.3384</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -321,13 +321,13 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Beállítása kép fehéregyensúly</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>A kontraszt beállítása</translation>
+<original>Adjusting image white balance</original>
+<translation>Beállítása kép fehéregyensúly</translation>
 </phrase>
 
 <phrase>
@@ -366,31 +366,11 @@ If a probléma továbbra is fennáll, kérjük, jelentse azt az PhotoDemon fejle
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Fokozása színek</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Fokozása szemben</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Fokozása világítás</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Beállítása árnyékok és a csúcsfények</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Fokozása árnyékok és a csúcsfények</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1420,6 +1400,991 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Nyisd ki</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Beillesztés új képként</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Scan kép</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Select szkenner vagy fényképezőgép</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Internet import</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>screen capture</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Közel</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>zárjon be minden</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Mentés</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>másolatának mentése</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Mentés másként</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Visszaszáll</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>batch varázsló</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Nyomtatás</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>kilépési program</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Undo történelem</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Ismétlés az utolsó akció</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Vágott</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Vágott rétegről</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Másolás réteg</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Beillesztés új réteget</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>üres vágólap</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>Ismétlődő képes</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>kép átméretezése</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>Content-aware image resize</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Vászonméret</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Fit vászon réteg</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Fit vászon minden rétege</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Vágja üres határok</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>kiegyenesedik kép</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Kép elforgatása 90 fokkal jobbra</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Kép elforgatása 90 fokkal balra</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>A kép elforgatása 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Tetszőleges kép forgatás</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Tükrözi a képet vízszintesen</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Tükrözi a képet függőlegesen</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>metaadatok szerkesztése</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Új réteg</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Tegyen üres réteget</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Duplicate Layer</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Új réteg látható rétegekből</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Törlés réteg</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Törlés rejtett rétegeket</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Merge réteg up</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Merge réteg lefelé</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>emelje réteg</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>alsó réteg</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Emelje réteg tetejére</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Alsó réteg alsó</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>kiegyenesedik réteg</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Forgatás 90 fokkal jobbra réteg</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Forgatás 90 réteg az óramutató járásával ellentétes</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Forgatás réteg 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Tetszőleges réteg forgás</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Flip réteg vízszintesen</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Flip réteg függőlegesen</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Visszaállítása réteg mérete</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>átméretezése réteg</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Content-aware réteg resize</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Rétegben a kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Színes alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Távolítsuk el az alfa-csatorna</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Raszterizálás réteg</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Raszterizálni összes réteg</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Egyesítése látható réteg</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>A görbületek kép</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Mindet kiválaszt</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>eltávolítani választás</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Fordított kijelölés</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Grow kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Shrink kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>Border kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>Feather kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Élesíti kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Törli a kijelölt területen</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Load kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Save kiválasztás</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Export kijelölt területet a kép</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Export kiválasztása maszkot kép</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Automatikus javítás</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Automatikus javítás</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Fekete és fehér</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>A fényerő és kontraszt</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>színegyensúly</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Curves</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Levels</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Árnyék és kiemelés</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibrálás</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>fehér egyensúly</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>csatornás keverő</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>maximális csatorna</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>minimum csatorna</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Shift színek (balra)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Shift színek (jobbra)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Színárnyalat és színtelítettség</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Hőmérséklet</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Színez</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>színezése</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Cserélje szín</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Szépia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>kiegyenlít</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>stretch hisztogram</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>film negatív</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Invert színárnyalat</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Invert RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Színes és monokróm</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Monokróm-szürke</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>exponálás</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Photo szűrő</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Vörösszem eltávolítás</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>osztott alakformálás</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Színes ceruza</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>Képregény</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>idomüvegből</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>üveg csempe</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoszkóp</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Modern művészet</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Olajfestmény</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Műanyag csomagolást</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Kontúrozás</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>Megkönnyebbülés</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Ólomüveg</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>box blur</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>gauss elmosás</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Felszíni homály</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Elmosódás</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radial blur</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>zoom blur</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara szűrő</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Szimmetrikus legközelebbi szomszéd</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Helyes lencsetorzítás</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Fánk</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Alkalmazza lencsetorzítás</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Pinch és örvény</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Bök</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Fodrozódás</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Fecskendez</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Örvény</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>Hullámok</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Egyéb Distort</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>Domborít</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>fokozza élek</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>élkeresés</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>tartomány szűrő</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Trace kontúr</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Fekete fény</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Kereszt-képernyő</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Szivárvány</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Napfény</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Nyújtás (maximum helyezés)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Rontja (minimum rang)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Légkör</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Köd</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Meggyullad</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Láva</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Fém</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Hó</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>Víz</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Add film gabona</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Add RGB zaj</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>anizotropikus diffúzió</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>kétoldalú simítás</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmonikus átlag</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>átlagos elmozdulása</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Középső</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>színes árnyalatos</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>kristályosodik</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Töredék</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotinto</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mozaik</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>élesít</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Életlen maszk</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antik</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>diffúz</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Vázlat</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Álló izzás</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Eléget</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Ikrek</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>színátmenet előállítás</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pan és zoom</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>távlati</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polar átalakítás</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Forog</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Nyírás</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>egyéni szűrő</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Kezdés makrórögzítést</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Állj makrórögzítést</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Lejátszás makró</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Ellenőrzés szoftverfrissítések</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Nyissa meg az összes új képet</translation>
 </phrase>
@@ -1439,7 +2404,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>Tiszta elmúlt makrólistát</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1514,11 +2479,6 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1583,7 +2543,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>Atkinson/Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2173,11 +3133,6 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>eltávolítani választás</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Művelet megszakítva.</translation>
 </phrase>
@@ -2194,7 +3149,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Hibajelentés utasítások</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2292,11 +3247,6 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Load kiválasztás</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Hiba történt betöltése közben: %1. Kérjük, ellenőrizze, hogy a fájl érvényes PhotoDemon kiválasztás fájlt.</translation>
 </phrase>
@@ -2357,11 +3307,6 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>Feather kiválasztás</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>tollazat kiválasztás</translation>
 </phrase>
@@ -2372,18 +3317,8 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Élesíti kiválasztás</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>élezése kiválasztás</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Grow kiválasztás</translation>
 </phrase>
 
 <phrase>
@@ -2397,28 +3332,13 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Shrink kiválasztás</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>zsugorítása kiválasztás</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>Border kiválasztás</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Megtalálása kiválasztás szélének</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Törli a kijelölt területen</translation>
 </phrase>
 
 <phrase>
@@ -2446,7 +3366,7 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 <translation>Kattints az első pontra a sokszög kiválasztási</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2548,31 +3468,11 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>kiegyenesedik kép</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>kiegyenesedik réteg</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Törlés réteg</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Új réteg</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2589,7 +3489,7 @@ Please enter a numeric value.</original>
 <translation>(egyik sem)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2779,7 +3679,17 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Ez a kép nem tartalmaz GPS-metaadatok.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Nincs GPS adat találtak</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3713,7 +4623,7 @@ Please enter a numeric value.</original>
 <translation>A kép sikeresen helyreállt.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3845,11 +4755,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Visszaszáll</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Nyílt helyen Explorer</translation>
 </phrase>
@@ -3884,7 +4789,7 @@ Please enter a numeric value.</original>
 <translation>A kép középre belül az ablakon</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3962,11 +4867,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>alapértelmezett</translation>
 </phrase>
@@ -4001,7 +4901,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <translation>egyik sem</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4630,6 +5530,12 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4677,11 +5583,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>kép átméretezése</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Hogy a kép a képernyőn</translation>
 </phrase>
@@ -4706,7 +5607,7 @@ The final value must be between %3 and %4.</original>
 <translation>A képméret módosítása egység bal oldalán jelenik meg ez a keretes</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4786,11 +5687,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>zárjon be minden</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>Export</translation>
 </phrase>
@@ -4846,18 +5742,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Undo történelem</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Vágott</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Vágott rétegről</translation>
 </phrase>
 
 <phrase>
@@ -4866,18 +5752,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Másolás réteg</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>Beillesztés új képként</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Beillesztés új réteget</translation>
 </phrase>
 
 <phrase>
@@ -4901,11 +5777,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Vászonméret</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Fit vászon aktív réteg</translation>
 </phrase>
@@ -4918,16 +5789,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Crop a kiválasztás</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Vágja üres határok</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Forog</translation>
 </phrase>
 
 <phrase>
@@ -4963,16 +5824,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metaadatok</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>metaadatok szerkesztése</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5046,16 +5897,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>emelje réteg</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>alsó réteg</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Réteg tetejére</translation>
 </phrase>
@@ -5126,16 +5967,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Egyesítése látható réteg</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>A görbületek kép</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>választ</translation>
 </phrase>
@@ -5171,11 +6002,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>élesít</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Mentése aktuális kijelölés</translation>
 </phrase>
@@ -5196,88 +6022,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Automatikus javítás</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Kontraszt</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Világítás</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Árnyékok és csúcsfények</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Automatikus javítás</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Fekete és fehér</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>A fényerő és kontraszt</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>színegyensúly</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Curves</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Levels</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibrálás</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>fehér egyensúly</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>csatornák</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>csatornás keverő</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maximális</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Minimális</translation>
 </phrase>
 
 <phrase>
@@ -5291,36 +6042,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Színárnyalat és színtelítettség</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Hőmérséklet</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Színez</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>színezése</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Cserélje szín</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Szépia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>hisztogram</translation>
 </phrase>
@@ -5328,11 +6049,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Kijelző</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>kiegyenlít</translation>
 </phrase>
 
 <phrase>
@@ -5351,8 +6067,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>Világítás</translation>
 </phrase>
 
 <phrase>
@@ -5361,38 +6077,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Színes és monokróm</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Monokróm-szürke</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fényképezés</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>exponálás</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>fotószűrő</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Vörösszem eltávolítás</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>osztott alakformálás</translation>
 </phrase>
 
 <phrase>
@@ -5406,108 +6097,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Színes ceruza</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>Képregény</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Idomüvegből (horpadások)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>üveg csempe</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleidoszkóp</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Modern művészet</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Olajfestmény</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Műanyag csomagolást</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Kontúrozás</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>Megkönnyebbülés</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Ólomüveg</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Elhomályosít</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>box blur</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>gauss elmosás</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Felszíni homály</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Elmosódás</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radial blur</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>zoom blur</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara szűrő</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Szimmetrikus legközelebbi szomszéd</translation>
 </phrase>
 
 <phrase>
@@ -5521,43 +6117,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Fánk</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lencse</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Pinch és örvény</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Bök</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Fodrozódás</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Fecskendez</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Örvény</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>Hullámok</translation>
 </phrase>
 
 <phrase>
@@ -5571,53 +6132,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>Domborít</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>fokozza élek</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>élkeresés</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>tartomány szűrő</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Trace kontúr</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Fény és árnyék</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Fekete fény</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Kereszt-képernyő</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Szivárvány</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Napfény</translation>
 </phrase>
 
 <phrase>
@@ -5636,36 +6152,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Légkör</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Köd</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Meggyullad</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Láva</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Fém</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Hó</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>viz alatti</translation>
 </phrase>
@@ -5676,68 +6162,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Add film gabona</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Add RGB zaj</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>anizotropikus diffúzió</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>kétoldalú szűrő</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmonikus átlag</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>átlagos elmozdulása</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Középső</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Képpontnagyítás</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>színes árnyalatos</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>kristályosodik</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Töredék</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotinto</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mozaik</translation>
 </phrase>
 
 <phrase>
@@ -5751,78 +6182,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antik</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>diffúz</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Vázlat</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Álló izzás</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Eléget</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Ikrek</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>színátmenet előállítás</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>átalakít</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pan és zoom</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>távlati</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polar átalakítás</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Nyírás</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>egyéni szűrő</translation>
 </phrase>
 
 <phrase>
@@ -5868,11 +6229,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>felvétel leállítása</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Lejátszás makró</translation>
 </phrase>
 
 <phrase>
@@ -6091,16 +6447,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Kezdés makrórögzítést</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Állj makrórögzítést</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Új verziója PhotoDemon elérhető. A frissítés automatikusan feldolgozása a háttérben</translation>
 </phrase>
@@ -6136,316 +6482,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Photo szűrő</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Automatikus színkorrekció</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Auto javítja a kontrasztot</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Auto megfelelő világítás</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Auto helyes árnyékok és a csúcsfények</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Auto A színek</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Automatikus kontraszt fokozása</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Auto fokozza világítás</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Auto fokozza árnyékos és fényes</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>batch varázsló</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Merge réteg up</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Merge réteg lefelé</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Rétegben a kiválasztás</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Törlés rejtett rétegeket</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Tegyen üres réteget</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Duplicate Layer</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Új réteg látható rétegekből</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Emelje réteg tetejére</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Alsó réteg alsó</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Forgatás 90 fokkal jobbra réteg</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Forgatás 90 réteg az óramutató járásával ellentétes</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Forgatás réteg 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Tetszőleges réteg forgás</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Flip réteg vízszintesen</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Flip réteg függőlegesen</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Raszterizálás réteg</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Raszterizálni összes réteg</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Visszaállítása réteg mérete</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>átméretezése réteg</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Content-aware réteg resize</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Nyújtás (maximum helyezés)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Rontja (minimum rang)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Árnyék és kiemelés</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>idomüvegből</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoszkóp</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>maximális csatorna</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>minimum csatorna</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Shift színek (balra)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Shift színek (jobbra)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Helyes lencsetorzítás</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Alkalmazza lencsetorzítás</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Egyéb Distort</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Ismétlés az utolsó akció</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Vágott</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Beillesztés új képként</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>üres vágólap</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Nyisd ki</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Közel</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Mentés</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>másolatának mentése</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Mentés másként</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Nyomtatás</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>kilépési program</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Ellenőrzés szoftverfrissítések</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>stretch hisztogram</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>Ismétlődő képes</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>Content-aware image resize</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Fit vászon réteg</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Fit vászon minden rétege</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Tükrözi a képet vízszintesen</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Tükrözi a képet függőlegesen</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Internet import</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Kérem várjon, amíg az új nyelvet alkalmazzák</translation>
 </phrase>
@@ -6465,117 +6501,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Nyelv módosítása sikeres volt.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Ez a kép nem tartalmaz GPS-metaadatok.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Nincs GPS adat találtak</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>Víz</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>film negatív</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Invert színárnyalat</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Invert RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>kétoldalú simítás</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Kép elforgatása 90 fokkal jobbra</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Kép elforgatása 90 fokkal balra</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>A kép elforgatása 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Tetszőleges kép forgatás</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Scan kép</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>screen capture</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Mindet kiválaszt</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Fordított kijelölés</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Save kiválasztás</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Export kijelölt területet a kép</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Export kiválasztása maszkot kép</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Select szkenner vagy fényképezőgép</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Életlen maszk</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Színes alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Távolítsuk el az alfa-csatorna</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11621,6 +11547,11 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Auto megfelelő világítás</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>Kijárat</translation>
 </phrase>
@@ -11645,7 +11576,7 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 <translation>Hátralévő idő becslése</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13468,7 +13399,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Mozgás réteg lefelé</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13477,6 +13408,12 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15711,18 +15648,12 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

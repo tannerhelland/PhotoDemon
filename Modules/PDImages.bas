@@ -219,6 +219,18 @@ NoImagesAvailable:
     IsImageNonNull = False
 End Function
 
+'The "Next Image" and "Previous Image" options simply wrap this function.
+Public Sub MoveToNextImage(ByVal moveForward As Boolean)
+
+    'If one (or zero) images are loaded, ignore this option
+    If (PDImages.GetNumOpenImages() <= 1) Then Exit Sub
+    
+    Dim newIndex As Long
+    newIndex = PDImages.GetNextImageID(PDImages.GetActiveImageID(), moveForward)
+    If (newIndex >= 0) Then CanvasManager.ActivatePDImage newIndex, "user requested next/previous image"
+    
+End Sub
+
 'Forcibly release all associated PDImage resources; this may include additional resources besides just the
 ' m_PDImages() array.
 Public Sub ReleaseAllPDImageResources()

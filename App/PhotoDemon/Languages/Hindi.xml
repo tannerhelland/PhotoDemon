@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.103</langversion>
+<langversion>1.0.104</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -322,13 +322,13 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>छवि सफेद संतुलन समायोजित करना</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>छवि कंट्रास्ट समायोजित करना</translation>
+<original>Adjusting image white balance</original>
+<translation>छवि सफेद संतुलन समायोजित करना</translation>
 </phrase>
 
 <phrase>
@@ -367,31 +367,11 @@ If समस्या बनी रहती है, कृपया PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>रंग बढ़ाना</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>कंट्रास्ट बढ़ाना</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>प्रकाश बढ़ाना</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>छाया और हाइलाइट समायोजित करना</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>छाया और हाइलाइट बढ़ाना</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1427,6 +1407,991 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>खुला</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>नई छवि के रूप में पेस्ट करें</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>स्कैन छवि</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>स्कैनर या कैमरा चुनें</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>इंटरनेट आयात</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>स्क्रीन कैप्चर</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>बंद करे</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>सब बंद करें</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>बचाना</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>प्रतिलिपि सहेजें</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>के रूप रक्षित करें</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>लौट आना</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>बैच विज़ार्ड</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>छाप</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>प्रोग्राम से बाहर निकलें</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>इतिहास पूर्ववत करें</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>अंतिम क्रिया दोहराएं</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>कट गया</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>परत से काटें</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>परत से कॉपी करें</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>नई परत के रूप में पेस्ट करें</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>रिक्त क्लिपबोर्ड</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>डुप्लिकेट इमेज</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>छवि का आकार बदलना</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>सामग्री-अवगत छवि का आकार बदलना</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>कैनवास का आकार</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>फीट कैनवास टू लेयर</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>सभी परतों के लिए कैनवास फ़िट करें</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>खाली सीमाएं ट्रिम करें</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>छवि को सीधा करें</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>छवि 90 घड़ी की दिशा में घुमाएं</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>छवि 90 घुमाएगी घुमाएगी</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>चित्र घुमाएं 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>मनमाना छवि रोटेशन</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>क्षैतिज छवि फ्लिप करें</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>खड़ी छवि खिसकाएं</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>मेटाडेटा संपादित करें</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>नई परत जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>खाली परत जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>नकली परत</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>दृश्य परतों से नई परत</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>परत हटाएं</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>छिपी हुई परतें हटाएं</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>परत को मर्ज करें</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>परत नीचे मर्ज करें</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>परत उठाएं</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>निचली परत</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>शीर्ष पर परत उठाएं</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>निचले स्तर को नीचे</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>सीधा सीधा परत</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>परत 90 घूर्णन घुमाएं</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>परत 90 काउंटर-वाइड दिशा में घुमाएं</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>परत 180 घुमाएं</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>अनियंत्रित परत रोटेशन</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>फ्लिप परत क्षैतिज रूप से</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>लंबवत रूप से फ्लिप परत</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>परत आकार रीसेट करें</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>परत का आकार बदलें</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>सामग्री-अवगत परत का आकार बदलना</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>चयन के लिए परत काटना</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>अल्फा को रंग</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>अल्फा चैनल निकालें</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>परत रेखापुंज करें</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>सभी परतों को रास्टाइज़ करें</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>दृश्य परतें मर्ज करें</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>फ़्लैटन इमेज</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>सभी का चयन करे</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>चयन निकालें</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>चयन को उल्टा करें</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>चयन बढ़ाएं</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>चयन सिकोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>सीमा चयन</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>पंख चयन</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>तीव्र चयन</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>चयनित क्षेत्र मिटाएं</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>चयन लोड करें</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>चयन सहेजें</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>चयनित क्षेत्र को छवि के रूप में निर्यात करें</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>छवि के रूप में चयन मुखौटा निर्यात करें</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>ऑटो सही</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>स्वचलित बढत</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>काला और सफेद</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>चमक और इसके विपरीत</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>रंग संतुलन</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>घटता</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>स्तर</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>छाया और हाइलाइट</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>वाइब्रैंस</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>श्वेत संतुलन</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>चैनल मिक्सर</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Rechannel</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>अधिकतम चैनल</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>न्यूनतम चैनल</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>शिफ्ट रंग (बाएं)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>शिफ्ट रंग (दाएं)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>ह्यू और संतृप्ति</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>तापमान</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>टिंट</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>रंग दें</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>रंग बदलें</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>एक प्रकार की मछली</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>बराबर करना</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>खिंचाव हिस्टोग्राम</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>फिल्म नकारात्मक</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>रंग बदलना</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>आरजीबी उलटा</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>गामा</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>मोनोक्रोम में रंग</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>ग्रे करने के लिए मोनोक्रोम</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>अनावरण</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>एचडीआर</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>फोटो फिल्टर</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>लाल-आँख हटाने</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>स्प्लिट टोनिंग</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>रंगीन पेंसिल</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>हास्य पुस्तक</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>कांच का आकार</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>फिल्म नोयर</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>ग्लास टाइल्स</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>बहुरूपदर्शक</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>आधुनिक कला</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>तैल चित्र</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>प्लास्टिक की चादर</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>पोस्टराइज़</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>राहत</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>रंगीन कांच</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>बॉक्स ब्लर</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>गौस्सियन धुंधलापन</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>सतह कलंक</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>धीमी गति</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>रेडियल कलंक</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>ज़ूम ज़ोर</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>कूहिरा फिल्टर</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>सममित निकट-पड़ोसी</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>सही लेंस विरूपण</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>डोनट</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>लेंस विरूपण लागू करें</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>चुटकी और चक्कर</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>प्रहार</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>लहर</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Squish</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>ज़ुल्फ़</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>लहर की</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>विविध बिगाड़ना</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>उभारदार नक्क़ाशी करना</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>किनारों को बढ़ाएं</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>किनारे ढूंढो</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>रेंज फिल्टर</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>ट्रेस समोच्च</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>काला प्रकाश</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>क्रॉस-स्क्रीन</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>इंद्रधनुष</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>सनशाइन</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>व्याप्त करें (अधिकतम रैंक)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>ईरोड (न्यूनतम रैंक)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>वातावरण</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>कोहरा</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>आग लगना</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>लावा</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>धातु</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>हिमपात</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>पानी</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>फिल्म अनाज जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>आरजीबी शोर जोड़ें</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>अनिसोट्रॉपिक प्रसार</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>द्विपक्षीय चौरसाई</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>अनुकूल माध्य</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>मीन बदलाव</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>मंझला</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>आंशिक रंग</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>मणिभ</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>टुकड़ा</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotint</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>मौज़ेक</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>गहरा बनाना</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Unsharp मुखौटा</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>प्राचीन वस्तुओं की</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>फैलाना</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>रेखांकित करें</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Palettize</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>पोर्ट्रेट चमक</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>सूर्य की किरणों से नष्ट करना</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>जुडवा</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>विगनेटिंग</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>पैन और ज़ूम करें</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>परिप्रेक्ष्य</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>ध्रुवीय रूपांतरण</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>घुमाएँ</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>कतरनी</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Spherize</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>कस्टम फ़िल्टर</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>मैक्रो रिकॉर्डिंग प्रारंभ करें</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>मैक्रो रिकॉर्डिंग रोकें</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>मैक्रो खेलें</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>सॉफ़्टवेयर अद्यतनों के लिए जांच रहा है</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>सभी हाल की छवियां खोलें</translation>
 </phrase>
@@ -1446,7 +2411,7 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <translation>हाल ही की मैक्रो सूची साफ़ करें</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1521,11 +2486,6 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1590,7 +2550,7 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <translation>एटकिंसन</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2184,11 +3144,6 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>चयन निकालें</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>कार्रवाई रद्द</translation>
 </phrase>
@@ -2205,7 +3160,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>बग रिपोर्ट निर्देश</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2303,11 +3258,6 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>चयन लोड करें</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation> %1 लोड करने का प्रयास करते समय त्रुटि हुई कृपया सत्यापित करें कि फ़ाइल वैध PhotoDemon चयन फ़ाइल है</translation>
 </phrase>
@@ -2368,11 +3318,6 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>पंख चयन</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>फेदरिंग चयन</translation>
 </phrase>
@@ -2383,18 +3328,8 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>तीव्र चयन</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>चयन को तेज करें</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>चयन बढ़ाएं</translation>
 </phrase>
 
 <phrase>
@@ -2408,28 +3343,13 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>चयन सिकोड़ें</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>सिकुड़ने का चयन</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>सीमा चयन</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>चयन सीमा खोजना</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>चयनित क्षेत्र मिटाएं</translation>
 </phrase>
 
 <phrase>
@@ -2457,7 +3377,7 @@ In इस बीच, कृपया एक वैकल्पिक प्र�
 <translation>बहुभुज चयन को पूरा करने के लिए पहले बिंदु पर क्लिक करें</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2559,31 +3479,11 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>छवि को सीधा करें</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>सीधा सीधा परत</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>परत हटाएं</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>नई परत जोड़ें</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2600,7 +3500,7 @@ Please enter a numeric value.</original>
 <translation>(कोई नहीं)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2790,7 +3690,17 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>इस चित्र में कोई भी जीपीएस मेटाडेटा नहीं है</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>कोई जीपीएस डेटा नहीं मिला</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3724,7 +4634,7 @@ Please enter a numeric value.</original>
 <translation>छवि को सफलतापूर्वक पुनर्स्थापित किया गया।</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3856,11 +4766,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>लौट आना</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>एक्सप्लोरर में स्थान खोलें</translation>
 </phrase>
@@ -3895,7 +4800,7 @@ Please enter a numeric value.</original>
 <translation>व्यूपोर्ट के अंदर की छवि को केंद्र में रखें</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3974,11 +4879,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>एचडीआर</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>मानक</translation>
 </phrase>
@@ -4013,7 +4913,7 @@ or the File > Open and File > Import menus.</original>
 <translation>कोई नहीं</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4642,6 +5542,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4689,11 +5595,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>छवि का आकार बदलना</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>छवि को स्क्रीन पर फ़िट करें</translation>
 </phrase>
@@ -4718,7 +5619,7 @@ The final value must be between %3 and %4.</original>
 <translation>इस बॉक्स के बाईं ओर प्रदर्शित छवि आकार इकाई बदलें</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4798,11 +5699,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>सब बंद करें</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>निर्यात</translation>
 </phrase>
@@ -4858,18 +5754,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>इतिहास पूर्ववत करें</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>कट गया</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>परत से काटें</translation>
 </phrase>
 
 <phrase>
@@ -4878,18 +5764,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>परत से कॉपी करें</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>नई छवि के रूप में पेस्ट करें</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>नई परत के रूप में पेस्ट करें</translation>
 </phrase>
 
 <phrase>
@@ -4913,11 +5789,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>कैनवास का आकार</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>फ़िल्ट कैनवास सक्रिय परत पर</translation>
 </phrase>
@@ -4930,16 +5801,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>चयन के लिए फसल</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>खाली सीमाएं ट्रिम करें</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>घुमाएँ</translation>
 </phrase>
 
 <phrase>
@@ -4975,16 +5836,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>मेटाडाटा</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>मेटाडेटा संपादित करें</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5058,16 +5909,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>परत उठाएं</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>निचली परत</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>परत शीर्ष पर</translation>
 </phrase>
@@ -5138,16 +5979,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>दृश्य परतें मर्ज करें</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>फ़्लैटन इमेज</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>चुनते हैं</translation>
 </phrase>
@@ -5183,11 +6014,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>गहरा बनाना</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>मौजूदा चयन सहेजें</translation>
 </phrase>
@@ -5208,88 +6034,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>ऑटो सही</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>विरोध</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>प्रकाश</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>छाया और डाला</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>स्वचलित बढत</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>काला और सफेद</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>चमक और इसके विपरीत</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>रंग संतुलन</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>घटता</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>स्तर</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>वाइब्रैंस</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>श्वेत संतुलन</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>चैनल</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>चैनल मिक्सर</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Rechannel</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>ज्यादा से ज्यादा</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>न्यूनतम</translation>
 </phrase>
 
 <phrase>
@@ -5303,36 +6054,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>ह्यू और संतृप्ति</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>तापमान</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>टिंट</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>रंग दें</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>रंग बदलें</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>एक प्रकार की मछली</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>हिस्टोग्राम</translation>
 </phrase>
@@ -5340,11 +6061,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>प्रदर्शन</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>बराबर करना</translation>
 </phrase>
 
 <phrase>
@@ -5363,8 +6079,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>गामा</translation>
+<original>Lighting</original>
+<translation>प्रकाश</translation>
 </phrase>
 
 <phrase>
@@ -5373,38 +6089,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>मोनोक्रोम में रंग</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>ग्रे करने के लिए मोनोक्रोम</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>फोटोग्राफी</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>अनावरण</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>फोटो फिल्टर</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>लाल-आँख हटाने</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>स्प्लिट टोनिंग</translation>
 </phrase>
 
 <phrase>
@@ -5418,108 +6109,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>रंगीन पेंसिल</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>हास्य पुस्तक</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>नक्काशीदार ग्लास (डेंट्स)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>फिल्म नोयर</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>ग्लास टाइल्स</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>बहुरूपदर्शक</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>आधुनिक कला</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>तैल चित्र</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>प्लास्टिक की चादर</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>पोस्टराइज़</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>राहत</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>रंगीन कांच</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>कलंक</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>बॉक्स ब्लर</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>गौस्सियन धुंधलापन</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>सतह कलंक</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>धीमी गति</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>रेडियल कलंक</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>ज़ूम ज़ोर</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>कूहिरा फिल्टर</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>सममित निकट-पड़ोसी</translation>
 </phrase>
 
 <phrase>
@@ -5533,43 +6129,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>डोनट</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>लेंस</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>चुटकी और चक्कर</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>प्रहार</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>लहर</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Squish</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>ज़ुल्फ़</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>लहर की</translation>
 </phrase>
 
 <phrase>
@@ -5583,53 +6144,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>उभारदार नक्क़ाशी करना</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>किनारों को बढ़ाएं</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>किनारे ढूंढो</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>रेंज फिल्टर</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>ट्रेस समोच्च</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>प्रकाश और छाया</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>काला प्रकाश</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>क्रॉस-स्क्रीन</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>इंद्रधनुष</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>सनशाइन</translation>
 </phrase>
 
 <phrase>
@@ -5648,36 +6164,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>वातावरण</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>कोहरा</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>आग लगना</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>लावा</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>धातु</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>हिमपात</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>पानी के नीचे</translation>
 </phrase>
@@ -5688,68 +6174,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>फिल्म अनाज जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>आरजीबी शोर जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>अनिसोट्रॉपिक प्रसार</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>द्विपक्षीय फिल्टर</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>अनुकूल माध्य</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>मीन बदलाव</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>मंझला</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>पिक्सेलेट</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>आंशिक रंग</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>मणिभ</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>टुकड़ा</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotint</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>मौज़ेक</translation>
 </phrase>
 
 <phrase>
@@ -5763,78 +6194,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>प्राचीन वस्तुओं की</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>फैलाना</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>रेखांकित करें</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Palettize</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>पोर्ट्रेट चमक</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>सूर्य की किरणों से नष्ट करना</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>जुडवा</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>विगनेटिंग</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>परिवर्तन</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>पैन और ज़ूम करें</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>परिप्रेक्ष्य</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>ध्रुवीय रूपांतरण</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>कतरनी</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Spherize</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>कस्टम फ़िल्टर</translation>
 </phrase>
 
 <phrase>
@@ -5880,11 +6241,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>रिकॉर्डिंग बंद करें</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>मैक्रो खेलें</translation>
 </phrase>
 
 <phrase>
@@ -6103,16 +6459,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>मैक्रो रिकॉर्डिंग प्रारंभ करें</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>मैक्रो रिकॉर्डिंग रोकें</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Photodemon का एक नया संस्करण उपलब्ध है। अपडेट स्वचालित रूप से पृष्ठभूमि में प्रोसेस कर रहा है</translation>
 </phrase>
@@ -6151,316 +6497,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>फोटो फिल्टर</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>ऑटो सही रंग</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>ऑटो सही विपरीत</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>ऑटो सही प्रकाश व्यवस्था</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>ऑटो सही छाया और डाला</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>ऑटो रंग में वृद्धि</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>स्वत:</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>ऑटो प्रकाश व्यवस्था में वृद्धि</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>ऑटो छाया और डाला बढ़ाएं</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>बैच विज़ार्ड</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>परत को मर्ज करें</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>परत नीचे मर्ज करें</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>चयन के लिए परत काटना</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>छिपी हुई परतें हटाएं</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>खाली परत जोड़ें</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>नकली परत</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>दृश्य परतों से नई परत</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>शीर्ष पर परत उठाएं</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>निचले स्तर को नीचे</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>परत 90 घूर्णन घुमाएं</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>परत 90 काउंटर-वाइड दिशा में घुमाएं</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>परत 180 घुमाएं</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>अनियंत्रित परत रोटेशन</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>फ्लिप परत क्षैतिज रूप से</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>लंबवत रूप से फ्लिप परत</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>परत रेखापुंज करें</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>सभी परतों को रास्टाइज़ करें</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>परत आकार रीसेट करें</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>परत का आकार बदलें</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>सामग्री-अवगत परत का आकार बदलना</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>व्याप्त करें (अधिकतम रैंक)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>ईरोड (न्यूनतम रैंक)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>छाया और हाइलाइट</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>कांच का आकार</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>बहुरूपदर्शक</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>अधिकतम चैनल</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>न्यूनतम चैनल</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>शिफ्ट रंग (बाएं)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>शिफ्ट रंग (दाएं)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>सही लेंस विरूपण</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>लेंस विरूपण लागू करें</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>विविध बिगाड़ना</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>अंतिम क्रिया दोहराएं</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>कट गया</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>नई छवि के रूप में पेस्ट करें</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>रिक्त क्लिपबोर्ड</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>खुला</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>बंद करे</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>बचाना</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>प्रतिलिपि सहेजें</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>के रूप रक्षित करें</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>छाप</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>प्रोग्राम से बाहर निकलें</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>सॉफ़्टवेयर अद्यतनों के लिए जांच रहा है</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>खिंचाव हिस्टोग्राम</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>डुप्लिकेट इमेज</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>सामग्री-अवगत छवि का आकार बदलना</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>फीट कैनवास टू लेयर</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>सभी परतों के लिए कैनवास फ़िट करें</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>क्षैतिज छवि फ्लिप करें</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>खड़ी छवि खिसकाएं</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>इंटरनेट आयात</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>कृपया नई भाषा लागू होने तक प्रतीक्षा करें</translation>
 </phrase>
@@ -6480,117 +6516,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>भाषा सफलतापूर्वक बदल गई</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>इस चित्र में कोई भी जीपीएस मेटाडेटा नहीं है</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>कोई जीपीएस डेटा नहीं मिला</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>पानी</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>फिल्म नकारात्मक</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>रंग बदलना</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>आरजीबी उलटा</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>द्विपक्षीय चौरसाई</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>छवि 90 घड़ी की दिशा में घुमाएं</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>छवि 90 घुमाएगी घुमाएगी</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>चित्र घुमाएं 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>मनमाना छवि रोटेशन</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>स्कैन छवि</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>स्क्रीन कैप्चर</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>सभी का चयन करे</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>चयन को उल्टा करें</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>चयन सहेजें</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>चयनित क्षेत्र को छवि के रूप में निर्यात करें</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>छवि के रूप में चयन मुखौटा निर्यात करें</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>स्कैनर या कैमरा चुनें</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Unsharp मुखौटा</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>अल्फा को रंग</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>अल्फा चैनल निकालें</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11637,6 +11563,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>ऑटो सही प्रकाश व्यवस्था</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>बाहर जाएं</translation>
 </phrase>
@@ -11661,7 +11592,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>अनुमानित शेष शेष</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13484,7 +13415,7 @@ I में लोड करें, इस दुर्भावना के �
 <translation>परत नीचे ले जाएं</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13493,6 +13424,12 @@ I में लोड करें, इस दुर्भावना के �
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15731,18 +15668,12 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>

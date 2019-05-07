@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.400</langversion>
+<langversion>6.7.401</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -322,13 +322,13 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
-<original>Adjusting image white balance</original>
-<translation>Instellen witbalans van de afbeelding</translation>
+<original>Auto-correcting colors and lighting</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Adjusting image contrast</original>
-<translation>Instellen van de afbeeldingcontrast</translation>
+<original>Adjusting image white balance</original>
+<translation>Instellen witbalans van de afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -367,31 +367,11 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 </phrase>
 
 <phrase>
-<original>Enhancing colors</original>
-<translation>Verbeteren van kleuren</translation>
+<original>Auto-enhancing color and lighting</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Enhancing contrast</original>
-<translation>Verbeteren van het contrast</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing lighting</original>
-<translation>Verbeteren van de belichting</translation>
-</phrase>
-
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation>Aanpassen schaduwen en glanspunten</translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation>Verbeteren van schaduwen en glanspunten</translation>
-</phrase>
-
-<!-- Filters_Color.bas contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
 
 <!-- END text for Filters_Color.bas-->
 
@@ -1427,6 +1407,991 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Open</original>
+<translation>Openen</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new image</original>
+<translation>Plakken als nieuwe afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Scan image</original>
+<translation>Scan Afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Select scanner or camera</original>
+<translation>Selecteer scanner of camera</translation>
+</phrase>
+
+<phrase>
+<original>Internet import</original>
+<translation>Internet import</translation>
+</phrase>
+
+<phrase>
+<original>Screen capture</original>
+<translation>Schermafdruk</translation>
+</phrase>
+
+<phrase>
+<original>Close</original>
+<translation>Sluiten</translation>
+</phrase>
+
+<phrase>
+<original>Close all</original>
+<translation>Alles sluiten</translation>
+</phrase>
+
+<phrase>
+<original>Save</original>
+<translation>Opslaan</translation>
+</phrase>
+
+<phrase>
+<original>Save copy</original>
+<translation>Opslaan kopie</translation>
+</phrase>
+
+<phrase>
+<original>Save as</original>
+<translation>Opslaan als</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Keren</translation>
+</phrase>
+
+<phrase>
+<original>Export palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Batch wizard</original>
+<translation>Batch-wizard</translation>
+</phrase>
+
+<phrase>
+<original>Print</original>
+<translation>Afdrukken</translation>
+</phrase>
+
+<phrase>
+<original>Exit program</original>
+<translation>Afsluiten programma</translation>
+</phrase>
+
+<phrase>
+<original>Undo history</original>
+<translation>Ongedaan maken geschiedenis</translation>
+</phrase>
+
+<phrase>
+<original>Repeat last action</original>
+<translation>Herhaal Laatste Actie</translation>
+</phrase>
+
+<phrase>
+<original>Cut</original>
+<translation>Knippen</translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation>Knippen uit laag</translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation>Kopiëren van laag</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation>Plakken als nieuwe laag</translation>
+</phrase>
+
+<phrase>
+<original>Empty clipboard</original>
+<translation>Ledigen klembord</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate image</original>
+<translation>Dupliceren afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Herschalen afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware image resize</original>
+<translation>inhoud-bewuste afbeeldingsherschaling</translation>
+</phrase>
+
+<phrase>
+<original>Canvas size</original>
+<translation>Canvasgrootte</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to layer</original>
+<translation>Pas canvas om laag</translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation>Pas canvas om alle lagen</translation>
+</phrase>
+
+<phrase>
+<original>Trim empty borders</original>
+<translation>Trim lege randen</translation>
+</phrase>
+
+<phrase>
+<original>Straighten image</original>
+<translation>Rechten afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 clockwise</original>
+<translation>Draai afbeelding 90 met de klok mee</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Draai afbeelding 90 tegen de klok in</translation>
+</phrase>
+
+<phrase>
+<original>Rotate image 180</original>
+<translation>Draai afbeelding 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation>Arbitraire beeldrotatie</translation>
+</phrase>
+
+<phrase>
+<original>Flip image horizontally</original>
+<translation>Afbeelding horizontaal omkeren</translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation>Afbeelding verticaal omkeren</translation>
+</phrase>
+
+<phrase>
+<original>Edit metadata</original>
+<translation>Wijzig metadata</translation>
+</phrase>
+
+<phrase>
+<original>Remove all metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation>Voeg een nieuwe laag toe</translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation>Voeg lege laag toe</translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation>Dupliceer laag</translation>
+</phrase>
+
+<phrase>
+<original>New layer from visible layers</original>
+<translation>Nieuwe laag van zichtbare lagen</translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation>Verwijder laag</translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation>Verwijder verborgen lagen</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation>Laag omhoog brengen</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation>Laag omlaag brengen</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation>Verhoog laag</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation>Onderlinggende laag</translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Verhoog laag naar bovenkant</translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation>Verlaag laag naar onderkant</translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation>Rechten laag</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 clockwise</original>
+<translation>Draai laag 90 met de klok mee</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Draai laag 90 tegen de klok in</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180</original>
+<translation>Draai laag 180</translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation>Arbitraire laagrotatie</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation>Laag horizontaal omkeren</translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation>Laag verticaal omkeren</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation>Reset laaggrootte</translation>
+</phrase>
+
+<phrase>
+<original>Resize layer</original>
+<translation>Herschaal laag</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
+<translation>Inhoudbewuste laagherschaling</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation>Verklein laag naar selectie</translation>
+</phrase>
+
+<phrase>
+<original>Color to alpha</original>
+<translation>Kleur naar alfa</translation>
+</phrase>
+
+<phrase>
+<original>Remove alpha channel</original>
+<translation>Verwijder alfakanaal</translation>
+</phrase>
+
+<phrase>
+<original>Rasterize layer</original>
+<translation>Rasterizeer laag </translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation>Rasterizeer alle lagen</translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation>Zichtbare lagen samenvoegen</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Afbeelding afvlakken</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Selecteer alles</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>Verwijder selectie</translation>
+</phrase>
+
+<phrase>
+<original>Invert selection</original>
+<translation>Omkeren selectie</translation>
+</phrase>
+
+<phrase>
+<original>Grow selection</original>
+<translation>Groeien selectie</translation>
+</phrase>
+
+<phrase>
+<original>Shrink selection</original>
+<translation>Krimpen selectie</translation>
+</phrase>
+
+<phrase>
+<original>Border selection</original>
+<translation>Rand selectie</translation>
+</phrase>
+
+<phrase>
+<original>Feather selection</original>
+<translation>Veer selectie</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen selection</original>
+<translation>Verscherpen selectie</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation>Wis geselecteerd gebied</translation>
+</phrase>
+
+<phrase>
+<original>Load selection</original>
+<translation>Selectie laden</translation>
+</phrase>
+
+<phrase>
+<original>Save selection</original>
+<translation>Opslaan selectie</translation>
+</phrase>
+
+<phrase>
+<original>Export selected area as image</original>
+<translation>Exporteer geselecteerd gebied als afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Export selection mask as image</original>
+<translation>Exporteer selectie masker als afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Auto correct</original>
+<translation>Auto correcte</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation>Automatisch verbeteren</translation>
+</phrase>
+
+<phrase>
+<original>Black and white</original>
+<translation>Zwart en wit</translation>
+</phrase>
+
+<phrase>
+<original>Brightness and contrast</original>
+<translation>Helderheid en contrast</translation>
+</phrase>
+
+<phrase>
+<original>Color balance</original>
+<translation>Kleurbalans</translation>
+</phrase>
+
+<phrase>
+<original>Curves</original>
+<translation>Curven</translation>
+</phrase>
+
+<phrase>
+<original>Levels</original>
+<translation>Niveaus</translation>
+</phrase>
+
+<phrase>
+<original>Shadow and highlight</original>
+<translation>Schaduw en glanspunt</translation>
+</phrase>
+
+<phrase>
+<original>Vibrance</original>
+<translation>Vibratie</translation>
+</phrase>
+
+<phrase>
+<original>White balance</original>
+<translation>Witbalans</translation>
+</phrase>
+
+<phrase>
+<original>Channel mixer</original>
+<translation>Kanaal mixer</translation>
+</phrase>
+
+<phrase>
+<original>Rechannel</original>
+<translation>Herkanaliseren</translation>
+</phrase>
+
+<phrase>
+<original>Maximum channel</original>
+<translation>Maximum kanaal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minimum kanaal</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (left)</original>
+<translation>Verschuif kleuren (links)</translation>
+</phrase>
+
+<phrase>
+<original>Shift colors (right)</original>
+<translation>Verschuif kleuren (rechts)</translation>
+</phrase>
+
+<phrase>
+<original>Hue and saturation</original>
+<translation>Kleurtoon en verzadiging</translation>
+</phrase>
+
+<phrase>
+<original>Temperature</original>
+<translation>Temperatuur</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Colorize</original>
+<translation>Verkleuren</translation>
+</phrase>
+
+<phrase>
+<original>Replace color</original>
+<translation>Vervang kleur</translation>
+</phrase>
+
+<phrase>
+<original>Sepia</original>
+<translation>Sepia</translation>
+</phrase>
+
+<phrase>
+<original>Equalize</original>
+<translation>Egaliseren</translation>
+</phrase>
+
+<phrase>
+<original>Stretch histogram</original>
+<translation>Rek histogram</translation>
+</phrase>
+
+<phrase>
+<original>Film negative</original>
+<translation>Film Negatief</translation>
+</phrase>
+
+<phrase>
+<original>Invert hue</original>
+<translation>Omkeren Kleurtoon</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Omkeren RGB</translation>
+</phrase>
+
+<phrase>
+<original>Gamma</original>
+<translation>Gamma</translation>
+</phrase>
+
+<phrase>
+<original>Color to monochrome</original>
+<translation>Kleur naar zwart-wit</translation>
+</phrase>
+
+<phrase>
+<original>Monochrome to gray</original>
+<translation>Monochroom tot grijs</translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>Blootstelling</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>Photo filter</original>
+<translation>Fotofilter</translation>
+</phrase>
+
+<phrase>
+<original>Red-eye removal</original>
+<translation>Rode ogen verwijdering</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation>Splits toning</translation>
+</phrase>
+
+<phrase>
+<original>Colored pencil</original>
+<translation>Kleurpotlood</translation>
+</phrase>
+
+<phrase>
+<original>Comic book</original>
+<translation>Comic Book</translation>
+</phrase>
+
+<phrase>
+<original>Figured glass</original>
+<translation>Glasfiguur</translation>
+</phrase>
+
+<phrase>
+<original>Film noir</original>
+<translation>Film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation>Glastegels</translation>
+</phrase>
+
+<phrase>
+<original>Kaleidoscope</original>
+<translation>Kaleidoscoop</translation>
+</phrase>
+
+<phrase>
+<original>Modern art</original>
+<translation>Moderne kunst</translation>
+</phrase>
+
+<phrase>
+<original>Oil painting</original>
+<translation>Olieverfschilderij</translation>
+</phrase>
+
+<phrase>
+<original>Plastic wrap</original>
+<translation>Plastiek omhulsel</translation>
+</phrase>
+
+<phrase>
+<original>Posterize</original>
+<translation>Schakeren</translation>
+</phrase>
+
+<phrase>
+<original>Relief</original>
+<translation>Reliëf</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation>Glas in lood</translation>
+</phrase>
+
+<phrase>
+<original>Box blur</original>
+<translation>Vierkant Verflauwen</translation>
+</phrase>
+
+<phrase>
+<original>Gaussian blur</original>
+<translation>Gaussiaans Verflauwen</translation>
+</phrase>
+
+<phrase>
+<original>Surface blur</original>
+<translation>Oppervlak onscherpte</translation>
+</phrase>
+
+<phrase>
+<original>Motion blur</original>
+<translation>Bewegingsvervaging</translation>
+</phrase>
+
+<phrase>
+<original>Radial blur</original>
+<translation>Radiaal vervaging</translation>
+</phrase>
+
+<phrase>
+<original>Zoom blur</original>
+<translation>Zoomvervaging</translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation>Kuwahara filter</translation>
+</phrase>
+
+<phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation>Symetrisch naatse buur</translation>
+</phrase>
+
+<phrase>
+<original>Correct lens distortion</original>
+<translation>Corrigeren lensvervorming</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation>Donut</translation>
+</phrase>
+
+<phrase>
+<original>Apply lens distortion</original>
+<translation>Toepassen lensvervorming</translation>
+</phrase>
+
+<phrase>
+<original>Pinch and whirl</original>
+<translation>Knijp en wervel</translation>
+</phrase>
+
+<phrase>
+<original>Poke</original>
+<translation>Porren</translation>
+</phrase>
+
+<phrase>
+<original>Ripple</original>
+<translation>Rimpeling</translation>
+</phrase>
+
+<phrase>
+<original>Squish</original>
+<translation>Zuigen</translation>
+</phrase>
+
+<phrase>
+<original>Swirl</original>
+<translation>Kolken</translation>
+</phrase>
+
+<phrase>
+<original>Waves</original>
+<translation>Golven</translation>
+</phrase>
+
+<phrase>
+<original>Miscellaneous distort</original>
+<translation>Diverse vervorming</translation>
+</phrase>
+
+<phrase>
+<original>Emboss</original>
+<translation>Reliëf</translation>
+</phrase>
+
+<phrase>
+<original>Enhance edges</original>
+<translation>Verbeter Randen</translation>
+</phrase>
+
+<phrase>
+<original>Find edges</original>
+<translation>Randen zoeken</translation>
+</phrase>
+
+<phrase>
+<original>Range filter</original>
+<translation>Range filter</translation>
+</phrase>
+
+<phrase>
+<original>Trace contour</original>
+<translation>Omtreklijn</translation>
+</phrase>
+
+<phrase>
+<original>Black light</original>
+<translation>Black light</translation>
+</phrase>
+
+<phrase>
+<original>Cross-screen</original>
+<translation>Kruis-scherm</translation>
+</phrase>
+
+<phrase>
+<original>Rainbow</original>
+<translation>Regenboog</translation>
+</phrase>
+
+<phrase>
+<original>Sunshine</original>
+<translation>Zonneschijn</translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilate (maximaal rangschikking)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Eroderen (minimum rangschikking)</translation>
+</phrase>
+
+<phrase>
+<original>Atmosphere</original>
+<translation>Atmosfeer</translation>
+</phrase>
+
+<phrase>
+<original>Fog</original>
+<translation>Mist</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation>Ontbranden</translation>
+</phrase>
+
+<phrase>
+<original>Lava</original>
+<translation>Lava</translation>
+</phrase>
+
+<phrase>
+<original>Metal</original>
+<translation>Metaal</translation>
+</phrase>
+
+<phrase>
+<original>Snow</original>
+<translation>Sneeuw</translation>
+</phrase>
+
+<phrase>
+<original>Water</original>
+<translation>Water</translation>
+</phrase>
+
+<phrase>
+<original>Add film grain</original>
+<translation>Toevoegen filmkorrel</translation>
+</phrase>
+
+<phrase>
+<original>Add RGB noise</original>
+<translation>Toevoegen RGB ruis</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation>Anisotropic diffusie</translation>
+</phrase>
+
+<phrase>
+<original>Bilateral smoothing</original>
+<translation>Bilaterale vergladding</translation>
+</phrase>
+
+<phrase>
+<original>Harmonic mean</original>
+<translation>Harmonisch gemiddelde</translation>
+</phrase>
+
+<phrase>
+<original>Mean shift</original>
+<translation>Gemiddelde verschuiving</translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Mediaan</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation>Kleuren halftoon</translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation>Kristaliiseren</translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation>Mezzotinto</translation>
+</phrase>
+
+<phrase>
+<original>Mosaic</original>
+<translation>Mozaïek</translation>
+</phrase>
+
+<phrase>
+<original>Sharpen</original>
+<translation>Verscherpen</translation>
+</phrase>
+
+<phrase>
+<original>Unsharp mask</original>
+<translation>Onscherpte masker</translation>
+</phrase>
+
+<phrase>
+<original>Antique</original>
+<translation>Antiek</translation>
+</phrase>
+
+<phrase>
+<original>Diffuse</original>
+<translation>Spreiden</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Omtrek</translation>
+</phrase>
+
+<phrase>
+<original>Palettize</original>
+<translation>Paletiseren</translation>
+</phrase>
+
+<phrase>
+<original>Portrait glow</original>
+<translation>Portret gloed</translation>
+</phrase>
+
+<phrase>
+<original>Solarize</original>
+<translation>Solarizeren</translation>
+</phrase>
+
+<phrase>
+<original>Twins</original>
+<translation>Tweelingen</translation>
+</phrase>
+
+<phrase>
+<original>Vignetting</original>
+<translation>Vignettering</translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Pannen en zoomen</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>Perspectief</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Polaire conversie</translation>
+</phrase>
+
+<phrase>
+<original>Rotate</original>
+<translation>Draai</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Schering</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Bollen</translation>
+</phrase>
+
+<phrase>
+<original>Custom filter</original>
+<translation>Aangepast filter</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Start Macro Opname</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Stop Macro Opname</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Speel Macro af</translation>
+</phrase>
+
+<phrase>
+<original>Checking for software updates</original>
+<translation>Controleren op software-updates</translation>
+</phrase>
+
+<phrase>
 <original>Open all recent images</original>
 <translation>Open alle recente afbeeldingen</translation>
 </phrase>
@@ -1446,7 +2411,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Wis recente macro-lijst</translation>
 </phrase>
 
-<!-- Menus.bas contains 24 phrases. 14 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -1521,11 +2486,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
-<original>Export palette</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Exporting palette</original>
 <translation></translation>
 </phrase>
@@ -1590,7 +2550,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Atkinson / Classic Macintosh</translation>
 </phrase>
 
-<!-- Palettes.bas contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Palettes.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Palettes.bas-->
 
@@ -2186,11 +3146,6 @@ Beschrijving: %2
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Verwijder selectie</translation>
-</phrase>
-
-<phrase>
 <original>Action canceled.</original>
 <translation>Actie geannuleerd.</translation>
 </phrase>
@@ -2207,7 +3162,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Bug report instructies</translation>
 </phrase>
 
-<!-- Processor.bas contains 125 phrases. 61 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+<!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -2305,11 +3260,6 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 </phrase>
 
 <phrase>
-<original>Load selection</original>
-<translation>Selectie laden</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Er is een fout opgetreden bij het laden van %1. Verifiëer dat het bestand een geldig PhotoDemon selectiebestand is.</translation>
 </phrase>
@@ -2370,11 +3320,6 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 </phrase>
 
 <phrase>
-<original>Feather selection</original>
-<translation>Veer selectie</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Bevedering selectie</translation>
 </phrase>
@@ -2385,18 +3330,8 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 </phrase>
 
 <phrase>
-<original>Sharpen selection</original>
-<translation>Verscherpen selectie</translation>
-</phrase>
-
-<phrase>
 <original>Sharpening selection</original>
 <translation>Verscherpen selectie</translation>
-</phrase>
-
-<phrase>
-<original>Grow selection</original>
-<translation>Groeien selectie</translation>
 </phrase>
 
 <phrase>
@@ -2410,28 +3345,13 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 </phrase>
 
 <phrase>
-<original>Shrink selection</original>
-<translation>Krimpen selectie</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Krimpen selectie</translation>
 </phrase>
 
 <phrase>
-<original>Border selection</original>
-<translation>Rand selectie</translation>
-</phrase>
-
-<phrase>
 <original>Finding selection border</original>
 <translation>Zoeken rand selectie</translation>
-</phrase>
-
-<phrase>
-<original>Erase selected area</original>
-<translation>Wis geselecteerd gebied</translation>
 </phrase>
 
 <phrase>
@@ -2459,7 +3379,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>Klik op het eerste punt van de veelhoek om de selectie te voltooien</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 39 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2561,31 +3481,11 @@ Geef een numerieke waarde.</translation>
 
 <!-- BEGIN text for MeasureTool.bas -->
 
-<phrase>
-<original>Straighten image</original>
-<translation>Rechten afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Straighten layer</original>
-<translation>Rechten laag</translation>
-</phrase>
-
-<!-- MeasureTool.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for MeasureTool.bas-->
 
 <!-- BEGIN text for MoveTool.bas -->
-
-<phrase>
-<original>Delete layer</original>
-<translation>Verwijder laag</translation>
-</phrase>
-
-<phrase>
-<original>Add new layer</original>
-<translation>Voeg een nieuwe laag toe</translation>
-</phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
@@ -2602,7 +3502,7 @@ Geef een numerieke waarde.</translation>
 <translation>(geen)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- MoveTool.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for MoveTool.bas-->
 
@@ -2792,7 +3692,17 @@ Geef een numerieke waarde.</translation>
 
 <!-- BEGIN text for Web.bas -->
 
-<!-- Web.bas contains 0 phrases. -->
+<phrase>
+<original>This image does not contain any GPS metadata.</original>
+<translation>Deze afbeelding bevat geen GPS-metagegevens.</translation>
+</phrase>
+
+<phrase>
+<original>No GPS data found</original>
+<translation>Geen GPS gegevens gevonden</translation>
+</phrase>
+
+<!-- Web.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Web.bas-->
 
@@ -3726,7 +4636,7 @@ Geef een numerieke waarde.</translation>
 <translation>Afbeelding met succes hersteld.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -3858,11 +4768,6 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>Revert</original>
-<translation>Keren</translation>
-</phrase>
-
-<phrase>
 <original>Open location in E&xplorer</original>
 <translation>Open locatie in E&xplorer</translation>
 </phrase>
@@ -3897,7 +4802,7 @@ Geef een numerieke waarde.</translation>
 <translation>Centreer de afbeelding binnenin de viewport</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3977,11 +4882,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>HDR</original>
-<translation>HDR</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>standaard</translation>
 </phrase>
@@ -4016,7 +4916,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>geen</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- pdColorDepth.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdColorDepth.ctl-->
 
@@ -4645,6 +5545,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSearchBar.ctl -->
+
+<!-- pdSearchBar.ctl contains 0 phrases. -->
+
+<!-- END text for pdSearchBar.ctl-->
+
 <!-- BEGIN text for pdSlider.ctl -->
 
 <!-- pdSlider.ctl contains 0 phrases. -->
@@ -4692,11 +5598,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Herschalen afbeelding</translation>
-</phrase>
-
-<phrase>
 <original>Fit the image on-screen</original>
 <translation>Pas de afbeelding op het scherm</translation>
 </phrase>
@@ -4721,7 +5622,7 @@ The final value must be between %3 and %4.</original>
 <translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdStatusBar.ctl contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for pdStatusBar.ctl-->
 
@@ -4801,11 +5702,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Close all</original>
-<translation>Alles sluiten</translation>
-</phrase>
-
-<phrase>
 <original>Export</original>
 <translation>Export</translation>
 </phrase>
@@ -4861,18 +5757,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Undo history</original>
-<translation>Ongedaan maken geschiedenis</translation>
-</phrase>
-
-<phrase>
 <original>Cu&t</original>
 <translation>Knippen</translation>
-</phrase>
-
-<phrase>
-<original>Cut from layer</original>
-<translation>Knippen uit laag</translation>
 </phrase>
 
 <phrase>
@@ -4881,18 +5767,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Copy from layer</original>
-<translation>Kopiëren van laag</translation>
-</phrase>
-
-<phrase>
 <original>&Paste as new image</original>
 <translation>&Plakken als nieuwe afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new layer</original>
-<translation>Plakken als nieuwe laag</translation>
 </phrase>
 
 <phrase>
@@ -4916,11 +5792,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Canvas size</original>
-<translation>Canvasgrootte</translation>
-</phrase>
-
-<phrase>
 <original>Fit canvas to active layer</original>
 <translation>Pas canvas op actieve laag</translation>
 </phrase>
@@ -4933,16 +5804,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Crop to selection</original>
 <translation>Bijsnijden tot selectie</translation>
-</phrase>
-
-<phrase>
-<original>Trim empty borders</original>
-<translation>Trim lege randen</translation>
-</phrase>
-
-<phrase>
-<original>Rotate</original>
-<translation>Draai</translation>
 </phrase>
 
 <phrase>
@@ -4978,16 +5839,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
-</phrase>
-
-<phrase>
-<original>Edit metadata</original>
-<translation>Wijzig metadata</translation>
-</phrase>
-
-<phrase>
-<original>Remove all metadata</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -5061,16 +5912,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Raise layer</original>
-<translation>Verhoog laag</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer</original>
-<translation>Onderlinggende laag</translation>
-</phrase>
-
-<phrase>
 <original>Layer to top</original>
 <translation>Laag naar boven</translation>
 </phrase>
@@ -5141,16 +5982,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Merge visible layers</original>
-<translation>Zichtbare lagen samenvoegen</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Afbeelding afvlakken</translation>
-</phrase>
-
-<phrase>
 <original>&Select</original>
 <translation>&Selecteer</translation>
 </phrase>
@@ -5186,11 +6017,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Sharpen</original>
-<translation>Verscherpen</translation>
-</phrase>
-
-<phrase>
 <original>Save current selection</original>
 <translation>Opslaan huidige selectie</translation>
 </phrase>
@@ -5211,88 +6037,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Auto correct</original>
-<translation>Auto correcte</translation>
-</phrase>
-
-<phrase>
-<original>Contrast</original>
-<translation>Contrast</translation>
-</phrase>
-
-<phrase>
-<original>Lighting</original>
-<translation>Verlichting</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Schaduwen en glanspunten</translation>
 </phrase>
 
 <phrase>
-<original>Auto enhance</original>
-<translation>Automatisch verbeteren</translation>
-</phrase>
-
-<phrase>
-<original>Black and white</original>
-<translation>Zwart en wit</translation>
-</phrase>
-
-<phrase>
-<original>Brightness and contrast</original>
-<translation>Helderheid en contrast</translation>
-</phrase>
-
-<phrase>
-<original>Color balance</original>
-<translation>Kleurbalans</translation>
-</phrase>
-
-<phrase>
-<original>Curves</original>
-<translation>Curven</translation>
-</phrase>
-
-<phrase>
-<original>Levels</original>
-<translation>Niveaus</translation>
-</phrase>
-
-<phrase>
-<original>Vibrance</original>
-<translation>Vibratie</translation>
-</phrase>
-
-<phrase>
-<original>White balance</original>
-<translation>Witbalans</translation>
-</phrase>
-
-<phrase>
 <original>Channels</original>
 <translation>Kanalen</translation>
-</phrase>
-
-<phrase>
-<original>Channel mixer</original>
-<translation>Kanaal mixer</translation>
-</phrase>
-
-<phrase>
-<original>Rechannel</original>
-<translation>Herkanaliseren</translation>
-</phrase>
-
-<phrase>
-<original>Maximum</original>
-<translation>Maximum</translation>
-</phrase>
-
-<phrase>
-<original>Minimum</original>
-<translation>Shuif links</translation>
 </phrase>
 
 <phrase>
@@ -5306,36 +6057,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Kleurtoon en verzadiging</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Temperatuur</translation>
-</phrase>
-
-<phrase>
-<original>Tint</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
-<original>Colorize</original>
-<translation>Verkleuren</translation>
-</phrase>
-
-<phrase>
-<original>Replace color</original>
-<translation>Vervang kleur</translation>
-</phrase>
-
-<phrase>
-<original>Sepia</original>
-<translation>Sepia</translation>
-</phrase>
-
-<phrase>
 <original>Histogram</original>
 <translation>Histogram</translation>
 </phrase>
@@ -5343,11 +6064,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Display</original>
 <translation>Weergeven</translation>
-</phrase>
-
-<phrase>
-<original>Equalize</original>
-<translation>Egaliseren</translation>
 </phrase>
 
 <phrase>
@@ -5366,8 +6082,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Gamma</original>
-<translation>Gamma</translation>
+<original>Lighting</original>
+<translation>Verlichting</translation>
 </phrase>
 
 <phrase>
@@ -5376,38 +6092,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Color to monochrome</original>
-<translation>Kleur naar zwart-wit</translation>
-</phrase>
-
-<phrase>
-<original>Monochrome to gray</original>
-<translation>Monochroom tot grijs</translation>
-</phrase>
-
-<phrase>
 <original>Photography</original>
 <translation>Fotografie</translation>
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>Blootstelling</translation>
-</phrase>
-
-<phrase>
 <original>Photo filters</original>
 <translation>Foto filters</translation>
-</phrase>
-
-<phrase>
-<original>Red-eye removal</original>
-<translation>Rode ogen verwijdering</translation>
-</phrase>
-
-<phrase>
-<original>Split toning</original>
-<translation>Splits toning</translation>
 </phrase>
 
 <phrase>
@@ -5421,108 +6112,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Colored pencil</original>
-<translation>Kleurpotlood</translation>
-</phrase>
-
-<phrase>
-<original>Comic book</original>
-<translation>Comic Book</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass (dents)</original>
 <translation>Gekleurd glas (deuken)</translation>
 </phrase>
 
 <phrase>
-<original>Film noir</original>
-<translation>Film noir</translation>
-</phrase>
-
-<phrase>
-<original>Glass tiles</original>
-<translation>Glastegels</translation>
-</phrase>
-
-<phrase>
-<original>Kaleiodoscope</original>
-<translation>Kaleiodoscoop</translation>
-</phrase>
-
-<phrase>
-<original>Modern art</original>
-<translation>Moderne kunst</translation>
-</phrase>
-
-<phrase>
-<original>Oil painting</original>
-<translation>Olieverfschilderij</translation>
-</phrase>
-
-<phrase>
-<original>Plastic wrap</original>
-<translation>Plastiek omhulsel</translation>
-</phrase>
-
-<phrase>
-<original>Posterize</original>
-<translation>Schakeren</translation>
-</phrase>
-
-<phrase>
-<original>Relief</original>
-<translation>Reliëf</translation>
-</phrase>
-
-<phrase>
-<original>Stained glass</original>
-<translation>Glas in lood</translation>
-</phrase>
-
-<phrase>
 <original>Blur</original>
 <translation>Verflauwen</translation>
-</phrase>
-
-<phrase>
-<original>Box blur</original>
-<translation>Vierkant Verflauwen</translation>
-</phrase>
-
-<phrase>
-<original>Gaussian blur</original>
-<translation>Gaussiaans Verflauwen</translation>
-</phrase>
-
-<phrase>
-<original>Surface blur</original>
-<translation>Oppervlak onscherpte</translation>
-</phrase>
-
-<phrase>
-<original>Motion blur</original>
-<translation>Bewegingsvervaging</translation>
-</phrase>
-
-<phrase>
-<original>Radial blur</original>
-<translation>Radiaal vervaging</translation>
-</phrase>
-
-<phrase>
-<original>Zoom blur</original>
-<translation>Zoomvervaging</translation>
-</phrase>
-
-<phrase>
-<original>Kuwahara filter</original>
-<translation>Kuwahara filter</translation>
-</phrase>
-
-<phrase>
-<original>Symmetric nearest-neighbor</original>
-<translation>Symetrisch naatse buur</translation>
 </phrase>
 
 <phrase>
@@ -5536,43 +6132,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Donut</original>
-<translation>Donut</translation>
-</phrase>
-
-<phrase>
 <original>Lens</original>
 <translation>Lens</translation>
-</phrase>
-
-<phrase>
-<original>Pinch and whirl</original>
-<translation>Knijp en wervel</translation>
-</phrase>
-
-<phrase>
-<original>Poke</original>
-<translation>Porren</translation>
-</phrase>
-
-<phrase>
-<original>Ripple</original>
-<translation>Rimpeling</translation>
-</phrase>
-
-<phrase>
-<original>Squish</original>
-<translation>Zuigen</translation>
-</phrase>
-
-<phrase>
-<original>Swirl</original>
-<translation>Kolken</translation>
-</phrase>
-
-<phrase>
-<original>Waves</original>
-<translation>Golven</translation>
 </phrase>
 
 <phrase>
@@ -5586,53 +6147,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Emboss</original>
-<translation>Reliëf</translation>
-</phrase>
-
-<phrase>
-<original>Enhance edges</original>
-<translation>Verbeter Randen</translation>
-</phrase>
-
-<phrase>
-<original>Find edges</original>
-<translation>Randen zoeken</translation>
-</phrase>
-
-<phrase>
-<original>Range filter</original>
-<translation>Range filter</translation>
-</phrase>
-
-<phrase>
-<original>Trace contour</original>
-<translation>Omtreklijn</translation>
-</phrase>
-
-<phrase>
 <original>Light and shadow</original>
 <translation>Licht en schaduw</translation>
-</phrase>
-
-<phrase>
-<original>Black light</original>
-<translation>Black light</translation>
-</phrase>
-
-<phrase>
-<original>Cross-screen</original>
-<translation>Kruis-scherm</translation>
-</phrase>
-
-<phrase>
-<original>Rainbow</original>
-<translation>Regenboog</translation>
-</phrase>
-
-<phrase>
-<original>Sunshine</original>
-<translation>Zonneschijn</translation>
 </phrase>
 
 <phrase>
@@ -5651,36 +6167,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Atmosphere</original>
-<translation>Atmosfeer</translation>
-</phrase>
-
-<phrase>
-<original>Fog</original>
-<translation>Mist</translation>
-</phrase>
-
-<phrase>
-<original>Ignite</original>
-<translation>Ontbranden</translation>
-</phrase>
-
-<phrase>
-<original>Lava</original>
-<translation>Lava</translation>
-</phrase>
-
-<phrase>
-<original>Metal</original>
-<translation>Metaal</translation>
-</phrase>
-
-<phrase>
-<original>Snow</original>
-<translation>Sneeuw</translation>
-</phrase>
-
-<phrase>
 <original>Underwater</original>
 <translation>Onderwater</translation>
 </phrase>
@@ -5691,68 +6177,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Add film grain</original>
-<translation>Toevoegen filmkorrel</translation>
-</phrase>
-
-<phrase>
-<original>Add RGB noise</original>
-<translation>Toevoegen RGB ruis</translation>
-</phrase>
-
-<phrase>
-<original>Anisotropic diffusion</original>
-<translation>Anisotropic diffusie</translation>
-</phrase>
-
-<phrase>
 <original>Bilateral filter</original>
 <translation>Bilaterale filter</translation>
 </phrase>
 
 <phrase>
-<original>Harmonic mean</original>
-<translation>Harmonisch gemiddelde</translation>
-</phrase>
-
-<phrase>
-<original>Mean shift</original>
-<translation>Gemiddelde verschuiving</translation>
-</phrase>
-
-<phrase>
-<original>Median</original>
-<translation>Mediaan</translation>
-</phrase>
-
-<phrase>
 <original>Pixelate</original>
 <translation>Pixellatie</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation>Kleuren halftoon</translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation>Kristaliiseren</translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation>Mezzotinto</translation>
-</phrase>
-
-<phrase>
-<original>Mosaic</original>
-<translation>Mozaïek</translation>
 </phrase>
 
 <phrase>
@@ -5766,78 +6197,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Antique</original>
-<translation>Antiek</translation>
-</phrase>
-
-<phrase>
-<original>Diffuse</original>
-<translation>Spreiden</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Omtrek</translation>
-</phrase>
-
-<phrase>
-<original>Palettize</original>
-<translation>Paletiseren</translation>
-</phrase>
-
-<phrase>
-<original>Portrait glow</original>
-<translation>Portret gloed</translation>
-</phrase>
-
-<phrase>
-<original>Solarize</original>
-<translation>Solarizeren</translation>
-</phrase>
-
-<phrase>
-<original>Twins</original>
-<translation>Tweelingen</translation>
-</phrase>
-
-<phrase>
-<original>Vignetting</original>
-<translation>Vignettering</translation>
-</phrase>
-
-<phrase>
 <original>Transform</original>
 <translation>Transformeren</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Pannen en zoomen</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>Perspectief</translation>
-</phrase>
-
-<phrase>
-<original>Polar conversion</original>
-<translation>Polaire conversie</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Schering</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Bollen</translation>
-</phrase>
-
-<phrase>
-<original>Custom filter</original>
-<translation>Aangepast filter</translation>
 </phrase>
 
 <phrase>
@@ -5883,11 +6244,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Stop recording</original>
 <translation>Stop opname</translation>
-</phrase>
-
-<phrase>
-<original>Play macro</original>
-<translation>Speel Macro af</translation>
 </phrase>
 
 <phrase>
@@ -6106,16 +6462,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Start Macro Opname</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Stop Macro Opname</translation>
-</phrase>
-
-<phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Een nieuwe versie van PhotoDemon is beschikbaar. De update wordt automatisch verwerkt op de achtergrond</translation>
 </phrase>
@@ -6154,316 +6500,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Photo filter</original>
-<translation>Fotofilter</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct color</original>
-<translation>Autocorrectie kleur</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct contrast</original>
-<translation>Autocorrectie contrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct lighting</original>
-<translation>Autocorrectie belichting</translation>
-</phrase>
-
-<phrase>
-<original>Auto correct shadows and highlights</original>
-<translation>Autocorrectie schaduwen en glanspunten</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance color</original>
-<translation>Autoverbetering kleuren</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance contrast</original>
-<translation>Autoverbetering contrast</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance lighting</original>
-<translation>Autoverbetering belichting</translation>
-</phrase>
-
-<phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation>Autoverbetering schaduwen en glanspunten</translation>
-</phrase>
-
-<phrase>
-<original>Batch wizard</original>
-<translation>Batch-wizard</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer up</original>
-<translation>Laag omhoog brengen</translation>
-</phrase>
-
-<phrase>
-<original>Merge layer down</original>
-<translation>Laag omlaag brengen</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Verklein laag naar selectie</translation>
-</phrase>
-
-<phrase>
-<original>Delete hidden layers</original>
-<translation>Verwijder verborgen lagen</translation>
-</phrase>
-
-<phrase>
-<original>Add blank layer</original>
-<translation>Voeg lege laag toe</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate Layer</original>
-<translation>Dupliceer laag</translation>
-</phrase>
-
-<phrase>
-<original>New layer from visible layers</original>
-<translation>Nieuwe laag van zichtbare lagen</translation>
-</phrase>
-
-<phrase>
-<original>Raise layer to top</original>
-<translation>Verhoog laag naar bovenkant</translation>
-</phrase>
-
-<phrase>
-<original>Lower layer to bottom</original>
-<translation>Verlaag laag naar onderkant</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 clockwise</original>
-<translation>Draai laag 90 met de klok mee</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 90 counter-clockwise</original>
-<translation>Draai laag 90 tegen de klok in</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer 180</original>
-<translation>Draai laag 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary layer rotation</original>
-<translation>Arbitraire laagrotatie</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer horizontally</original>
-<translation>Laag horizontaal omkeren</translation>
-</phrase>
-
-<phrase>
-<original>Flip layer vertically</original>
-<translation>Laag verticaal omkeren</translation>
-</phrase>
-
-<phrase>
-<original>Rasterize layer</original>
-<translation>Rasterizeer laag </translation>
-</phrase>
-
-<phrase>
-<original>Rasterize all layers</original>
-<translation>Rasterizeer alle lagen</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer size</original>
-<translation>Reset laaggrootte</translation>
-</phrase>
-
-<phrase>
-<original>Resize layer</original>
-<translation>Herschaal laag</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware layer resize</original>
-<translation>Inhoudbewuste laagherschaling</translation>
-</phrase>
-
-<phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilate (maximaal rangschikking)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Eroderen (minimum rangschikking)</translation>
-</phrase>
-
-<phrase>
-<original>Shadow and highlight</original>
-<translation>Schaduw en glanspunt</translation>
-</phrase>
-
-<phrase>
-<original>Figured glass</original>
-<translation>Glasfiguur</translation>
-</phrase>
-
-<phrase>
-<original>Kaleidoscope</original>
-<translation>Kaleidoscoop</translation>
-</phrase>
-
-<phrase>
-<original>Maximum channel</original>
-<translation>Maximum kanaal</translation>
-</phrase>
-
-<phrase>
-<original>Minimum channel</original>
-<translation>Minimum kanaal</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (left)</original>
-<translation>Verschuif kleuren (links)</translation>
-</phrase>
-
-<phrase>
-<original>Shift colors (right)</original>
-<translation>Verschuif kleuren (rechts)</translation>
-</phrase>
-
-<phrase>
-<original>Correct lens distortion</original>
-<translation>Corrigeren lensvervorming</translation>
-</phrase>
-
-<phrase>
-<original>Apply lens distortion</original>
-<translation>Toepassen lensvervorming</translation>
-</phrase>
-
-<phrase>
-<original>Miscellaneous distort</original>
-<translation>Diverse vervorming</translation>
-</phrase>
-
-<phrase>
-<original>Repeat last action</original>
-<translation>Herhaal Laatste Actie</translation>
-</phrase>
-
-<phrase>
-<original>Cut</original>
-<translation>Knippen</translation>
-</phrase>
-
-<phrase>
-<original>Paste as new image</original>
-<translation>Plakken als nieuwe afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Empty clipboard</original>
-<translation>Ledigen klembord</translation>
-</phrase>
-
-<phrase>
-<original>Open</original>
-<translation>Openen</translation>
-</phrase>
-
-<phrase>
-<original>Close</original>
-<translation>Sluiten</translation>
-</phrase>
-
-<phrase>
-<original>Save</original>
-<translation>Opslaan</translation>
-</phrase>
-
-<phrase>
-<original>Save copy</original>
-<translation>Opslaan kopie</translation>
-</phrase>
-
-<phrase>
-<original>Save as</original>
-<translation>Opslaan als</translation>
-</phrase>
-
-<phrase>
-<original>Print</original>
-<translation>Afdrukken</translation>
-</phrase>
-
-<phrase>
-<original>Exit program</original>
-<translation>Afsluiten programma</translation>
-</phrase>
-
-<phrase>
-<original>Checking for software updates</original>
-<translation>Controleren op software-updates</translation>
-</phrase>
-
-<phrase>
-<original>Stretch histogram</original>
-<translation>Rek histogram</translation>
-</phrase>
-
-<phrase>
-<original>Duplicate image</original>
-<translation>Dupliceren afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware image resize</original>
-<translation>inhoud-bewuste afbeeldingsherschaling</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to layer</original>
-<translation>Pas canvas om laag</translation>
-</phrase>
-
-<phrase>
-<original>Fit canvas to all layers</original>
-<translation>Pas canvas om alle lagen</translation>
-</phrase>
-
-<phrase>
-<original>Flip image horizontally</original>
-<translation>Afbeelding horizontaal omkeren</translation>
-</phrase>
-
-<phrase>
-<original>Flip image vertically</original>
-<translation>Afbeelding verticaal omkeren</translation>
-</phrase>
-
-<phrase>
-<original>Internet import</original>
-<translation>Internet import</translation>
-</phrase>
-
-<phrase>
 <original>Please wait while the new language is applied</original>
 <translation>Een moment geduld terwijl de nieuwe taal wordt toegepast</translation>
 </phrase>
@@ -6483,117 +6519,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<phrase>
-<original>This image does not contain any GPS metadata.</original>
-<translation>Deze afbeelding bevat geen GPS-metagegevens.</translation>
-</phrase>
-
-<phrase>
-<original>No GPS data found</original>
-<translation>Geen GPS gegevens gevonden</translation>
-</phrase>
-
-<phrase>
-<original>Water</original>
-<translation>Water</translation>
-</phrase>
-
-<phrase>
-<original>Film negative</original>
-<translation>Film Negatief</translation>
-</phrase>
-
-<phrase>
-<original>Invert hue</original>
-<translation>Omkeren Kleurtoon</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Omkeren RGB</translation>
-</phrase>
-
-<phrase>
-<original>Bilateral smoothing</original>
-<translation>Bilaterale vergladding</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 clockwise</original>
-<translation>Draai afbeelding 90 met de klok mee</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 90 counter-clockwise</original>
-<translation>Draai afbeelding 90 tegen de klok in</translation>
-</phrase>
-
-<phrase>
-<original>Rotate image 180</original>
-<translation>Draai afbeelding 180</translation>
-</phrase>
-
-<phrase>
-<original>Arbitrary image rotation</original>
-<translation>Arbitraire beeldrotatie</translation>
-</phrase>
-
-<phrase>
-<original>Scan image</original>
-<translation>Scan Afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Screen capture</original>
-<translation>Schermafdruk</translation>
-</phrase>
-
-<phrase>
-<original>Select all</original>
-<translation>Selecteer alles</translation>
-</phrase>
-
-<phrase>
-<original>Invert selection</original>
-<translation>Omkeren selectie</translation>
-</phrase>
-
-<phrase>
-<original>Save selection</original>
-<translation>Opslaan selectie</translation>
-</phrase>
-
-<phrase>
-<original>Export selected area as image</original>
-<translation>Exporteer geselecteerd gebied als afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Export selection mask as image</original>
-<translation>Exporteer selectie masker als afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Select scanner or camera</original>
-<translation>Selecteer scanner of camera</translation>
-</phrase>
-
-<phrase>
-<original>Unsharp mask</original>
-<translation>Onscherpte masker</translation>
-</phrase>
-
-<phrase>
-<original>Color to alpha</original>
-<translation>Kleur naar alfa</translation>
-</phrase>
-
-<phrase>
-<original>Remove alpha channel</original>
-<translation>Verwijder alfakanaal</translation>
-</phrase>
-
-<!-- MainWindow.frm contains 560 phrases. 192 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11640,6 +11566,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct lighting</original>
+<translation>Autocorrectie belichting</translation>
+</phrase>
+
+<phrase>
 <original>Exit</original>
 <translation>Einde</translation>
 </phrase>
@@ -11664,7 +11595,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Geschatte resterende tijd</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 176 phrases. 71 were duplicates of existing phrases, so only 105 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 176 phrases. 70 were duplicates of existing phrases, so only 106 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13487,7 +13418,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Verplaats laag neerwaarts</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13496,6 +13427,12 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <!-- Layerpanel_Navigator.frm contains 0 phrases. -->
 
 <!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
+
+<!-- Layerpanel_Search.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Search.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -15735,18 +15672,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Layerpanel_Search.frm (layerpanel_Search) -->
-
-<!-- Layerpanel_Search.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Search.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2625</phrasecount>
+<phrasecount>2610</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4805 phrases. -->
-<!-- 2180 are duplicates, so only 2625 unique phrases have been written to file. -->
-<!-- These 2625 phrases contain approximately 12437 total words. -->
+<!-- As of this build, PhotoDemon contains 4776 phrases. -->
+<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
+<!-- These 2610 phrases contain approximately 12399 total words. -->
 
 </pdData>
