@@ -435,7 +435,7 @@ Public Sub ApplyDonutDistortion(ByVal effectParams As String, Optional ByVal toP
             nY = k + ssY(sampleIndex)
             
             'Calculate theta, and use it to calculate a source X position
-            theta = PDMath.Atan2_Fastest(-nY, -nX) + initialAngle
+            theta = PDMath.Atan2_Faster(-nY, -nX) + initialAngle
             theta = PDMath.Modulo(theta, PI_DOUBLE)
             srcX = theta * spreadCalc
             

@@ -302,7 +302,7 @@ Public Sub SwirlImage(ByVal effectParams As String, Optional ByVal toPreview As 
     midY = midY + initY
     
     'Rotation values
-    Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
+    Dim theta As Double, sRadius As Double, sRadiusInv As Double, sRadius2 As Double, sDistance As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -317,7 +317,9 @@ Public Sub SwirlImage(ByVal effectParams As String, Optional ByVal toPreview As 
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
     sRadius = Sqr(tWidth * tWidth + tHeight * tHeight) / 2#
-              
+    If (sRadius < 0.0000001) Then sRadius = 0.0000001
+    sRadiusInv = 1# / sRadius
+    
     sRadius = sRadius * (swirlRadius / 100#)
     sRadius2 = sRadius * sRadius
               
@@ -357,7 +359,7 @@ Public Sub SwirlImage(ByVal effectParams As String, Optional ByVal toPreview As 
                 sDistance = Sqr(sDistance)
                 
                 'Calculate theta
-                theta = PDMath.Atan2_Fastest(nY, nX) + swirlAngle * ((sRadius - sDistance) / sRadius)
+                theta = PDMath.Atan2_Faster(nY, nX) + swirlAngle * ((sRadius - sDistance) * sRadiusInv)
             
                 srcX = midX + (sDistance * Cos(theta))
                 srcY = midY + (sDistance * Sin(theta))
