@@ -2727,7 +2727,12 @@ End Sub
 
 'The top-level adjustments menu provides some shortcuts to most-used items.
 Private Sub MnuAdjustments_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuAdjustments(Index).Caption
+    
+    'Check the index; if it's past 10, then it's just a top-level menu for one of the
+    ' adjustment categories; we don't want to auto-trigger these, as one menu is named
+    ' "Invert" which is also a command in the "Selection" menu!
+    If (Index <= 10) Then Menus.ProcessDefaultAction_ByCaption MnuAdjustments(Index).Caption
+    
 End Sub
 
 Private Sub MnuArtistic_Click(Index As Integer)
