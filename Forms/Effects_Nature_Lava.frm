@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'Lava Effect
 'Copyright 2002-2019 by Tanner Helland
 'Created: 8/April/02
-'Last updated: 16/October/17
-'Last update: rewrite using new algorithm; migrate to dedicated UI instance
+'Last updated: 09/May/19
+'Last update: fix potential overflow on 32-bpp images with fully transparent regions
 '
 'This (silly) effect uses a combination of a pdNoise instance (for generating a base fog-like effect),
 ' which is then chrome-ified in red/orange hues, rotated 180 degrees, and merged onto itself to create
@@ -148,7 +148,7 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     
     'Create a local array and point it at the pixel data of the current image
     Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    EffectPrep.PrepImageData tmpSA, toPreview, dstPic, , , True
     
     If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
     m_tmpDIB.CreateFromExistingDIB workingDIB
