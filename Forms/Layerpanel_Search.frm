@@ -132,7 +132,14 @@ Private Sub srchMain_Click(bestSearchHit As String)
 End Sub
 
 Private Sub srchMain_GotFocusAPI()
-    Debug.Print "search stack generated"
+    UpdateSearchTerms
+End Sub
+
+Private Sub srchMain_RequestSearchList()
+    UpdateSearchTerms
+End Sub
+
+Private Sub UpdateSearchTerms()
     Dim searchStack As pdStringStack
     Menus.GetSearchableMenuList searchStack
     srchMain.SetSearchList searchStack

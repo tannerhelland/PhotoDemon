@@ -22,15 +22,15 @@ Begin VB.UserControl pdSearchBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   374
    ToolboxBitmap   =   "pdSearchBar.ctx":0000
-   Begin PhotoDemon.pdListBox lbPrimary 
-      Height          =   375
-      Left            =   0
+   Begin PhotoDemon.pdListBoxOD lbPrimary 
+      Height          =   255
+      Left            =   120
       TabIndex        =   0
-      Top             =   0
+      Top             =   120
       Visible         =   0   'False
-      Width           =   4935
-      _ExtentX        =   2566
-      _ExtentY        =   661
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   450
    End
 End
 Attribute VB_Name = "pdSearchBar"
@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Bar control
 'Copyright 2019-2019 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 25/April/19
-'Last update: initial build (based off a mashup of pdTextBox + pdDropDown)
+'Last updated: 09/May/19
+'Last update: wrap up remaining UI quirks - the search bar should be usable now!
 '
 'This is PD's version of a "search box" - an edit box that raises a neighboring list window with a list
 ' of "hits" that match the current search query.  Search matching is left up to the parent window, which
@@ -66,6 +66,10 @@ Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolea
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+
+'After language changes, the search list needs to be refreshed (as the current results, if any,
+' will still be in the *old* language!)
+Public Event RequestSearchList()
 
 'The actual common control edit box is handled by a dedicated class
 Private WithEvents m_EditBox As pdEditBoxW
@@ -106,13 +110,17 @@ Attribute ucSupport.VB_VarHelpID = -1
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
 '  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
 '  class, rather than treating every imaginable variant as a separate constant.)
-Private Enum PDEDITBOX_COLOR_LIST
+Private Enum PDDROPDOWNFONT_COLOR_LIST
     [_First] = 0
-    PDEB_Background = 0
-    PDEB_Border = 1
-    PDEB_Text = 2
-    [_Last] = 2
-    [_Count] = 3
+    PDDD_Background = 0
+    PDDD_ComboFill = 1
+    PDDD_ComboBorder = 2
+    PDDD_DropDownCaption = 3
+    PDDD_DropArrow = 4
+    PDDD_ListCaption = 5
+    PDDD_ListBorder = 6
+    [_Last] = 6
+    [_Count] = 7
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -153,13 +161,23 @@ Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 
 'Change this value to control the maximum number of visible items in the dropped box.  (Note that it's technically
 ' this value + 1, with the +1 representing the currently selected item.)
-Private Const NUM_ITEMS_VISIBLE As Long = 16
+Private Const NUM_ITEMS_VISIBLE As Long = 8
+
+'Padding around the currently selected list item when painted to the combo box.  These values are also added to the
+' default font metrics to arrive at a default control size.
+Private Const LIST_PADDING_HORIZONTAL As Single = 4!
+Private Const LIST_PADDING_VERTICAL As Single = 2!
 
 'The rectangle where the combo portion of the control is actually rendered
 Private m_ComboRect As RectF, m_MouseInComboRect As Boolean
 
 'When the popup listbox is visible, this is set to TRUE.  (Also, as a failsafe the list box hWnd is cached.)
 Private m_PopUpVisible As Boolean, m_PopUpHwnd As Long
+
+'If we previously pushed the edit box (awkwardly) to the side so that extra-long entries fit on screen,
+' this will be set to TRUE.  As the dropdown list tends to shrink as the user types more entries,
+' we want to reorient the list box as necessary.
+Private m_PopUpForciblyFit As Boolean
 
 'List box support class.  Handles data storage and coordinate math for rendering, but for this control, we primarily
 ' use the data storage aspect.  (Note that when the combo box is clicked and the corresponding listbox window is raised,
@@ -209,8 +227,8 @@ Public Property Let FontSize(ByVal newSize As Single)
     If Not (m_EditBox Is Nothing) Then
         If (newSize <> m_EditBox.FontSize) Then
             m_EditBox.FontSize = newSize
-            listSupport.DefaultItemHeight = Fonts.GetDefaultStringHeight(newSize) + Interface.FixDPI(4)
-            lbPrimary.FontSize = newSize
+            listSupport.DefaultItemHeight = Fonts.GetDefaultStringHeight(newSize) + Interface.FixDPI(LIST_PADDING_VERTICAL) * 2
+            lbPrimary.ListItemHeight = listSupport.DefaultItemHeight
             PropertyChanged "FontSize"
         End If
     End If
@@ -297,10 +315,32 @@ End Property
 'You *MUST* call this before the user starts typing; otherwise, the control won't have anything to search!
 Public Sub SetSearchList(ByRef srcStringStack As pdStringStack)
     Set m_SearchStack = srcStringStack
+    If m_PopUpVisible Then RefreshSearchResults
 End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
 
+    m_InSubclassNow = True
+    
+    'If certain events occur in our parent window, and our list box is visible, release it
+    If m_PopUpVisible Then
+        If (uiMsg = WM_ENTERSIZEMOVE) Or (uiMsg = WM_WINDOWPOSCHANGING) Then
+            HideListBox
+        ElseIf (uiMsg = WM_LBUTTONDOWN) Or (uiMsg = WM_RBUTTONDOWN) Or (uiMsg = WM_MBUTTONDOWN) Then
+            HideListBox
+        ElseIf (uiMsg = WM_NCDESTROY) Then
+            HideListBox
+            Set m_SubclassReleaseTimer = Nothing
+            VBHacks.StopSubclassing hWnd, Me
+            m_ParentHWnd = 0
+        End If
+    End If
+    
+    'Never eat parent window messages; just peek at them
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+    m_InSubclassNow = False
+    
 End Function
 
 'On dropdown-click, return the string (*not* the index) that was clicked
@@ -309,35 +349,95 @@ Private Sub lbPrimary_Click()
     RaiseEvent Click(m_BestMatchString)
 End Sub
 
+Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+
+    If (Not PDMain.IsProgramRunning()) Then Exit Sub
+    
+    'Cache colors in advance, so we can simply reuse them in the inner loop
+    Dim itemFillColor As Long, itemFillBorderColor As Long, itemFontColor As Long
+    itemFillColor = m_Colors.RetrieveColor(PDDD_ComboFill, Me.Enabled, itemIsSelected, itemIsHovered)
+    itemFillBorderColor = m_Colors.RetrieveColor(PDDD_ListBorder, Me.Enabled, itemIsSelected, itemIsHovered)
+    itemFontColor = m_Colors.RetrieveColor(PDDD_ListCaption, Me.Enabled, itemIsSelected, itemIsHovered)
+    
+    'Grab the rendering rect
+    Dim tmpRectF As RectF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    'Paint the fill and border
+    GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRectF, itemFillColor, 255, GP_CM_SourceCopy
+    GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRectF, itemFillBorderColor, , , , GP_LJ_Miter
+    
+    'Paint the font name in the default UI font
+    Dim tmpFont As pdFont, textPadding As Single
+    Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
+    textPadding = LIST_PADDING_HORIZONTAL
+    
+    Dim tmpString As String
+    tmpString = m_SearchResults.GetString(itemIndex)
+    
+    tmpFont.SetFontColor itemFontColor
+    tmpFont.AttachToDC bufferDC
+    tmpFont.SetTextAlignment vbLeftJustify
+    tmpFont.FastRenderTextWithClipping tmpRectF.Left + textPadding, tmpRectF.Top + LIST_PADDING_VERTICAL, tmpRectF.Width - LIST_PADDING_HORIZONTAL, tmpRectF.Height - LIST_PADDING_VERTICAL, tmpString, False, True, False
+    tmpFont.ReleaseFromDC
+    
+End Sub
+
+Private Sub lbPrimary_GotFocusAPI()
+    ComponentGotFocus
+End Sub
+
+Private Sub lbPrimary_LostFocusAPI()
+    ComponentLostFocus
+End Sub
+
+Private Sub listSupport_RedrawNeeded()
+    If ucSupport.AmIVisible Then RedrawBackBuffer
+End Sub
+
 Private Sub m_EditBox_Change()
+
     If (PDMain.IsProgramRunning()) Then
-        PerformSearch
+        
+        RefreshSearchResults
+        
+        'Finally, notify our parent
         RaiseEvent Change
+        
     End If
+    
 End Sub
 
 Private Sub m_EditBox_GotFocusAPI()
+    
+    'If the dropdown isn't visible, make it visible now
+    If (Not m_ControlHasFocus) And (Not m_SearchResults Is Nothing) Then
+        If (Len(m_EditBox.Text) <> 0) And (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox
+    End If
+    
     ComponentGotFocus
+    
 End Sub
 
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
-    'Enter/Esc/Tab keypresses receive special treatment
+    'Enter raises a Click event with the current best-match search result (if any)
     If (vKey = pdnk_Enter) Then
-        Debug.Print "enter pressed?"
+        
         'Retrieve the best-match string, if any
         PerformSearch
         If (m_SearchResults.GetNumOfStrings > 0) Then
-            Debug.Print "match found?"
             m_BestMatchString = m_SearchResults.GetString(0)
             RaiseEvent Click(m_BestMatchString)
         Else
-            Debug.Print "no match found?"
             If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
         End If
-        
+    
+    'Esc/Tab keypresses are checked for navigation usefulness
     ElseIf ((vKey = pdnk_Escape) Or (vKey = pdnk_Tab)) Then
         If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
+    
+    'Other keypresses are passed, uninterrupted, to our parent
     Else
         RaiseEvent KeyPress(vKey, preventFurtherHandling)
     End If
@@ -358,6 +458,19 @@ Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
+Private Sub m_SubclassReleaseTimer_Timer()
+    If (Not m_InSubclassNow) Then
+        m_SubclassReleaseTimer.StopTimer
+        RemoveSubclass
+    End If
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    If m_PopUpVisible Then HideListBox
+    RedrawBackBuffer
+    RaiseEvent LostFocusAPI
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
@@ -365,12 +478,14 @@ End Sub
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     
     If (Not m_EditBox Is Nothing) Then
-        
-        'If we haven't created the edit box yet, now is a great time to do it!
         If (m_EditBox.hWnd = 0) Then CreateEditBoxAPIWindow
-        
         m_EditBox.Visible = newVisibility
-        
+    Else
+        If newVisibility Then
+            listSupport.SetAutomaticRedraws True, True
+        Else
+            If m_PopUpVisible Then HideListBox
+        End If
     End If
     
 End Sub
@@ -394,11 +509,15 @@ Private Sub PerformSearch()
         Exit Sub
     End If
     
+    If (LenB(Trim$(m_EditBox.Text)) = 0) Then
+        Set m_SearchResults = Nothing
+        Exit Sub
+    End If
+    
     Set m_SearchResults = New pdStringStack
     
     Dim strSource As String
     strSource = m_EditBox.Text
-    Debug.Print "performing search on " & m_SearchStack.GetNumOfStrings & " input strings; input = " & strSource
     
     'Search is pretty simple: iterate the list the caller provided, and see if the search string occurs
     ' inside any of the strings we were passed.  Exact matches are given priority over partial matches,
@@ -431,6 +550,46 @@ Private Sub PerformSearch()
     ' are not implemented currently as internationalization concerns terrify me.  English searches would
     ' be easy enough to handle, but other languages... I'd definitely need outside help.
     
+End Sub
+
+'After search results change, we need to update the corresponding list object
+Private Sub UpdateResultsList()
+
+    listSupport.Clear
+    If (m_SearchResults Is Nothing) Then Exit Sub
+    If (m_SearchResults.GetNumOfStrings > 0) Then
+        
+        'Update each item in the list, and - importantly! - note that items do *NOT* need to
+        ' be translated by the language engine (as we've already received translated strings
+        ' from the menu manager
+        Dim i As Long
+        For i = 0 To m_SearchResults.GetNumOfStrings - 1
+            listSupport.AddItem m_SearchResults.GetString(i), , , , False
+        Next i
+        
+    End If
+    
+End Sub
+
+Private Sub RefreshSearchResults()
+    
+    If PDMain.IsProgramRunning() Then
+    
+        'First, perform a search to see if we have any matches
+        PerformSearch
+        
+        'If we do, forward the matches to the listbox and display it
+        UpdateResultsList
+        
+        If (m_SearchResults Is Nothing) Then
+            HideListBox
+            Exit Sub
+        End If
+        
+        If (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox Else HideListBox
+        
+    End If
+        
 End Sub
 
 'Sometimes, we want to change the UC's size to match the edit box.  Other times, we want to change the edit box's size to
@@ -506,6 +665,8 @@ Private Sub ComponentLostFocus()
         End If
     End If
     
+    If (Not m_ControlHasFocus) Then HideListBox
+    
     'Regardless of component state, redraw the control "just in case"
     RelayUpdatedColorsToEditBox
     RedrawBackBuffer
@@ -563,10 +724,6 @@ Private Sub CreateEditBoxAPIWindow()
     
 End Sub
 
-Private Sub UserControl_GotFocus()
-    ComponentGotFocus
-End Sub
-
 Private Sub UserControl_Hide()
     If (Not m_EditBox Is Nothing) Then m_EditBox.Visible = False
 End Sub
@@ -585,15 +742,14 @@ Private Sub UserControl_Initialize()
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
-    Dim colorCount As PDEDITBOX_COLOR_LIST: colorCount = [_Count]
-    m_Colors.InitializeColorList "PDEditBox", colorCount
-    If Not PDMain.IsProgramRunning() Then UpdateColorList
+    Dim colorCount As PDDROPDOWNFONT_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDDropDownFont", colorCount
+    If (Not PDMain.IsProgramRunning()) Then UpdateColorList
     
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
     listSupport.ListSupportMode = PDLM_COMBOBOX
-    
     
 End Sub
 
@@ -621,7 +777,14 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Terminate()
+    
     Set m_EditBox = Nothing
+    
+    'As a failsafe, immediately release the popup box.  (If we don't do this, PD will crash.)
+    If m_PopUpVisible Then HideListBox
+    If Not (m_SubclassReleaseTimer Is Nothing) Then m_SubclassReleaseTimer.StopTimer
+    SafelyRemoveSubclass
+    
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -633,8 +796,16 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UpdateControlLayout()
+    
     SynchronizeSizes
+    
+    'Notify the list manager of our new size.  (Note that this isn't necessary from a rendering standpoint, as we don't
+    ' render a normal list-type UI to the dropdown - but the listSupport class won't raise Redraw events if it has an
+    ' invalid rendering rect.)
+    listSupport.NotifyParentRectF m_ComboRect
+    
     RedrawBackBuffer
+    
 End Sub
 
 'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
@@ -643,7 +814,7 @@ Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDDD_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
     If (bufferDC = 0) Then Exit Sub
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
@@ -667,7 +838,7 @@ Private Sub RedrawBackBuffer()
         Else
             borderWidth = 1
         End If
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, GP_LJ_Miter
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, GP_LJ_Miter
     
     End If
     
@@ -684,9 +855,13 @@ Private Sub UpdateColorList()
     'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
     ' It will build an internal hash table of the colors we request, which makes rendering much faster.
     With m_Colors
-        .LoadThemeColor PDEB_Background, "Background", IDE_WHITE
-        .LoadThemeColor PDEB_Border, "Border", IDE_BLUE
-        .LoadThemeColor PDEB_Text, "Text", IDE_GRAY
+        .LoadThemeColor PDDD_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDDD_ComboFill, "ComboFill", IDE_WHITE
+        .LoadThemeColor PDDD_ComboBorder, "ComboBorder", IDE_GRAY
+        .LoadThemeColor PDDD_DropDownCaption, "Caption", IDE_GRAY
+        .LoadThemeColor PDDD_DropArrow, "DropArrow", IDE_GRAY
+        .LoadThemeColor PDDD_ListCaption, "ListCaption", IDE_GRAY
+        .LoadThemeColor PDDD_ListBorder, "ListBorder", IDE_GRAY
     End With
     
     RelayUpdatedColorsToEditBox
@@ -697,8 +872,313 @@ End Sub
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
     If (Not m_EditBox Is Nothing) Then
-        m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
-        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.BackColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.TextColor = m_Colors.RetrieveColor(PDDD_DropDownCaption, Me.Enabled, False, False)
+    End If
+End Sub
+
+'Display the search results list box; typically done on receiving focus and/or the first edit box "Change" event.
+Private Sub RaiseListBox()
+    
+    On Error GoTo UnexpectedListBoxTrouble
+    
+    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Or (Not PDMain.IsProgramRunning()) Then Exit Sub
+    
+    'This sub is called whenever the list box is meant to be shown (e.g. every edit box change event),
+    ' which means there are two possible starting points:
+    ' 1) The list box is currently invisible, and needs to be made visible
+    ' 2) The list box is already visible, and its size potentially needs to be adjusted (because the
+    '     number of search results may have changed, thanks to the user typing more text)
+    '
+    'Because these two scenarios have quite different requirements, we handle them separately.
+    
+    'First, retrieve the edit box's window coordinates *in the screen's coordinate space*.
+    ' (We need this to know how to position the listbox next to it, and to establish a lower
+    ' limit on the dropdown's width.)
+    Dim myRect As RectL
+    GetWindowRect m_EditBox.hWnd, myRect
+    
+    'Start with the case where the listbox is *not* visible; this requires more work as we have to establish
+    ' an initial x/y position, and also setup a bunch of window bit changes to make the child control
+    ' work as a popup window.
+    Dim popupRect As RectF, showingFirstTime As Boolean
+    
+    If (Not m_PopUpVisible) Then
+    
+        'We now want to figure out the idealized coordinates for the pop-up rect.
+        'Start by assuming a successful drop-down.  (If this fails, we'll "drop-up" instead.)
+        With popupRect
+            .Left = myRect.Left - 3     '-3 so that text aligns (instead of just window chrome)
+            .Top = myRect.Bottom + 1
+            
+            'Width and height are TBD, contingent on list contents
+        End With
+        
+        'The first time we raise the window, we want to cache its current window longs
+        ' as whatever VB has set.  (We may need to restore these before the window is unloaded,
+        ' to prevent issues with VB.)
+        m_PopUpHwnd = lbPrimary.hWnd
+        m_ParentHWnd = UserControl.Parent.hWnd
+        If (Not m_WindowStyleHasBeenSet) Then
+            m_WindowStyleHasBeenSet = True
+            m_OriginalWindowBits = g_WindowManager.GetWindowLongWrapper(m_PopUpHwnd)
+            m_OriginalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_PopUpHwnd, True)
+        End If
+        
+        'We also want to make the listbox a top-level window (SetParent null) and while we're at it,
+        ' apply any other relevant window styles.  The top-level window is especially important,
+        ' as it allows the listbox to be positioned outside the boundary rect of this control.
+        SetParent m_PopUpHwnd, 0&
+        g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_EX_PALETTEWINDOW, False, True
+        
+        'Normally, you need to reset the popup and child flags when you make a window top-level.
+        ' Unfortunately, this breaks the window terribly, and I'm not sure why; it's probably an
+        ' internal VB thing.  At any rate, the current solution seems to work, so we ignore this for now.
+        'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_CHILD, True, False
+        'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_POPUP, False, False
+        
+        showingFirstTime = True
+        
+    Else
+        
+        showingFirstTime = False
+        
+        'Initialize our window rect to the list box's *current* on-screen rect.
+        Dim tmpWinRect As winRect
+        g_WindowManager.GetWindowRect_API m_PopUpHwnd, tmpWinRect
+        
+        With popupRect
+            .Left = tmpWinRect.x1
+            .Top = tmpWinRect.y1
+            .Width = tmpWinRect.x2 - tmpWinRect.x1
+            .Height = tmpWinRect.y2 - tmpWinRect.y1
+        End With
+        
+        'If the edit box was previously forced aside due to screen boundaries, reset it to
+        ' the edit box's coordinates; it will be moved again in a subsequent step, as necessary.
+        If m_PopUpForciblyFit Then popupRect.Left = myRect.Left
+        
+    End If
+    
+    'Regardless of whether the listbox is visible or not, we now want to make sure it is large enough
+    ' to fit all search entries (both horizontally and vertically).
+    
+    'Let's deal with height first.
+    
+    'Height is obviously contingent on how many entries we need to show.  We want to show as many
+    ' as possible, up to the limit of NUM_ITEMS_VISIBLE.  (Past that point, we'll use a scrollbar.)
+    ' Note that we calculation both an "untouched" amount to show (amtShowOriginal), and an "actual"
+    ' amount to show (amtShow); later in the function we'll use any difference between these to
+    ' know if a scrollbar is required.
+    Dim amtShow As Long, amtShowOriginal As Long
+    amtShow = m_SearchResults.GetNumOfStrings
+    amtShowOriginal = amtShow
+    If (amtShow > NUM_ITEMS_VISIBLE) Then amtShow = NUM_ITEMS_VISIBLE
+    
+    'Make sure we're showing at least one item; if we're not, hide the window instead and bail
+    If (amtShow <= 0) Then
+        HideListBox
+        Exit Sub
+    End If
+        
+    'We now know there's at least one item in the results list.
+    
+    'Instead of doing a cheap size calculation (itemHeight * count), iterate through the list;
+    ' this is separator-compatible (if we decide to use separators in the future).
+    Dim sizeChange As Single, i As Long
+    sizeChange = amtShow * listSupport.DefaultItemHeight
+    
+    If (listSupport.GetInternalSizeMode = PDLH_SEPARATORS) Then
+        For i = 0 To amtShow - 1
+            If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
+        Next i
+    End If
+    
+    'Use this as our baseline for the list box's height, and add enough space for window chrome
+    popupRect.Height = sizeChange + 3
+    
+    'Next, we want to calculate width.  There's no trivial way to do this; instead, we need to
+    ' manually iterate the list and find the longest string being displayed.
+    
+    'Create a temporary DIB so we don't have to constantly re-select the font into a DC of its own making.
+    Dim tmpDC As Long
+    tmpDC = GDI.GetMemoryDC()
+    
+    'Font names are rendered in the current UI font
+    Dim curFont As pdFont
+    Set curFont = Fonts.GetMatchingUIFont(m_EditBox.FontSize)
+    curFont.AttachToDC tmpDC
+    
+    'Find the longest font name
+    Dim tmpWidth As Long, maxWidth As Long
+    For i = 0 To m_SearchResults.GetNumOfStrings() - 1
+        tmpWidth = curFont.GetWidthOfString(m_SearchResults.GetString(i))
+        If (tmpWidth > maxWidth) Then maxWidth = tmpWidth
+    Next i
+    
+    curFont.ReleaseFromDC
+    GDI.FreeMemoryDC tmpDC
+    
+    'If the max width is not greater than the width of our parent edit box, use its width instead
+    If (myRect.Right - myRect.Left) > maxWidth Then maxWidth = (myRect.Right - myRect.Left)
+    popupRect.Width = maxWidth
+    
+    'If the listbox requires a scroll bar, factor that into the width calculation; otherwise, add just
+    ' enough for window chrome padding.
+    If (amtShowOriginal > amtShow) Then
+        popupRect.Width = popupRect.Width + Interface.FixDPI(28)
+    Else
+        popupRect.Width = popupRect.Width + Interface.FixDPI(12)
+    End If
+    
+    'We now want to make sure the popup box doesn't lie off-screen.  If it does, we want to flip it
+    ' to appear "above" the search bar.
+    Dim estimatedDesktopBottom As Long
+    estimatedDesktopBottom = (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight) - g_Displays.GetTaskbarHeight
+        
+    If (popupRect.Top + popupRect.Height > estimatedDesktopBottom) Then popupRect.Top = myRect.Top - popupRect.Height
+    
+    'Same with left/right differences
+    If (popupRect.Left < g_Displays.GetDesktopLeft) Then
+        sizeChange = g_Displays.GetDesktopLeft - popupRect.Left
+        popupRect.Left = g_Displays.GetDesktopLeft
+        m_PopUpForciblyFit = True
+    ElseIf (popupRect.Left + popupRect.Width > g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth) Then
+        sizeChange = (popupRect.Left + popupRect.Width) - (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)
+        popupRect.Left = popupRect.Left - sizeChange
+        m_PopUpForciblyFit = True
+    End If
+    
+    'The list box is now ready to go.
+    
+    'If the listbox is already visible, compare its newly calculated position to its current position.
+    ' If they are identical, we can exit immediately - while still making sure to sync any changes
+    ' to the underlying list of search results!
+    If (Not showingFirstTime) Then
+        
+        With m_popupRectCopy
+            If (.Left = Int(popupRect.Left)) And (.Top = Int(popupRect.Top)) Then
+                If (.Right = Int(popupRect.Left + popupRect.Width + 0.999999)) Then
+                    If (.Bottom = Int(popupRect.Top + popupRect.Height + 0.999999)) Then
+                        lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
+                        Exit Sub
+                    End If
+                End If
+            End If
+        End With
+        
+    End If
+    
+    'Move the listbox into its new position *but do not activate it* (we don't want to steal focus
+    ' from the edit box where the user is typing!)
+    With popupRect
+        SetWindowPos m_PopUpHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
+    End With
+    
+    'We also need to cache the popup rect's position; when the listbox is closed, we will manually
+    ' invalidate windows beneath it (only on certain OS + theme combinations; Aero handles this correctly).
+    With m_popupRectCopy
+        .Left = Int(popupRect.Left)
+        .Top = Int(popupRect.Top)
+        .Right = Int(popupRect.Left + popupRect.Width + 0.999999)
+        .Bottom = Int(popupRect.Top + popupRect.Height + 0.999999)
+    End With
+    
+    'Clone our list's contents; note that we cannot do this until *after* the list size has been established,
+    ' as the scroll bar's maximum value is contingent on the available pixel size of the dropdown.
+    lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
+    
+    'Now we can show the window; we also notify the window of its changed window style bits
+    With popupRect
+        SetWindowPos m_PopUpHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_FRAMECHANGED
+    End With
+    
+    'One last thing: because this is a (fairly?  mostly?  extremely?) hackish way to emulate a combo box,
+    ' we need to cover the case where the user selects outside the raised list box, but *not* on an object
+    ' that can receive focus (e.g. an exposed section of an underlying form).  Focusable objects are taken
+    ' care of automatically, because a LostFocus event will fire, but non-focusable clicks are problematic.
+    ' To solve this, we subclass our parent control and watch for mouse events. Also, since we're subclassing
+    ' the control anyway, we'll also hide the ListBox if the parent window is moved.
+    If (m_ParentHWnd <> 0) And PDMain.IsProgramRunning() Then
+        
+        'Make sure we're not currently trying to release a previous subclass attempt
+        Dim subclassActive As Boolean: subclassActive = False
+        If Not (m_SubclassReleaseTimer Is Nothing) Then
+            If m_SubclassReleaseTimer.IsActive Then
+                m_SubclassReleaseTimer.StopTimer
+                subclassActive = True
+            End If
+        End If
+        
+        If (Not subclassActive) And (Not m_SubclassActive) Then
+            VBHacks.StartSubclassing m_ParentHWnd, Me
+            m_SubclassActive = True
+        End If
+        
+    End If
+    
+    'As an additional failsafe, we also notify the master UserControl tracker that a list box is active.
+    ' If any other PD control receives focus, that tracker will automatically unload our list box as well,
+    ' "just in case".
+    UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, True
+    
+    m_PopUpVisible = True
+    
+    Exit Sub
+    
+UnexpectedListBoxTrouble:
+    PDDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
+    
+End Sub
+
+Private Sub HideListBox()
+
+    If m_PopUpVisible And (m_PopUpHwnd <> 0) Then
+        
+        'Notify the master UserControl tracker that our list box is now inactive.
+        UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False
+        
+        m_PopUpVisible = False
+        SetParent m_PopUpHwnd, Me.hWnd
+        If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , , True
+        If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , True, True
+        g_WindowManager.SetVisibilityByHWnd m_PopUpHwnd, False
+        
+        m_PopUpHwnd = 0
+        
+        'If Aero theming is not active, hiding the list box may cause windows beneath the current one to render incorrectly.
+        If (OS.IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
+            InvalidateRect 0&, VarPtr(m_popupRectCopy), 0&
+        End If
+        
+        'Note that termination may result in the client site not being available.  If this happens, we simply want
+        ' to continue; the subclasser will handle clean-up automatically.
+        SafelyRemoveSubclass
+        
+    End If
+    
+End Sub
+
+'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
+Private Sub RemoveSubclass()
+    On Error GoTo UnsubclassUnnecessary
+    If ((m_ParentHWnd <> 0) And m_SubclassActive) Then
+        VBHacks.StopSubclassing m_ParentHWnd, Me
+        m_ParentHWnd = 0
+        m_SubclassActive = False
+    End If
+UnsubclassUnnecessary:
+End Sub
+
+'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
+' release the hook as soon as the system allows.
+Private Sub SafelyRemoveSubclass()
+    If m_InSubclassNow Then
+        If (m_SubclassReleaseTimer Is Nothing) Then Set m_SubclassReleaseTimer = New pdTimer
+        m_SubclassReleaseTimer.Interval = 16
+        m_SubclassReleaseTimer.StartTimer
+    Else
+        RemoveSubclass
     End If
 End Sub
 
@@ -706,8 +1186,13 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
-        If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
-        If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        listSupport.UpdateAgainstCurrentTheme
+        lbPrimary.UpdateAgainstCurrentTheme
+        If PDMain.IsProgramRunning() Then
+            NavKey.NotifyControlLoad Me, hostFormhWnd
+            ucSupport.UpdateAgainstThemeAndLanguage
+            RaiseEvent RequestSearchList
+        End If
     End If
 End Sub
 
@@ -720,4 +1205,3 @@ Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTi
         ucSupport.AssignTooltip targetHWnd, newTooltip, newTooltipTitle
     End If
 End Sub
-

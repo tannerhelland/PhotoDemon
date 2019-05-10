@@ -123,7 +123,7 @@ End Sub
 'Add an item to the list.  Note that all parameters are optional; if the owner is managing a list with custom data, for example,
 ' they do not need to pass strings to this function.  Similarly, things like separators and custom height can be happily
 ' ignored if those features are not required.
-Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
+Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1, Optional ByVal itemShouldBeTranslated As Boolean = True)
     
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
@@ -159,7 +159,11 @@ Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional
         'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
         If (Not g_Language Is Nothing) Then
             If g_Language.TranslationActive Then
-                .textTranslated = g_Language.TranslateMessage(srcItemText)
+                If itemShouldBeTranslated Then
+                    .textTranslated = g_Language.TranslateMessage(srcItemText)
+                Else
+                    .textTranslated = srcItemText
+                End If
             Else
                 .textTranslated = srcItemText
             End If
@@ -278,14 +282,15 @@ End Sub
 ' rendering parameters.
 Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
     
-    'The order in which we copy data from the target list support is crucial; copying in the wrong order will cause crashes,
-    ' especially because we are copying the data using direct pointer manipulation.
+    'The order in which we copy data from the target list support is crucial; copying in the
+    ' wrong order will cause crashes, especially because we are copying the data using direct
+    ' pointer manipulation.
     
-    'Basically, I'm saying: don't mess with this function.
+    'In other words: don't mess with this function.
     
     'Start by grabbing the raw m_Items array
     m_NumOfItems = srcListSupport.ListCount
-    If m_NumOfItems > 0 Then
+    If (m_NumOfItems > 0) Then
         
         ReDim m_Items(0 To srcListSupport.GetSizeOfInternalListStruct) As PD_LISTITEM
         
@@ -313,13 +318,13 @@ Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optio
     
     'Normally, we calculate a new scrollbar maximum during the CalculateRenderMetrics step, but during a clone, we want to
     ' set it early so we can position the scroll bar perfectly, according to our parent control's requested position.
-    If desiredListIndexTop <> 0 Then
+    If (desiredListIndexTop <> 0) Then
         
         Dim newScrollValue As Single
-        newScrollValue = (m_Items(m_ListIndex).itemTop - desiredListIndexTop)
+        If (m_ListIndex >= 0) And (m_NumOfItems > 0) Then newScrollValue = (m_Items(m_ListIndex).itemTop - desiredListIndexTop)
         
-        If newScrollValue < 0 Then newScrollValue = 0
-        If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+        If (newScrollValue < 0) Then newScrollValue = 0
+        If (newScrollValue > m_ScrollMax) Then newScrollValue = m_ScrollMax
         Me.ScrollValue = newScrollValue
         
     Else

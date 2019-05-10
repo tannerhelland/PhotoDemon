@@ -66,16 +66,21 @@ Public Event LostFocusAPI()
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RectL) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Const GWL_EXSTYLE As Long = -20
+
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
+Private Const WS_EX_WINDOWEDGE As Long = &H100&
+Private Const WS_EX_TOPMOST As Long = &H8&
+Private Const WS_EX_PALETTEWINDOW As Long = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
 Private m_WindowStyleHasBeenSet As Boolean
+Private m_OriginalWindowBits As Long, m_OriginalWindowBitsEx As Long
+Private m_popupRectCopy As RectL
 
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOACTIVATE As Long = &H10
+Private Const SWP_FRAMECHANGED As Long = &H20
 
 'When the popup listbox is raised, we subclass the parent control.  If it is moved or sized or clicked, we automatically
 ' unload the dropdown listview.  (This workaround is necessary for modal dialogs, among other things.)
@@ -887,15 +892,37 @@ Private Sub RaiseListBox()
     'The list box is now ready to go.  Before displaying it, we want to convert the listbox to a floating toolbox window
     ' and a bare child of the desktop (hWnd = 0).  This allows the listbox to be positioned outside our boundary rect.
     m_PopUpHwnd = lbPrimary.hWnd
+    m_ParentHWnd = UserControl.Parent.hWnd
     If (Not m_WindowStyleHasBeenSet) Then
         m_WindowStyleHasBeenSet = True
-        SetWindowLong m_PopUpHwnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) Or WS_EX_TOOLWINDOW
+        m_OriginalWindowBits = g_WindowManager.GetWindowLongWrapper(m_PopUpHwnd)
+        m_OriginalWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_PopUpHwnd, True)
     End If
+    
+    'Now we are ready to display the window.  Make it a top-level window (SetParent null) and apply any other relevant
+    ' window styles.  The top-level window is especially important, as it allows the listbox to be positioned outside
+    ' the boundary rect of this control.
     SetParent m_PopUpHwnd, 0&
+    g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_EX_PALETTEWINDOW, False, True
+    
+    'Normally, you need to reset the popup and child flags when you make a window top-level.  Unfortunately, this breaks
+    ' the window terribly, and I'm not sure why; it's probably an internal VB thing.  At any rate, the current solution
+    ' seems to work, so we ignore this for now.
+    'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_CHILD, True, False
+    'g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, WS_POPUP, False, False
     
     'Move the listbox into position *but do not display it*
     With popupRect
         SetWindowPos m_PopUpHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
+    End With
+    
+    'We also need to cache the popup rect's position; when the listbox is closed, we will manually invalidate windows
+    ' beneath it (only on certain OS + theme combinations; Aero handles this correctly).
+    With m_popupRectCopy
+        .Left = popupRect.Left
+        .Top = popupRect.Top
+        .Right = popupRect.Left + popupRect.Width
+        .Bottom = popupRect.Top + popupRect.Height
     End With
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
@@ -912,7 +939,6 @@ Private Sub RaiseListBox()
     ' section of an underlying form).  Focusable objects are taken care of automatically, because a LostFocus event will fire,
     ' but non-focusable clicks are problematic.  To solve this, we subclass our parent control and watch for mouse events.
     ' Also, since we're subclassing the control anyway, we'll also hide the ListBox if the parent window is moved.
-    m_ParentHWnd = UserControl.Parent.hWnd
     If (m_ParentHWnd <> 0) And PDMain.IsProgramRunning() Then
         
         'Make sure we're not currently trying to release a previous subclass attempt
@@ -940,7 +966,7 @@ Private Sub RaiseListBox()
     Exit Sub
     
 UnexpectedListBoxTrouble:
-    PDDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
+    PDDebug.LogAction "WARNING!  pdDropDownFont.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
     
 End Sub
 
@@ -953,16 +979,20 @@ Private Sub HideListBox()
         
         m_PopUpVisible = False
         SetParent m_PopUpHwnd, Me.hWnd
+        If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , , True
+        If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , True, True
         g_WindowManager.SetVisibilityByHWnd m_PopUpHwnd, False
+        
         m_PopUpHwnd = 0
+        
+        'If Aero theming is not active, hiding the list box may cause windows beneath the current one to render incorrectly.
+        If (OS.IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
+            InvalidateRect 0&, VarPtr(m_popupRectCopy), 0&
+        End If
         
         'Note that termination may result in the client site not being available.  If this happens, we simply want
         ' to continue; the subclasser will handle clean-up automatically.
         SafelyRemoveSubclass
-        
-        'Restoring window styles proves unnecessary (and in fact, it can fuck things up - so just leave the style bits as
-        ' we set them previously!)
-        'SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) And CLng(Not WS_EX_TOOLWINDOW)
         
     End If
     
@@ -1043,7 +1073,7 @@ Private Sub UpdateControlLayout()
     
     'With all size metrics handled, we can now paint the back buffer
     RedrawBackBuffer True
-            
+    
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
