@@ -414,7 +414,7 @@ End Property
 Friend Property Let ListIndex(ByVal newIndex As Long)
     
     If (newIndex < m_NumOfItems) And PDMain.IsProgramRunning() Then
-        Debug.Print newIndex
+        
         m_ListIndex = newIndex
         If (newIndex >= 0) Then
         

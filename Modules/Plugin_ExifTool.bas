@@ -1109,7 +1109,21 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     If saveIsMultipageTIFF And (Not forciblyAnonymize) Then AddMultipageData srcPDImage, cmdParams
     
     'If we were asked to remove GPS data, do so now
-    If forciblyAnonymize And srcFileAvailable Then cmdParams.AppendLine "-gps:all="
+    If forciblyAnonymize And srcFileAvailable Then
+        cmdParams.AppendLine "-gps:all="
+      
+    'If we were *not* asked to remove GPS data, and the source file contains GPS coordinates,
+    ' we need to write them manually to prevent a loss of precision.
+    Else
+    
+        If srcPDImage.ImgMetadata.HasGPSMetadata() Then
+            Dim latString As String, lonString As String
+            srcPDImage.ImgMetadata.FillLatitudeLongitude latString, lonString
+            cmdParams.AppendLine "-GPS:GPSLatitude=" & latString
+            cmdParams.AppendLine "-GPS:GPSLongitude=" & lonString
+        End If
+        
+    End If
     
     'The incoming parameter "forciblyAnonymize" indicates the user wants privacy tags removed.
     ' If the user has NOT requested anonymization, list PD as the processing software.  (Note that this behavior can also be
