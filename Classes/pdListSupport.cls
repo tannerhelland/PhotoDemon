@@ -412,16 +412,22 @@ End Property
 'You can set the ListIndex to -1 to indicate "nothing is selected", but this is stupid for a whole bunch of reasons, so please
 ' don't do it.  (I mention this because this function rejects invalid ListIndex requests, with that sole exception.)
 Friend Property Let ListIndex(ByVal newIndex As Long)
-
-    If (newIndex >= -1) And (newIndex < m_NumOfItems) And PDMain.IsProgramRunning() Then
     
+    If (newIndex < m_NumOfItems) And PDMain.IsProgramRunning() Then
+        Debug.Print newIndex
         m_ListIndex = newIndex
-        RaiseEvent Click
+        If (newIndex >= 0) Then
         
-        'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
-        If MakeSureListIndexFitsOnscreen Then
-            RaiseEvent ScrollValueChanged
-            If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+            RaiseEvent Click
+        
+            'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
+            If MakeSureListIndexFitsOnscreen Then
+                RaiseEvent ScrollValueChanged
+                If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+            Else
+                If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
+            End If
+            
         Else
             If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
         End If

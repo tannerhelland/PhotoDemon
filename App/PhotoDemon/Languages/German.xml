@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1068</langversion>
+<langversion>7.2.1106</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -323,7 +323,7 @@ Wenn das Problem bestehen bleibt, melden Sie es bitte den Entwicklern von PhotoD
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation></translation>
+<translation>Farben und Beleuchtung werden autom. korrigiert</translation>
 </phrase>
 
 <phrase>
@@ -368,7 +368,7 @@ Wenn das Problem bestehen bleibt, melden Sie es bitte den Entwicklern von PhotoD
 
 <phrase>
 <original>Auto-enhancing color and lighting</original>
-<translation></translation>
+<translation>Farbe und Beleuchtung werden autom. verbessert</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
@@ -10612,7 +10612,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>palette type</original>
-<translation></translation>
+<translation>Palettentyp</translation>
 </phrase>
 
 <phrase>
@@ -10657,12 +10657,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color only (RGB)</original>
-<translation></translation>
+<translation>Nur Farbe (RGB)</translation>
 </phrase>
 
 <phrase>
 <original>color and opacity (RGBA)</original>
-<translation></translation>
+<translation>Farbe und Opazität (RGBA)</translation>
 </phrase>
 
 <phrase>
@@ -13488,7 +13488,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>search</original>
-<translation></translation>
+<translation>Suchen</translation>
 </phrase>
 
 <phrase>

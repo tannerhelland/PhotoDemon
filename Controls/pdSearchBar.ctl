@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Bar control
 'Copyright 2019-2019 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 09/May/19
-'Last update: wrap up remaining UI quirks - the search bar should be usable now!
+'Last updated: 10/May/19
+'Last update: implement arrow key navigation for the dropdown, without the edit box losing focus
 '
 'This is PD's version of a "search box" - an edit box that raises a neighboring list window with a list
 ' of "hits" that match the current search query.  Search matching is left up to the parent window, which
@@ -412,7 +412,7 @@ Private Sub m_EditBox_GotFocusAPI()
     
     'If the dropdown isn't visible, make it visible now
     If (Not m_ControlHasFocus) And (Not m_SearchResults Is Nothing) Then
-        If (Len(m_EditBox.Text) <> 0) And (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox
+        If (LenB(m_EditBox.Text) <> 0) And (m_SearchResults.GetNumOfStrings > 0) Then RaiseListBox
     End If
     
     ComponentGotFocus
@@ -424,11 +424,21 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
     'Enter raises a Click event with the current best-match search result (if any)
     If (vKey = pdnk_Enter) Then
         
-        'Retrieve the best-match string, if any
+        'Make sure we have usable search results for the current query
         PerformSearch
         If (m_SearchResults.GetNumOfStrings > 0) Then
-            m_BestMatchString = m_SearchResults.GetString(0)
+            
+            'If the list box is dropped, query it for a list index; if the user has used arrow keys
+            ' to select a *different* entry, use that instead.  (This allows for navigating the dropdown
+            ' using keyboard only, no mouse required.)
+            Dim targetIndex As Long: targetIndex = 0
+            If m_PopUpVisible Then
+                If (lbPrimary.ListIndex >= 0) Then targetIndex = lbPrimary.ListIndex
+            End If
+            
+            m_BestMatchString = m_SearchResults.GetString(targetIndex)
             RaiseEvent Click(m_BestMatchString)
+            
         Else
             If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
         End If
@@ -437,6 +447,10 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
     ElseIf ((vKey = pdnk_Escape) Or (vKey = pdnk_Tab)) Then
         If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
     
+    'Up/down keypresses are forwarded to the dropped listbox
+    ElseIf ((vKey = vbKeyDown) Or (vKey = vbKeyUp)) And m_PopUpVisible Then
+        lbPrimary.NotifyKeyDown Shift, vKey, preventFurtherHandling
+        
     'Other keypresses are passed, uninterrupted, to our parent
     Else
         RaiseEvent KeyPress(vKey, preventFurtherHandling)
@@ -1060,8 +1074,16 @@ Private Sub RaiseListBox()
             If (.Left = Int(popupRect.Left)) And (.Top = Int(popupRect.Top)) Then
                 If (.Right = Int(popupRect.Left + popupRect.Width + 0.999999)) Then
                     If (.Bottom = Int(popupRect.Top + popupRect.Height + 0.999999)) Then
+                        
+                        'See if we can reuse the current listindex, if any
+                        If (lbPrimary.ListIndex >= 0) Then
+                            listSupport.ListIndex = listSupport.ListIndexByString(lbPrimary.List(lbPrimary.ListIndex), vbBinaryCompare)
+                            If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
+                        End If
+                        
                         lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
                         Exit Sub
+                        
                     End If
                 End If
             End If
@@ -1086,6 +1108,20 @@ Private Sub RaiseListBox()
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established,
     ' as the scroll bar's maximum value is contingent on the available pixel size of the dropdown.
+    
+    'Also, while we're here, set a default listindex - this makes it clear what will happen if the user
+    ' hits "Enter" inside the edit box
+    If showingFirstTime Then
+        listSupport.ListIndex = 0
+    
+    'See if we can reuse the current listindex, if any
+    Else
+        If (lbPrimary.ListIndex >= 0) Then
+            listSupport.ListIndex = listSupport.ListIndexByString(lbPrimary.List(lbPrimary.ListIndex), vbBinaryCompare)
+            If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
+        End If
+    End If
+    
     lbPrimary.CloneExternalListSupport listSupport, , PDLM_LB_INSIDE_CB
     
     'Now we can show the window; we also notify the window of its changed window style bits

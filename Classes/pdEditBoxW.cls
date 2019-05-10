@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright 2014-2019 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 17/June/17
-'Last update: attempted fix for issues reported at https://github.com/tannerhelland/PhotoDemon/commit/25870dd93ae74e79fa146e88ee66989dd0223312
+'Last updated: 10/May/19
+'Last update: raise key events for arrow keys; in rare circumstances (e.g. pdSearchBox) our parent window
+'              may want to do something special with these
 '
 'This class contains code that was formerly implemented directly inside the pdTextBox user control.  To simplify
 ' the embedding of this window into other user controls (like pdSpinner), I've separated the text box events into
@@ -947,21 +948,22 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
             'Key up/down events are raised twice; once in a transitionary stage, and once again in a final stage.
             ' To prevent double-raising events, check the transitionary state before proceeding
             If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
-
+                
+                'Manually pull key modifier states (shift, control, alt/menu)
+                Dim retShiftConstants As ShiftConstants
+                If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+                If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+                If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+                
                 'Check for arrow keys and forward them manually.  (Also, eat these messages so no one else receives them.)
                 If (wParam = VK_LEFT) Or (wParam = VK_UP) Or (wParam = VK_RIGHT) Or (wParam = VK_DOWN) Then
-                    VBHacks.SendMsgW m_EditBoxHwnd, WM_KEYDOWN, wParam, (lParam And &H51111111)
+                    RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
+                    If (Not msgEaten) Then VBHacks.SendMsgW m_EditBoxHwnd, WM_KEYDOWN, wParam, (lParam And &H51111111)
                     msgEaten = True
                 End If
                 
                 'If the edit box is *not* multiline, check for tab presses and raise them manually
                 If (wParam = VK_TAB) And (Not m_Multiline) Then
-                    
-                    'Manually pull key modifier states (shift, control, alt/menu)
-                    Dim retShiftConstants As ShiftConstants
-                    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-                    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-                    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
                     
                     RaiseEvent KeyPress(retShiftConstants, wParam, msgEaten)
                     msgEaten = True
