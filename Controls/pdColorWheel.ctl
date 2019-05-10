@@ -645,7 +645,7 @@ Private Sub CreateColorWheel()
             nY = y - m_HueWheelCenterY
             
             'Calculate an angle for this pixel
-            pxAngle = PDMath.Atan2_Fastest(nY, nX)
+            pxAngle = PDMath.Atan2_Faster(nY, nX)
             
             'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
             ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],

@@ -281,7 +281,7 @@ Public Sub ApplyMiscDistort(ByVal effectParams As String, Optional ByVal toPrevi
             
             'Next, map them to polar coordinates
             radius = Sqr(nX * nX + nY * nY)
-            theta = PDMath.Atan2_Fastest(nY, nX)
+            theta = PDMath.Atan2_Faster(nY, nX)
             
             'Emphasize center
             If (distortStyle = 0) Then

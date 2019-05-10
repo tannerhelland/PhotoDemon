@@ -298,6 +298,7 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
     
     'Additional kaleidoscope variables
     Dim theta As Double, sRadius As Double, tRadius As Double, sDistance As Double
+    Const ONE_DIV_PI As Double = 1# / PI
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -326,8 +327,8 @@ Public Sub KaleidoscopeImage(ByVal effectParams As String, Optional ByVal toPrev
         sDistance = Sqr((nX * nX) + (nY * nY))
                 
         'Calculate theta
-        theta = PDMath.Atan2_Fastest(nY, nX) - primaryAngle - secondaryAngle
-        theta = convertTriangle((theta / PI) * numMirrors * 0.5)
+        theta = PDMath.Atan2_Faster(nY, nX) - primaryAngle - secondaryAngle
+        theta = convertTriangle((theta * ONE_DIV_PI) * numMirrors * 0.5)
                 
         'Calculate remapped x and y values
         If (sRadius > 0#) Then
