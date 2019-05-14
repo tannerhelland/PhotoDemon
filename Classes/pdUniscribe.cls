@@ -309,7 +309,7 @@ Friend Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     If UBound(m_ScriptItemsCache) < numScriptItems Then ReDim m_ScriptItemsCache(0 To numScriptItems) As SCRIPT_ITEM
     
     'SCRIPT_CONTROL and SCRIPT_STATE primarily deal with extremely technical details of localization and glyph runs.  Most of the settings
-    ' they contrl are not really relevant to our usage in PD, because they involve low-level instructions for how to handle embedded data.
+    ' they control are not really relevant to our usage in PD, because they involve low-level instructions for how to handle embedded data.
     ' Whenever possible, we prefer to let Uniscribe use its own internal heuristics to determine things like RTL runs inside LTR paragraphs,
     ' rather than arbitrarily forcing everything to a particular direction or script algorithm.
     '

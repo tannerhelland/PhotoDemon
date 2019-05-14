@@ -95,6 +95,12 @@ Private m_SearchStack As pdStringStack
 ' they want with it; we just display it in the dropdown list.
 Private m_SearchResults As pdStringStack
 
+'If the list of search matches changes due to user input, we will reset the current dropdown listindex
+' to the "best match" string.  If, however, the current list of results has *not* changed (typical
+' when typing something like a space character), we will preserve the existing listindex, if any,
+' between updates.
+Private m_LastResults As pdStringStack, m_ResultsChanged As Boolean
+
 'If the user hits enter (while in the text box) or clicks a specific list entry, we raise a corresponding
 ' _Click() event and return the clicked (or in the case of Enter presses, best-matched) string.  That string
 ' is also cached locally, and can be manually retrieved for other purposes.
@@ -523,23 +529,30 @@ Private Sub PerformSearch()
         Exit Sub
     End If
     
-    If (LenB(Trim$(m_EditBox.Text)) = 0) Then
+    Dim strSource As String
+    strSource = Trim$(m_EditBox.Text)
+    
+    If (LenB(Trim$(strSource)) = 0) Then
         Set m_SearchResults = Nothing
         Exit Sub
     End If
     
     Set m_SearchResults = New pdStringStack
     
-    Dim strSource As String
-    strSource = m_EditBox.Text
+    'If the source search string contains multiple words, split it into individual words before continuing.
+    ' (NOTE: this uses the space char as a word delimiter, which isn't correct across all locales -
+    '  e.g. languages like Thai will not be covered by this, and a more comprehensive library like Uniscribe
+    '  should really be used for word-breaking.  TODO!)
+    Dim lstSearchTerms As pdStringStack
+    Set lstSearchTerms = Strings.GetListOfWordsFromString(strSource)
     
     'Search is pretty simple: iterate the list the caller provided, and see if the search string occurs
     ' inside any of the strings we were passed.  Exact matches are given priority over partial matches,
     ' but otherwise, no special search "ranking" is currently performed.
-    Dim i As Long, alreadyAdded() As Boolean
+    Dim i As Long, j As Long, alreadyAdded() As Boolean
     ReDim alreadyAdded(0 To m_SearchStack.GetNumOfStrings - 1) As Boolean
     
-    'Find exact matches first
+    'First, look for an exact match of the given search term.
     For i = 0 To m_SearchStack.GetNumOfStrings - 1
         If Strings.StringsEqual(strSource, m_SearchStack.GetString(i), True) Then
             m_SearchResults.AddString m_SearchStack.GetString(i)
@@ -547,18 +560,57 @@ Private Sub PerformSearch()
         End If
     Next i
     
-    'Find partial matches next.
-    ' (TODO: use an optimized boyer-moore implementation here, since we can cache the search pattern for
-    '  our source string, making this step super fast.)
-    ' (TODO: search input string into discrete words, and search each)
+    'Next, look for partial matches of one or more words in the search list.
+    Dim curHits As Long, maxHits As Long
+        
+    'Perform a first pass to see if we get *any* hits for *any* of the search terms.
     For i = 0 To m_SearchStack.GetNumOfStrings - 1
+        
+        'Skip already added items
         If (Not alreadyAdded(i)) Then
-            If (InStr(1, m_SearchStack.GetString(i), strSource, vbTextCompare) <> 0) Then
-                m_SearchResults.AddString m_SearchStack.GetString(i)
-                alreadyAdded(i) = True
-            End If
+            
+            curHits = 0
+            
+            'Iterate all separate search words, and count how many hits we get
+            For j = 0 To lstSearchTerms.GetNumOfStrings - 1
+                If (InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare) <> 0) Then curHits = curHits + 1
+            Next j
+            
+            If (curHits > maxHits) Then maxHits = curHits
+            
         End If
+        
     Next i
+    
+    'If any partial matches were found, we now want to add them to the search results queue -
+    ' but IMPORTANTLY, we want to add them according to *how many* partial matches were found.
+    ' (e.g. if the user searches for "bright contrast", we want to return
+    ' "Adjustments > Brightness and Contrast"
+    ' ...ahead of...
+    ' "Auto-correct contrast"
+    If (maxHits > 0) Then
+    
+        Dim loopHits As Long
+        
+        For loopHits = maxHits To 1 Step -1
+            For i = 0 To m_SearchStack.GetNumOfStrings - 1
+                If (Not alreadyAdded(i)) Then
+                    
+                    curHits = 0
+                    For j = 0 To lstSearchTerms.GetNumOfStrings - 1
+                        If (InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare) <> 0) Then curHits = curHits + 1
+                    Next j
+                    
+                    If (curHits = loopHits) Then
+                        m_SearchResults.AddString m_SearchStack.GetString(i)
+                        alreadyAdded(i) = True
+                    End If
+                    
+                End If
+            Next i
+        Next loopHits
+    
+    End If
     
     'Other matching mechanisms could be performed here in the future (e.g. phonetic algorithms), but they
     ' are not implemented currently as internationalization concerns terrify me.  English searches would
@@ -591,6 +643,37 @@ Private Sub RefreshSearchResults()
     
         'First, perform a search to see if we have any matches
         PerformSearch
+        
+        'Compare the old and new search results list to see if any changes were made;
+        ' this affects how we assign a list index in the dropdown window
+        m_ResultsChanged = True
+        If (Not m_SearchResults Is Nothing) Then
+            If (m_SearchResults.GetNumOfStrings > 0) Then
+                If (Not m_LastResults Is Nothing) Then
+                    If (m_LastResults.GetNumOfStrings = m_SearchResults.GetNumOfStrings) Then
+                    
+                        Dim i As Long, mismatchFound As Boolean
+                        For i = 0 To m_LastResults.GetNumOfStrings - 1
+                            If Strings.StringsNotEqual(m_LastResults.GetString(i), m_SearchResults.GetString(i)) Then
+                                mismatchFound = True
+                                Exit For
+                            End If
+                        Next i
+                        
+                        m_ResultsChanged = mismatchFound
+                        
+                    End If
+                End If
+            End If
+        End If
+        
+        'Make a backup copy of the current search results list; we use this in the previous step
+        ' to detect changes to the current list of search results (which again, affects how we assign
+        ' a listindex in the dropdown window - if the list of results changes, we default to position 0,
+        ' or the "best match", but if the list of results *hasn't* changed, we preserve the user's
+        ' current selection, if any)
+        Set m_LastResults = New pdStringStack
+        If (Not m_SearchResults Is Nothing) Then m_LastResults.CloneStack m_SearchResults
         
         'If we do, forward the matches to the listbox and display it
         UpdateResultsList
@@ -1076,7 +1159,9 @@ Private Sub RaiseListBox()
                     If (.Bottom = Int(popupRect.Top + popupRect.Height + 0.999999)) Then
                         
                         'See if we can reuse the current listindex, if any
-                        If (lbPrimary.ListIndex >= 0) Then
+                        If m_ResultsChanged Then
+                            listSupport.ListIndex = 0
+                        ElseIf (lbPrimary.ListIndex >= 0) Then
                             listSupport.ListIndex = listSupport.ListIndexByString(lbPrimary.List(lbPrimary.ListIndex), vbBinaryCompare)
                             If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
                         End If
@@ -1116,7 +1201,9 @@ Private Sub RaiseListBox()
     
     'See if we can reuse the current listindex, if any
     Else
-        If (lbPrimary.ListIndex >= 0) Then
+        If m_ResultsChanged Then
+            listSupport.ListIndex = 0
+        ElseIf (lbPrimary.ListIndex >= 0) Then
             listSupport.ListIndex = listSupport.ListIndexByString(lbPrimary.List(lbPrimary.ListIndex), vbBinaryCompare)
             If (listSupport.ListIndex < 0) Then listSupport.ListIndex = 0
         End If
