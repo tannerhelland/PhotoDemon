@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2019 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 26/June/18
-'Last update: integrate with Evaluator module to support arbitrary formulae evaluation
+'Last updated: 14/May/19
+'Last update: using up/down keys in the edit box now moves the current control value up/down to match
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -346,7 +346,29 @@ Public Property Let Value(ByVal newValue As Double)
                 Else
                     If (LenB(Trim$(m_EditBox.Text)) <> 0) Then
                         On Error GoTo SpinStringInvalid
-                        If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then m_EditBox.Text = GetFormattedStringValue(m_Value)
+                        If Strings.StringsNotEqual(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), False) Then
+                            
+                            'Attempt to preserve the current cursor position, if any; this produces nicer behavior
+                            ' when using the up/down arrow keys to modify the spin value while the edit box has focus.
+                            Dim cursPos As Long, maxCursPos As Boolean
+                            cursPos = m_EditBox.SelStart
+                            maxCursPos = (cursPos = Len(m_EditBox.Text))
+                            
+                            'Assign the new string
+                            m_EditBox.Text = GetFormattedStringValue(m_Value)
+                            
+                            'Restore the cursor position (as closely as possible, given possible changes
+                            ' to edit box text length)
+                            If (cursPos > 0) Then
+                                If maxCursPos Then
+                                    cursPos = Len(m_EditBox.Text)
+                                ElseIf (cursPos > Len(m_EditBox.Text)) Then
+                                    cursPos = Len(m_EditBox.Text)
+                                End If
+                                m_EditBox.SelStart = cursPos
+                            End If
+                            
+                        End If
 SpinStringInvalid:
                         On Error GoTo 0
                     End If
@@ -408,6 +430,12 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
     
     If (vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab) Then
         preventFurtherHandling = NavKey.NotifyNavKeypress(Me, vKey, Shift)
+    ElseIf (vKey = vbKeyUp) Then
+        MoveValueDown
+        preventFurtherHandling = True
+    ElseIf (vKey = vbKeyDown) Then
+        MoveValueUp
+        preventFurtherHandling = True
     End If
     
 End Sub
