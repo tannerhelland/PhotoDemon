@@ -1130,3 +1130,9 @@ End Function
 Public Sub SetPngQuantEnabled(ByVal newState As Boolean)
     m_pngQuantEnabled = newState
 End Sub
+
+'When the active language changes, we need to calculate new translations for text like "All Compatible Images"
+Public Sub NotifyLanguageChanged()
+    GenerateInputFormats
+    GenerateOutputFormats
+End Sub

@@ -287,6 +287,9 @@ Friend Sub ApplyLanguage(Optional ByVal redrawMainUI As Boolean = True, Optional
     'The caller may choose to suspend the main interface redraw.  (We do this when loading the program, for example.)
     If redrawMainUI Then Interface.RedrawEntireUI useDoEvents
     
+    'Some other esoteric areas may need their translations live-updated
+    ImageFormats.NotifyLanguageChanged
+    
 End Sub
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"
