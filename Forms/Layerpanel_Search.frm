@@ -137,6 +137,8 @@ End Sub
 
 Private Sub srchMain_Click(bestSearchHit As String)
     
+    srchMain.Text = bestSearchHit
+    
     If (m_MenuSearchTerms.ContainsString(bestSearchHit) >= 0) Then
         Menus.ProcessDefaultAction_BySearch bestSearchHit
     
