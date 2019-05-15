@@ -2481,55 +2481,55 @@ Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
     Select Case srcMenuName
         
         Case "tool_hand"
-            toolbar_Toolbox.SelectNewTool NAV_DRAG
+            toolbar_Toolbox.SelectNewTool NAV_DRAG, True
         
         Case "tool_move"
-            toolbar_Toolbox.SelectNewTool NAV_MOVE
+            toolbar_Toolbox.SelectNewTool NAV_MOVE, True
         
         Case "tool_colorselect"
-            toolbar_Toolbox.SelectNewTool COLOR_PICKER
+            toolbar_Toolbox.SelectNewTool COLOR_PICKER, True
         
         Case "tool_measure"
-            toolbar_Toolbox.SelectNewTool ND_MEASURE
+            toolbar_Toolbox.SelectNewTool ND_MEASURE, True
         
         Case "tool_select_rect"
-            toolbar_Toolbox.SelectNewTool SELECT_RECT
+            toolbar_Toolbox.SelectNewTool SELECT_RECT, True
         
         Case "tool_select_ellipse"
-            toolbar_Toolbox.SelectNewTool SELECT_CIRC
+            toolbar_Toolbox.SelectNewTool SELECT_CIRC, True
         
         Case "tool_select_line"
-            toolbar_Toolbox.SelectNewTool SELECT_LINE
+            toolbar_Toolbox.SelectNewTool SELECT_LINE, True
         
         Case "tool_select_polygon"
-            toolbar_Toolbox.SelectNewTool SELECT_POLYGON
+            toolbar_Toolbox.SelectNewTool SELECT_POLYGON, True
         
         Case "tool_select_lasso"
-            toolbar_Toolbox.SelectNewTool SELECT_LASSO
+            toolbar_Toolbox.SelectNewTool SELECT_LASSO, True
         
         Case "tool_select wand"
-            toolbar_Toolbox.SelectNewTool SELECT_WAND
+            toolbar_Toolbox.SelectNewTool SELECT_WAND, True
         
         Case "tool_text"
-            toolbar_Toolbox.SelectNewTool VECTOR_TEXT
+            toolbar_Toolbox.SelectNewTool VECTOR_TEXT, True
         
         Case "tool_typography"
-            toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT
+            toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT, True
         
         Case "tool_pencil"
-            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH
+            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH, True
         
         Case "tool_paintbrush"
-            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
+            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH, True
         
         Case "tool_erase"
-            toolbar_Toolbox.SelectNewTool PAINT_ERASER
+            toolbar_Toolbox.SelectNewTool PAINT_ERASER, True
         
         Case "tool_paintbucket"
-            toolbar_Toolbox.SelectNewTool PAINT_FILL
+            toolbar_Toolbox.SelectNewTool PAINT_FILL, True
         
         Case "tool_gradient"
-            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
+            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT, True
         
         Case Else
             cmdFound = False

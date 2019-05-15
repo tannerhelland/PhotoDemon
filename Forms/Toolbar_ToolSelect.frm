@@ -374,8 +374,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Primary Toolbar
 'Copyright 2013-2019 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 22/February/18
-'Last update: properly remember open/closed panel state between sessions
+'Last updated: 15/May/19
+'Last update: new option to "flash" a button when it's selected programmatically.
+'             (The new search bar uses this to let the user know what tool was selected!)
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -894,18 +895,18 @@ End Sub
 
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
 ' rectangular tool selector as the current tool)
-Public Sub SelectNewTool(ByVal newToolID As PDTools)
+Public Sub SelectNewTool(ByVal newToolID As PDTools, Optional ByVal flashToolButton As Boolean = False)
     
     If (newToolID <> g_CurrentTool) Then
         g_PreviousTool = g_CurrentTool
         g_CurrentTool = newToolID
-        ResetToolButtonStates
+        ResetToolButtonStates flashToolButton
     End If
     
 End Sub
 
 'When a new tool button is selected, we need to raise all the others and display the proper options box
-Public Sub ResetToolButtonStates()
+Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = False)
         
     m_InsideReflowCode = True
         
@@ -914,6 +915,7 @@ Public Sub ResetToolButtonStates()
     For catID = 0 To cmdTools.Count - 1
         If (catID = g_CurrentTool) Then
             If (Not cmdTools(catID).Value) Then cmdTools(catID).Value = True
+            If flashCurrentButton Then cmdTools(catID).FlashButton
         Else
             If cmdTools(catID).Value Then cmdTools(catID).Value = False
         End If

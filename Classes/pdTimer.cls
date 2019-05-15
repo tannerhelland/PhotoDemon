@@ -18,13 +18,14 @@ Attribute VB_Exposed = False
 'Last updated: 08/February/16
 'Last update: added support for coalescing timers on Win 8+
 '
-'Sometimes you want a timer without an attached UserControl (and all the extra objects that entails).  This class
-' implements a basic timer message handler, meaning it behaves roughly identically to a VB timer control.  On Windows 8
-' or later, a coalescing timer is preferentially used.  See go.microsoft.com/fwlink/p/?linkid=246618 for details.
+'Sometimes you want a timer without an attached UserControl (and all the extra objects that entails).
+' This class implements a basic timer message handler, meaning it behaves roughly identically to a
+' VB timer control.  On Windows 8 or later, a coalescing timer is preferentially used.
+' See go.microsoft.com/fwlink/p/?linkid=246618 for details.
 '
-'Because AddressOf does not work in a module, this class leans on a few helper functions in the VBHacks module.
-'Also, just like a regular VB Timer, this is a bad solution for high-resolution timing or anything that needs to be
-' extremely consistent.
+'Because AddressOf does not work in a module, this class leans on a few helper functions in the
+' VBHacks module.  Also, just like a regular VB Timer, this is a bad solution for high-resolution timing
+' or anything that needs to be extremely consistent.
 '
 'Many thanks to Karl Peterson for additional resources related to callback procs inside VB classes
 ' (retrieved from http://vb.mvps.org/samples/TimerObj/)
