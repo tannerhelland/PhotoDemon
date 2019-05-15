@@ -484,6 +484,10 @@ Private Const NUM_OF_TOOL_PANELS As Long = 11
 'The currently active tool panel will be mirrored to this value
 Private m_ActiveToolPanel As PD_ToolPanels
 
+'Sometimes, external functions need to get a list of valid tool names.  (The search bar, for example.)
+' We store a list of localized tool names and corresponding action strings internally.
+Private m_ToolNames As pdStringStack, m_ToolActions As pdStringStack
+
 Private Sub cmdFile_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
@@ -493,28 +497,28 @@ Private Sub cmdFile_Click(Index As Integer)
     Select Case Index
     
         Case FILE_NEW
-            Process "New image", True
-        
+            Menus.ProcessDefaultAction_ByName "file_new"
+            
         Case FILE_OPEN
-            Process "Open", True
-        
+            Menus.ProcessDefaultAction_ByName "file_open"
+            
         Case FILE_CLOSE
-            Process "Close", True
+            Menus.ProcessDefaultAction_ByName "file_close"
         
         Case FILE_SAVE
-            Process "Save", , , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "file_save"
         
         Case FILE_SAVEAS_LAYERS
-            Process "Save copy", , , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "file_savecopy"
             
         Case FILE_SAVEAS_FLAT
-            Process "Save as", True, , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "file_saveas"
         
         Case FILE_UNDO
-            Process "Undo", , , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "edit_undo"
             
         Case FILE_REDO
-            Process "Redo", , , UNDO_Nothing
+            Menus.ProcessDefaultAction_ByName "edit_redo"
     
     End Select
     
@@ -598,6 +602,10 @@ Private Sub Form_Load()
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", 1)
+    
+    'Ensure our tool name and action stacks exist
+    Set m_ToolNames = New pdStringStack
+    Set m_ToolActions = New pdStringStack
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -1376,6 +1384,65 @@ Public Sub UpdateAgainstCurrentTheme()
     shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
     cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
+    'And finally, tool names and their corresponding action strings
+    m_ToolNames.AddString g_Language.TranslateMessage("Hand tool")
+    m_ToolActions.AddString "tool_hand"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Move tool")
+    m_ToolActions.AddString "tool_move"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Color selector tool")
+    m_ToolActions.AddString "tool_colorselect"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Measure tool")
+    m_ToolActions.AddString "tool_measure"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Rectangle selection tool")
+    m_ToolActions.AddString "tool_select_rect"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Ellipse selection tool")
+    m_ToolActions.AddString "tool_select_ellipse"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Line selection tool")
+    m_ToolActions.AddString "tool_select_line"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Polygon selection tool")
+    m_ToolActions.AddString "tool_select_polygon"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Lasso selection tool")
+    m_ToolActions.AddString "tool_select_lasso"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Magic wand selection tool")
+    m_ToolActions.AddString "tool_select wand"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Text tool")
+    m_ToolActions.AddString "tool_text"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Typography tool")
+    m_ToolActions.AddString "tool_typography"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Pencil tool")
+    m_ToolActions.AddString "tool_pencil"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Paintbrush tool")
+    m_ToolActions.AddString "tool_paintbrush"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Erase tool")
+    m_ToolActions.AddString "tool_erase"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Paint bucket tool")
+    m_ToolActions.AddString "tool_paintbucket"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Gradient tool")
+    m_ToolActions.AddString "tool_gradient"
+    
+End Sub
+
+Public Sub GetListOfToolNamesAndActions(ByRef dstNames As pdStringStack, ByRef dstActions As pdStringStack)
+    Set dstNames = New pdStringStack
+    dstNames.CloneStack m_ToolNames
+    Set dstActions = New pdStringStack
+    dstActions.CloneStack m_ToolActions
 End Sub
 
 Private Sub ttlCategories_Click(Index As Integer, ByVal newState As Boolean)

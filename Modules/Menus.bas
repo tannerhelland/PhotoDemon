@@ -1,6 +1,6 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
-'Specialized Math Routines
+'PhotoDemon Menu Manager
 'Copyright 2017-2019 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 03/May/19
@@ -627,7 +627,7 @@ Public Sub ApplyIconsToMenus()
 
     Dim i As Long
     For i = 0 To m_NumOfMenus - 1
-        If (Len(m_Menus(i).me_ResImage) <> 0) Then
+        If (LenB(m_Menus(i).me_ResImage) <> 0) Then
             With m_Menus(i)
                 IconsAndCursors.AddMenuIcon .me_ResImage, .me_TopMenu, .me_SubMenu, .me_SubSubMenu
             End With
@@ -661,7 +661,7 @@ Public Sub RequestCaptionChange_ByName(ByVal menuName As String, ByVal newCaptio
                 End If
                 
                 'Deal with trailing accelerator text, if any
-                If (Len(.me_HotKeyTextTranslated) <> 0) Then
+                If (LenB(.me_HotKeyTextTranslated) <> 0) Then
                     .me_TextFinal = .me_TextTranslated & vbTab & .me_HotKeyTextTranslated
                 Else
                     .me_TextFinal = .me_TextTranslated
@@ -1330,6 +1330,7 @@ Public Sub ProcessDefaultAction_ByName(ByRef srcMenuName As String)
     If (Not cmdFound) Then cmdFound = PDA_ByName_MenuView(srcMenuName)
     If (Not cmdFound) Then cmdFound = PDA_ByName_MenuWindow(srcMenuName)
     If (Not cmdFound) Then cmdFound = PDA_ByName_MenuHelp(srcMenuName)
+    If (Not cmdFound) Then cmdFound = PDA_ByName_NonMenu(srcMenuName)
     
     'Failsafe check to make sure we found *something*
     If (Not cmdFound) Then PDDebug.LogAction "WARNING: Menus.ProcessDefaultAction_ByName received an unknown request: " & srcMenuName
@@ -1978,328 +1979,254 @@ End Function
 
 Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "effects_artistic"
             Case "effects_colorpencil"
-                cmdFound = True
                 Process "Colored pencil", True
                 
             Case "effects_comicbook"
-                cmdFound = True
                 Process "Comic book", True
                 
             Case "effects_figuredglass"
-                cmdFound = True
                 Process "Figured glass", True
                 
             Case "effects_filmnoir"
-                cmdFound = True
                 Process "Film noir", True
                 
             Case "effects_glasstiles"
-                cmdFound = True
                 Process "Glass tiles", True
                 
             Case "effects_kaleidoscope"
-                cmdFound = True
                 Process "Kaleidoscope", True
                 
             Case "effects_modernart"
-                cmdFound = True
                 Process "Modern art", True
                 
             Case "effects_oilpainting"
-                cmdFound = True
                 Process "Oil painting", True
                 
             Case "effects_plasticwrap"
-                cmdFound = True
                 Process "Plastic wrap", True
                 
             Case "effects_posterize"
-                cmdFound = True
                 Process "Posterize", True
                 
             Case "effects_relief"
-                cmdFound = True
                 Process "Relief", True
                 
             Case "effects_stainedglass"
-                cmdFound = True
                 Process "Stained glass", True
                 
         Case "effects_blur"
             Case "effects_boxblur"
-                cmdFound = True
                 Process "Box blur", True
                 
             Case "effects_gaussianblur"
-                cmdFound = True
                 Process "Gaussian blur", True
                 
             Case "effects_surfaceblur"
-                cmdFound = True
                 Process "Surface blur", True
                 
             Case "effects_motionblur"
-                cmdFound = True
                 Process "Motion blur", True
                 
             Case "effects_radialblur"
-                cmdFound = True
                 Process "Radial blur", True
                 
             Case "effects_zoomblur"
-                cmdFound = True
                 Process "Zoom blur", True
                 
             Case "effects_kuwahara"
-                cmdFound = True
                 Process "Kuwahara filter", True
                 
             Case "effects_snn"
-                cmdFound = True
                 Process "Symmetric nearest-neighbor", True
                 
         Case "effects_distort"
             Case "effects_fixlensdistort"
-                cmdFound = True
                 Process "Correct lens distortion", True
                 
             Case "effects_donut"
-                cmdFound = True
                 Process "Donut", True
                 
             Case "effects_lens"
-                cmdFound = True
                 Process "Apply lens distortion", True
                 
             Case "effects_pinchandwhirl"
-                cmdFound = True
                 Process "Pinch and whirl", True
                 
             Case "effects_poke"
-                cmdFound = True
                 Process "Poke", True
                 
             Case "effects_ripple"
-                cmdFound = True
                 Process "Ripple", True
                 
             Case "effects_squish"
-                cmdFound = True
                 Process "Squish", True
                 
             Case "effects_swirl"
-                cmdFound = True
                 Process "Swirl", True
                 
             Case "effects_waves"
-                cmdFound = True
                 Process "Waves", True
                 
             Case "effects_miscdistort"
-                cmdFound = True
                 Process "Miscellaneous distort", True
                 
         Case "effects_edges"
             Case "effects_emboss"
-                cmdFound = True
                 Process "Emboss", True
                 
             Case "effects_enhanceedges"
-                cmdFound = True
                 Process "Enhance edges", True
                 
             Case "effects_findedges"
-                cmdFound = True
                 Process "Find edges", True
                 
             Case "effects_rangefilter"
-                cmdFound = True
                 Process "Range filter", True
                 
             Case "effects_tracecontour"
-                cmdFound = True
                 Process "Trace contour", True
                 
         Case "effects_lightandshadow"
             Case "effects_blacklight"
-                cmdFound = True
                 Process "Black light", True
                 
             Case "effects_crossscreen"
-                cmdFound = True
                 Process "Cross-screen", True
-            Case "effects_rainbow"
             
-                cmdFound = True
+            Case "effects_rainbow"
                 Process "Rainbow", True
                 
             Case "effects_sunshine"
-                cmdFound = True
                 Process "Sunshine", True
                 
             Case "effects_dilate"
-                cmdFound = True
                 Process "Dilate (maximum rank)", True
                 
             Case "effects_erode"
-                cmdFound = True
                 Process "Erode (minimum rank)", True
                 
         Case "effects_natural"
             Case "effects_atmosphere"
-                cmdFound = True
                 Process "Atmosphere", True
                 
             Case "effects_fog"
-                cmdFound = True
                 Process "Fog", True
                 
             Case "effects_ignite"
-                cmdFound = True
                 Process "Ignite", True
                 
             Case "effects_lava"
-                cmdFound = True
                 Process "Lava", True
                 
             Case "effects_metal"
-                cmdFound = True
                 Process "Metal", True
                 
             Case "effects_snow"
-                cmdFound = True
                 Process "Snow", True
                 
             Case "effects_underwater"
-                cmdFound = True
                 Process "Water", True
                 
         Case "effects_noise"
             Case "effects_filmgrain"
-                cmdFound = True
                 Process "Add film grain", True
                 
             Case "effects_rgbnoise"
-                cmdFound = True
                 Process "Add RGB noise", True
                 
             Case "effects_anisotropic"
-                cmdFound = True
                 Process "Anisotropic diffusion", True
                 
             Case "effects_bilateral"
-                cmdFound = True
                 Process "Bilateral smoothing", True
                 
             Case "effects_harmonicmean"
-                cmdFound = True
                 Process "Harmonic mean", True
                 
             Case "effects_meanshift"
-                cmdFound = True
                 Process "Mean shift", True
                 
             Case "effects_median"
-                cmdFound = True
                 Process "Median", True
                 
         Case "effects_pixelate"
             Case "effects_colorhalftone"
-                cmdFound = True
                 Process "Color halftone", True
                 
             Case "effects_crystallize"
-                cmdFound = True
                 Process "Crystallize", True
                 
             Case "effects_fragment"
-                cmdFound = True
                 Process "Fragment", True
                 
             Case "effects_mezzotint"
-                cmdFound = True
                 Process "Mezzotint", True
                 
             Case "effects_mosaic"
-                cmdFound = True
                 Process "Mosaic", True
                 
         Case "effects_sharpentop"
             Case "effects_sharpen"
-                cmdFound = True
                 Process "Sharpen", True
                 
             Case "effects_unsharp"
-                cmdFound = True
                 Process "Unsharp mask", True
                 
         Case "effects_stylize"
             Case "effects_antique"
-                cmdFound = True
                 Process "Antique", True
                 
             Case "effects_diffuse"
-                cmdFound = True
                 Process "Diffuse", True
                 
             Case "effects_outline"
-                cmdFound = True
                 Process "Outline", True
                 
             Case "effects_palettize"
-                cmdFound = True
                 Process "Palettize", True
                 
             Case "effects_portraitglow"
-                cmdFound = True
                 Process "Portrait glow", True
                 
             Case "effects_solarize"
-                cmdFound = True
                 Process "Solarize", True
                 
             Case "effects_twins"
-                cmdFound = True
                 Process "Twins", True
                 
             Case "effects_vignetting"
-                cmdFound = True
                 Process "Vignetting", True
                 
         Case "effects_transform"
             Case "effects_panandzoom"
-                cmdFound = True
                 Process "Pan and zoom", True
                 
             Case "effects_perspective"
-                cmdFound = True
                 Process "Perspective", True
                 
             Case "effects_polarconversion"
-                cmdFound = True
                 Process "Polar conversion", True
                 
             Case "effects_rotate"
-                cmdFound = True
                 Process "Rotate", True
                 
             Case "effects_shear"
-                cmdFound = True
                 Process "Shear", True
                 
             Case "effects_spherize"
-                cmdFound = True
                 Process "Spherize", True
                 
         Case "effects_customfilter"
-            cmdFound = True
             Process "Custom filter", True
+            
+        Case Else
+            cmdFound = False
             
     End Select
     
@@ -2309,14 +2236,13 @@ End Function
 
 Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "tools_language"
         
         Case "tools_languageeditor"
-            cmdFound = True
             If (Not FormLanguageEditor.Visible) Then
                 FormMain.pdHotkeys.Enabled = False
                 ShowPDDialog vbModal, FormLanguageEditor
@@ -2324,50 +2250,43 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
             End If
             
         Case "tools_theme"
-            cmdFound = True
             DialogManager.PromptUITheme
             
         Case "tools_macrocreatetop"
             Case "tools_macrofromhistory"
-                cmdFound = True
                 ShowPDDialog vbModal, FormMacroSession
                 
             Case "tools_recordmacro"
-                cmdFound = True
                 Process "Start macro recording", , , UNDO_Nothing
                 
             Case "tools_stopmacro"
-                cmdFound = True
                 Process "Stop macro recording", True
                 
         Case "tools_playmacro"
-            cmdFound = True
             Process "Play macro", True
             
         Case "tools_recentmacros"
         
         Case "tools_options"
-            cmdFound = True
             ShowPDDialog vbModal, FormOptions
             
         Case "tools_plugins"
-            cmdFound = True
             ShowPDDialog vbModal, FormPluginManager
             
         Case "tools_developers"
             Case "tools_themeeditor"
-                cmdFound = True
                 ShowPDDialog vbModal, FormThemeEditor
                 
             Case "tools_themepackage"
-                cmdFound = True
                 g_Themer.BuildThemePackage
                 
             Case "tools_standalonepackage"
-                cmdFound = True
                 ShowPDDialog vbModal, FormPackage
                 
         Case "effects_developertest"
+        
+        Case Else
+            cmdFound = False
         
     End Select
     
@@ -2377,76 +2296,65 @@ End Function
 
 Private Function PDA_ByName_MenuView(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "view_fit"
-            cmdFound = True
             CanvasManager.FitOnScreen
             
         Case "view_zoomin"
-            cmdFound = True
             If FormMain.MainCanvas(0).IsZoomEnabled Then
                 If (FormMain.MainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
             End If
             
         Case "view_zoomout"
-            cmdFound = True
             If FormMain.MainCanvas(0).IsZoomEnabled Then
                 If (FormMain.MainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.MainCanvas(0).GetZoomDropDownIndex)
             End If
             
         Case "view_zoomtop"
             Case "zoom_16_1"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 2
                 
             Case "zoom_8_1"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 4
                 
             Case "zoom_4_1"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 8
                 
             Case "zoom_2_1"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 10
                 
             Case "zoom_actual"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
                 
             Case "zoom_1_2"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 14
                 
             Case "zoom_1_4"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 16
                 
             Case "zoom_1_8"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 19
                 
             Case "zoom_1_16"
-                cmdFound = True
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
                 
         Case "view_rulers"
-            cmdFound = True
             Dim newRulerState As Boolean
             newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
             FormMain.MnuView(6).Checked = newRulerState
             FormMain.MainCanvas(0).SetRulerVisibility newRulerState
             
         Case "view_statusbar"
-            cmdFound = True
             Dim newStatusBarState As Boolean
             newStatusBarState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
             FormMain.MnuView(7).Checked = newStatusBarState
             FormMain.MainCanvas(0).SetStatusBarVisibility newStatusBarState
+            
+        Case Else
+            cmdFound = False
         
     End Select
     
@@ -2456,79 +2364,65 @@ End Function
 
 Private Function PDA_ByName_MenuWindow(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "window_toolbox"
             Case "window_displaytoolbox"
-                cmdFound = True
                 Toolboxes.ToggleToolboxVisibility PDT_LeftToolbox
                 
             Case "window_displaytoolcategories"
-                cmdFound = True
                 toolbar_Toolbox.ToggleToolCategoryLabels
                 
             Case "window_smalltoolbuttons"
-                cmdFound = True
                 toolbar_Toolbox.UpdateButtonSize tbs_Small
                 
             Case "window_normaltoolbuttons"
-                cmdFound = True
                 toolbar_Toolbox.UpdateButtonSize tbs_Medium
                 
             Case "window_largetoolbuttons"
-                cmdFound = True
                 toolbar_Toolbox.UpdateButtonSize tbs_Large
                 
         Case "window_tooloptions"
-            cmdFound = True
             Toolboxes.ToggleToolboxVisibility PDT_BottomToolbox
             
         Case "window_layers"
-            cmdFound = True
             Toolboxes.ToggleToolboxVisibility PDT_RightToolbox
             
         Case "window_imagetabstrip"
             Case "window_imagetabstrip_alwaysshow"
-                cmdFound = True
                 Interface.ToggleImageTabstripVisibility 0
                 
             Case "window_imagetabstrip_shownormal"
-                cmdFound = True
                 Interface.ToggleImageTabstripVisibility 1
                 
             Case "window_imagetabstrip_nevershow"
-                cmdFound = True
                 Interface.ToggleImageTabstripVisibility 2
                 
             Case "window_imagetabstrip_alignleft"
-                cmdFound = True
                 Interface.ToggleImageTabstripAlignment vbAlignLeft
                 
             Case "window_imagetabstrip_aligntop"
-                cmdFound = True
                 Interface.ToggleImageTabstripAlignment vbAlignTop
                 
             Case "window_imagetabstrip_alignright"
-                cmdFound = True
                 Interface.ToggleImageTabstripAlignment vbAlignRight
                 
             Case "window_imagetabstrip_alignbottom"
-                cmdFound = True
                 Interface.ToggleImageTabstripAlignment vbAlignBottom
                 
         Case "window_resetsettings"
-            cmdFound = True
             Toolboxes.ResetAllToolboxSettings
             
         Case "window_next"
-            cmdFound = True
             PDImages.MoveToNextImage True
             
         Case "window_previous"
-            cmdFound = True
             PDImages.MoveToNextImage False
+            
+        Case Else
+            cmdFound = False
         
     End Select
     
@@ -2538,16 +2432,14 @@ End Function
 
 Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "help_patreon"
-            cmdFound = True
             Web.OpenURL "https://www.patreon.com/photodemon/overview"
             
         Case "help_donate"
-            cmdFound = True
             Web.OpenURL "https://photodemon.org/donate"
             
         Case "help_checkupdates"
@@ -2555,34 +2447,97 @@ Private Function PDA_ByName_MenuHelp(ByRef srcMenuName As String) As Boolean
             'Initiate an asynchronous download of the standard PD update file (currently hosted @ GitHub).
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            cmdFound = True
             Message "Checking for software updates..."
             FormMain.RequestAsynchronousDownload "PROGRAM_UPDATE_CHECK_USER", "https://raw.githubusercontent.com/tannerhelland/PhotoDemon-Updates/master/summary/pdupdate.xml", , vbAsyncReadForceUpdate, UserPrefs.GetUpdatePath & "updates.xml"
             
         Case "help_reportbug"
-            cmdFound = True
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/"
             
         Case "help_website"
-            cmdFound = True
             Web.OpenURL "http://www.photodemon.org"
             
         Case "help_sourcecode"
-            cmdFound = True
             Web.OpenURL "https://github.com/tannerhelland/PhotoDemon"
             
         Case "help_license"
-            cmdFound = True
             Web.OpenURL "https://photodemon.org/license/"
             
         Case "help_about"
-            cmdFound = True
             ShowPDDialog vbModal, FormAbout
+            
+        Case Else
+            cmdFound = False
         
     End Select
     
     PDA_ByName_MenuHelp = cmdFound
     
+End Function
+
+Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
+
+    Dim cmdFound As Boolean: cmdFound = True
+    
+    Select Case srcMenuName
+        
+        Case "tool_hand"
+            toolbar_Toolbox.SelectNewTool NAV_DRAG
+        
+        Case "tool_move"
+            toolbar_Toolbox.SelectNewTool NAV_MOVE
+        
+        Case "tool_colorselect"
+            toolbar_Toolbox.SelectNewTool COLOR_PICKER
+        
+        Case "tool_measure"
+            toolbar_Toolbox.SelectNewTool ND_MEASURE
+        
+        Case "tool_select_rect"
+            toolbar_Toolbox.SelectNewTool SELECT_RECT
+        
+        Case "tool_select_ellipse"
+            toolbar_Toolbox.SelectNewTool SELECT_CIRC
+        
+        Case "tool_select_line"
+            toolbar_Toolbox.SelectNewTool SELECT_LINE
+        
+        Case "tool_select_polygon"
+            toolbar_Toolbox.SelectNewTool SELECT_POLYGON
+        
+        Case "tool_select_lasso"
+            toolbar_Toolbox.SelectNewTool SELECT_LASSO
+        
+        Case "tool_select wand"
+            toolbar_Toolbox.SelectNewTool SELECT_WAND
+        
+        Case "tool_text"
+            toolbar_Toolbox.SelectNewTool VECTOR_TEXT
+        
+        Case "tool_typography"
+            toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT
+        
+        Case "tool_pencil"
+            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH
+        
+        Case "tool_paintbrush"
+            toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
+        
+        Case "tool_erase"
+            toolbar_Toolbox.SelectNewTool PAINT_ERASER
+        
+        Case "tool_paintbucket"
+            toolbar_Toolbox.SelectNewTool PAINT_FILL
+        
+        Case "tool_gradient"
+            toolbar_Toolbox.SelectNewTool PAINT_GRADIENT
+        
+        Case Else
+            cmdFound = False
+            
+    End Select
+    
+    PDA_ByName_NonMenu = cmdFound
+
 End Function
 
 'Some of PD's menus obey special rules.  (For example, menus that add/remove entries at run-time.)  These menus have their own

@@ -59,6 +59,14 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+'Some search terms are managed by the menu manager.  Others are managed by the tool manager.
+' We want to condense these into a single list of search terms, and when a search result is returned,
+' we'll match it up against its relevant source stack.
+Private m_AllSearchTerms As pdStringStack
+Private m_MenuSearchTerms As pdStringStack
+Private m_ToolSearchTerms As pdStringStack
+Private m_ToolActions As pdStringStack
+
 Private Sub Form_Load()
     
     'Load any last-used settings for this form
@@ -128,7 +136,16 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 End Sub
 
 Private Sub srchMain_Click(bestSearchHit As String)
-    Menus.ProcessDefaultAction_BySearch bestSearchHit
+    
+    If (m_MenuSearchTerms.ContainsString(bestSearchHit) >= 0) Then
+        Menus.ProcessDefaultAction_BySearch bestSearchHit
+    
+    'If the search result is *not* a menu, the menu module can't auto-map it to a corresponding
+    ' action string.  Return the action string instead.
+    Else
+        Menus.ProcessDefaultAction_ByName m_ToolActions.GetString(m_ToolSearchTerms.ContainsString(bestSearchHit, True))
+    End If
+    
 End Sub
 
 Private Sub srchMain_GotFocusAPI()
@@ -140,7 +157,13 @@ Private Sub srchMain_RequestSearchList()
 End Sub
 
 Private Sub UpdateSearchTerms()
-    Dim searchStack As pdStringStack
-    Menus.GetSearchableMenuList searchStack
-    srchMain.SetSearchList searchStack
+    
+    Set m_AllSearchTerms = New pdStringStack
+    Menus.GetSearchableMenuList m_MenuSearchTerms
+    m_AllSearchTerms.CloneStack m_MenuSearchTerms
+    
+    toolbar_Toolbox.GetListOfToolNamesAndActions m_ToolSearchTerms, m_ToolActions
+    m_AllSearchTerms.AppendStack m_ToolSearchTerms
+    srchMain.SetSearchList m_AllSearchTerms
+    
 End Sub

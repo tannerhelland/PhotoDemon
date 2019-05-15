@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2019 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 30/August/15
-'Last update: improve performance of stack resetting by only allocating new memory if absolutely necessary
+'Last updated: 15/May/19
+'Last update: add AppendStack function for easily "merging" two stacks
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -61,6 +61,18 @@ Friend Function AddString(ByRef srcString As String) As Long
     m_NumOfStrings = m_NumOfStrings + 1
         
 End Function
+
+'Append a full stack to this one
+Friend Sub AppendStack(ByRef srcStack As pdStringStack)
+    If (Not srcStack Is Nothing) Then
+        If (srcStack.GetNumOfStrings > 0) Then
+            Dim i As Long
+            For i = 0 To srcStack.GetNumOfStrings() - 1
+                Me.AddString srcStack.GetString(i)
+            Next i
+        End If
+    End If
+End Sub
 
 'Check the stack for an existing string.  Returns an index >= 0 if the string exists in the stack;
 ' returns a negative number if the string does *not* occur.

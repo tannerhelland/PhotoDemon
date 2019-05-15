@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.92</langversion>
+<langversion>1.0.93</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -13740,7 +13740,87 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 71 phrases. 26 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
+<phrase>
+<original>Hand tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color selector tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Measure tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rectangle selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Ellipse selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Line selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Polygon selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lasso selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Magic wand selection tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Text tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Typography tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pencil tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paintbrush tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Erase tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint bucket tool</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 97 phrases. 36 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15668,10 +15748,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2610</phrasecount>
+<phrasecount>2626</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4776 phrases. -->
-<!-- 2166 are duplicates, so only 2610 unique phrases have been written to file. -->
-<!-- These 2610 phrases contain approximately 12399 total words. -->
+<!-- As of this build, PhotoDemon contains 4802 phrases. -->
+<!-- 2176 are duplicates, so only 2626 unique phrases have been written to file. -->
+<!-- These 2626 phrases contain approximately 12440 total words. -->
 
 </pdData>
