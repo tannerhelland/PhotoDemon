@@ -48,6 +48,8 @@ Public Event CreateTextBoxNow()
 'By design, PD textboxes raises fewer events than standard text boxes
 Public Event Change()
 Public Event KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
@@ -677,13 +679,25 @@ Private Sub Class_Terminate()
     
 End Sub
 
-Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+Private Function HandleKeyDownUpMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean, ByVal isKeyDown As Boolean) As Long
     
     'Inside keydown/up messages, we want to cache WM_CHAR, if one exists.  (If we don't do this, VB will eat unicode
     ' character codes inside its TranslateAccelerator handler.)
     Dim tmpMsg As TagMSG
     If (PeekMessage(tmpMsg, hWnd, WM_CHAR, WM_CHAR, PM_NOREMOVE) <> 0) Then m_CharCache = tmpMsg.wParam
     HandleKeyDownUpMsgs = 0
+    
+    'Raise a corresponding keydown/up event; note that PD rarely uses these - instead, it preferentially uses
+    ' KeyPress events.
+    Dim retShiftConstants As ShiftConstants
+    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+    If isKeyDown Then
+        RaiseEvent KeyDown(retShiftConstants, wParam, msgEaten)
+    Else
+        RaiseEvent KeyUp(retShiftConstants, wParam, msgEaten)
+    End If
     
 End Function
 
@@ -777,7 +791,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             
     'Manually dispatch WM_KEYDOWN messages.
     ElseIf (uiMsg = WM_KEYDOWN) Or (uiMsg = WM_KEYUP) Then
-        HandleEditBoxMsgs = HandleKeyDownUpMsgs(hWnd, uiMsg, wParam, lParam, msgEaten)
+        HandleEditBoxMsgs = HandleKeyDownUpMsgs(hWnd, uiMsg, wParam, lParam, msgEaten, uiMsg = WM_KEYDOWN)
             
     'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
     ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
@@ -828,7 +842,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         VBHacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHasBeenSubclassed = False
         'Note that we deliberately *do not* eat this message, as VB's default wndproc needs to perform its own teardown
-
+    
     End If
     
 End Function

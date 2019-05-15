@@ -36,6 +36,7 @@ Private Type PD_MenuEntry
     me_TextFinal As String                'Final on-screen appearance of the text, with translations and accelerator
     me_TextSearchable As String           'Localized string for search results.  Uses "TopMenu > ChildMenu > MyMenuName" format.
     me_HasChildren As Boolean             'Is this a non-clickable menu (e.g. it only exists to open a child menu?)
+    me_DoNotIncludeInSearch As Boolean    'If TRUE, this menu will not appear in search results.  (Used for checkbox menus.)
 End Type
 
 'https://msdn.microsoft.com/en-us/library/windows/desktop/ms647578(v=vs.85).aspx
@@ -477,10 +478,10 @@ Public Sub InitializeMenus()
     If debugMenuVisibility Then
         AddMenuItem "-", "-", 7, 11
         AddMenuItem "Developers", "tools_developers", 7, 12
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 12, 0
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 12, 1
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 12, 0, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 12, 1, , False
             AddMenuItem "-", "-", 7, 12, 2
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 12, 3
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 12, 3, , False
         AddMenuItem "Test", "effects_developertest", 7, 13
     End If
     
@@ -517,9 +518,9 @@ Public Sub InitializeMenus()
     AddMenuItem "Tool options", "window_tooloptions", 9, 1
     AddMenuItem "Layers", "window_layers", 9, 2
     AddMenuItem "Image tabstrip", "window_imagetabstrip", 9, 3
-        AddMenuItem "Always show", "window_imagetabstrip_alwaysshow", 9, 3, 0
-        AddMenuItem "Show when multiple images are loaded", "window_imagetabstrip_shownormal", 9, 3, 1
-        AddMenuItem "Never show", "window_imagetabstrip_nevershow", 9, 3, 2
+        AddMenuItem "Always show", "window_imagetabstrip_alwaysshow", 9, 3, 0, , False
+        AddMenuItem "Show when multiple images are loaded", "window_imagetabstrip_shownormal", 9, 3, 1, , False
+        AddMenuItem "Never show", "window_imagetabstrip_nevershow", 9, 3, 2, , False
         AddMenuItem "-", "-", 9, 3, 3
         AddMenuItem "Left", "window_imagetabstrip_alignleft", 9, 3, 4
         AddMenuItem "Top", "window_imagetabstrip_aligntop", 9, 3, 5
@@ -556,7 +557,7 @@ End Sub
 'Internal helper function for adding a menu entry to the running collection.  Note that PD menus support a number
 ' of non-standard properties, all of which must be cached early in the load process so we can properly support things
 ' like UI themes and language translations.
-Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, ByVal topMenuID As Long, Optional ByVal subMenuID As Long = MENU_NONE, Optional ByVal subSubMenuID As Long = MENU_NONE, Optional ByRef menuImageName As String = vbNullString)
+Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, ByVal topMenuID As Long, Optional ByVal subMenuID As Long = MENU_NONE, Optional ByVal subSubMenuID As Long = MENU_NONE, Optional ByRef menuImageName As String = vbNullString, Optional ByVal allowInSearches As Boolean = True)
     
     'Make sure a sufficiently large buffer exists
     Const INITIAL_MENU_COLLECTION_SIZE As Long = 128
@@ -573,6 +574,7 @@ Private Sub AddMenuItem(ByRef menuTextEn As String, ByRef menuName As String, By
         .me_SubMenu = subMenuID
         .me_SubSubMenu = subSubMenuID
         .me_ResImage = menuImageName
+        .me_DoNotIncludeInSearch = Not allowInSearches
     End With
     
     m_NumOfMenus = m_NumOfMenus + 1
@@ -839,6 +841,7 @@ Public Function GetSearchableMenuList(ByRef dstStack As pdStringStack, Optional 
             allowedToAdd = True
             If ignoreDisabledMenus Then allowedToAdd = Menus.IsMenuEnabled(m_Menus(i).me_Name)
             If (restrictToThisTopMenuIndex >= 0) Then allowedToAdd = allowedToAdd And (m_Menus(i).me_TopMenu = restrictToThisTopMenuIndex)
+            allowedToAdd = allowedToAdd And (Not m_Menus(i).me_DoNotIncludeInSearch)
             
             If allowedToAdd Then dstStack.AddString m_Menus(i).me_TextSearchable
             
@@ -1339,90 +1342,75 @@ End Sub
 
 Private Function PDA_ByName_MenuFile(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "file_new"
-            cmdFound = True
             Process "New image", True
             
         Case "file_open"
-            cmdFound = True
             Process "Open", True
             
         Case "file_openrecent"
+            If (LenB(g_RecentFiles.GetFullPath(0)) <> 0) Then Loading.LoadFileAsNewImage g_RecentFiles.GetFullPath(0)
         
         Case "file_import"
             Case "file_import_paste"
-                cmdFound = True
                 Process "Paste as new image", False, , UNDO_Nothing, , False
                 
             Case "file_import_scanner"
-                cmdFound = True
                 Process "Scan image", True
                 
             Case "file_import_selectscanner"
-                cmdFound = True
                 Process "Select scanner or camera", True
                 
             Case "file_import_web"
-                cmdFound = True
                 Process "Internet import", True
                 
             Case "file_import_screenshot"
-                cmdFound = True
                 Process "Screen capture", True
                 
         Case "file_close"
-            cmdFound = True
             Process "Close", True
             
         Case "file_closeall"
-            cmdFound = True
             Process "Close all", True
             
         Case "file_save"
-            cmdFound = True
             Process "Save", True
             
         Case "file_savecopy"
-            cmdFound = True
             Process "Save copy", True
             
         Case "file_saveas"
-            cmdFound = True
             Process "Save as", True
             
         Case "file_revert"
-            cmdFound = True
             Process "Revert", False, , UNDO_Everything
             
         Case "file_export"
             Case "file_export_colorprofile"
-                cmdFound = True
                 Process "Export color profile", True
                 
             Case "file_export_palette"
-                cmdFound = True
                 Process "Export palette", True
                 
         Case "file_batch"
             Case "file_batch_process"
-                cmdFound = True
                 Process "Batch wizard", True
                 
             Case "file_batch_repair"
-                cmdFound = True
                 ShowPDDialog vbModal, FormBatchRepair
                 
         Case "file_print"
-            cmdFound = True
             Process "Print", True
             
         Case "file_quit"
-            cmdFound = True
             Process "Exit program", True
+            
+        Case Else
+            cmdFound = False
         
     End Select
     
@@ -1432,41 +1420,34 @@ End Function
 
 Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "edit_undo"
-            cmdFound = True
             Process "Undo", False
             
         Case "edit_redo"
-            cmdFound = True
             Process "Redo", False
             
         Case "edit_history"
-            cmdFound = True
             Process "Undo history", True
             
         'TODO: figure out Undo handling for "Repeat last action"... can we always reuse the undo type of
         ' the previous action?  Could this have unforeseen consequences?
         Case "edit_repeat"
-            cmdFound = True
             Process "Repeat last action", False, , UNDO_Image
             
         Case "edit_fade"
-            cmdFound = True
             Process "Fade", True
             
         Case "edit_cut"
-            cmdFound = True
             Process "Cut", False, , UNDO_Image, , True
         
         'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.
         ' If, however, no selection is active, we will delete the entire layer.  That requires a backup
         ' of the full layer stack.
         Case "edit_cutlayer"
-            cmdFound = True
             If PDImages.GetActiveImage.IsSelectionActive Then
                 Process "Cut from layer", False, , UNDO_Layer, , True
             Else
@@ -1474,24 +1455,22 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
             End If
             
         Case "edit_copy"
-            cmdFound = True
             Process "Copy", False, , UNDO_Nothing, , False
             
         Case "edit_copylayer"
-            cmdFound = True
             Process "Copy from layer", False, , UNDO_Nothing, , False
             
         Case "edit_pasteasimage"
-            cmdFound = True
             Process "Paste as new image", False, , UNDO_Nothing, , False
             
         Case "edit_pasteaslayer"
-            cmdFound = True
             Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
             
         Case "edit_emptyclipboard"
-            cmdFound = True
             Process "Empty clipboard", False, , UNDO_Nothing, , False
+            
+        Case Else
+            cmdFound = False
             
     End Select
     
@@ -1501,87 +1480,71 @@ End Function
 
 Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "image_duplicate"
-            cmdFound = True
             Process "Duplicate image", , , UNDO_Nothing
             
         Case "image_resize"
-            cmdFound = True
             Process "Resize image", True
             
         Case "image_contentawareresize"
-            cmdFound = True
             Process "Content-aware image resize", True
             
         Case "image_canvassize"
-            cmdFound = True
             Process "Canvas size", True
             
         Case "image_fittolayer"
-            cmdFound = True
             Process "Fit canvas to layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
             
         Case "image_fitalllayers"
-            cmdFound = True
             Process "Fit canvas to all layers", False, , UNDO_ImageHeader
             
         Case "image_crop"
-            cmdFound = True
             Process "Crop", True
             
         Case "image_trim"
-            cmdFound = True
             Process "Trim empty borders", , , UNDO_ImageHeader
             
         Case "image_rotate"
             Case "image_straighten"
-                cmdFound = True
                 Process "Straighten image", True
                 
             Case "image_rotate90"
-                cmdFound = True
                 Process "Rotate image 90 clockwise", , , UNDO_Image
                 
             Case "image_rotate270"
-                cmdFound = True
                 Process "Rotate image 90 counter-clockwise", , , UNDO_Image
                 
             Case "image_rotate180"
-                cmdFound = True
                 Process "Rotate image 180", , , UNDO_Image
                 
             Case "image_rotatearbitrary"
-                cmdFound = True
                 Process "Arbitrary image rotation", True
                 
         Case "image_fliphorizontal"
-            cmdFound = True
             Process "Flip image horizontally", , , UNDO_Image
             
         Case "image_flipvertical"
-            cmdFound = True
             Process "Flip image vertically", , , UNDO_Image
             
         Case "image_metadata"
             Case "image_editmetadata"
-                cmdFound = True
                 Process "Edit metadata", True
                 
             Case "image_removemetadata"
-                cmdFound = True
                 Process "Remove all metadata", False, , UNDO_ImageHeader
                 
             Case "image_countcolors"
-                cmdFound = True
                 Process "Count image colors", True
                 
             Case "image_maplocation"
-                cmdFound = True
                 Web.MapImageLocation
+                
+        Case Else
+            cmdFound = False
                 
     End Select
     
@@ -1591,140 +1554,112 @@ End Function
 
 Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "layer_add"
             Case "layer_addbasic"
-                cmdFound = True
                 Process "Add new layer", True
                 
             Case "layer_addblank"
-                cmdFound = True
                 Process "Add blank layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_duplicate"
-                cmdFound = True
                 Process "Duplicate Layer", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_addfromclipboard"
-                cmdFound = True
                 Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
                 
             Case "layer_addfromfile"
-                cmdFound = True
                 Process "New layer from file", True
                 
             Case "layer_addfromvisiblelayers"
-                cmdFound = True
                 Process "New layer from visible layers", False, , UNDO_Image_VectorSafe
                 
         Case "layer_delete"
             Case "layer_deletecurrent"
-                cmdFound = True
                 Process "Delete layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image_VectorSafe
                 
             Case "layer_deletehidden"
-                cmdFound = True
                 Process "Delete hidden layers", False, , UNDO_Image_VectorSafe
                 
         Case "layer_mergeup"
-            cmdFound = True
             Process "Merge layer up", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
             
         Case "layer_mergedown"
-            cmdFound = True
             Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
             
         Case "layer_order"
             Case "layer_up"
-                cmdFound = True
                 Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
             Case "layer_down"
-                cmdFound = True
                 Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
             Case "layer_totop"
-                cmdFound = True
                 Process "Raise layer to top", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
             Case "layer_tobottom"
-                cmdFound = True
                 Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
         Case "layer_orientation"
             Case "layer_straighten"
-                cmdFound = True
                 Process "Straighten layer", True
                 
             Case "layer_rotate90"
-                cmdFound = True
                 Process "Rotate layer 90 clockwise", , , UNDO_Layer
                 
             Case "layer_rotate270"
-                cmdFound = True
                 Process "Rotate layer 90 counter-clockwise", , , UNDO_Layer
                 
             Case "layer_rotate180"
-                cmdFound = True
                 Process "Rotate layer 180", , , UNDO_Layer
                 
             Case "layer_rotatearbitrary"
-                cmdFound = True
                 Process "Arbitrary layer rotation", True
                 
             Case "layer_fliphorizontal"
-                cmdFound = True
                 Process "Flip layer horizontally", , , UNDO_Layer
                 
             Case "layer_flipvertical"
-                cmdFound = True
                 Process "Flip layer vertically", , , UNDO_Layer
                 
         Case "layer_resize"
             Case "layer_resetsize"
-                cmdFound = True
                 Process "Reset layer size", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_LayerHeader
                 
             Case "layer_resize"
-                cmdFound = True
                 Process "Resize layer", True
                 
             Case "layer_contentawareresize"
-                cmdFound = True
                 Process "Content-aware layer resize", True
                 
         Case "layer_crop"
-            cmdFound = True
             Process "Crop layer to selection", , , UNDO_Layer
             
         Case "layer_transparency"
             Case "layer_colortoalpha"
-                cmdFound = True
                 Process "Color to alpha", True
                 
             Case "layer_removealpha"
-                cmdFound = True
                 Process "Remove alpha channel", True
                 
         Case "layer_rasterize"
             Case "layer_rasterizecurrent"
-                cmdFound = True
                 Process "Rasterize layer", , , UNDO_Layer
                 
             Case "layer_rasterizeall"
-                cmdFound = True
                 Process "Rasterize all layers", , , UNDO_Image
                 
         Case "layer_mergevisible"
-            cmdFound = True
             Process "Merge visible layers", , , UNDO_Image
             
         Case "layer_flatten"
-            cmdFound = True
             Process "Flatten image", True
+            
+        Case Else
+            cmdFound = False
             
     End Select
     
@@ -1734,62 +1669,52 @@ End Function
 
 Private Function PDA_ByName_MenuSelect(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "select_all"
-            cmdFound = True
             Process "Select all", , , UNDO_Selection
             
         Case "select_none"
-            cmdFound = True
             Process "Remove selection", , , UNDO_Selection
             
         Case "select_invert"
-            cmdFound = True
             Process "Invert selection", , , UNDO_Selection
             
         Case "select_grow"
-            cmdFound = True
             Process "Grow selection", True
             
         Case "select_shrink"
-            cmdFound = True
             Process "Shrink selection", True
             
         Case "select_border"
-            cmdFound = True
             Process "Border selection", True
             
         Case "select_feather"
-            cmdFound = True
             Process "Feather selection", True
             
         Case "select_sharpen"
-            cmdFound = True
             Process "Sharpen selection", True
             
         Case "select_erasearea"
-            cmdFound = True
             Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
             
         Case "select_load"
-            cmdFound = True
             Process "Load selection", True
             
         Case "select_save"
-            cmdFound = True
             Process "Save selection", True
             
         Case "select_export"
             Case "select_exportarea"
-                cmdFound = True
                 Process "Export selected area as image", True
                 
             Case "select_exportmask"
-                cmdFound = True
                 Process "Export selection mask as image", True
+                
+        Case Else
+            cmdFound = False
                 
     End Select
     
@@ -1799,73 +1724,57 @@ End Function
 
 Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Boolean
 
-    Dim cmdFound As Boolean: cmdFound = False
+    Dim cmdFound As Boolean: cmdFound = True
     
     Select Case srcMenuName
     
         Case "adj_autocorrect"
-            cmdFound = True
             Process "Auto correct", False, , UNDO_Layer
             
         Case "adj_autoenhance"
-            cmdFound = True
             Process "Auto enhance", False, , UNDO_Layer
             
         Case "adj_blackandwhite"
-            cmdFound = True
             Process "Black and white", True
             
         Case "adj_bandc"
-            cmdFound = True
             Process "Brightness and contrast", True
             
         Case "adj_colorbalance"
-            cmdFound = True
             Process "Color balance", True
             
         Case "adj_curves"
-            cmdFound = True
             Process "Curves", True
             
         Case "adj_levels"
-            cmdFound = True
             Process "Levels", True
             
         Case "adj_sandh"
-            cmdFound = True
             Process "Shadow and highlight", True
             
         Case "adj_vibrance"
-            cmdFound = True
             Process "Vibrance", True
             
         Case "adj_whitebalance"
-            cmdFound = True
             Process "White balance", True
             
         Case "adj_channels"
             Case "adj_channelmixer"
-                cmdFound = True
                 Process "Channel mixer", True
                 
             Case "adj_rechannel"
-                cmdFound = True
                 Process "Rechannel", True
                 
             Case "adj_maxchannel"
-                cmdFound = True
                 Process "Maximum channel", , , UNDO_Layer
                 
             Case "adj_minchannel"
-                cmdFound = True
                 Process "Minimum channel", , , UNDO_Layer
                 
             Case "adj_shiftchannelsleft"
-                cmdFound = True
                 Process "Shift colors (left)", , , UNDO_Layer
                 
             Case "adj_shiftchannelsright"
-                cmdFound = True
                 Process "Shift colors (right)", , , UNDO_Layer
                 
         Case "adj_color"
@@ -1875,15 +1784,12 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             'Case "adj_whitebalance"    'Covered by parent menu
             
             Case "adj_hsl"
-                cmdFound = True
                 Process "Hue and saturation", True
                 
             Case "adj_temperature"
-                cmdFound = True
                 Process "Temperature", True
                 
             Case "adj_tint"
-                cmdFound = True
                 Process "Tint", True
                 
             'Case "adj_vibrance"        'Covered by parent menu
@@ -1891,41 +1797,32 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             'Case "adj_blackandwhite"   'Covered by parent menu
             
             Case "adj_colorize"
-                cmdFound = True
                 Process "Colorize", True
                 
             Case "adj_replacecolor"
-                cmdFound = True
                 Process "Replace color", True
                 
             Case "adj_sepia"
-                cmdFound = True
                 Process "Sepia", , , UNDO_Layer
                 
         Case "adj_histogram"
             Case "adj_histogramdisplay"
-                cmdFound = True
                 ShowPDDialog vbModal, FormHistogram
                 
             Case "adj_histogramequalize"
-                cmdFound = True
                 Process "Equalize", True
                 
             Case "adj_histogramstretch"
-                cmdFound = True
                 Process "Stretch histogram", , , UNDO_Layer
                 
         Case "adj_invert"
             Case "adj_invertcmyk"
-                cmdFound = True
                 Process "Film negative", , , UNDO_Layer
                 
             Case "adj_inverthue"
-                cmdFound = True
                 Process "Invert hue", , , UNDO_Layer
                 
             Case "adj_invertrgb"
-                cmdFound = True
                 Process "Invert RGB", , , UNDO_Layer
                 
         Case "adj_lighting"
@@ -1934,7 +1831,6 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             'Case "adj_curves"  'Covered by parent menu
             
             Case "adj_gamma"
-                cmdFound = True
                 Process "Gamma", True
                 
             'Case "adj_levels"  'Covered by parent menu
@@ -1943,33 +1839,29 @@ Private Function PDA_ByName_MenuAdjustments(ByRef srcMenuName As String) As Bool
             
         Case "adj_monochrome"
             Case "adj_colortomonochrome"
-                cmdFound = True
                 Process "Color to monochrome", True
                 
             Case "adj_monochrometogray"
-                cmdFound = True
                 Process "Monochrome to gray", True
                 
         Case "adj_photo"
             Case "adj_exposure"
-                cmdFound = True
                 Process "Exposure", True
                 
             Case "adj_hdr"
-                cmdFound = True
                 Process "HDR", True
                 
             Case "adj_photofilters"
-                cmdFound = True
                 Process "Photo filter", True
                 
             Case "adj_redeyeremoval"
-                cmdFound = True
                 Process "Red-eye removal", True
                 
             Case "adj_splittone"
-                cmdFound = True
                 Process "Split toning", True
+                
+        Case Else
+            cmdFound = False
                 
     End Select
     

@@ -2776,7 +2776,78 @@ Private Sub MnuEdit_Click(Index As Integer)
 End Sub
 
 Private Sub MnuFile_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuFile(Index).Caption
+    
+    Select Case Index
+    
+        'New
+        Case 0
+            Menus.ProcessDefaultAction_ByName "file_new"
+        
+        'Open
+        Case 1
+            Menus.ProcessDefaultAction_ByName "file_open"
+        
+        '<Open Recent top-level>
+        Case 2
+        
+        '<Import top-level>
+        Case 3
+        
+        '<separator>
+        Case 4
+        
+        'Close
+        Case 5
+            Menus.ProcessDefaultAction_ByName "file_close"
+        
+        'Close all
+        Case 6
+            Menus.ProcessDefaultAction_ByName "file_closeall"
+            
+        '<separator>
+        Case 7
+        
+        'Save
+        Case 8
+            Menus.ProcessDefaultAction_ByName "file_save"
+            
+        'Save copy (lossless)
+        Case 9
+            Menus.ProcessDefaultAction_ByName "file_savecopy"
+            
+        'Save as
+        Case 10
+            Menus.ProcessDefaultAction_ByName "file_saveas"
+        
+        'Revert
+        Case 11
+            Menus.ProcessDefaultAction_ByName "file_revert"
+        
+        'Export
+        Case 12
+        
+        '<separator>
+        Case 13
+        
+        'Batch top-level menu
+        Case 14
+        
+        '<separator>
+        Case 15
+        
+        'Print
+        Case 16
+            Menus.ProcessDefaultAction_ByName "file_print"
+            
+        '<separator>
+        Case 17
+        
+        'Exit
+        Case 18
+            Menus.ProcessDefaultAction_ByName "file_quit"
+    
+    End Select
+    
 End Sub
 
 Private Sub MnuFileExport_Click(Index As Integer)

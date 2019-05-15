@@ -148,6 +148,10 @@ Private Sub srchMain_Click(bestSearchHit As String)
         Menus.ProcessDefaultAction_ByName m_ToolActions.GetString(m_ToolSearchTerms.ContainsString(bestSearchHit, True))
     End If
     
+    'Before exiting, update the search list as available items may have changed.
+    ' (For example, if the user types "undo" and hits Enter, "redo" may now be available to them.)
+    UpdateSearchTerms
+    
 End Sub
 
 Private Sub srchMain_GotFocusAPI()

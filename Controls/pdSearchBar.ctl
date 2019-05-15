@@ -425,6 +425,17 @@ Private Sub m_EditBox_GotFocusAPI()
     
 End Sub
 
+Private Sub m_EditBox_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+
+    'Many edit boxes defer to PD's central hotkey handler for Ctrl+A; the search bar, however,
+    ' is one where we definitely want to handle Ctrl+A ourselves.
+    If ((vKey = vbKeyA) And (Shift = vbCtrlMask)) Then
+        m_EditBox.SelectAll
+        preventFurtherHandling = True
+    End If
+    
+End Sub
+
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     'Enter raises a Click event with the current best-match search result (if any)
@@ -454,9 +465,9 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
         If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
     
     'Up/down keypresses are forwarded to the dropped listbox
-    ElseIf ((vKey = vbKeyDown) Or (vKey = vbKeyUp)) And m_PopUpVisible Then
+    ElseIf (((vKey = vbKeyDown) Or (vKey = vbKeyUp)) And m_PopUpVisible) Then
         lbPrimary.NotifyKeyDown Shift, vKey, preventFurtherHandling
-        
+    
     'Other keypresses are passed, uninterrupted, to our parent
     Else
         RaiseEvent KeyPress(vKey, preventFurtherHandling)
