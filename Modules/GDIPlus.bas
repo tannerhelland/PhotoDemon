@@ -2128,8 +2128,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
         End If
     
-        'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
-        ' 32bpp (including CMYK) images require a bit of extra work.
+        'We now copy over image data in one of two ways.  Additional transforms may be required if
+        ' the source image is in an unexpected color format (e.g. CMYK) or depth.
         If imgHasAlpha Then
             
             'Make sure the image is in 32bpp premultiplied ARGB format
@@ -2158,6 +2158,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             GdipBitmapLockBits hImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
             GdipBitmapUnlockBits hImage, copyBitmapData
         
+        'The image does *not* have alpha
         Else
             
             'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
@@ -2466,8 +2467,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
                 End If
                 
-                'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
-                ' 32bpp (including CMYK) images require a bit of extra work.
+                'We now copy over image data in one of two ways.  Additional transforms may be required if
+                ' the source image is in an unexpected color format (e.g. CMYK) or depth.
                 If imgHasAlpha Then
                     
                     'Make sure the image is in 32bpp premultiplied ARGB format
@@ -2495,7 +2496,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     'Use LockBits to perform the copy for us.
                     GdipBitmapLockBits m_hMultiPageTIFF, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
                     GdipBitmapUnlockBits m_hMultiPageTIFF, copyBitmapData
-        
+                
+                'Image does *not* have alpha
                 Else
                     
                     'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.

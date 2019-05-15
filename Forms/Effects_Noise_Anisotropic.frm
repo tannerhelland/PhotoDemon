@@ -113,8 +113,8 @@ Attribute VB_Exposed = False
 'Anisotropic Diffusion dialog
 'Copyright 2015-2019 by Tanner Helland
 'Created: 11/December/15
-'Last updated: 11/December/15
-'Last update: initial build
+'Last updated: 15/May/19
+'Last update: minor code clean-up
 '
 'Relevant wikipedia link:
 ' https://en.wikipedia.org/wiki/Anisotropic_diffusion
@@ -195,18 +195,18 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     For i = -255 To 255
         tmpFloat = (CDbl(i) / adKappa)
         
-        If adOption = 0 Then
+        If (adOption = 0) Then
             conduction(i) = -1# * (tmpFloat * tmpFloat)
         Else
             conduction(i) = 1# / (1# + tmpFloat * tmpFloat)
         End If
+        
     Next i
     
     'Create a local array and point it at the destination pixel data
-    Dim dstImageData() As Byte
-    Dim tmpSA As SafeArray2D
-    EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    Dim dstImageData() As Byte, dstSA As SafeArray2D
+    EffectPrep.PrepImageData dstSA, toPreview, dstPic
+    workingDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
@@ -214,10 +214,8 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     Set srcDIB = New pdDIB
     srcDIB.CreateFromExistingDIB workingDIB
     
-    Dim srcImageData() As Byte
-    Dim srcSA As SafeArray2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    Dim srcImageData() As Byte, srcSA As SafeArray2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
     ' (At present, we ignore edge pixels to simplify the filter's implementation; this will be dealt with momentarily.)
@@ -229,7 +227,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, quickXInner As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, quickXInner As Long, quickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -275,11 +273,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             If adCardinal Then
                 
                 'North
-                QuickY = y - 1
-                bSrc = srcImageData(quickX, QuickY)
-                gSrc = srcImageData(quickX + 1, QuickY)
-                rSrc = srcImageData(quickX + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, QuickY)
+                quickY = y - 1
+                bSrc = srcImageData(quickX, quickY)
+                gSrc = srcImageData(quickX + 1, quickY)
+                rSrc = srcImageData(quickX + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, quickY)
                 
                 'Calculate nabla (gradient) and conduction, and add them to the running total
                 rNabla = (rSrc - rDst)
@@ -294,11 +292,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
                 
                 'South
-                QuickY = y + 1
-                bSrc = srcImageData(quickX, QuickY)
-                gSrc = srcImageData(quickX + 1, QuickY)
-                rSrc = srcImageData(quickX + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, QuickY)
+                quickY = y + 1
+                bSrc = srcImageData(quickX, quickY)
+                gSrc = srcImageData(quickX + 1, quickY)
+                rSrc = srcImageData(quickX + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -354,11 +352,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
 
                 'North-west
                 quickXInner = quickX - qvDepth
-                QuickY = y - 1
-                bSrc = srcImageData(quickXInner, QuickY)
-                gSrc = srcImageData(quickXInner + 1, QuickY)
-                rSrc = srcImageData(quickXInner + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, QuickY)
+                quickY = y - 1
+                bSrc = srcImageData(quickXInner, quickY)
+                gSrc = srcImageData(quickXInner + 1, quickY)
+                rSrc = srcImageData(quickXInner + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -373,11 +371,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
 
                 'North-east
                 quickXInner = quickX + qvDepth
-                QuickY = y - 1
-                bSrc = srcImageData(quickXInner, QuickY)
-                gSrc = srcImageData(quickXInner + 1, QuickY)
-                rSrc = srcImageData(quickXInner + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, QuickY)
+                quickY = y - 1
+                bSrc = srcImageData(quickXInner, quickY)
+                gSrc = srcImageData(quickXInner + 1, quickY)
+                rSrc = srcImageData(quickXInner + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -392,11 +390,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
 
                 'South-west
                 quickXInner = quickX - qvDepth
-                QuickY = y + 1
-                bSrc = srcImageData(quickXInner, QuickY)
-                gSrc = srcImageData(quickXInner + 1, QuickY)
-                rSrc = srcImageData(quickXInner + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, QuickY)
+                quickY = y + 1
+                bSrc = srcImageData(quickXInner, quickY)
+                gSrc = srcImageData(quickXInner + 1, quickY)
+                rSrc = srcImageData(quickXInner + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -411,11 +409,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
 
                 'South-east
                 quickXInner = quickX + qvDepth
-                QuickY = y + 1
-                bSrc = srcImageData(quickXInner, QuickY)
-                gSrc = srcImageData(quickXInner + 1, QuickY)
-                rSrc = srcImageData(quickXInner + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, QuickY)
+                quickY = y + 1
+                bSrc = srcImageData(quickXInner, quickY)
+                gSrc = srcImageData(quickXInner + 1, quickY)
+                rSrc = srcImageData(quickXInner + 2, quickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickXInner + 3, quickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -463,18 +461,14 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         Next x
         
         'On each iteration, we must copy over the new bits to the source image
-        If (i < adIterations) Then GDI.BitBltWrapper srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
+        If (i < adIterations) Then CopyMemoryStrict VarPtr(srcImageData(0, 0)), VarPtr(dstImageData(0, 0)), (finalX - initX + 1) * (finalY - initY + 1) * qvDepth
         If (Not toPreview) Then progBarOffset = finalX * i
         
     Next i
     
     'With our work complete, point all arrays away from their respective DIBs and deallocate any temp copies
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
+    workingDIB.UnwrapArrayFromDIB dstImageData
+    srcDIB.UnwrapArrayFromDIB srcImageData
     srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
