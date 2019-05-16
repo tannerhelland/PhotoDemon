@@ -2355,7 +2355,8 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    If PDMain.ContinueLoadingProgram() Then
+    Dim suspendAdditionalMessages As Boolean
+    If PDMain.ContinueLoadingProgram(suspendAdditionalMessages) Then
     
         '*************************************************************************************************************************************
         ' Now that all program engines are initialized, we can finally display the primary window
@@ -2472,8 +2473,17 @@ FormMainLoadError:
         
     'Something went catastrophically wrong during the load process.  Do not continue with the loading process.
     Else
-        MsgBox "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)", vbOKOnly + vbCritical, "Startup failure"
+    
+        'Because we can't guarantee that the translation subsystem is loaded, default to
+        ' a plain English error message, then terminate the program.
+        If (Not suspendAdditionalMessages) Then
+            Dim tmpMsg As String, tmpTitle As String
+            tmpMsg = "PhotoDemon has experienced a critical startup error." & vbCrLf & vbCrLf & "This can occur when the application is placed in a restricted system folder, like C:\Program Files\ or C:\Windows\.  Because PhotoDemon is a portable application, security precautions require it to operate from a non-system folder, like Desktop, Documents, or Downloads.  Please relocate the program to one of these folders, then try again." & vbCrLf & vbCrLf & "(The application will now close.)"
+            tmpTitle = "Startup failure"
+            MsgBox tmpMsg, vbOKOnly + vbCritical, tmpTitle
+        End If
         Unload Me
+        
     End If
     
 End Sub

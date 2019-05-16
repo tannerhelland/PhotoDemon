@@ -114,7 +114,7 @@ End Sub
 ' operated on by functions called from this routine.  (It is necessary to load the main window first, since a number of
 ' load operations - like decoding PNG menu icons from the resource file, then applying them to program menus - operate
 ' directly on the main window.)
-Public Function ContinueLoadingProgram() As Boolean
+Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages As Boolean = False) As Boolean
     
     'We assume that the program will initialize correctly.  If for some reason it doesn't, it will return FALSE, and the
     ' program needs to be shut down accordingly, because it is catastrophically broken.
@@ -231,6 +231,50 @@ Public Function ContinueLoadingProgram() As Boolean
     PluginManager.LoadPluginGroup True
     
     
+    '*************************************************************************************************************************************
+    ' Make sure all required plugins loaded successfully.  If they didn't, bail immediately.
+    '*************************************************************************************************************************************
+    
+    Dim corePluginsAvailable As Boolean: corePluginsAvailable = True
+    corePluginsAvailable = corePluginsAvailable And PluginManager.IsPluginCurrentlyEnabled(CCP_zstd)
+    corePluginsAvailable = corePluginsAvailable And PluginManager.IsPluginCurrentlyEnabled(CCP_lz4)
+    corePluginsAvailable = corePluginsAvailable And PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
+    corePluginsAvailable = corePluginsAvailable And PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS)
+    
+    If (Not corePluginsAvailable) Then
+        
+        PDDebug.LogAction "Core plugins missing or broken; PD will now terminate."
+        
+        'Translations will not be available yet, so use non-localized strings.
+        Dim tmpMsg As pdString, tmpTitle As String
+        Set tmpMsg = New pdString
+        tmpMsg.AppendLine "This PhotoDemon copy is broken (essential libraries missing)."
+        tmpMsg.AppendLineBreak
+        
+        tmpMsg.AppendLine "This usually means your PhotoDemon download was interrupted, or the program was unzipped incorrectly."
+        tmpMsg.AppendLineBreak
+        
+        tmpMsg.AppendLine "To fix this copy of PhotoDemon, please try the following steps:"
+        tmpMsg.AppendLineBreak
+        
+        tmpMsg.AppendLine "1) Download a fresh copy from photodemon.org/download"
+        tmpMsg.AppendLine "2) Extract the zip file's contents to a folder on your PC.  Make sure both PhotoDemon.exe and its /App subfolder are extracted."
+        tmpMsg.AppendLine "3) Double-click the new PhotoDemon.exe file."
+        tmpMsg.AppendLine "4) Because the program is freshly downloaded, Windows SmartScreen may raise a confirmation window.  You will need to give PhotoDemon permission to run on your PC."
+        tmpMsg.AppendLine "5) Enjoy the program!"
+        tmpMsg.AppendLineBreak
+        tmpMsg.Append "(This copy of PhotoDemon will now exit.)"
+        tmpTitle = "Critical error"
+        MsgBox tmpMsg.ToString(), vbCritical Or vbOKOnly Or vbApplicationModal, tmpTitle
+        
+        'Set termination flags, then exit
+        suspendAdditionalMessages = True
+        ContinueLoadingProgram = False
+        
+        Exit Function
+        
+    End If
+        
     '*************************************************************************************************************************************
     ' Initialize the internal resources handler and extract default assets
     '*************************************************************************************************************************************
