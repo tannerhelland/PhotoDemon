@@ -619,8 +619,30 @@ Private Sub PerformSearch()
     ' ...ahead of...
     ' "Auto-correct contrast"
     If (maxHits > 0) Then
-    
-        Dim loopHits As Long, minHits As Long
+        
+        'As part of this segment of the search engine, we want to put results in one of three
+        ' categories: "good", "better", and "best" results.
+        
+        ' - "Best" results start with the text of the search query.
+        ' - "Better" results do not start with the text of the search query, but a word within
+        '   the search text *does* start with the search query.
+        ' - "Good" results are results that include any words in the search query.
+        
+        ' As a concrete example, if the user searches for "gra"...
+        ' - "Gradient tool" is a best result (it starts with "gra")
+        ' - "Monochrome to grayscale" is a better result (a word other than the first one
+        '   starts with "gra"
+        ' - "Histogram" is just a good result (because "gra" appears in the text, but it's in
+        '   the middle of a word rather than the start).
+        
+        'After sorting results into these categories, we will append results in "best",
+        ' "better", "good" order.
+        Dim goodResults As pdStringStack: Set goodResults = New pdStringStack
+        Dim betterResults As pdStringStack: Set betterResults = New pdStringStack
+        Dim bestResults As pdStringStack: Set bestResults = New pdStringStack
+        
+        Dim loopHits As Long, minHits As Long, hitPosition As Long
+        Dim resultIsBest As Boolean, resultIsBetter As Boolean
         
         'If the search query contains (n) words, we want to match at least (n-1) of them.
         ' This is useful after the user performs a search query, as the edit box will read something
@@ -636,19 +658,46 @@ Private Sub PerformSearch()
                 If (Not alreadyAdded(i)) Then
                     
                     curHits = 0
+                    resultIsBetter = False
+                    resultIsBest = False
+                    
                     For j = 0 To lstSearchTerms.GetNumOfStrings - 1
-                        If (InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare) <> 0) Then curHits = curHits + 1
+                        
+                        hitPosition = InStr(1, m_SearchStack.GetString(i), lstSearchTerms.GetString(j), vbTextCompare)
+                        If (hitPosition <> 0) Then
+                            
+                            curHits = curHits + 1
+                            
+                            'Classify this as a "good" or "better" result
+                            If (hitPosition = 1) Then
+                                resultIsBest = True
+                            Else
+                                If (Mid$(m_SearchStack.GetString(i), hitPosition - 1, 1) = " ") Then resultIsBetter = True
+                            End If
+                            
+                        End If
+                        
                     Next j
                     
                     If (curHits = loopHits) Then
-                        m_SearchResults.AddString m_SearchStack.GetString(i)
+                        If resultIsBest And (curHits = maxHits) Then
+                            bestResults.AddString m_SearchStack.GetString(i)
+                        ElseIf resultIsBest Or resultIsBetter Then
+                            betterResults.AddString m_SearchStack.GetString(i)
+                        Else
+                            goodResults.AddString m_SearchStack.GetString(i)
+                        End If
                         alreadyAdded(i) = True
                     End If
                     
                 End If
             Next i
         Next loopHits
-    
+        
+        If (bestResults.GetNumOfStrings > 0) Then m_SearchResults.AppendStack bestResults
+        If (betterResults.GetNumOfStrings > 0) Then m_SearchResults.AppendStack betterResults
+        If (goodResults.GetNumOfStrings > 0) Then m_SearchResults.AppendStack goodResults
+        
     End If
     
     'Other matching mechanisms could be performed here in the future (e.g. phonetic algorithms), but they

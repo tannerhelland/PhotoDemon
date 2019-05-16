@@ -490,9 +490,11 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 Private Sub m_FlashTimer_Timer()
+    
     m_FlashCount = m_FlashCount + 1
-    Debug.Print m_FlashCount
     m_FlashTimeElapsed = m_FlashTimeElapsed + m_FlashTimer.Interval
+    
+    'Only flash for three seconds (by default; the caller can configure this manually)
     If (m_FlashTimeElapsed >= m_FlashLength) Then
         m_FlashTimer.StopTimer
         m_FlashCount = 0
@@ -500,6 +502,7 @@ Private Sub m_FlashTimer_Timer()
     Else
         RedrawBackBuffer True, False
     End If
+    
 End Sub
 
 'A few key events are also handled

@@ -895,9 +895,13 @@ End Sub
 
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
 ' rectangular tool selector as the current tool)
-Public Sub SelectNewTool(ByVal newToolID As PDTools, Optional ByVal flashToolButton As Boolean = False)
+Public Sub SelectNewTool(ByVal newToolID As PDTools, Optional ByVal flashToolButton As Boolean = False, Optional ByVal setEvenIfAlreadySet As Boolean = False)
     
-    If (newToolID <> g_CurrentTool) Then
+    Dim okToProceed As Boolean
+    okToProceed = setEvenIfAlreadySet
+    If (Not okToProceed) Then okToProceed = (newToolID <> g_CurrentTool)
+    
+    If okToProceed Then
         g_PreviousTool = g_CurrentTool
         g_CurrentTool = newToolID
         ResetToolButtonStates flashToolButton
