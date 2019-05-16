@@ -127,8 +127,7 @@ Private Sub Form_Resize()
 End Sub
 
 Public Sub SetFocusToSearchBox()
-    srchMain.SetFocus
-    srchMain.SelectAll
+    srchMain.SetFocusToSearchBox
 End Sub
 
 Private Sub lastUsedSettings_ReadCustomPresetData()
