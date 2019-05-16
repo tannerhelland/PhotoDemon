@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Search Bar control
 'Copyright 2019-2019 by Tanner Helland
 'Created: 25/April/19
-'Last updated: 10/May/19
-'Last update: implement arrow key navigation for the dropdown, without the edit box losing focus
+'Last updated: 16/May/19
+'Last update: continue refining search results list
 '
 'This is PD's version of a "search box" - an edit box that raises a neighboring list window with a list
 ' of "hits" that match the current search query.  Search matching is left up to the parent window, which
@@ -563,10 +563,23 @@ Private Sub PerformSearch()
     Dim lstSearchTerms As pdStringStack
     Set lstSearchTerms = Strings.GetListOfWordsFromString(strSource)
     
+    'Remove any menu separator "words" as these just add noise to the results list (e.g. ">")
+    Dim i As Long, j As Long
+    Dim tmpSearchList As pdStringStack
+    Set tmpSearchList = New pdStringStack
+    Do While lstSearchTerms.PopString(strSource)
+        strSource = Trim$(strSource)
+        If (LenB(strSource) > 0) Then
+            If (strSource <> ">") Then tmpSearchList.AddString strSource
+        End If
+    Loop
+    
+    Set lstSearchTerms = tmpSearchList
+    
     'Search is pretty simple: iterate the list the caller provided, and see if the search string occurs
     ' inside any of the strings we were passed.  Exact matches are given priority over partial matches,
     ' but otherwise, no special search "ranking" is currently performed.
-    Dim i As Long, j As Long, alreadyAdded() As Boolean
+    Dim alreadyAdded() As Boolean
     ReDim alreadyAdded(0 To m_SearchStack.GetNumOfStrings - 1) As Boolean
     
     'First, look for an exact match of the given search term.
@@ -607,9 +620,18 @@ Private Sub PerformSearch()
     ' "Auto-correct contrast"
     If (maxHits > 0) Then
     
-        Dim loopHits As Long
+        Dim loopHits As Long, minHits As Long
         
-        For loopHits = maxHits To 1 Step -1
+        'If the search query contains (n) words, we want to match at least (n-1) of them.
+        ' This is useful after the user performs a search query, as the edit box will read something
+        ' like "Effects > Stylize > Vignetting".  If we allow one-word matches, everything in the
+        ' "Effects" menu will appear in the results box - but using an n-1 system, we will first
+        ' return the exact match "Effects > Stylize > Vignetting", followed by all other items in
+        ' the "Effects > Stylize" submenu - but no other items from the base "Effects" menu.
+        minHits = 1
+        If (maxHits > 2) Then minHits = maxHits - 1
+        
+        For loopHits = maxHits To minHits Step -1
             For i = 0 To m_SearchStack.GetNumOfStrings - 1
                 If (Not alreadyAdded(i)) Then
                     
