@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.708</langversion>
+<langversion>7.2.709</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -605,7 +605,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <!-- BEGIN text for Histograms.bas -->
 
-<!-- Histograms.bas contains 0 phrases. -->
+<phrase>
+<original>Analyzing image histogram for maximum and minimum values</original>
+<translation>判断图像直方图的最大值和最小值</translation>
+</phrase>
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>拉伸直方图</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -7010,11 +7020,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>logarithmic</original>
-<translation>对数</translation>
-</phrase>
-
-<phrase>
 <original>on</original>
 <translation>打开</translation>
 </phrase>
@@ -7059,25 +7064,15 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>输出</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
 <!-- BEGIN text for Adjustments_Histogram_DisplayHistogram.frm (FormHistogram) -->
 
 <phrase>
-<original>Exit histogram</original>
-<translation>退出直方图</translation>
-</phrase>
-
-<phrase>
 <original>use logarithmic values</original>
 <translation>采用对数值</translation>
-</phrase>
-
-<phrase>
-<original>use smooth lines</original>
-<translation>用流畅的线条</translation>
 </phrase>
 
 <phrase>
@@ -7126,26 +7121,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Please wait while the histogram is updated</original>
-<translation>请稍候，直方图更新</translation>
-</phrase>
-
-<phrase>
 <original>Updating histogram</original>
 <translation>更新直方图</translation>
 </phrase>
 
-<phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>判断图像直方图的最大值和最小值</translation>
-</phrase>
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>拉伸直方图</translation>
-</phrase>
-
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -15739,10 +15719,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2626</phrasecount>
+<phrasecount>2622</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4802 phrases. -->
-<!-- 2176 are duplicates, so only 2626 unique phrases have been written to file. -->
-<!-- These 2626 phrases contain approximately 12440 total words. -->
+<!-- As of this build, PhotoDemon contains 4797 phrases. -->
+<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
+<!-- These 2622 phrases contain approximately 12427 total words. -->
 
 </pdData>

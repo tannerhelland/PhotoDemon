@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3385</langversion>
+<langversion>6.8.3386</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -606,7 +606,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <!-- BEGIN text for Histograms.bas -->
 
-<!-- Histograms.bas contains 0 phrases. -->
+<phrase>
+<original>Analyzing image histogram for maximum and minimum values</original>
+<translation>Analysera bilden histogram för maximi-och minimivärden</translation>
+</phrase>
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>Stretching histogram</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -7013,11 +7023,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>logarithmic</original>
-<translation>logaritmisk</translation>
-</phrase>
-
-<phrase>
 <original>on</original>
 <translation>på</translation>
 </phrase>
@@ -7062,25 +7067,15 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>utsignal</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
 <!-- BEGIN text for Adjustments_Histogram_DisplayHistogram.frm (FormHistogram) -->
 
 <phrase>
-<original>Exit histogram</original>
-<translation>exit histogram</translation>
-</phrase>
-
-<phrase>
 <original>use logarithmic values</original>
 <translation>använda logaritmiska värden</translation>
-</phrase>
-
-<phrase>
-<original>use smooth lines</original>
-<translation>Använd mjuka linjer</translation>
 </phrase>
 
 <phrase>
@@ -7129,26 +7124,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>Please wait while the histogram is updated</original>
-<translation>Vänta medan histogrammet uppdateras</translation>
-</phrase>
-
-<phrase>
 <original>Updating histogram</original>
 <translation>Uppdaterar histogram</translation>
 </phrase>
 
-<phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analysera bilden histogram för maximi-och minimivärden</translation>
-</phrase>
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>Stretching histogram</translation>
-</phrase>
-
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -15748,10 +15728,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2626</phrasecount>
+<phrasecount>2622</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4802 phrases. -->
-<!-- 2176 are duplicates, so only 2626 unique phrases have been written to file. -->
-<!-- These 2626 phrases contain approximately 12440 total words. -->
+<!-- As of this build, PhotoDemon contains 4797 phrases. -->
+<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
+<!-- These 2622 phrases contain approximately 12427 total words. -->
 
 </pdData>

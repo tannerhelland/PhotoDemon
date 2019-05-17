@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.402</langversion>
+<langversion>6.7.403</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -606,7 +606,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <!-- BEGIN text for Histograms.bas -->
 
-<!-- Histograms.bas contains 0 phrases. -->
+<phrase>
+<original>Analyzing image histogram for maximum and minimum values</original>
+<translation>Analyse de l'histogramme de l'image pour les valeurs maximales et minimales</translation>
+</phrase>
+
+<phrase>
+<original>Stretching histogram</original>
+<translation>Etirer l'histogramme</translation>
+</phrase>
+
+<!-- Histograms.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Histograms.bas-->
 
@@ -7017,11 +7027,6 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>logarithmic</original>
-<translation>logarithmique</translation>
-</phrase>
-
-<phrase>
 <original>on</original>
 <translation>on</translation>
 </phrase>
@@ -7066,25 +7071,15 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <translation>output</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
 <!-- BEGIN text for Adjustments_Histogram_DisplayHistogram.frm (FormHistogram) -->
 
 <phrase>
-<original>Exit histogram</original>
-<translation>Exit histogramme</translation>
-</phrase>
-
-<phrase>
 <original>use logarithmic values</original>
 <translation>En utilisant les valeurs logarithmiques</translation>
-</phrase>
-
-<phrase>
-<original>use smooth lines</original>
-<translation>Utilisez les lignes lisses</translation>
 </phrase>
 
 <phrase>
@@ -7133,26 +7128,11 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>Please wait while the histogram is updated</original>
-<translation>S'il vous plaît patienter pendant que l'histogramme est mis à jour</translation>
-</phrase>
-
-<phrase>
 <original>Updating histogram</original>
 <translation>Mise à jour de l'histogramme</translation>
 </phrase>
 
-<phrase>
-<original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Analyse de l'histogramme de l'image pour les valeurs maximales et minimales</translation>
-</phrase>
-
-<phrase>
-<original>Stretching histogram</original>
-<translation>Etirer l'histogramme</translation>
-</phrase>
-
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 46 phrases. 30 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_DisplayHistogram.frm-->
 
@@ -15753,10 +15733,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2626</phrasecount>
+<phrasecount>2622</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4802 phrases. -->
-<!-- 2176 are duplicates, so only 2626 unique phrases have been written to file. -->
-<!-- These 2626 phrases contain approximately 12440 total words. -->
+<!-- As of this build, PhotoDemon contains 4797 phrases. -->
+<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
+<!-- These 2622 phrases contain approximately 12427 total words. -->
 
 </pdData>
