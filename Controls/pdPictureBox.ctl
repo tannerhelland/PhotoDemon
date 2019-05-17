@@ -53,6 +53,8 @@ Public Event DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal ctlHei
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event Resize(ByVal newWidth As Long, ByVal newHeight As Long)
+Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -286,8 +288,16 @@ Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal S
     ucSupport.RequestCursor IDC_ARROW
 End Sub
 
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    RaiseEvent Resize(newWidth, newHeight)
 End Sub
 
 Private Sub UserControl_Initialize()

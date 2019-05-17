@@ -1952,7 +1952,7 @@ Private Function Process_AdjustmentsMenu(ByVal processID As String, Optional rai
         Process_AdjustmentsMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Stretch histogram", True) Then
-        FormHistogram.StretchHistogram
+        Histograms.StretchHistogram
         Process_AdjustmentsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Equalize", True) Then

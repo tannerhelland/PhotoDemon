@@ -149,8 +149,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright 2008-2019 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 19/July/17
-'Last update: rewrite against XML params, performance optimizations
+'Last updated: 17/May/19
+'Last update: simplify display options (histogram is now an on/off toggle)
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -213,14 +213,14 @@ Private Const PREVIEW_BORDER_PX As Long = 10
 
 'These five arrays will hold histogram data for the current image.  They are filled when the form is activated, and
 ' not modified again unless the form is unloaded and reopened.
-Private m_hData() As Double
+Private m_hData() As Long
 Private m_hDataLog() As Double
-Private m_hMax() As Double
+Private m_hMax() As Long
 Private m_hMaxLog() As Double
 Private m_hMaxPosition() As Byte
 
 'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
-Private m_hDIB() As pdDIB, m_hLogDIB() As pdDIB
+Private m_hDIB() As pdDIB
 
 'The current mouse coordinates are rendered to this DIB, which is then overlaid atop the curve box
 Private m_mouseCoordFont As pdFont
@@ -550,7 +550,7 @@ Private Sub cmdBar_ResetClick()
     
     'Also, reset will automatically select the first entry in a button strip, which isn't ideal for this control.
     btsChannel.ListIndex = 3
-    btsHistogram.ListIndex = 1
+    btsHistogram.ListIndex = 0
     
 End Sub
 
@@ -566,18 +566,17 @@ Private Sub Form_Load()
     btsChannel.AddItem "RGB", 3
     
     Dim btnImageSize As Long, btnImageSizeGroup As Long
-    btnImageSize = FixDPI(16)
-    btnImageSizeGroup = FixDPI(24)
+    btnImageSize = Interface.FixDPI(16)
+    btnImageSizeGroup = Interface.FixDPI(24)
     btsChannel.AssignImageToItem 0, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, btnImageSize, 2), btnImageSize, btnImageSize
     btsChannel.AssignImageToItem 3, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, btnImageSizeGroup, 2), btnImageSizeGroup, btnImageSizeGroup
     
     'Populate the histogram display options
-    btsHistogram.AddItem "none", 0
-    btsHistogram.AddItem "standard", 1
-    btsHistogram.AddItem "logarithmic", 2
-    btsHistogram.ListIndex = 1
+    btsHistogram.AddItem "on", 0
+    btsHistogram.AddItem "off", 1
+    btsHistogram.ListIndex = 0
     
     'Populate the grid on/off selector
     btsGrid.AddItem "on", 0
@@ -626,11 +625,10 @@ Private Sub Form_Load()
     m_MouseDown = False
     
     'Fill the histogram arrays
-    Histograms.FillHistogramArrays m_hData, m_hDataLog, m_hMax, m_hMaxLog, m_hMaxPosition
+    Histograms.FillHistogramArrays m_hData, m_hDataLog, m_hMax, m_hMaxLog, m_hMaxPosition, True
     
     'Generate matching overlay images
     Histograms.GenerateHistogramImages m_hData, m_hMax, m_hDIB, picDraw.ScaleWidth - (PREVIEW_BORDER_PX * 2) - 1, picDraw.ScaleHeight - (PREVIEW_BORDER_PX * 2) - 1
-    Histograms.GenerateHistogramImages m_hDataLog, m_hMaxLog, m_hLogDIB, picDraw.ScaleWidth - (PREVIEW_BORDER_PX * 2) - 1, picDraw.ScaleHeight - (PREVIEW_BORDER_PX * 2) - 1
         
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -678,17 +676,13 @@ Private Sub RedrawPreviewBox()
     
     Select Case btsHistogram.ListIndex
     
-        'No histogram
+        'Histogram overlay on
         Case 0
-        
-        'Normal histogram
-        Case 1
             m_hDIB(m_curChannel).AlphaBlendToDC picDraw.hDC, , PREVIEW_BORDER_PX + 1, PREVIEW_BORDER_PX + 1
-            
-        'Logarithmic histogram
-        Case 2
-            m_hLogDIB(m_curChannel).AlphaBlendToDC picDraw.hDC, , PREVIEW_BORDER_PX + 1, PREVIEW_BORDER_PX + 1
         
+        'Overlay off
+        Case 1
+            
     End Select
     
     'Next, draw a grid that separates the image into 16 segments; this helps orient the user, and it also provides a

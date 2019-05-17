@@ -27,49 +27,57 @@ Option Explicit
 ' 5) Array of where the maximum channel values occur (histogram index)
 '
 'TODO: add an option for ignoring transparent pixels; this would improve output on images with variable opacity
-Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Double, ByRef channelMax() As Double, ByRef channelMaxLog() As Double, ByRef channelMaxPosition() As Byte)
+Public Sub FillHistogramArrays(ByRef hData() As Long, ByRef hDataLog() As Double, ByRef channelMax() As Long, ByRef channelMaxLog() As Double, ByRef channelMaxPosition() As Byte, Optional ByVal allowDownsample As Boolean = False)
     
     'Redimension the various arrays
-    ReDim hData(0 To 3, 0 To 255) As Double
+    ReDim hData(0 To 3, 0 To 255) As Long
     ReDim hDataLog(0 To 3, 0 To 255) As Double
-    ReDim channelMax(0 To 3) As Double
+    ReDim channelMax(0 To 3) As Long
     ReDim channelMaxLog(0 To 3) As Double
     ReDim channelMaxPosition(0 To 3) As Byte
     
-    'Create a local array and point it at the pixel data we want to scan
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
+    'If the image is large, it's faster to grab a downsampled image and simply use that;
+    ' however, some dialogs (like Display Histogram) require full image data.
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
     
-    EffectPrep.PrepImageData tmpSA, , , , True
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+    If allowDownsample Then
         
+        'Downsample to two megapixel as necessary; that's more than enough data for a good histogram
+        Const MAX_PX_SIZE As Long = 2000000
+        With PDImages.GetActiveImage.GetActiveDIB
+            If (.GetDIBWidth * .GetDIBHeight) > MAX_PX_SIZE Then
+                DIBs.ResizeDIBByPixelCount PDImages.GetActiveImage.GetActiveDIB, srcDIB, MAX_PX_SIZE, GP_IM_Bilinear
+            Else
+                srcDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+            End If
+        End With
+        
+    Else
+        srcDIB.CreateFromExistingDIB PDImages.GetActiveImage.GetActiveDIB
+    End If
+    
+    'Create a local array and point it at the pixel data we want to scan
+    Dim imageData() As Byte, tmpSA1D As SafeArray1D
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim imgDepth As Long
+    imgDepth = srcDIB.GetDIBColorDepth \ 8
+    
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    initX = 0
+    initY = 0
+    finalX = (srcDIB.GetDIBWidth - 1) * imgDepth
+    finalY = srcDIB.GetDIBHeight - 1
     
     'These variables will hold temporary histogram values
     Dim r As Long, g As Long, b As Long, l As Long
     
     'If the histogram has already been used, we need to clear out all the
     'maximum values and histogram values
-    Dim hMax As Double, hMaxLog As Double
-    hMax = 0:    hMaxLog = 0
-    
-    For x = 0 To 3
-        channelMax(x) = 0
-        channelMaxLog(x) = 0
-        For y = 0 To 255
-            hData(x, y) = 0
-        Next y
-    Next x
+    Dim hMax As Long, hMaxLog As Double
+    hMax = 0
+    hMaxLog = 0#
     
     'Build a look-up table for luminance conversion; 765 = 255 * 3
     Dim lumLookup(0 To 765) As Byte
@@ -78,17 +86,20 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
         lumLookup(x) = x \ 3
     Next x
     
-    'Run a quick loop through the image, gathering what we need to calculate our histogram
-    For x = initX To finalX
-        quickVal = x * qvDepth
-    For y = initY To finalY
+    Dim dibPtr As Long, dibStride As Long
+    srcDIB.WrapArrayAroundScanline imageData, tmpSA1D, 0
+    dibPtr = srcDIB.GetDIBPointer
+    dibStride = srcDIB.GetDIBStride
     
-        'We have to gather the red, green, and blue in order to calculate luminance
-        r = imageData(quickVal + 2, y)
-        g = imageData(quickVal + 1, y)
-        b = imageData(quickVal, y)
+    'Run a quick loop through the image, gathering what we need to calculate our histogram
+    For y = initY To finalY
+        tmpSA1D.pvData = dibPtr + dibStride * y
+    For x = initX To finalX Step imgDepth
         
-        'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we use a simpler average value.
+        'Gather RGB and calculate luminance
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         l = lumLookup(r + g + b)
         
         'Increment each value in the array, depending on its present value; this will let us see how many pixels of
@@ -103,16 +114,16 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
         'Luminance
         hData(3, l) = hData(3, l) + 1
         
-    Next y
     Next x
+    Next y
     
     'With our dataset successfully collected, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    srcDIB.UnwrapArrayFromDIB imageData
     
     'Run a quick loop through the completed array to find maximum values
     For x = 0 To 3
         For y = 0 To 255
-            If hData(x, y) > channelMax(x) Then
+            If (hData(x, y) > channelMax(x)) Then
                 channelMax(x) = hData(x, y)
                 channelMaxPosition(x) = y
             End If
@@ -121,29 +132,29 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     
     'Now calculate the logarithmic version of the histogram
     For x = 0 To 3
-        If channelMax(x) <> 0 Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0
+        If (channelMax(x) <> 0) Then channelMaxLog(x) = Log(channelMax(x)) Else channelMaxLog(x) = 0#
     Next x
     
     For x = 0 To 3
         For y = 0 To 255
-            If hData(x, y) <> 0 Then
+            If (hData(x, y) <> 0) Then
                 hDataLog(x, y) = Log(hData(x, y))
             Else
-                hDataLog(x, y) = 0
+                hDataLog(x, y) = 0#
             End If
         Next y
     Next x
     
 End Sub
 
-'Given a set of histogram arrays generated by fillHistogramArrays(), above, produce a set of matching pdDIB objects.
+'Given a set of histogram arrays generated by FillHistogramArrays(), above, produce a set of matching pdDIB objects.
 ' For consistency reasons, the caller doesn't get much control over these images; just width/height, and this function
 ' controls the rest (including color + transparency decisions).  The finished images are 32-bpp and suitable for layering,
 ' as well.
 '
 'Note: this function only takes one set of input histogram data, so if you want images for both log and non-log variants,
 ' you'll need to call this function *twice*, once for each set.
-Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channelMax() As Double, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long)
+Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelMax() As Long, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long)
     
     'The incoming histogramData() and channelMax() arrays are already filled, and must not be modified.
     
@@ -240,3 +251,126 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
     'All pd2D paint objects are self-freeing
     
 End Sub
+
+'Stretch the histogram to reach from 0 to 255 (white balance correction is a far better method, FYI)
+Public Sub StretchHistogram()
+   
+    Message "Analyzing image histogram for maximum and minimum values..."
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte
+    Dim tmpSA As SafeArray2D
+    
+    EffectPrep.PrepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim quickVal As Long, qvDepth As Long
+    qvDepth = curDIBValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = ProgressBars.FindBestProgBarValue()
+    
+    'Color variables
+    Dim r As Long, g As Long, b As Long
+    
+    'Max and min values
+    Dim RMax As Long, gMax As Long, bMax As Long
+    Dim RMin As Long, gMin As Long, bMin As Long
+    RMin = 255
+    gMin = 255
+    bMin = 255
+        
+    'Loop through each pixel in the image, checking max/min values as we go
+    For x = initX To finalX
+        quickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
+        
+        If r < RMin Then RMin = r
+        If r > RMax Then RMax = r
+        If g < gMin Then gMin = g
+        If g > gMax Then gMax = g
+        If b < bMin Then bMin = b
+        If b > bMax Then bMax = b
+        
+    Next y
+    Next x
+    
+    Message "Stretching histogram..."
+    Dim rDif As Long, gDif As Long, bDif As Long
+    
+    rDif = RMax - RMin
+    gDif = gMax - gMin
+    bDif = bMax - bMin
+    
+    'Lookup tables make the stretching go faster
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    
+    For x = 0 To 255
+        If rDif <> 0 Then
+            r = 255 * ((x - RMin) / rDif)
+            If r < 0 Then r = 0
+            If r > 255 Then r = 255
+            rLookup(x) = r
+        Else
+            rLookup(x) = x
+        End If
+        If gDif <> 0 Then
+            g = 255 * ((x - gMin) / gDif)
+            If g < 0 Then g = 0
+            If g > 255 Then g = 255
+            gLookup(x) = g
+        Else
+            gLookup(x) = x
+        End If
+        If bDif <> 0 Then
+            b = 255 * ((x - bMin) / bDif)
+            If b < 0 Then b = 0
+            If b > 255 Then b = 255
+            bLookup(x) = b
+        Else
+            bLookup(x) = x
+        End If
+    Next x
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        quickVal = x * qvDepth
+    For y = initY To finalY
+    
+        'Get the source pixel color values
+        r = imageData(quickVal + 2, y)
+        g = imageData(quickVal + 1, y)
+        b = imageData(quickVal, y)
+                
+        imageData(quickVal + 2, y) = rLookup(r)
+        imageData(quickVal + 1, y) = gLookup(g)
+        imageData(quickVal, y) = bLookup(b)
+        
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'Safely deallocate imageData()
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    EffectPrep.FinalizeImageData
+        
+End Sub
+

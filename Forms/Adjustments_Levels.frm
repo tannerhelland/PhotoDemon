@@ -1070,9 +1070,9 @@ Private Sub PrepHistogramOverlays()
     
     'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
     ' (TODO: fix this!  Most functions need one or the other; not both.)
-    Dim hData() As Double
+    Dim hData() As Long
     Dim hDataLog() As Double
-    Dim hMax() As Double
+    Dim hMax() As Long
     Dim hMaxLog() As Double
     Dim hMaxPosition() As Byte
     
