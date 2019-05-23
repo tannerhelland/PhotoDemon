@@ -65,7 +65,9 @@ Option Explicit
 
 'By design, this textbox raises fewer events than a standard text box
 Public Event Change()
-Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
+Public Event KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
@@ -257,15 +259,23 @@ Private Sub m_EditBox_GotFocusAPI()
     ComponentGotFocus
 End Sub
 
+Private Sub m_EditBox_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    RaiseEvent KeyDown(Shift, vKey, preventFurtherHandling)
+End Sub
+
 Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     'Enter/Esc/Tab keypresses receive special treatment
     If ((vKey = pdnk_Enter) Or (vKey = pdnk_Escape) Or (vKey = pdnk_Tab)) And (Not m_EditBox.Multiline) Then
-        If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(vKey, preventFurtherHandling)
+        If (Not NavKey.NotifyNavKeypress(Me, vKey, Shift)) Then RaiseEvent KeyPress(Shift, vKey, preventFurtherHandling)
     Else
-        RaiseEvent KeyPress(vKey, preventFurtherHandling)
+        RaiseEvent KeyPress(Shift, vKey, preventFurtherHandling)
     End If
     
+End Sub
+
+Private Sub m_EditBox_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    RaiseEvent KeyUp(Shift, vKey, preventFurtherHandling)
 End Sub
 
 Private Sub m_EditBox_LostFocusAPI()

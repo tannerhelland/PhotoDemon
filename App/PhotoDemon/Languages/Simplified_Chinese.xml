@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.2.709</langversion>
+<langversion>7.1.1138</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -322,7 +322,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation></translation>
+<translation>自动校正颜色和照明</translation>
 </phrase>
 
 <phrase>
@@ -367,7 +367,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Auto-enhancing color and lighting</original>
-<translation></translation>
+<translation>自动增强色彩和照明</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 10 phrases.  All 10 were unique, so 10 new phrases were written to file. -->
@@ -421,14 +421,15 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Total colors: %1</original>
-<translation></translation>
+<translation>颜色总数: %1</translation>
 </phrase>
 
 <phrase>
 <original>This image contains %1 unique colors (RGB).
 
 This image contains %2 unique color + opacity values (RGBA).</original>
-<translation></translation>
+<translation>此图像包含 %1 个唯一颜色（RGB）。
+此图像包含 %2 个唯一颜色+不透明度值（RGBA）。</translation>
 </phrase>
 
 <phrase>
@@ -2474,7 +2475,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>PhotoDemon Palette</original>
-<translation></translation>
+<translation>PhotoDemon调色板</translation>
 </phrase>
 
 <phrase>
@@ -3470,12 +3471,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Gradient tool</original>
-<translation></translation>
+<translation>渐变工具</translation>
 </phrase>
 
 <phrase>
 <original>Gradient layer</original>
-<translation></translation>
+<translation>渐变层</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3767,7 +3768,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Unnamed gradient</original>
-<translation></translation>
+<translation>未命名的渐变</translation>
 </phrase>
 
 <!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4506,7 +4507,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>%1 (Channel %2)</original>
-<translation></translation>
+<translation>%1 (通道 %2)</translation>
 </phrase>
 
 <!-- pdPSD.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -5341,7 +5342,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>RGBA(%1, %2, %3, %4)</original>
-<translation></translation>
+<translation>RGBA(%1, %2, %3, %4)</translation>
 </phrase>
 
 <phrase>
@@ -6236,7 +6237,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From history</original>
-<translation></translation>
+<translation>从历史</translation>
 </phrase>
 
 <phrase>
@@ -6281,7 +6282,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Build standalone package</original>
-<translation></translation>
+<translation>构建独立包</translation>
 </phrase>
 
 <phrase>
@@ -8136,62 +8137,62 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>make node distances equal</original>
-<translation></translation>
+<translation>使节点距离相等</translation>
 </phrase>
 
 <phrase>
 <original>additional options</original>
-<translation></translation>
+<translation>其他选项</translation>
 </phrase>
 
 <phrase>
 <original>use gamma when blending</original>
-<translation></translation>
+<translation>混合时使用伽玛</translation>
 </phrase>
 
 <phrase>
 <original>gradient name</original>
-<translation></translation>
+<translation>渐变名称</translation>
 </phrase>
 
 <phrase>
 <original>import gradient file</original>
-<translation></translation>
+<translation>导入渐变文件</translation>
 </phrase>
 
 <phrase>
 <original>import / export</original>
-<translation></translation>
+<translation>导入/导出</translation>
 </phrase>
 
 <phrase>
 <original>export gradient file</original>
-<translation></translation>
+<translation>导出渐变文件</translation>
 </phrase>
 
 <phrase>
 <original>save to gradient collection</original>
-<translation></translation>
+<translation>保存到渐变集合</translation>
 </phrase>
 
 <phrase>
 <original>generate new pattern</original>
-<translation></translation>
+<translation>生成新模式</translation>
 </phrase>
 
 <phrase>
 <original>start color and opacity</original>
-<translation></translation>
+<translation>开始颜色和透明度</translation>
 </phrase>
 
 <phrase>
 <original>end color and opacity</original>
-<translation></translation>
+<translation>结束颜色和透明度</translation>
 </phrase>
 
 <phrase>
 <original>noise density</original>
-<translation></translation>
+<translation>噪声密度</translation>
 </phrase>
 
 <phrase>
@@ -8216,17 +8217,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>edit this gradient >></original>
-<translation></translation>
+<translation>编辑此渐变>></translation>
 </phrase>
 
 <phrase>
 <original>sort collection by</original>
-<translation></translation>
+<translation>排序集合</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation></translation>
+<translation>你的收藏</translation>
 </phrase>
 
 <phrase>
@@ -8251,62 +8252,62 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation></translation>
+<translation>您的集合中已存在名为“ %1 ”的渐变。 你想覆盖它吗？</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate name</original>
-<translation></translation>
+<translation>名称重复</translation>
 </phrase>
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation></translation>
+<translation>这个渐变没有名称，请在将其添加到收藏集之前为其命名。</translation>
 </phrase>
 
 <phrase>
 <original>Name required</original>
-<translation></translation>
+<translation>名称为空</translation>
 </phrase>
 
 <phrase>
 <original>All supported gradients</original>
-<translation></translation>
+<translation>所有支持的渐变</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Gradient</original>
-<translation></translation>
+<translation>GIMP 渐变</translation>
 </phrase>
 
 <phrase>
 <original>SVG Gradient</original>
-<translation></translation>
+<translation>SVG 渐变</translation>
 </phrase>
 
 <phrase>
 <original>Import gradient</original>
-<translation></translation>
+<translation>导入渐变</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation></translation>
+<translation>渐变文件“ %1 ” 无效。</translation>
 </phrase>
 
 <phrase>
 <original>Invalid gradient</original>
-<translation></translation>
+<translation>无效的渐变文件</translation>
 </phrase>
 
 <phrase>
 <original>New gradient</original>
-<translation></translation>
+<translation>新的渐变</translation>
 </phrase>
 
 <phrase>
 <original>Export gradient</original>
-<translation></translation>
+<translation>导出渐变</translation>
 </phrase>
 
 <phrase>
@@ -8316,62 +8317,62 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient collection</original>
-<translation></translation>
+<translation>渐变集合</translation>
 </phrase>
 
 <phrase>
 <original>make your own</original>
-<translation></translation>
+<translation>自定义</translation>
 </phrase>
 
 <phrase>
 <original>noise gradients</original>
-<translation></translation>
+<translation>噪声渐变</translation>
 </phrase>
 
 <phrase>
 <original>filename</original>
-<translation></translation>
+<translation>文件名</translation>
 </phrase>
 
 <phrase>
 <original>complexity</original>
-<translation></translation>
+<translation>复杂</translation>
 </phrase>
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation></translation>
+<translation>您的渐变集合存储在“ %1 ”文件夹中</translation>
 </phrase>
 
 <phrase>
 <original>click to open the gradient collection folder in Windows Explorer</original>
-<translation></translation>
+<translation>单击以在Windows资源管理器中打开渐变集合文件夹</translation>
 </phrase>
 
 <phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
-<translation></translation>
+<translation>当渐变包含具有完全不同的亮度值的颜色时，伽马校正可以改善其外观。</translation>
 </phrase>
 
 <phrase>
 <original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
-<translation></translation>
+<translation>使用此设置可自动计算所有梯度节点的相等定位。</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to black</original>
-<translation></translation>
+<translation>前景转换为黑色</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to white</original>
-<translation></translation>
+<translation>前景转换为白色</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to transparent</original>
-<translation></translation>
+<translation>前景透明</translation>
 </phrase>
 
 <phrase>
@@ -10580,12 +10581,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>palette type</original>
-<translation></translation>
+<translation>调色板类型</translation>
 </phrase>
 
 <phrase>
 <original>use palette's alpha values</original>
-<translation></translation>
+<translation>使用调色板的alpha值</translation>
 </phrase>
 
 <phrase>
@@ -10625,12 +10626,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color only (RGB)</original>
-<translation></translation>
+<translation>仅彩色（RGB）</translation>
 </phrase>
 
 <phrase>
 <original>color and opacity (RGBA)</original>
-<translation></translation>
+<translation>颜色和透明度（RGBA）</translation>
 </phrase>
 
 <phrase>
@@ -12463,7 +12464,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>compression optimization</original>
-<translation></translation>
+<translation>压缩优化</translation>
 </phrase>
 
 <phrase>
@@ -12488,7 +12489,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>lossy optimization is provided by pngquant</original>
-<translation></translation>
+<translation>损耗优化由pngquant提供</translation>
 </phrase>
 
 <phrase>
@@ -12528,7 +12529,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
-<translation></translation>
+<translation>OptiPNG 提供无损优化</translation>
 </phrase>
 
 <phrase>
@@ -12543,47 +12544,49 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>automatic</original>
-<translation></translation>
+<translation>自动</translation>
 </phrase>
 
 <phrase>
 <original>optimize: fast filters</original>
-<translation></translation>
+<translation>优化：快速过滤器</translation>
 </phrase>
 
 <phrase>
 <original>optimize: all filters</original>
-<translation></translation>
+<translation>优化：所有过滤器</translation>
 </phrase>
 
 <phrase>
 <original>single filter: none</original>
-<translation></translation>
+<translation>单过滤器：无</translation>
 </phrase>
 
 <phrase>
 <original>single filter: sub</original>
-<translation></translation>
+<translation>
+单过滤器：sub</translation>
 </phrase>
 
 <phrase>
 <original>single filter: up</original>
-<translation></translation>
+<translation>
+单过滤器：up</translation>
 </phrase>
 
 <phrase>
 <original>single filter: average</original>
-<translation></translation>
+<translation>单过滤器：平均值</translation>
 </phrase>
 
 <phrase>
 <original>single filter: paeth</original>
-<translation></translation>
+<translation>单过滤器：paeth</translation>
 </phrase>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation></translation>
+<translation>PNG文件支持不同的压缩策略（称为“过滤器”）。 智能滤波器选择产生更好的压缩 使用自动设置让PhotoDemon测试多种策略，并自动选择产生最佳压缩的策略。</translation>
 </phrase>
 
 <phrase>
@@ -12604,22 +12607,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>PSD Export Options</original>
-<translation></translation>
+<translation>PSD导出选项</translation>
 </phrase>
 
 <phrase>
 <original>compression</original>
-<translation></translation>
+<translation>压缩</translation>
 </phrase>
 
 <phrase>
 <original>maximize compatibility</original>
-<translation></translation>
+<translation>最大化兼容性</translation>
 </phrase>
 
 <phrase>
 <original>PackBits</original>
-<translation></translation>
+<translation>PackBits</translation>
 </phrase>
 
 <!-- File_Save_PSD.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12762,7 +12765,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Thank you to our wonderful Patreon supporters!</original>
-<translation></translation>
+<translation>感谢我们精彩的Patreon支持者！</translation>
 </phrase>
 
 <phrase>
@@ -13454,7 +13457,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>search</original>
-<translation></translation>
+<translation>搜索</translation>
 </phrase>
 
 <phrase>
@@ -13711,87 +13714,87 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Gradient</original>
-<translation></translation>
+<translation>渐变</translation>
 </phrase>
 
 <phrase>
 <original>Hand tool</original>
-<translation></translation>
+<translation>平移工具</translation>
 </phrase>
 
 <phrase>
 <original>Move tool</original>
-<translation></translation>
+<translation>移动工具</translation>
 </phrase>
 
 <phrase>
 <original>Color selector tool</original>
-<translation></translation>
+<translation>颜色选择器工具</translation>
 </phrase>
 
 <phrase>
 <original>Measure tool</original>
-<translation></translation>
+<translation>测量工具</translation>
 </phrase>
 
 <phrase>
 <original>Rectangle selection tool</original>
-<translation></translation>
+<translation>矩形选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Ellipse selection tool</original>
-<translation></translation>
+<translation>椭圆选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Line selection tool</original>
-<translation></translation>
+<translation>线条选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Polygon selection tool</original>
-<translation></translation>
+<translation>多边形选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Lasso selection tool</original>
-<translation></translation>
+<translation>套索选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Magic wand selection tool</original>
-<translation></translation>
+<translation>魔术棒选择工具</translation>
 </phrase>
 
 <phrase>
 <original>Text tool</original>
-<translation></translation>
+<translation>文本工具</translation>
 </phrase>
 
 <phrase>
 <original>Typography tool</original>
-<translation></translation>
+<translation>排版工具</translation>
 </phrase>
 
 <phrase>
 <original>Pencil tool</original>
-<translation></translation>
+<translation>铅笔工具</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush tool</original>
-<translation></translation>
+<translation>毛笔工具</translation>
 </phrase>
 
 <phrase>
 <original>Erase tool</original>
-<translation></translation>
+<translation>擦除工具</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket tool</original>
-<translation></translation>
+<translation>油漆桶工具</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 97 phrases. 36 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
@@ -13940,47 +13943,47 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>repeat</original>
-<translation></translation>
+<translation>重复</translation>
 </phrase>
 
 <phrase>
 <original>linear</original>
-<translation></translation>
+<translation>线性</translation>
 </phrase>
 
 <phrase>
 <original>radial</original>
-<translation></translation>
+<translation>径向</translation>
 </phrase>
 
 <phrase>
 <original>spherical</original>
-<translation></translation>
+<translation>球形</translation>
 </phrase>
 
 <phrase>
 <original>conical</original>
-<translation></translation>
+<translation>圆锥形</translation>
 </phrase>
 
 <phrase>
 <original>spiral</original>
-<translation></translation>
+<translation>螺旋形</translation>
 </phrase>
 
 <phrase>
 <original>clamp</original>
-<translation></translation>
+<translation>夹具</translation>
 </phrase>
 
 <phrase>
 <original>wrap</original>
-<translation></translation>
+<translation>缠绕</translation>
 </phrase>
 
 <phrase>
 <original>reflect</original>
-<translation></translation>
+<translation>反射</translation>
 </phrase>
 
 <!-- Toolpanel_Gradient.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->

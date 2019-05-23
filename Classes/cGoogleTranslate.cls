@@ -87,6 +87,7 @@ Private Sub Class_Initialize()
         m_IEAvailable = True
     Else
         m_IEAvailable = False
+        PDDebug.LogAction "WARNING!  clsGoogleTranslate failed to create an InternetExplorer.application instance."
     End If
     
     Exit Sub
@@ -123,7 +124,11 @@ Public Function GetGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     processedHTML = vbNullString
     
     'If an IE object wasn't initialized successfully, this whole function is pointless
-    If (m_IEAvailable And (Not m_IE Is Nothing)) Then
+    Dim ieAvailable As Boolean
+    ieAvailable = m_IEAvailable
+    If ieAvailable Then ieAvailable = (Not m_IE Is Nothing)
+    
+    If ieAvailable Then
         
         'PhotoDemon uses %n to define custom parameters in text entries.  URLs also make use of the % identifier,
         ' so replace our % with something else before attempting to translate.
@@ -151,11 +156,15 @@ RetryTranslation:
         Dim useChineseEngine As Boolean: useChineseEngine = False
         useChineseEngine = (InStr(1, LCase$(m_dstLanguage), "zh", vbBinaryCompare) <> 0) Or (InStr(1, LCase$(m_dstLanguage), "cn", vbBinaryCompare) <> 0)
         
+        Dim fullTargetURL As String
+        
         If useChineseEngine Then
-            m_IE.navigate "http://translate.google.cn/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
+            fullTargetURL = "http://translate.google.cn/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
         Else
-            m_IE.navigate "http://translate.google.com/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
+            fullTargetURL = "http://translate.google.com/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
         End If
+        
+        m_IE.navigate fullTargetURL
         
         'Loop until the ie object has received the translation from Google.  The amount of time this requires is
         ' obviously dependent on this PC's Internet connection.
@@ -174,10 +183,9 @@ RetryTranslation:
             
         'Copy the translation (including all HTML elements) into a VB string
         origHTML = m_IE.Document.getElementById("result_box").innerHTML
-        m_IE.Document.Clear
         
         'If this translation matches the previous one, try again if necessary.
-        If (InStr(1, origHTML, m_lastTranslation, vbTextCompare) > 0) Then
+        If (InStr(1, origHTML, m_lastTranslation, vbTextCompare) <> 0) Then
             If (numOfRetries < 2) Then
                 numOfRetries = numOfRetries + 1
                 GoTo RetryTranslation
@@ -221,6 +229,18 @@ RetryTranslation:
     End If
     
 NoTranslationAvailable:
+    
+    If (Err.Number <> 0) Then
+        
+        'An "object required" error means we could find the target tag; Google Translate has probably changed
+        ' their HTML again, and we are bad and don't use their recommended API so we get what we deserve.
+        If (Err.Number = 424) Then
+            PDDebug.LogAction "Google Translate changed their page layout; the auto-translate function won't work for this language."
+        Else
+            PDDebug.LogAction "An unknown error occurred in clsGoogleTranslate: " & Err.Number & ", " & Err.Description
+        End If
+        
+    End If
     
     'Return the translated data
     GetGoogleTranslation = processedHTML

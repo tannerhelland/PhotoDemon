@@ -77,6 +77,204 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
+      Index           =   2
+      Left            =   3480
+      TabIndex        =   8
+      Top             =   720
+      Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdListBox lstPhrases 
+         Height          =   5175
+         Left            =   240
+         TabIndex        =   22
+         Top             =   360
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   9128
+      End
+      Begin PhotoDemon.pdDropDown cboPhraseFilter 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   21
+         Top             =   6000
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButton cmdNextPhrase 
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   5
+         Top             =   6600
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1085
+         Caption         =   "Save this translation and proceed to the next phrase"
+      End
+      Begin PhotoDemon.pdTextBox txtTranslation 
+         Height          =   2325
+         Left            =   5040
+         TabIndex        =   7
+         Top             =   3120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtOriginal 
+         Height          =   2355
+         Left            =   5040
+         TabIndex        =   9
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkGoogleTranslate 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   2
+         Top             =   5520
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "automatically estimate missing translations (via Google Translate)"
+      End
+      Begin PhotoDemon.pdCheckBox chkShortcut 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   3
+         Top             =   6000
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "CTRL+ENTER automatically saves and proceeds to next phrase"
+      End
+      Begin PhotoDemon.pdLabel lblTranslatedPhrase 
+         Height          =   285
+         Left            =   4920
+         Top             =   2760
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "translated phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   9
+         Left            =   4920
+         Top             =   0
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "original phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   5625
+         Width           =   4665
+         _ExtentX        =   8229
+         _ExtentY        =   503
+         Caption         =   "phrases to display"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblPhraseBox 
+         Height          =   285
+         Left            =   0
+         Top             =   0
+         Width           =   4785
+         _ExtentX        =   8440
+         _ExtentY        =   503
+         Caption         =   "list of phrases (%1 items)"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdButton cmdAutoTranslate 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   20
+         Top             =   6600
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   1085
+         Caption         =   "Initiate auto-translation of all missing phrases"
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   7455
+      Index           =   0
+      Left            =   3480
+      TabIndex        =   6
+      Top             =   720
+      Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdListBox lstLanguages 
+         Height          =   4575
+         Left            =   840
+         TabIndex        =   23
+         Top             =   1560
+         Width           =   10695
+         _ExtentX        =   18865
+         _ExtentY        =   8070
+      End
+      Begin PhotoDemon.pdButton cmdDeleteLanguage 
+         Height          =   615
+         Left            =   8400
+         TabIndex        =   10
+         Top             =   6360
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "Delete selected language file"
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   0
+         Top             =   120
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "start a new language file from scratch"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   1
+         Top             =   600
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "edit an existing language file:"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   840
+         Top             =   1200
+         Width           =   10650
+         _ExtentX        =   18785
+         _ExtentY        =   503
+         Caption         =   "language files currently available"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   7455
       Index           =   1
       Left            =   3480
       TabIndex        =   11
@@ -285,204 +483,6 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   4210752
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
-      Index           =   2
-      Left            =   3480
-      TabIndex        =   8
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdListBox lstPhrases 
-         Height          =   5175
-         Left            =   240
-         TabIndex        =   22
-         Top             =   360
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   9128
-      End
-      Begin PhotoDemon.pdDropDown cboPhraseFilter 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   21
-         Top             =   6000
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButton cmdNextPhrase 
-         Height          =   615
-         Left            =   5040
-         TabIndex        =   5
-         Top             =   6600
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1085
-         Caption         =   "Save this translation and proceed to the next phrase"
-      End
-      Begin PhotoDemon.pdTextBox txtTranslation 
-         Height          =   2325
-         Left            =   5040
-         TabIndex        =   7
-         Top             =   3120
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtOriginal 
-         Height          =   2355
-         Left            =   5040
-         TabIndex        =   9
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkGoogleTranslate 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   2
-         Top             =   5520
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "automatically estimate missing translations (via Google Translate)"
-      End
-      Begin PhotoDemon.pdCheckBox chkShortcut 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   3
-         Top             =   6000
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "ENTER key automatically saves and proceeds to next phrase"
-      End
-      Begin PhotoDemon.pdLabel lblTranslatedPhrase 
-         Height          =   285
-         Left            =   4920
-         Top             =   2760
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   503
-         Caption         =   "translated phrase"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   9
-         Left            =   4920
-         Top             =   0
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   503
-         Caption         =   "original phrase"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   5625
-         Width           =   4665
-         _ExtentX        =   8229
-         _ExtentY        =   503
-         Caption         =   "phrases to display"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPhraseBox 
-         Height          =   285
-         Left            =   0
-         Top             =   0
-         Width           =   4785
-         _ExtentX        =   8440
-         _ExtentY        =   503
-         Caption         =   "list of phrases (%1 items)"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdButton cmdAutoTranslate 
-         Height          =   615
-         Left            =   240
-         TabIndex        =   20
-         Top             =   6600
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   1085
-         Caption         =   "Initiate auto-translation of all missing phrases"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
-      Index           =   0
-      Left            =   3480
-      TabIndex        =   6
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdListBox lstLanguages 
-         Height          =   4575
-         Left            =   840
-         TabIndex        =   23
-         Top             =   1560
-         Width           =   10695
-         _ExtentX        =   18865
-         _ExtentY        =   8070
-      End
-      Begin PhotoDemon.pdButton cmdDeleteLanguage 
-         Height          =   615
-         Left            =   8400
-         TabIndex        =   10
-         Top             =   6360
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1085
-         Caption         =   "Delete selected language file"
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   0
-         Top             =   120
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "start a new language file from scratch"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optBaseLanguage 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   1
-         Top             =   600
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "edit an existing language file:"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   840
-         Top             =   1200
-         Width           =   10650
-         _ExtentX        =   18785
-         _ExtentY        =   503
-         Caption         =   "language files currently available"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
 End
 Attribute VB_Name = "FormLanguageEditor"
 Attribute VB_GlobalNameSpace = False
@@ -564,6 +564,9 @@ Private m_XMLEngine As pdXML
 Private m_curBackupFile As Long
 Private Const backupFileName As String = "PD_LANG_EDIT_BACKUP_"
 
+'Hacky fix for specialized Ctrl+Enter detection
+Private m_InKeyEvent As Boolean
+
 'During phrase editing, the user can choose to display all phrases, only translated phrases, or only untranslated phrases.
 Private Sub cboPhraseFilter_Click()
 
@@ -583,7 +586,7 @@ Private Sub cboPhraseFilter_Click()
         'Translated phrases
         Case 1
             For i = 0 To m_NumOfPhrases - 1
-                If Len(m_AllPhrases(i).Translation) <> 0 Then
+                If (LenB(m_AllPhrases(i).Translation) <> 0) Then
                     lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
                 End If
             Next i
@@ -591,7 +594,7 @@ Private Sub cboPhraseFilter_Click()
         'Untranslated phrases
         Case 2
             For i = 0 To m_NumOfPhrases - 1
-                If Len(m_AllPhrases(i).Translation) = 0 Then
+                If (LenB(m_AllPhrases(i).Translation) = 0) Then
                     lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
                 End If
             Next i
@@ -626,14 +629,14 @@ Private Sub cmdAutoTranslate_Click()
     totalTranslated = 0
     
     For i = 0 To m_NumOfPhrases - 1
-        If Len(m_AllPhrases(i).Translation) = 0 Then totalUntranslated = totalUntranslated + 1
+        If (LenB(m_AllPhrases(i).Translation) = 0) Then totalUntranslated = totalUntranslated + 1
     Next i
     
     Dim srcPhrase As String, retString As String
     
     'Iterate through all untranslated phrases, requesting Google translates as we go
     For i = 0 To m_NumOfPhrases - 1
-        If Len(m_AllPhrases(i).Translation) = 0 Then
+        If (LenB(m_AllPhrases(i).Translation) = 0) Then
         
             'Regardless of whether or not we succeed, increment the counter
             totalTranslated = totalTranslated + 1
@@ -651,7 +654,7 @@ Private Sub cmdAutoTranslate_Click()
             retString = m_AutoTranslate.GetGoogleTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation
-            If (Len(retString) <> 0) Then
+            If (LenB(retString) <> 0) Then
                 
                 'Do a "quick and dirty" case fix for titlecase text
                 retString = GetFixedTitlecase(srcPhrase, retString)
@@ -743,11 +746,15 @@ Private Sub cmdNext_Click()
 End Sub
 
 Private Sub cmdNextPhrase_Click()
+    PhraseFinished
+End Sub
 
-    If lstPhrases.ListIndex < 0 Then Exit Sub
+Private Sub PhraseFinished()
+
+    If (lstPhrases.ListIndex < 0) Then Exit Sub
     
     'Store this translation to the phrases array
-    m_AllPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation
+    m_AllPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation.Text
     
     'Insert this translation into the original XML file
     m_XMLEngine.UpdateTagAtLocation "translation", txtTranslation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
@@ -766,26 +773,26 @@ Private Sub cmdNextPhrase_Click()
             newIndex = lstPhrases.ListIndex + 1
             
             'Attempt to automatically move to the next item in the list
-            If newIndex <= lstPhrases.ListCount - 1 Then
+            If (newIndex <= lstPhrases.ListCount - 1) Then
                 lstPhrases.ListIndex = newIndex
             Else
-                If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+                If (lstPhrases.ListCount > 0) Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
             End If
         
         'Translated phrases
         Case 1
             
             'If the translation has been erased, this item is no longer part of the "translated phrases" group
-            If Len(txtTranslation) = 0 Then
+            If (LenB(txtTranslation) = 0) Then
                 
                 newIndex = lstPhrases.ListIndex
                 lstPhrases.RemoveItem lstPhrases.ListIndex
                 
                 'Attempt to automatically move to the next item in the list
-                If newIndex <= lstPhrases.ListCount - 1 Then
+                If (newIndex <= lstPhrases.ListCount - 1) Then
                     lstPhrases.ListIndex = newIndex
                 Else
-                    If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+                    If (lstPhrases.ListCount > 0) Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
                 End If
                 
             End If
@@ -794,16 +801,16 @@ Private Sub cmdNextPhrase_Click()
         Case 2
         
             'If a translation has been provided, this item is no longer part of the "untranslated phrases" group
-            If Len(txtTranslation) <> 0 Then
+            If (LenB(txtTranslation) <> 0) Then
                 
                 newIndex = lstPhrases.ListIndex
                 lstPhrases.RemoveItem lstPhrases.ListIndex
                 
                 'Attempt to automatically move to the next item in the list
-                If newIndex <= lstPhrases.ListCount - 1 Then
+                If (newIndex <= lstPhrases.ListCount - 1) Then
                     lstPhrases.ListIndex = newIndex
                 Else
-                    If lstPhrases.ListCount > 0 Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
+                    If (lstPhrases.ListCount > 0) Then lstPhrases.ListIndex = lstPhrases.ListCount - 1
                 End If
                 
             End If
@@ -1174,21 +1181,19 @@ End Sub
 Private Sub lstPhrases_Click()
     
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase:")
-    lblTranslatedPhrase.ForeColor = RGB(64, 64, 64)
     txtOriginal = m_AllPhrases(GetPhraseIndexFromListIndex()).Original
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
-    If Len(m_AllPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0 Then
+    If (LenB(m_AllPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0) Then
         txtTranslation = m_AllPhrases(GetPhraseIndexFromListIndex()).Translation
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved):")
     Else
     
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
-        lblTranslatedPhrase.ForeColor = RGB(208, 52, 52)
-    
+        
         If chkGoogleTranslate.Value Then
             txtTranslation = g_Language.TranslateMessage("waiting for Google Translate...")
             
@@ -1196,13 +1201,14 @@ Private Sub lstPhrases_Click()
             ' assigning new text.
             Dim retString As String
             retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
-            If (Len(retString) <> 0) Then
+            If (LenB(retString) <> 0) Then
                 txtTranslation = vbNullString
                 txtTranslation = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
             Else
                 txtTranslation = vbNullString
                 txtTranslation = g_Language.TranslateMessage("translation failed!")
             End If
+            
         Else
             txtTranslation = vbNullString
         End If
@@ -1217,11 +1223,9 @@ End Sub
 
 'The phrase list box label will automatically be updated with the current count of list items
 Private Sub UpdatePhraseBoxTitle()
-    If lstPhrases.ListCount > 0 Then
-        lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", lstPhrases.ListCount - 1)
-    Else
-        lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", 0)
-    End If
+    Dim numPhrasesDisplay As Long
+    If (lstPhrases.ListCount > 0) Then numPhrasesDisplay = lstPhrases.ListCount - 1 Else numPhrasesDisplay = 0
+    lblPhraseBox.Caption = g_Language.TranslateMessage("list of phrases (%1 items)", numPhrasesDisplay)
 End Sub
 
 'Call this function whenever we want the in-memory XML data saved to an autosave file
@@ -1233,7 +1237,7 @@ Private Sub PerformAutosave()
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str$(m_curBackupFile) & ".tmpxml"
+    backupFile = UserPrefs.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Trim$(Str$(m_curBackupFile)) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
     m_XMLEngine.WriteXMLToFile backupFile, True
@@ -1315,7 +1319,7 @@ Private Sub PopulateAvailableLanguages()
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(m_ListOfLanguages(i).Author) <> 0 Then
+                If (LenB(m_ListOfLanguages(i).Author) <> 0) Then
                     listEntry = listEntry & m_ListOfLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")
@@ -1328,7 +1332,7 @@ Private Sub PopulateAvailableLanguages()
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(m_ListOfLanguages(i).Author) <> 0 Then
+                If (LenB(m_ListOfLanguages(i).Author) <> 0) Then
                     listEntry = listEntry & m_ListOfLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")
@@ -1361,7 +1365,7 @@ End Sub
 Private Function GetLanguageIndexFromListIndex() As Long
     Dim i As Long
     For i = LBound(m_ListOfLanguages) To UBound(m_ListOfLanguages)
-        If StrComp(lstLanguages.List(lstLanguages.ListIndex), m_ListOfLanguages(i).InternalDisplayName, vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(lstLanguages.List(lstLanguages.ListIndex), m_ListOfLanguages(i).InternalDisplayName) Then
             GetLanguageIndexFromListIndex = i
             Exit For
         End If
@@ -1371,7 +1375,7 @@ End Function
 Private Function GetPhraseIndexFromListIndex() As Long
     Dim i As Long
     For i = LBound(m_AllPhrases) To UBound(m_AllPhrases)
-        If StrComp(lstPhrases.List(lstPhrases.ListIndex), m_AllPhrases(i).ListBoxEntry, vbBinaryCompare) = 0 Then
+        If Strings.StringsEqual(lstPhrases.List(lstPhrases.ListIndex), m_AllPhrases(i).ListBoxEntry) Then
             GetPhraseIndexFromListIndex = i
             Exit For
         End If
@@ -1384,7 +1388,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
     
     On Error GoTo TitlecaseFail
     
-    If (Len(origString) <> 0) And (Len(translatedString) <> 0) Then
+    If (LenB(origString) <> 0) And (LenB(translatedString) <> 0) Then
     
         If OS.IsWin7OrLater Then
             
@@ -1424,7 +1428,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                     
                     'Find the first word in the translation and titlecase it
                     For i = LBound(strTranslated) To UBound(strTranslated)
-                        If (Len(Trim$(strTranslated(i))) <> 0) Then
+                        If (LenB(Trim$(strTranslated(i))) <> 0) Then
                             firstWord = strTranslated(i)
                             firstWordIndex = i
                             Exit For
@@ -1434,7 +1438,7 @@ Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedS
                     Dim tmpString As String
                     tmpString = Strings.StringRemap(firstWord, PDSR_TITLECASE_WIN7)
                     
-                    If (Len(tmpString) <> 0) Then
+                    If (LenB(tmpString) <> 0) Then
                     
                         strTranslated(firstWordIndex) = tmpString
                         
@@ -1484,3 +1488,20 @@ TitlecaseFail:
     GetFixedTitlecase = translatedString
 
 End Function
+
+Private Sub txtTranslation_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+
+    If (vKey = vbKeyReturn) And (Shift And vbCtrlMask = vbCtrlMask) Then
+        preventFurtherHandling = True
+        m_InKeyEvent = True
+        PhraseFinished
+        txtTranslation.SelStart = Len(txtTranslation.Text)
+    Else
+        m_InKeyEvent = False
+    End If
+
+End Sub
+
+Private Sub txtTranslation_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    preventFurtherHandling = m_InKeyEvent
+End Sub

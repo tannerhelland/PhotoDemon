@@ -248,7 +248,7 @@ Public Property Let ScrollValue(ByRef newValue As Long)
 End Property
 
 'If the layer name textbox is visible and the Enter key is pressed, commit the changed layer name and hide the text box
-Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
+Private Sub txtLayerName_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
     If (vKey = VK_RETURN) Then
         
