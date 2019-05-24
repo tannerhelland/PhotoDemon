@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.81</langversion>
+<langversion>7.0.83</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9171,13 +9171,8 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>zastosuj roztrząsanie</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>dopasuj istniejące kolory</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9200,17 +9195,7 @@ Jesli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie 
 <translation>Posteryzowanie obrazu</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Zastosowanie inteligentnej koloryt</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posteryzowanie obrazu (z zaawansowanym ditheringu)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14477,6 +14462,26 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Usuń wybrany plik językowy</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>uruchom nowy plik języka od podstaw</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>edytuj istniejący plik językowy</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>pliki językowe dostępne obecnie</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>np. "1.0.0". Proszę użyć formatu Major.Minor.Revision.</translation>
 </phrase>
@@ -14542,8 +14547,8 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER automatycznie zapisuje i przechodzi do następnego etapu</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14569,26 +14574,6 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Inicjowanie automatycznego tłumaczenia wszystkich brakujących fraz</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Usuń wybrany plik językowy</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>uruchom nowy plik języka od podstaw</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>edytuj istniejący plik językowy</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>pliki językowe dostępne obecnie</translation>
 </phrase>
 
 <phrase>
@@ -14863,7 +14848,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Auto zapisywanie wł</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15709,10 +15694,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

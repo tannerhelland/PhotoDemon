@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3386</langversion>
+<langversion>6.8.3388</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9173,13 +9173,8 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>alkalmazni szürkeárnyalás</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>igazítsák színek</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9202,17 +9197,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>Posterizing kép</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Alkalmazása intelligens színező</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizing kép (előrehaladott színcsökkentés)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14479,6 +14464,26 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Törli a kiválasztott nyelvi fájl</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>kezdeni egy új nyelvi fájl a semmiből</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>szerkesztése meglévő nyelvi fájl</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>nyelvi fájlokat a jelenleg rendelkezésre álló</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>például. "1.0.0." Használja Major.Minor.Revision formátumban.</translation>
 </phrase>
@@ -14544,8 +14549,8 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER gomb automatikusan menti és továbblép a következő fázisban</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14571,26 +14576,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Megindítja az automatikus fordítása minden hiányzó kifejezések</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Törli a kiválasztott nyelvi fájl</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>kezdeni egy új nyelvi fájl a semmiből</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>szerkesztése meglévő nyelvi fájl</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>nyelvi fájlokat a jelenleg rendelkezésre álló</translation>
 </phrase>
 
 <phrase>
@@ -14864,7 +14849,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>automatikusan ment a</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15710,10 +15695,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

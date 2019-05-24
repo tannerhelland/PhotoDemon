@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.403</langversion>
+<langversion>6.7.405</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -9191,13 +9191,8 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>toepassing dithering</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>vergelijken met bestaande kleuren</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9220,17 +9215,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Schakeren afbeelding</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Toepassen van intelligent kleuren</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizeren afbeelding (met geavanceerde dithering)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14498,6 +14483,26 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Verwijder geselecteerd taalbestand</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>start een nieuw taalbestand van niets</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>wijzig een bestaand taalbestand</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>beschikbare taalbestanden</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>bv. "1.0.0" . Gebruik aub Major.Minor.Revision formaat.</translation>
 </phrase>
@@ -14563,8 +14568,8 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER toets bewaart automatisch en gaat naar de volgende zin</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14590,26 +14595,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Verwijder geselecteerd taalbestand</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>start een nieuw taalbestand van niets</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>wijzig een bestaand taalbestand</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>beschikbare taalbestanden</translation>
 </phrase>
 
 <phrase>
@@ -14888,7 +14873,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>automatisch opgeslagen op</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15734,10 +15719,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

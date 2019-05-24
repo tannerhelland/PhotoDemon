@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.94</langversion>
+<langversion>1.0.96</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9186,13 +9186,8 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>ディザリングを適用する</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>既存の色と一致する</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9215,17 +9210,7 @@ If別のファイル名で保存する場合は、「キャンセル」を選択
 <translation>ポスター画像</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>知的着色の適用</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizing image（高度なディザリングあり）</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14493,6 +14478,26 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>選択した言語ファイルを削除する</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>新しい言語ファイルを一から始める</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>既存の言語ファイルを編集する</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>現在利用可能な言語ファイル</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>例えば "1.0.0"。 Major.Minor.Revision形式を使用してください。</translation>
 </phrase>
@@ -14558,8 +14563,8 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTERキーが自動的に保存され、次のフレーズに進みます</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14585,26 +14590,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>不足しているフレーズの自動翻訳を開始する</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>選択した言語ファイルを削除する</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>新しい言語ファイルを一から始める</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>既存の言語ファイルを編集する</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>現在利用可能な言語ファイル</translation>
 </phrase>
 
 <phrase>
@@ -14883,7 +14868,7 @@ To引き続き、photemonの新しいコピーをphotodemon.orgからダウン�
 <translation>自動保存された</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15728,10 +15713,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

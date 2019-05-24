@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.199</langversion>
+<langversion>1.0.201</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -9190,13 +9190,8 @@ If сакате да ја спаси со друго име на датотек�
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>применуваат Разтреперана</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>одговараат на постојните бои</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9219,17 +9214,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Posterizing слика</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Примена на интелигентна боење</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizing слика (со напредни Вознемиреност)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14497,6 +14482,26 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Избришете избраниот јазик на датотека</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>започнете нова јазична датотека од нула</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Уредување постоечки јазична датотека</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>јазик датотеки во моментов на располагање</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>на пример, "1.0.0". Ве молиме користете Major.Minor.Revision формат.</translation>
 </phrase>
@@ -14562,8 +14567,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>Внесете го клучот автоматски ги зачувува и продолжува до следната фаза</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14589,26 +14594,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Иницирање на авто-преведувачки на сите исчезнати фрази</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Избришете избраниот јазик на датотека</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>започнете нова јазична датотека од нула</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Уредување постоечки јазична датотека</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>јазик датотеки во моментов на располагање</translation>
 </phrase>
 
 <phrase>
@@ -14887,7 +14872,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Автоматско зачувување на</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15733,10 +15718,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

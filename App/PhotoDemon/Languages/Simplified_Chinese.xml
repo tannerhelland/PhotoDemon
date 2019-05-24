@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1138</langversion>
+<langversion>7.1.1140</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -9185,13 +9185,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>应用抖动</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>匹配现有的颜色</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9214,17 +9209,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>色调分离的图像</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>应用智能着色</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>色调分离的图像（使用高级抖动）</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14490,6 +14475,26 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>&D 删除语言文件</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>建立一个新的语言文件</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>编辑已经存在的语言文件</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>可用的语言文件</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>例如“1.0.0”，请使用Major.Minor.Revision格式。</translation>
 </phrase>
@@ -14555,8 +14560,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>回车键自动保存并继续翻译下一句</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14582,26 +14587,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>启动自动翻译的所有缺失词组</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>&D 删除语言文件</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>建立一个新的语言文件</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>编辑已经存在的语言文件</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>可用的语言文件</translation>
 </phrase>
 
 <phrase>
@@ -14878,7 +14863,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>自动保存于</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15722,10 +15707,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

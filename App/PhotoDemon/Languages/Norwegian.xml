@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3386</langversion>
+<langversion>6.8.3388</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9190,13 +9190,8 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>gjelder utjamning</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>matche eksisterende farger</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9219,17 +9214,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>poste bilde</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Bruk av intelligente farging</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Poste bilde (med avansert utjamning)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14497,6 +14482,26 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Slett valgt språkfil</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>starte en ny språkfil fra scratch</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>redigere en eksisterende språkfil</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>språkfiler  tilgjengelige</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>f.eks "1.0.0". Vennligst bruk Major.Minor.Revision format.</translation>
 </phrase>
@@ -14562,8 +14567,8 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER lagrer og fortsetter til neste fase automatisk</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14589,26 +14594,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Initiere automatisk oversettelse av alle mangler setninger</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Slett valgt språkfil</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>starte en ny språkfil fra scratch</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>redigere en eksisterende språkfil</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>språkfiler  tilgjengelige</translation>
 </phrase>
 
 <phrase>
@@ -14887,7 +14872,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <translation>Automatisk lagring på</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15731,10 +15716,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

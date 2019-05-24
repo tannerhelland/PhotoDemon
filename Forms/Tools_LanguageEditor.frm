@@ -77,140 +77,6 @@ Begin VB.Form FormLanguageEditor
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
-      Index           =   2
-      Left            =   3480
-      TabIndex        =   8
-      Top             =   720
-      Width           =   11775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdListBox lstPhrases 
-         Height          =   5175
-         Left            =   240
-         TabIndex        =   22
-         Top             =   360
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   9128
-      End
-      Begin PhotoDemon.pdDropDown cboPhraseFilter 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   21
-         Top             =   6000
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButton cmdNextPhrase 
-         Height          =   615
-         Left            =   5040
-         TabIndex        =   5
-         Top             =   6600
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1085
-         Caption         =   "Save this translation and proceed to the next phrase"
-      End
-      Begin PhotoDemon.pdTextBox txtTranslation 
-         Height          =   2325
-         Left            =   5040
-         TabIndex        =   7
-         Top             =   3120
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtOriginal 
-         Height          =   2355
-         Left            =   5040
-         TabIndex        =   9
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkGoogleTranslate 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   2
-         Top             =   5520
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "automatically estimate missing translations (via Google Translate)"
-      End
-      Begin PhotoDemon.pdCheckBox chkShortcut 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   3
-         Top             =   6000
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "CTRL+ENTER automatically saves and proceeds to next phrase"
-      End
-      Begin PhotoDemon.pdLabel lblTranslatedPhrase 
-         Height          =   285
-         Left            =   4920
-         Top             =   2760
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   503
-         Caption         =   "translated phrase"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   9
-         Left            =   4920
-         Top             =   0
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   503
-         Caption         =   "original phrase"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   5625
-         Width           =   4665
-         _ExtentX        =   8229
-         _ExtentY        =   503
-         Caption         =   "phrases to display"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPhraseBox 
-         Height          =   285
-         Left            =   0
-         Top             =   0
-         Width           =   4785
-         _ExtentX        =   8440
-         _ExtentY        =   503
-         Caption         =   "list of phrases (%1 items)"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdButton cmdAutoTranslate 
-         Height          =   615
-         Left            =   240
-         TabIndex        =   20
-         Top             =   6600
-         Width           =   4455
-         _ExtentX        =   7858
-         _ExtentY        =   1085
-         Caption         =   "Initiate auto-translation of all missing phrases"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   7455
       Index           =   0
       Left            =   3480
       TabIndex        =   6
@@ -481,6 +347,140 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "language ID"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   7455
+      Index           =   2
+      Left            =   3480
+      TabIndex        =   8
+      Top             =   720
+      Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdListBox lstPhrases 
+         Height          =   5175
+         Left            =   240
+         TabIndex        =   22
+         Top             =   360
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   9128
+      End
+      Begin PhotoDemon.pdDropDown cboPhraseFilter 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   21
+         Top             =   6000
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButton cmdNextPhrase 
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   5
+         Top             =   6600
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1085
+         Caption         =   "Save this translation and proceed to the next phrase"
+      End
+      Begin PhotoDemon.pdTextBox txtTranslation 
+         Height          =   2325
+         Left            =   5040
+         TabIndex        =   7
+         Top             =   3120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtOriginal 
+         Height          =   2355
+         Left            =   5040
+         TabIndex        =   9
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkGoogleTranslate 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   2
+         Top             =   5520
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "automatically estimate missing translations (via Google Translate)"
+      End
+      Begin PhotoDemon.pdCheckBox chkShortcut 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   3
+         Top             =   6000
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "CTRL+ENTER automatically saves and proceeds to next phrase"
+      End
+      Begin PhotoDemon.pdLabel lblTranslatedPhrase 
+         Height          =   285
+         Left            =   4920
+         Top             =   2760
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "translated phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   9
+         Left            =   4920
+         Top             =   0
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "original phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   5625
+         Width           =   4665
+         _ExtentX        =   8229
+         _ExtentY        =   503
+         Caption         =   "phrases to display"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblPhraseBox 
+         Height          =   285
+         Left            =   0
+         Top             =   0
+         Width           =   4785
+         _ExtentX        =   8440
+         _ExtentY        =   503
+         Caption         =   "list of phrases (%1 items)"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdButton cmdAutoTranslate 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   20
+         Top             =   6600
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   1085
+         Caption         =   "Initiate auto-translation of all missing phrases"
       End
    End
 End

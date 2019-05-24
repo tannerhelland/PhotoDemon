@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3386</langversion>
+<langversion>6.8.3388</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9186,13 +9186,8 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>Použijte dithering</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>Odpovídající existující barvy</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9215,17 +9210,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Posterizující obraz</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Použití inteligentního zbarvení</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizace obrazu (s pokročilým rozkladem)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14493,6 +14478,26 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Odstranit vybraný jazykový soubor</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>Spusťte nový soubor jazyka od začátku</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>Upravte stávající jazykový soubor</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>Aktuálně dostupné jazykové soubory</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>např. "1.0.0". Použijte formát Major.Minor.Revision.</translation>
 </phrase>
@@ -14558,8 +14563,8 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>Tlačítko ENTER se automaticky uloží a pokračuje další frází</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14585,26 +14590,6 @@ I se ospravedlně omluvte za tuto nepohodlí, ale bohužel nic nemůže udělat 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Spusťte automatický překlad všech chybových frází</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Odstranit vybraný jazykový soubor</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>Spusťte nový soubor jazyka od začátku</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>Upravte stávající jazykový soubor</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>Aktuálně dostupné jazykové soubory</translation>
 </phrase>
 
 <phrase>
@@ -14881,7 +14866,7 @@ VBCRLTo pokračujte, stáhněte si prosím novou kopii PhotoDemon z photodemon.o
 <translation>Automatické uložení</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15727,10 +15712,10 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

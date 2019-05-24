@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.106</langversion>
+<langversion>1.0.108</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9188,13 +9188,8 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>द्विध्रुव लागू करें</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>मौजूदा रंगों से मेल खाएं</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9217,17 +9212,7 @@ If आप उसे एक अलग फ़ाइल नाम से सहे�
 <translation>चित्र पोस्टिंग</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>बुद्धिमान रंग लागू करना</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>छवि पोस्टिंग (उन्नत ड्रिथिंग के साथ)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14495,6 +14480,26 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>चयनित भाषा फ़ाइल हटाएं</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>खरोंच से एक नई भाषा फ़ाइल शुरू करें</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>एक मौजूदा भाषा फ़ाइल संपादित करें</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>भाषा फाइल वर्तमान में उपलब्ध है</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>जैसे "1.0.0"। कृपया Major.Minor.Revision प्रारूप का उपयोग करें।</translation>
 </phrase>
@@ -14560,8 +14565,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>एन्टर कुंजी स्वचालित रूप से अगले वाक्यांश को सहेजती है और आय करता है</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14587,26 +14592,6 @@ I में लोड करें, इस दुर्भावना के �
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>सभी लापता वाक्यांशों का स्वत: अनुवाद प्रारंभ करें</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>चयनित भाषा फ़ाइल हटाएं</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>खरोंच से एक नई भाषा फ़ाइल शुरू करें</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>एक मौजूदा भाषा फ़ाइल संपादित करें</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>भाषा फाइल वर्तमान में उपलब्ध है</translation>
 </phrase>
 
 <phrase>
@@ -14885,7 +14870,7 @@ T जारी रखें, कृपया photodemon.org से PhotoDemon �
 <translation>स्वत: सहेजे गए पर</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15730,10 +15715,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

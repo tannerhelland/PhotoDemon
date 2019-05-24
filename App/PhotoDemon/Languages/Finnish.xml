@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3386</langversion>
+<langversion>6.8.3388</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9184,13 +9184,8 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>sovelletaan kiertelevät</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>sovittaa olemassa olevat värit</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9213,17 +9208,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <translation>Posterizing kuva</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>Hakeminen älykäs väritys</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>Posterizing kuva (edistynyttä kiertelevät)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14491,6 +14476,26 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>Poista valitut kielitiedosto</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>aloittaa uuden kielen tiedosto tyhjästä</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>muokata olemassa olevaa kielitiedostoa</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>kielitiedostoja tällä hetkellä saatavilla</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>esim. "1.0.0". Käytä Major.Minor.Revision muodossa.</translation>
 </phrase>
@@ -14556,8 +14561,8 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER tallentaa automaattisesti ja siirtyy seuraavaan vaiheeseen</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14583,26 +14588,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Aloittaa automaattisen käännöksen puuttuvat lauseita</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>Poista valitut kielitiedosto</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>aloittaa uuden kielen tiedosto tyhjästä</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>muokata olemassa olevaa kielitiedostoa</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>kielitiedostoja tällä hetkellä saatavilla</translation>
 </phrase>
 
 <phrase>
@@ -14881,7 +14866,7 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 <translation>automaattinen tallennus on</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15727,10 +15712,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.71</langversion>
+<langversion>1.0.73</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -9185,13 +9185,8 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <!-- BEGIN text for Effects_Artistic_Posterize.frm (FormPosterize) -->
 
 <phrase>
-<original>apply dithering</original>
-<translation>디더링 적용</translation>
-</phrase>
-
-<phrase>
-<original>match existing colors</original>
-<translation>기존 색상과 일치</translation>
+<original>adaptive coloring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9214,17 +9209,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>포스터 화 이미지</translation>
 </phrase>
 
-<phrase>
-<original>Applying intelligent coloring</original>
-<translation>지능형 채색 적용</translation>
-</phrase>
-
-<phrase>
-<original>Posterizing image (with advanced dithering)</original>
-<translation>포스터 라이징 이미지 (고급 디더링 사용)</translation>
-</phrase>
-
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 3 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -14492,6 +14477,26 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
+<original>Delete selected language file</original>
+<translation>선택한 언어 파일 삭제</translation>
+</phrase>
+
+<phrase>
+<original>start a new language file from scratch</original>
+<translation>처음부터 새로운 언어 파일을 시작한다.</translation>
+</phrase>
+
+<phrase>
+<original>edit an existing language file</original>
+<translation>기존 언어 파일 편집</translation>
+</phrase>
+
+<phrase>
+<original>language files currently available</original>
+<translation>현재 사용 가능한 언어 파일</translation>
+</phrase>
+
+<phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
 <translation>예: "1.0.0". Major.Minor.Revision 형식을 사용하십시오.</translation>
 </phrase>
@@ -14557,8 +14562,8 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER 키를 누르면 자동으로 저장되고 다음 구문으로 이동합니다.</translation>
+<original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14584,26 +14589,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>누락 된 모든 문구의 자동 번역 시작</translation>
-</phrase>
-
-<phrase>
-<original>Delete selected language file</original>
-<translation>선택한 언어 파일 삭제</translation>
-</phrase>
-
-<phrase>
-<original>start a new language file from scratch</original>
-<translation>처음부터 새로운 언어 파일을 시작한다.</translation>
-</phrase>
-
-<phrase>
-<original>edit an existing language file</original>
-<translation>기존 언어 파일 편집</translation>
-</phrase>
-
-<phrase>
-<original>language files currently available</original>
-<translation>현재 사용 가능한 언어 파일</translation>
 </phrase>
 
 <phrase>
@@ -14882,7 +14867,7 @@ To 계속 하시겠습니까? photodemon.org에서 PhotoDemon의 새 복사본�
 <translation>자동 저장 됨</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 130 phrases. 54 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- Tools_LanguageEditor.frm contains 128 phrases. 52 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for Tools_LanguageEditor.frm-->
 
@@ -15727,10 +15712,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2622</phrasecount>
+<phrasecount>2619</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4797 phrases. -->
-<!-- 2175 are duplicates, so only 2622 unique phrases have been written to file. -->
-<!-- These 2622 phrases contain approximately 12427 total words. -->
+<!-- As of this build, PhotoDemon contains 4796 phrases. -->
+<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
+<!-- These 2619 phrases contain approximately 12414 total words. -->
 
 </pdData>
