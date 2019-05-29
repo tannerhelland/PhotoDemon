@@ -432,12 +432,12 @@ Public Function ShowDialog(ByVal pMessage As String, ByVal pButtons As VbMsgBoxS
     
     'Use the final label size to calculate a final form width/height
     Dim formWidth As Long
-    formWidth = lblMsg.GetLeft + lblMsg.GetWidth + FixDPI(32)
+    formWidth = lblMsg.GetLeft + lblMsg.GetWidth + Interface.FixDPI(32)
     
     'Note that short messages may be shorter than our button arrangement!  (Especially with Yes/No/Cancel.)
     ' As such, we need to ensure we have room for all buttons.
     Dim netButtonWidth As Long
-    netButtonWidth = (buttonRight - buttonLeft) + FixDPI(16)
+    netButtonWidth = (buttonRight - buttonLeft) + Interface.FixDPI(16)
     If (netButtonWidth > formWidth) Then formWidth = netButtonWidth
     
     'Add the size of the bottom button panel to the calculated form height

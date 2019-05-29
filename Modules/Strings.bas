@@ -3,8 +3,10 @@ Attribute VB_Name = "Strings"
 'Additional string support functions
 'Copyright 2017-2019 by Tanner Helland
 'Created: 13/June/17
-'Last updated: 24/October/17
-'Last update: fix some inexplicable issues with WideCharToMultiByte(); comments are in the UTF-8 conversion functions
+'Last updated: 29/May/19
+'Last update: add proper support for Unicode normalizing; while this is rarely needed for data coming from Windows
+'             (as normalization form C is used across most win32 functions), it may be useful for data coming from
+'             outside files.
 '
 'Special thank-yous go out to some valuable references while developing this class:
 ' - fast Boyer-Moore string comparisons: http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/bmen.htm
@@ -22,6 +24,19 @@ Private Const CRYPT_STRING_HEXASCII As Long = &H4&
 Private Const CRYPT_STRING_NOCR As Long = &H80000000
 Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
+
+'FoldString flags
+Private Enum FoldStringFlags
+    MAP_COMPOSITE = &H40
+    MAP_EXPAND_LIGATURES = &H2000
+    MAP_FOLDCZONE = &H10
+    MAP_FOLDDIGITS = &H80
+    MAP_PRECOMPOSED = &H20
+End Enum
+
+#If False Then
+    Private Const MAP_COMPOSITE = &H40, MAP_EXPAND_LIGATURES = &H2000, MAP_FOLDCZONE = &H10, MAP_FOLDDIGITS = &H80, MAP_PRECOMPOSED = &H20
+#End If
 
 'Locale identifiers; these need to be specified for certain string functions
 Public Enum PD_LocaleIdentifier
@@ -84,12 +99,27 @@ Private Declare Function CryptStringToBinary Lib "crypt32" Alias "CryptStringToB
 
 Private Declare Function CompareStringW Lib "kernel32" (ByVal lcID As PD_LocaleIdentifier, ByVal cmpFlags As StrCmpFlags, ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long) As Long
 Private Declare Function CompareStringOrdinal Lib "kernel32" (ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long, ByVal bIgnoreCase As Long) As Long
+Private Declare Function FoldStringW Lib "kernel32" (ByVal dwMapFlags As FoldStringFlags, ByVal lpSrcStr As Long, ByVal cchSrc As Long, ByVal lpDestStr As Long, ByVal cchDest As Long) As Long
 Private Declare Function LCMapStringW Lib "kernel32" (ByVal localeID As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long) As Long
 Private Declare Function LCMapStringEx Lib "kernel32" (ByVal lpLocaleNameStringPt As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long, ByVal lpVersionInformationPtr As Long, ByVal lpReserved As Long, ByVal sortHandle As Long) As Long 'Vista+ only!  (Note the lack of a trailing W in the function name.)
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal dstCodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As Long, ByVal cbMultiByte As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
 Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal dstCodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
+
+Private Enum UnicodeNormalizeForm
+    NormalizationOther = 0  'Unsupported
+    NormalizationC = 1
+    NormalizationD = 2
+    NormalizationKC = 3
+    NormalizationKD = 4
+End Enum
+
+#If False Then
+    Private Const NormalizationOther = 0, NormalizationC = 1, NormalizationD = 2, NormalizationKC = 3, NormalizationKD = 4
+#End If
+
+Private Declare Function NormalizeString Lib "Normaliz" (ByVal normForm As UnicodeNormalizeForm, ByVal lpSrcString As Long, ByVal cwSrcLength As Long, ByVal lpDstString As Long, ByVal cwDstLength As Long) As Long
 
 Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal srcPtr As Long, ByVal strLength As Long) As String
 
@@ -529,6 +559,62 @@ Public Function StringFromUTF16_FixedLen(ByVal srcPointer As Long, ByVal lengthI
     StringFromUTF16_FixedLen = String$(lengthInBytes \ 2, 0)
     CopyMemoryStrict StrPtr(StringFromUTF16_FixedLen), srcPointer, lengthInBytes
     If trimNullChars Then StringFromUTF16_FixedLen = Strings.TrimNull(StringFromUTF16_FixedLen)
+End Function
+
+'Given a source string, perform Unicode normalization (type C, in keeping with standard Windows conventions).
+Public Function StringNormalize(ByRef srcString As String) As String
+    
+    'Failsafe
+    If (LenB(srcString) <= 0) Then
+        StringNormalize = srcString
+        Exit Function
+    End If
+    
+    Dim dstBufLen As Long, finalSize As Long
+    
+    'Vista+ exposes a more comprehensive API for normalizing...
+    If OS.IsVistaOrLater Then
+        
+        'Calculate buffer size
+        dstBufLen = NormalizeString(NormalizationC, StrPtr(srcString), Len(srcString), 0, 0)
+        If (dstBufLen > 0) Then
+            
+            StringNormalize = String$(dstBufLen, 0)
+            
+            'Perform normalization
+            finalSize = NormalizeString(NormalizationC, StrPtr(srcString), Len(srcString), StrPtr(StringNormalize), dstBufLen)
+            If (finalSize > 0) Then
+                StringNormalize = Strings.TrimNull(StringNormalize)
+                
+            'Failsafe
+            Else
+                StringNormalize = srcString
+            End If
+        
+        'Failsafe
+        Else
+            StringNormalize = srcString
+        End If
+    
+    'XP gets a more primitive function (which also works on Vista+, but the mapping tables are older -
+    ' see the ever-relevant blog of Michael Kaplan for details: http://archives.miloush.net/michkap/archive/2005/01/31/363701.html)
+    Else
+    
+        dstBufLen = FoldStringW(MAP_PRECOMPOSED Or MAP_FOLDDIGITS, StrPtr(srcString), Len(srcString), 0, 0)
+        If (dstBufLen > 0) Then
+            StringNormalize = String$(dstBufLen, 0)
+            finalSize = FoldStringW(MAP_PRECOMPOSED Or MAP_FOLDDIGITS, StrPtr(srcString), Len(srcString), StrPtr(StringNormalize), dstBufLen)
+            If (finalSize > 0) Then
+                StringNormalize = Strings.TrimNull(StringNormalize)
+            Else
+                StringNormalize = srcString
+            End If
+        Else
+            StringNormalize = srcString
+        End If
+    
+    End If
+
 End Function
 
 'Apply some kind of remap conversion ("change case" in Latin languages) using WAPI.

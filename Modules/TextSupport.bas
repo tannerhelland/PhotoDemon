@@ -64,7 +64,11 @@ End Function
 ' that it allows users to enter floating-point values however they want, without worrying about system
 ' settings they may/may not have control over.
 Public Function CDblCustom(ByVal srcString As String) As Double
-
+    
+    'Start by normalizing the incoming string.  This will convert any non-standard Unicode chars
+    ' (e.g. weird extended-range numeric representations) into their standard 0-9 equivalent.
+    srcString = Strings.StringNormalize(srcString)
+    
     'Coerce arbitrary decimal separators into the standard, locale-invariant "."
     If (InStr(1, srcString, ",", vbBinaryCompare) <> 0) Then srcString = Replace$(srcString, ",", ".", , , vbBinaryCompare)
     If (InStr(1, srcString, ChrW$(&H66B&), vbBinaryCompare) <> 0) Then srcString = Replace$(srcString, ChrW$(&H66B&), ".", , , vbBinaryCompare)
