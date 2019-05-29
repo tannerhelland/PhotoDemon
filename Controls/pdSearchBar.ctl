@@ -449,6 +449,11 @@ Private Sub m_EditBox_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long
         
         'Make sure we have usable search results for the current query
         PerformSearch
+        If (m_SearchResults Is Nothing) Then
+            preventFurtherHandling = True
+            Exit Sub
+        End If
+        
         If (m_SearchResults.GetNumOfStrings > 0) Then
             
             'If the list box is dropped, query it for a list index; if the user has used arrow keys
