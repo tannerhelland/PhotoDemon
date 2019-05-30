@@ -3,8 +3,8 @@ Attribute VB_Name = "IconsAndCursors"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2019 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 26/February/18
-'Last update: new support functions for manually combining certain system cursors at run-time (for pdTitlebar)
+'Last updated: 30/May/19
+'Last update: render small overlay of PD's icon atop dynamic taskbar icons
 '
 'Because VB6 doesn't provide many (any?) mechanisms for manipulating icons, I've had to manually write a wide variety
 ' of icon handling functions.  As of v7.0, all icons in PD are stored in our custom resource file (in a variety of
@@ -134,6 +134,9 @@ Private m_RecentFileIconSize As Long
 
 'System cursor size (x, y).  X and Y sizes should always be identical, so we only cache one.
 Private m_CursorSize As Long
+
+'PD icon overlay for the task bar icon
+Private m_PDIconOverlay As pdDIB
 
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
@@ -382,8 +385,8 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
         
         'To improve quality at very low sizes, enforce prefiltering
         Dim resampleMode As GP_InterpolationMode
-        If (iconSize <= 32) Then resampleMode = GP_IM_HighQualityBicubic Else resampleMode = GP_IM_HighQualityBicubic
-        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
+        If (iconSize <= 32) Then resampleMode = GP_IM_HighQualityBicubic Else resampleMode = UserPrefs.GetThumbnailInterpolationPref()
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, iconSize, iconSize, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, , resampleMode, , , , True
         
     Else
         tmpDIB.CreateFromExistingDIB srcDIB
@@ -428,8 +431,12 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
             'Request two icon-format versions of the generated thumbnail.
             ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
             Dim hIcon32 As Long, hIcon16 As Long
-            hIcon32 = GetIconFromDIB(thumbDIB)
             hIcon16 = GetIconFromDIB(thumbDIB, 16)
+            
+            'Overlay the PD logo on the taskbar icon
+            If (m_PDIconOverlay Is Nothing) Then g_Resources.LoadImageResource "pd_icon_glow_16", m_PDIconOverlay, 16, 16
+            If (Not m_PDIconOverlay Is Nothing) Then m_PDIconOverlay.AlphaBlendToDC thumbDIB.GetDIBDC, , thumbDIB.GetDIBWidth - 16, thumbDIB.GetDIBHeight - 16
+            hIcon32 = GetIconFromDIB(thumbDIB, 32)
             
             'Each pdImage instance caches its custom icon handles, which simplifies the process of synchronizing PD's icons
             ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
