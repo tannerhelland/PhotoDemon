@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>norsk</langname>
-<langversion>6.8.3388</langversion>
+<langversion>6.8.3389</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4757,41 +4757,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>&Image</original>
-<translation>Bilde</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Lagre</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Lagre kopi (lossless)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Lagre som</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Åpen beliggenhet i Explorer</translation>
-</phrase>
-
-<phrase>
-<original>&Close</original>
-<translation>Lukke</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Lukk alle unntatt denne</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Skriv inn tekst her)</translation>
 </phrase>
@@ -4807,11 +4772,21 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Åpen beliggenhet i Explorer</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Lukk alle unntatt denne</translation>
+</phrase>
+
+<phrase>
 <original>Center the image inside the viewport</original>
 <translation>Sentrer bilde inne i view</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5481,43 +5456,8 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
-<original>Scroll</original>
-<translation>Rull</translation>
-</phrase>
-
-<phrase>
 <original>Scroll here</original>
 <translation>Rull her</translation>
-</phrase>
-
-<phrase>
-<original>Top</original>
-<translation>Topp</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>Bunn</translation>
-</phrase>
-
-<phrase>
-<original>Page up</original>
-<translation>Side opp</translation>
-</phrase>
-
-<phrase>
-<original>Page down</original>
-<translation>Side ned</translation>
-</phrase>
-
-<phrase>
-<original>Scroll up</original>
-<translation>Bla opp</translation>
-</phrase>
-
-<phrase>
-<original>Scroll down</original>
-<translation>Bla nedover</translation>
 </phrase>
 
 <phrase>
@@ -5531,6 +5471,16 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Top</original>
+<translation>Topp</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>Bunn</translation>
+</phrase>
+
+<phrase>
 <original>Page left</original>
 <translation>Page venstre</translation>
 </phrase>
@@ -5538,6 +5488,16 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <phrase>
 <original>Page right</original>
 <translation>Page riktig</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation>Side opp</translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation>Side ned</translation>
 </phrase>
 
 <phrase>
@@ -5550,7 +5510,17 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <translation>Rull til høyre</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>Scroll up</original>
+<translation>Bla opp</translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation>Bla nedover</translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -5711,6 +5681,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>&Close</original>
+<translation>Lukke</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>Lagre</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Lagre kopi (lossless)</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Lagre som</translation>
+</phrase>
+
+<phrase>
 <original>Export</original>
 <translation>Eksport</translation>
 </phrase>
@@ -5783,6 +5773,11 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Empty utklippstavlen </translation>
+</phrase>
+
+<phrase>
+<original>&Image</original>
+<translation>Bilde</translation>
 </phrase>
 
 <phrase>
@@ -6528,7 +6523,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Språk endret.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15714,12 +15709,18 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2619</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4796 phrases. -->
-<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
-<!-- These 2619 phrases contain approximately 12414 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12413 total words. -->
 
 </pdData>

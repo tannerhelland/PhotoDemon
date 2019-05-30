@@ -121,48 +121,6 @@ Begin VB.UserControl pdCanvas
       _ExtentY        =   8705
       VisualStyle     =   1
    End
-   Begin VB.Menu mnuImageTabsContext 
-      Caption         =   "&Image"
-      Visible         =   0   'False
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "&Save"
-         Enabled         =   0   'False
-         Index           =   0
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "Save copy (&lossless)"
-         Index           =   1
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "Save &as..."
-         Index           =   2
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "Revert"
-         Enabled         =   0   'False
-         Index           =   3
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "-"
-         Index           =   4
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "Open location in E&xplorer"
-         Index           =   5
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "-"
-         Index           =   6
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "&Close"
-         Index           =   7
-      End
-      Begin VB.Menu mnuTabstripPopup 
-         Caption         =   "Close all except this"
-         Index           =   8
-      End
-   End
 End
 Attribute VB_Name = "pdCanvas"
 Attribute VB_GlobalNameSpace = False
@@ -173,10 +131,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2019 by Tanner Helland
 'Created: 29/November/02
-'Last updated: constantly
-'Last update: sorry for a lack of details, but as the primary UI mechanism for PhotoDemon, this class sees constant updates.
-'             I'm terrible about remembering to note these updates, so I'm just leaving this text here for now.  Check out
-'             the commit log on GitHub for up-to-date details.
+'Last updated: 30/May/19
+'Last update: replace image tabstrip right-click menu with pdPopupMenu; now it's Unicode-aware (finally!)
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -274,18 +230,18 @@ Private m_RulersVisible As Boolean, m_StatusBarVisible As Boolean
 
 'In Feb '15, Raj added a great context menu to the image tabstrip.  To help simplify menu enable/disable behavior,
 ' this enum can be used to identify individual menu entries.
-Private Enum POPUP_MENU_ENTRIES
-    POP_SAVE = 0
-    POP_SAVE_COPY = 1
-    POP_SAVE_AS = 2
-    POP_REVERT = 3
-    POP_OPEN_IN_EXPLORER = 5
-    POP_CLOSE = 7
-    POP_CLOSE_OTHERS = 8
+Private Enum PopupMenuIndices
+    pm_Save = 0
+    pm_SaveCopy = 1
+    pm_SaveAs = 2
+    pm_Revert = 3
+    pm_OpenInExplorer = 5
+    pm_Close = 7
+    pm_CloseOthers = 8
 End Enum
 
 #If False Then
-    Private Const POP_SAVE = 0, POP_SAVE_COPY = 1, POP_SAVE_AS = 2, POP_REVERT = 3, POP_OPEN_IN_EXPLORER = 5, POP_CLOSE = 7, POP_CLOSE_OTHERS = 8
+    Private Const pm_Save = 0, pm_SaveCopy = 1, pm_SaveAs = 2, pm_Revert = 3, pm_OpenInExplorer = 5, pm_Close = 7, pm_CloseOthers = 8
 #End If
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
@@ -310,6 +266,10 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+'Popup menu for the image strip
+Private WithEvents m_PopupImageStrip As pdPopupMenu
+Attribute m_PopupImageStrip.VB_VarHelpID = -1
 
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_Canvas
@@ -618,6 +578,62 @@ End Sub
 Private Sub CanvasView_LostFocusAPI()
     m_LMBDown = False
     m_RMBDown = False
+End Sub
+
+Private Sub m_PopupImageStrip_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+
+    Select Case mnuIndex
+        
+        'Save
+        Case 0
+            Menus.ProcessDefaultAction_ByName "file_save"
+            
+        'Save copy (lossless)
+        Case 1
+            Menus.ProcessDefaultAction_ByName "file_savecopy"
+        
+        'Save as
+        Case 2
+            Menus.ProcessDefaultAction_ByName "file_saveas"
+        
+        'Revert
+        Case 3
+            Menus.ProcessDefaultAction_ByName "file_revert"
+        
+        '(separator)
+        Case 4
+        
+        'Open location in Explorer
+        Case 5
+            Files.FileSelectInExplorer PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+            
+        '(separator)
+        Case 6
+        
+        'Close
+        Case 7
+            Menus.ProcessDefaultAction_ByName "file_close"
+        
+        'Close all but this
+        Case 8
+            
+            Dim curImageID As Long
+            curImageID = PDImages.GetActiveImage.imageID
+            
+            Dim listOfOpenImageIDs As pdStack
+            If PDImages.GetListOfActiveImageIDs(listOfOpenImageIDs) Then
+                
+                Dim tmpImageID As Long
+                Do While listOfOpenImageIDs.PopInt(tmpImageID)
+                    If PDImages.IsImageActive(tmpImageID) Then
+                        If (PDImages.GetImageByID(tmpImageID).imageID <> curImageID) Then CanvasManager.FullPDImageUnload tmpImageID
+                    End If
+                Loop
+                
+            End If
+    
+    End Select
+
 End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
@@ -1251,26 +1267,9 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         
         ucSupport.RequestCursor IDC_DEFAULT
         
-        'Enable various pop-up menu entries.  Wherever possible, we simply want to mimic the official PD menu, which saves
-        ' us having to supply our own heuristics for menu enablement.
-        mnuTabstripPopup(POP_SAVE).Enabled = FormMain.MnuFile(8).Enabled
-        mnuTabstripPopup(POP_SAVE_COPY).Enabled = FormMain.MnuFile(9).Enabled
-        mnuTabstripPopup(POP_SAVE_AS).Enabled = FormMain.MnuFile(10).Enabled
-        mnuTabstripPopup(POP_REVERT).Enabled = FormMain.MnuFile(11).Enabled
-        mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuFile(5).Enabled
-        
-        'Two special commands only appear in this menu: Open in Explorer, and Close Other Images
-        ' Use our own enablement heuristics for these.
-        
-        'Open in Explorer only works if the image is currently on-disk
-        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) > 0)
-        
-        'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
-        ' in the Window menu
-        mnuTabstripPopup(POP_CLOSE).Enabled = (PDImages.GetNumOpenImages() > 1)
-        
         'Raise the context menu
-        UserControl.PopupMenu mnuImageTabsContext, x, y
+        BuildPopupMenu
+        If (Not m_PopupImageStrip Is Nothing) Then m_PopupImageStrip.ShowMenu ImageStrip.hWnd, x, y
         ShowCursor 1
         
     End If
@@ -1289,71 +1288,6 @@ End Sub
 ' a layout adjustment of all other controls on the canvas.
 Private Sub ImageStrip_PositionChanged()
     If (Not m_InternalResize) Then Me.AlignCanvasView
-End Sub
-
-'All popup menu clicks are handled here
-Private Sub mnuTabstripPopup_Click(Index As Integer)
-
-    Select Case Index
-        
-        'Save
-        Case 0
-            FileMenu.MenuSave PDImages.GetActiveImage()
-        
-        'Save copy (lossless)
-        Case 1
-            FileMenu.MenuSaveLosslessCopy PDImages.GetActiveImage()
-        
-        'Save as
-        Case 2
-            FileMenu.MenuSaveAs PDImages.GetActiveImage()
-        
-        'Revert
-        Case 3
-            
-            PDImages.GetActiveImage.UndoManager.RevertToLastSavedState
-                        
-            'Also, redraw the current child form icon
-            CreateCustomFormIcons PDImages.GetActiveImage()
-            ImageStrip.NotifyUpdatedImage PDImages.GetActiveImageID()
-        
-        '(separator)
-        Case 4
-        
-        'Open location in Explorer
-        Case 5
-            Dim filePath As String, shellCommand As String
-            filePath = PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
-            shellCommand = "explorer.exe /select,""" & filePath & """"
-            Shell shellCommand, vbNormalFocus
-        
-        '(separator)
-        Case 6
-        
-        'Close
-        Case 7
-            CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()
-        
-        'Close all but this
-        Case 8
-            
-            Dim curImageID As Long
-            curImageID = PDImages.GetActiveImage.imageID
-            
-            Dim listOfOpenImageIDs As pdStack
-            If PDImages.GetListOfActiveImageIDs(listOfOpenImageIDs) Then
-                
-                Dim tmpImageID As Long
-                Do While listOfOpenImageIDs.PopInt(tmpImageID)
-                    If PDImages.IsImageActive(tmpImageID) Then
-                        If (PDImages.GetImageByID(tmpImageID).imageID <> curImageID) Then CanvasManager.FullPDImageUnload tmpImageID
-                    End If
-                Loop
-                
-            End If
-    
-    End Select
-
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -2052,6 +1986,29 @@ Public Sub SetCursorToCanvasPosition(ByVal newCanvasX As Double, ByVal newCanvas
     CanvasView.SetCursorToCanvasPosition newCanvasX, newCanvasY
 End Sub
 
+Private Sub BuildPopupMenu()
+    
+    Set m_PopupImageStrip = New pdPopupMenu
+    
+    With m_PopupImageStrip
+        
+        .AddMenuItem Menus.GetCaptionFromName("file_save"), Menus.IsMenuEnabled("file_save")
+        .AddMenuItem Menus.GetCaptionFromName("file_savecopy"), Menus.IsMenuEnabled("file_savecopy")
+        .AddMenuItem Menus.GetCaptionFromName("file_saveas"), Menus.IsMenuEnabled("file_saveas")
+        .AddMenuItem Menus.GetCaptionFromName("file_revert"), Menus.IsMenuEnabled("file_revert")
+        .AddMenuItem "-"
+        
+        'Open in Explorer only works if the image is currently on-disk
+        .AddMenuItem g_Language.TranslateMessage("Open location in E&xplorer"), (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
+        
+        .AddMenuItem "-"
+        .AddMenuItem Menus.GetCaptionFromName("file_close")
+        .AddMenuItem g_Language.TranslateMessage("Close all except this"), (PDImages.GetNumOpenImages() > 1)
+        
+    End With
+    
+End Sub
+
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
@@ -2068,7 +2025,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     
     If ucSupport.ThemeUpdateRequired Then
         
-        Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
+        'Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
         
         'Suspend redraws until all theme updates are complete
         Me.SetRedrawSuspension True

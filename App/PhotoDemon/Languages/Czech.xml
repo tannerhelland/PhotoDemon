@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3388</langversion>
+<langversion>6.8.3389</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4755,41 +4755,6 @@ Při zadání číselné hodnoty.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>&Image</original>
-<translation>Obraz</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Uložit</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Uložit kopii (bez ztráty)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Uložit jako</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Otevřete umístění v Průzkumníku</translation>
-</phrase>
-
-<phrase>
-<original>&Close</original>
-<translation>Zavřít</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Zavřete všechny kromě tohoto</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Zadejte text zde)</translation>
 </phrase>
@@ -4805,11 +4770,21 @@ Při zadání číselné hodnoty.</translation>
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Otevřete umístění v Průzkumníku</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Zavřete všechny kromě tohoto</translation>
+</phrase>
+
+<phrase>
 <original>Center the image inside the viewport</original>
 <translation>Centrování obrazu uvnitř výřezu</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5478,43 +5453,8 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
-<original>Scroll</original>
-<translation>Svitek</translation>
-</phrase>
-
-<phrase>
 <original>Scroll here</original>
 <translation>Přejděte zde</translation>
-</phrase>
-
-<phrase>
-<original>Top</original>
-<translation>Horní</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>Dno</translation>
-</phrase>
-
-<phrase>
-<original>Page up</original>
-<translation>Strana nahoru</translation>
-</phrase>
-
-<phrase>
-<original>Page down</original>
-<translation>Stránka dolů</translation>
-</phrase>
-
-<phrase>
-<original>Scroll up</original>
-<translation>Posunout nahoru</translation>
-</phrase>
-
-<phrase>
-<original>Scroll down</original>
-<translation>Posunout dolů</translation>
 </phrase>
 
 <phrase>
@@ -5528,6 +5468,16 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 </phrase>
 
 <phrase>
+<original>Top</original>
+<translation>Horní</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>Dno</translation>
+</phrase>
+
+<phrase>
 <original>Page left</original>
 <translation>Stránka vlevo</translation>
 </phrase>
@@ -5535,6 +5485,16 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <phrase>
 <original>Page right</original>
 <translation>Pravá stránka</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation>Strana nahoru</translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation>Stránka dolů</translation>
 </phrase>
 
 <phrase>
@@ -5547,7 +5507,17 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, VBCRLPro soubor Sou
 <translation>Přejděte doprava</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>Scroll up</original>
+<translation>Posunout nahoru</translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation>Posunout dolů</translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -5708,6 +5678,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>&Close</original>
+<translation>Zavřít</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>Uložit</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Uložit kopii (bez ztráty)</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Uložit jako</translation>
+</phrase>
+
+<phrase>
 <original>Export</original>
 <translation>Vývozní</translation>
 </phrase>
@@ -5780,6 +5770,11 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Prázdný schránka</translation>
+</phrase>
+
+<phrase>
+<original>&Image</original>
+<translation>Obraz</translation>
 </phrase>
 
 <phrase>
@@ -6524,7 +6519,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Jazyk byl úspěšně změněn.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15710,12 +15705,18 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2619</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4796 phrases. -->
-<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
-<!-- These 2619 phrases contain approximately 12414 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12413 total words. -->
 
 </pdData>

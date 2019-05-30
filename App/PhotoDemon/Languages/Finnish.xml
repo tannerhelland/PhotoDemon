@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3388</langversion>
+<langversion>6.8.3389</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4751,41 +4751,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>&Image</original>
-<translation>Kuva</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Tallentaa</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Tallenna kopio (lossless)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Tallenna nimellä</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Open paikalla Explorer</translation>
-</phrase>
-
-<phrase>
-<original>&Close</original>
-<translation>Lähellä</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Sulje kaikki paitsi tämä</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Kirjoita teksti tähän)</translation>
 </phrase>
@@ -4801,11 +4766,21 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Open paikalla Explorer</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Sulje kaikki paitsi tämä</translation>
+</phrase>
+
+<phrase>
 <original>Center the image inside the viewport</original>
 <translation>Keskittää kuvan sisällä näyttöikkunan</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5475,43 +5450,8 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
-<original>Scroll</original>
-<translation>vierittää</translation>
-</phrase>
-
-<phrase>
 <original>Scroll here</original>
 <translation>selaa täällä</translation>
-</phrase>
-
-<phrase>
-<original>Top</original>
-<translation>ylin</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>pohja</translation>
-</phrase>
-
-<phrase>
-<original>Page up</original>
-<translation>Sivu ylös</translation>
-</phrase>
-
-<phrase>
-<original>Page down</original>
-<translation>Sivu alas</translation>
-</phrase>
-
-<phrase>
-<original>Scroll up</original>
-<translation>Selaa ylöspäin</translation>
-</phrase>
-
-<phrase>
-<original>Scroll down</original>
-<translation>Rullaa alas</translation>
 </phrase>
 
 <phrase>
@@ -5525,6 +5465,16 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>Top</original>
+<translation>ylin</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>pohja</translation>
+</phrase>
+
+<phrase>
 <original>Page left</original>
 <translation>Page vasen</translation>
 </phrase>
@@ -5532,6 +5482,16 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <phrase>
 <original>Page right</original>
 <translation>Page oikealle</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation>Sivu ylös</translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation>Sivu alas</translation>
 </phrase>
 
 <phrase>
@@ -5544,7 +5504,17 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <translation>Selaa oikealle</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>Scroll up</original>
+<translation>Selaa ylöspäin</translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation>Rullaa alas</translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -5705,6 +5675,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>&Close</original>
+<translation>Lähellä</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>Tallentaa</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Tallenna kopio (lossless)</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Tallenna nimellä</translation>
+</phrase>
+
+<phrase>
 <original>Export</original>
 <translation>Viedä</translation>
 </phrase>
@@ -5777,6 +5767,11 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>tyhjä leikepöydälle</translation>
+</phrase>
+
+<phrase>
+<original>&Image</original>
+<translation>Kuva</translation>
 </phrase>
 
 <phrase>
@@ -6522,7 +6517,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Kieli vaihdettu.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15710,12 +15705,18 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2619</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4796 phrases. -->
-<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
-<!-- These 2619 phrases contain approximately 12414 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12413 total words. -->
 
 </pdData>

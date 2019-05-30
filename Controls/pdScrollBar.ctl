@@ -24,50 +24,6 @@ Begin VB.UserControl pdScrollBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    ToolboxBitmap   =   "pdScrollBar.ctx":0000
-   Begin VB.Menu MnuScrollPopup 
-      Caption         =   "Scroll"
-      Visible         =   0   'False
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Scroll here"
-         Index           =   0
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "-"
-         Index           =   1
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Top"
-         Index           =   2
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Bottom"
-         Index           =   3
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "-"
-         Index           =   4
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Page up"
-         Index           =   5
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Page down"
-         Index           =   6
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "-"
-         Index           =   7
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Scroll up"
-         Index           =   8
-      End
-      Begin VB.Menu MnuScroll 
-         Caption         =   "Scroll down"
-         Index           =   9
-      End
-   End
 End
 Attribute VB_Name = "pdScrollBar"
 Attribute VB_GlobalNameSpace = False
@@ -78,8 +34,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Scrollbar control
 'Copyright 2015-2019 by Tanner Helland
 'Created: 07/October/15
-'Last updated: 11/October/15
-'Last update: wrap up initial build
+'Last updated: 29/May/19
+'Last update: switch to pdPopupMenu for right-clicks; this allows for localization (finally)
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -208,6 +164,9 @@ Attribute m_UpButtonTimer.VB_VarHelpID = -1
 Private WithEvents m_DownButtonTimer As pdTimer
 Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
+'Popup menu exposed on right-clicks (this is adopted from normal Windows scroll bars)
+Private WithEvents m_PopupMenu As pdPopupMenu
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_ScrollBar
 End Function
@@ -222,9 +181,9 @@ Public Property Get ContainerHwnd() As Long
 End Property
 
 'hWnds aren't exposed by default
-Public Property Get hWnd() As Long
-Attribute hWnd.VB_UserMemId = -515
-    hWnd = UserControl.hWnd
+Public Property Get hwnd() As Long
+Attribute hwnd.VB_UserMemId = -515
+    hwnd = UserControl.hwnd
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -440,6 +399,52 @@ Private Sub m_DownButtonTimer_Timer()
 
 End Sub
 
+Private Sub m_PopupMenu_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+    
+    Select Case mnuIndex
+        
+        'Scroll here
+        Case 0
+            'Change the value to the corresponding value of the context menu position
+            Value = GetValueFromMouseCoords(m_ContextMenuX, m_ContextMenuY)
+            
+        '(separator)
+        Case 1
+        
+        'Top
+        Case 2
+            Value = Min
+        
+        'Bottom
+        Case 3
+            Value = Max
+        
+        '(separator)
+        Case 4
+        
+        'Page up
+        Case 5
+            MoveValueDown True
+            
+        'Page down
+        Case 6
+            MoveValueUp True
+        
+        '(separator)
+        Case 7
+        
+        'Scroll up
+        Case 8
+            MoveValueDown
+        
+        'Scroll down
+        Case 9
+            MoveValueUp
+    
+    End Select
+    
+End Sub
+
 Private Sub m_UpButtonTimer_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
@@ -608,10 +613,8 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 m_ContextMenuY = y
                 
                 'Make sure translations have been applied to the popup menu captions
-                UpdatePopupText
+                If (Not m_PopupMenu Is Nothing) Then m_PopupMenu.ShowMenu Me.hwnd, m_ContextMenuX, m_ContextMenuY
                 
-                UserControl.PopupMenu MnuScrollPopup, x:=x, y:=y
-        
         End Select
         
     'End (If Me.Enabled...)
@@ -764,52 +767,6 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
     
 End Sub
 
-Private Sub MnuScroll_Click(Index As Integer)
-    
-    Select Case Index
-        
-        'Scroll here
-        Case 0
-            'Change the value to the corresponding value of the context menu position
-            Value = GetValueFromMouseCoords(m_ContextMenuX, m_ContextMenuY)
-            
-        '(separator)
-        Case 1
-        
-        'Top
-        Case 2
-            Value = Min
-        
-        'Bottom
-        Case 3
-            Value = Max
-        
-        '(separator)
-        Case 4
-        
-        'Page up
-        Case 5
-            MoveValueDown True
-            
-        'Page down
-        Case 6
-            MoveValueUp True
-        
-        '(separator)
-        Case 7
-        
-        'Scroll up
-        Case 8
-            MoveValueDown
-        
-        'Scroll down
-        Case 9
-            MoveValueUp
-    
-    End Select
-    
-End Sub
-
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
@@ -819,7 +776,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
-    ucSupport.RegisterControl UserControl.hWnd, True
+    ucSupport.RegisterControl UserControl.hwnd, True
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
     
@@ -1279,28 +1236,42 @@ End Function
 ' 1) the scroll bar orientation changes, or...
 ' 2) the active translation changes...
 ' ...the popup menu text needs to be updated to match
-Private Sub UpdatePopupText()
+Private Sub CreatePopupMenu()
     
     'The text of the scroll bar context menu changes depending on orientation.  We match the verbiage and layout
     ' of the default Windows context menu.
     If PDMain.IsProgramRunning() And (Not g_Language Is Nothing) Then
         
+        Set m_PopupMenu = New pdPopupMenu
+        m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll here")
+        m_PopupMenu.AddMenuItem "-"
+        
         If m_OrientationHorizontal Then
-            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-            MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
-            MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
-            MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
-            MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
-            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
-            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Left edge")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Right edge")
         Else
-            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-            MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
-            MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
-            MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
-            MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
-            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
-            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Top")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Bottom")
+        End If
+        
+        m_PopupMenu.AddMenuItem "-"
+        
+        If m_OrientationHorizontal Then
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page left")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page right")
+        Else
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page up")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Page down")
+        End If
+        
+        m_PopupMenu.AddMenuItem "-"
+        
+        If m_OrientationHorizontal Then
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll left")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll right")
+        Else
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll up")
+            m_PopupMenu.AddMenuItem g_Language.TranslateMessage("Scroll down")
         End If
         
     End If
@@ -1331,6 +1302,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
     If ucSupport.ThemeUpdateRequired Then
         UpdateColorList
+        CreatePopupMenu
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
     End If

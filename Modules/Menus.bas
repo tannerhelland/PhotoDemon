@@ -828,6 +828,30 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = T
     
 End Sub
 
+'Given a menu name, return the corresponding menu caption (localized, with accelerator)
+Public Function GetCaptionFromName(ByRef mnuName As String, Optional ByVal returnTranslation As Boolean = True) As String
+
+    'Resolve the menu name into an index into our menu collection
+    Dim i As Long
+    Dim mnuIndex As Long: mnuIndex = -1
+    
+    For i = 0 To m_NumOfMenus - 1
+        If Strings.StringsEqual(mnuName, m_Menus(i).me_Name, True) Then
+            mnuIndex = i
+            Exit For
+        End If
+    Next i
+    
+    If (mnuIndex >= 0) Then
+        If returnTranslation Then
+            GetCaptionFromName = m_Menus(mnuIndex).me_TextTranslated
+        Else
+            GetCaptionFromName = m_Menus(mnuIndex).me_TextEn
+        End If
+    End If
+    
+End Function
+
 'Return a list of searchable menu strings.  Matches to this list can then be passed back to this module and
 ' matched against their respective menu(s).
 Public Function GetSearchableMenuList(ByRef dstStack As pdStringStack, Optional ByVal ignoreDisabledMenus As Boolean = True, Optional ByVal restrictToThisTopMenuIndex As Long = -1) As Boolean

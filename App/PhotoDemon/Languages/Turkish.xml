@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3388</langversion>
+<langversion>6.8.3389</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4753,41 +4753,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>&Image</original>
-<translation>görüntü</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Kayıt etmek</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Kaydet kopyası (kayıpsız)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Farklı kaydet</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Explorer'da Aç konumu</translation>
-</phrase>
-
-<phrase>
-<original>&Close</original>
-<translation>&Kapat</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Tümünü kapat Bu hariç</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Metni buraya girin)</translation>
 </phrase>
@@ -4803,11 +4768,21 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Explorer'da Aç konumu</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Tümünü kapat Bu hariç</translation>
+</phrase>
+
+<phrase>
 <original>Center the image inside the viewport</original>
 <translation>görünüm içinde görüntüyü ortalamak</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5475,43 +5450,8 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
-<original>Scroll</original>
-<translation>kaydırma</translation>
-</phrase>
-
-<phrase>
 <original>Scroll here</original>
 <translation>burada ilerleyin</translation>
-</phrase>
-
-<phrase>
-<original>Top</original>
-<translation>Üst</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Page up</original>
-<translation>Sayfa yukarı</translation>
-</phrase>
-
-<phrase>
-<original>Page down</original>
-<translation>Sayfa aşağı</translation>
-</phrase>
-
-<phrase>
-<original>Scroll up</original>
-<translation>Yukarı kaydırmak</translation>
-</phrase>
-
-<phrase>
-<original>Scroll down</original>
-<translation>Aşağı kaydır</translation>
 </phrase>
 
 <phrase>
@@ -5525,6 +5465,16 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
+<original>Top</original>
+<translation>Üst</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
 <original>Page left</original>
 <translation>Sayfa sol</translation>
 </phrase>
@@ -5532,6 +5482,16 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <phrase>
 <original>Page right</original>
 <translation>Sayfa hakkı</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation>Sayfa yukarı</translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation>Sayfa aşağı</translation>
 </phrase>
 
 <phrase>
@@ -5544,7 +5504,17 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <translation>sağa kaydır</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>Scroll up</original>
+<translation>Yukarı kaydırmak</translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation>Aşağı kaydır</translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -5705,6 +5675,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>&Close</original>
+<translation>&Kapat</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>Kayıt etmek</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Kaydet kopyası (kayıpsız)</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Farklı kaydet</translation>
+</phrase>
+
+<phrase>
 <original>Export</original>
 <translation>İhracat</translation>
 </phrase>
@@ -5777,6 +5767,11 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>boş panonun</translation>
+</phrase>
+
+<phrase>
+<original>&Image</original>
+<translation>görüntü</translation>
 </phrase>
 
 <phrase>
@@ -6521,7 +6516,7 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 <translation>Dil başarıyla değiştirildi.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15703,12 +15698,18 @@ If yamalı vardır.</translation>
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2619</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4796 phrases. -->
-<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
-<!-- These 2619 phrases contain approximately 12414 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12413 total words. -->
 
 </pdData>

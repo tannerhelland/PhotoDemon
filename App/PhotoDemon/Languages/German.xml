@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1133</langversion>
+<langversion>7.2.1131</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4762,41 +4762,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>&Image</original>
-<translation>&Bild</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>&Speichern</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Kopie speichern (&verlustfrei)</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Speichern &unter</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Speicherort im E&xplorer öffnen</translation>
-</phrase>
-
-<phrase>
-<original>&Close</original>
-<translation>&Schließen</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Alles schließen außer dies</translation>
-</phrase>
-
-<phrase>
 <original>(enter text here)</original>
 <translation>(Hier Text eingeben)</translation>
 </phrase>
@@ -4812,11 +4777,21 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Speicherort im E&xplorer öffnen</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Alles schließen außer dies</translation>
+</phrase>
+
+<phrase>
 <original>Center the image inside the viewport</original>
 <translation>Das Bild in Viewport zentrieren</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5486,43 +5461,8 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 <!-- BEGIN text for pdScrollBar.ctl -->
 
 <phrase>
-<original>Scroll</original>
-<translation>Scrollen</translation>
-</phrase>
-
-<phrase>
 <original>Scroll here</original>
 <translation>Hier scrollen</translation>
-</phrase>
-
-<phrase>
-<original>Top</original>
-<translation>Oben</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>Unten</translation>
-</phrase>
-
-<phrase>
-<original>Page up</original>
-<translation>Seite oben</translation>
-</phrase>
-
-<phrase>
-<original>Page down</original>
-<translation>Seite unten</translation>
-</phrase>
-
-<phrase>
-<original>Scroll up</original>
-<translation>Nach oben scrollen</translation>
-</phrase>
-
-<phrase>
-<original>Scroll down</original>
-<translation>Nach unten scrollen</translation>
 </phrase>
 
 <phrase>
@@ -5536,6 +5476,16 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 </phrase>
 
 <phrase>
+<original>Top</original>
+<translation>Oben</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>Unten</translation>
+</phrase>
+
+<phrase>
 <original>Page left</original>
 <translation>Seite links</translation>
 </phrase>
@@ -5543,6 +5493,16 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 <phrase>
 <original>Page right</original>
 <translation>Seite rechts</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation>Seite oben</translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation>Seite unten</translation>
 </phrase>
 
 <phrase>
@@ -5555,7 +5515,17 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 <translation>Nach rechts scrollen</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>Scroll up</original>
+<translation>Nach oben scrollen</translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation>Nach unten scrollen</translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -5717,6 +5687,26 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>&Close</original>
+<translation>&Schließen</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>&Speichern</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Kopie speichern (&verlustfrei)</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Speichern &unter</translation>
+</phrase>
+
+<phrase>
 <original>Export</original>
 <translation>Export</translation>
 </phrase>
@@ -5789,6 +5779,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>&Empty clipboard</original>
 <translation>Zwischenablage &leeren</translation>
+</phrase>
+
+<phrase>
+<original>&Image</original>
+<translation>&Bild</translation>
 </phrase>
 
 <phrase>
@@ -6534,7 +6529,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 154 were duplicates of existing phrases, so only 173 new phrases were written to file. -->
+<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15720,12 +15715,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2619</phrasecount>
+<phrasecount>2618</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4796 phrases. -->
-<!-- 2177 are duplicates, so only 2619 unique phrases have been written to file. -->
-<!-- These 2619 phrases contain approximately 12414 total words. -->
+<!-- As of this build, PhotoDemon contains 4781 phrases. -->
+<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
+<!-- These 2618 phrases contain approximately 12413 total words. -->
 
 </pdData>
