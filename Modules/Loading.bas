@@ -604,6 +604,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
             loadSuccessful = (cPNG.LoadPNG_Simple(imagePath, tmpPDImage, targetDIB) < png_Failure)
+            If (Not targetDIB.GetAlphaPremultiplication) Then targetDIB.SetAlphaPremultiplication True
         
         'All other formats follow a set pattern: try to load them via FreeImage (if it's available), then GDI+, then finally
         ' VB's internal LoadPicture function.

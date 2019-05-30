@@ -212,8 +212,7 @@ Public Function GetDDBFromDIB(ByRef srcDIB As pdDIB) As Long
     End With
     
     Dim tmpBitmapInfo As GDI_BitmapInfo
-    CopyMemory ByVal VarPtr(tmpBitmapInfo.bmiHeader), ByVal srcDIB.GetDIBHeader, LenB(tmpBitmapInfo.bmiHeader)
-    
+    CopyMemoryStrict VarPtr(tmpBitmapInfo.bmiHeader), srcDIB.GetDIBHeader, LenB(tmpBitmapInfo.bmiHeader)
     GetDDBFromDIB = CreateDIBitmap(tmpDC, tmpBIHeader, GDI_CBM_INIT, srcDIB.GetDIBPointer, VarPtr(tmpBitmapInfo), GDI_DIB_RGB_COLORS)
     
     ReleaseDC 0, tmpDC

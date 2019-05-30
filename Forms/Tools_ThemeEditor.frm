@@ -460,7 +460,7 @@ Private Sub cmdExport_Click()
         
         Dim x As Long, y As Long
         For x = 0 To 255
-            cmpLookup(x) = (x \ 5) * 5
+            cmpLookup(x) = ((x + 2) \ 5) * 5
         Next x
         
         'Start adding resources.  Resources are stored in a predefined format that describes how the icons are
