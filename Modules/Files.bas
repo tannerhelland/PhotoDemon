@@ -57,6 +57,11 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As L
 Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByVal lpStartupInfo As Long, ByVal lpProcessInformation As Long) As Long
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 
+Private Declare Sub CoTaskMemFree Lib "ole32" (ByVal pv As Long)
+
+Private Declare Function ILCreateFromPathW Lib "shell32" (ByVal lpFileName As Long) As Long
+Private Declare Function SHOpenFolderAndSelectItems Lib "shell32" (ByVal pidlFolder As Long, ByVal cidl As Long, ByVal apidl As Long, ByVal dwFlags As Long) As Long
+
 Private Declare Function StrFormatByteSizeW Lib "shlwapi" (ByVal srcSize As Currency, ByVal ptrDstString As Long, ByVal sizeDstStringInChars As Long) As Long
 
 'PD creates a lot of temp files.  To prevent hard drive thrashing, this module tracks created temp files,
@@ -202,8 +207,8 @@ Public Function ShellAndWait(ByVal executablePath As String, Optional ByVal comm
     
     'Null strings are problematic here; generate pointers manually to account for their possible existence
     Dim ptrToExePath As Long, ptrToCmdArgs As Long
-    If (Len(executablePath) <> 0) Then ptrToExePath = StrPtr(executablePath) Else ptrToExePath = 0
-    If (Len(commandLineArguments) <> 0) Then ptrToCmdArgs = StrPtr(commandLineArguments) Else ptrToCmdArgs = 0
+    If (LenB(executablePath) <> 0) Then ptrToExePath = StrPtr(executablePath) Else ptrToExePath = 0
+    If (LenB(commandLineArguments) <> 0) Then ptrToCmdArgs = StrPtr(commandLineArguments) Else ptrToCmdArgs = 0
     
     If (CreateProcessW(ptrToExePath, ptrToCmdArgs, ByVal 0&, ByVal 0&, 1&, 0&, ByVal 0&, 0&, VarPtr(startInfo), VarPtr(procInfo)) <> 0) Then
         
@@ -299,6 +304,18 @@ End Function
 Public Function FileSaveAsText(ByRef srcString As String, ByRef dstFilename As String, Optional ByVal useUTF8 As Boolean = True, Optional ByVal useUTF8_BOM As Boolean = True) As Boolean
     If InitializeFSO Then FileSaveAsText = m_FSO.FileSaveAsText(srcString, dstFilename, useUTF8, useUTF8_BOM)
 End Function
+
+'Open a new Explorer window and select the file in question
+Public Sub FileSelectInExplorer(ByRef srcFile As String)
+    If Files.FileExists(srcFile) Then
+        Dim pItemIDList As Long
+        pItemIDList = ILCreateFromPathW(StrPtr(srcFile))
+        If (pItemIDList <> 0) Then
+            SHOpenFolderAndSelectItems pItemIDList, 0&, 0&, 0&
+            CoTaskMemFree pItemIDList
+        End If
+    End If
+End Sub
 
 Public Function FileTestAccess_Read(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
     If InitializeFSO Then FileTestAccess_Read = m_FSO.FileTestAccess_Read(srcFile, dstLastDLLError)
