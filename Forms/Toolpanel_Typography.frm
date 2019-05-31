@@ -26,27 +26,6 @@ Begin VB.Form toolpanel_FancyText
    ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdContainer pdcMain 
-      Height          =   1500
-      Index           =   0
-      Left            =   2280
-      TabIndex        =   2
-      Top             =   0
-      Width           =   10980
-      _ExtentX        =   19368
-      _ExtentY        =   2646
-      Begin PhotoDemon.pdTextBox txtTextTool 
-         Height          =   1380
-         Left            =   0
-         TabIndex        =   4
-         Top             =   30
-         Width           =   9855
-         _ExtentX        =   17383
-         _ExtentY        =   2434
-         FontSize        =   9
-         Multiline       =   -1  'True
-      End
-   End
    Begin PhotoDemon.pdContainer ctlGroupConvertLayer 
       Height          =   1335
       Left            =   0
@@ -88,6 +67,27 @@ Begin VB.Form toolpanel_FancyText
       Width           =   2100
       _ExtentX        =   3704
       _ExtentY        =   2434
+   End
+   Begin PhotoDemon.pdContainer pdcMain 
+      Height          =   1500
+      Index           =   0
+      Left            =   2280
+      TabIndex        =   2
+      Top             =   0
+      Width           =   10980
+      _ExtentX        =   19368
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1380
+         Left            =   0
+         TabIndex        =   4
+         Top             =   30
+         Width           =   9855
+         _ExtentX        =   17383
+         _ExtentY        =   2434
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
    End
    Begin PhotoDemon.pdContainer pdcMain 
       Height          =   1500
@@ -135,27 +135,30 @@ Begin VB.Form toolpanel_FancyText
             Width           =   10935
             _ExtentX        =   0
             _ExtentY        =   0
+            Begin PhotoDemon.pdSlider sldTextFontSize 
+               Height          =   375
+               Left            =   1320
+               TabIndex        =   46
+               Top             =   435
+               Width           =   2535
+               _ExtentX        =   4471
+               _ExtentY        =   661
+               Min             =   1
+               Max             =   1000
+               ScaleStyle      =   2
+               ScaleExponent   =   4
+               Value           =   16
+               NotchPosition   =   2
+               NotchValueCustom=   16
+            End
             Begin PhotoDemon.pdDropDownFont cboTextFontFace 
                Height          =   375
                Left            =   1320
                TabIndex        =   9
-               Top             =   0
+               Top             =   15
                Width           =   2415
                _ExtentX        =   4260
                _ExtentY        =   661
-            End
-            Begin PhotoDemon.pdSpinner tudTextFontSize 
-               Height          =   345
-               Left            =   1320
-               TabIndex        =   10
-               Top             =   450
-               Width           =   2415
-               _ExtentX        =   4260
-               _ExtentY        =   609
-               DefaultValue    =   16
-               Min             =   1
-               Max             =   1000
-               Value           =   16
             End
             Begin PhotoDemon.pdLabel lblText 
                Height          =   240
@@ -173,7 +176,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   240
                Index           =   4
                Left            =   0
-               Top             =   510
+               Top             =   495
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -185,7 +188,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   240
                Index           =   2
                Left            =   0
-               Top             =   960
+               Top             =   930
                Width           =   1125
                _ExtentX        =   1984
                _ExtentY        =   503
@@ -197,8 +200,8 @@ Begin VB.Form toolpanel_FancyText
                Height          =   435
                Index           =   1
                Left            =   1800
-               TabIndex        =   11
-               Top             =   870
+               TabIndex        =   10
+               Top             =   885
                Width           =   450
                _ExtentX        =   794
                _ExtentY        =   767
@@ -208,8 +211,8 @@ Begin VB.Form toolpanel_FancyText
                Height          =   435
                Index           =   2
                Left            =   2280
-               TabIndex        =   12
-               Top             =   870
+               TabIndex        =   11
+               Top             =   885
                Width           =   450
                _ExtentX        =   794
                _ExtentY        =   767
@@ -219,8 +222,8 @@ Begin VB.Form toolpanel_FancyText
                Height          =   435
                Index           =   3
                Left            =   2760
-               TabIndex        =   13
-               Top             =   870
+               TabIndex        =   12
+               Top             =   885
                Width           =   450
                _ExtentX        =   794
                _ExtentY        =   767
@@ -229,7 +232,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdCheckBox chkHinting 
                Height          =   330
                Left            =   4200
-               TabIndex        =   14
+               TabIndex        =   13
                Top             =   450
                Width           =   3615
                _ExtentX        =   6376
@@ -240,7 +243,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdDropDown cboTextRenderingHint 
                Height          =   375
                Left            =   5400
-               TabIndex        =   15
+               TabIndex        =   14
                Top             =   0
                Width           =   2415
                _ExtentX        =   4260
@@ -262,8 +265,8 @@ Begin VB.Form toolpanel_FancyText
                Height          =   435
                Index           =   0
                Left            =   1320
-               TabIndex        =   16
-               Top             =   870
+               TabIndex        =   15
+               Top             =   885
                Width           =   450
                _ExtentX        =   794
                _ExtentY        =   767
@@ -274,7 +277,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   1500
             Index           =   1
             Left            =   1920
-            TabIndex        =   17
+            TabIndex        =   16
             Top             =   60
             Visible         =   0   'False
             Width           =   10935
@@ -284,7 +287,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   345
                Index           =   0
                Left            =   5280
-               TabIndex        =   18
+               TabIndex        =   17
                Top             =   0
                Width           =   1215
                _ExtentX        =   1720
@@ -307,7 +310,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdDropDown cboCharCase 
                Height          =   375
                Left            =   1320
-               TabIndex        =   19
+               TabIndex        =   18
                Top             =   0
                Width           =   2595
                _ExtentX        =   4577
@@ -329,7 +332,7 @@ Begin VB.Form toolpanel_FancyText
                CausesValidation=   0   'False
                Height          =   405
                Left            =   1200
-               TabIndex        =   20
+               TabIndex        =   19
                Top             =   420
                Width           =   2760
                _ExtentX        =   4868
@@ -354,7 +357,7 @@ Begin VB.Form toolpanel_FancyText
                CausesValidation=   0   'False
                Height          =   405
                Left            =   1200
-               TabIndex        =   21
+               TabIndex        =   20
                Top             =   900
                Width           =   2760
                _ExtentX        =   4868
@@ -390,7 +393,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdDropDown cboCharMirror 
                Height          =   375
                Left            =   5280
-               TabIndex        =   22
+               TabIndex        =   21
                Top             =   945
                Width           =   2595
                _ExtentX        =   4577
@@ -400,7 +403,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   345
                Index           =   1
                Left            =   6675
-               TabIndex        =   23
+               TabIndex        =   22
                Top             =   0
                Width           =   1215
                _ExtentX        =   2143
@@ -424,7 +427,7 @@ Begin VB.Form toolpanel_FancyText
                CausesValidation=   0   'False
                Height          =   405
                Left            =   5160
-               TabIndex        =   24
+               TabIndex        =   23
                Top             =   420
                Width           =   2760
                _ExtentX        =   4868
@@ -438,7 +441,7 @@ Begin VB.Form toolpanel_FancyText
          Height          =   1500
          Index           =   3
          Left            =   2280
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -449,7 +452,7 @@ Begin VB.Form toolpanel_FancyText
          Height          =   1500
          Index           =   2
          Left            =   2280
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -458,7 +461,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
             Height          =   1380
             Left            =   0
-            TabIndex        =   27
+            TabIndex        =   26
             Top             =   30
             Width           =   1815
             _ExtentX        =   3201
@@ -468,7 +471,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   1500
             Index           =   1
             Left            =   1920
-            TabIndex        =   28
+            TabIndex        =   27
             Top             =   0
             Visible         =   0   'False
             Width           =   10935
@@ -477,7 +480,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdPenSelector psTextBackground 
                Height          =   855
                Left            =   4680
-               TabIndex        =   29
+               TabIndex        =   28
                Top             =   480
                Width           =   2055
                _ExtentX        =   3625
@@ -486,7 +489,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdBrushSelector bsTextBackground 
                Height          =   855
                Left            =   1200
-               TabIndex        =   30
+               TabIndex        =   29
                Top             =   480
                Width           =   2055
                _ExtentX        =   3625
@@ -495,7 +498,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdCheckBox chkBackground 
                Height          =   330
                Left            =   120
-               TabIndex        =   31
+               TabIndex        =   30
                Top             =   60
                Width           =   3240
                _ExtentX        =   4445
@@ -532,7 +535,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
                Height          =   330
                Left            =   3480
-               TabIndex        =   32
+               TabIndex        =   31
                Top             =   60
                Width           =   3240
                _ExtentX        =   4445
@@ -545,7 +548,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   1500
             Index           =   0
             Left            =   1920
-            TabIndex        =   33
+            TabIndex        =   32
             Top             =   0
             Visible         =   0   'False
             Width           =   10935
@@ -554,7 +557,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdPenSelector psText 
                Height          =   855
                Left            =   4680
-               TabIndex        =   34
+               TabIndex        =   33
                Top             =   480
                Width           =   2055
                _ExtentX        =   3625
@@ -563,7 +566,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdBrushSelector bsText 
                Height          =   855
                Left            =   1200
-               TabIndex        =   35
+               TabIndex        =   34
                Top             =   480
                Width           =   2055
                _ExtentX        =   3625
@@ -584,7 +587,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdCheckBox chkFillText 
                Height          =   330
                Left            =   120
-               TabIndex        =   36
+               TabIndex        =   35
                Top             =   60
                Width           =   3255
                _ExtentX        =   5741
@@ -606,7 +609,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdCheckBox chkOutlineText 
                Height          =   330
                Left            =   3480
-               TabIndex        =   37
+               TabIndex        =   36
                Top             =   60
                Width           =   3255
                _ExtentX        =   5741
@@ -620,7 +623,7 @@ Begin VB.Form toolpanel_FancyText
          Height          =   1500
          Index           =   1
          Left            =   2280
-         TabIndex        =   38
+         TabIndex        =   37
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -629,7 +632,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdSpinner tudLineSpacing 
             Height          =   345
             Left            =   5160
-            TabIndex        =   39
+            TabIndex        =   38
             Top             =   1020
             Width           =   1935
             _ExtentX        =   3413
@@ -641,7 +644,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   345
             Index           =   0
             Left            =   5160
-            TabIndex        =   40
+            TabIndex        =   39
             Top             =   90
             Width           =   1380
             _ExtentX        =   2434
@@ -652,7 +655,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdButtonStrip btsHAlignment 
             Height          =   435
             Left            =   1320
-            TabIndex        =   41
+            TabIndex        =   40
             Top             =   60
             Width           =   1455
             _ExtentX        =   2566
@@ -674,7 +677,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdButtonStrip btsVAlignment 
             Height          =   435
             Left            =   1320
-            TabIndex        =   42
+            TabIndex        =   41
             Top             =   510
             Width           =   1455
             _ExtentX        =   2566
@@ -696,7 +699,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdDropDown cboWordWrap 
             Height          =   375
             Left            =   1320
-            TabIndex        =   43
+            TabIndex        =   42
             Top             =   1020
             Width           =   2070
             _ExtentX        =   3651
@@ -718,7 +721,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   345
             Index           =   1
             Left            =   6540
-            TabIndex        =   44
+            TabIndex        =   43
             Top             =   90
             Width           =   1380
             _ExtentX        =   2434
@@ -730,7 +733,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   345
             Index           =   2
             Left            =   5160
-            TabIndex        =   45
+            TabIndex        =   44
             Top             =   570
             Width           =   1380
             _ExtentX        =   2434
@@ -742,7 +745,7 @@ Begin VB.Form toolpanel_FancyText
             Height          =   345
             Index           =   3
             Left            =   6540
-            TabIndex        =   46
+            TabIndex        =   45
             Top             =   570
             Width           =   1380
             _ExtentX        =   2434
@@ -1520,6 +1523,34 @@ Private Sub psTextBackground_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
 End Sub
 
+Private Sub sldTextFontSize_Change()
+
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+    
+    'Update the current layer font size
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontSize, sldTextFontSize.Value
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub sldTextFontSize_GotFocusAPI()
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FontSize, sldTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub sldTextFontSize_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Text ptp_FontSize, sldTextFontSize.Value
+End Sub
+
 Private Sub sltCharInflation_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -1733,34 +1764,6 @@ Private Sub tudMargin_LostFocusAPI(Index As Integer)
     
     End Select
         
-End Sub
-
-Private Sub tudTextFontSize_Change()
-    
-    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
-    
-    'Mark the tool engine as busy
-    Tools.SetToolBusyState True
-    
-    'Update the current layer font size
-    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontSize, tudTextFontSize.Value
-    
-    'Free the tool engine
-    Tools.SetToolBusyState False
-    
-    'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
-End Sub
-
-Private Sub tudTextFontSize_GotFocusAPI()
-    If (Not PDImages.IsImageActive()) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
-End Sub
-
-Private Sub tudTextFontSize_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()

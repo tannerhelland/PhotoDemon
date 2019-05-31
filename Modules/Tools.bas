@@ -671,7 +671,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 With toolpanel_Text
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
-                    .tudTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
+                    .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
                     .sltTextClarity.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextContrast)
@@ -691,7 +691,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 With toolpanel_FancyText
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
                     .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
-                    .tudTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
+                    .sldTextFontSize.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .cboTextRenderingHint.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
                     .chkHinting.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_TextHinting)
                     .btnFontStyles(0).Value = CBool(PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
@@ -793,7 +793,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_Text.cboTextFontFace.List(toolpanel_Text.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_Text.tudTextFontSize.Value
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_Text.sldTextFontSize.Value
                     .SetTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
                     .SetTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
@@ -814,7 +814,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
                     .SetTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
-                    .SetTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_FancyText.sldTextFontSize.Value
                     .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
                     .SetTextLayerProperty ptp_TextHinting, toolpanel_FancyText.chkHinting.Value
                     .SetTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value

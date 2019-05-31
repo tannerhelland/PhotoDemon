@@ -99,6 +99,21 @@ Begin VB.Form toolpanel_Text
       Width           =   10980
       _ExtentX        =   18521
       _ExtentY        =   2646
+      Begin PhotoDemon.pdSlider sldTextFontSize 
+         Height          =   375
+         Left            =   1320
+         TabIndex        =   15
+         Top             =   465
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   661
+         Min             =   1
+         Max             =   1000
+         ScaleStyle      =   2
+         Value           =   16
+         NotchPosition   =   2
+         NotchValueCustom=   16
+      End
       Begin PhotoDemon.pdButtonStrip btsHAlignment 
          Height          =   435
          Left            =   9360
@@ -114,7 +129,7 @@ Begin VB.Form toolpanel_Text
          Index           =   0
          Left            =   1320
          TabIndex        =   6
-         Top             =   900
+         Top             =   915
          Width           =   450
          _ExtentX        =   794
          _ExtentY        =   767
@@ -142,20 +157,6 @@ Begin VB.Form toolpanel_Text
          _ExtentY        =   688
          curColor        =   0
       End
-      Begin PhotoDemon.pdSpinner tudTextFontSize 
-         Height          =   345
-         Left            =   1320
-         TabIndex        =   9
-         Top             =   480
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   609
-         DefaultValue    =   16
-         Min             =   1
-         Max             =   1000
-         SigDigits       =   1
-         Value           =   16
-      End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
          Index           =   3
@@ -172,7 +173,7 @@ Begin VB.Form toolpanel_Text
          Height          =   240
          Index           =   4
          Left            =   0
-         Top             =   540
+         Top             =   510
          Width           =   1125
          _ExtentX        =   1984
          _ExtentY        =   503
@@ -184,7 +185,7 @@ Begin VB.Form toolpanel_Text
          Height          =   240
          Index           =   2
          Left            =   0
-         Top             =   990
+         Top             =   975
          Width           =   1125
          _ExtentX        =   1984
          _ExtentY        =   503
@@ -195,7 +196,7 @@ Begin VB.Form toolpanel_Text
       Begin PhotoDemon.pdDropDown cboTextRenderingHint 
          Height          =   375
          Left            =   5520
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   495
          Width           =   2415
          _ExtentX        =   4260
@@ -241,8 +242,8 @@ Begin VB.Form toolpanel_Text
          Height          =   435
          Index           =   1
          Left            =   1800
-         TabIndex        =   11
-         Top             =   900
+         TabIndex        =   10
+         Top             =   915
          Width           =   450
          _ExtentX        =   794
          _ExtentY        =   767
@@ -252,8 +253,8 @@ Begin VB.Form toolpanel_Text
          Height          =   435
          Index           =   2
          Left            =   2280
-         TabIndex        =   12
-         Top             =   900
+         TabIndex        =   11
+         Top             =   915
          Width           =   450
          _ExtentX        =   794
          _ExtentY        =   767
@@ -263,8 +264,8 @@ Begin VB.Form toolpanel_Text
          Height          =   435
          Index           =   3
          Left            =   2760
-         TabIndex        =   13
-         Top             =   900
+         TabIndex        =   12
+         Top             =   915
          Width           =   450
          _ExtentX        =   794
          _ExtentY        =   767
@@ -285,7 +286,7 @@ Begin VB.Form toolpanel_Text
       Begin PhotoDemon.pdButtonStrip btsVAlignment 
          Height          =   435
          Left            =   9360
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   450
          Width           =   1455
          _ExtentX        =   2566
@@ -295,8 +296,8 @@ Begin VB.Form toolpanel_Text
       Begin PhotoDemon.pdDropDownFont cboTextFontFace 
          Height          =   375
          Left            =   1320
-         TabIndex        =   15
-         Top             =   30
+         TabIndex        =   14
+         Top             =   45
          Width           =   2430
          _ExtentX        =   4286
          _ExtentY        =   661
@@ -660,6 +661,34 @@ Private Sub pdcMain_SizeChanged(Index As Integer)
     
 End Sub
 
+Private Sub sldTextFontSize_Change()
+
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+    
+    'Update the current layer font size
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontSize, sldTextFontSize.Value
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub sldTextFontSize_GotFocusAPI()
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_FontSize, sldTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub sldTextFontSize_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Text ptp_FontSize, sldTextFontSize.Value
+End Sub
+
 Private Sub sltTextClarity_Change()
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -686,34 +715,6 @@ End Sub
 
 Private Sub sltTextClarity_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
-End Sub
-
-Private Sub tudTextFontSize_Change()
-    
-    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
-    
-    'Mark the tool engine as busy
-    Tools.SetToolBusyState True
-    
-    'Update the current layer font size
-    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_FontSize, tudTextFontSize.Value
-    
-    'Free the tool engine
-    Tools.SetToolBusyState False
-    
-    'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
-End Sub
-
-Private Sub tudTextFontSize_GotFocusAPI()
-    If (Not PDImages.IsImageActive()) Then Exit Sub
-    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, PDImages.GetActiveImage.GetActiveLayerID
-End Sub
-
-Private Sub tudTextFontSize_LostFocusAPI()
-    Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()

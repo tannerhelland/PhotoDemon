@@ -1313,7 +1313,7 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
                 Dim minL As Single, maxL As Single
                 minL = Log(m_Min)
                 maxL = Log(m_Max)
-                
+                If (customValue < m_Min) Then customValue = m_Min
                 customX = GetTrackLeft + ((Log(customValue) - minL) / (maxL - minL)) * (GetTrackRight - GetTrackLeft)
             
         End Select
