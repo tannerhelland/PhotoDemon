@@ -23,7 +23,7 @@ Begin VB.Form FormMain
    ScaleHeight     =   742
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1034
-   Begin PhotoDemon.pdAccelerator pdHotkeys 
+   Begin PhotoDemon.pdAccelerator HotkeyManager 
       Left            =   120
       Top             =   720
       _ExtentX        =   661
@@ -39,7 +39,7 @@ Begin VB.Form FormMain
       _ExtentX        =   10398
       _ExtentY        =   6588
    End
-   Begin PhotoDemon.pdDownload asyncDownloader 
+   Begin PhotoDemon.pdDownload AsyncDownloader 
       Left            =   120
       Top             =   120
       _ExtentX        =   873
@@ -1623,19 +1623,45 @@ Attribute m_FocusDetector.VB_VarHelpID = -1
 Private m_AllowedToReflowInterface As Boolean
 
 Private Sub m_FocusDetector_GotFocusReliable()
-    pdHotkeys.RecaptureKeyStates
+    HotkeyManager.RecaptureKeyStates
 End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
-    pdHotkeys.ResetKeyStates
+    HotkeyManager.ResetKeyStates
 End Sub
 
 Private Sub MnuFileImport_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuFileImport(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "file_import_paste"
+        Case 1
+            '(separator)
+        Case 2
+            Menus.ProcessDefaultAction_ByName "file_import_scanner"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "file_import_selectscanner"
+        Case 4
+            '(separator)
+        Case 5
+            Menus.ProcessDefaultAction_ByName "file_import_web"
+        Case 6
+            '(separator)
+        Case 7
+            Menus.ProcessDefaultAction_ByName "file_import_screenshot"
+    End Select
 End Sub
 
 Private Sub MnuMacroCreate_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuMacroCreate(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "tools_macrofromhistory"
+        Case 1
+            '(separator)
+        Case 2
+            Menus.ProcessDefaultAction_ByName "tools_recordmacro"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "tools_stopmacro"
+    End Select
 End Sub
 
 Private Sub MnuTest_Click()
@@ -1652,11 +1678,11 @@ StopTestImmediately:
 End Sub
 
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
-Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
+Private Sub AsyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
     'Core program updates are handled specially, so their resources can be freed without question.
-    asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK"
-    asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
+    AsyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK"
+    AsyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     
     FormMain.MainCanvas(0).SetNetworkState False
     Debug.Print "All downloads complete."
@@ -1664,7 +1690,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
 End Sub
 
 'When an asynchronous download completes, deal with it here
-Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, downloadedData() As Byte, ByVal savedToThisFile As String)
+Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, downloadedData() As Byte, ByVal savedToThisFile As String)
     
     'On a typical PD install, updates are checked every session, but users can specify a larger interval in the preferences dialog.
     ' As part of honoring that preference, whenever an update check successfully completes, we write the current date out to the
@@ -1710,7 +1736,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             End If
             
         Else
-            PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.GetLastErrorNumber & " - " & asyncDownloader.GetLastErrorDescription
+            PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & AsyncDownloader.GetLastErrorNumber & " - " & AsyncDownloader.GetLastErrorDescription
         End If
     
     'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
@@ -1737,7 +1763,7 @@ End Sub
 'External functions can request asynchronous downloads via this function.
 Public Function RequestAsynchronousDownload(ByRef downloadKey As String, ByRef urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal saveToThisFileWhenComplete As String = vbNullString, Optional ByVal checksumToVerify As Long = 0) As Boolean
     FormMain.MainCanvas(0).SetNetworkState True
-    RequestAsynchronousDownload = Me.asyncDownloader.AddToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, True, saveToThisFileWhenComplete, checksumToVerify)
+    RequestAsynchronousDownload = Me.AsyncDownloader.AddToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, True, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
 'When the main form is resized, we must re-align the main canvas to match
@@ -1944,11 +1970,27 @@ End Sub
 
 'Menu: Adjustments -> Photography
 Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuAdjustmentsPhoto(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "adj_exposure"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "adj_hdr"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "adj_photofilters"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "adj_redeyeremoval"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "adj_splittone"
+    End Select
 End Sub
 
 Private Sub MnuBatch_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuBatch(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "file_batch_process"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "file_batch_repair"
+    End Select
 End Sub
 
 Private Sub MnuClearRecentMacros_Click()
@@ -1962,79 +2004,90 @@ End Sub
 
 'Menu: effect > transform actions
 Private Sub MnuEffectTransform_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuEffectTransform(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_panandzoom"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_perspective"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "effects_polarconversion"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "effects_rotate"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "effects_shear"
+        Case 5
+            Menus.ProcessDefaultAction_ByName "effects_spherize"
+    End Select
 End Sub
 
 'Menu: top-level layer actions
 Private Sub MnuLayer_Click(Index As Integer)
-
-    'Menu index 9 is a special exception - it is "Crop to selection", which is identical
-    ' to a command in the Image menu.  We must explicitly request the LAYER version.
-    If (Index = 9) Then
-        Menus.ProcessDefaultAction_ByName "layer_crop"
-    Else
-        Menus.ProcessDefaultAction_ByCaption MnuLayer(Index).Caption
-    End If
-    
+    Select Case Index
+        Case 0
+            'Add submenu
+        Case 1
+            'Delete submenu
+        Case 2
+            '(separator)
+        Case 3
+            Menus.ProcessDefaultAction_ByName "layer_mergeup"
+        Case 4
+            Menus.ProcessDefaultAction_ByName "layer_mergedown"
+        Case 5
+            'Order submenu
+        Case 6
+            '(separator)
+        Case 7
+            'Orientation submenu
+        Case 8
+            'Size submenu
+        Case 9
+            Menus.ProcessDefaultAction_ByName "layer_crop"
+        Case 10
+            '(separator)
+        Case 11
+            'Transparency submenu
+        Case 12
+            '(separator)
+        Case 13
+            'Rasterize submenu
+        Case 14
+            '(separator)
+        Case 15
+            Menus.ProcessDefaultAction_ByName "layer_mergevisible"
+        Case 16
+            Menus.ProcessDefaultAction_ByName "layer_flatten"
+    End Select
 End Sub
 
 'Menu: remove layers from the image
 Private Sub MnuLayerDelete_Click(Index As Integer)
-
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the Layer > Rasterize menu (e.g. "Current layer"); as such, we must explicitly
-    ' request actions.
     Select Case Index
-    
-        'Delete current layer
         Case 0
             Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
-        
-        'Delete all hidden layers
         Case 1
             Menus.ProcessDefaultAction_ByName "layer_deletehidden"
-        
     End Select
-    
 End Sub
 
 'Menu: add a layer to the image
 Private Sub MnuLayerNew_Click(Index As Integer)
-
-    'Normally, we process menu commands by caption, but this menu is unique because it shares
-    ' names with the File > Import menu (e.g. "From clipboard"); as such, we must explicitly
-    ' request actions.
     Select Case Index
-        
-        'Basic layer
         Case 0
             Menus.ProcessDefaultAction_ByName "layer_addbasic"
-        
-        'Blank layer
         Case 1
             Menus.ProcessDefaultAction_ByName "layer_addblank"
-        
-        'Duplicate of current layer
         Case 2
             Menus.ProcessDefaultAction_ByName "layer_duplicate"
-        
-        '<separator>
         Case 3
-        
-        'Import from clipboard
+            '(separator)
         Case 4
             Menus.ProcessDefaultAction_ByName "layer_addfromclipboard"
-        
-        'Import from file
         Case 5
             Menus.ProcessDefaultAction_ByName "layer_addfromfile"
-            
-        'Import from visible layers in current image
         Case 6
             Menus.ProcessDefaultAction_ByName "layer_addfromvisiblelayers"
-    
     End Select
-    
 End Sub
 
 'Menu: change layer order
@@ -2186,7 +2239,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
     
 End Sub
 
-Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
+Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
     
     'Accelerators are divided into three groups, and they are processed in the following order:
     ' 1) Direct processor strings.  These are automatically submitted to the software processor.
@@ -2196,7 +2249,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
     '***********************************************************
     'Accelerators that are direct processor strings are handled automatically
     
-    With pdHotkeys
+    With HotkeyManager
     
         If .IsProcessorString(acceleratorIndex) Then
             
@@ -2551,7 +2604,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Cancel any pending downloads
     PDDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
     
-    Me.asyncDownloader.Reset
+    Me.AsyncDownloader.Reset
     
     'Allow any objects on this form to save preferences and other user data
     PDDebug.LogAction "Asking all FormMain components to write out final user preference values..."
@@ -2587,9 +2640,9 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Stop tracking hotkeys
     PDDebug.LogAction "Turning off hotkey manager..."
-    If (Not pdHotkeys Is Nothing) Then
-        pdHotkeys.DeactivateHook True
-        pdHotkeys.ReleaseResources
+    If (Not HotkeyManager Is Nothing) Then
+        HotkeyManager.DeactivateHook True
+        HotkeyManager.ReleaseResources
     End If
     
     'Release the tooltip tracker

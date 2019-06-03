@@ -970,7 +970,7 @@ End Function
 ' nightmares (like language translations).
 Public Sub InitializeAllHotkeys()
     
-    With FormMain.pdHotkeys
+    With FormMain.HotkeyManager
     
         .Enabled = True
         
@@ -1142,7 +1142,7 @@ Public Sub InitializeAllHotkeys()
     
     CacheCommonTranslations
     
-    With FormMain.pdHotkeys
+    With FormMain.HotkeyManager
         For i = 0 To .Count - 1
             If .HasMenu(i) Then Menus.NotifyMenuHotkey .GetMenuName(i), .GetKeyCode(i), .GetShift(i)
         Next i
@@ -2160,9 +2160,9 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
         
         Case "tools_languageeditor"
             If (Not FormLanguageEditor.Visible) Then
-                FormMain.pdHotkeys.Enabled = False
+                FormMain.HotkeyManager.Enabled = False
                 ShowPDDialog vbModal, FormLanguageEditor
-                FormMain.pdHotkeys.Enabled = True
+                FormMain.HotkeyManager.Enabled = True
             End If
             
         Case "tools_theme"

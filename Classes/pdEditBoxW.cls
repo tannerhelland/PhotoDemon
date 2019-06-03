@@ -798,7 +798,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     ElseIf (uiMsg = WM_SETFOCUS) Then
         
         'Forcibly disable PD's main accelerator control
-        FormMain.pdHotkeys.DeactivateHook
+        FormMain.HotkeyManager.DeactivateHook
         
         InstallKeyboardHook
         
@@ -816,7 +816,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         RemoveKeyboardHook
         
         'Re-enable PD's main accelerator control
-        FormMain.pdHotkeys.ActivateHook
+        FormMain.HotkeyManager.ActivateHook
         
         'Raise a matching notification
         If m_HasFocus Then
