@@ -15,20 +15,21 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2019 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 06/July/18
-'Last update: rewrite file and folder search code for improved performance
+'Last updated: 10/June/19
+'Last update: new functions for detailed memory-mapped file behavior
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '              Strings module (handles lots of Unicode-related transforms)
 '
-'This class provides convenient, Unicode-friendly replacements for VB's various file and folder functions.  In some cases, the VB
-' equivalents have been directly reproduced.  In others, the functions have been rewritten to make fail states easier to detect
-' (e.g. returning Boolean's instead of raising errors).
+'This class provides convenient, Unicode-friendly replacements for VB's various file and folder functions.
+' In some cases, VB6 function signatures are reproduced in a Unicode-friendly way (typically with a -W suffix).
+' In other cases, functions have been completely rewritten differently to match signatures in modern languages,
+' or do things like make fail states easier to detect (e.g. returning bools instead of raising errors).
 '
-'Pay careful attention to the requirements of each function.  Some functions that operate on bare file handles require that the
-' handle was created with certain permissions (e.g. you can't check file size using an hFile unless the hFile was created with
-' read access).
+'Pay careful attention to the requirements of each function.  Some functions that operate on bare file handles
+' require that the handle was created with certain permissions (e.g. you can't check file size using an hFile
+' unless the hFile was created with read access).
 '
-'Thank you to the many invaluable references I used while constructing this class, particularly:
+'Thank you to many invaluable references I used while constructing this class, particularly:
 ' - Dana Seaman's UnicodeTutorialVB (http://www.cyberactivex.com/UnicodeTutorialVb.htm)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -58,7 +59,8 @@ Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
 Private Const FILE_ATTRIBUTE_TEMPORARY As Long = &H100&
 Private Const FILE_FLAG_SEQUENTIAL_SCAN As Long = &H8000000
 Private Const FILE_FLAG_RANDOM_ACCESS As Long = &H10000000
-Private Const FILE_MAP_WRITE As Long = 2
+Private Const FILE_MAP_WRITE As Long = &H2
+Private Const FILE_MAP_READ As Long = &H4
 Private Const FILE_SHARE_READ As Long = &H1
 Private Const FILE_SHARE_WRITE As Long = &H2
 Private Const FILE_SHARE_DELETE As Long = &H4
@@ -76,7 +78,9 @@ Private Const MOVEFILE_COPY_ALLOWED As Long = &H2   'If the file is to be moved 
                                                     ' is unable to be deleted, the function succeeds leaving the source file intact.
 Private Const OPEN_ALWAYS As Long = &H4
 Private Const OPEN_EXISTING As Long = &H3
-Private Const PAGE_READWRITE As Long = 4
+
+Private Const PAGE_READONLY As Long = &H2
+Private Const PAGE_READWRITE As Long = &H4
 Private Const REPLACEFILE_IGNORE_MERGE_ERRORS As Long = &H2
 
 'Because our file patching code affects critical PhotoDemon files, we need to make sure we return detailed success/failure information.
@@ -163,6 +167,20 @@ Private Type WIN32_FIND_DATA
     cAlternate As String * 14
 End Type
 
+Private Type Win32_System_Info
+    wProcessorArchitecture As Integer
+    wReserved As Integer
+    dwPageSize As Long
+    lpMinimumApplicationAddress As Long
+    lpMaximumApplicationAddress As Long
+    dwActiveProcessorMask As Long
+    dwNumberOfProcessors As Long
+    dwProcessorType As Long
+    dwAllocationGranularity As Long
+    wProcessorLevel As Integer
+    wProcessorRevision As Integer
+End Type
+
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CopyFileW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal bFailIfExists As Long) As Long
 Private Declare Function CreateDirectoryW Lib "kernel32" (ByVal lpPathName As Long, ByVal ptrToSecurityAttributes As Long) As Long
@@ -179,6 +197,7 @@ Private Declare Function GetFileSizeEx Lib "kernel32" (ByVal hFile As Long, ByRe
 Private Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Long, ByRef lpCreationTime As WAPI_FILETIME, ByRef lpLastAccessTime As WAPI_FILETIME, ByRef lpLastWriteTime As WAPI_FILETIME) As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
 Private Declare Function GetShortPathNameW Lib "kernel32" (ByVal lpLongPath As Long, ByVal lpShortPath As Long, ByVal nBufLen As Long) As Long
+Private Declare Sub GetSystemInfo Lib "kernel32" (ByRef lpSystemInfo As Win32_System_Info)
 Private Declare Function MapViewOfFile Lib "kernel32" (ByVal hFileMappingObject As Long, ByVal dwDesiredAccess As Long, ByVal dwFileOffsetHigh As Long, ByVal dwFileOffsetLow As Long, ByVal dwNumberOfBytesToMap As Long) As Long
 Private Declare Function MoveFileExW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal dwFlags As Long) As Long
 Private Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingW" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal ptrToNameString As Long) As Long
@@ -321,7 +340,7 @@ End Function
 Friend Function FileConvertHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByRef dstBaseAddress As Long, ByVal sizeInBytes As Long, Optional ByVal nameOfMap As String = vbNullString) As Boolean
     
     Dim ptrName As Long
-    If (Len(nameOfMap) <> 0) Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
+    If (LenB(nameOfMap) <> 0) Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
     dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, PAGE_READWRITE, 0&, sizeInBytes, ptrName)
                                  
     If (dstMappedHandle = 0) Then
@@ -651,6 +670,19 @@ Friend Function FileGetExtension(ByRef srcFile As String) As String
             
 End Function
 
+'Return a memory-mapped handle for an existing file handle.  No view mapping is performed,
+' and the resulting handle is local-only (e.g. not inheritable).
+
+'For correct operation, the same access tokens as the underlying file handle should be used -
+' e.g. if the source file handle wasn't created with write access, don't request write access here!
+Friend Function FileGetMMHandle_Local(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByVal sizeInBytes As Long, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal nameOfMap As String = vbNullString) As Long
+    Dim ptrName As Long, fFlags As Long
+    If (LenB(nameOfMap) <> 0) Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
+    If requestWriteAccess Then fFlags = PAGE_READWRITE Else fFlags = PAGE_READONLY
+    dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, fFlags, 0&, sizeInBytes, ptrName)
+    FileGetMMHandle_Local = (dstMappedHandle <> 0)
+End Function
+
 'Return just the filename from a full path.  Optionally, you can ask the function to strip the extension (if any)
 ' from the filename.  If stripExtension is FALSE, the full filename + extension will be returned (e.g. "file.txt").
 Friend Function FileGetName(ByRef srcPath As String, Optional ByVal stripExtension As Boolean = False) As String
@@ -977,6 +1009,15 @@ Friend Function FileLoadAsString(ByRef srcFile As String, ByRef dstString As Str
 StopTextFileRead:
     FSOError "FileLoadAsString", " internal error on " & srcFile & ". Abandoning load.", Err.Number
     FileLoadAsString = False
+End Function
+
+'Map a new file view.  startPos *must* match the current system allocation granularity (as returned by
+' Me.GetSystemAllocationGranularity(), below).  If it isn't, the call will fail.  Matching allocation
+' granularity is deliberately left to the caller, so that they can handle any required offsets correctly.
+Friend Function FileMapView(ByVal srcHandle As Long, ByVal startPos As Long, ByVal mapSize As Long, Optional ByVal requestWriteAccess As Boolean = False) As Long
+    Dim fFlags As Long
+    If requestWriteAccess Then fFlags = FILE_MAP_WRITE Else fFlags = FILE_MAP_READ
+    FileMapView = MapViewOfFile(srcHandle, fFlags, 0&, startPos, mapSize)
 End Function
 
 'After a file has been opened, you can use this function to manually move the file pointer around
@@ -1351,7 +1392,7 @@ End Function
 ' see MSDN for details: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365531(v=vs.85).aspx
 Friend Function FileSetLength(ByVal hFile As Long, ByVal newLength As Long) As Boolean
     If (hFile <> 0) Then
-        If Me.FileMovePointer(hFile, newLength, FILE_BEGIN) Then FileSetLength = (SetEndOfFile(hFile) <> 0)
+        If Me.FileMovePointer(hFile, newLength, FILE_BEGIN) Then FileSetLength = (SetEndOfFile(hFile) <> 0) Else FSOError "FileSetLength", "couldn't set file length", Err.LastDllError
     End If
 End Function
 
@@ -1412,6 +1453,10 @@ Friend Function FileTestAccess_Write(ByVal srcFile As String, Optional ByRef dst
     
 End Function
 
+Friend Function FileUnmapView(ByVal origPtr As Long) As Boolean
+    FileUnmapView = (UnmapViewOfFile(origPtr) <> 0)
+End Function
+
 'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
 ' (The write will be performed synchronously, FYI.)
 ' Returns: TRUE if successful; FALSE otherwise.
@@ -1462,6 +1507,13 @@ Friend Function GetShortPath(ByRef longPath As String) As String
         GetShortPath = longPath
     End If
     
+End Function
+
+'Required for memory-mapped files, used by VirtualAlloc, etc
+Friend Function GetSystemAllocationGranularity() As Long
+    Dim tmpSysInfo As Win32_System_Info
+    GetSystemInfo tmpSysInfo
+    GetSystemAllocationGranularity = tmpSysInfo.dwAllocationGranularity
 End Function
 
 'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
