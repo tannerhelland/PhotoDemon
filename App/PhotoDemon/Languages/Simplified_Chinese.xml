@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1141</langversion>
+<langversion>7.1.1142</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -714,7 +714,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>选择的文件不是PDI格式，取消打开。</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -3212,12 +3212,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>%1 保存成功。</translation>
 </phrase>
 
-<phrase>
-<original>Saving %1 layer</original>
-<translation>保存层 %1</translation>
-</phrase>
-
-<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15706,12 +15701,24 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for pdPopupMenu.cls-->
 
+<!-- BEGIN text for pdPackageChunky.cls -->
+
+<!-- pdPackageChunky.cls contains 0 phrases. -->
+
+<!-- END text for pdPackageChunky.cls-->
+
+<!-- BEGIN text for pdFileMM.cls -->
+
+<!-- pdFileMM.cls contains 0 phrases. -->
+
+<!-- END text for pdFileMM.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2618</phrasecount>
+<phrasecount>2617</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
-<!-- These 2618 phrases contain approximately 12413 total words. -->
+<!-- As of this build, PhotoDemon contains 4777 phrases. -->
+<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
+<!-- These 2617 phrases contain approximately 12411 total words. -->
 
 </pdData>

@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 'Created: 2/April/01
 'Last updated: 26/April/19
 'Last update: modify File > Revert behavior; it now creates a *new* entry on the Undo stack (similar to Photoshop),
-'             which allows the user to move back to a previous state after reverting.
+'             which allows the user to return to previous states even after reverting.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted

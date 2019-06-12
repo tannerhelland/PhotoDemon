@@ -24,7 +24,7 @@ Option Explicit
 
 'To improve Undo/Redo performance, a persistent Undo writer is used.  (To free up memory, you can release this class;
 ' it will automatically be re-created, as necessary.)
-Private m_PdiWriter As pdPackager
+Private m_PdiWriter As pdPackager, m_PdiWriterNew As pdPackageChunky
 
 'When a Save request is invoked, call this function to determine if Save As is needed instead.  (Several factors can
 ' affect whether Save is okay; for example, if an image has never been saved before, we must raise a dialog to ask
@@ -32,11 +32,7 @@ Private m_PdiWriter As pdPackager
 Public Function IsCommonDialogRequired(ByRef srcImage As pdImage) As Boolean
     
     'At present, this heuristic is pretty simple: if the image hasn't been saved to disk before, require a Save As instead.
-    If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
-        IsCommonDialogRequired = True
-    Else
-        IsCommonDialogRequired = False
-    End If
+    IsCommonDialogRequired = (LenB(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0)
 
 End Function
 
@@ -589,68 +585,53 @@ SavePDIError:
     
 End Function
 
-'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
-' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
-    
+Private Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByRef pdiPath As String, Optional ByVal compressHeaders As PD_CompressionFormat = cf_Zstd, Optional ByVal compressLayers As PD_CompressionFormat = cf_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False, Optional ByRef dstUndoFileSize As Long) As Boolean
+
     On Error GoTo SavePDLayerError
     
     'Perform a few failsafe checks
     If (srcLayer Is Nothing) Then Exit Function
     If (srcLayer.layerDIB Is Nothing) Then Exit Function
-    If (Len(pdiPath) = 0) Then Exit Function
+    If (LenB(pdiPath) = 0) Then Exit Function
     
     Dim sFileType As String
     sFileType = "PDI"
     
-    If (Not suppressMessages) Then Message "Saving %1 layer...", sFileType
+    'First things first: create a pdPackage instance.  It handles the messy business of assembling
+    ' the layer file (including all compression tasks).
+    If (m_PdiWriterNew Is Nothing) Then Set m_PdiWriterNew = New pdPackageChunky
     
-    'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
-    ' (Note that we reuse the same pdPackager instance throughout this module; this spares us from constant reallocating
-    ' memory for package assembly.)
-    If (m_PdiWriter Is Nothing) Then Set m_PdiWriter = New pdPackager
+    'Unlike an actual PDI file, which stores a whole bunch of data, layer temp files only store
+    ' two pieces of data: the layer header, and the DIB bytestream.  (Note that we supply a
+    ' (very rough) estimate of final package size as a helper to the memory-mapped file class
+    ' underlying pdPackager - you can omit this and everything will work fine; there may just be
+    ' a few extra trips out to the HDD to dynamically resize the file map as needed.
+    m_PdiWriterNew.StartNewPackage_File pdiPath, srcIsUndo, srcLayer.EstimateRAMUsage \ 4
     
-    'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
-    ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
-    ' (NOTE: if memory consumption ever becomes an issue, you can write Undo/Redo data as a "file-backed" package.  In that
-    '  mode, data is streamed immediately out to file, instead of coalescing the package in memory first.  This makes it
-    '  quite a bit slower, but the memory burden is significantly reduced.)
-    m_PdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.EstimateRAMUsage ', PD_SM_FileBacked, pdiPath
-    
-    'The first (and only) node we'll add is the specific pdLayer header and DIB data.
-    ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
-    '  and the current layer's index (stored as the node type).
-    
-    'Start by creating the node entry; if successful, this will return the index of the node, which we can use
-    ' to supply the actual header and DIB data.
-    Dim nodeIndex As Long
-    nodeIndex = m_PdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, PDImages.GetActiveImage.GetLayerIndexFromID(srcLayer.GetLayerID))
-    
-    'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
-    Dim dataString As String
+    'Retrieve the layer header (in XML format), then write the XML stream to the package
+    Dim dataString As String, dataUTF8() As Byte, utf8Len As Long
     dataString = srcLayer.GetLayerHeaderAsXML(True)
-    
-    m_PdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
+    Strings.UTF8FromStrPtr StrPtr(dataString), Len(dataString), dataUTF8, utf8Len
+    m_PdiWriterNew.AddChunk_WholeFromPtr "LHDR", VarPtr(dataUTF8(0)), utf8Len, compressHeaders
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
     If (Not writeHeaderOnlyFile) Then
         
-        'Specific handling varies by layer type
-        
-        'Image layers save their raster contents as a raw byte stream
+        'Image layers save their pixel data as a raw byte stream
         If srcLayer.IsLayerRaster Then
         
             Dim layerDIBPointer As Long, layerDIBLength As Long
             srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            m_PdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
+            m_PdiWriterNew.AddChunk_WholeFromPtr "LDAT", layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
         
         'Text (and other vector layers) save their vector contents in XML format
         ElseIf srcLayer.IsLayerVector Then
             
             dataString = srcLayer.GetVectorDataAsXML(True)
-            m_PdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel
-        
+            Strings.UTF8FromStrPtr StrPtr(dataString), Len(dataString), dataUTF8, utf8Len
+            m_PdiWriterNew.AddChunk_WholeFromPtr "LDAT", VarPtr(dataUTF8(0)), utf8Len, compressLayers, compressionLevel
+            
         'Other layer types are not currently supported
         Else
             Debug.Print "WARNING!  SavePhotoDemonLayer was passed a layer of unknown or unsupported type."
@@ -658,18 +639,18 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
         
     End If
     
-    'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonLayer = m_PdiWriter.WritePackageToFile(pdiPath, , srcIsUndo, , dstUndoFileSize)
-    If (Not SavePhotoDemonLayer) Then
-        PDDebug.LogAction "WARNING!  SavingSavePhotoDemonLayer received a failure status from pdiWriter.WritePackageToFile()"
-    End If
+    'Report our finished package size to the caller
+    dstUndoFileSize = m_PdiWriterNew.GetPackageSize()
+    
+    'That's everything!  Just remember to finalize the package before exiting.
+    SavePhotoDemonLayer = m_PdiWriterNew.FinishPackage()
+    If (Not SavePhotoDemonLayer) Then PDDebug.LogAction "WARNING!  SavingSavePhotoDemonLayer received a failure status from pdiWriter.WritePackageToFile()"
     
     Exit Function
     
 SavePDLayerError:
     PDDebug.LogAction "WARNING!  Saving.SavePhotoDemonLayer failed with error #" & Err.Number & ", " & Err.Description
     SavePhotoDemonLayer = False
-    
 End Function
 
 'Save a new Undo/Redo entry to file.  This function is only called by the createUndoData function in the pdUndo class.
@@ -726,11 +707,11 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_Layer, UNDO_Layer_VectorSafe
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, cf_Lz4, undoCmpEngine, False, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", cf_Lz4, undoCmpEngine, False, undoCmpLevel, True, dstUndoFileSize)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LayerHeader
-            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, cf_None, True, undoCmpLevel, True, dstUndoFileSize)
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", undoCmpEngine, cf_None, True, undoCmpLevel, True, dstUndoFileSize)
             
         'Selection data only
         Case UNDO_Selection
@@ -804,4 +785,5 @@ End Sub
 'Want to free up memory?  Call this function to release all export caches.
 Public Sub FreeUpMemory()
     Set m_PdiWriter = Nothing
+    Set m_PdiWriterNew = Nothing
 End Sub

@@ -833,7 +833,7 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         If m_File.FileExists(dstFilename) Then m_File.FileDelete dstFilename
         
     'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
-    ' and the dictionary.  Close the stream.
+    ' and the directory.  Close the stream.
     Else
         dstFinalSize = m_DataBuffer.GetStreamSize()
         m_DataBuffer.StopStream

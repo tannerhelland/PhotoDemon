@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3389</langversion>
+<langversion>6.8.3390</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -713,7 +713,7 @@ To включить поддержку этого формата изображ�
 <translation>Выбранный файл не в формате PDF. Нагрузка заброшены.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -3216,12 +3216,7 @@ In Тем временем, пожалуйста, попытайтесь сох�
 <translation> %1 сохранить полный.</translation>
 </phrase>
 
-<phrase>
-<original>Saving %1 layer</original>
-<translation>Сохранение %1 слой</translation>
-</phrase>
-
-<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15717,12 +15712,24 @@ If вы все еще отключить обновления, не забудь
 
 <!-- END text for pdPopupMenu.cls-->
 
+<!-- BEGIN text for pdPackageChunky.cls -->
+
+<!-- pdPackageChunky.cls contains 0 phrases. -->
+
+<!-- END text for pdPackageChunky.cls-->
+
+<!-- BEGIN text for pdFileMM.cls -->
+
+<!-- pdFileMM.cls contains 0 phrases. -->
+
+<!-- END text for pdFileMM.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2618</phrasecount>
+<phrasecount>2617</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
-<!-- These 2618 phrases contain approximately 12413 total words. -->
+<!-- As of this build, PhotoDemon contains 4777 phrases. -->
+<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
+<!-- These 2617 phrases contain approximately 12411 total words. -->
 
 </pdData>

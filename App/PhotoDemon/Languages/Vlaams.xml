@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.406</langversion>
+<langversion>6.7.407</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -714,7 +714,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Geselecteerd bestand niet in PDI-formaat. Laden afgebroken.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 22 phrases. 16 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -3217,12 +3217,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>%1 opslaan voltooid.</translation>
 </phrase>
 
-<phrase>
-<original>Saving %1 layer</original>
-<translation>Opslaan %1 laag</translation>
-</phrase>
-
-<!-- Saving.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -15718,12 +15713,24 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdPopupMenu.cls-->
 
+<!-- BEGIN text for pdPackageChunky.cls -->
+
+<!-- pdPackageChunky.cls contains 0 phrases. -->
+
+<!-- END text for pdPackageChunky.cls-->
+
+<!-- BEGIN text for pdFileMM.cls -->
+
+<!-- pdFileMM.cls contains 0 phrases. -->
+
+<!-- END text for pdFileMM.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2618</phrasecount>
+<phrasecount>2617</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4781 phrases. -->
-<!-- 2163 are duplicates, so only 2618 unique phrases have been written to file. -->
-<!-- These 2618 phrases contain approximately 12413 total words. -->
+<!-- As of this build, PhotoDemon contains 4777 phrases. -->
+<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
+<!-- These 2617 phrases contain approximately 12411 total words. -->
 
 </pdData>

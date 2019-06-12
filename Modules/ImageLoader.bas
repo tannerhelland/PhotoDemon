@@ -555,131 +555,95 @@ LoadLayerFromPDIFail:
 End Function
 
 'Load a single PhotoDemon layer from a standalone pdLayer file (which is really just a modified PDI file).
-' At present, this function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
-' the Saving module; any changes there should be mirrored here.
-Public Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+' This function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
+' the Saving module; any changes there must be mirrored here.
+Private Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadPDLayerFail
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    Dim pdiReader As pdPackageChunky
+    Set pdiReader = New pdPackageChunky
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(pdiPath, PD_LAYER_IDENTIFIER) Then
+    'Load the file into the pdPackager instance.  The reader uses memory-mapped file I/O, so don't modify
+    ' the file until the read process completes.  (Note that this step will also validate the incoming file.)
+    If pdiReader.OpenPackage_File(pdiPath) Then
     
-        'Layer variants of PDI files contain a single node.  The layer's header is stored to the node's header chunk
-        ' (in XML format, as expected).  The layer's DIB data is stored to the node's data chunk (in binary format, as expected).
-        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
-        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String, retSize As Long
+        Dim chunkName As String, chunkLength As Long, chunkData As pdStream
+        Dim layerHeaderFound As Boolean
         
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
-        
-            'Copy the received bytes into a string
-            retString = Space$(retSize \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
+        'Iterate chunks, looking for a layer header
+        Do While pdiReader.ChunksRemain()
             
-            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
-            ' Note that we pass the loadHeaderOnly request to this function; if this is a header-only load, the target
-            ' layer must retain its current DIB.  This functionality is used by PD's Undo/Redo engine.
-            dstLayer.CreateNewLayerFromXML retString, , loadHeaderOnly
+            chunkName = pdiReader.GetChunkName()
+            chunkLength = pdiReader.GetChunkSize()
             
-        'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
-        ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
-        End If
-        
-        'Unless a header-only load was requested, we will now repeat the steps above, but for layer-specific data
-        ' (a raw DIB stream for raster layers, or an XML string for vector/text layers)
-        If (Not loadHeaderOnly) Then
-        
-            'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
-            ' already created a DIB with a built-in buffer for the pixel data.
-            '
-            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
-            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
-            Dim nodeLoadedSuccessfully As Boolean
-            nodeLoadedSuccessfully = False
-            
-            'Image (raster) layers
-            If dstLayer.IsLayerRaster Then
-                
-                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
-                Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
-                dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                
-                nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(0, False, tmpDIBPointer)
-                
-            'Text and other vector layers
-            ElseIf dstLayer.IsLayerVector Then
-                
-                If pdiReader.GetNodeDataByIndex(0, False, retBytes, False, retSize) Then
-                
-                    'Convert the byte array to a Unicode string.
-                    retString = Space$(retSize \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
-                    
-                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If dstLayer.CreateVectorDataFromXML(retString) Then
-                        nodeLoadedSuccessfully = True
-                    Else
-                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                    End If
-                    
-                Else
-                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+            'Layer header.  Note that we'll pull the chunk data into a dedicated stream before converting
+            ' it from UTF-8; this is simply a convenience.
+            If (chunkName = "LHDR") Then
+                If pdiReader.GetNextChunk(chunkName, chunkLength, chunkData) Then
+                    layerHeaderFound = True
+                    dstLayer.CreateNewLayerFromXML chunkData.ReadString_UTF8(chunkLength), , loadHeaderOnly
                 End If
-            
-            'In the future, additional layer types can be handled here
-            Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.GetLayerType
-            
-            End If
-                
-            'If the load was successful, notify the target layer that its DIB data has been changed; the layer will use this to
-            ' regenerate various internal caches.
-            If nodeLoadedSuccessfully Then
-                dstLayer.NotifyOfDestructiveChanges
-                
-            'Failure means package bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently
-            ' disabled for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
-            Else
-                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
             
-        End If
+            'Layer raster/vector data (only if "loadHeaderOnly" is NOT set).
+            If (Not loadHeaderOnly) And layerHeaderFound And (chunkName = "LDAT") Then
+            
+                'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
+                ' already created a DIB with a built-in buffer for the pixel data.
+                '
+                'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
+                ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
+                Dim nodeLoadedSuccessfully As Boolean
+                nodeLoadedSuccessfully = False
+                
+                If dstLayer.IsLayerRaster Then
+                
+                    'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
+                    Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                    dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
+                    dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                    
+                    'Because we already know the decompressed size of the pixel data, we don't need to
+                    ' double-allocate it - instead, decompress it directly from its (memory-mapped)
+                    ' source into the already-allocated pixel container.
+                    nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, , tmpDIBPointer)
+                
+                Else
+                    nodeLoadedSuccessfully = pdiReader.GetNextChunk(chunkName, chunkLength, chunkData)
+                    nodeLoadedSuccessfully = dstLayer.CreateVectorDataFromXML(chunkData.ReadString_UTF8(chunkLength))
+                End If
+                
+                'If the load was successful, notify the target layer that its DIB data has been changed; the layer will use this to
+                ' regenerate various internal caches.
+                If nodeLoadedSuccessfully Then
+                    dstLayer.NotifyOfDestructiveChanges
+                    
+                'Failure means package bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently
+                ' disabled for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
+                Else
+                    PDDebug.LogAction "LoadPhotoDemonLayer: node was not loaded successfully."
+                End If
+                
+            End If
+            
+        Loop
         
         'That's all there is to it!  Mark the load as successful and carry on.
         LoadPhotoDemonLayer = True
     
+    'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
     Else
-    
-        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
-        Message "Selected file is not in PDI format.  Load abandoned."
+        PDDebug.LogAction "LoadPhotoDemonLayer: file didn't pass validation."
         LoadPhotoDemonLayer = False
-    
     End If
     
     Exit Function
     
 LoadPDLayerFail:
-
-    Select Case Err.Number
-    
-        Case PDP_GENERIC_ERROR
-            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
-            
-        Case Else
-
-        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
-        
-    End Select
-    
+    PDDebug.LogAction "LoadPhotoDemonLayer: VB error #" & Err.Number & ": " & Err.Description
     LoadPhotoDemonLayer = False
     Exit Function
 
