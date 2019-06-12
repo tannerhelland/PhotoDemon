@@ -15,9 +15,12 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2019 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 09/January/19
-'Last update: add new option for wrapping a stream instance around an arbitrary pointer; this is used by pdPNG
-'             to load PNG files directly from memory
+'Last updated: 10/June/19
+'Last update: add new memory-mapped file backing option; this provides large performance boosts when
+'             reading/writing large chunks of data that must ultimately end up on the HDD, but note that
+'             mm files have certain limitations - for example, when creating a new file, you *must* set
+'             the file size to a "large enough" value in advance, as you can't resize memory-mapped files
+'             "on the fly"
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -59,10 +62,11 @@ Public Enum PD_STREAM_MODE
     PD_SM_MemoryBacked = 0
     PD_SM_FileBacked = 1
     PD_SM_ExternalPtrBacked = 2
+    PD_SM_FileMemoryMapped = 3
 End Enum
 
 #If False Then
-    Private Const PD_SM_MemoryBacked = 0, PD_SM_FileBacked = 1, PD_SM_ExternalPtrBacked = 2
+    Private Const PD_SM_MemoryBacked = 0, PD_SM_FileBacked = 1, PD_SM_ExternalPtrBacked = 2, PD_SM_FileMemoryMapped = 3
 #End If
 
 Public Enum PD_STREAM_ACCESS
@@ -90,6 +94,9 @@ Private m_TemporarySA As SafeArray1D
 
 'For file-backed streams, pdFSO is used for file interactions
 Private m_FSO As pdFSO
+
+'For memory-mapped file streams, pdFileMM is used for file interactions
+Private m_FileMM As pdFileMM
 
 'When writing a stream, this is the current stream size.  It is updated on each write.  (Importantly, for memory streams,
 ' this is *not* the UBound() of m_MemBuffer()!  m_MemBuffer's UBound() will always be >= this number.)
@@ -156,8 +163,8 @@ Friend Sub DeleteFromStart(ByVal numBytesToDelete As Long)
             m_BufferSize = 0
         End If
         
-    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        InternalStreamError "sorry, DeleteFromStart is not currently supported in file-backed streams"
+    Else
+        InternalStreamError "sorry, DeleteFromStart is only supported for memory-backed streams"
     End If
 
 End Sub
@@ -170,6 +177,8 @@ Friend Function GetPosition() As Long
         GetPosition = m_Pointer
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
         If (m_FileHandle <> 0) And (Not m_FSO Is Nothing) Then GetPosition = m_FSO.FileGetCurrentPointer(m_FileHandle) - m_FilePointerOffset
+    ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+        GetPosition = m_Pointer
     End If
 End Function
 
@@ -178,8 +187,13 @@ End Function
 'RETURNS: TRUE if successful; FALSE otherwise.  FALSE may occur if you attempt to set the pointer outside the current stream range.
 Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
     
-    'In memory-backed mode, we must manually handle the different "move method" options.
-    If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+    'In file-backed mode, we only need special handling for the FILE_BEGIN method, if the user has specified a custom offset
+    ' into the file
+    If (m_StreamMode = PD_SM_FileBacked) Then
+        If (startingPosition = FILE_BEGIN) Then newPosition = newPosition + m_FilePointerOffset
+    
+    'All other modes must calculate the pointer manually
+    Else
         If (startingPosition = FILE_BEGIN) Then
             'Do nothing; newPosition is an absolute value
         ElseIf (startingPosition = FILE_CURRENT) Then
@@ -187,21 +201,16 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
         ElseIf (startingPosition = FILE_END) Then
             newPosition = m_BufferSize + newPosition
         End If
-    
-    'In file-backed mode, we only need special handling for the FILE_BEGIN method, if the user has specified a custom offset
-    ' into the file
-    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        If (startingPosition = FILE_BEGIN) Then newPosition = newPosition + m_FilePointerOffset
     End If
     
     'Now we can actually apply the new position
     If (newPosition >= 0) And (newPosition <= m_BufferSize) Then
         
-        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+        If (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then SetPosition = m_FSO.FileMovePointer(m_FileHandle, newPosition, startingPosition)
+        Else
             m_Pointer = newPosition
             SetPosition = True
-        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-            If (Not m_FSO Is Nothing) Then SetPosition = m_FSO.FileMovePointer(m_FileHandle, newPosition, startingPosition)
         End If
         
     Else
@@ -287,6 +296,7 @@ End Sub
 ' 1) This is a file-backed stream and you supplied an invalid or inaccessible filename, or...
 ' 2) This is a memory-backed stream and the initial starting size is ridiculously huge.
 ' 3) This is an external pointer-backed stream and the initial size and/or pointer value is zero.
+' 4) This is a memory-mapped file stream and the filename is bad, or you requested write access but supplied an initial size <= 0.
 '
 'If this stream object is already open, the existing stream will be closed and a new one will be started.
 Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PD_FILE_ACCESS_OPTIMIZE = OptimizeNone, Optional ByVal reuseExistingBuffer As Boolean = False) As Boolean
@@ -366,6 +376,32 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
             m_Open = False
         End If
         
+    ElseIf (streamType = PD_SM_FileMemoryMapped) Then
+        
+        If (m_FileMM Is Nothing) Then Set m_FileMM = New pdFileMM
+        If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
+        
+        If (streamAccess = PD_SA_ReadOnly) Then
+            m_BufferSize = m_FSO.FileLenW(srcFilename)
+            m_Open = m_FileMM.OpenExistingFile(srcFilename, False, optimizeAccess)
+        Else
+            
+            If m_FSO.FileExists(srcFilename) Then
+                
+                If (startingBufferSize > m_FSO.FileLenW(srcFilename)) Then
+                    Dim hFileTmp As Long
+                    m_FSO.FileCreateHandle srcFilename, hFileTmp, True, True, OptimizeSequentialAccess
+                    m_FSO.FileSetLength hFileTmp, startingBufferSize
+                    m_FSO.FileCloseHandle hFileTmp
+                End If
+                m_Open = m_FileMM.OpenExistingFile(srcFilename, True, optimizeAccess)
+                
+            Else
+                m_Open = m_FileMM.StartNewFile(srcFilename, startingBufferSize, optimizeAccess)
+            End If
+            
+        End If
+            
     End If
     
     StartStream = m_Open
@@ -380,10 +416,6 @@ Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
     
     If m_Open Then
     
-        m_Open = False
-        m_Pointer = 0
-        m_BufferSize = 0
-        
         If (m_StreamMode = PD_SM_MemoryBacked) Then
             If alsoFreeMemory Then Erase m_MemBuffer
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
@@ -391,7 +423,13 @@ Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
             m_FileHandle = 0
         ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             PutMem4 VarPtrArray(m_MemBuffer), 0&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            m_FileMM.CloseFile m_BufferSize
         End If
+        
+        m_Open = False
+        m_Pointer = 0
+        m_BufferSize = 0
         
     End If
     
@@ -429,10 +467,10 @@ Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition 
                     If movePtrToMatch Then m_Pointer = startPosition
                 End If
             
-            'Do not use this in file-backed mode!  Manually cache a chunk of the file and perform the
+            'Do not use this in file-backed mode(s)!  Manually cache a chunk of the file and perform the
             ' search yourself!
-            ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-                
+            Else
+                InternalStreamError "FindByte is not implemented for this stream mode"
             End If
         
         End If
@@ -529,6 +567,15 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
         
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, dstPointer, readLength
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, readLength, srcPtr, srcReadMax) Then
+                    CopyMemoryStrict dstPointer, srcPtr + m_Pointer, readLength
+                Else
+                    InternalStreamError "ReadBytesToBarePointer failed; const pdFileMM for details."
+                End If
+            End If
         End If
         
         ReadBytesToBarePointer = readLength
@@ -537,10 +584,52 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
     
 End Function
 
+'Read (n) bytes to a destination stream object.  This is helpful if the bytes require further parsing.
+' Note that the returned stream will be at position (0) by default.
+Friend Function ReadBytesToStream(ByRef dstStream As pdStream, ByVal readLength As Long) As Boolean
+
+    If m_Open Then
+        
+        'Make sure the read length doesn't extend past the end of the buffer
+        If (Me.GetPosition() + readLength > m_BufferSize) Then readLength = m_BufferSize - Me.GetPosition()
+        
+        'Prep the destination stream
+        If (dstStream Is Nothing) Then Set dstStream = New pdStream
+        ReadBytesToStream = dstStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=readLength, reuseExistingBuffer:=True)
+        
+        'Copy the relevant amount of bytes into position
+        If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+            CopyMemoryStrict dstStream.Peek_PointerOnly(0), VarPtr(m_MemBuffer(m_Pointer)), readLength
+            
+            'In memory mode, we must manually move the pointer to match the new position
+            m_Pointer = m_Pointer + readLength
+            If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
+        
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, dstStream.Peek_PointerOnly(0), readLength
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, readLength, srcPtr, srcReadMax) Then
+                    CopyMemoryStrict dstStream.Peek_PointerOnly(0), srcPtr + m_Pointer, readLength
+                Else
+                    InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
+                End If
+            End If
+        End If
+        
+        'Make sure the buffer size of the destination stream accurately reflects however many bytes we copied.
+        dstStream.SetSizeExternally readLength
+        
+    End If
+    
+End Function
+
 'Read bytes from the stream.  Instead of returning the bytes (which requires an expensive copy operation), this function
 ' simply returns a pointer to the relevant position in the stream, which the user can use however they want.  An optional
 ' readLength parameter controls how far the position pointer is moved within the stream, but it does not otherwise
-' affect anything.
+' affect anything EXCEPT on memory-mapped files - for these, it is critical to supply a valid read length, because only
+' that many bytes will get mapped into memory.
 '
 'NOTE: for file-backed streams, *if* the stream was opened in read-only mode, this function is still valid.  If the file
 ' stream is opened in read/write mode, this function *cannot be used*.  Instead, you must use the ReadBytes() function, above.
@@ -576,6 +665,26 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
             
             'TODO!!
             
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                
+                'Calculate the length we need to move the current position marker
+                If (readLength < 0) Then readLength = m_BufferSize - m_Pointer
+                
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, readLength, srcPtr, srcReadMax) Then
+                    
+                    ReadBytes_PointerOnly = srcPtr + m_Pointer
+                    
+                    'Move the pointer
+                    m_Pointer = m_Pointer + readLength
+                    If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
+            
+                Else
+                    InternalStreamError "ReadBytes_PointerOnly failed; const pdFileMM for details."
+                End If
+                
+            End If
         End If
         
     End If
@@ -591,6 +700,16 @@ Friend Function ReadByte() As Byte
             m_Pointer = m_Pointer + 1&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadByte), 1&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 1, srcPtr, srcReadMax) Then
+                    GetMem1 srcPtr + m_Pointer, ReadByte
+                    m_Pointer = m_Pointer + 1
+                Else
+                    InternalStreamError "ReadByte failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -604,6 +723,16 @@ Friend Function ReadInt() As Integer
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt), 2&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 2, srcPtr, srcReadMax) Then
+                    GetMem2 srcPtr + m_Pointer, ReadInt
+                    m_Pointer = m_Pointer + 2&
+                Else
+                    InternalStreamError "ReadInt failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -625,6 +754,16 @@ Friend Function ReadIntUnsigned() As Long
             m_Pointer = m_Pointer + 2&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadInt) + 2&, 2&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 2, srcPtr, srcReadMax) Then
+                    CopyMemoryStrict VarPtr(ReadIntUnsigned), srcPtr + m_Pointer, 2&
+                    m_Pointer = m_Pointer + 2&
+                Else
+                    InternalStreamError "ReadIntUnsigned failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -644,6 +783,16 @@ Friend Function ReadLong() As Long
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadLong), 4&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 4, srcPtr, srcReadMax) Then
+                    GetMem4 srcPtr + m_Pointer, ReadLong
+                    m_Pointer = m_Pointer + 4&
+                Else
+                    InternalStreamError "ReadLong failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -681,6 +830,16 @@ Friend Function ReadFloat() As Single
             m_Pointer = m_Pointer + 4&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadFloat), 4&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 4, srcPtr, srcReadMax) Then
+                    GetMem4 srcPtr + m_Pointer, ByVal VarPtr(ReadFloat)
+                    m_Pointer = m_Pointer + 4&
+                Else
+                    InternalStreamError "ReadFloat failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -699,6 +858,16 @@ Friend Function ReadDouble() As Double
             m_Pointer = m_Pointer + 8&
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then m_FSO.FileReadData m_FileHandle, VarPtr(ReadDouble), 8&
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, 8, srcPtr, srcReadMax) Then
+                    GetMem8_Ptr srcPtr, ByVal VarPtr(ReadDouble)
+                    m_Pointer = m_Pointer + 8&
+                Else
+                    InternalStreamError "ReadDouble failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 End Function
@@ -734,6 +903,16 @@ Friend Function ReadString_ASCII(ByVal numOfChars As Long) As String
                 m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars
                 ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), False, numOfChars)
             End If
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, numOfChars, srcPtr, srcReadMax) Then
+                    ReadString_ASCII = Strings.StringFromCharPtr(srcPtr + m_Pointer, False, numOfChars)
+                    m_Pointer = m_Pointer + numOfChars
+                Else
+                    InternalStreamError "ReadString_ASCII failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 
@@ -755,6 +934,16 @@ Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
                 m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars * 2
                 ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), True, numOfChars)
             End If
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim srcPtr As Long, srcReadMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, numOfChars * 2, srcPtr, srcReadMax) Then
+                    ReadString_Unicode = Strings.StringFromCharPtr(srcPtr + m_Pointer, True, numOfChars)
+                    m_Pointer = m_Pointer + numOfChars * 2&
+                Else
+                    InternalStreamError "ReadString_Unicode failed; const pdFileMM for details."
+                End If
+            End If
         End If
     End If
 
@@ -770,7 +959,7 @@ Friend Function ReadString_Unicode_BE(ByVal numOfChars As Long) As String
         tmpString = Me.ReadString_Unicode(numOfChars)
         
         'If string is not null-length, manually reverse endianness of all chars
-        If (Len(tmpString) <> 0) Then
+        If (LenB(tmpString) <> 0) Then
             
             ReadString_Unicode_BE = String$(Len(tmpString), 0)
             Dim i As Long, tmpInt As Integer
@@ -848,6 +1037,8 @@ Friend Function TrimStream() As Long
             If (Not m_FSO Is Nothing) Then
                 m_FSO.FileSetLength m_FileHandle, m_BufferSize + m_FilePointerOffset
             End If
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            InternalStreamError "Not implemented"
         End If
     
     End If
@@ -935,6 +1126,18 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
                 WriteBytesFromPointer = 0
             End If
         
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            If (Not m_FileMM Is Nothing) Then
+                Dim dstPtr As Long, dstWriteMin As Long, dstWriteMax As Long
+                If m_FileMM.EnsureMapAvailable(m_Pointer, dataLength, dstPtr, dstWriteMin, dstWriteMax) Then
+                    CopyMemoryStrict dstPtr + m_Pointer, dataPointer, dataLength
+                    m_Pointer = m_Pointer + dataLength
+                    If (m_Pointer > m_BufferSize) Then m_BufferSize = m_Pointer
+                    WriteBytesFromPointer = m_Pointer
+                Else
+                    InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
+                End If
+            End If
         End If
     
     Else
@@ -1065,6 +1268,9 @@ End Function
 'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.
 ' Unlike the various ReadXYZ() functions, this function does *not* modify the current stream pointer.
 '
+'NOTE: for memory-mapped file streams, you *must* supply a length alongside the peek position.  A length is required
+'      to page the source data into memory.
+'
 'NOTE: for file-backed streams, this function *cannot currently be used*.
 '
 'RETURNS: non-zero pointer if successful; zero otherwise.  Zero will be returned if the current stream is file-backed.
@@ -1072,15 +1278,28 @@ End Function
 'IMPORTANT NOTE: adding data to the buffer may force it to allocate new memory, invalidating all previously returned
 ' pointers.  You must use the return of this function immediately, as its correctness is not guaranteed after any
 ' other functions are called.
-Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1) As Long
+Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optional ByVal peekLength As Long = 0) As Long
 
     If (peekPosition < 0) Then peekPosition = Me.GetPosition()
     
     If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
         Peek_PointerOnly = VarPtr(m_MemBuffer(peekPosition))
         
+    'Unsupported
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        'TODO!!
+        InternalStreamError "You can't peek pointers on a file-based stream!"
+        
+    ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+        If (Not m_FileMM Is Nothing) And (peekLength > 0) Then
+            Dim srcPtr As Long, srcReadMax As Long
+            If m_FileMM.EnsureMapAvailable(peekPosition, peekLength, srcPtr, srcReadMax) Then
+                Peek_PointerOnly = srcPtr + peekPosition
+            Else
+                InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
+            End If
+        Else
+            InternalStreamError "Peek_PointerOnly failed - you need to supply a length value!"
+        End If
     End If
 
 End Function
@@ -1092,8 +1311,8 @@ Public Sub SwapEndianness16()
     If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
         VBHacks.SwapEndianness16 m_MemBuffer
         
-    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        'TODO!!
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Or (m_StreamMode = PD_SM_FileMemoryMapped) Then
+        'Unsupported at present
     End If
     
 End Sub
@@ -1193,6 +1412,10 @@ Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Opt
         ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             InternalStreamError "EnsureBufferSpaceAvailable is not allowed on pointer-wrapped streams!"
             EnsureBufferSpaceAvailable = False
+        
+        ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+            Dim tmpPtrMap As Long
+            If (Not m_FileMM Is Nothing) Then m_FileMM.EnsureMapAvailable m_Pointer, newDataSizeInBytes, tmpPtrMap
         End If
         
         EnsureBufferSpaceAvailable = True
