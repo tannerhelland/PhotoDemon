@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon PSD (PhotoShop Image) Container and Parser
 'Copyright 2019-2019 by Tanner Helland
 'Created: 13/January/19
-'Last updated: 19/February/19
-'Last update: wrap up support for "use max compatibility" feature when exporting PSDs
+'Last updated: 20/June/19
+'Last update: move to a memory-mapped file interface; this improves import and export performance while
+'             still keeping memory usage nice and low!
 '
 'This class (and its associated pdPSD- child classes) handle Adobe PSD parsing duties.  It is custom-built
 ' for PhotoDemon, with an emphasis on performance and proper color-management of all imported data.
@@ -250,7 +251,7 @@ Friend Function LoadPSD(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Try to validate the source file
     Dim keepLoading As PD_PSDResult
-    keepLoading = Step1_ValidateHeader(srcFile, checkExtension, True)
+    keepLoading = Step1_ValidateHeader(srcFile, checkExtension)
     
     If (keepLoading < psd_Failure) Then
         
@@ -358,12 +359,12 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     'As usual, all writing is handled by a pdStream instance.  Note that we do not request typical
     ' sequential perf-optimized mode - this is because PSDs use a ton of "length" entries that describe
     ' following data segments.  Lengths are not easily known in advance, so the writer must periodically
-    ' "retreat" and update previous length entries.  This incurs potentially huge penalties when
+    ' "retreat" and update previous length entries.  This incurs potentially large penalties when
     ' sequential mode is requested, and random-access shows no meaningful benefit, so we stick to
     ' default caching behavior.
     Dim cStream As pdStream
     Set cStream = New pdStream
-    cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile
+    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, srcPDImage.EstimateRAMUsage()
     
     'Start by writing out a basic PSD header.
     Dim keepGoing As PD_PSDResult
@@ -1567,7 +1568,7 @@ InternalVBError:
 
 End Function
 
-Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False, Optional ByVal cacheFileIfSuccessful As Boolean = False) As PD_PSDResult
+Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal checkExtension As Boolean = False) As PD_PSDResult
 
     On Error GoTo InternalVBError
     
@@ -1589,15 +1590,14 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
     
     'If all pre-checks passed, open a stream over the source data.
     If (okToProceed < psd_Failure) Then
+        Set m_Stream = New pdStream
         If (m_SourceFilename = PSD_LOADED_FROM_MEMORY) Then
-            Set m_Stream = New pdStream
             If Not m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_SourcePtrLen, m_SourcePtr) Then
                 m_Warnings.AddString "Couldn't start in-memory stream against passed pointer: " & m_SourcePtr
                 okToProceed = psd_Failure
             End If
         Else
-            Set m_Stream = New pdStream
-            If Not m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
+            If Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
                 m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
                 okToProceed = psd_Failure
             End If
@@ -1622,93 +1622,50 @@ Private Function Step1_ValidateHeader(ByRef srcFile As String, Optional ByVal ch
             If (psdVersion = 1) Or (psdVersion = 2) Then okToProceed = psd_Success Else okToProceed = psd_Failure
             If (okToProceed < psd_Failure) Then
             
-                'This appears to be a valid PSD file.  If streaming from the HDD, attempt to pre-cache
-                ' smaller files in memory to improve load time.  (Obviously, we skip this step when
-                ' loading a PSD directly from memory!)
-                If (m_SourceFilename <> PSD_LOADED_FROM_MEMORY) And cacheFileIfSuccessful Then
+                'This appears to be a valid PSD file.  Parse the file header.
+                With m_Header
+                
+                    .Version = psdVersion
+                
+                    'After the signature and version come 6 reserved bytes
+                    m_Stream.SetPosition 6&, FILE_CURRENT
+                
+                    'Number of channels in the image, including alpha channels, comes next
+                    .NumChannels = m_Stream.ReadInt_BE()
+                
+                    'Height/width come next (IN THAT ORDER, don't ask me why)
+                    .ImageHeightPx = m_Stream.ReadLong_BE()
+                    .ImageWidthPx = m_Stream.ReadLong_BE()
+                
+                    'Color depth
+                    .BitsPerChannel = m_Stream.ReadInt_BE()
                     
-                    'Given the huge variance in potential PSD file sizes, I don't know of a good way to
-                    ' "predict" the gains we might get from pre-loading the file (or if this will just
-                    ' cause issues due to increased memory pressure).  In lieu of something more complex,
-                    ' let's just test file size and use that as our guide - sufficiently small files
-                    ' will then "always" pre-cache successfully, while large files get some measure of
-                    ' safety against memory-related issues.
-                    
-                    'We currently use a threshold of 50 mb.  PSDs don't encode particularly efficiently,
-                    ' so we're unlikely to encounter a very small PSD that expands to huge numbers
-                    ' when expanded.  (And if a file's *that* big, 50mb of RAM won't make a difference.)
-                    Const FILE_SIZE_TOO_BIG As Long = 50000000
-                    If (Files.FileLenW(m_SourceFilename) < FILE_SIZE_TOO_BIG) Then
-                        
-                        Dim cachedStream As pdStream
-                        Set cachedStream = New pdStream
-                        
-                        'If pre-caching fails, no problem; we'll just abandon the attempt and
-                        ' continue using our original stream.
-                        If Files.FileLoadAsPDStream(m_SourceFilename, cachedStream) Then
-                            
-                            'Replace the master stream object and advance its pointer by six bytes
-                            ' (to bypass the fields we've already validated)
-                            Set m_Stream = cachedStream
-                            m_Stream.SetPosition 6&, FILE_BEGIN
-                            If PSD_DEBUG_VERBOSE Then PDDebug.LogAction "PSD looks good; caching source file in memory for improved performance..."
-                        
-                        End If
-                    
-                    '/File too big to pre-cache
+                    'Color mode
+                    .ColorMode = m_Stream.ReadInt_BE()
+                
+                    'Validate all header data; if any of it doesn't conform, reject the file.
+                    ' (Validation values come from Adobe's spec, hence their arbitrary nature.)
+                    If (.NumChannels < 1) Or (.NumChannels > 56) Then
+                        m_Warnings.AddString "Unsupported number of channels: " & CStr(.NumChannels) & ". Load canceled."
+                        okToProceed = psd_Failure
+                    ElseIf (.ImageHeightPx <= 0) Or (.ImageWidthPx <= 0) Then
+                        m_Warnings.AddString "Width and/or height is invalid (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                        okToProceed = psd_Failure
+                    ElseIf (Not m_PSDisPSB) And ((.ImageHeightPx > 30000) Or (.ImageWidthPx > 30000)) Then
+                        m_Warnings.AddString "PSD width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                        okToProceed = psd_Failure
+                    ElseIf m_PSDisPSB And ((.ImageHeightPx > 300000) Or (.ImageWidthPx > 300000)) Then
+                        m_Warnings.AddString "PSB width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
+                        okToProceed = psd_Failure
+                    ElseIf ((.BitsPerChannel <> 1) And (.BitsPerChannel <> 8) And (.BitsPerChannel <> 16) And (.BitsPerChannel <> 32)) Then
+                        m_Warnings.AddString "Invalid depth/bpc (" & CStr(.BitsPerChannel) & "). Load canceled."
+                        okToProceed = psd_Failure
+                    ElseIf ((.ColorMode < cm_Bitmap) Or (.ColorMode > cm_Lab)) Then
+                        m_Warnings.AddString "Unknown color mode (" & CStr(.ColorMode) & "). Load canceled."
+                        okToProceed = psd_Failure
                     End If
-                
-                '/PSD is being loaded from pointer, or caller explicitly asked us to *not* pre-cache
-                End If
-                
-                'Confirm our stream is still attached to the PSD data and finish validating the header segment
-                If (okToProceed < psd_Failure) Then
                     
-                    With m_Header
-                    
-                        .Version = psdVersion
-                    
-                        'After the signature and version come 6 reserved bytes
-                        m_Stream.SetPosition 6&, FILE_CURRENT
-                    
-                        'Number of channels in the image, including alpha channels, comes next
-                        .NumChannels = m_Stream.ReadInt_BE()
-                    
-                        'Height/width come next (IN THAT ORDER, don't ask me why)
-                        .ImageHeightPx = m_Stream.ReadLong_BE()
-                        .ImageWidthPx = m_Stream.ReadLong_BE()
-                    
-                        'Color depth
-                        .BitsPerChannel = m_Stream.ReadInt_BE()
-                        
-                        'Color mode
-                        .ColorMode = m_Stream.ReadInt_BE()
-                    
-                        'Validate all header data; if any of it doesn't conform, reject the file.
-                        ' (Validation values come from Adobe's spec, hence their arbitrary nature.)
-                        If (.NumChannels < 1) Or (.NumChannels > 56) Then
-                            m_Warnings.AddString "Unsupported number of channels: " & CStr(.NumChannels) & ". Load canceled."
-                            okToProceed = psd_Failure
-                        ElseIf (.ImageHeightPx <= 0) Or (.ImageWidthPx <= 0) Then
-                            m_Warnings.AddString "Width and/or height is invalid (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
-                            okToProceed = psd_Failure
-                        ElseIf (Not m_PSDisPSB) And ((.ImageHeightPx > 30000) Or (.ImageWidthPx > 30000)) Then
-                            m_Warnings.AddString "PSD width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
-                            okToProceed = psd_Failure
-                        ElseIf m_PSDisPSB And ((.ImageHeightPx > 300000) Or (.ImageWidthPx > 300000)) Then
-                            m_Warnings.AddString "PSB width and/or height is too large (" & CStr(.ImageWidthPx) & "x" & CStr(.ImageHeightPx) & "). Load canceled."
-                            okToProceed = psd_Failure
-                        ElseIf ((.BitsPerChannel <> 1) And (.BitsPerChannel <> 8) And (.BitsPerChannel <> 16) And (.BitsPerChannel <> 32)) Then
-                            m_Warnings.AddString "Invalid depth/bpc (" & CStr(.BitsPerChannel) & "). Load canceled."
-                            okToProceed = psd_Failure
-                        ElseIf ((.ColorMode < cm_Bitmap) Or (.ColorMode > cm_Lab)) Then
-                            m_Warnings.AddString "Unknown color mode (" & CStr(.ColorMode) & "). Load canceled."
-                            okToProceed = psd_Failure
-                        End If
-                        
-                    End With
-                
-                End If
+                End With
                 
             Else
                 m_Warnings.AddString "PSD header provided unknown version #" & CStr(psdVersion) & ". Load canceled."

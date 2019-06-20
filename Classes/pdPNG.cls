@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2019 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 09/April/19
-'Last update: continued code reorganization and minor perf improvements
+'Last updated: 12/June/19
+'Last update: switch to new memory-mapped interface for great performance and memory usage benefits
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -258,7 +258,7 @@ Friend Function ImportStage1_ValidatePNG(ByRef srcFile As String, Optional ByVal
                 okToProceed = png_Failure
             End If
         Else
-            If Not m_Stream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
+            If Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, m_SourceFilename, , , OptimizeSequentialAccess) Then
                 m_Warnings.AddString "Can't read file; it may be locked or in an inaccessible location."
                 okToProceed = png_Failure
             End If
@@ -1382,7 +1382,7 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
     Dim cStream As pdStream
     Set cStream = New pdStream
-    cStream.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, dstFile, , , OptimizeSequentialAccess
+    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, srcImage.GetDIBWidth * srcImage.GetDIBHeight, , OptimizeSequentialAccess
     
     Dim startTime As Currency, firstStartTime As Currency
     VBHacks.GetHighResTime startTime
@@ -3292,54 +3292,117 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
     End If
     
     PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
-    Compression.CompressPtrToDstArray tmpBytes, cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
     
-    If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
-        VBHacks.GetHighResTime startTime
+    'This next bit of code is a failsafe so that this class can support two different write modes:
+    ' memory-mapped files (which are faster but use slightly more memory) and traditional file writes
+    ' (slower but minimal memory usage).  In June 2019, I switched over to the memory-mapped
+    ' interface because of its obvious perf benefits, but I'm leaving the old interface in case I
+    ' ever decide to revert back.
+    If (cStream.GetStreamMode = PD_SM_FileBacked) Then
+        
+        Compression.CompressPtrToDstArray tmpBytes, cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'We're done with the temporary chunk, and because it consumes a *lot* of memory, free it immediately
+        Set tmpChunk = Nothing
+        
+        'Normally, we would use a temporary chunk object to write the actual chunk data (including CRC calculation).
+        ' Because IDAT chunks are potentially enormous, however, we want to manually embed the final, compressed data
+        ' stream directly inside the target file.
+        
+        'Start with data length
+        cStream.WriteLong_BE cmpSize
+        
+        'Next, the chunk name
+        cStream.WriteString_ASCII "IDAT"
+        
+        'Next, the data itself
+        cStream.WriteBytesFromPointer VarPtr(tmpBytes(0)), cmpSize
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'Finally, a CRC value.  We need to manually calculate this, and the calculation must include the
+        ' chunk name (but not its length).  Start by calculating a CRC for the chunk name.
+        Dim nameBytes() As Byte
+        nameBytes = StrConv("IDAT", vbFromUnicode)
+        
+        Dim crcBase As Long, crcFinal As Long
+        crcBase = Plugin_libdeflate.GetCrc32(0&, 0&, 0&, True)
+        crcBase = Plugin_libdeflate.GetCrc32(VarPtr(nameBytes(0)), 4&, crcBase, False)
+        
+        'Next, compute a CRC over the compressed data - but make sure we pass the *existing* CRC value
+        ' to ensure a correct final value!
+        crcFinal = Plugin_libdeflate.GetCrc32(VarPtr(tmpBytes(0)), cmpSize, crcBase, False)
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'Write the final CRC out to file
+        cStream.WriteLong_BE crcFinal
+    
+    'Memory-based approaches can use a faster approach, where we compress directly into the final buffer
+    ' (instead of wasting time and energy on an intermediary one).
+    Else
+        
+        'Ensure the stream has sufficient space for a worst-case compression, plus 12 bytes for
+        ' a PNG chunk ID, size, and CRC checksum.
+        Dim worstCaseCompressedSize As Long
+        worstCaseCompressedSize = Compression.GetWorstCaseSize(srcLen, cf_Zlib, cmpLevel)
+        cStream.EnsureBufferSpaceAvailable worstCaseCompressedSize + 12
+        
+        'Compress directly into the final buffer, and remember that it needs to be offset by 8
+        ' (for the PNG chunk ID and size)
+        cmpSize = worstCaseCompressedSize
+        Compression.CompressPtrToPtr cStream.Peek_PointerOnly(cStream.GetPosition + 8, worstCaseCompressedSize + 8), cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'We're done with the temporary chunk, and because it consumes a *lot* of memory, free it immediately
+        Set tmpChunk = Nothing
+        
+        'At the current (unmoved) pointer position, write the final compressed length
+        cStream.WriteLong_BE cmpSize
+        
+        'Next, the chunk name
+        cStream.WriteString_ASCII "IDAT"
+        
+        'Next, the compressed data stream already exists - so we don't need to write it!  We simply need to
+        ' (manually) move the stream pointer to match.
+        Dim posData As Long
+        posData = cStream.GetPosition()
+        cStream.SetSizeExternally posData + cmpSize
+        cStream.SetPosition cmpSize, FILE_CURRENT
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'Finally, a CRC value.  We need to manually calculate this, and the calculation must include the
+        ' chunk name (but not its length) and obviously the compressed data itself.
+        crcFinal = Plugin_libdeflate.GetCrc32(cStream.Peek_PointerOnly(posData - 4, cmpSize + 4), cmpSize + 4, 0&, True)
+        
+        If PNG_DEBUG_VERBOSE Then
+            PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
+        'Write the final CRC out to file
+        cStream.WriteLong_BE crcFinal
+        
     End If
-    
-    'We're done with the temporary chunk, and because it consumes a *lot* of memory, free it immediately
-    Set tmpChunk = Nothing
-    
-    'Normally, we would use a temporary chunk object to write the actual chunk data (including CRC calculation).
-    ' Because IDAT chunks are potentially enormous, however, we want to manually embed the final, compressed data
-    ' stream directly inside the target file.
-    
-    'Start with data length
-    cStream.WriteLong_BE cmpSize
-    
-    'Next, the chunk name
-    cStream.WriteString_ASCII "IDAT"
-    
-    'Next, the data itself
-    cStream.WriteBytesFromPointer VarPtr(tmpBytes(0)), cmpSize
-    
-    If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
-        VBHacks.GetHighResTime startTime
-    End If
-    
-    'Finally, a CRC value.  We need to manually calculate this, and the calculation must include the
-    ' chunk name (but not its length).  Start by calculating a CRC for the chunk name.
-    Dim nameBytes() As Byte
-    nameBytes = StrConv("IDAT", vbFromUnicode)
-    
-    Dim crcBase As Long, crcFinal As Long
-    crcBase = Plugin_libdeflate.GetCrc32(0&, 0&, 0&, True)
-    crcBase = Plugin_libdeflate.GetCrc32(VarPtr(nameBytes(0)), 4&, crcBase, False)
-    
-    'Next, compute a CRC over the compressed data - but make sure we pass the *existing* CRC value
-    ' to ensure a correct final value!
-    crcFinal = Plugin_libdeflate.GetCrc32(VarPtr(tmpBytes(0)), cmpSize, crcBase, False)
-    
-    If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
-        VBHacks.GetHighResTime startTime
-    End If
-    
-    'Write the final CRC out to file
-    cStream.WriteLong_BE crcFinal
     
     ExportStep4_WriteIDAT = png_Success
     

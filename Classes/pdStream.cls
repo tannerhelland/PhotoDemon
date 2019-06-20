@@ -424,7 +424,7 @@ Friend Sub StopStream(Optional ByVal alsoFreeMemory As Boolean = True)
         ElseIf (m_StreamMode = PD_SM_ExternalPtrBacked) Then
             PutMem4 VarPtrArray(m_MemBuffer), 0&
         ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
-            m_FileMM.CloseFile m_BufferSize
+            If (m_StreamAccess = PD_SA_ReadOnly) Then m_FileMM.CloseFile Else m_FileMM.CloseFile m_BufferSize
         End If
         
         m_Open = False
@@ -572,6 +572,7 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, readLength, srcPtr, srcReadMax) Then
                     CopyMemoryStrict dstPointer, srcPtr + m_Pointer, readLength
+                    m_Pointer = m_Pointer + readLength
                 Else
                     InternalStreamError "ReadBytesToBarePointer failed; const pdFileMM for details."
                 End If
@@ -612,6 +613,7 @@ Friend Function ReadBytesToStream(ByRef dstStream As pdStream, ByVal readLength 
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, readLength, srcPtr, srcReadMax) Then
                     CopyMemoryStrict dstStream.Peek_PointerOnly(0), srcPtr + m_Pointer, readLength
+                    m_Pointer = m_Pointer + readLength
                 Else
                     InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
                 End If
@@ -705,7 +707,7 @@ Friend Function ReadByte() As Byte
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, 1, srcPtr, srcReadMax) Then
                     GetMem1 srcPtr + m_Pointer, ReadByte
-                    m_Pointer = m_Pointer + 1
+                    m_Pointer = m_Pointer + 1&
                 Else
                     InternalStreamError "ReadByte failed; const pdFileMM for details."
                 End If
@@ -1291,8 +1293,8 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optio
         
     ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
         If (Not m_FileMM Is Nothing) And (peekLength > 0) Then
-            Dim srcPtr As Long, srcReadMax As Long
-            If m_FileMM.EnsureMapAvailable(peekPosition, peekLength, srcPtr, srcReadMax) Then
+            Dim srcPtr As Long
+            If m_FileMM.EnsureMapAvailable(peekPosition, peekLength, srcPtr) Then
                 Peek_PointerOnly = srcPtr + peekPosition
             Else
                 InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
