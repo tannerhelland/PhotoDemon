@@ -505,7 +505,11 @@ Friend Function FileCreateHandle(ByRef srcFilePath As String, ByRef dstFileHandl
     shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
     
     Dim createFlags As Long
-    If requestWriteAccess Then createFlags = CREATE_ALWAYS Else createFlags = OPEN_EXISTING
+    If requestWriteAccess Then
+        If Me.FileExists(srcFilePath) Then createFlags = OPEN_ALWAYS Else createFlags = CREATE_ALWAYS
+    Else
+        createFlags = OPEN_EXISTING
+    End If
     
     Dim attributeFlags As Long
     attributeFlags = FILE_ATTRIBUTE_NORMAL

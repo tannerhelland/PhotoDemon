@@ -378,7 +378,7 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
         
     ElseIf (streamType = PD_SM_FileMemoryMapped) Then
         
-        If (m_FileMM Is Nothing) Then Set m_FileMM = New pdFileMM
+        Set m_FileMM = New pdFileMM
         If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
         
         If (streamAccess = PD_SA_ReadOnly) Then
@@ -390,10 +390,14 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
                 
                 If (startingBufferSize > m_FSO.FileLenW(srcFilename)) Then
                     Dim hFileTmp As Long
-                    m_FSO.FileCreateHandle srcFilename, hFileTmp, True, True, OptimizeSequentialAccess
-                    m_FSO.FileSetLength hFileTmp, startingBufferSize
-                    m_FSO.FileCloseHandle hFileTmp
+                    If m_FSO.FileCreateHandle(srcFilename, hFileTmp, True, True, OptimizeSequentialAccess) Then
+                        m_FSO.FileSetLength hFileTmp, startingBufferSize
+                        m_FSO.FileCloseHandle hFileTmp
+                    Else
+                        InternalStreamError "failed to set startingbuffersize", Err.LastDllError
+                    End If
                 End If
+                
                 m_Open = m_FileMM.OpenExistingFile(srcFilename, True, optimizeAccess)
                 
             Else
@@ -1137,8 +1141,10 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
                     If (m_Pointer > m_BufferSize) Then m_BufferSize = m_Pointer
                     WriteBytesFromPointer = m_Pointer
                 Else
-                    InternalStreamError "ReadBytesToStream failed; const pdFileMM for details."
+                    InternalStreamError "WriteBytesFromPointer failed; const pdFileMM for details."
                 End If
+            Else
+                InternalStreamError "WriteBytesFromPointer failed; no pdFileMM object!"
             End If
         End If
     

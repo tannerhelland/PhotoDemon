@@ -78,7 +78,7 @@ Friend Function CloseFile(Optional ByVal finalFileSize As Long = -1)
     ResetMapTrackers
     If (m_FileHandleMM <> 0) Then m_FSO.FileCloseHandle m_FileHandleMM
     If (m_FileHandle <> 0) Then
-        If (finalFileSize >= 0) Then m_FSO.FileSetLength m_FileHandle, finalFileSize
+        If (finalFileSize >= 0) And m_WriteAccessRequired Then m_FSO.FileSetLength m_FileHandle, finalFileSize
         m_FSO.FileCloseHandle m_FileHandle
     End If
 End Function
@@ -170,8 +170,7 @@ Friend Function EnsureMapAvailable(ByVal offsetRequired As Long, ByVal sizeRequi
         
         'Re-create our map
         If (Not m_FSO.FileGetMMHandle_Local(m_FileHandle, m_FileHandleMM, 0&, m_WriteAccessRequired)) Then InternalError "EnsureMapAvailable", "couldn't reacquire map handle", Err.LastDllError
-        Debug.Print "recreated map successfully", m_MapLimit
-    
+        
     Else
         
         'As a "bonus" optimization, use a minimum allocation size (m_constAllocationMinSize)
@@ -288,8 +287,14 @@ Friend Function OpenExistingFile(ByRef srcFile As String, Optional ByVal writeAc
     
     If Files.FileExists(srcFile) Then
         m_MapLimit = m_FSO.FileLenW(srcFile)
+        m_WriteAccessRequired = writeAccessRequired
         OpenExistingFile = m_FSO.FileCreateHandle(srcFile, m_FileHandle, True, writeAccessRequired, optimizeFileAccess)
-        If OpenExistingFile Then OpenExistingFile = m_FSO.FileGetMMHandle_Local(m_FileHandle, m_FileHandleMM, 0&, writeAccessRequired)
+        If OpenExistingFile Then
+            OpenExistingFile = m_FSO.FileGetMMHandle_Local(m_FileHandle, m_FileHandleMM, 0&, writeAccessRequired)
+            If (Not OpenExistingFile) Then InternalError "Couldn't get mm handle", "DLL error #" & Err.LastDllError
+        Else
+            InternalError "OpenExistingFile", "couldn't get file handle", "DLL error #" & Err.LastDllError
+        End If
     End If
     
 End Function

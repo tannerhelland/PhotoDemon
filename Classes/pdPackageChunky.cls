@@ -625,3 +625,8 @@ End Function
 Private Function InternalError(ByVal fncName As String, ByVal errDescription As String)
     PDDebug.LogAction "WARNING!  pdPackageChunky." & fncName & "() reported an error: " & errDescription
 End Function
+
+Private Sub Class_Terminate()
+    If (Not m_Stream Is Nothing) Then m_Stream.StopStream
+    Set m_Stream = Nothing
+End Sub
