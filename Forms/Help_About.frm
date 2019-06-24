@@ -351,6 +351,7 @@ Private Sub Form_Load()
     GenerateContributor "Google Translate", "http://translate.google.com"
     GenerateContributor "Hans Nolte", "https://github.com/hansnolte"
     GenerateContributor "Helmut Kuerbiss"
+    GenerateContributor "Hidayat Suriapermana"
     GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateContributor "Jason Peter Brown", "https://github.com/jpbro"
     GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
