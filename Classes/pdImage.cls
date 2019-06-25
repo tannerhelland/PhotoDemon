@@ -672,6 +672,27 @@ Friend Function MoveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
 
 End Function
 
+'Reverse z-order of all layers in the layer stack
+Friend Sub ReverseLayerOrder()
+    
+    'As a convenience to the user, preserve the active layer
+    Dim curLayerID As Long
+    curLayerID = Me.GetActiveLayerID
+    
+    'Reverse layer order
+    Dim i As Long
+    For i = 0 To (m_numOfLayers \ 2) - 1
+        Me.SwapTwoLayers i, (m_numOfLayers - 1) - i
+    Next i
+    
+    'Restore the originally selected layer
+    Me.SetActiveLayerByID curLayerID
+    
+    'Notify ourselves that the entire image has change
+    Me.NotifyImageChanged UNDO_Image
+    
+End Sub
+
 'Used by various layer movement functions.  Given two layer indices, swap them.
 Friend Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 
@@ -694,10 +715,10 @@ End Sub
 Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
-    If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
+    If (srcLayerIndex < 0) Or (srcLayerIndex >= m_numOfLayers) Then Exit Sub
     
     'If this is the last remaining layer, exit
-    If m_numOfLayers = 1 Then Exit Sub
+    If (m_numOfLayers = 1) Then Exit Sub
     
     'Shift all layer references above this one downward
     Dim i As Long
@@ -1006,16 +1027,21 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
         .Height = Me.Height
     End With
     
+    Dim gdipTimeStart As Currency, gdipTimeFinal As String
+    VBHacks.GetHighResTime gdipTimeStart
     Me.GetCompositedRect m_ImageThumbnail, dstRectF, srcRectF, UserPrefs.GetThumbnailInterpolationPref(), , CLC_Thumbnail
     m_ImageThumbnail.SetInitialAlphaPremultiplicationState True
+    gdipTimeFinal = VBHacks.GetTimeDiffNowAsString(gdipTimeStart)
     
     'Before exiting, apply color-management.  This spares callers from needing to do it (and when wouldn't we want
     ' a color-managed thumbnail anyway?)
+    Dim cmTime As Currency
+    VBHacks.GetHighResTime cmTime
     ColorManagement.ApplyDisplayColorManagement m_ImageThumbnail, , True
     
     'Mark the thumbnail state as clean
     m_IsThumbClean = True
-    PDDebug.LogAction "pdImage had to generate a new thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime)
+    PDDebug.LogAction "pdImage had to generate a thumbnail; it took " & VBHacks.GetTimeDiffNowAsString(startTime) & " total (color-management: " & VBHacks.GetTimeDiffNowAsString(cmTime) & ", GDI+: " & gdipTimeFinal & ")"
     
 End Sub
 

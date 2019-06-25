@@ -427,24 +427,48 @@ Begin VB.Form FormMain
          Caption         =   "Order"
          Index           =   5
          Begin VB.Menu MnuLayerOrder 
-            Caption         =   "Raise layer"
+            Caption         =   "Go to top layer"
             Index           =   0
          End
          Begin VB.Menu MnuLayerOrder 
-            Caption         =   "Lower layer"
+            Caption         =   "Go to layer above"
             Index           =   1
          End
          Begin VB.Menu MnuLayerOrder 
-            Caption         =   "-"
+            Caption         =   "Go to layer below"
             Index           =   2
          End
          Begin VB.Menu MnuLayerOrder 
-            Caption         =   "Layer to top"
+            Caption         =   "Go to bottom layer"
             Index           =   3
          End
          Begin VB.Menu MnuLayerOrder 
-            Caption         =   "Layer to bottom"
+            Caption         =   "-"
             Index           =   4
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Move layer to top"
+            Index           =   5
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Move layer up"
+            Index           =   6
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Move layer down"
+            Index           =   7
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Move layer to bottom"
+            Index           =   8
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "-"
+            Index           =   9
+         End
+         Begin VB.Menu MnuLayerOrder 
+            Caption         =   "Reverse"
+            Index           =   10
          End
       End
       Begin VB.Menu MnuLayer 
@@ -2092,7 +2116,31 @@ End Sub
 
 'Menu: change layer order
 Private Sub MnuLayerOrder_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuLayerOrder(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_gotop"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "layer_goup"
+        Case 2
+            Menus.ProcessDefaultAction_ByName "layer_godown"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "layer_gobottom"
+        Case 4
+            'Separator
+        Case 5
+            Menus.ProcessDefaultAction_ByName "layer_movetop"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "layer_moveup"
+        Case 7
+            Menus.ProcessDefaultAction_ByName "layer_movedown"
+        Case 8
+            Menus.ProcessDefaultAction_ByName "layer_movebottom"
+        Case 9
+            'Separator
+        Case 10
+            Menus.ProcessDefaultAction_ByName "layer_reverse"
+    End Select
+    
 End Sub
 
 Private Sub MnuLayerOrientation_Click(Index As Integer)

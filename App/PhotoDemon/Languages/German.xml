@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1132</langversion>
+<langversion>7.2.1133</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1654,6 +1654,31 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Go to top layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to bottom layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Layer ganz nach oben setzen</translation>
+</phrase>
+
+<phrase>
 <original>Raise layer</original>
 <translation>Layer heraufsetzen</translation>
 </phrase>
@@ -1664,13 +1689,13 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
-<original>Raise layer to top</original>
-<translation>Layer ganz nach oben setzen</translation>
+<original>Lower layer to bottom</original>
+<translation>Layer ganz nach unten setzen</translation>
 </phrase>
 
 <phrase>
-<original>Lower layer to bottom</original>
-<translation>Layer ganz nach unten setzen</translation>
+<original>Reverse layer order</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2423,7 +2448,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
+<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5917,13 +5942,28 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Layer to top</original>
-<translation>Layer ganz nach oben</translation>
+<original>Move layer to top</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Layer to bottom</original>
-<translation>Layer ganz nach unten</translation>
+<original>Move layer up</original>
+<translation>Layer nach oben verschieben</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Layer nach unten verschieben</translation>
+</phrase>
+
+<phrase>
+<original>Move layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reverse</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6524,7 +6564,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13362,21 +13402,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Move layer up</original>
-<translation>Layer nach oben verschieben</translation>
-</phrase>
-
-<phrase>
 <original>Move the current layer downward in the layer stack.</original>
 <translation>Den aktuellen Layer im Layer-Stapel nach unten verschieben.</translation>
 </phrase>
 
-<phrase>
-<original>Move layer down</original>
-<translation>Layer nach unten verschieben</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -15730,10 +15760,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2617</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4777 phrases. -->
-<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
-<!-- These 2617 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12433 total words. -->
 
 </pdData>

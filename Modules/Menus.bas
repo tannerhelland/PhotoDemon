@@ -240,11 +240,17 @@ Public Sub InitializeMenus()
     AddMenuItem "Merge up", "layer_mergeup", 3, 3, , "layer_mergeup"
     AddMenuItem "Merge down", "layer_mergedown", 3, 4, , "layer_mergedown"
     AddMenuItem "Order", "layer_order", 3, 5
-        AddMenuItem "Raise layer", "layer_up", 3, 5, 0, "layer_up"
-        AddMenuItem "Lower layer", "layer_down", 3, 5, 1, "layer_down"
-        AddMenuItem "-", "-", 3, 5, 2
-        AddMenuItem "Layer to top", "layer_totop", 3, 5, 3
-        AddMenuItem "Layer to bottom", "layer_tobottom", 3, 5, 4
+        AddMenuItem "Go to top layer", "layer_gotop", 3, 5, 0
+        AddMenuItem "Go to layer above", "layer_goup", 3, 5, 1
+        AddMenuItem "Go to layer below", "layer_godown", 3, 5, 2
+        AddMenuItem "Go to bottom layer", "layer_gobottom", 3, 5, 3
+        AddMenuItem "-", "-", 3, 5, 4
+        AddMenuItem "Move layer to top", "layer_movetop", 3, 5, 5
+        AddMenuItem "Move layer up", "layer_moveup", 3, 5, 6, "layer_up"
+        AddMenuItem "Move layer down", "layer_movedown", 3, 5, 7, "layer_down"
+        AddMenuItem "Move layer to bottom", "layer_movebottom", 3, 5, 8
+        AddMenuItem "-", "-", 3, 5, 9
+        AddMenuItem "Reverse", "layer_reverse", 3, 5, 10
     AddMenuItem "-", "-", 3, 6
     AddMenuItem "Orientation", "layer_orientation", 3, 7
         AddMenuItem "Straighten...", "layer_straighten", 3, 7, 0
@@ -1055,6 +1061,10 @@ Public Sub InitializeAllHotkeys()
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", "image_rotatearbitrary", True, True, True, UNDO_Nothing
         
         'Layer Menu
+        .AddAccelerator vbKeyPageUp, vbCtrlMask Or vbAltMask, "Go to top layer", "layer_gotop", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, True, False, UNDO_Nothing
+        .AddAccelerator vbKeyPageDown, vbAltMask, "Go to layer below", "layer_godown", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "layer_mergevisible", True, True, False, UNDO_Image
         .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "layer_flatten", True, True, True, UNDO_Nothing
         
@@ -1615,18 +1625,34 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Process "Merge layer down", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
             
         Case "layer_order"
-            Case "layer_up"
-                Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            
+            Case "layer_gotop"
+                Process "Go to top layer", False, vbNullString, UNDO_Nothing
                 
-            Case "layer_down"
-                Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            Case "layer_goup"
+                Process "Go to layer above", False, vbNullString, UNDO_Nothing
                 
-            Case "layer_totop"
+            Case "layer_godown"
+                Process "Go to layer below", False, vbNullString, UNDO_Nothing
+                
+            Case "layer_gobottom"
+                Process "Go to bottom layer", False, vbNullString, UNDO_Nothing
+            
+            Case "layer_movetop"
                 Process "Raise layer to top", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
-            Case "layer_tobottom"
-                Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            Case "layer_moveup"
+                Process "Raise layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
+            Case "layer_movedown"
+                Process "Lower layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+                
+            Case "layer_movebottom"
+                Process "Lower layer to bottom", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
+            
+            Case "layer_reverse"
+                Process "Reverse layer order", False, vbNullString, UNDO_Image
+            
         Case "layer_orientation"
             Case "layer_straighten"
                 Process "Straighten layer", True

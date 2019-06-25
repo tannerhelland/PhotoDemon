@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.407</langversion>
+<langversion>6.7.408</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1652,6 +1652,31 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
+<original>Go to top layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to bottom layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Levez couche en haut</translation>
+</phrase>
+
+<phrase>
 <original>Raise layer</original>
 <translation>Levez couche</translation>
 </phrase>
@@ -1662,13 +1687,13 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
-<original>Raise layer to top</original>
-<translation>Levez couche en haut</translation>
+<original>Lower layer to bottom</original>
+<translation>Abaissez la couche de fond</translation>
 </phrase>
 
 <phrase>
-<original>Lower layer to bottom</original>
-<translation>Abaissez la couche de fond</translation>
+<original>Reverse layer order</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2421,7 +2446,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <translation>Effacer liste récente macro</translation>
 </phrase>
 
-<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
+<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5911,13 +5936,28 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Layer to top</original>
-<translation>Couche de page</translation>
+<original>Move layer to top</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Layer to bottom</original>
-<translation>Couche de fond</translation>
+<original>Move layer up</original>
+<translation>Déplacer couche jusqu'à</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Couche Descendre</translation>
+</phrase>
+
+<phrase>
+<original>Move layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reverse</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6518,7 +6558,7 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <translation>Langue changé avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13357,21 +13397,11 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>Move layer up</original>
-<translation>Déplacer couche jusqu'à</translation>
-</phrase>
-
-<phrase>
 <original>Move the current layer downward in the layer stack.</original>
 <translation>Déplacer la couche courant descendant dans la pile des couches.</translation>
 </phrase>
 
-<phrase>
-<original>Move layer down</original>
-<translation>Couche Descendre</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -15726,10 +15756,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2617</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4777 phrases. -->
-<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
-<!-- These 2617 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12433 total words. -->
 
 </pdData>

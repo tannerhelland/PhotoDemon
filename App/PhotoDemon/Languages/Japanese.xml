@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.98</langversion>
+<langversion>1.0.99</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1651,6 +1651,31 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Go to top layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to bottom layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>レイヤーを上に上げる</translation>
+</phrase>
+
+<phrase>
 <original>Raise layer</original>
 <translation>レイヤーを上げる</translation>
 </phrase>
@@ -1661,13 +1686,13 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Raise layer to top</original>
-<translation>レイヤーを上に上げる</translation>
+<original>Lower layer to bottom</original>
+<translation>下層から下層</translation>
 </phrase>
 
 <phrase>
-<original>Lower layer to bottom</original>
-<translation>下層から下層</translation>
+<original>Reverse layer order</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2420,7 +2445,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>最近のマクロリストをクリアする</translation>
 </phrase>
 
-<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
+<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5908,13 +5933,28 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Layer to top</original>
-<translation>上から上へ</translation>
+<original>Move layer to top</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Layer to bottom</original>
-<translation>レイヤーからボトム</translation>
+<original>Move layer up</original>
+<translation>レイヤーを上に移動</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>レイヤーを下に移動</translation>
+</phrase>
+
+<phrase>
+<original>Move layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reverse</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6514,7 +6554,7 @@ Vbcrl更新は自動的にバックグラウンドで処理されます。 完�
 <translation>言語が正常に変更されました。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13354,21 +13394,11 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>Move layer up</original>
-<translation>レイヤーを上に移動</translation>
-</phrase>
-
-<phrase>
 <original>Move the current layer downward in the layer stack.</original>
 <translation>現在のレイヤーをレイヤースタックの下に移動します。</translation>
 </phrase>
 
-<phrase>
-<original>Move layer down</original>
-<translation>レイヤーを下に移動</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -15721,10 +15751,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2617</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4777 phrases. -->
-<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
-<!-- These 2617 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12433 total words. -->
 
 </pdData>

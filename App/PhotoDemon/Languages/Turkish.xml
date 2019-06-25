@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3390</langversion>
+<langversion>6.8.3391</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1647,6 +1647,31 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
+<original>Go to top layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer above</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to layer below</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Go to bottom layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation>Başa katmanı kaldırın</translation>
+</phrase>
+
+<phrase>
 <original>Raise layer</original>
 <translation>katmanı kaldırın</translation>
 </phrase>
@@ -1657,13 +1682,13 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 </phrase>
 
 <phrase>
-<original>Raise layer to top</original>
-<translation>Başa katmanı kaldırın</translation>
+<original>Lower layer to bottom</original>
+<translation>alt Alt tabaka</translation>
 </phrase>
 
 <phrase>
-<original>Lower layer to bottom</original>
-<translation>alt Alt tabaka</translation>
+<original>Reverse layer order</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2416,7 +2441,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 <translation>Clear son makro listesi</translation>
 </phrase>
 
-<!-- Menus.bas contains 233 phrases. 26 were duplicates of existing phrases, so only 207 new phrases were written to file. -->
+<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5905,13 +5930,28 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Layer to top</original>
-<translation>Başa Katman</translation>
+<original>Move layer to top</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Layer to bottom</original>
-<translation>alt katman</translation>
+<original>Move layer up</original>
+<translation>Taşı yukarı katman</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>aşağı taşı tabakası</translation>
+</phrase>
+
+<phrase>
+<original>Move layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reverse</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6511,7 +6551,7 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 <translation>Dil başarıyla değiştirildi.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 327 phrases. 149 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13350,21 +13390,11 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>Move layer up</original>
-<translation>Taşı yukarı katman</translation>
-</phrase>
-
-<phrase>
 <original>Move the current layer downward in the layer stack.</original>
 <translation>katman yığınının aşağı yönlü geçerli katman hareket ettirin.</translation>
 </phrase>
 
-<phrase>
-<original>Move layer down</original>
-<translation>aşağı taşı tabakası</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -15713,10 +15743,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2617</phrasecount>
+<phrasecount>2623</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4777 phrases. -->
-<!-- 2160 are duplicates, so only 2617 unique phrases have been written to file. -->
-<!-- These 2617 phrases contain approximately 12411 total words. -->
+<!-- As of this build, PhotoDemon contains 4787 phrases. -->
+<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
+<!-- These 2623 phrases contain approximately 12433 total words. -->
 
 </pdData>

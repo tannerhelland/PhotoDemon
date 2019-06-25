@@ -2166,7 +2166,24 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
         Layers.MergeLayerAdjacent cParams.GetLong("layerindex"), False
         Process_LayerMenu = True
-        
+    
+    'Select top/up/below/bottom layer
+    ElseIf Strings.StringsEqual(processID, "Go to top layer", True) Then
+        Layers.SelectLayerTopBottom True
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Go to layer above", True) Then
+        Layers.SelectLayerAdjacent True
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Go to layer below", True) Then
+        Layers.SelectLayerAdjacent False
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Go to bottom layer", True) Then
+        Layers.SelectLayerTopBottom False
+        Process_LayerMenu = True
+    
     'Raise a layer up or down
     ElseIf Strings.StringsEqual(processID, "Raise layer", True) Then
         Layers.MoveLayerAdjacent cParams.GetLong("layerindex"), True
@@ -2183,6 +2200,11 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     
     ElseIf Strings.StringsEqual(processID, "Lower layer to bottom", True) Then
         Layers.MoveLayerToEndOfStack cParams.GetLong("layerindex"), False
+        Process_LayerMenu = True
+        
+    'Reverse layer order
+    ElseIf Strings.StringsEqual(processID, "Reverse layer order", True) Then
+        PDImages.GetActiveImage.ReverseLayerOrder
         Process_LayerMenu = True
     
     'Non-destructive layer size and orientation changes

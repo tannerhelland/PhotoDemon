@@ -310,12 +310,27 @@ Private Sub SyncUI_MultipleLayerSettings()
     FormMain.MnuLayer(4).Enabled = (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
     
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
-    ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
+    ' "move to top" are both disabled for top layers (similarly for bottom layers and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
+    
+    'Activate top/next layer up
     FormMain.MnuLayerOrder(0).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
-    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled   '"raise to top" mirrors "raise layer"
-    FormMain.MnuLayerOrder(1).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
-    FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled   '"lower to bottom" mirrors "lower layer"
+    FormMain.MnuLayerOrder(1).Enabled = FormMain.MnuLayerOrder(0).Enabled
+    
+    'Activate bottom/next layer down
+    FormMain.MnuLayerOrder(2).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
+    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(2).Enabled
+    
+    'Move to top/move up
+    FormMain.MnuLayerOrder(5).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
+    FormMain.MnuLayerOrder(6).Enabled = FormMain.MnuLayerOrder(5).Enabled
+    
+    'Move to bottom/move down
+    FormMain.MnuLayerOrder(7).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
+    FormMain.MnuLayerOrder(8).Enabled = FormMain.MnuLayerOrder(7).Enabled
+    
+    'Reverse layer order is always available for multi-layer images
+    FormMain.MnuLayerOrder(10).Enabled = True
     
     'Flatten is only available if one or more layers are actually *visible*
     FormMain.MnuLayer(15).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
@@ -397,10 +412,12 @@ Private Sub SyncUI_CurrentImageSettings()
     
 End Sub
 
-'If an image has multiple layers, call this function to enable any UI elements that operate on multiple layers.
-' Note that some multi-layer settings require certain additional criteria to be met, e.g. "Merge Visible Layers" requires at least
-' two visible layers, so it must still be handled specially.  This function is only for functions that are ALWAYS available if
-' multiple layers are present in an image.
+'If an image has multiple layers, call this function to enable any UI elements that
+' operate on multiple layers.
+'Note that some multi-layer settings require certain additional criteria to be met,
+' e.g. "Merge Visible Layers" requires at least two visible layers, so it must still
+' be handled specially.  This function is only for functions that are ALWAYS available
+' if multiple layers are present in an image.
 Private Sub SetUIMode_MultipleLayers()
     If (Not FormMain.MnuLayer(1).Enabled) Then FormMain.MnuLayer(1).Enabled = True    'Delete layer
     If (Not FormMain.MnuLayer(5).Enabled) Then FormMain.MnuLayer(5).Enabled = True    'Order submenu

@@ -348,6 +348,39 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
 
 End Sub
 
+'Reverse the order of layers in this image
+Public Sub ReverseLayerOrder()
+    If PDImages.IsImageNonNull() Then PDImages.GetActiveImage.ReverseLayerOrder
+End Sub
+
+'Select a neighboring layer (up or down)
+Public Sub SelectLayerAdjacent(ByVal layerDirectionIsUp As Boolean)
+
+    Dim curLayerIndex As Long
+    curLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex
+    
+    'Determine a new, valid layer index (with wrapping around top/bottom)
+    If layerDirectionIsUp Then curLayerIndex = curLayerIndex + 1 Else curLayerIndex = curLayerIndex - 1
+    If (curLayerIndex < 0) Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+    If (curLayerIndex >= PDImages.GetActiveImage.GetNumOfLayers) Then curLayerIndex = 0
+    
+    'Select the new layer
+    Layers.SetActiveLayerByIndex curLayerIndex, True, False
+
+End Sub
+
+'Select the top or bottom layer in this image
+Public Sub SelectLayerTopBottom(ByVal topIsWanted As Boolean)
+
+    'Determine a new, valid layer index (with wrapping around top/bottom)
+    Dim curLayerIndex As Long
+    If topIsWanted Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1 Else curLayerIndex = 0
+    
+    'Select the new layer
+    Layers.SetActiveLayerByIndex curLayerIndex, True, False
+
+End Sub
+
 'Activate a layer.  Use this instead of directly calling the pdImage.setActiveLayer function if you want to also
 ' synchronize the UI to match.
 Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
