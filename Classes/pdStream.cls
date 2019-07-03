@@ -1006,15 +1006,18 @@ End Function
 
 'Read a series of UTF-8 bytes from the stream, and return them as a standard BSTR.
 ' If the requested length is invalid (i.e. it extends beyond the end of the stream), a partial string will be returned.
-Friend Function ReadString_UTF8(ByVal numOfBytes As Long) As String
+' Optionally, the lengthIsEmbedded parameter can be set to TRUE; if it is, a 4-byte UTF-8 length will first be read,
+' followed by the UTF-8 bytes.  The numOfBytes parameter will be ignored (e.g. just pass zero).  This makes it
+' symmetrical with the WriteString_UTF8 function if its optional embedded length parameter is also set.
+Friend Function ReadString_UTF8(ByVal numOfBytes As Long, Optional ByVal lengthIsEmbedded As Boolean = False) As String
     
     If m_Open Then
         
-        Dim tmpBytes() As Byte, trueByteCount As Long
-        trueByteCount = Me.ReadBytes(tmpBytes, numOfBytes, True)
+        If lengthIsEmbedded Then numOfBytes = Me.ReadLong()
+        If (Me.GetPosition + numOfBytes > Me.GetStreamSize) Then numOfBytes = Me.GetStreamSize - Me.GetPosition
         
-        If (trueByteCount > 0) Then
-            ReadString_UTF8 = Strings.StringFromUTF8Ptr(VarPtr(tmpBytes(0)), trueByteCount)
+        If (numOfBytes > 0) Then
+            ReadString_UTF8 = Strings.StringFromUTF8Ptr(Me.ReadBytes_PointerOnly(numOfBytes), numOfBytes)
         Else
             ReadString_UTF8 = vbNullString
         End If
@@ -1271,6 +1274,20 @@ Friend Function WriteString_UnicodeBE(ByRef srcString As String, Optional ByVal 
     
     If addTrailingNull Then WriteString_UnicodeBE = Me.WriteInt(0)
     
+End Function
+
+'Given a source VB string, transparently convert it to UTF-8 and embed *that* in the stream.  Optionally,
+' you can choose to also embed the string's length; this will preface the UTF-8 data with a 4-byte size
+' descriptor.  If you choose to embed length, you MUST also specify "readEmbeddedLength=TRUE" when reading
+' the UTF-8 string - otherwise the size descriptor will show up in the UTF-8 data!
+Friend Function WriteString_UTF8(ByRef srcString As String, Optional ByVal embedLengthToo As Boolean = False) As Boolean
+    Dim lenUTF8 As Long, tmpUTF8() As Byte
+    If Strings.UTF8FromStrPtr(StrPtr(srcString), Len(srcString), tmpUTF8, lenUTF8) Then
+        If embedLengthToo Then Me.WriteLong lenUTF8
+        WriteString_UTF8 = (Me.WriteBytesFromPointer(VarPtr(tmpUTF8(0)), lenUTF8) <> 0)
+    Else
+        InternalStreamError "WriteString_Unicode", "couldn't convert string to UTF-8"
+    End If
 End Function
 
 'Return a pointer to the stream data at peekPosition.  If peekPosition is -1, the current stream pointer will be used.
