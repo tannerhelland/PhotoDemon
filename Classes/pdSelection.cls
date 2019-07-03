@@ -53,6 +53,7 @@ Option Explicit
 'Used when writing/reading selection data to/from a file
 Private Const SELECTION_IDENTIFIER As Long = &H64734450     'PDsd
 Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
+Private Const SELECTION_FILE_VERSION_2019 As Long = &H1005&
 
 'What shape does this selection have?
 Public Enum PD_SelectionShape
@@ -3266,10 +3267,178 @@ End Sub
 'Create a selection from selection data previously saved to file
 ' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
 '        request a render if they want one.)
-Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
+Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
-    ReadSelectionFromFile = False
+    'Check for modern format first (legacy format is still supported)
+    Dim packageIsModern As Boolean, cPackage As pdPackageChunky
+    Set cPackage = New pdPackageChunky
+    packageIsModern = cPackage.OpenPackage_File(srcFilename)
+    Set cPackage = Nothing
+    
+    If packageIsModern Then
+        ReadSelectionFromFile = ReadSelectionFromFile_New(srcFilename, ignoreLockStatus)
+    Else
+        ReadSelectionFromFile = ReadSelectionFromFile_Old(srcFilename, ignoreLockStatus)
+    End If
+    
+End Function
+        
+'Create a selection from selection data previously saved to file
+' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
+'        request a render if they want one.)
+Friend Function ReadSelectionFromFile_New(ByRef srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
+    
+    ReadSelectionFromFile_New = False
     PDDebug.LogAction "Reading selection data from file: " & srcFilename
+    
+    'Like all other PD-specific files, selection files are just pdPackage instances
+    Dim cPackage As pdPackageChunky
+    Set cPackage = New pdPackageChunky
+    If cPackage.OpenPackage_File(srcFilename) Then
+    
+        'Reset some of our internal trackers prior to reading the selection data
+        
+        'First, note that our mask is not yet ready.  (Masks are generated on-demand, unless this is
+        ' a raster selection, in which case we'll load the mask bits directly from the file.)
+        m_IsMaskReady = False
+        
+        Dim chnkName As String, chnkSize As Long, chnkStream As pdStream
+        Dim xmlString As String
+        
+        Do While cPackage.ChunksRemain()
+            
+            Dim origWidth As Long, origHeight As Long
+            Dim tmpDIB As pdDIB, tmpDIBPointer As Long, tmpDIBLength As Long
+            
+            'Internal selection data
+            If (cPackage.GetChunkName() = "SELI") Then
+                
+                If cPackage.GetNextChunk(chnkName, chnkSize, chnkStream) Then
+                    xmlString = chnkStream.ReadString_UTF8(chnkSize)
+                    Me.InitFromXML xmlString
+                Else
+                    PDDebug.LogAction "WARNING!  Selection reader couldn't read internal selection XML."
+                End If
+            
+            'External selection data
+            ElseIf (cPackage.GetChunkName() = "SELE") Then
+                
+                If cPackage.GetNextChunk(chnkName, chnkSize, chnkStream) Then
+                    
+                    Dim headerXML As pdParamXML
+                    Set headerXML = New pdParamXML
+                    headerXML.SetParamString chnkStream.ReadString_UTF8(chnkSize)
+                    
+                    'Use the minor header to populate a few extra settings
+                    m_IsLocked = headerXML.GetBool("sel-locked", False)
+                    m_IsTransformable = headerXML.GetBool("sel-transformable", True)
+                    
+                    'Certain selection types (e.g. selections that can't be fully described with vectors) store a full copy of their
+                    ' selection mask in the selection file.  Check for these and load them conditionally.
+                    If (m_SelectionShape = ss_Raster) Or (m_SelectionShape = ss_Wand) Then
+                        
+                        'Retrieve the original parent image's width and height.  If the original containing image had the same dimensions
+                        ' as our current image (e.g. during Undo/Redo operations), we can create the selection mask directly from the
+                        ' file data.  Otherwise, we have no choice but to perform a resize so that the old mask matches the new dimensions.
+                        origWidth = headerXML.GetLong("sel-mask-width", m_parentPDImage.Width)
+                        origHeight = headerXML.GetLong("sel-mask-height", m_parentPDImage.Height)
+                        
+                        'Dimensions match!  Load the source data directly into our selection mask
+                        If (origWidth = m_parentPDImage.Width) And (origHeight = m_parentPDImage.Height) Then
+                            
+                            With headerXML
+                                m_SelMask.CreateBlank origWidth, origHeight, .GetLong("SelMaskDepth", 32), 0, 0
+                            End With
+                            
+                            m_SelMask.SetInitialAlphaPremultiplicationState headerXML.GetBool("sel-mask-alpha-premultiplied", True)
+                            
+                        'Dimensions do not match.  Use an intermediary DIB to cache the original raster data, then resize it to match
+                        ' our current image.
+                        Else
+                        
+                            Set tmpDIB = New pdDIB
+                            
+                            With headerXML
+                                tmpDIB.CreateBlank origWidth, origHeight, .GetLong("sel-mask-depth", 32), 0, 0
+                            End With
+                            
+                            tmpDIB.SetInitialAlphaPremultiplicationState headerXML.GetBool("sel-mask-alpha-premultiplied", True)
+                            
+                        End If
+                        
+                        'Note that a mask has been created; this prevents PD from attempting to create a new copy.
+                        ' (For magic wand selections, this is particularly bad as the wand may generate totally new boundaries
+                        '  on a new image.)
+                        m_MaskHasBeenCreated = True
+                        m_IsMaskReady = True
+                        
+                    End If
+                        
+                Else
+                    PDDebug.LogAction "WARNING!  Selection reader couldn't read external selection XML."
+                End If
+            
+            'Mask data (not included in all files - only those that require it)
+            ElseIf (cPackage.GetChunkName() = "SELM") Then
+            
+                'Only load the mask for certain selection types (e.g. ones that can't be defined as vectors)
+                If (m_SelectionShape = ss_Raster) Or (m_SelectionShape = ss_Wand) Then
+                    
+                    'If this image is the same size as the embedded mask, we don't need to stretch anything;
+                    ' load the bits directly into our (already created) mask DIB
+                    If (origWidth = m_parentPDImage.Width) And (origHeight = m_parentPDImage.Height) Then
+                        m_SelMask.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                        If (Not cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer)) Then PDDebug.LogAction "WARNING!  Couldn't retrieve selection mask!"
+                    Else
+                        
+                        tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                        
+                        If cPackage.GetNextChunk(chnkName, chnkSize, Nothing, tmpDIBPointer) Then
+                            m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB.GetDIBColorDepth, 0, 0
+                            GDI_Plus.GDIPlusResizeDIB m_SelMask, 0, 0, m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                            m_SelMask.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication()
+                            Set tmpDIB = Nothing
+                        Else
+                            PDDebug.LogAction "WARNING!  Couldn't retrieve selection mask!"
+                        End If
+                            
+                    End If
+                    
+                End If
+            
+            End If
+            
+        Loop
+        
+        'Polygon selections loaded from file are assumed to be closed
+        m_PolygonClosed = True
+        
+        'If this selection was locked in at the time of its save, lock this selection in as well
+        If (Not ignoreLockStatus) Then
+            If m_IsLocked Then Me.LockIn Else Me.LockRelease
+            m_parentPDImage.SetSelectionActive m_IsLocked
+        End If
+                    
+        'If this selection isn't a vector, we need to manually find its boundaries now
+        If (((m_SelectionShape = ss_Raster) Or (m_SelectionShape = ss_Wand)) And (Not m_SelMask Is Nothing)) Then
+            Me.NotifyRasterDataChanged
+            Me.FindNewBoundsManually
+        End If
+        
+        ReadSelectionFromFile_New = True
+        PDDebug.LogAction "pdSelection.ReadSelectionFromFile complete.  Exiting now..."
+    
+    End If
+    
+End Function
+
+'Create a selection from selection data previously saved to file
+' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
+'        request a render if they want one.)
+Friend Function ReadSelectionFromFile_Old(ByRef srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
+    
+    ReadSelectionFromFile_Old = False
+    PDDebug.LogAction "Reading legacy selection data from file: " & srcFilename
     
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackager
@@ -3380,7 +3549,7 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                         End If
                     End If
                     
-                    ReadSelectionFromFile = True
+                    ReadSelectionFromFile_Old = True
                     
                 Else
                     PDDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
@@ -3405,34 +3574,44 @@ End Function
 ' file if it exists; it's up to the caller to plan for this.
 Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal compressXML As PD_CompressionFormat = cf_Zstd, Optional ByVal xmlCompressionLevel As Long = -1, Optional ByVal compressRaster As PD_CompressionFormat = cf_Zstd, Optional ByVal rasterCompressionLevel As Long = -1, Optional ByRef dstUndoFileSize As Long) As Boolean
     
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
-    cPackage.PrepareNewPackage , SELECTION_IDENTIFIER, , PD_SM_MemoryBacked
+    Dim cPackage As pdPackageChunky
+    Set cPackage = New pdPackageChunky
+    cPackage.StartNewPackage_File dstFilename
     
-    'We now prepare two different XML packets for the packager.  One is the default vector selection descriptor PD uses internally;
-    ' the other is a set of file-specific descriptors that make it easier to recreate this selection at load-time.
-    Dim nodeIndex As Long
-    nodeIndex = cPackage.AddNode("SelHeader")
+    'Selection files are pdPackage (chunky) files with three pieces of data:
+    ' 1) A standard vector selection descriptor.  This is an XML string, used internally by PD, that holds
+    '    all information necessary to create the current selection (except raster selections; see below).
+    ' 2) A "special" file-specific XML string that contains additional internal program state data;
+    '    for example, it saves the image width/height associated with the selection - this lets us
+    '    dynamically rescale saved selections to new images.
+    ' 3) For raster masks only, we also save pixel data from the active selection mask.  (For vector
+    '    selections, we dynamically create the mask at load-time, using the data from the XML strings.)
     
+    'Before writing any data, ensure default compression levels are handled correctly
     If (xmlCompressionLevel = -1) Then xmlCompressionLevel = Compression.GetDefaultCompressionLevel(compressXML)
     If (rasterCompressionLevel = -1) Then rasterCompressionLevel = Compression.GetDefaultCompressionLevel(compressRaster)
     
-    'Write the default vector selection descriptor first
-    cPackage.AddNodeDataFromString nodeIndex, False, Me.GetSelectionAsXML(), compressXML, xmlCompressionLevel
+    'Start by adding the internal selection XML data
+    cPackage.StartChunk "SELI"
+    cPackage.GetInProgressChunk.WriteString_UTF8 Me.GetSelectionAsXML()
+    cPackage.EndChunk compressXML, xmlCompressionLevel
     
-    'Prep a secondary descriptor
+    'Next, prepare a second XML string, this one containing additional internal session data.
+    ' (The selection engine only maintains selection-specific data; we need to also know some
+    ' external selection-adjacent data, like the size of the current image, so that we can
+    ' properly scale the selection to other images in the future.)
     Dim maskWillBeEmbedded As Boolean
     maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated) Or ((m_SelectionShape = ss_Wand) And m_MaskHasBeenCreated)
     
     Dim tmpXML As pdParamXML
     Set tmpXML = New pdParamXML
     With tmpXML
-        .AddParam "SelVersion", SELECTION_FILE_VERSION_2017
-        .AddParam "SelParentImageWidth", m_parentPDImage.Width
-        .AddParam "SelParentImageHeight", m_parentPDImage.Height
-        .AddParam "SelIsLocked", Me.IsLockedIn
-        .AddParam "SelIsTransformable", m_IsTransformable
-        .AddParam "SelMaskEmbedded", maskWillBeEmbedded
+        .AddParam "sel-version", SELECTION_FILE_VERSION_2019
+        .AddParam "sel-parent-image-width", m_parentPDImage.Width
+        .AddParam "sel-parent-image-height", m_parentPDImage.Height
+        .AddParam "sel-locked", Me.IsLockedIn
+        .AddParam "sel-transformable", m_IsTransformable
+        .AddParam "sel-mask-embedded", maskWillBeEmbedded
         
         'If we're going to embed a mask, we also need to store some mask-specific data
         If maskWillBeEmbedded Then
@@ -3440,28 +3619,29 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
             'Make sure the mask is ready before continuing!
             If (Not m_IsMaskReady) Then CreateSelectionMask
             
-            .AddParam "SelMaskDepth", m_SelMask.GetDIBColorDepth
-            .AddParam "SelMaskWidth", m_SelMask.GetDIBWidth
-            .AddParam "SelMaskHeight", m_SelMask.GetDIBHeight
-            .AddParam "SelMaskStride", m_SelMask.GetDIBStride
-            .AddParam "SelMaskAlphaPremultiplied", m_SelMask.GetAlphaPremultiplication
+            .AddParam "sel-mask-depth", m_SelMask.GetDIBColorDepth
+            .AddParam "sel-mask-width", m_SelMask.GetDIBWidth
+            .AddParam "sel-mask-height", m_SelMask.GetDIBHeight
+            .AddParam "sel-mask-stride", m_SelMask.GetDIBStride
+            .AddParam "sel-mask-alpha-premultiplied", m_SelMask.GetAlphaPremultiplication
             
         End If
         
     End With
     
     'Add the secondary descriptor to the same node (in the header chunk)
-    cPackage.AddNodeDataFromString nodeIndex, True, tmpXML.GetParamString(), compressXML, xmlCompressionLevel
+    cPackage.StartChunk "SELE"
+    cPackage.GetInProgressChunk.WriteString_UTF8 tmpXML.GetParamString()
+    cPackage.EndChunk compressXML, xmlCompressionLevel
     
     'Finally, if this is a raster or magic-wand selection, add the full mask as well
     If maskWillBeEmbedded Then
         Dim maskDIBPointer As Long, maskDIBLength As Long
         m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
-        nodeIndex = cPackage.AddNode("SelMask")
-        cPackage.AddNodeDataFromPointer nodeIndex, False, maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
+        cPackage.AddChunk_WholeFromPtr "SELM", maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
     End If
     
-    WriteSelectionToFile = cPackage.WritePackageToFile(dstFilename, , , , dstUndoFileSize)
+    WriteSelectionToFile = cPackage.FinishPackage()
     
 End Function
 

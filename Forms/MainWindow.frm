@@ -1697,7 +1697,10 @@ Private Sub MnuTest_Click()
     'Want to test a new dialog?  Call it here, using a line like the following:
     'ShowPDDialog vbModal, FormToTest
     
+    Exit Sub
+    
 StopTestImmediately:
+    Debug.Print "Error in test sub: " & Err.Number & ", " & Err.Description
 
 End Sub
 
