@@ -236,16 +236,16 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'The median dialog is reused for several tools: minimum, median, maximum.
-Public Sub showMedianDialog(ByVal initPercentage As Long)
+Public Sub ShowMedianDialog(ByVal initPercentage As Long)
 
-    If initPercentage = 1 Then
+    If (initPercentage = 1) Then
         Me.Caption = g_Language.TranslateMessage("Erode (Minimum rank filter)")
         sltPercent.Value = 1
         sltPercent.Visible = False
         cmdBar.SetToolName "Erode"
         curMode = MEDIAN_ERODE
         
-    ElseIf initPercentage = 100 Then
+    ElseIf (initPercentage = 100) Then
         Me.Caption = g_Language.TranslateMessage("Dilate (Maximum rank filter)")
         sltPercent.Value = 100
         sltPercent.Visible = False
