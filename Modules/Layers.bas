@@ -1258,7 +1258,7 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_Laye
     dialogTitle = "Rasterization required"
     
     'Display the dialog and return the result
-    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
+    AskIfOkayToRasterizeLayer = Dialogs.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
 
 End Function
 

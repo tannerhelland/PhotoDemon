@@ -1,4 +1,4 @@
-Attribute VB_Name = "DialogManager"
+Attribute VB_Name = "Dialogs"
 '***************************************************************************
 'Custom Dialog Interface
 'Copyright 2012-2019 by Tanner Helland
@@ -612,8 +612,28 @@ Public Function PromptForDropAsNewLayer() As VbMsgBoxResult
         'Display the dialog and return the result
         Dim questionID As String
         questionID = g_Language.TranslateMessage("Drop as image or layer")
-        PromptForDropAsNewLayer = DialogManager.PromptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, IDI_QUESTION, vbCancel, False, "generic_image", "generic_add", "generic_cancel")
+        PromptForDropAsNewLayer = Dialogs.PromptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, IDI_QUESTION, vbCancel, False, "generic_image", "generic_add", "generic_cancel")
             
     End If
 
 End Function
+
+Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
+
+    Load FormClipboard
+    FormClipboard.ShowClipboardDialog clipMode
+    
+    If (FormClipboard.DialogResult = vbOK) Then
+        If (clipMode = co_Cut) Then
+            Processor.Process "Cut special", False, FormClipboard.GetParamString(), UNDO_Image
+        ElseIf (clipMode = co_Copy) Then
+            Processor.Process "Copy special", False, FormClipboard.GetParamString(), UNDO_Nothing
+        Else
+            Processor.Process "Paste special", False, FormClipboard.GetParamString(), UNDO_Image_VectorSafe
+        End If
+    End If
+    
+    Unload FormClipboard
+    Set FormClipboard = Nothing
+    
+End Sub

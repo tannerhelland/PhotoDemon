@@ -678,6 +678,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             If (FormMain.MnuEdit(9).Enabled <> newState) Then FormMain.MnuEdit(9).Enabled = newState
             If (FormMain.MnuEdit(10).Enabled <> newState) Then FormMain.MnuEdit(10).Enabled = newState
             If (FormMain.MnuEdit(12).Enabled <> newState) Then FormMain.MnuEdit(12).Enabled = newState
+            If (FormMain.MnuEdit(13).Enabled <> newState) Then FormMain.MnuEdit(13).Enabled = newState
             
         'View (top-menu level)
         Case PDUI_View
@@ -1560,19 +1561,8 @@ End Sub
 'Sister function to DisableUserInput(), above
 Public Sub EnableUserInput()
     
-    'Start a countdown timer on the main form.  When it terminates, user input will be restored.  A timer is required because
-    ' we need a certain amount of "dead time" to elapse between double-clicks on a top-level dialog (like a common dialog)
-    ' which may be incorrectly passed through to the main form.  (I know, this seems like a ridiculous solution, but I tried
-    ' a thousand others before settling on this.  It's the least of many evils.)
-    'NOTE 08 September 2017: because we now forcibly disable the main form when activating PD's central processor,
-    ' this should no longer be required.
-    'FormMain.StartInterfaceTimer
-    
-    'NOTE 08 September 2017: normally, FormMain.StartInterfaceTimer handles this input check; while that line of code, above,
-    ' is commented out, we need to restore this manually.
+    'Restore our internal input-allowance flag(s)
     g_DisableUserInput = False
-
-    'Drag/drop allowance doesn't suffer the issue described above, so we can enable it immediately
     g_AllowDragAndDrop = True
     
     'Restore any active UI animations

@@ -4,7 +4,7 @@ Attribute VB_Name = "ImageImporter"
 'Copyright 2001-2019 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 20/January/19
-'Last update: integrate our now homebrew PSD decoder
+'Last update: integrate our new homebrew PSD decoder
 '
 'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.

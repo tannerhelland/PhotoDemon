@@ -22,23 +22,25 @@ Attribute VB_Exposed = False
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Clipboard/Customising_Clipboard_Use/article.asp
 '
 'Starting in May 2013 (https://github.com/tannerhelland/PhotoDemon/commit/c61951048c8a411e5e100cba9010dad8d81fc096),
-' I rewrote much of the class to add features, and solve some glaring stability issues.  Unfortunately, over time I
-' have come to realize that the class is extremely bug-prone.  API returns are not always checked correctly, and when
-' they are, they are handled out-of-order in various If/Then branches, so failure states result in things like memory
-' objects not being released.  Worse still, the class mixes a bunch of different coding styles together (e.g. 1-based
-' arrays in some places, 0-based in others), which makes interop prone to all kinds of failures.  The class is also
-' not Unicode-compatible, it uses a bunch of deprecated constants for 16-bit support (!!!), and it's missing support
-' for new system-defined formats that have been around since XP (like DIBv5).
+' I rewrote much of the class to add new features and solve some long-standing stability issues.
+' Unfortunately, the cCustomClipboard class is extremely bug-prone.  API returns are not always
+' checked correctly, and when they are, they are handled out-of-order in various If/Then branches,
+' so failure states result in things like memory objects not being released.  Worse still,
+' the class mixes a bunch of different coding styles together (e.g. 1-based arrays in some places,
+' 0-based in others), which makes interop prone to all kinds of failures.  The class is also not
+' Unicode-compatible, it uses a bunch of deprecated constants for 16-bit support (!!!), and it's
+' missing support for new system-defined formats that have been around since XP (like DIBv5).
 '
-'Because clipboard interactions are such a crucial part of a graphics program, a ground-up rewrite seemed long overdue.
-' Hence this new class.  It uses a completely different methodology for enumerating available clipboard formats,
-' and many small bugs have been ironed out.  The coding style also fits with the rest of PD (so everything is 0-based),
-' event names are now representative of what they actually do, many dead and/or broken functions are gone, and a bunch
-' of previously missing functionality has been plugged in.
+'Because clipboard interactions are such a crucial part of a graphics program, a ground-up rewrite
+' seemed long overdue.  Hence this new class.  It uses a completely different methodology for
+' enumerating available clipboard formats, and many small bugs have been ironed out.  The coding
+' style also fits with the rest of PD (so everything is 0-based), event names are now representative
+' of what they actually do, many dead and/or broken functions are gone, and a bunch of previously
+' missing functionality has been plugged in.
 '
-'Despite my bitching, I am still very grateful to Steve McMahon for his original implementation, which served PD well
-' for several years.  It's still a fine reference for beginners, and you can find the original article and code here
-' (good as of November '15):
+'Despite my bitching, I am still very grateful to Steve McMahon for his original implementation,
+' which served PD for several years.  It's still a valuable reference for beginners, and you can find
+' the original article and code here (good as of November '15):
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Clipboard/Customising_Clipboard_Use/article.asp
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -49,7 +51,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'When delayed rendering is active, this class raises three potential events
-Public Event ClipboardRenderFormat(ByVal FormatID As PredefinedClipboardFormatConstants)
+Public Event ClipboardRenderFormat(ByVal clipFormatID As PredefinedClipboardFormatConstants)
 Public Event ClipboardRenderAllFormats()
 Public Event ClipboardDestroyStashedData()
 

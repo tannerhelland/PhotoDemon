@@ -504,7 +504,7 @@ Private Function SavePreset() As Boolean
     
     'Prompt the user for a name
     Dim newNameReturn As VbMsgBoxResult
-    newNameReturn = DialogManager.PromptNewPreset(m_Presets, Me, UserControl.Parent)
+    newNameReturn = Dialogs.PromptNewPreset(m_Presets, Me, UserControl.Parent)
     
     If (newNameReturn = vbOK) Then
     

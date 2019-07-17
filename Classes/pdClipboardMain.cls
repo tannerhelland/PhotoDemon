@@ -47,6 +47,20 @@ Private Const PD_CB_ALLOW_ONLINE_PASTE As Boolean = True
 Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
 '**************************************************************************
 
+'Image formats that PD understands (via clipboard)
+Public Enum PD_ClipboardFormats
+    pdcf_All = 0
+    pdcf_InternalPD = CF_PD_DIB
+    pdcf_Bitmap = CF_BITMAP
+    pdcf_Dib = CF_DIB
+    pdcf_DibV5 = CF_DIBV5
+    pdcf_PNG = -1
+End Enum
+
+#If False Then
+    Private Const pdcf_All = 0, pdcf_InternalPD = CF_PD_DIB, pdcf_Bitmap = CF_BITMAP, pdcf_Dib = CF_DIB, pdcf_DibV5 = CF_DIBV5, pdcf_PNG = -1
+#End If
+
 'Some format constants are not inherently defined by VB; we cache these at load-time
 Private CF_FileContents As Integer, CF_FileGroupDescriptorW As Integer
 
@@ -229,7 +243,7 @@ End Function
 
 'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
 ' (or entire layer, if no selection is active).
-Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
+Friend Sub ClipboardCut(ByVal cutMerged As Boolean, Optional ByVal cFormat As PD_ClipboardFormats = pdcf_All)
     
     'Lock the UI
     Processor.MarkProgramBusyState True, True
@@ -288,10 +302,23 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean)
 
 End Sub
 
+Friend Sub ClipboardCutSpecial(ByRef paramString As String)
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString paramString
+    
+    With cParams
+        Dim clipFormat As PD_ClipboardFormats
+        Me.ClipboardCut cParams.GetBool("merged", True), cParams.GetLong("clipboard-format", pdcf_All)
+    End With
+
+End Sub
+
 'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
 ' The optional updateUI parameter tells the function to lock PD's UI during the copy operation.  ("Cut" operations also do this, so they
 ' manage the UI separately - hence the need for a dedicated parameter.)
-Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True)
+Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True, Optional ByVal cFormat As PD_ClipboardFormats = pdcf_All)
     
     'Lock the UI
     If updateUI Then Processor.MarkProgramBusyState True, True
@@ -303,24 +330,42 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
         
         m_Clipboard.ClearClipboard
-        m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
-        m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
-        m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
-        m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
         
-        'So an interesting story about CF_DIB.  PD is perfectly capable of rendering CF_DIB images
-        ' to the clipboard, but at present, we choose not to enable this.  Why?  Microsoft Paint will
-        ' preferentially accept a CF_DIB image over any other format on the clipboard.  This would be
-        ' okay if Paint recognized alpha channels, but because it doesn't, we would need to downsample
-        ' PD's 32-bpp images to 24-bpp.  However, this would incorrectly generate a 24-bpp copy for
-        ' software that *does* recognize 32-bpp CF_DIB entries.  To minimize the risk of a screwed-up
-        ' end result, PD only registers CF_BITMAP and CF_DIBv5 formats to the clipboard (plus PNG,
-        ' obviously).  It's assumed that any program clever enough to recognize CF_DIBv5 also has a
-        ' contingency plan for alpha bytes, whereas the same can't be said for CF_DIB, unfortunately.
-        '
-        'As always, PNG is the preferred interchange format for images.  If you use a program that
-        ' doesn't copy/paste PNG-format data, get them to fix their software!
-        'm_Clipboard.SetClipboardData_DelayedRendering CF_DIB
+        'By default, we offer all supported formats
+        If (cFormat = pdcf_All) Then
+        
+            m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
+            m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
+            m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
+            m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
+            
+            'So an interesting story about CF_DIB.  PD is perfectly capable of rendering CF_DIB images
+            ' to the clipboard, but at present, we choose not to enable this.  Why?  Microsoft Paint will
+            ' preferentially accept a CF_DIB image over any other format on the clipboard.  This would be
+            ' okay if Paint recognized alpha channels, but because it doesn't, we would need to downsample
+            ' PD's 32-bpp images to 24-bpp.  However, this would incorrectly generate a 24-bpp copy for
+            ' software that *does* recognize 32-bpp CF_DIB entries.  To minimize the risk of a screwed-up
+            ' end result, PD only registers CF_BITMAP and CF_DIBv5 formats to the clipboard (plus PNG,
+            ' obviously).  It's assumed that any program clever enough to recognize CF_DIBv5 also has a
+            ' contingency plan for alpha bytes, whereas the same can't be said for CF_DIB, unfortunately.
+            '
+            'As always, PNG is the preferred interchange format for images.  If you use a program that
+            ' doesn't copy/paste PNG-format data, get them to fix their software!
+            'm_Clipboard.SetClipboardData_DelayedRendering CF_DIB
+            
+        ElseIf (cFormat = pdcf_Bitmap) Then
+            m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
+        ElseIf (cFormat = pdcf_Dib) Then
+            m_Clipboard.SetClipboardData_DelayedRendering CF_DIB
+        ElseIf (cFormat = pdcf_DibV5) Then
+            m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
+        ElseIf (cFormat = pdcf_InternalPD) Then
+            m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
+        ElseIf (cFormat = pdcf_PNG) Then
+            m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
+        Else
+            PDDebug.LogAction "WARNING!  pdClipboardMain.ClipboardCopy received an unsupported format request."
+        End If
         
         m_Clipboard.ClipboardClose
         
@@ -328,6 +373,19 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     
     'Unlock the UI
     If updateUI Then Processor.MarkProgramBusyState False
+    
+End Sub
+
+Friend Sub ClipboardCopySpecial(ByRef paramString As String)
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString paramString
+    
+    With cParams
+        Dim clipFormat As PD_ClipboardFormats
+        Me.ClipboardCopy cParams.GetBool("merged", True), True, cParams.GetLong("clipboard-format", pdcf_All)
+    End With
     
 End Sub
 
@@ -795,13 +853,13 @@ End Function
 
 'Helper function that SHOULD NOT BE CALLED DIRECTLY.  Only other ClipboardPaste_* variants are able to safely use this function.
 ' Returns: TRUE if an image was successfully downloaded and loaded to the pdImages collection.  FALSE if failure occurred.
-Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
+Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
     
     'This function assumes the source URL is both absolute and well-formed
     Message "Image URL found.  Attempting to download..."
                     
     Dim tmpDownloadFile As String
-    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcURL, suppressErrorMsgs)
+    tmpDownloadFile = FormInternetImport.DownloadURLToTempFile(srcUrl, suppressErrorMsgs)
     
     'If the download was successful, we can now use the standard image load routine to import the temporary file
     If (Files.FileLenW(tmpDownloadFile) <> 0) Then

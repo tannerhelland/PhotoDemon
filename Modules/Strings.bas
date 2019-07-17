@@ -737,7 +737,7 @@ Public Function StringsEqual(ByRef firstString As String, ByRef secondString As 
                     
                 End If
             Else
-                StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), Len(firstString) * 2)
+                StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), LenB(firstString))
             End If
         End If
     End If

@@ -1360,7 +1360,7 @@ End Function
 'Helper wrapper for EDIT MENU operations.  (Note that edit menu actions are generally not recorded as part of macros.)
 'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
 ' additional return details may be supplied in the returnDetails string parameter.
-Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+Private Function Process_EditMenu(ByRef processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UndoType = UNDO_Nothing, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
     'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
     ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
@@ -1368,8 +1368,6 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
 
     If Strings.StringsEqual(processID, "Undo", True) Then
         
-        Dim startTime As Currency
-        VBHacks.GetHighResTime startTime
         If FormMain.MnuEdit(0).Enabled Then
             
             PDImages.GetActiveImage.UndoManager.RestoreUndoData
@@ -1382,8 +1380,6 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
             undoOrRedoUsed = True
             
         End If
-        
-        Debug.Print "Processor time spent in Undo check: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0.00") & " ms"
         Process_EditMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Redo", True) Then
@@ -1434,7 +1430,35 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
         g_Clipboard.ClipboardPaste PDImages.IsImageActive()
         Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Paste as new image", True) Then
+        g_Clipboard.ClipboardPaste False
+        Process_EditMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Cut special", True) Then
+        If raiseDialog Then
+            Dialogs.ShowClipboardDialog co_Cut
+        Else
+            g_Clipboard.ClipboardCutSpecial processParameters
+        End If
+        Process_EditMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Copy special", True) Then
+        If raiseDialog Then
+            Dialogs.ShowClipboardDialog co_Copy
+        Else
+            g_Clipboard.ClipboardCopySpecial processParameters
+        End If
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Paste special", True) Then
+        If raiseDialog Then
+            Dialogs.ShowClipboardDialog co_Paste
+        Else
+            'TODO
+        End If
+        Process_EditMenu = True
+    
     ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
         g_Clipboard.ClipboardEmpty
         Process_EditMenu = True
@@ -1656,11 +1680,11 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Dilate (maximum rank)", True) Then
-        If raiseDialog Then FormMedian.showMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then FormMedian.ShowMedianDialog 100 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Erode (minimum rank)", True) Then
-        If raiseDialog Then FormMedian.showMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then FormMedian.ShowMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
         
     'Natural
@@ -1720,7 +1744,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Median", True) Then
-        If raiseDialog Then FormMedian.showMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
+        If raiseDialog Then FormMedian.ShowMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
     
     'Pixelate

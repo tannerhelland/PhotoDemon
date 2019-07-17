@@ -1818,7 +1818,7 @@ Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle 
         howToProceed = vbOK
         ToneMapSettings = vbNullString
     Else
-        howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, ToneMapSettings)
+        howToProceed = Dialogs.PromptToneMapSettings(fi_Handle, ToneMapSettings)
     End If
     
     'Check for a cancellation state; if encountered, abandon ship now.

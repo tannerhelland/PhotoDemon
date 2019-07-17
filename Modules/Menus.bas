@@ -189,8 +189,12 @@ Public Sub InitializeMenus()
     AddMenuItem "Copy from layer", "edit_copylayer", 1, 10
     AddMenuItem "&Paste as new image", "edit_pasteasimage", 1, 11, , "edit_paste"
     AddMenuItem "Paste as new layer", "edit_pasteaslayer", 1, 12
-    AddMenuItem "-", "-", 1, 13
-    AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 14
+    AddMenuItem "Special", "edit_specialtop", 1, 13
+    AddMenuItem "Cut special...", "edit_specialcut", 1, 13, 0, "edit_cut"
+    AddMenuItem "Copy special...", "edit_specialcopy", 1, 13, 1, "edit_copy"
+    AddMenuItem "Paste special...", "edit_specialpaste", 1, 13, 2, "edit_paste"
+    AddMenuItem "-", "-", 1, 14
+    AddMenuItem "&Empty clipboard", "edit_emptyclipboard", 1, 15
     
     'Image Menu
     AddMenuItem "&Image", "image_top", 2
@@ -1499,7 +1503,18 @@ Private Function PDA_ByName_MenuEdit(ByRef srcMenuName As String) As Boolean
             
         Case "edit_pasteaslayer"
             Process "Paste as new layer", False, , UNDO_Image_VectorSafe, , False
-            
+        
+        'The cut/copy/paste special menus allow the user to specify the format used for cut/copy/paste
+        Case "edit_specialcut"
+            Process "Cut special", True
+        
+        Case "edit_specialcopy"
+            Process "Copy special", True
+        
+        Case "edit_specialpaste"
+            Process "Paste special", True
+        
+        'Empty clipboard is always available
         Case "edit_emptyclipboard"
             Process "Empty clipboard", False, , UNDO_Nothing, , False
             
@@ -2192,7 +2207,7 @@ Private Function PDA_ByName_MenuTools(ByRef srcMenuName As String) As Boolean
             End If
             
         Case "tools_theme"
-            DialogManager.PromptUITheme
+            Dialogs.PromptUITheme
             
         Case "tools_macrocreatetop"
             Case "tools_macrofromhistory"

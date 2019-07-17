@@ -281,7 +281,7 @@ Public Function QueryUnloadPDImage(ByVal imageID As Long) As Boolean
                     'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                     ' displayed and the user will be given an option to apply their choice to all unsaved images.
                     Dim confirmReturn As VbMsgBoxResult
-                    confirmReturn = DialogManager.ConfirmClose(imageID, numOfUnsavedImages, imageIndices)
+                    confirmReturn = Dialogs.ConfirmClose(imageID, numOfUnsavedImages, imageIndices)
                     
                 Else
                     confirmReturn = g_HowToDealWithAllUnsavedImages

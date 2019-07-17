@@ -671,7 +671,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'Retrieve the recommended output color depth of the image.
     Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     
-    If StrComp(LCase$(cParams.GetString("BMPColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
+    If Strings.StringsEqual(cParams.GetString("BMPColorDepth", "Auto"), "auto", True) Then
         outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_BMP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
         ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
         

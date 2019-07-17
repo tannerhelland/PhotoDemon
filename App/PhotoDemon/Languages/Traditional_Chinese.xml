@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.78</langversion>
+<langversion>7.0.79</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -149,7 +149,22 @@
 <translation></translation>
 </phrase>
 
-<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Cut special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Copy special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paste special</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -2419,7 +2434,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>清除最近巨集列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
+<!-- Menus.bas contains 241 phrases. 29 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5750,6 +5765,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Empty clipboard</original>
 <translation>清空剪貼簿(&E)</translation>
 </phrase>
@@ -6517,7 +6537,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 336 phrases. 154 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9201,7 +9221,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -15695,12 +15715,53 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for pdFileMM.cls-->
 
+<!-- BEGIN text for Edit_Clipboard.frm (FormClipboard) -->
+
+<phrase>
+<original>use merged image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available formats</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bitmap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB v5</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNG</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for Edit_Clipboard.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2623</phrasecount>
+<phrasecount>2634</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4787 phrases. -->
-<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
-<!-- These 2623 phrases contain approximately 12433 total words. -->
+<!-- As of this build, PhotoDemon contains 4809 phrases. -->
+<!-- 2175 are duplicates, so only 2634 unique phrases have been written to file. -->
+<!-- These 2634 phrases contain approximately 12451 total words. -->
 
 </pdData>

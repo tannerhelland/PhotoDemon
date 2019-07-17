@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>čeština</langname>
-<langversion>6.8.3391</langversion>
+<langversion>6.8.3392</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -149,7 +149,22 @@
 <translation></translation>
 </phrase>
 
-<!-- DialogManager.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Cut special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Copy special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paste special</original>
+<translation></translation>
+</phrase>
+
+<!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for DialogManager.bas-->
 
@@ -2445,7 +2460,7 @@ V verze 6.0 byly soubory maker PhotoDemon přepracovány, aby podpořily nové f
 <translation>Vymazat poslední seznam maker</translation>
 </phrase>
 
-<!-- Menus.bas contains 238 phrases. 26 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
+<!-- Menus.bas contains 241 phrases. 29 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5788,6 +5803,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Empty clipboard</original>
 <translation>Prázdný schránka</translation>
 </phrase>
@@ -6554,7 +6574,7 @@ VBCRLTato aktualizace se automaticky zpracovává na pozadí. Po dokončení obd
 <translation>Jazyk byl úspěšně změněn.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 332 phrases. 151 were duplicates of existing phrases, so only 181 new phrases were written to file. -->
+<!-- MainWindow.frm contains 336 phrases. 154 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9240,7 +9260,7 @@ Pokud jej chcete uložit jiným názvem souboru, vyberte "Zrušit" a použijte p
 <translation>Posterizující obraz</translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Posterize.frm-->
 
@@ -15748,12 +15768,53 @@ Pokud se stále rozhodnete zakázat aktualizace, nezapomeňte čas od času nav�
 
 <!-- END text for pdFileMM.cls-->
 
+<!-- BEGIN text for Edit_Clipboard.frm (FormClipboard) -->
+
+<phrase>
+<original>use merged image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available formats</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bitmap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB v5</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNG</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for Edit_Clipboard.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2623</phrasecount>
+<phrasecount>2634</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4787 phrases. -->
-<!-- 2164 are duplicates, so only 2623 unique phrases have been written to file. -->
-<!-- These 2623 phrases contain approximately 12433 total words. -->
+<!-- As of this build, PhotoDemon contains 4809 phrases. -->
+<!-- 2175 are duplicates, so only 2634 unique phrases have been written to file. -->
+<!-- These 2634 phrases contain approximately 12451 total words. -->
 
 </pdData>

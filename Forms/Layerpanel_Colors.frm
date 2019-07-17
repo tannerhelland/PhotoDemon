@@ -283,7 +283,7 @@ Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As
 End Sub
 
 Private Sub cmdSettings_Click()
-    If (DialogManager.ChooseColorPanelSettings() = vbOK) Then
+    If (Dialogs.ChooseColorPanelSettings() = vbOK) Then
         VerifyPanelUserPrefs
         ReflowInterface
     End If

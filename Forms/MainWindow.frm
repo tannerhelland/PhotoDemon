@@ -242,12 +242,28 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "Special"
          Index           =   13
+         Begin VB.Menu MnuEditSpecial 
+            Caption         =   "Cut special..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuEditSpecial 
+            Caption         =   "Copy special..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuEditSpecial 
+            Caption         =   "Paste special..."
+            Index           =   2
+         End
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "-"
+         Index           =   14
       End
       Begin VB.Menu MnuEdit 
          Caption         =   "&Empty clipboard"
-         Index           =   14
+         Index           =   15
       End
    End
    Begin VB.Menu MnuImageTop 
@@ -1608,11 +1624,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'Please see the included README.txt file for additional information regarding licensing and redistribution.
+'Please see the included README file for additional information on licensing and redistribution.
 
 'PhotoDemon is Copyright 1999-2019 by Tanner Helland, tannerhelland.com
 
-'Please visit photodemon.org for updates and additional downloads
+'Please visit https://photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Primary PhotoDemon Window
@@ -1633,8 +1649,6 @@ Option Explicit
 
 'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.  See the timer
 ' start/stop functions for additional details.
-Private WithEvents m_InterfaceTimer As pdTimer
-Attribute m_InterfaceTimer.VB_VarHelpID = -1
 Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
 
@@ -1835,34 +1849,6 @@ Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
     'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
     If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
     
-End Sub
-
-'Some functions need to artificially delay handling user input to prevent "click-through".  Use this function to do so.
-Public Sub StartInterfaceTimer()
-
-    If (m_InterfaceTimer Is Nothing) Then
-        Set m_InterfaceTimer = New pdTimer
-        m_InterfaceTimer.Interval = 50
-    End If
-    
-    m_InterfaceTimer.StartTimer
-    
-End Sub
-
-'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
-' "passing through" to the main form and causing goofy behavior.
-Private Sub m_InterfaceTimer_Timer()
-
-    Static intervalCount As Long
-    
-    If (intervalCount >= 1) Then
-        intervalCount = 0
-        g_DisableUserInput = False
-        m_InterfaceTimer.StopTimer
-    End If
-    
-    intervalCount = intervalCount + 1
-
 End Sub
 
 Public Sub StartMetadataTimer()
@@ -2540,7 +2526,7 @@ Private Sub Form_Load()
         ' users to help them get everything set up just the way they want it.
         
         'See if we've shown this dialog before; if we have, suspend its load.
-        If (Not UserPrefs.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
+        If (Not UserPrefs.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then Dialogs.PromptUITheme
         
         '*************************************************************************************************************************************
         ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
@@ -2601,7 +2587,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
     Dim dropAsNewLayer As VbMsgBoxResult
-    dropAsNewLayer = DialogManager.PromptForDropAsNewLayer()
+    dropAsNewLayer = Dialogs.PromptForDropAsNewLayer()
     If (dropAsNewLayer <> vbCancel) Then g_Clipboard.LoadImageFromDragDrop Data, Effect, (dropAsNewLayer = vbNo)
     
 End Sub
@@ -2886,7 +2872,76 @@ Private Sub MnuEdge_Click(Index As Integer)
 End Sub
 
 Private Sub MnuEdit_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuEdit(Index).Caption
+    
+    Select Case Index
+    
+        Case 0
+            Menus.ProcessDefaultAction_ByName "edit_undo"
+        
+        Case 1
+            Menus.ProcessDefaultAction_ByName "edit_redo"
+        
+        Case 2
+            Menus.ProcessDefaultAction_ByName "edit_history"
+        
+        Case 3
+            'separator
+        
+        Case 4
+            Menus.ProcessDefaultAction_ByName "edit_repeat"
+        
+        Case 5
+            Menus.ProcessDefaultAction_ByName "edit_fade"
+        
+        Case 6
+            'separator
+        
+        Case 7
+            Menus.ProcessDefaultAction_ByName "edit_cut"
+        
+        Case 8
+            Menus.ProcessDefaultAction_ByName "edit_cutlayer"
+        
+        Case 9
+            Menus.ProcessDefaultAction_ByName "edit_copy"
+            
+        Case 10
+            Menus.ProcessDefaultAction_ByName "edit_copylayer"
+            
+        Case 11
+            Menus.ProcessDefaultAction_ByName "edit_pasteasimage"
+            
+        Case 12
+            Menus.ProcessDefaultAction_ByName "edit_pasteaslayer"
+            
+        Case 13
+            'Top-level "cut/copy/paste special"
+            
+        Case 14
+            'separator
+            
+        Case 15
+            Menus.ProcessDefaultAction_ByName "edit_emptyclipboard"
+    
+    End Select
+    
+End Sub
+
+Private Sub MnuEditSpecial_Click(Index As Integer)
+
+    Select Case Index
+    
+        Case 0
+            Menus.ProcessDefaultAction_ByName "edit_specialcut"
+        
+        Case 1
+            Menus.ProcessDefaultAction_ByName "edit_specialcopy"
+        
+        Case 2
+            'Menus.ProcessDefaultAction_ByName "edit_specialpaste"
+    
+    End Select
+
 End Sub
 
 Private Sub MnuFile_Click(Index As Integer)

@@ -233,8 +233,9 @@ Private Sub HandleOKButton()
     Interface.NotifyShowDialogResult vbOK
     
     'Hide the parent form from view
-    On Error Resume Next
+    On Error GoTo ParentUnloadedAlready
     UserControl.Parent.Visible = False
+ParentUnloadedAlready:
         
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
     If (Not m_dontAutoUnloadParent) Then Unload UserControl.Parent
