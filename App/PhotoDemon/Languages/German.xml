@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1134</langversion>
+<langversion>7.2.1192</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -151,17 +151,17 @@
 
 <phrase>
 <original>Cut special</original>
-<translation></translation>
+<translation>Special ausschneiden</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation></translation>
+<translation>Special kopieren</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation></translation>
+<translation>Special einfügen</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -1670,22 +1670,22 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Go to top layer</original>
-<translation></translation>
+<translation>Gehe zu Layer ganz oben</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer above</original>
-<translation></translation>
+<translation>Gehe zu Layer oberhalb</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation></translation>
+<translation>Gehe zu Layer unterhalb</translation>
 </phrase>
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation></translation>
+<translation>Gehe zu Layer ganz unten</translation>
 </phrase>
 
 <phrase>
@@ -1710,7 +1710,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Reverse layer order</original>
-<translation></translation>
+<translation>Umgekehrte Layer-Reihenfolge</translation>
 </phrase>
 
 <phrase>
@@ -5813,7 +5813,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Special</original>
-<translation></translation>
+<translation>Special</translation>
 </phrase>
 
 <phrase>
@@ -5963,7 +5963,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Move layer to top</original>
-<translation></translation>
+<translation>Layer ganz nach oben verschieben</translation>
 </phrase>
 
 <phrase>
@@ -5978,12 +5978,12 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Move layer to bottom</original>
-<translation></translation>
+<translation>Layer ganz nach unten verschieben</translation>
 </phrase>
 
 <phrase>
 <original>Reverse</original>
-<translation></translation>
+<translation>Umgekehrt</translation>
 </phrase>
 
 <phrase>
@@ -9247,7 +9247,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>adaptive coloring</original>
-<translation></translation>
+<translation>Adaptive Färbung</translation>
 </phrase>
 
 <phrase>
@@ -13328,12 +13328,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>top of layer stack</original>
-<translation>Oberster von Layer-Stapel</translation>
+<translation>Ganz oben von Layer-Stapel</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>Unterster von Layer-Stapel</translation>
+<translation>Ganz unten von Layer-Stapel</translation>
 </phrase>
 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14612,7 +14612,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
-<translation></translation>
+<translation>STRG + Enter speichert automatisch und geht zur nächsten Textpassage weiter</translation>
 </phrase>
 
 <phrase>
@@ -15782,37 +15782,37 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>use merged image</original>
-<translation></translation>
+<translation>Zusammengeführtes Bild verwenden</translation>
 </phrase>
 
 <phrase>
 <original>available formats</original>
-<translation></translation>
+<translation>Verfügbare Formate</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Image</original>
-<translation></translation>
+<translation>PhotoDemon Image</translation>
 </phrase>
 
 <phrase>
 <original>Bitmap</original>
-<translation></translation>
+<translation>Bitmap</translation>
 </phrase>
 
 <phrase>
 <original>DIB</original>
-<translation></translation>
+<translation>DIB</translation>
 </phrase>
 
 <phrase>
 <original>DIB v5</original>
-<translation></translation>
+<translation>DIB v5</translation>
 </phrase>
 
 <phrase>
 <original>PNG</original>
-<translation></translation>
+<translation>PNG</translation>
 </phrase>
 
 <!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
