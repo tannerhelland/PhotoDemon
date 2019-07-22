@@ -408,7 +408,7 @@ End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
-Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
+Friend Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing)
     
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
@@ -503,7 +503,7 @@ End Sub
 ' or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_InternalData = False
@@ -520,10 +520,14 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean)
             sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                 
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-            If srcIsMeantAsLayer Then
-                Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, True
+            If (Not pasteToThisDIBInstead Is Nothing) Then
+                Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
             Else
-                LoadFileAsNewImage m_StashFile, sTitle, False
+                If srcIsMeantAsLayer Then
+                    Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, True
+                Else
+                    Loading.LoadFileAsNewImage m_StashFile, sTitle, False
+                End If
             End If
                 
             'If we made it all the way here, the load was (probably?) successful
@@ -539,12 +543,12 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean)
     
 End Function
 
-'If the clipboard contains custom-format image data (most commonly PNG or JPEG), you can call this function to initiate a "paste" command
-' using the custom image data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
-' or as a new layer in an existing image.
+'If the clipboard contains custom-format image data (most commonly PNG or JPEG), you can call this function
+' to initiate a "paste" command using the custom image data as a source.  The parameter "srcIsMeantAsLayer"
+' controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal tmpFileExtension As String = "tmp") As Boolean
+Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal tmpFileExtension As String = "tmp", Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_CustomImageFormat = False
@@ -585,10 +589,14 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                If srcIsMeantAsLayer Then
-                    Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                If (Not pasteToThisDIBInstead Is Nothing) Then
+                    Loading.QuickLoadImageToDIB m_StashFile, pasteToThisDIBInstead, False, False
                 Else
-                    LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                    If srcIsMeantAsLayer Then
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                    Else
+                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                    End If
                 End If
                 
                 'Be polite and remove the temporary file
@@ -620,7 +628,7 @@ End Function
 ' active image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_HTML = False
@@ -639,7 +647,7 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
         If m_Clipboard.GetClipboardHTML(htmlString) Then
             
             'Look for an image reference within the HTML snippet
-            If InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare) > 0 Then
+            If (InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare) > 0) Then
             
                 'Retrieve the full image path, which will be between the first set of quotation marks following the
                 ' "<img src=" statement in the HTML snippet.
@@ -683,7 +691,7 @@ Private Function ClipboardPaste_HTML(ByVal srcIsMeantAsLayer As Boolean) As Bool
 End Function
 
 'If one or more files exist on the clipboard, attempt to paste them all.
-Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'Make sure files actually exist on the clipboard
     If m_Clipboard.DoesClipboardHaveFiles() Then
@@ -723,7 +731,7 @@ End Function
 ' or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_Metafile = False
@@ -764,10 +772,14 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
                 sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                If srcIsMeantAsLayer Then
-                    Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                If (Not pasteToThisDIBInstead Is Nothing) Then
+                    Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                 Else
-                    LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                    If srcIsMeantAsLayer Then
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                    Else
+                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                    End If
                 End If
                 
                 'Be polite and remove the temporary file
@@ -792,7 +804,7 @@ Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As 
 End Function
 
 'If the clipboard contains text, try to find an image path or URL that we can use.
-Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     ClipboardPaste_TextSource = False
     
@@ -812,7 +824,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean) A
             Dim testURL As String
             testURL = Trim$(clipText)
         
-            If Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True) Then
+            If (Strings.StringsEqual(Left$(testURL, 4), "http", True) Or Strings.StringsEqual(Left$(testURL, 3), "ftp", True)) Then
                 Message "Image URL found.  Attempting to download..."
                 ClipboardPaste_TextSource = ClipboardPaste_WellFormedURL(testURL, srcIsMeantAsLayer)
                 
@@ -828,11 +840,15 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean) A
                 
                 'If the text (or a trimmed version of the text) matches a local file, try to load it.
                 If (LenB(targetFile) <> 0) Then
-                
-                    If srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, targetFile, , True
+                    
+                    If (Not pasteToThisDIBInstead Is Nothing) Then
+                        Loading.QuickLoadImageToDIB targetFile, pasteToThisDIBInstead, False, False
                     Else
-                        LoadFileAsNewImage targetFile
+                        If srcIsMeantAsLayer Then
+                            Layers.LoadImageAsNewLayer False, targetFile, , True
+                        Else
+                            LoadFileAsNewImage targetFile
+                        End If
                     End If
                     
                     ClipboardPaste_TextSource = True
@@ -853,7 +869,7 @@ End Function
 
 'Helper function that SHOULD NOT BE CALLED DIRECTLY.  Only other ClipboardPaste_* variants are able to safely use this function.
 ' Returns: TRUE if an image was successfully downloaded and loaded to the pdImages collection.  FALSE if failure occurred.
-Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False) As Boolean
+Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal suppressErrorMsgs As Boolean = False, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
     
     'This function assumes the source URL is both absolute and well-formed
     Message "Image URL found.  Attempting to download..."
@@ -870,22 +886,26 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcUrl As String, ByVal srcI
         tmpFilename = Files.FileGetName(tmpDownloadFile, True)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-        If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-            Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
+        If (Not pasteToThisDIBInstead Is Nothing) Then
+            ClipboardPaste_WellFormedURL = Loading.QuickLoadImageToDIB(tmpDownloadFile, pasteToThisDIBInstead, False, False)
         Else
-            LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
+            If PDImages.IsImageActive() And srcIsMeantAsLayer Then
+                Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
+            Else
+                LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
+            End If
         End If
         
         'Delete the temporary file
         Files.FileDeleteIfExists tmpDownloadFile
         
-        Message "Image imported successfully "
+        If (Not suppressErrorMsgs) Then Message "Image imported successfully "
         
         'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
         ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
         ' and subsequently unloads images in an arbitrary order - but given the rarity of that situation,
         ' I'm content to use this simplified technique for predicting failure.)
-        If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
+        If ((pasteToThisDIBInstead Is Nothing) And PDImages.IsImageActive(PDImages.GetActiveImageID())) Then
             ClipboardPaste_WellFormedURL = PDImages.GetActiveImage.IsActive
         End If
     
@@ -901,7 +921,7 @@ End Function
 ' is loaded as a new image, or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean, Optional ByRef pasteToThisDIBInstead As pdDIB = Nothing) As Boolean
         
     'Unfortunately, a lot of things can go wrong when pasting bitmaps, so we assume failure by default.
     ClipboardPaste_BitmapImage = False
@@ -937,28 +957,30 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
         
             'Perform some failsafe validation on the DIB header
             Dim dibHeaderOkay As Boolean
-            dibHeaderOkay = True
             
-            'First, make sure we have at least 40 bytes of data to work with.  (Anything smaller than this and we can't even retrieve a header!)
-            If UBound(rawClipboardData) < 40 Then dibHeaderOkay = False
+            'First, make sure we have at least 40 bytes of data to work with.  (Anything smaller than this
+            ' and we can't even retrieve a header!)
+            dibHeaderOkay = (UBound(rawClipboardData) >= 40)
             
-            'If we have at least 40 bytes of data, copy them into a default BITMAPINFOHEADER.  This struct is shared between regular DIBs
-            ' and v5 DIBs.
+            'If we have at least 40 bytes of data, copy them into a default BITMAPINFOHEADER.
+            ' This struct is shared between regular DIBs and v5 DIBs.
             Dim bmpHeader As BITMAPINFOHEADER, bmpV5Header As BITMAPV5HEADER
             If dibHeaderOkay Then
                 
-                'Retrieve a copy of the bitmap's header in standard, 40-byte format.  This gives us some default values like width, height,
-                ' and color depth.
-                CopyMemory ByVal VarPtr(bmpHeader), ByVal VarPtr(rawClipboardData(0)), LenB(bmpHeader)
+                'Retrieve a copy of the bitmap's header in standard, 40-byte format.
+                ' This reports useful values like width, height, and color depth.
+                CopyMemoryStrict VarPtr(bmpHeader), VarPtr(rawClipboardData(0)), LenB(bmpHeader)
                 
                 'Validate the header size; it must match a default DIB header, or a v5 DIB header
-                If (bmpHeader.biSize <> LenB(bmpHeader)) And (bmpHeader.biSize <> LenB(bmpV5Header)) Then dibHeaderOkay = False
+                dibHeaderOkay = (bmpHeader.biSize = LenB(bmpHeader)) Or (bmpHeader.biSize = LenB(bmpV5Header))
                 
                 'If a v5 header is present, retrieve it as well
                 If (priorityFormat = CF_DIBV5) And (bmpHeader.biSize = LenB(bmpV5Header)) And (UBound(rawClipboardData) > LenB(bmpV5Header)) Then
-                    CopyMemory ByVal VarPtr(bmpV5Header), ByVal VarPtr(rawClipboardData(0)), LenB(bmpV5Header)
                     
-                    'Track some v5 header data at module-level; external functions may request copies of this, to know how to handle alpha.
+                    CopyMemoryStrict VarPtr(bmpV5Header), VarPtr(rawClipboardData(0)), LenB(bmpV5Header)
+                    
+                    'Track some v5 header data at module-level; external functions may request copies of this,
+                    ' to know how to handle alpha.
                     m_ClipboardInfo.pdci_DIBv5AlphaMask = bmpV5Header.biAlphaMask
                     
                 End If
@@ -969,9 +991,10 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     With bmpHeader
                     
                         'Width must be positive
-                        If .biWidth < 0 Then dibHeaderOkay = False
+                        If (.biWidth < 0) Then dibHeaderOkay = False
                         
-                        'For performance reasons, restrict sizes to 2 ^ 16 in either dimension.  This metric is also used by Chrome and Firefox.
+                        'For performance reasons, restrict sizes to 2 ^ 16 in either dimension.
+                        ' (This metric is also used by Chrome and Firefox.)
                         If (.biWidth > (2 ^ 16)) Or (Abs(.biHeight) > (2 ^ 16)) Then dibHeaderOkay = False
                         
                         'Check for invalid bit-depths.
@@ -1014,10 +1037,10 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         Debug.Print "biClrImportant: " & .biClrImportant
                         
                         'If a color table is included, add it to the offset
-                        If .biClrUsed > 0 Then
+                        If (.biClrUsed > 0) Then
                             pixelOffset = pixelOffset + .biClrUsed * 4
                         Else
-                            If .biBitCount <= 8 Then pixelOffset = pixelOffset + 4 * (2 ^ .biBitCount)
+                            If (.biBitCount <= 8) Then pixelOffset = pixelOffset + 4 * (2 ^ .biBitCount)
                         End If
                         
                         'Bitfields are optional with certain bit-depths; if bitfields are specified, add them too.
@@ -1027,8 +1050,8 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         
                     End With
                     
-                    'v5 of the BMP header allows for ICC profiles.  These are supposed to be stored AFTER the pixel data, but some software
-                    ' is written by idiots (hi!), so perform a failsafe check for out-of-place profiles.
+                    'v5 of the BMP header allows for ICC profiles.  These are supposed to be stored AFTER pixel data,
+                    ' but some software is written by idiots (hi!), so perform a failsafe check for out-of-place profiles.
                     If (priorityFormat = CF_DIBV5) And (bmpV5Header.biProfileData <= pixelOffset) Then pixelOffset = pixelOffset + bmpV5Header.biProfileSize
                                         
                     'We now know enough to create a temporary BMP file as a placeholder for the clipboard data.
@@ -1076,17 +1099,21 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     Dim sTitle As String
                     sTitle = g_Language.TranslateMessage("Clipboard Image")
                     sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                        
+                    
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                    If PDImages.IsImageActive() And srcIsMeantAsLayer Then
-                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                    If (Not pasteToThisDIBInstead Is Nothing) Then
+                        Loading.QuickLoadImageToDIB tmpClipboardFile, pasteToThisDIBInstead, False, False
                     Else
-                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                        If PDImages.IsImageActive() And srcIsMeantAsLayer Then
+                            Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                        Else
+                            Loading.LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                        End If
                     End If
-                            
+                    
                     'Once the load is complete, be polite and remove the temporary file
                     cFile.FileDelete tmpClipboardFile
-                        
+                    
                     'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
                     ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
                     ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
@@ -1095,7 +1122,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     'TODO: rewrite PD's central image load functions to return pass/fail status.
                     If PDImages.IsImageActive(PDImages.GetActiveImageID()) Then
                         If PDImages.GetActiveImage.IsActive Then
-                            Message "Clipboard data imported successfully "
+                            If (pasteToThisDIBInstead Is Nothing) Then Message "Clipboard data imported successfully "
                             ClipboardPaste_BitmapImage = True
                         End If
                     End If
@@ -1216,7 +1243,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
 
     'The IDataObject pointer appears 16 bytes past VBs DataObject
     Dim IID_IDataObject As Long
-    CopyMemory IID_IDataObject, ByVal ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
+    CopyMemoryStrict VarPtr(IID_IDataObject), ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
     
     'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.  Since we know the
     ' VTable address and we know which function index we want, we can call it directly using the DispCallFunc.
@@ -1232,21 +1259,21 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
     
     'Manually invoke the desired interface
     Dim varRtn As Variant
-    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
+    If (DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0) Then
         
         'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
         If (pMedium.Data = 0) Then Exit Function
         
         'Remember that this data object doesn't point directly at the files themselves, but to a 20-byte DROPFILES structure
         Dim hDrop As Long
-        CopyMemory hDrop, ByVal pMedium.Data, 4&
+        CopyMemoryStrict VarPtr(hDrop), pMedium.Data, 4&
         
         'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
         If (hDrop <> 0) Then
             
             'Convert the hDrop into a usable DROPFILES struct
             Dim dFiles As DROPFILES
-            CopyMemory dFiles, ByVal hDrop, 20&
+            CopyMemoryStrict VarPtr(dFiles), hDrop, 20&
             
             'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later.
             ' (But just in case, check - otherwise we'll get gibberish string results.)
@@ -1270,7 +1297,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     
                     If (lLen <> 0) Then
                         tmpString = String$(lLen \ 2, 0&)
-                        CopyMemory ByVal StrPtr(tmpString), ByVal dFiles.pFiles, lLen
+                        CopyMemoryStrict StrPtr(tmpString), dFiles.pFiles, lLen
                     
                         'Any valid files get added to the collection.  (Note that we only validate file existence; validating the
                         ' actual image data is handled by the load image function.)
@@ -1348,7 +1375,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
 
     'The IDataObject pointer appears 16 bytes past VB's DataObject
     Dim IID_IDataObject As Long
-    CopyMemory IID_IDataObject, ByVal ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
+    CopyMemoryStrict VarPtr(IID_IDataObject), ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
     
     'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.  Since we know the
     ' VTable address and we know which function index we want, we can call it directly using the DispCallFunc.
@@ -1364,7 +1391,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
     
     'Manually invoke the desired interface
     Dim varRtn As Variant
-    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
+    If (DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0) Then
         
         'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
         If (pMedium.Data = 0) Then Exit Function

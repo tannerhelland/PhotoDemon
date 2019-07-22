@@ -255,6 +255,7 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuEditSpecial 
             Caption         =   "Paste special..."
             Index           =   2
+            Visible         =   0   'False
          End
       End
       Begin VB.Menu MnuEdit 
