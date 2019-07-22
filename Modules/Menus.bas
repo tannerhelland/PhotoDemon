@@ -443,27 +443,29 @@ Public Sub InitializeMenus()
         AddMenuItem "Fragment...", "effects_fragment", 6, 7, 2
         AddMenuItem "Mezzotint...", "effects_mezzotint", 6, 7, 3
         AddMenuItem "Mosaic...", "effects_mosaic", 6, 7, 4
-    AddMenuItem "Sharpen", "effects_sharpentop", 6, 8
-        AddMenuItem "Sharpen...", "effects_sharpen", 6, 8, 0
-        AddMenuItem "Unsharp masking...", "effects_unsharp", 6, 8, 1
-    AddMenuItem "Stylize", "effects_stylize", 6, 9
-        AddMenuItem "Antique...", "effects_antique", 6, 9, 0
-        AddMenuItem "Diffuse...", "effects_diffuse", 6, 9, 1
-        AddMenuItem "Outline...", "effects_outline", 6, 9, 2
-        AddMenuItem "Palettize...", "effects_palettize", 6, 9, 3
-        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 9, 4
-        AddMenuItem "Solarize...", "effects_solarize", 6, 9, 5
-        AddMenuItem "Twins...", "effects_twins", 6, 9, 6
-        AddMenuItem "Vignetting...", "effects_vignetting", 6, 9, 7
-    AddMenuItem "Transform", "effects_transform", 6, 10
-        AddMenuItem "Pan and zoom...", "effects_panandzoom", 6, 10, 0
-        AddMenuItem "Perspective...", "effects_perspective", 6, 10, 1
-        AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 10, 2
-        AddMenuItem "Rotate...", "effects_rotate", 6, 10, 3
-        AddMenuItem "Shear...", "effects_shear", 6, 10, 4
-        AddMenuItem "Spherize...", "effects_spherize", 6, 10, 5
-    AddMenuItem "-", "-", 6, 11
-    AddMenuItem "Custom filter...", "effects_customfilter", 6, 12
+    AddMenuItem "Render", "effects_render", 6, 8
+        AddMenuItem "Clouds...", "effects_clouds", 6, 8, 0
+    AddMenuItem "Sharpen", "effects_sharpentop", 6, 9
+        AddMenuItem "Sharpen...", "effects_sharpen", 6, 9, 0
+        AddMenuItem "Unsharp masking...", "effects_unsharp", 6, 9, 1
+    AddMenuItem "Stylize", "effects_stylize", 6, 10
+        AddMenuItem "Antique...", "effects_antique", 6, 10, 0
+        AddMenuItem "Diffuse...", "effects_diffuse", 6, 10, 1
+        AddMenuItem "Outline...", "effects_outline", 6, 10, 2
+        AddMenuItem "Palettize...", "effects_palettize", 6, 10, 3
+        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 10, 4
+        AddMenuItem "Solarize...", "effects_solarize", 6, 10, 5
+        AddMenuItem "Twins...", "effects_twins", 6, 10, 6
+        AddMenuItem "Vignetting...", "effects_vignetting", 6, 10, 7
+    AddMenuItem "Transform", "effects_transform", 6, 11
+        AddMenuItem "Pan and zoom...", "effects_panandzoom", 6, 11, 0
+        AddMenuItem "Perspective...", "effects_perspective", 6, 11, 1
+        AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 11, 2
+        AddMenuItem "Rotate...", "effects_rotate", 6, 11, 3
+        AddMenuItem "Shear...", "effects_shear", 6, 11, 4
+        AddMenuItem "Spherize...", "effects_spherize", 6, 11, 5
+    AddMenuItem "-", "-", 6, 12
+    AddMenuItem "Custom filter...", "effects_customfilter", 6, 13
     
     'Tools Menu
     AddMenuItem "&Tools", "tools_top", 7

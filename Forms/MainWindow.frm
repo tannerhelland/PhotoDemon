@@ -1206,8 +1206,16 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Sharpen"
+         Caption         =   "Render"
          Index           =   8
+         Begin VB.Menu MnuRender 
+            Caption         =   "Clouds..."
+            Index           =   0
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Sharpen"
+         Index           =   9
          Begin VB.Menu MnuSharpen 
             Caption         =   "Sharpen..."
             Index           =   0
@@ -1219,7 +1227,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Stylize"
-         Index           =   9
+         Index           =   10
          Begin VB.Menu MnuStylize 
             Caption         =   "Antique..."
             Index           =   0
@@ -1255,7 +1263,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Transform"
-         Index           =   10
+         Index           =   11
          Begin VB.Menu MnuEffectTransform 
             Caption         =   "Pan and zoom..."
             Index           =   0
@@ -1283,10 +1291,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "-"
-         Index           =   11
+         Index           =   12
       End
-      Begin VB.Menu MnuCustomFilter 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Custom filter..."
+         Index           =   13
       End
    End
    Begin VB.Menu MnuTools 
@@ -1667,6 +1676,42 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     HotkeyManager.ResetKeyStates
+End Sub
+
+Private Sub MnuEffectUpper_Click(Index As Integer)
+
+    Select Case Index
+    
+        Case 0
+            'Artistic
+        Case 1
+            'Blur
+        Case 2
+            'Distort
+        Case 3
+            'Edge
+        Case 4
+            'Light and Shadow
+        Case 5
+            'Natural
+        Case 6
+            'Noise
+        Case 7
+            'Pixelate
+        Case 8
+            'Render
+        Case 9
+            'Sharpen
+        Case 10
+            'Stylize
+        Case 11
+            'Transform
+        Case 12
+            '(separator)
+        Case 13
+            Menus.ProcessDefaultAction_ByName "effects_customfilter"
+    End Select
+
 End Sub
 
 Private Sub MnuFileImport_Click(Index As Integer)
@@ -2857,10 +2902,6 @@ End Sub
 'All entries in the Color -> Components sub-menu are handled here
 Private Sub MnuColorComponents_Click(Index As Integer)
     Menus.ProcessDefaultAction_ByCaption MnuColorComponents(Index).Caption
-End Sub
-
-Private Sub MnuCustomFilter_Click()
-    Menus.ProcessDefaultAction_ByName "effects_customfilter"
 End Sub
 
 'All distortion filters happen here
