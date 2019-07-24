@@ -1748,6 +1748,13 @@ Private Sub MnuMacroCreate_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuRender_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "effects_clouds"
+    End Select
+End Sub
+
 Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately

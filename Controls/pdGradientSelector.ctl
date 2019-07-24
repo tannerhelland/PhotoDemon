@@ -216,6 +216,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
         tmpGradient.CreateGradientFromString m_curGradient
         tmpGradient.ReverseGradient
         m_curGradient = tmpGradient.GetGradientAsString()
+        
         RedrawBackBuffer
         RaiseEvent GradientChanged
         

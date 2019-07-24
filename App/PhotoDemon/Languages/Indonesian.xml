@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.351</langversion>
+<langversion>6.6.352</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -2342,6 +2342,11 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Clouds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Tajamkan</translation>
 </phrase>
@@ -2466,7 +2471,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 241 phrases. 29 were duplicates of existing phrases, so only 212 new phrases were written to file. -->
+<!-- Menus.bas contains 242 phrases. 29 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6252,6 +6257,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Render</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unsharp masking</original>
 <translation>masking unsharp</translation>
 </phrase>
@@ -6584,7 +6594,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 336 phrases. 154 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 338 phrases. 155 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10124,7 +10134,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Khayalan Letupan Gunung Api</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Nature_Lava.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Nature_Lava.frm-->
 
@@ -15821,12 +15831,43 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Edit_Clipboard.frm-->
 
+<!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
+
+<phrase>
+<original>generator</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering clouds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Perlin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Simplex</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OpenSimplex</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Clouds.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Render_Clouds.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2634</phrasecount>
+<phrasecount>2641</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4809 phrases. -->
-<!-- 2175 are duplicates, so only 2634 unique phrases have been written to file. -->
-<!-- These 2634 phrases contain approximately 12451 total words. -->
+<!-- As of this build, PhotoDemon contains 4832 phrases. -->
+<!-- 2191 are duplicates, so only 2641 unique phrases have been written to file. -->
+<!-- These 2641 phrases contain approximately 12459 total words. -->
 
 </pdData>

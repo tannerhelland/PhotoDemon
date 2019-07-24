@@ -1595,7 +1595,6 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         Process_EffectsMenu = True
     
     'Distort filters
-                
     ElseIf Strings.StringsEqual(processID, "Correct lens distortion", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormLensCorrect Else FormLensCorrect.CorrectLensDistortion processParameters
         Process_EffectsMenu = True
@@ -1661,8 +1660,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormContour Else FormContour.TraceContour processParameters
         Process_EffectsMenu = True
     
-    'Lights and shadows
-    
+    'Light and shadow filters
     ElseIf Strings.StringsEqual(processID, "Black light", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormBlackLight Else FormBlackLight.fxBlackLight processParameters
         Process_EffectsMenu = True
@@ -1687,8 +1685,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then FormMedian.ShowMedianDialog 1 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
         
-    'Natural
-    
+    'Natural filters
     ElseIf Strings.StringsEqual(processID, "Atmosphere", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormAtmosphere Else FormAtmosphere.ApplyAtmosphereEffect processParameters
         Process_EffectsMenu = True
@@ -1717,8 +1714,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormWater Else FormWater.ApplyWaterFX processParameters
         Process_EffectsMenu = True
     
-    'Noise
-    
+    'Noise filters
     ElseIf Strings.StringsEqual(processID, "Add film grain", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormFilmGrain Else FormFilmGrain.AddFilmGrain processParameters
         Process_EffectsMenu = True
@@ -1747,8 +1743,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then FormMedian.ShowMedianDialog 50 Else FormMedian.ApplyMedianFilter processParameters
         Process_EffectsMenu = True
     
-    'Pixelate
-    
+    'Pixelate filters
     ElseIf Strings.StringsEqual(processID, "Color halftone", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormColorHalftone Else FormColorHalftone.ColorHalftoneFilter processParameters
         Process_EffectsMenu = True
@@ -1769,8 +1764,12 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormMosaic Else FormMosaic.MosaicFilter processParameters
         Process_EffectsMenu = True
     
-    'Sharpen
-    
+    'Render filters
+    ElseIf Strings.StringsEqual(processID, "Clouds", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFxClouds Else FormFxClouds.FxRenderClouds processParameters
+        Process_EffectsMenu = True
+        
+    'Sharpen filters
     ElseIf Strings.StringsEqual(processID, "Sharpen", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters
         Process_EffectsMenu = True
@@ -1779,8 +1778,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormUnsharpMask Else FormUnsharpMask.UnsharpMask processParameters
         Process_EffectsMenu = True
         
-    'Stylize
-        
+    'Stylize filters
     ElseIf Strings.StringsEqual(processID, "Antique", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormAntique Else FormAntique.AntiqueEffect processParameters
         Process_EffectsMenu = True
@@ -1813,8 +1811,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormVignette Else FormVignette.ApplyVignette processParameters
         Process_EffectsMenu = True
         
-    'Transform
-    
+    'Transform filters
     ElseIf Strings.StringsEqual(processID, "Pan and zoom", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormPanAndZoom Else FormPanAndZoom.PanAndZoomFilter processParameters
         Process_EffectsMenu = True
@@ -1835,8 +1832,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormSpherize Else FormSpherize.SpherizeImage processParameters
         Process_EffectsMenu = True
         
-    'Custom
-    
+    'Custom filters
     ElseIf Strings.StringsEqual(processID, "Custom filter", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormCustomFilter Else Filters_Area.ApplyConvolutionFilter_XML processParameters
         Process_EffectsMenu = True

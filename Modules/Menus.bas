@@ -2129,6 +2129,10 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
                 
             Case "effects_mosaic"
                 Process "Mosaic", True
+        
+        Case "effects_render"
+            Case "effects_clouds"
+                Process "Clouds", True
                 
         Case "effects_sharpentop"
             Case "effects_sharpen"

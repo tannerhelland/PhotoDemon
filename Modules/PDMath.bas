@@ -24,6 +24,17 @@ Public Const PI_DIV_180 As Double = 0.017453292519943
 Public Const PI_14 As Double = 0.785398163397448
 Public Const PI_34 As Double = 2.35619449019234
 
+'Noise generators
+Public Enum PD_NoiseGenerator
+    ng_Perlin = 0
+    ng_Simplex = 1
+    ng_OpenSimplex = 2
+End Enum
+
+#If False Then
+    Private Const ng_Perlin = 0, ng_Simplex = 1, ng_OpenSimplex = 2
+#End If
+
 Private Declare Function IntersectRect Lib "user32" (ByVal ptrDstRect As Long, ByVal ptrSrcRect1 As Long, ByVal ptrSrcRect2 As Long) As Long
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RectL, ByVal x As Long, ByVal y As Long) As Long
