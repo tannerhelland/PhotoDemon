@@ -386,6 +386,19 @@ Public Function GetOptimizedPaletteIncAlpha(ByRef srcDIB As pdDIB, ByRef dstPale
     
 End Function
 
+Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
+    ReDim dstPalette(0 To 255) As RGBQuad
+    Dim i As Long
+    For i = 0 To 255
+        With dstPalette(i)
+            .Red = i
+            .Green = i
+            .Blue = i
+            .Alpha = 255
+        End With
+    Next i
+End Sub
+
 'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
 ' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
 ' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that

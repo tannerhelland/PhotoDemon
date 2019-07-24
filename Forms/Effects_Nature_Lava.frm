@@ -89,11 +89,33 @@ Begin VB.Form FormLava
       Height          =   735
       Left            =   6000
       TabIndex        =   5
-      Top             =   3300
+      Top             =   4680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
       Caption         =   "random seed:"
+   End
+   Begin PhotoDemon.pdColorSelector cpHighlight 
+      Height          =   975
+      Left            =   9000
+      TabIndex        =   6
+      Top             =   3360
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1720
+      Caption         =   "highlight color"
+      curColor        =   6262010
+   End
+   Begin PhotoDemon.pdColorSelector cpShadow 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1720
+      Caption         =   "shadow color"
+      curColor        =   50
    End
 End
 Attribute VB_Name = "FormLava"
@@ -133,12 +155,15 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     'At present, some parameters are hard-coded.  This is primarily to free up UI space and simplify the
     ' potential set of effect parameters.
     Dim fxScale As Double, fxOpacity As Double, fxBlendMode As PD_BlendMode, fxSeed As String
+    Dim fxColorShadow As Long, fxColorHighlight As Long
     
     With cParams
         fxScale = .GetDouble("scale", sltScale.Value)
         fxOpacity = .GetDouble("opacity", sldOpacity.Value)
         fxBlendMode = .GetLong("blendmode", cboBlendMode.ListIndex)
         fxSeed = .GetString("seed")
+        fxColorShadow = .GetLong("shadow-color", RGB(50, 0, 0))
+        fxColorHighlight = .GetLong("highlight-color", RGB(250, 140, 95))
     End With
     
     'Random number generation is handled by pdRandomize
@@ -153,11 +178,15 @@ Public Sub fxLava(ByVal effectParams As String, Optional ByVal toPreview As Bool
     If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
     m_tmpDIB.CreateFromExistingDIB workingDIB
     
+    'Generate a palette for the incoming colors
+    Dim palColors() As RGBQuad
+    Palettes.GetPalette_Grayscale palColors
+    
     'The initial noise render is handled by a dedicated function
-    Filters_Render.GetCloudDIB m_tmpDIB, fxScale, 4, cRandom.GetSeed(), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, 0
+    Filters_Render.GetCloudDIB m_tmpDIB, fxScale, VarPtr(palColors(0)), 256, ng_Simplex, 4, cRandom.GetSeed(), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, 0
     
     'Chrome-ify it using hard-coded "lava" colors
-    Filters_Natural.GetChromeDIB m_tmpDIB, 8, fxScale * 0.25, RGB(50, 0, 0), RGB(250, 140, 95), toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight
+    Filters_Natural.GetChromeDIB m_tmpDIB, 8, fxScale * 0.25, fxColorShadow, fxColorHighlight, toPreview, m_tmpDIB.GetDIBHeight + m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight
     
     'Duplicate that layer
     Dim rotDIB As pdDIB
@@ -195,6 +224,16 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     cboBlendMode.ListIndex = BL_OVERLAY
+    cpShadow.Color = RGB(50, 0, 0)
+    cpHighlight.Color = RGB(250, 140, 95)
+End Sub
+
+Private Sub cpHighlight_ColorChanged()
+    UpdatePreview
+End Sub
+
+Private Sub cpShadow_ColorChanged()
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -248,6 +287,8 @@ Private Function GetLocalParamString() As String
         .AddParam "opacity", sldOpacity.Value
         .AddParam "blendmode", cboBlendMode.ListIndex
         .AddParam "seed", rndSeed.Value
+        .AddParam "shadow-color", cpShadow.Color
+        .AddParam "highlight-color", cpHighlight.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()
