@@ -279,9 +279,9 @@ Friend Function GetGradientAsString(Optional ByVal useBase64ForNodes As Boolean 
 End Function
 
 Friend Sub CreateGradientFromString(ByRef srcString As String)
-    
+
     'If the string is empty, prep a default object
-    If (LenB(srcString) = 0) Then
+    If (LenB(Trim$(srcString)) = 0) Then
         Me.ResetAllProperties
     Else
         
@@ -323,6 +323,9 @@ Friend Sub CreateGradientFromString(ByRef srcString As String)
             End If
                 
         End With
+        
+        'Failsafe check
+        If (m_NumOfPoints < 2) Then Me.ResetAllProperties
         
     End If
     
@@ -998,6 +1001,7 @@ Friend Sub ResetAllProperties()
     
     m_NumOfPoints = 2
     ReDim m_GradientPoints(0 To 1) As GradientPoint
+    m_IsSorted = True
     
     With m_GradientPoints(0)
         .PointRGB = vbBlack
@@ -1018,6 +1022,7 @@ End Sub
 Friend Sub ReverseGradient()
     
     If (m_NumOfPoints < 2) Then Exit Sub
+    m_GradientIsDefault = False
     
     'Make sure points are sorted
     If (Not m_IsSorted) Then SortGradientArray
