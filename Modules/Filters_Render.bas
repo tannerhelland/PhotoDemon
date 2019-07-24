@@ -17,7 +17,7 @@ Option Explicit
 
 'Render a "cloud" effect to an arbitrary DIB.  The DIB must already exist and be sized to whatever dimensions
 ' the caller requires.
-Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Optional ByVal fxQuality As Long = 4, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVal ptrToPalette As Long, ByVal numPalColors As Long, Optional ByVal noiseGenerator As PD_NoiseGenerator = ng_Simplex, Optional ByVal fxQuality As Long = 4, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
     
     'Quality is passed on a [1, 8] scale; rework it to [0, 7] now
     fxQuality = fxQuality - 1
@@ -87,22 +87,16 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
         p2InvLookup(i) = 1# / (2 ^ i)
     Next i
     
-    'Generate a displacement lookup table.  Because we ignore alpha values at present, and clouds are always
-    ' produced as grayscale, we have a fixed set of possible output values.
+    'Generate a displacement lookup table.  Because we don't need to assign individual RGBA values,
+    ' it's faster to alias our incoming palette (type RGBQuad) into a Long-type array, because we
+    ' can then assign all four RGBA lookup values at once.
     Dim dispLookup() As Long
-    ReDim dispLookup(0 To 255) As Long
+    ReDim dispLookup(0 To numPalColors - 1) As Long
+    CopyMemoryStrict VarPtr(dispLookup(0)), ptrToPalette, 4& * numPalColors
     
-    Dim tmpRGBA As RGBQuad
-    
-    For i = 0 To 255
-        With tmpRGBA
-            .Red = i
-            .Green = i
-            .Blue = i
-            .Alpha = 255
-        End With
-        CopyMemory ByVal VarPtr(dispLookup(i)), ByVal VarPtr(tmpRGBA), 4&
-    Next i
+    Dim lookupMaxI As Long, halfLookupF As Long
+    lookupMaxI = numPalColors - 1
+    halfLookupF = lookupMaxI / 2#
     
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
@@ -116,13 +110,24 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, Opti
         
         'Fractal noise works by summing successively smaller noise values taken from successively larger
         ' amplitudes of the original function.
-        For i = 0 To fxQuality
-            pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.SimplexNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
-        Next i
+        If (noiseGenerator = ng_Perlin) Then
+            For i = 0 To fxQuality
+                pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.PerlinNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
+            Next i
+        ElseIf (noiseGenerator = ng_Simplex) Then
+            For i = 0 To fxQuality
+                pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.SimplexNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
+            Next i
+        Else
+            For i = 0 To fxQuality
+                pNoiseCache = pNoiseCache + p2InvLookup(i) * cNoise.OpenSimplexNoise2d(rndOffsetX + xScaleCache * p2Lookup(i), rndOffsetY + yScaleCache * p2Lookup(i))
+            Next i
+        End If
         
         'Convert the calculated noise value to RGB range and cache it
-        pDisplace = 127 + (pNoiseCache * 127#)
-        If (pDisplace > 255) Then pDisplace = 255 Else If (pDisplace < 0) Then pDisplace = 0
+        pDisplace = Int(halfLookupF + (pNoiseCache * halfLookupF) + 0.5)
+        If (pDisplace > lookupMaxI) Then pDisplace = lookupMaxI
+        If (pDisplace < 0&) Then pDisplace = 0&
         
         'Write all RGBA bytes at once
         dstImageData(x) = dispLookup(pDisplace)
