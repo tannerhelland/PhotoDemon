@@ -186,8 +186,8 @@ End Enum
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
 ' stored in this struct.
 Private Type genericVectorData
-    vd_Width As Long          'Unlike raster layers, vector layers must explicitly store their width and height
-    vd_Height As Long
+    vd_Width As Single          'Unlike raster layers, vector layers must explicitly store their width and height
+    vd_Height As Single
 End Type
 
 Private myVectorData As genericVectorData
@@ -500,7 +500,8 @@ Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
         Case PDL_TEXT, PDL_TYPOGRAPHY
             GetLayerWidth = myVectorData.vd_Width
-    
+            If (GetLayerWidth < 1#) Then GetLayerWidth = 1#
+            
     End Select
     
 End Function
@@ -530,6 +531,7 @@ Friend Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
         Case PDL_TEXT, PDL_TYPOGRAPHY
             GetLayerHeight = myVectorData.vd_Height
+            If (GetLayerHeight < 1#) Then GetLayerHeight = 1#
     
     End Select
     
@@ -538,7 +540,7 @@ End Function
 Friend Sub SetLayerWidth(ByVal newSize As Single)
     
     'Force size in-bounds
-    If (newSize < 1#) Then newSize = 1#
+    If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
     If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
@@ -556,10 +558,10 @@ End Sub
 Friend Sub SetLayerHeight(ByVal newSize As Single)
     
     'Force size in-bounds
-    If (newSize < 1#) Then newSize = 1#
+    If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
-    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
+    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Height) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Height = newSize
@@ -1563,8 +1565,8 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
     
     'Reset any vector-specific data
     With myVectorData
-        .vd_Width = 0#
-        .vd_Height = 0#
+        .vd_Width = 0
+        .vd_Height = 0
     End With
     
     m_VectorDIBSynched = False
@@ -2179,7 +2181,7 @@ Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
             
             If (layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
-                layerDIB.CreateBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
+                layerDIB.CreateBlank Int(myVectorData.vd_Width + 0.9999), Int(myVectorData.vd_Height + 0.9999), 32, 0, 0
             Else
                 layerDIB.ResetDIB
             End If
