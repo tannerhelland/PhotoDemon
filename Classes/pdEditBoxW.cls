@@ -581,10 +581,11 @@ End Sub
 
 'This function actually does two things: makes the edit box the foreground window, then assigns it keyboard focus.
 ' By design, all non-multiline edit boxes in PD select all their own text upon an initial click.
-Friend Sub SetFocusToEditBox()
+Friend Sub SetFocusToEditBox(Optional ByVal selectTextToo As Boolean = False)
     If (m_EditBoxHwnd <> 0) Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
+        If selectTextToo Then Me.SelectAll
     End If
 End Sub
 

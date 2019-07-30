@@ -71,6 +71,7 @@ Public Event ResetClick()
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'The actual common control edit box is handled by a dedicated class
 Private WithEvents m_EditBox As pdEditBoxW
@@ -448,6 +449,21 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     End If
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    
+    'If this control is about to receive focus via the tab key, manually set focus to the edit box.
+    If (wMsg = WM_PD_FOCUS_FROM_TAB_KEY) And (wParam = Me.hWnd) Then
+        
+        'Set focus to the edit box
+        m_EditBox.SetFocusToEditBox True
+        
+        'Set the lParam flag to a non-zero value (see NavKey.NotifyNavKeyPress for details)
+        PutMem4 lParam, 1&
+    
+    End If
+
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     m_FocusCount = m_FocusCount + 1
     EvaluateFocusCount
@@ -732,6 +748,10 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo And (Not m_InternalResizeState) Then UpdateControlLayout Else RedrawBackBuffer
 End Sub
 
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
+End Sub
+
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     If (Not m_EditBox Is Nothing) Then m_EditBox.Visible = newVisibility
 End Sub
@@ -757,6 +777,10 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_RIGHT, VK_DOWN, VK_LEFT, vbKeyAdd, vbKeySubtract
+    
+    'We also want to be notified when focus changes via tab-key; when this occurs, we want to
+    ' set focus to the edit box - NOT the spin control.
+    ucSupport.SubclassCustomMessage WM_PD_FOCUS_FROM_TAB_KEY, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

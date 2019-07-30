@@ -159,134 +159,156 @@ End Sub
 'Tab keypresses only require an incoming hWnd; we'll figure out the rest.
 Friend Sub NotifyTabKey(ByVal srcHwnd As Long, ByVal shiftTabPressed As Boolean)
     
-    'First thing we need to do is make a list of all visible/enabled controls on the form.
-    ' (Invisible/disabled controls can't receive focus, obviously!)
-    ReDim m_ControlsSort(0 To m_numOfControls) As PD_ControlSort
-    m_numOfControlsSort = 0
-    
-    'We also need the width of the current screen, so we can sort coordinates one-dimensionally.
-    Dim screenWidth As Long
-    screenWidth = g_Displays.GetDesktopWidth()
-    
-    Dim currentControlIndex As Long
-    currentControlIndex = -1
-    
-    Dim i As Long, tmpRect As winRect
-    For i = 0 To m_numOfControls - 1
-    
-        'Only visible + enabled controls are eligible for receiving focus
-        If (IsWindowVisible(m_Controls(i).hWnd) <> 0) And (IsWindowEnabled(m_Controls(i).hWnd)) Then
-            
-            'The command bar (and mini command bar) are a special case.  They are managed by this class,
-            ' because we need to detect them for OK/Cancel purposes, but we don't want them receiving
-            ' focus during KeyPress events.  (Instead, focus should go to one of their child controls.)
-            If (m_Controls(i).ctlType <> pdct_CommandBar) And (m_Controls(i).ctlType <> pdct_CommandBarMini) Then
-            
-                'This control is visible, enabled, and interactive, making it a candidate for receiving focus.
-                ' Retrieve its coordinates.
-                g_WindowManager.GetWindowRect_API m_Controls(i).hWnd, tmpRect
-                
-                'I haven't decided if it is worthwhile to map coordinates to a new coordinate space prior to
-                ' determining order.  (I don't think it matters, but it's possible I haven't fully considered the math!)
-                
-                'For now, convert the top-left corner of the rect into a single-dimension variable
-                With m_ControlsSort(m_numOfControlsSort)
-                    .hWnd = m_Controls(i).hWnd
-                    .x = tmpRect.x1
-                    .y = tmpRect.y1
-                    .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
-                End With
-                
-                'If this control is the one that supplied the tabkey, note it now
-                If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
-                
-                m_numOfControlsSort = m_numOfControlsSort + 1
-                
-            End If
-            
-        End If
-    Next i
-    
-    'We now have a list of all valid tab recipients on this form.  Hopefully our source control was included;
-    ' if it wasn't (for whatever reason), retrieve its last-known position and use that instead.
-    If (currentControlIndex = -1) Then
-        
-        g_WindowManager.GetWindowRect_API srcHwnd, tmpRect
-        
-        With m_ControlsSort(m_numOfControlsSort)
-            .hWnd = srcHwnd
-            .x = tmpRect.x1
-            .y = tmpRect.y1
-            .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
-        End With
-        
-        m_numOfControlsSort = m_numOfControlsSort + 1
-        
-    End If
-    
-    'Our list of "valid" window targets is now guaranteed to include the source window that triggered this tab press
-    ' in the first place!  (We need it in the list, obviously, so we know which control(s) surround it in the tab order.)
-    
-    'Next, we need to sort the list by its sortKey property.  This list is guaranteed to be small, so we shouldn't
-    ' need a fancy sort.  An in-place insertion sort (as used elsewhere in the project) should be more than sufficient.
-    If (m_numOfControlsSort > 1) Then
-    
-        Dim j As Long, loopBound As Long, tmpRef As PD_ControlSort
-        loopBound = m_numOfControlsSort - 1
-        
-        'Loop through all entries in the stack, sorting them as we go
-        For i = 0 To loopBound
-            For j = 0 To loopBound
-                If (m_ControlsSort(i).sortKey < m_ControlsSort(j).sortKey) Then
-                    tmpRef = m_ControlsSort(i)
-                    m_ControlsSort(i) = m_ControlsSort(j)
-                    m_ControlsSort(j) = tmpRef
-                End If
-            Next j
-        Next i
-        
-    'If there is only one (or zero) valid tab key recipient(s) on this dialog, skip the sort step, obviously.
-    Else
-    
-    End If
-    
-    'Now that our list is sorted, we need to once again find the source window's hWnd.
-    For i = 0 To m_numOfControlsSort - 1
-        If (m_ControlsSort(i).hWnd = srcHwnd) Then
-            currentControlIndex = i
-            Exit For
-        End If
-    Next i
-    
-    'With a sorted list of controls, finding the next/previous control is easy!
-    Dim targetIndex As Long
-    
+    'Before doing anything else, ask the source control if it wants to specify a custom tab-key target.
+    ' If it does, we'll use its suggestion instead of determining our own.
+    Dim newTargetHwnd As Long: newTargetHwnd = 0
     If shiftTabPressed Then
-        targetIndex = currentControlIndex - 1
-        If (targetIndex < 0) Then targetIndex = m_numOfControlsSort - 1
+        UserControls.PostPDMessage WM_PD_SHIFT_TAB_KEY_TARGET, srcHwnd, VarPtr(newTargetHwnd)
     Else
-        targetIndex = currentControlIndex + 1
-        If (targetIndex >= m_numOfControlsSort) Then targetIndex = 0
+        UserControls.PostPDMessage WM_PD_TAB_KEY_TARGET, srcHwnd, VarPtr(newTargetHwnd)
     End If
     
-    'During debug sessions, it can be helpful to print window details to the immediate window
-    If DISPLAY_DEBUG_TABORDER_DATA Then
-        Debug.Print "---------"
-        For i = 0 To m_numOfControlsSort - 1
-            If (i = targetIndex) Then
-                Debug.Print "> " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
-            ElseIf (i = currentControlIndex) Then
-                Debug.Print "* " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
-            Else
-                Debug.Print GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+    If (newTargetHwnd = 0) Then
+    
+        'First thing we need to do is make a list of all visible/enabled controls on the form.
+        ' (Invisible/disabled controls can't receive focus, obviously!)
+        ReDim m_ControlsSort(0 To m_numOfControls) As PD_ControlSort
+        m_numOfControlsSort = 0
+        
+        'We also need the width of the current screen, so we can sort coordinates one-dimensionally.
+        Dim screenWidth As Long
+        screenWidth = g_Displays.GetDesktopWidth()
+        
+        Dim currentControlIndex As Long
+        currentControlIndex = -1
+        
+        Dim i As Long, tmpRect As winRect
+        For i = 0 To m_numOfControls - 1
+        
+            'Only visible + enabled controls are eligible for receiving focus
+            If (IsWindowVisible(m_Controls(i).hWnd) <> 0) And (IsWindowEnabled(m_Controls(i).hWnd)) Then
+                
+                'The command bar (and mini command bar) are a special case.  They are managed by this class,
+                ' because we need to detect them for OK/Cancel purposes, but we don't want them receiving
+                ' focus during KeyPress events.  (Instead, focus should go to one of their child controls.)
+                If (m_Controls(i).ctlType <> pdct_CommandBar) And (m_Controls(i).ctlType <> pdct_CommandBarMini) Then
+                
+                    'This control is visible, enabled, and interactive, making it a candidate for receiving focus.
+                    ' Retrieve its coordinates.
+                    g_WindowManager.GetWindowRect_API m_Controls(i).hWnd, tmpRect
+                    
+                    'I haven't decided if it is worthwhile to map coordinates to a new coordinate space prior to
+                    ' determining order.  (I don't think it matters, but it's possible I haven't fully considered the math!)
+                    
+                    'For now, convert the top-left corner of the rect into a single-dimension variable
+                    With m_ControlsSort(m_numOfControlsSort)
+                        .hWnd = m_Controls(i).hWnd
+                        .x = tmpRect.x1
+                        .y = tmpRect.y1
+                        .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
+                    End With
+                    
+                    'If this control is the one that supplied the tabkey, note it now
+                    If (srcHwnd = m_Controls(i).hWnd) Then currentControlIndex = m_numOfControlsSort
+                    
+                    m_numOfControlsSort = m_numOfControlsSort + 1
+                    
+                End If
+                
             End If
         Next i
-        Debug.Print "FYI, target control is " & GetControlNameFromHWnd(m_ControlsSort(targetIndex).hWnd)
+        
+        'We now have a list of all valid tab recipients on this form.  Hopefully our source control was included;
+        ' if it wasn't (for whatever reason), retrieve its last-known position and use that instead.
+        If (currentControlIndex = -1) Then
+            
+            g_WindowManager.GetWindowRect_API srcHwnd, tmpRect
+            
+            With m_ControlsSort(m_numOfControlsSort)
+                .hWnd = srcHwnd
+                .x = tmpRect.x1
+                .y = tmpRect.y1
+                .sortKey = GetSortKeyFromRect(tmpRect, screenWidth)
+            End With
+            
+            m_numOfControlsSort = m_numOfControlsSort + 1
+            
+        End If
+        
+        'Our list of "valid" window targets is now guaranteed to include the source window that triggered this tab press
+        ' in the first place!  (We need it in the list, obviously, so we know which control(s) surround it in the tab order.)
+        
+        'Next, we need to sort the list by its sortKey property.  This list is guaranteed to be small, so we shouldn't
+        ' need a fancy sort.  An in-place insertion sort (as used elsewhere in the project) should be more than sufficient.
+        If (m_numOfControlsSort > 1) Then
+        
+            Dim j As Long, loopBound As Long, tmpRef As PD_ControlSort
+            loopBound = m_numOfControlsSort - 1
+            
+            'Loop through all entries in the stack, sorting them as we go
+            For i = 0 To loopBound
+                For j = 0 To loopBound
+                    If (m_ControlsSort(i).sortKey < m_ControlsSort(j).sortKey) Then
+                        tmpRef = m_ControlsSort(i)
+                        m_ControlsSort(i) = m_ControlsSort(j)
+                        m_ControlsSort(j) = tmpRef
+                    End If
+                Next j
+            Next i
+            
+        'If there is only one (or zero) valid tab key recipient(s) on this dialog, skip the sort step, obviously.
+        Else
+        
+        End If
+        
+        'Now that our list is sorted, we need to once again find the source window's hWnd.
+        For i = 0 To m_numOfControlsSort - 1
+            If (m_ControlsSort(i).hWnd = srcHwnd) Then
+                currentControlIndex = i
+                Exit For
+            End If
+        Next i
+        
+        'With a sorted list of controls, finding the next/previous control is easy!
+        Dim targetIndex As Long
+        
+        If shiftTabPressed Then
+            targetIndex = currentControlIndex - 1
+            If (targetIndex < 0) Then targetIndex = m_numOfControlsSort - 1
+        Else
+            targetIndex = currentControlIndex + 1
+            If (targetIndex >= m_numOfControlsSort) Then targetIndex = 0
+        End If
+        
+        'During debug sessions, it can be helpful to print window details to the immediate window
+        If DISPLAY_DEBUG_TABORDER_DATA Then
+            Debug.Print "---------"
+            For i = 0 To m_numOfControlsSort - 1
+                If (i = targetIndex) Then
+                    Debug.Print "> " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+                ElseIf (i = currentControlIndex) Then
+                    Debug.Print "* " & GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+                Else
+                    Debug.Print GetControlNameFromHWnd(m_ControlsSort(i).hWnd), m_ControlsSort(i).sortKey
+                End If
+            Next i
+            Debug.Print "FYI, target control is " & GetControlNameFromHWnd(m_ControlsSort(targetIndex).hWnd)
+        End If
+        
+        newTargetHwnd = m_ControlsSort(targetIndex).hWnd
+        
     End If
+        
+    'Some controls require special focus notifications (e.g. spinners, which default to
+    ' the edit box receiving focus via tab key - NOT the spin control).  Check for this now.
+    Dim useSpecialFocusEvent As Long: useSpecialFocusEvent = 0
+    UserControls.PostPDMessage WM_PD_FOCUS_FROM_TAB_KEY, newTargetHwnd, VarPtr(useSpecialFocusEvent)
     
-    'Finally, apply the focus change!
-    g_WindowManager.SetFocusAPI m_ControlsSort(targetIndex).hWnd
-
+    'Finally, apply the focus change!  (If the previous step succeeded, the caller must set
+    ' useSpecialFocusEvent to a non-zero value - this means they handled the focus event
+    ' internally, so we don't need to handle it for them.)
+    If (useSpecialFocusEvent = 0) Then g_WindowManager.SetFocusAPI newTargetHwnd
+    
 End Sub
 
 'Return a sort key for a given control's window rectangle (e.g. the control's coordinates and dimensions,

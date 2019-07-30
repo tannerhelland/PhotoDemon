@@ -115,6 +115,9 @@ Public Const WM_PD_PRIMARY_COLOR_CHANGE As Long = (WM_APP + 16&)
 Public Const WM_PD_COLOR_MANAGEMENT_CHANGE As Long = (WM_APP + 17&)
 Public Const WM_PD_DIALOG_NAVKEY As Long = (WM_APP + 18&)
 Public Const WM_PD_PRIMARY_COLOR_APPLIED As Long = (WM_APP + 19&)
+Public Const WM_PD_FOCUS_FROM_TAB_KEY As Long = (WM_APP + 20&)
+Public Const WM_PD_TAB_KEY_TARGET As Long = (WM_APP + 21&)
+Public Const WM_PD_SHIFT_TAB_KEY_TARGET As Long = (WM_APP + 22&)
 
 'Inside the IDE, we can't rely on PD's central themer for color decisions (as it won't be initialized).
 ' A few constants are used instead.

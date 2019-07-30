@@ -437,7 +437,7 @@ Public Sub RemoveMessageRecipient(ByVal targetHWnd As Long)
     'Rather then condensing the list, we simply set all corresponding window entries to zero.
     Dim i As Long
     For i = 0 To m_windowMsgCount - 1
-        If m_windowList(i) = targetHWnd Then
+        If (m_windowList(i) = targetHWnd) Then
             m_windowList(i) = 0
             m_wMsgList(i) = 0
         End If
