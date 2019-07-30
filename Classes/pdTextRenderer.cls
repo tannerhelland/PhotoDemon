@@ -1290,43 +1290,44 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         Exit Function
     End If
     
+    'Check for zero-length text
+    If (LenB(m_CurrentText) = 0) Then
+        RenderTextToDIB = True
+        Exit Function
+    End If
+    
     'PD currently supports two rendering modes: WAPI (which uses GDI or GDI+ to render the text, and is thus limited by the settings
     ' those two engines provide), or an internal PHOTODEMON engine, which manually extracts font glyphs and renders them ourselves.
     If (m_RenderingEngine = tre_WAPI) Then
         
-        'All backends have no reason to render if text isn't present
-        If (LenB(m_CurrentText) <> 0) Then
-        
-            'We should now know whether GDI or GDI+ is required for this combination of settings.
-            Select Case m_CurrentBackend
+        'We should now know whether GDI or GDI+ is required for this combination of settings.
+        Select Case m_CurrentBackend
+            
+            'GDI+ is sufficient
+            Case fb_GDIPLUS
+                RenderTextToDIB = RenderTextToDIB_GDIPlus(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                 
-                'GDI+ is sufficient
-                Case fb_GDIPLUS
-                    RenderTextToDIB = RenderTextToDIB_GDIPlus(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
-                    
-                    'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
-                    If (Not RenderTextToDIB) Then
-                        Debug.Print "GDI+ text render failed; falling back to GDI renderer..."
-                        RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
-                    End If
-                    
-                'GDI is required
-                Case fb_GDI
+                'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
+                If (Not RenderTextToDIB) Then
+                    Debug.Print "GDI+ text render failed; falling back to GDI renderer..."
                     RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
-                    
-                'GDI and GDI+ both failed; at present, we have no fallback for this case
-                Case fb_UNKNOWN
-                    PDDebug.LogAction "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
-                    RenderTextToDIB = False
-                    
-            End Select
+                End If
+                
+            'GDI is required
+            Case fb_GDI
+                RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
+                
+            'GDI and GDI+ both failed; at present, we have no fallback for this case
+            Case fb_UNKNOWN
+                PDDebug.LogAction "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
+                RenderTextToDIB = False
+                
+        End Select
             
-            'Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
-            
-        End If
-    
+        'Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
+        
     ElseIf (m_RenderingEngine = tre_PHOTODEMON) Then
-    
+        
         'PD's internal font engine works by manually translating GDI glyphs into GDI+ paths, then rendering the paths manually.
         ' Because glyph geometry is very energy intensive, we use a separate class that caches glyphs as they are created.
         ' This saves us from having to translate glyphs more than once, which is a non-trivial boost on text with one or more
@@ -1353,7 +1354,7 @@ Friend Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         
         'With the glyph collection successfully assembled, proceed with rendering
         RenderTextToDIB = RenderTextToDIB_Glyphs(dstDIB, tmpString, x1, y1, textWidth, textHeight)
-    
+        
     'Failsafe
     Else
         RenderTextToDIB = False
@@ -1624,26 +1625,31 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             gdipReturn = GdipDrawRectangle(dstGraphics, gdipBackBorderPen, x1 + halfBorderWidth, y1 + halfBorderWidth, textWidth - borderWidth, textHeight - borderWidth)
             If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawRectangle failed; return code was " & gdipReturn
         End If
+        
+        'Before attempting to render the text itself, make sure a boundary rect exists.
+        ' (Bad/corrupted font files may not produce usable glyph data.)
+        If (boundingRect.Width > 0!) And (boundingRect.Height > 0!) Then
+            
+            'If fill mode is active, draw the text now
+            If (gdipFillBrush <> 0) Then
+            
+                'Update the fill brush against the final rect established by the path renderer.
+                ' (This additional step is necessary to ensure that gradients span the full width/height of the text.)
+                textFillBrush.SetBrushPropertiesFromXML m_FillBrush
+                boundingRect = finalTextPath.GetPathBoundariesF
+                textFillBrush.SetBoundaryRect boundingRect
+                gdipFillBrush = textFillBrush.GetHandle
+                gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
+                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
                 
-        'If fill mode is active, draw the text now
-        If (gdipFillBrush <> 0) Then
-        
-            'Update the fill brush against the final rect established by the path renderer.
-            ' (This additional step is necessary to ensure that gradients span the full width/height of the text.)
-            textFillBrush.SetBrushPropertiesFromXML m_FillBrush
-            boundingRect = finalTextPath.GetPathBoundariesF
-            textFillBrush.SetBoundaryRect boundingRect
-            gdipFillBrush = textFillBrush.GetHandle
+            End If
             
-            gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
-            If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+            'If outline mode is active, stroke the text now
+            If (gdipOutlinePen <> 0) Then
+                gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
+                If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+            End If
             
-        End If
-        
-        'If outline mode is active, stroke the text now
-        If (gdipOutlinePen <> 0) Then
-            gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
-            If (gdipReturn <> GP_OK) Then PDDebug.LogAction "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
         End If
         
     Else

@@ -711,14 +711,15 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             'Start by finding the distance of the rotation line.
             Dim rRadius As Double
             rRadius = PDMath.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y)
+            If (rRadius < 0.1) Then rRadius = 0.1
             
             'From there, bounds are easy-peasy
             Dim rotateBoundRect As RectF
             With rotateBoundRect
                 .Left = layerRotateNodes(0).x - rRadius
                 .Top = layerRotateNodes(0).y - rRadius
-                .Width = rRadius * 2
-                .Height = rRadius * 2
+                .Width = rRadius * 2#
+                .Height = rRadius * 2#
             End With
             
             'Arc sweep and arc length are inter-related.  What we ultimately want is a (roughly) equal arc size regardless of zoom or

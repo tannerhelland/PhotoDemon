@@ -115,7 +115,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
     Else
     
-        'Create a 4x4 transparent DIB to avoid errors; subsequent functions will resize the DIB as required
+        'Create a 1x1 transparent DIB to avoid errors; subsequent functions will resize the DIB as required
         tmpDIB.CreateBlank 1, 1, 32, 0, 0
     
     End If
@@ -124,7 +124,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     tmpDIB.SetInitialAlphaPremultiplicationState True
     
     'Set the layer name
-    If (Len(Trim$(dLayerName)) = 0) Then
+    If (LenB(Trim$(dLayerName)) = 0) Then
     
         Select Case dLayerType
         
@@ -155,8 +155,8 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
         
         'Set an initial width/height of 1x1
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerWidth 1#
-            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerHeight 1#
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerWidth 1!
+            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerHeight 1!
         
     End Select
         
@@ -201,7 +201,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     If (Not suspendRedraws) Then
         
         ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-    
+        
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.NotifyLayerChange
         

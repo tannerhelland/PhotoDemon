@@ -266,7 +266,7 @@ Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
             curGlyphIndex = m_Glyphs(i).glyphIndex
             
             'See if this glyph index already exists in our outline collection
-            If m_NumOfGlyphs > 0 Then
+            If (m_NumOfGlyphs > 0) Then
                 
                 For j = 0 To m_NumOfGlyphOutlines - 1
                     
@@ -344,7 +344,7 @@ Friend Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal u
                 'If a glyph was successfully added to the collection, increment the current glyph count and resize the collection as necessary.
                 If glyphAdded Then
                     m_NumOfGlyphOutlines = m_NumOfGlyphOutlines + 1
-                    If m_NumOfGlyphOutlines > UBound(m_GlyphOutlines) Then ReDim Preserve m_GlyphOutlines(0 To m_NumOfGlyphOutlines * 2 - 1) As pdGlyphOutline
+                    If (m_NumOfGlyphOutlines > UBound(m_GlyphOutlines)) Then ReDim Preserve m_GlyphOutlines(0 To m_NumOfGlyphOutlines * 2 - 1) As pdGlyphOutline
                 End If
                 
             '(End "If Not charAlreadyExists")
@@ -788,6 +788,8 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         'With all glyphs assembled, apply underline/strikeout if any
         If m_StyleUnderline Or m_StyleStrikeout Then dstPath.AddPath additionalStylesRect
         
+    Else
+        Debug.Print "No glyphs in the current path; pdGlyphCollection.AssembleCompositePath() exited without doing anything..."
     End If
         
     AssembleCompositePath = True

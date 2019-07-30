@@ -662,7 +662,9 @@ Friend Function GetPathBoundariesF(Optional ByRef testPen As pd2DPen = Nothing, 
         End If
         
         GetPathBoundariesF = GDI_Plus.GDIPlus_PathGetPathBoundsF(m_PathHandle, transformHandle, penHandle)
-        
+    
+    Else
+        InternalError "No path handle!", "GetPathBoundariesF() can't return boundaries if the path doesn't exist"
     End If
     
 End Function

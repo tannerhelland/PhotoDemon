@@ -856,8 +856,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
                     
-                    'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
-                    ' want the delay associated with full Undo/Redo creation.
+                    'Create a new text layer directly; note that we *do not* pass this command through the central processor,
+                    ' as we don't want the delay associated with full Undo/Redo creation.
                     If (g_CurrentTool = VECTOR_TEXT) Then
                         Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, imgX, imgY, True
                     ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
@@ -876,7 +876,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     'Redraw the viewport immediately
                     tmpViewportParams.curPOI = poi_CornerSE
                     ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
-                
+                    
                 End If
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
@@ -1121,9 +1121,9 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
                         'If the current text box is empty, set some new text to orient the user
                         If (g_CurrentTool = VECTOR_TEXT) Then
-                            If (Len(toolpanel_Text.txtTextTool.Text) = 0) Then toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            If (LenB(toolpanel_Text.txtTextTool.Text) = 0) Then toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         Else
-                            If (Len(toolpanel_FancyText.txtTextTool.Text) = 0) Then toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            If (LenB(toolpanel_FancyText.txtTextTool.Text) = 0) Then toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         End If
                         
                         'Manually synchronize the new size values against their on-screen UI elements

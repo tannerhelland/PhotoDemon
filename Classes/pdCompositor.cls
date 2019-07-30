@@ -647,6 +647,8 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     Dim dibWidthCalc As Long, dibHeightCalc As Long
     dibWidthCalc = Int(dstViewportRect.Width + PDMath.Frac(dstViewportRect.Left) + 0.99)
     dibHeightCalc = Int(dstViewportRect.Height + PDMath.Frac(dstViewportRect.Top) + 0.99)
+    If (dibWidthCalc < 1) Then dibWidthCalc = 1
+    If (dibHeightCalc < 1) Then dibHeightCalc = 1
     
     'Note that we try to avoid recreating this DIB unless absolutely necessary
     If (m_dstDIB.GetDIBWidth < dibWidthCalc) Or (m_dstDIB.GetDIBHeight < dibHeightCalc) Then
@@ -952,6 +954,8 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' to make sure the DIB is at least large enough to contain 0.999 offsets on either side.
             dibWidthCalc = Int(dstRect.Width + (dstRect.Left - Int(dstRect.Left)) + 0.999)
             dibHeightCalc = Int(dstRect.Height + (dstRect.Top - Int(dstRect.Top)) + 0.999)
+            If (dibWidthCalc < 1) Then dibWidthCalc = 1
+            If (dibHeightCalc < 1) Then dibHeightCalc = 1
             
             'With all coordinate math complete, we now proceed with the actual compositing!
             
@@ -1153,6 +1157,8 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             'dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
             dibWidthCalc = Int(dstViewportRect.Width + 0.9999)
             dibHeightCalc = Int(dstViewportRect.Height + 0.9999)
+            If (dibWidthCalc < 1) Then dibWidthCalc = 1
+            If (dibHeightCalc < 1) Then dibHeightCalc = 1
             
             'While the layer provides its own hash (representing whether internal layer settings have changed), we also append some viewport-specific
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.  However,

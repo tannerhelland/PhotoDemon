@@ -274,7 +274,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     If (Not fullPipelineCall) Then allowedToRender = ViewportRenderingAllowed(srcImage, dstCanvas)
     
     If allowedToRender Then
-    
+        
         'If the user passed in viewport parameters, retrieve them now
         Dim localViewportParams As PD_ViewportParams
         If (ptrToViewportParams <> 0) Then
