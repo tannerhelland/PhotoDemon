@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1193</langversion>
+<langversion>7.2.1202</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2340,7 +2340,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Clouds</original>
-<translation></translation>
+<translation>Wolken</translation>
 </phrase>
 
 <phrase>
@@ -3737,7 +3737,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Viewport-Rendering angehalten aufgrund eines unerwarteten Fehlers (#%1)</translation>
+<translation>Viewport-Rendering pausiert aufgrund eines unerwarteten Fehlers (#%1)</translation>
 </phrase>
 
 <!-- ViewportEngine.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -6258,7 +6258,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Render</original>
-<translation></translation>
+<translation>Rendern</translation>
 </phrase>
 
 <phrase>
@@ -7452,12 +7452,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>absorb excessive sky blue, emphasizing clouds</original>
-<translation>Übermäßiges Himmelblau absorbieren, Wolken verstärken</translation>
+<translation>Übermäßiges Himmelblau absorbieren, Wolken betonend</translation>
 </phrase>
 
 <phrase>
 <original>high blue absorption; correction for sky, cloud, and foliage</original>
-<translation>Hohe Blauabsorption; Korrektur für Himmel, Wolken und Laub</translation>
+<translation>Hohe Blauabsorption; Korrektur für Himmel, Wolke und Laub</translation>
 </phrase>
 
 <phrase>
@@ -9148,7 +9148,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>render emphasis</original>
-<translation>Schwerpunkt rendern</translation>
+<translation>Render-Betonung</translation>
 </phrase>
 
 <phrase>
@@ -10200,7 +10200,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Increasing image noise</original>
-<translation>Bildrauschen verstärken</translation>
+<translation>Bildrauschen wird erhöht</translation>
 </phrase>
 
 <phrase>
@@ -13650,12 +13650,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Sie haben den "sicheren" Speichermodus spezifiziert. Dies bedeutet, dass bei jedem Speichern eine neue Datei erstellt wird; der Dateiname wird automatisch erhöht.</translation>
+<translation>Sie haben den "sicheren" Speichermodus spezifiziert. Dies bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateinamen erstellen wird.</translation>
 </phrase>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer automatisch erhöhten Versionsnummer, falls erforderlich).</translation>
+<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Versionsnummer, falls erforderlich).</translation>
 </phrase>
 
 <phrase>
@@ -15424,7 +15424,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>Die EXIF-Spezifikation fragt Programme ab, sich selbst korrekt als Ursprungs-Software zu identifizieren, wenn Bilddateien exportiert werden. Für mehr Privatsphäre können Sie dieses Verhalten aussetzen.</translation>
+<translation>Die EXIF-Spezifikation fragt Programme ab, sich selbst korrekt als Ursprungs-Software zu identifizieren, wenn Bilddateien exportiert werden. Für erhöhte Privatsphäre können Sie dieses Verhalten aussetzen.</translation>
 </phrase>
 
 <phrase>
@@ -15833,27 +15833,27 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>generator</original>
-<translation></translation>
+<translation>Generator</translation>
 </phrase>
 
 <phrase>
 <original>Rendering clouds</original>
-<translation></translation>
+<translation>Wolken werden gerendert</translation>
 </phrase>
 
 <phrase>
 <original>Perlin</original>
-<translation></translation>
+<translation>Perlin</translation>
 </phrase>
 
 <phrase>
 <original>Simplex</original>
-<translation></translation>
+<translation>Simplex</translation>
 </phrase>
 
 <phrase>
 <original>OpenSimplex</original>
-<translation></translation>
+<translation>OpenSimplex</translation>
 </phrase>
 
 <!-- Effects_Render_Clouds.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
