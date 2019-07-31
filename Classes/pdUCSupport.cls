@@ -56,6 +56,7 @@ Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shi
 Public Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 Public Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 Public Event KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, ByRef markEventHandled As Boolean)
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -228,11 +229,19 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, ByVal controlCanReceiveFo
         'Mark whether the control can receive focus; if it can, we'll immediately start tracking Tab keypresses
         m_ControlCanGetFocus = controlCanReceiveFocus
         If m_ControlCanGetFocus Then
+            
             Set m_KeyEvents = New pdInputKeyboard
             If PDMain.IsProgramRunning() Then
                 m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
                 m_KeyEvents.RequestMoreKeys vbKeyReturn, vbKeyTab, vbKeyEscape
             End If
+            
+            'We also want to subclass some special internal PD messages related to tab-key nav;
+            ' these allow controls to specify custom tab and shift+tab targets (for pages with
+            ' non-standard control layouts, like toolboxes)
+            Me.SubclassCustomMessage WM_PD_TAB_KEY_TARGET, True
+            Me.SubclassCustomMessage WM_PD_SHIFT_TAB_KEY_TARGET, True
+            
         End If
         
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
@@ -1494,7 +1503,29 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'See if this message is a message that our parent control wants notification for.  If it is, relay it accordingly.
         If (Not m_CustomMessages Is Nothing) Then
-            If m_CustomMessages.DoesKeyExist(uiMsg) Then RaiseEvent CustomMessage(uiMsg, wParam, lParam, eatMessage, ISubclass_WindowMsg)
+            If m_CustomMessages.DoesKeyExist(uiMsg) Then
+                
+                'Look for some special internal message IDs
+                
+                'If tab or shift+tab was pressed, give the target control an opportunity to override
+                ' the default focus target.
+                Dim newHWnd As Long: newHWnd = 0
+                If (uiMsg = WM_PD_TAB_KEY_TARGET) And (wParam = m_hWnd) Then
+                    RaiseEvent SetCustomTabTarget(False, newHWnd)
+                    eatMessage = True
+                    PutMem4 lParam, newHWnd
+                
+                ElseIf (uiMsg = WM_PD_SHIFT_TAB_KEY_TARGET) And (wParam = m_hWnd) Then
+                    RaiseEvent SetCustomTabTarget(True, newHWnd)
+                    PutMem4 lParam, newHWnd
+                    eatMessage = True
+                
+                'Any other messages are up to the target control to deal with on their own.
+                Else
+                    RaiseEvent CustomMessage(uiMsg, wParam, lParam, eatMessage, ISubclass_WindowMsg)
+                End If
+                
+            End If
         End If
         
     End If

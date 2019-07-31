@@ -29,8 +29,8 @@ Begin VB.UserControl pdDropDownFont
       Top             =   0
       Visible         =   0   'False
       Width           =   4935
-      _ExtentX        =   2566
-      _ExtentY        =   661
+      _extentx        =   2566
+      _extenty        =   661
    End
 End
 Attribute VB_Name = "pdDropDownFont"
@@ -62,6 +62,7 @@ Public Event Click()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
@@ -638,6 +639,10 @@ End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout Else RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)

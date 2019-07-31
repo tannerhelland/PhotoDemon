@@ -67,6 +67,7 @@ Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Sh
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
 ' via dedicated properties.
@@ -573,6 +574,10 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByRef resName As 
         UpdateControlLayout
     End If
 
+End Sub
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)

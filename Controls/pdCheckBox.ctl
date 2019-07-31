@@ -65,6 +65,7 @@ Public Event Click()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'If we cannot physically fit a translated caption into the user control's area (because we run out of allowable font sizes),
 ' this failure state will be set to TRUE.  When that happens, ellipses will be forcibly appended to the control caption.
@@ -272,6 +273,10 @@ End Sub
 Private Function IsMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
     IsMouseOverClickArea = PDMath.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
 End Function
+
+Private Sub ucSupport_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    RaiseEvent SetCustomTabTarget(shiftTabWasPressed, newTargetHwnd)
+End Sub
 
 Private Sub UserControl_Initialize()
     

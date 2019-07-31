@@ -25,20 +25,20 @@ Begin VB.UserControl pdSlider
    Begin PhotoDemon.pdSliderStandalone pdssPrimary 
       Height          =   360
       Left            =   0
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   60
       Width           =   4335
-      _ExtentX        =   8281
-      _ExtentY        =   635
+      _extentx        =   8281
+      _extenty        =   635
    End
    Begin PhotoDemon.pdSpinner tudPrimary 
       Height          =   345
       Left            =   4440
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   45
       Width           =   1260
-      _ExtentX        =   2223
-      _ExtentY        =   609
+      _extentx        =   2223
+      _extenty        =   609
    End
 End
 Attribute VB_Name = "pdSlider"
@@ -101,6 +101,7 @@ Public Event ResetClick()
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ByRef newTargetHwnd As Long)
 
 'If this is an owner-drawn slider, the slider will raise events when it needs an updated track image.
 ' (This event is irrelevant for normal sliders.)
@@ -229,6 +230,14 @@ End Property
 
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
+End Property
+
+Public Property Get hWndSlider() As Long
+    hWndSlider = pdssPrimary.hWnd
+End Property
+
+Public Property Get hWndSpinner() As Long
+    hWndSpinner = tudPrimary.hWnd
 End Property
 
 'If the current text value is NOT valid, this will return FALSE.  Note that this property is read-only.
@@ -414,6 +423,14 @@ End Sub
 'During owner-draw mode, our parent can call this sub if they need to modify their owner-drawn track image.
 Public Sub RequestOwnerDrawChange()
     pdssPrimary.RequestOwnerDrawChange
+End Sub
+
+Private Sub pdssPrimary_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then RaiseEvent SetCustomTabTarget(True, newTargetHwnd)
+End Sub
+
+Private Sub tudPrimary_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Not shiftTabWasPressed) Then RaiseEvent SetCustomTabTarget(False, newTargetHwnd)
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
