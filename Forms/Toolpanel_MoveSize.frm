@@ -327,6 +327,18 @@ Private Sub UpdateSubpanel()
     Next i
 End Sub
 
+Private Sub btsMoveOptions_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (btsMoveOptions.ListIndex = 0) Then
+        If shiftTabWasPressed Then
+            If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = cboLayerResizeQuality.hWnd
+        End If
+    ElseIf (btsMoveOptions.ListIndex = 1) Then
+        If shiftTabWasPressed Then
+            If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = sltLayerShearY.hWndSpinner
+        End If
+    End If
+End Sub
+
 Private Sub cboLayerResizeQuality_Click()
     
     'If tool changes are not allowed, exit.
@@ -356,9 +368,29 @@ Private Sub cboLayerResizeQuality_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex
 End Sub
 
+Private Sub cboLayerResizeQuality_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = tudLayerMove(3).hWnd
+    Else
+        If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = btsMoveOptions.hWnd
+    End If
+End Sub
+
 'En/disable the "ignore transparent layer bits on click activations" setting if the auto-activate clicked layer setting changes
 Private Sub chkAutoActivateLayer_Click()
     chkIgnoreTransparent.Enabled = chkAutoActivateLayer
+End Sub
+
+Private Sub chkAutoActivateLayer_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Not shiftTabWasPressed) Then newTargetHwnd = chkIgnoreTransparent.hWnd
+End Sub
+
+Private Sub chkIgnoreTransparent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkAutoActivateLayer.hWnd
+    Else
+        newTargetHwnd = chkLayerBorder.hWnd
+    End If
 End Sub
 
 'Show/hide layer borders while using the move tool
@@ -367,10 +399,26 @@ Private Sub chkLayerBorder_Click()
     ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkLayerBorder_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkIgnoreTransparent.hWnd
+    Else
+        newTargetHwnd = chkLayerNodes.hWnd
+    End If
+End Sub
+
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
     Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
     ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
+
+Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkLayerBorder.hWnd
+    Else
+        newTargetHwnd = chkRotateNode.hWnd
+    End If
 End Sub
 
 Private Sub chkRotateNode_Click()
@@ -378,9 +426,21 @@ Private Sub chkRotateNode_Click()
     ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
+Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = chkLayerNodes.hWnd
+End Sub
+
 Private Sub cmdLayerAffinePermanent_Click()
     If (Not PDImages.IsImageActive()) Then Exit Sub
     Process "Make layer changes permanent", , BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
+End Sub
+
+Private Sub cmdLayerAffinePermanent_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = sltLayerShearY.hWndSpinner
+    Else
+        newTargetHwnd = btsMoveOptions.hWnd
+    End If
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
@@ -395,6 +455,10 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
     End Select
     
+End Sub
+
+Private Sub cmdLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) And (Not shiftTabWasPressed) Then newTargetHwnd = btsMoveOptions.hWnd
 End Sub
 
 Private Sub Form_Load()
@@ -519,6 +583,10 @@ Private Sub sltLayerShearX_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_ShearX, sltLayerShearX.Value
 End Sub
 
+Private Sub sltLayerShearX_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Not shiftTabWasPressed) Then newTargetHwnd = sltLayerShearY.hWndSlider
+End Sub
+
 Private Sub sltLayerShearY_Change()
     
     'If tool changes are not allowed, exit.
@@ -554,6 +622,14 @@ End Sub
 
 Private Sub sltLayerShearY_LostFocusAPI()
     Processor.FlagFinalNDFXState_Generic pgp_ShearY, sltLayerShearY.Value
+End Sub
+
+Private Sub sltLayerShearY_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = sltLayerShearX.hWndSpinner
+    Else
+        If cmdLayerAffinePermanent.Enabled Then newTargetHwnd = cmdLayerAffinePermanent.hWnd Else newTargetHwnd = btsMoveOptions.hWnd
+    End If
 End Sub
 
 Private Sub tudLayerMove_Change(Index As Integer)
@@ -617,6 +693,7 @@ Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
+    If (Not PDImages.IsImageActive()) Then Exit Sub
     If (Index = 0) Then
         Processor.FlagFinalNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value
     ElseIf (Index = 1) Then
@@ -651,4 +728,24 @@ Public Sub UpdateAgainstCurrentTheme()
     
     Interface.ApplyThemeAndTranslations Me
     
+End Sub
+
+'Because these controls are laid out in a non-standard pattern, we want to manually specify tab and
+' shift+tab focus targets.
+Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    
+    If shiftTabWasPressed Then
+        If (Index > 0) Then
+            newTargetHwnd = tudLayerMove(Index - 1).hWnd
+        Else
+            newTargetHwnd = btsMoveOptions.hWnd
+        End If
+    Else
+        If (Index < 3) Then
+            newTargetHwnd = tudLayerMove(Index + 1).hWnd
+        Else
+            newTargetHwnd = cboLayerResizeQuality.hWnd
+        End If
+    End If
+
 End Sub
