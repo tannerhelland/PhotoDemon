@@ -120,27 +120,30 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte
-    Dim tmpSA As SafeArray2D
-    
+    Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
-        
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim qvDepth As Long
+    qvDepth = curDIBValues.BytesPerPixel
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right
+    finalX = curDIBValues.Right * qvDepth
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    
+    Dim dibPtr As Long, dibStride As Long
+    dibPtr = workingDIB.GetDIBPointer
+    dibStride = workingDIB.GetDIBStride
+    workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, 0
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
@@ -168,14 +171,14 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
     cRandom.SetSeed_AutomaticAndRandom
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
-    
+        tmpSA1D.pvData = dibPtr + y * dibStride
+    For x = initX To finalX Step qvDepth
+        
         'Get the source pixel color values
-        b = imageData(quickVal, y)
-        g = imageData(quickVal + 1, y)
-        r = imageData(quickVal + 2, y)
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
         
         'Monochromatic noise - same amount for each color
         If useMono Then
@@ -213,21 +216,21 @@ Public Sub AddNoise(ByVal effectParams As String, Optional ByVal toPreview As Bo
         If (b < 0) Then b = 0
         
         'Assign that blended value to each color channel
-        imageData(quickVal, y) = b
-        imageData(quickVal + 1, y) = g
-        imageData(quickVal + 2, y) = r
+        imageData(x) = b
+        imageData(x + 1) = g
+        imageData(x + 2) = r
         
-    Next y
+    Next x
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If Interface.UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    workingDIB.UnwrapArrayFromDIB imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     EffectPrep.FinalizeImageData toPreview, dstPic

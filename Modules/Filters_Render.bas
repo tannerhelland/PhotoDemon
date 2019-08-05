@@ -149,3 +149,143 @@ Public Function GetCloudDIB(ByRef dstDIB As pdDIB, ByVal fxScale As Double, ByVa
         
 End Function
 
+'Render a "fiber" effect to an arbitrary DIB.  A two-color system (a la Photoshop) is used.
+' The DIB must already exist and be sized to whatever dimensions the caller requires.
+Public Function RenderFibers_TwoColor(ByRef dstDIB As pdDIB, ByVal firstColorRGBA As Long, ByVal secondColorRGBA As Long, ByVal fxStrength As Double, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Long, dstSA As SafeArray2D
+    dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, yStep As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBWidth - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    yStep = 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'Prep a randomizer
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_Float fxRndSeed
+    
+    'Set the initial color randomly
+    Dim lastColor As Long, newColor As Long, tmpColor As Long
+    If (cRandom.GetRandomFloat_WH() > 0.5) Then
+        lastColor = firstColorRGBA
+        newColor = secondColorRGBA
+    Else
+        lastColor = secondColorRGBA
+        newColor = firstColorRGBA
+    End If
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+    For y = initY To finalY Step yStep
+        
+        If (cRandom.GetRandomFloat_WH() < fxStrength) Then
+            tmpColor = lastColor
+            lastColor = newColor
+            newColor = tmpColor
+        End If
+        
+        'Write all RGBA bytes at once
+        dstImageData(x, y) = lastColor
+          
+    Next y
+        If (Not suppressMessages) Then
+            If (x And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal modifyProgBarOffset + x
+            End If
+        End If
+        
+        'Switch direction on each iteration (serpentine)
+        If (yStep > 0) Then
+            initY = finalY
+            finalY = 0
+            yStep = -1
+        Else
+            finalY = initY
+            initY = 0
+            yStep = 1
+        End If
+        
+    Next x
+    
+    'tmpFogDIB now contains a grayscale representation of our fog data
+    dstDIB.UnwrapLongArrayFromDIB dstImageData
+    dstDIB.SetInitialAlphaPremultiplicationState True
+    
+    RenderFibers_TwoColor = True
+        
+End Function
+
+'Render a "fiber" effect to an arbitrary DIB.  An arbitrary lookup-table system is used.
+' The DIB must also already exist and be sized to whatever dimensions the caller requires.
+Public Function RenderFibers_LUT(ByRef dstDIB As pdDIB, ByRef cLut() As Long, ByVal fxStrength As Double, Optional ByVal fxRndSeed As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Long, dstSA As SafeArray2D
+    dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBWidth - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalY Else SetProgBarMax modifyProgBarMax
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
+    
+    'Prep a randomizer
+    Dim cRandom As pdRandomize
+    Set cRandom = New pdRandomize
+    cRandom.SetSeed_Float fxRndSeed
+    
+    'Set the initial color randomly
+    Dim lastColor As Long, lutLimit As Long
+    lutLimit = UBound(cLut)
+    lastColor = cLut(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+    For y = initY To finalY
+        
+        If (cRandom.GetRandomFloat_WH() < fxStrength) Then lastColor = cLut(Int(cRandom.GetRandomFloat_WH() * lutLimit + 0.9999))
+        
+        'Write all RGBA bytes at once
+        dstImageData(x, y) = lastColor
+          
+    Next y
+        If (Not suppressMessages) Then
+            If (x And progBarCheck) = 0 Then
+                If Interface.UserPressedESC() Then Exit For
+                SetProgBarVal modifyProgBarOffset + x
+            End If
+        End If
+    Next x
+    
+    'tmpFogDIB now contains a grayscale representation of our fog data
+    dstDIB.UnwrapLongArrayFromDIB dstImageData
+    dstDIB.SetInitialAlphaPremultiplicationState True
+    
+    RenderFibers_LUT = True
+        
+End Function
+

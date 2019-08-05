@@ -3289,6 +3289,13 @@ End Sub
 ' to fit the rotated image, or a parameter can be set, instructing the function to use the destination DIB "as-is"
 Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False, Optional ByVal rotateQuality As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal transparentBackground As Boolean = True, Optional ByVal newBackColor As Long = vbWhite)
     
+    'Shortcut angle = 0!
+    If (rotateAngle = 0!) Then
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateFromExistingDIB srcDIB
+        Exit Sub
+    End If
+    
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
@@ -3322,10 +3329,11 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
+    ' (NOTE: we now move the +0.5 to the very end of the transform, as that's the only place it matters.)
     Dim i As Long
     For i = 0 To 3
-        listOfPoints(i).x = listOfPoints(i).x + 0.5! + hOffset
-        listOfPoints(i).y = listOfPoints(i).y + 0.5! + vOffset
+        listOfPoints(i).x = listOfPoints(i).x + hOffset
+        listOfPoints(i).y = listOfPoints(i).y + vOffset
     Next i
     
     'If a background color is being applied, "cut out" the target region now
@@ -3348,10 +3356,10 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         cx = cx * 0.25
         cy = cy * 0.25
         
-        'Re-center the points around (0, 0)
+        'Re-center the points around (0, 0) and add 0.5 for GDI+ half-pixel offset requirements
         For i = 0 To 3
-            tmpPoints(i).x = tmpPoints(i).x - cx
-            tmpPoints(i).y = tmpPoints(i).y - cy
+            tmpPoints(i).x = tmpPoints(i).x - cx + 0.5!
+            tmpPoints(i).y = tmpPoints(i).y - cy + 0.5!
         Next i
         
         'For each corner of the rotated square, convert the point to polar coordinates, then shrink the radius by one.
@@ -3394,14 +3402,21 @@ End Sub
 ' to fill all empty space around the rotated image.  This very cool operation allows us to support angles for any filter
 ' with a grid implementation (e.g. something that operates on the (x, y) axes of an image, like pixellate or blur).
 Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single)
-
+    
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
     PDMath.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
     
     'Use these dimensions to size the destination image
-    If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
+    'Shortcut angle = 0
+    If (rotateAngle = 0!) Then
+        dstDIB.CreateFromExistingDIB srcDIB
+        Exit Sub
+    End If
+    
     If (dstDIB.GetDIBWidth <> nWidth) Or (dstDIB.GetDIBHeight <> nHeight) Or (dstDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
         dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
     Else
@@ -3422,14 +3437,21 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
+    Dim useHalfPixels As Boolean
+    useHalfPixels = False
+    
     Dim i As Long
     For i = 0 To 3
-        listOfPoints(i).x = listOfPoints(i).x + hOffset '+ 0.5
-        listOfPoints(i).y = listOfPoints(i).y + vOffset '+ 0.5
+        listOfPoints(i).x = listOfPoints(i).x + hOffset
+        listOfPoints(i).y = listOfPoints(i).y + vOffset
+        If useHalfPixels Then
+            listOfPoints(i).x = listOfPoints(i).x + 0.5
+            listOfPoints(i).y = listOfPoints(i).y + 0.5
+        End If
     Next i
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBicubic, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
     
     'We're now going to calculate a whole bunch of geometry based around the concept of extending a rectangle from
     ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
@@ -3467,7 +3489,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(0).x
     padPoints(2).y = listOfPoints(0).y
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, useHalfPixels
     
     'Now repeat the above steps for the bottom of the image.  Note that we can reuse almost all of the calculations,
     ' as this line is parallel to the one we just calculated.
@@ -3477,7 +3499,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(3).y - (pY / distDiff)
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, useHalfPixels
     
     'We are now going to repeat the above steps, but for the left and right edges of the image.  The end result of this
     ' will be a rotated destination image, with clamped values extending from all image edges.
@@ -3506,7 +3528,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(0).y
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
     
     '...and finally, repeat everything for the right side of the image
     padPoints(0).x = listOfPoints(1).x + (pX / distDiff)
@@ -3515,7 +3537,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(3).x + (pX / distDiff)
     padPoints(2).y = listOfPoints(3).y + (pY / distDiff)
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, useHalfPixels
     
     'Our work here is complete!
 

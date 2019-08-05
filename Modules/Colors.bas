@@ -87,7 +87,7 @@ End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
 Public Function BlendColors(ByVal Color1 As Long, ByVal Color2 As Long, ByVal mixRatio As Single) As Byte
-    BlendColors = Int((1! - mixRatio) * CSng(Color1) + 0.5!) + Int(mixRatio * CSng(Color2) + 0.5!)
+    BlendColors = Int((1! - mixRatio) * CSng(Color1) + 0.5!) + Int(mixRatio * CSng(Color2))
 End Function
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead
@@ -103,6 +103,15 @@ End Function
 ' the [0,255] range instead of the usual [0,1.0] one.
 Public Function GetHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
     GetHQLuminance = (0.213 * r + 0.715 * g + 0.072 * b)
+End Function
+
+Public Function GetRGBAFromRGBAndA(ByVal rgbLong As Long, ByVal a As Long) As Long
+    Dim tmpQuad As RGBQuad
+    tmpQuad.Red = Colors.ExtractRed(rgbLong)
+    tmpQuad.Green = Colors.ExtractGreen(rgbLong)
+    tmpQuad.Blue = Colors.ExtractBlue(rgbLong)
+    tmpQuad.Alpha = a
+    GetMem4 VarPtr(tmpQuad), GetRGBAFromRGBAndA
 End Function
 
 'HSL <-> RGB conversion routines.  H is returned on the (weird) range  [-1, 5], but this allows for
@@ -725,6 +734,25 @@ Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'Return the RGB Long
     GetRGBLongFromHex = RGB(r, g, b)
+    
+End Function
+
+'Given an 8-char hex string (e.g. "ff00ff00") representing RGBA data, return a long-type RGBA quad
+Public Function GetRGBALongFromHex(ByVal srcHex As String) As Long
+    
+    'To make things simpler, remove variability from the source string
+    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then srcHex = (Right$(srcHex, Len(srcHex) - 1))
+    
+    'Parse the string to calculate actual numeric values; we can use VB's Val() function for this.
+    Dim tmpQuad As RGBQuad
+    Const HEX_PREFIX As String = "&H"
+    tmpQuad.Red = Val(HEX_PREFIX & Left$(srcHex, 2))
+    tmpQuad.Green = Val(HEX_PREFIX & Mid$(srcHex, 3, 2))
+    tmpQuad.Blue = Val(HEX_PREFIX & Mid$(srcHex, 5, 2))
+    tmpQuad.Alpha = Val(HEX_PREFIX & Right$(srcHex, 2))
+    
+    'Return the RGB Long
+    GetMem4_Ptr VarPtr(tmpQuad), VarPtr(GetRGBALongFromHex)
     
 End Function
 

@@ -142,7 +142,7 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         bDistance = bDistance * curDIBValues.previewModifier
-        If bDistance = 0 Then bDistance = 1
+        If (bDistance < 1) Then bDistance = 1
     End If
     
     Dim finalX As Long, finalY As Long
@@ -181,18 +181,20 @@ Public Sub MotionBlurFilter(ByVal effectParams As String, Optional ByVal toPrevi
     End Select
     
     If blurSuccess Then
-            
+        
         'Finally, we need to rotate the image back to its original orientation, using the opposite parameters of the
         ' first conversion.
         
         'Use GDI+ to apply the inverse rotation.  Note that it will automatically center the rotated image within
         ' the destination boundaries, sparing us the trouble of manually trimming the clamped edges
-        If (DIBs.IsDIBTransparent(workingDIB)) Then workingDIB.ResetDIB 0
-        GDI_Plus.GDIPlus_RotateDIBPlgStyle rotateDIB, workingDIB, -bAngle, True
+        Dim dibIsTransparent As Boolean
+        dibIsTransparent = DIBs.IsDIBTransparent(workingDIB)
+        If dibIsTransparent Then workingDIB.ResetDIB 0
+        GDI_Plus.GDIPlus_RotateDIBPlgStyle rotateDIB, workingDIB, -bAngle, True, , dibIsTransparent
         
     End If
     
-    'Release our temporary rotation DIB
+    'Release our temporary rotation DIB early (to free up memory before committing results)
     rotateDIB.EraseDIB
     Set rotateDIB = Nothing
     

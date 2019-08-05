@@ -1769,6 +1769,10 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormFxClouds Else FormFxClouds.FxRenderClouds processParameters
         Process_EffectsMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Fibers", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormFxFibers Else FormFxFibers.FxRenderFibers processParameters
+        Process_EffectsMenu = True
+        
     'Sharpen filters
     ElseIf Strings.StringsEqual(processID, "Sharpen", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormSharpen Else FormSharpen.ApplySharpenFilter processParameters

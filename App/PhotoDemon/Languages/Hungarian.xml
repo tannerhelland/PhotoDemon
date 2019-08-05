@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3393</langversion>
+<langversion>6.8.3394</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2335,6 +2335,11 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
+<original>Fibers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>élesít</translation>
 </phrase>
@@ -2459,7 +2464,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>Tiszta elmúlt makrólistát</translation>
 </phrase>
 
-<!-- Menus.bas contains 242 phrases. 29 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
+<!-- Menus.bas contains 243 phrases. 29 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6571,7 +6576,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Nyelv módosítása sikeres volt.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 338 phrases. 155 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15833,12 +15838,28 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Effects_Render_Clouds.frm-->
 
+<!-- BEGIN text for Effects_Render_Fibers.frm (FormFxFibers) -->
+
+<phrase>
+<original>length</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering fibers</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Fibers.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Render_Fibers.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2641</phrasecount>
+<phrasecount>2644</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4832 phrases. -->
-<!-- 2191 are duplicates, so only 2641 unique phrases have been written to file. -->
-<!-- These 2641 phrases contain approximately 12459 total words. -->
+<!-- As of this build, PhotoDemon contains 4850 phrases. -->
+<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
+<!-- These 2644 phrases contain approximately 12463 total words. -->
 
 </pdData>

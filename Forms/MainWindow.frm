@@ -1212,6 +1212,10 @@ Begin VB.Form FormMain
             Caption         =   "Clouds..."
             Index           =   0
          End
+         Begin VB.Menu MnuRender 
+            Caption         =   "Fibers..."
+            Index           =   1
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Sharpen"
@@ -1752,6 +1756,8 @@ Private Sub MnuRender_Click(Index As Integer)
     Select Case Index
         Case 0
             Menus.ProcessDefaultAction_ByName "effects_clouds"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "effects_fibers"
     End Select
 End Sub
 

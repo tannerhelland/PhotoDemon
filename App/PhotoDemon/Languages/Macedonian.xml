@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.206</langversion>
+<langversion>1.0.207</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2341,6 +2341,11 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Fibers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Sharpen</original>
 <translation>Подигнување</translation>
 </phrase>
@@ -2465,7 +2470,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 242 phrases. 29 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
+<!-- Menus.bas contains 243 phrases. 29 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6588,7 +6593,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 338 phrases. 155 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15856,12 +15861,28 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Effects_Render_Clouds.frm-->
 
+<!-- BEGIN text for Effects_Render_Fibers.frm (FormFxFibers) -->
+
+<phrase>
+<original>length</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering fibers</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Fibers.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Render_Fibers.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2641</phrasecount>
+<phrasecount>2644</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4832 phrases. -->
-<!-- 2191 are duplicates, so only 2641 unique phrases have been written to file. -->
-<!-- These 2641 phrases contain approximately 12459 total words. -->
+<!-- As of this build, PhotoDemon contains 4850 phrases. -->
+<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
+<!-- These 2644 phrases contain approximately 12463 total words. -->
 
 </pdData>

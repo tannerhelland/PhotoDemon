@@ -445,6 +445,7 @@ Public Sub InitializeMenus()
         AddMenuItem "Mosaic...", "effects_mosaic", 6, 7, 4
     AddMenuItem "Render", "effects_render", 6, 8
         AddMenuItem "Clouds...", "effects_clouds", 6, 8, 0
+        AddMenuItem "Fibers...", "effects_fibers", 6, 8, 1
     AddMenuItem "Sharpen", "effects_sharpentop", 6, 9
         AddMenuItem "Sharpen...", "effects_sharpen", 6, 9, 0
         AddMenuItem "Unsharp masking...", "effects_unsharp", 6, 9, 1
@@ -2133,6 +2134,9 @@ Private Function PDA_ByName_MenuEffects(ByRef srcMenuName As String) As Boolean
         Case "effects_render"
             Case "effects_clouds"
                 Process "Clouds", True
+                
+            Case "effects_fibers"
+                Process "Fibers", True
                 
         Case "effects_sharpentop"
             Case "effects_sharpen"
