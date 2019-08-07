@@ -337,7 +337,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: as of v7.0, this feature has been disabled for icons and GIFs.  Why?  PD doesn't yet provide a way to
         ' export "multipage" versions of these files.  As such, importing them as multipage is just frustrating.  I'll look
         ' at fixing this in a future release.
-        If imageHasMultiplePages And (targetImage.GetOriginalFileFormat = PDIF_TIFF) Then
+        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF)) Then
             
             'TODO: deal with UI prompt options here!
             

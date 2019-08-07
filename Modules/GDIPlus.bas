@@ -1135,6 +1135,8 @@ Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Lo
 Private Declare Function GdipGetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByRef dstWrapMode As GP_WrapMode) As GP_Result
 
 Private Declare Function GdipImageGetFrameCount Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByRef dstCount As Long) As GP_Result
+Private Declare Function GdipImageGetFrameDimensionsCount Lib "gdiplus" (ByVal hImage As Long, ByRef dstCount As Long) As GP_Result
+Private Declare Function GdipImageGetFrameDimensionsList Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuids As Long, ByVal srcCount As Long) As GP_Result
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rotateFlipType As GP_RotateFlip) As GP_Result
 Private Declare Function GdipImageSelectActiveFrame Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToDimensionGuid As Long, ByVal frameIndex As Long) As GP_Result
 
@@ -1255,7 +1257,7 @@ Private m_AttributesMatrix() As Single
 ' - e.g. prompt the user for desired load behavior - and notify us of the result.  If the user wants more
 ' pages from the file, we don't have to load it again; instead, we can just switch pages and carry on
 ' where we left off.
-Private m_hMultiPageTIFF As Long
+Private m_hMultiPageImage As Long, m_OriginalFIF As PD_IMAGE_FORMAT
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1914,6 +1916,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'And finally, convert the string into an FIF long
     Dim imgFormatFIF As PD_IMAGE_FORMAT
     imgFormatFIF = GetFIFFromGUID(imgFormatGuidString)
+    m_OriginalFIF = imgFormatFIF
     
     'Metafiles require special consideration; set that flag in advance
     Dim isMetafile As Boolean
@@ -1925,9 +1928,41 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim frameDimensionID(0 To 15) As Byte
     CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
     
-    Dim isMultiPageTIFF As Boolean, tiffPageCount As Long
+    Dim isMultiPage As Boolean, imgPageCount As Long
+    
+    'TIFFs use a simple frame count
     If (imgFormatFIF = PDIF_TIFF) Then
-        If (GdipImageGetFrameCount(hImage, VarPtr(frameDimensionID(0)), tiffPageCount) = GP_OK) Then isMultiPageTIFF = (tiffPageCount > 1)
+        If (GdipImageGetFrameCount(hImage, VarPtr(frameDimensionID(0)), imgPageCount) = GP_OK) Then isMultiPage = (imgPageCount > 1)
+    
+    'GIFs are more complicated to retrieve frame count
+    ElseIf (imgFormatFIF = PDIF_GIF) Then
+        
+        'First, retrieve frame dimension count
+        Dim numFrameDimensions As Long
+        If (GdipImageGetFrameDimensionsCount(hImage, numFrameDimensions) = GP_OK) Then
+            
+            'Frame dimension count should be at least 1
+            If (numFrameDimensions > 0) Then
+            
+                'Retrieve GUIDs for frame dimensions
+                Dim lstGuids() As Byte
+                ReDim lstGuids(0 To 16 * numFrameDimensions - 1) As Byte
+                If (GdipImageGetFrameDimensionsList(hImage, VarPtr(lstGuids(0)), numFrameDimensions) = GP_OK) Then
+                
+                    'Animation set 0 holds the required guid
+                    If (GdipImageGetFrameCount(hImage, VarPtr(lstGuids(0)), imgPageCount) = GP_OK) Then
+                        
+                        'Frame delay retrieval is TBD!
+                        isMultiPage = (imgPageCount > 1)
+                        
+                    End If
+                
+                End If
+            
+            End If
+            
+        End If
+        
     End If
     
     'We're now going to retrieve various image properties using standard GDI+ property retrieval functions.
@@ -2260,9 +2295,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Release any remaining GDI+ handles.  IMPORTANTLY, if this is a multipage TIFF, we *skip* this step,
     ' as we'll be reusing the image handle on subsequent pages.
-    If isMultiPageTIFF Then
-        m_hMultiPageTIFF = hImage
-        numOfPages = tiffPageCount
+    If isMultiPage Then
+        m_hMultiPageImage = hImage
+        numOfPages = imgPageCount
     Else
         GdipDisposeImage hImage
     End If
@@ -2378,21 +2413,39 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
     ContinueLoadingMultipageImage = False
     
     'For now, just free the incoming handle
-    If (m_hMultiPageTIFF <> 0) Then
+    If (m_hMultiPageImage <> 0) Then
         
         'Failsafe check to ensure the destination DIB exists
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         
-        'GDI+ uses GUIDs to access frame parameters
+        'GDI+ uses GUIDs to access frame parameters; for TIFF, these are defined by "page", for GIF, by "time"
         Dim frameDimensionID(0 To 15) As Byte
-        CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
+        If (m_OriginalFIF = PDIF_TIFF) Then
+            CLSIDFromString StrPtr(GP_FD_Page), VarPtr(frameDimensionID(0))
+        ElseIf (m_OriginalFIF = PDIF_GIF) Then
+            CLSIDFromString StrPtr(GP_FD_Time), VarPtr(frameDimensionID(0))
+        End If
         
-        'Ensure the passed page count is accurate
-        Dim tiffPageCount As Long
-        If (GdipImageGetFrameCount(m_hMultiPageTIFF, VarPtr(frameDimensionID(0)), tiffPageCount) = GP_OK) Then
-            If (tiffPageCount <> numOfPages) Then InternalGDIPlusError "ContinueLoadingMultipageImage passed bad page numbers", "reported page count differs (" & CStr(numOfPages) & " vs " & CStr(tiffPageCount) & ")"
-        Else
-            PDDebug.LogAction "GDI+ page count successfully verified: " & tiffPageCount
+        'Ensure the passed page count is accurate.  (The verification code varies by file type.)
+        Dim imgPageCount As Long
+        If (m_OriginalFIF = PDIF_TIFF) Then
+            If (GdipImageGetFrameCount(m_hMultiPageImage, VarPtr(frameDimensionID(0)), imgPageCount) <> GP_OK) Then InternalGDIPlusError "ContinueLoadingMultipageImage failed to retrieve page count."
+        ElseIf (m_OriginalFIF = PDIF_GIF) Then
+            Dim numFrameDimensions As Long
+            If (GdipImageGetFrameDimensionsCount(m_hMultiPageImage, numFrameDimensions) = GP_OK) Then
+                If (numFrameDimensions > 0) Then
+                    Dim lstGuids() As Byte
+                    ReDim lstGuids(0 To 16 * numFrameDimensions - 1) As Byte
+                    If (GdipImageGetFrameDimensionsList(m_hMultiPageImage, VarPtr(lstGuids(0)), numFrameDimensions) = GP_OK) Then
+                        If (GdipImageGetFrameCount(m_hMultiPageImage, VarPtr(lstGuids(0)), imgPageCount) <> GP_OK) Then InternalGDIPlusError "ContinueLoadingMultipageImage failed to retrieve page count."
+                    End If
+                End If
+            End If
+        End If
+        
+        If (imgPageCount <> numOfPages) Then
+            InternalGDIPlusError "ContinueLoadingMultipageImage passed bad page numbers", "reported page count differs (" & CStr(numOfPages) & " vs " & CStr(imgPageCount) & ")"
+            Exit Function
         End If
         
         'We're going to be pulling a lot of information from each page, as we try to support edge-cases like
@@ -2412,24 +2465,24 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             If ((pageToLoad And 7) = 0) Then ProgressBars.Replacement_DoEvents FormMain.hWnd
             
             'Select the current page
-            If (GdipImageSelectActiveFrame(m_hMultiPageTIFF, VarPtr(frameDimensionID(0)), pageToLoad) = GP_OK) Then
+            If (GdipImageSelectActiveFrame(m_hMultiPageImage, VarPtr(frameDimensionID(0)), pageToLoad) = GP_OK) Then
                 
                 'Throughout this process, we'll be notifying the destination DIB of various page parameters.
-                dstDIB.SetOriginalFormat PDIF_TIFF
+                dstDIB.SetOriginalFormat m_OriginalFIF
                 
                 'Retrieve this frame's size
-                GdipGetImageWidth m_hMultiPageTIFF, imgWidth
-                GdipGetImageHeight m_hMultiPageTIFF, imgHeight
+                GdipGetImageWidth m_hMultiPageImage, imgWidth
+                GdipGetImageHeight m_hMultiPageImage, imgHeight
                 
                 PDDebug.LogAction "Loading page with dimensions (" & CStr(imgWidth) & "x" & CStr(imgHeight) & ")"
                 
                 'Retrieve this frame's horizontal and vertical resolution (if any)
-                GdipGetImageHorizontalResolution m_hMultiPageTIFF, imgHResolution
-                GdipGetImageVerticalResolution m_hMultiPageTIFF, imgVResolution
+                GdipGetImageHorizontalResolution m_hMultiPageImage, imgHResolution
+                GdipGetImageVerticalResolution m_hMultiPageImage, imgVResolution
                 dstDIB.SetDPI imgHResolution, imgVResolution
                 
                 'Look for an alpha channel
-                GdipGetImagePixelFormat m_hMultiPageTIFF, imgPixelFormat
+                GdipGetImagePixelFormat m_hMultiPageImage, imgPixelFormat
                 imgHasAlpha = ((imgPixelFormat And GP_PF_Alpha) <> 0)
                 If (Not imgHasAlpha) Then imgHasAlpha = ((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
                 
@@ -2442,7 +2495,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 dstDIB.SetOriginalColorDepth imgColorDepth
                 
                 'Look for an ICC profile and cache the result
-                imgHasIccProfile = GDIPlus_ImageGetProperty(m_hMultiPageTIFF, GP_PT_ICCProfile, tmpPropHeader, tmpPropBuffer)
+                imgHasIccProfile = GDIPlus_ImageGetProperty(m_hMultiPageImage, GP_PT_ICCProfile, tmpPropHeader, tmpPropBuffer)
                 If imgHasIccProfile Then
                     Set embeddedProfile = New pdICCProfile
                     embeddedProfile.LoadICCFromPtr tmpPropHeader.propLength, tmpPropHeader.propValue
@@ -2455,7 +2508,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 
                 'Next, pull an orientation flag, if any, and apply it to the underlying page
                 If UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
-                    If AutoCorrectImageOrientation(m_hMultiPageTIFF) Then PDDebug.LogAction "Image contains orientation data, and it was successfully handled."
+                    If AutoCorrectImageOrientation(m_hMultiPageImage) Then PDDebug.LogAction "Image contains orientation data, and it was successfully handled."
                 End If
                 
                 'We now need to copy the relevant image bytes into the destination DIB.  This is complicated, unfortunately.
@@ -2472,7 +2525,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 If imgHasAlpha Then
                     
                     'Make sure the image is in 32bpp premultiplied ARGB format
-                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageTIFF, m_hMultiPageTIFF
+                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageImage, m_hMultiPageImage
                     
                     'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
                     
@@ -2494,8 +2547,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     End With
                     
                     'Use LockBits to perform the copy for us.
-                    GdipBitmapLockBits m_hMultiPageTIFF, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
-                    GdipBitmapUnlockBits m_hMultiPageTIFF, copyBitmapData
+                    GdipBitmapLockBits m_hMultiPageImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
+                    GdipBitmapUnlockBits m_hMultiPageImage, copyBitmapData
                 
                 'Image does *not* have alpha
                 Else
@@ -2527,8 +2580,8 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                         End With
                         
                         'Use LockBits to perform the copy for us.
-                        GdipBitmapLockBits m_hMultiPageTIFF, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppCMYK, copyBitmapData
-                        GdipBitmapUnlockBits m_hMultiPageTIFF, copyBitmapData
+                        GdipBitmapLockBits m_hMultiPageImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppCMYK, copyBitmapData
+                        GdipBitmapUnlockBits m_hMultiPageImage, copyBitmapData
                         
                         'We now need to apply the CMYK transform.  This is a multistep process that has been condensed here due to
                         ' its rarity in the actual processing chain.
@@ -2567,7 +2620,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                             
                             GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
                             If (hGraphics <> 0) Then
-                                GdipDrawImageRect hGraphics, m_hMultiPageTIFF, 0, 0, imgWidth, imgHeight
+                                GdipDrawImageRect hGraphics, m_hMultiPageImage, 0, 0, imgWidth, imgHeight
                                 GdipDeleteGraphics hGraphics
                             End If
                             
@@ -2580,7 +2633,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                         'Render the GDI+ image directly onto the newly created DIB
                         GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
                         If (hGraphics <> 0) Then
-                            GdipDrawImageRect hGraphics, m_hMultiPageTIFF, 0, 0, imgWidth, imgHeight
+                            GdipDrawImageRect hGraphics, m_hMultiPageImage, 0, 0, imgWidth, imgHeight
                             GdipDeleteGraphics hGraphics
                         End If
                         
@@ -2645,7 +2698,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
         Next pageToLoad
         
         'Before exiting, make sure we free the master image handle!
-        GDI_Plus.ReleaseGDIPlusImage m_hMultiPageTIFF
+        GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
         
         ContinueLoadingMultipageImage = True
         
@@ -2658,7 +2711,7 @@ End Function
 'Encountered a multi-page TIFF and you just want to load one page?  No worries; just call this function after the load
 ' function completes to free any cached multi-page assets.
 Public Sub MultiPageDataNotWanted()
-    If (m_hMultiPageTIFF <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageTIFF
+    If (m_hMultiPageImage <> 0) Then GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
 End Sub
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)

@@ -966,6 +966,9 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         ' to GDI+ for JPEGs.
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpg", True) Or Strings.StringsEqual(Files.FileGetExtension(srcFile), "jpeg", True)
         
+        'Animated GIF support is currently a work in progress
+        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
+        
         If tryGDIPlusFirst Then
             CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             freeImage_Return = PD_FAILURE_GENERIC
