@@ -553,7 +553,7 @@ Public Enum GP_PropertyTag
 '    GP_PT_ExifVer = &H9000&
 '    GP_PT_ExtraSamples = &H152&
 '    GP_PT_FillOrder = &H10A&
-'    GP_PT_FrameDelay = &H5100&
+    GP_PT_FrameDelay = &H5100&
 '    GP_PT_FreeByteCounts = &H121&
 '    GP_PT_FreeOffset = &H120&
 '    GP_PT_Gamma = &H301&
@@ -617,7 +617,7 @@ Public Enum GP_PropertyTag
 '    GP_PT_JPEGQTables = &H207&
 '    GP_PT_JPEGQuality = &H5010&
 '    GP_PT_JPEGRestartInterval = &H203&
-'    GP_PT_LoopCount = &H5101&
+    GP_PT_LoopCount = &H5101&
 '    GP_PT_LuminanceTable = &H5090&
 '    GP_PT_MaxSampleValue = &H119&
 '    GP_PT_MinSampleValue = &H118&
@@ -1242,22 +1242,28 @@ Private Declare Function StringFromCLSID Lib "ole32" (ByVal ptrToGuid As Long, B
 'Startup values
 Private m_GDIPlusToken As Long, m_GDIPlus11Available As Boolean
 
-'Some GDI+ functions require world transformation data.  This dummy graphics container is used to host any such transformations.
-' It is created when GDI+ is initialized, and destroyed when GDI+ is released.  To be a good citizen, please undo any world transforms
-' before a function releases.  This ensures that subsequent functions are not messed up.
+'Some GDI+ functions require world transformation data.  This dummy graphics container is used to host
+' any such transformations. It is created when GDI+ is initialized, and destroyed when GDI+ is released.
+' To be a good citizen, please undo any world transforms before a function releases.  This ensures that
+' subsequent functions don't get messed up.
 Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
 
-'To modify opacity in GDI+, an image attributes matrix is used.  Rather than recreating one every time an alpha operation is required,
-' we simply create a default identity matrix at initialization, then re-use it as necessary.
+'To modify opacity in GDI+, an image attributes matrix is used.  Rather than recreating one every time
+' an alpha operation is required, we simply create a default identity matrix at initialization,
+' then re-use it as necessary.
 Private m_AttributesMatrix() As Single
 
-'When loading multi-page TIFF images, we first perform a default load operation on the first TIFF page.
-' (This gives the user something to work with if subsequent pages fail, which is worryingly possible
-' given the complexities of loading TIFFs.)  PD's master load function can then do whatever it needs to
-' - e.g. prompt the user for desired load behavior - and notify us of the result.  If the user wants more
-' pages from the file, we don't have to load it again; instead, we can just switch pages and carry on
-' where we left off.
+'When loading multi-page (TIFF) or multi-frame (GIF) images, we first perform a default load operation
+' on the first page/frame. (This gives the user something to work with if subsequent pages fail,
+' which is worryingly possible especially given the complexities of loading TIFFs.)  PD's master load
+' function can then do whatever it needs to - e.g. prompt the user for desired load behavior - and
+' notify GDI+ of the result.  If the user wants more pages/frames from the file, we don't have to load
+' it again; instead, we can just activate subsequent pages in turn, carrying on where we first left off.
 Private m_hMultiPageImage As Long, m_OriginalFIF As PD_IMAGE_FORMAT
+
+'When loading GIFs, we need to cache some extra GIF-related metadata (e.g. frame times).  This metadata
+' gets embedded into a master pdImage object, and reused at export time as relevant.
+Private m_FrameTimes() As Long, m_FrameCount As Long
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1944,19 +1950,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             'Frame dimension count should be at least 1
             If (numFrameDimensions > 0) Then
             
-                'Retrieve GUIDs for frame dimensions
+                'Retrieve GUIDs for frame dimensions, then pull the frame count using that
                 Dim lstGuids() As Byte
                 ReDim lstGuids(0 To 16 * numFrameDimensions - 1) As Byte
                 If (GdipImageGetFrameDimensionsList(hImage, VarPtr(lstGuids(0)), numFrameDimensions) = GP_OK) Then
-                
-                    'Animation set 0 holds the required guid
-                    If (GdipImageGetFrameCount(hImage, VarPtr(lstGuids(0)), imgPageCount) = GP_OK) Then
-                        
-                        'Frame delay retrieval is TBD!
-                        isMultiPage = (imgPageCount > 1)
-                        
-                    End If
-                
+                    If (GdipImageGetFrameCount(hImage, VarPtr(lstGuids(0)), imgPageCount) = GP_OK) Then isMultiPage = (imgPageCount > 1)
                 End If
             
             End If
@@ -1967,6 +1965,35 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'We're now going to retrieve various image properties using standard GDI+ property retrieval functions.
     Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
+    
+    'If this is an animated GIF, load all frame times and cache them; if the rest of the load process
+    ' is successful, we'll embed these inside the parent pdImage object.
+    If isMultiPage And (imgFormatFIF = PDIF_GIF) Then
+    
+        m_FrameCount = imgPageCount
+        ReDim m_FrameTimes(0) As Long
+        
+        If GDIPlus_ImageGetProperty(hImage, GP_PT_FrameDelay, tmpPropHeader, tmpPropBuffer) Then
+            
+            'Ensure the retrieved data matches our expected size
+            If (UBound(tmpPropBuffer) = (m_FrameCount * 4) - 1) Then
+                
+                'Copy the frame times into our buffer, and because they're in hundredths of a second
+                ' (WTF GIF?), convert them to more useful ms measurements.
+                ReDim m_FrameTimes(0 To m_FrameCount - 1) As Long
+                CopyMemoryStrict VarPtr(m_FrameTimes(0)), VarPtr(tmpPropBuffer(0)), m_FrameCount * 4
+                Erase tmpPropBuffer
+                
+                Dim cFrame As Long
+                For cFrame = 0 To m_FrameCount - 1
+                    m_FrameTimes(cFrame) = m_FrameTimes(cFrame) * 10
+                Next cFrame
+                
+            End If
+            
+        End If
+    
+    End If
     
     'Look for an ICC profile and cache the result; if the image *does* have an embedded profile, we will use
     ' it in a subsequent function as part of transforming pixel bytes to a standard 32-bit buffer.
@@ -2457,6 +2484,19 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
         Dim tmpPropHeader As GP_PropertyItem, tmpPropBuffer() As Byte
         Dim imgHasIccProfile As Boolean, embeddedProfile As pdICCProfile
         
+        'If the multipage handle is valid, and the image is a GIF, retrieve some GIF-specific metadata
+        ' (e.g. animation loop count) and cache it inside the parent object
+        If (m_OriginalFIF = PDIF_GIF) Then
+            If GDIPlus_ImageGetProperty(m_hMultiPageImage, GP_PT_LoopCount, tmpPropHeader, tmpPropBuffer) Then
+            
+                'The returned value is a ushort; copy it into a signed long
+                Dim tmpLoopCount As Long
+                CopyMemoryStrict VarPtr(tmpLoopCount), VarPtr(tmpPropBuffer(0)), 2
+                If (Not targetImage Is Nothing) Then targetImage.ImgStorage.AddEntry "agif-loop-count", Trim$(Str$(tmpLoopCount))
+                
+            End If
+        End If
+        
         Dim pageToLoad As Long
         For pageToLoad = 1 To numOfPages - 1
             
@@ -2696,6 +2736,22 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             End If
         
         Next pageToLoad
+        
+        'For animated GIFs, we now want to cache frame times inside the parent pdImage object
+        If (m_OriginalFIF = PDIF_GIF) And (m_FrameCount > 0) Then
+        
+            If (UBound(m_FrameTimes) = m_FrameCount - 1) Then
+                
+                targetImage.ImgStorage.AddEntry "agif-frame-count", m_FrameCount
+                
+                Dim cFrame As Long
+                For cFrame = 0 To m_FrameCount - 1
+                    targetImage.ImgStorage.AddEntry "agif-frame-time-" & Trim$(Str$(cFrame)), m_FrameTimes(cFrame)
+                Next cFrame
+                
+            End If
+            
+        End If
         
         'Before exiting, make sure we free the master image handle!
         GDI_Plus.ReleaseGDIPlusImage m_hMultiPageImage
