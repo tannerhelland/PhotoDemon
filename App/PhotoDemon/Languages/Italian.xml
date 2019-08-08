@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.411</langversion>
+<langversion>6.7.412</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1616,6 +1616,16 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>Merge visible layers</original>
+<translation>Unisci i livelli visibili</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Appiattisci l'immagine</translation>
+</phrase>
+
+<phrase>
 <original>Edit metadata</original>
 <translation>Modifica i metadati</translation>
 </phrase>
@@ -1783,16 +1793,6 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <phrase>
 <original>Rasterize all layers</original>
 <translation>Rasterizza tutti i livelli</translation>
-</phrase>
-
-<phrase>
-<original>Merge visible layers</original>
-<translation>Unisci i livelli visibili</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Appiattisci l'immagine</translation>
 </phrase>
 
 <phrase>
@@ -5990,6 +5990,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>Orientazione</translation>
 </phrase>
@@ -6592,7 +6597,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15876,10 +15881,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2644</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4850 phrases. -->
-<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
-<!-- These 2644 phrases contain approximately 12463 total words. -->
+<!-- As of this build, PhotoDemon contains 4851 phrases. -->
+<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 12464 total words. -->
 
 </pdData>

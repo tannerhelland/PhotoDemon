@@ -926,12 +926,14 @@ Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
                 
                 'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
                 ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
-                If Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Fade", True) And Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Repeat", True) Then
-                    actionFound = True
-                    affectedLayerID = m_UndoStack(i).undoLayerID
-                    nameOfProcessorAction = m_UndoStack(i).srcProcCall.pcID
-                    layerChangeIndex = i
-                    Exit For
+                If Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Fade", True) Then
+                    If Strings.StringsNotEqual(m_UndoStack(i).srcProcCall.pcID, "Repeat", True) Then
+                        actionFound = True
+                        affectedLayerID = m_UndoStack(i).undoLayerID
+                        nameOfProcessorAction = m_UndoStack(i).srcProcCall.pcID
+                        layerChangeIndex = i
+                        Exit For
+                    End If
                 End If
                 
             End If

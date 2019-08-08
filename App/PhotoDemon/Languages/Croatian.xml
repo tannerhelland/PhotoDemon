@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3394</langversion>
+<langversion>6.8.3395</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1616,6 +1616,16 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
+<original>Merge visible layers</original>
+<translation>Spoji vidljive slojeve</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Poravnajte sliku</translation>
+</phrase>
+
+<phrase>
 <original>Edit metadata</original>
 <translation>Uređivanje metapodataka</translation>
 </phrase>
@@ -1783,16 +1793,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <phrase>
 <original>Rasterize all layers</original>
 <translation>Rasterizirajte sve slojeve</translation>
-</phrase>
-
-<phrase>
-<original>Merge visible layers</original>
-<translation>Spoji vidljive slojeve</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Poravnajte sliku</translation>
 </phrase>
 
 <phrase>
@@ -5988,6 +5988,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>Orijentacija</translation>
 </phrase>
@@ -6589,7 +6594,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Jezik je uspješno promijenjen.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15875,10 +15880,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2644</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4850 phrases. -->
-<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
-<!-- These 2644 phrases contain approximately 12463 total words. -->
+<!-- As of this build, PhotoDemon contains 4851 phrases. -->
+<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 12464 total words. -->
 
 </pdData>

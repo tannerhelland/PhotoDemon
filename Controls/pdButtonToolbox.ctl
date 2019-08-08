@@ -195,9 +195,11 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    UserControl.Enabled = newValue
-    PropertyChanged "Enabled"
-    If ucSupport.AmIVisible Then RedrawBackBuffer
+    If (UserControl.Enabled <> newValue) Then
+        UserControl.Enabled = newValue
+        PropertyChanged "Enabled"
+        If ucSupport.AmIVisible Then RedrawBackBuffer
+    End If
 End Property
 
 Public Property Get HasFocus() As Boolean

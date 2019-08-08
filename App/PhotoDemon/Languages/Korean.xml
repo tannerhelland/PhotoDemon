@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.79</langversion>
+<langversion>1.0.80</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1615,6 +1615,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Merge visible layers</original>
+<translation>보이는 레이어 병합</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>납작한 이미지</translation>
+</phrase>
+
+<phrase>
 <original>Edit metadata</original>
 <translation>메타 데이터 수정</translation>
 </phrase>
@@ -1782,16 +1792,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Rasterize all layers</original>
 <translation>모든 레이어 래스터 화</translation>
-</phrase>
-
-<phrase>
-<original>Merge visible layers</original>
-<translation>보이는 레이어 병합</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>납작한 이미지</translation>
 </phrase>
 
 <phrase>
@@ -5987,6 +5987,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>정위</translation>
 </phrase>
@@ -6588,7 +6593,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>언어가 성공적으로 변경되었습니다.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15873,10 +15878,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2644</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4850 phrases. -->
-<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
-<!-- These 2644 phrases contain approximately 12463 total words. -->
+<!-- As of this build, PhotoDemon contains 4851 phrases. -->
+<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 12464 total words. -->
 
 </pdData>

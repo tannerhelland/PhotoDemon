@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.414</langversion>
+<langversion>6.7.415</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -1615,6 +1615,16 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
+<original>Merge visible layers</original>
+<translation>Combinar las capas visibles</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation>Acoplar imagen</translation>
+</phrase>
+
+<phrase>
 <original>Edit metadata</original>
 <translation>Editar metadatos</translation>
 </phrase>
@@ -1782,16 +1792,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <phrase>
 <original>Rasterize all layers</original>
 <translation>Rasterizar todas las capas</translation>
-</phrase>
-
-<phrase>
-<original>Merge visible layers</original>
-<translation>Combinar las capas visibles</translation>
-</phrase>
-
-<phrase>
-<original>Flatten image</original>
-<translation>Acoplar imagen</translation>
 </phrase>
 
 <phrase>
@@ -5990,6 +5990,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>orientación</translation>
 </phrase>
@@ -6592,7 +6597,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 339 phrases. 156 were duplicates of existing phrases, so only 183 new phrases were written to file. -->
+<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15877,10 +15882,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2644</phrasecount>
+<phrasecount>2645</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4850 phrases. -->
-<!-- 2206 are duplicates, so only 2644 unique phrases have been written to file. -->
-<!-- These 2644 phrases contain approximately 12463 total words. -->
+<!-- As of this build, PhotoDemon contains 4851 phrases. -->
+<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
+<!-- These 2645 phrases contain approximately 12464 total words. -->
 
 </pdData>

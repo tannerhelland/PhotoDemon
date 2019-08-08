@@ -286,9 +286,9 @@ Public Sub SyncInterfaceToCurrentImage()
         
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
-    FormMain.MnuWindow(7).Enabled = (PDImages.GetNumOpenImages() > 1)
-    FormMain.MnuWindow(8).Enabled = (PDImages.GetNumOpenImages() > 1)
-        
+    Menus.SetMenuEnabled "window_next", (PDImages.GetNumOpenImages() > 1)
+    Menus.SetMenuEnabled "window_previous", (PDImages.GetNumOpenImages() > 1)
+    
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
     
@@ -303,40 +303,45 @@ End Sub
 Private Sub SyncUI_MultipleLayerSettings()
     
     'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-    FormMain.MnuLayerDelete(1).Enabled = (PDImages.GetActiveImage.GetNumOfHiddenLayers > 0) And (PDImages.GetActiveImage.GetNumOfHiddenLayers < PDImages.GetActiveImage.GetNumOfLayers)
+    Menus.SetMenuEnabled "layer_deletehidden", (PDImages.GetActiveImage.GetNumOfHiddenLayers > 0) And (PDImages.GetActiveImage.GetNumOfHiddenLayers < PDImages.GetActiveImage.GetNumOfLayers)
     
     'Merge up/down are not available for layers at the top and bottom of the image
-    FormMain.MnuLayer(3).Enabled = (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, False) <> -1)
-    FormMain.MnuLayer(4).Enabled = (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
+    Menus.SetMenuEnabled "layer_mergeup", (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, False) <> -1)
+    Menus.SetMenuEnabled "layer_mergedown", (IsLayerAllowedToMergeAdjacent(PDImages.GetActiveImage.GetActiveLayerIndex, True) <> -1)
     
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top layers (similarly for bottom layers and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
     
     'Activate top/next layer up
-    FormMain.MnuLayerOrder(0).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
-    FormMain.MnuLayerOrder(1).Enabled = FormMain.MnuLayerOrder(0).Enabled
+    Dim mnuEnabled As Boolean
+    mnuEnabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
+    Menus.SetMenuEnabled "layer_gotop", mnuEnabled
+    Menus.SetMenuEnabled "layer_goup", mnuEnabled
     
     'Activate bottom/next layer down
-    FormMain.MnuLayerOrder(2).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
-    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(2).Enabled
+    mnuEnabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
+    Menus.SetMenuEnabled "layer_godown", mnuEnabled
+    Menus.SetMenuEnabled "layer_gobottom", mnuEnabled
     
     'Move to top/move up
-    FormMain.MnuLayerOrder(5).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
-    FormMain.MnuLayerOrder(6).Enabled = FormMain.MnuLayerOrder(5).Enabled
+    mnuEnabled = (PDImages.GetActiveImage.GetActiveLayerIndex < PDImages.GetActiveImage.GetNumOfLayers - 1)
+    Menus.SetMenuEnabled "layer_movetop", mnuEnabled
+    Menus.SetMenuEnabled "layer_moveup", mnuEnabled
     
     'Move to bottom/move down
-    FormMain.MnuLayerOrder(7).Enabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
-    FormMain.MnuLayerOrder(8).Enabled = FormMain.MnuLayerOrder(7).Enabled
+    mnuEnabled = (PDImages.GetActiveImage.GetActiveLayerIndex > 0)
+    Menus.SetMenuEnabled "layer_movedown", mnuEnabled
+    Menus.SetMenuEnabled "layer_movebottom", mnuEnabled
     
     'Reverse layer order is always available for multi-layer images
-    FormMain.MnuLayerOrder(10).Enabled = True
+    Menus.SetMenuEnabled "layer_reverse", True
     
     'Merge visible is only available if *two* or more layers are visible
-    FormMain.MnuImage(16).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 1)
+    Menus.SetMenuEnabled "image_mergevisible", (PDImages.GetActiveImage.GetNumOfVisibleLayers > 1)
     
     'Flatten is only available if one or more layers are actually *visible*
-    FormMain.MnuImage(17).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
+    Menus.SetMenuEnabled "image_flatten", (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
     
 End Sub
 
@@ -359,8 +364,8 @@ Private Sub SyncUI_CurrentLayerSettings()
     End If
     
     'Layer rasterization depends on the current layer type
-    FormMain.MnuLayerRasterize(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
-    FormMain.MnuLayerRasterize(1).Enabled = (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
+    Menus.SetMenuEnabled "layer_rasterizecurrent", PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
+    Menus.SetMenuEnabled "layer_rasterizeall", (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -414,52 +419,54 @@ End Sub
 
 'If an image has multiple layers, call this function to enable any UI elements that
 ' operate on multiple layers.
+
 'Note that some multi-layer settings require certain additional criteria to be met,
 ' e.g. "Merge Visible Layers" requires at least two visible layers, so it must still
 ' be handled specially.  This function is only for functions that are ALWAYS available
 ' if multiple layers are present in an image.
 Private Sub SetUIMode_MultipleLayers()
-    If (Not FormMain.MnuLayer(1).Enabled) Then FormMain.MnuLayer(1).Enabled = True    'Delete layer
-    If (Not FormMain.MnuLayer(5).Enabled) Then FormMain.MnuLayer(5).Enabled = True    'Order submenu
+    Menus.SetMenuEnabled "layer_delete", True
+    Menus.SetMenuEnabled "layer_order", True
 End Sub
 
-'If an image has only one layer (e.g. a loaded JPEG), call this function to disable any UI elements that operate on multiple layers.
+'If an image has only one layer (e.g. a loaded JPEG), call this function to disable any UI elements
+' that require multiple layers.
 Private Sub SetUIMode_OnlyOneLayer()
-    FormMain.MnuLayer(1).Enabled = False    'Delete layer
-    FormMain.MnuLayer(3).Enabled = False    'Merge up/down
-    FormMain.MnuLayer(4).Enabled = False
-    FormMain.MnuLayer(5).Enabled = False    'Layer order
-    FormMain.MnuImage(16).Enabled = False   'Flatten
-    FormMain.MnuImage(17).Enabled = False   'Merge visible
+    Menus.SetMenuEnabled "image_flatten", False
+    Menus.SetMenuEnabled "image_mergevisible", False
+    Menus.SetMenuEnabled "layer_delete", False
+    Menus.SetMenuEnabled "layer_mergeup", False
+    Menus.SetMenuEnabled "layer_mergedown", False
+    Menus.SetMenuEnabled "layer_order", False
 End Sub
 
 'If an image has at least one valid layer (as they always do in PD), call this function to enable relevant layer menus and controls.
 Private Sub SetUIMode_AtLeastOneLayer()
-    
-    If (Not FormMain.MnuLayer(7).Enabled) Then
-        FormMain.MnuLayer(7).Enabled = True
-        FormMain.MnuLayer(8).Enabled = True
-        FormMain.MnuLayer(11).Enabled = True
-        FormMain.MnuLayerTransparency(3).Enabled = True     'Because all PD layers are 32-bpp, we always enable "remove transparency"
-    End If
-            
+    Menus.SetMenuEnabled "layer_orientation", True
+    Menus.SetMenuEnabled "layer_resize", True
+    Menus.SetMenuEnabled "layer_transparency", True
+    Menus.SetMenuEnabled "layer_rasterize", True
 End Sub
 
-'If PD ever reaches a "no layers in the current image" state, this function should be called.  (Such a state is currently unsupported, so this
-' exists only as a failsafe measure.)
+'If PD ever reaches a "no layers in the current image" state, this function should be called.
+' (Such a state is currently unsupported, so this exists only as a failsafe.)
 Private Sub SetUIMode_NoLayers()
     
-    FormMain.MnuLayer(1).Enabled = False
-    FormMain.MnuLayer(3).Enabled = False
-    FormMain.MnuLayer(4).Enabled = False
-    FormMain.MnuLayer(5).Enabled = False
-    FormMain.MnuLayer(7).Enabled = False
-    FormMain.MnuLayer(8).Enabled = False
-    FormMain.MnuLayer(9).Enabled = False
-    FormMain.MnuLayer(11).Enabled = False
-    FormMain.MnuLayer(13).Enabled = False
-    FormMain.MnuImage(16).Enabled = False   'Flatten
-    FormMain.MnuImage(17).Enabled = False   'Merge visible
+    'Image menu
+    Menus.SetMenuEnabled "image_flatten", False
+    Menus.SetMenuEnabled "image_mergevisible", False
+    
+    'Layer menu
+    Menus.SetMenuEnabled "layer_delete", False
+    Menus.SetMenuEnabled "layer_mergeup", False
+    Menus.SetMenuEnabled "layer_mergedown", False
+    Menus.SetMenuEnabled "layer_order", False
+    Menus.SetMenuEnabled "layer_visibility", False
+    Menus.SetMenuEnabled "layer_orientation", False
+    Menus.SetMenuEnabled "layer_resize", False
+    Menus.SetMenuEnabled "layer_crop", False
+    Menus.SetMenuEnabled "layer_transparency", False
+    Menus.SetMenuEnabled "layer_rasterize", False
     
 End Sub
 
@@ -488,10 +495,10 @@ Private Sub SetUIMode_NoImages()
     End If
     
     'Multiple edit menu items must also be disabled
-    FormMain.MnuEdit(2).Enabled = False     'Undo history
-    FormMain.MnuEdit(4).Enabled = False     'Repeat last action
+    Menus.SetMenuEnabled "edit_history", False
+    Menus.SetMenuEnabled "edit_repeat", False
+    Menus.SetMenuEnabled "edit_fade", False
     Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat"), True
-    FormMain.MnuEdit(5).Enabled = False     'Fade last action
     Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade..."), True
     
     'Reset the main window's caption to its default PD name and version
@@ -561,7 +568,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             SetUIGroupState PDUI_Redo, PDImages.GetActiveImage.UndoManager.GetRedoState
             
             'Undo history is enabled if either Undo or Redo is active
-            FormMain.MnuEdit(2).Enabled = (PDImages.GetActiveImage.UndoManager.GetUndoState Or PDImages.GetActiveImage.UndoManager.GetRedoState)
+            Menus.SetMenuEnabled "edit_history", (PDImages.GetActiveImage.UndoManager.GetUndoState Or PDImages.GetActiveImage.UndoManager.GetRedoState)
             
             '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
             ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
@@ -571,20 +578,20 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
             If PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName)), True
-                FormMain.MnuEdit(5).Enabled = True
+                Menus.SetMenuEnabled "edit_fade", True
             Else
                 Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade..."), True
-                FormMain.MnuEdit(5).Enabled = False
+                Menus.SetMenuEnabled "edit_fade", False
             End If
             
             'Repeat the above steps, but use the "Repeat" detection algorithm (which uses slightly different criteria;
             ' e.g. "Rotate Whole Image" cannot be faded, but it can be repeated)
             If PDImages.GetActiveImage.UndoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
                 Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName)), True
-                FormMain.MnuEdit(4).Enabled = True
+                Menus.SetMenuEnabled "edit_repeat", True
             Else
                 Menus.RequestCaptionChange_ByName "edit_repeat", g_Language.TranslateMessage("Repeat"), True
-                FormMain.MnuEdit(4).Enabled = False
+                Menus.SetMenuEnabled "edit_repeat", False
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
@@ -596,8 +603,8 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
 
 End Sub
 
-'SetUIGroupState enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
-' and toolbar buttons)
+'SetUIGroupState enables or disables a swath of controls related to a simple keyword
+' (e.g. "Undo", which affects multiple menu items and toolbar buttons)
 Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Boolean)
     
     Dim i As Long
@@ -606,39 +613,38 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Save (left-hand panel button(s) AND menu item)
         Case PDUI_Save
-            If (FormMain.MnuFile(8).Enabled <> newState) Then
+            If (Menus.IsMenuEnabled("file_save") <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = newState
-                FormMain.MnuFile(8).Enabled = newState      'Save
-                FormMain.MnuFile(11).Enabled = newState     'Revert
+                Menus.SetMenuEnabled "file_save", newState
+                Menus.SetMenuEnabled "file_revert", newState
             End If
             
-        'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality, because they use the same rules
-        ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
+        'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality,
+        ' because they use the same rules for enablement (e.g. disabled if no images are loaded,
+        ' always enabled otherwise)
         Case PDUI_SaveAs
-            If (FormMain.MnuFile(10).Enabled <> newState) Then
+            If (Menus.IsMenuEnabled("file_saveas") <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = newState
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = newState
-                FormMain.MnuFile(9).Enabled = newState      'Save as
-                FormMain.MnuFile(10).Enabled = newState     'Save copy
-                FormMain.MnuFile(12).Enabled = newState     'Export
+                Menus.SetMenuEnabled "file_saveas", newState
+                Menus.SetMenuEnabled "file_savecopy", newState
+                Menus.SetMenuEnabled "file_export", newState
             End If
             
         'Close (and Close All)
         Case PDUI_Close
-            If (FormMain.MnuFile(5).Enabled <> newState) Then
-                FormMain.MnuFile(5).Enabled = newState
-                FormMain.MnuFile(6).Enabled = newState
+            If (Menus.IsMenuEnabled("file_close") <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = newState
+                Menus.SetMenuEnabled "file_close", newState
+                Menus.SetMenuEnabled "file_closeall", newState
             End If
         
         'Undo (left-hand panel button AND menu item).  Undo toggles also control the "Fade last action" button,
         ' because that operates directly on previously saved Undo data.
         Case PDUI_Undo
         
-            If (FormMain.MnuEdit(0).Enabled <> newState) Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = newState
-                FormMain.MnuEdit(0).Enabled = newState
-            End If
+            toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = newState
+            Menus.SetMenuEnabled "edit_undo", newState
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
@@ -654,10 +660,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Redo (left-hand panel button AND menu item)
         Case PDUI_Redo
-            If (FormMain.MnuEdit(1).Enabled <> newState) Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = newState
-                FormMain.MnuEdit(1).Enabled = newState
-            End If
+            toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = newState
+            Menus.SetMenuEnabled "edit_redo", newState
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
@@ -673,36 +677,35 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Copy (menu item only)
         Case PDUI_EditCopyCut
-            If (FormMain.MnuEdit(7).Enabled <> newState) Then FormMain.MnuEdit(7).Enabled = newState
-            If (FormMain.MnuEdit(8).Enabled <> newState) Then FormMain.MnuEdit(8).Enabled = newState
-            If (FormMain.MnuEdit(9).Enabled <> newState) Then FormMain.MnuEdit(9).Enabled = newState
-            If (FormMain.MnuEdit(10).Enabled <> newState) Then FormMain.MnuEdit(10).Enabled = newState
-            If (FormMain.MnuEdit(12).Enabled <> newState) Then FormMain.MnuEdit(12).Enabled = newState
-            If (FormMain.MnuEdit(13).Enabled <> newState) Then FormMain.MnuEdit(13).Enabled = newState
+            Menus.SetMenuEnabled "edit_copy", newState
+            Menus.SetMenuEnabled "edit_copylayer", newState
+            Menus.SetMenuEnabled "edit_cut", newState
+            Menus.SetMenuEnabled "edit_cutlayer", newState
+            Menus.SetMenuEnabled "edit_pasteaslayer", newState
+            Menus.SetMenuEnabled "edit_specialcopy", newState
+            Menus.SetMenuEnabled "edit_specialcut", newState
             
         'View (top-menu level)
         Case PDUI_View
-            If (FormMain.MnuViewTop.Enabled <> newState) Then FormMain.MnuViewTop.Enabled = newState
-        
+            Menus.SetMenuEnabled "view_top", newState
+            
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case PDUI_ImageMenu
-            If (FormMain.MnuImageTop.Enabled <> newState) Then
-                FormMain.MnuSelectTop.Enabled = newState
-                FormMain.MnuImageTop.Enabled = newState
-                FormMain.MnuLayerTop.Enabled = newState
-                FormMain.MnuAdjustmentsTop.Enabled = newState
-                FormMain.MnuEffectsTop.Enabled = newState
-                FormMain.MnuFile(16).Enabled = newState     'File -> Print
+            If (Menus.IsMenuEnabled("image_top") <> newState) Then
+                Menus.SetMenuEnabled "image_top", newState
+                Menus.SetMenuEnabled "layer_top", newState
+                Menus.SetMenuEnabled "select_top", newState
+                Menus.SetMenuEnabled "adj_top", newState
+                Menus.SetMenuEnabled "effects_top", newState
+                Menus.SetMenuEnabled "file_print", newState
             End If
             
         'Macro (within the Tools menu)
         Case PDUI_Macros
-            If (FormMain.MnuTool(5).Enabled <> newState) Then
-                FormMain.MnuTool(5).Enabled = newState
-                FormMain.MnuTool(6).Enabled = newState
-                FormMain.MnuTool(7).Enabled = newState
-            End If
-        
+            Menus.SetMenuEnabled "tools_macrocreatetop", newState
+            Menus.SetMenuEnabled "tools_playmacro", newState
+            Menus.SetMenuEnabled "tools_recentmacros", newState
+            
         'Selections in general
         Case PDUI_Selections
             
@@ -727,31 +730,33 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             End If
             
             'En/disable all selection menu items that rely on an existing selection to operate
-            If (FormMain.MnuSelect(2).Enabled <> newState) Then
+            If (Menus.IsMenuEnabled("select_none") <> newState) Then
                 
                 'Select none, invert selection
-                FormMain.MnuSelect(1).Enabled = newState
-                FormMain.MnuSelect(2).Enabled = newState
+                Menus.SetMenuEnabled "select_none", newState
+                Menus.SetMenuEnabled "select_invert", newState
                 
                 'Grow/shrink/border/feather/sharpen selection
-                For i = 4 To 8
-                    FormMain.MnuSelect(i).Enabled = newState
-                Next i
+                Menus.SetMenuEnabled "select_grow", newState
+                Menus.SetMenuEnabled "select_shrink", newState
+                Menus.SetMenuEnabled "select_border", newState
+                Menus.SetMenuEnabled "select_feather", newState
+                Menus.SetMenuEnabled "select_sharpen", newState
                 
                 'Erase selected area
-                FormMain.MnuSelect(10).Enabled = newState
+                Menus.SetMenuEnabled "select_erasearea", newState
                 
                 'Save selection
-                FormMain.MnuSelect(13).Enabled = newState
+                Menus.SetMenuEnabled "select_save", newState
                 
                 'Export selection top-level menu
-                FormMain.MnuSelect(14).Enabled = newState
+                Menus.SetMenuEnabled "select_export", newState
                 
             End If
                                     
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
-            If (FormMain.MnuImage(9).Enabled <> newState) Then FormMain.MnuImage(9).Enabled = newState
-            If (FormMain.MnuLayer(9).Enabled <> newState) Then FormMain.MnuLayer(9).Enabled = newState
+            Menus.SetMenuEnabled "image_crop", newState
+            Menus.SetMenuEnabled "layer_crop", newState
             
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms
@@ -771,20 +776,20 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         Case PDUI_Metadata
         
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
-                FormMain.MnuMetadata(0).Enabled = newState
-                FormMain.MnuMetadata(1).Enabled = newState
+                Menus.SetMenuEnabled "image_editmetadata", newState
+                Menus.SetMenuEnabled "image_removemetadata", newState
             Else
-                FormMain.MnuMetadata(0).Enabled = False
-                FormMain.MnuMetadata(1).Enabled = False
+                Menus.SetMenuEnabled "image_editmetadata", False
+                Menus.SetMenuEnabled "image_removemetadata", False
             End If
         
         'GPS metadata is its own sub-category, and its activation is contigent upon an image having embedded GPS data
         Case PDUI_GPSMetadata
         
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) Then
-                If (FormMain.MnuMetadata(4).Enabled <> newState) Then FormMain.MnuMetadata(4).Enabled = newState
+                Menus.SetMenuEnabled "image_maplocation", newState
             Else
-                If FormMain.MnuMetadata(4).Enabled Then FormMain.MnuMetadata(4).Enabled = False
+                Menus.SetMenuEnabled "image_maplocation", False
             End If
         
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
@@ -864,7 +869,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Images with embedded color profiles support extra features
         Case PDUI_ICCProfile
-            FormMain.MnuFileExport(0).Enabled = newState
+            Menus.SetMenuEnabled "file_export_colorprofile", newState
             
     End Select
     
@@ -1533,11 +1538,9 @@ End Sub
 'Populate the passed button strip with options related to convolution kernel shape.  The caller can also specify which method they
 ' want set as the default.
 Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As pdButtonStrip, Optional ByVal defaultShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle)
-    
     srcBTS.AddItem "Square", 0
     srcBTS.AddItem "Circle", 1
     srcBTS.ListIndex = defaultShape
-    
 End Sub
 
 'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call EnableUserInput(),

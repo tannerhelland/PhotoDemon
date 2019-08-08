@@ -3,8 +3,8 @@ Attribute VB_Name = "Menus"
 'PhotoDemon Menu Manager
 'Copyright 2017-2019 by Tanner Helland
 'Created: 11/January/17
-'Last updated: 03/May/19
-'Last update: large overhaul to handle action redirection via menu caption and/or name
+'Last updated: 08/August/19
+'Last update: provide a WAPI interface for enabling/disabling menu items
 '
 'PhotoDemon has an extensive menu system.  Managing all those menus is a cumbersome task.  This module exists
 ' to tackle the worst parts of run-time maintenance, so other functions don't need to.
@@ -103,6 +103,17 @@ Private Type Win32_MenuItemInfoW
     hbmpItem        As Long
 End Type
 
+Private Enum Win32_EnableMenuItem
+    MFE_BYPOSITION = &H400&      'Indicates that uIDEnableItem gives the zero-based relative position of the menu item.
+    MFE_DISABLED = &H2&          'Indicates that the menu item is disabled, but not grayed, so it cannot be selected.
+    MFE_ENABLED = &H0&           'Indicates that the menu item is enabled and restored from a grayed state so that it can be selected.
+    MFE_GRAYED = &H1&            'Indicates that the menu item is disabled and grayed so that it cannot be selected.
+End Enum
+
+#If False Then
+    Private Const MFE_BYPOSITION = &H400&, MFE_DISABLED = &H2&, MFE_ENABLED = &H0&, MFE_GRAYED = &H1&
+#End If
+
 'When modifying menus, special ID values can be used to restrict operations
 Private Const IGNORE_MENU_ID As Long = -10
 Private Const ALL_MENU_SUBITEMS As Long = -9
@@ -110,6 +121,7 @@ Private Const MENU_NONE As Long = -1
 
 'A number of menu features require us to interact directly with the API
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function EnableMenuItem Lib "user32" (ByVal hMenu As Long, ByVal uIDEnabledItem As Long, ByVal uEnable As Win32_EnableMenuItem) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
@@ -258,33 +270,32 @@ Public Sub InitializeMenus()
         AddMenuItem "Move layer to bottom", "layer_movebottom", 3, 5, 8
         AddMenuItem "-", "-", 3, 5, 9
         AddMenuItem "Reverse", "layer_reverse", 3, 5, 10
-    AddMenuItem "-", "-", 3, 6
-    AddMenuItem "Orientation", "layer_orientation", 3, 7
-        AddMenuItem "Straighten...", "layer_straighten", 3, 7, 0
-        AddMenuItem "-", "-", 3, 7, 1
-        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 7, 2, "generic_rotateright"
-        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 7, 3, "generic_rotateleft"
-        AddMenuItem "Rotate 180", "layer_rotate180", 3, 7, 4
-        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 7, 5
-        AddMenuItem "-", "-", 3, 7, 6
-        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 7, 7, "image_fliphorizontal"
-        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 7, 8, "image_flipvertical"
+    AddMenuItem "Visibility", "layer_visibility", 3, 6
     AddMenuItem "-", "-", 3, 7
-    AddMenuItem "Size", "layer_resize", 3, 8
-        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 8, 0, "generic_reset"
+    AddMenuItem "Orientation", "layer_orientation", 3, 8
+        AddMenuItem "Straighten...", "layer_straighten", 3, 8, 0
         AddMenuItem "-", "-", 3, 8, 1
-        AddMenuItem "Resize...", "layer_resize", 3, 8, 2, "image_resize"
-        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 8, 3
-    AddMenuItem "-", "-", 3, 8
-    AddMenuItem "Crop to selection", "layer_crop", 3, 9, , "image_crop"
-    AddMenuItem "-", "-", 3, 10
-    AddMenuItem "Transparency", "layer_transparency", 3, 11
-        AddMenuItem "Make color transparent...", "layer_colortoalpha", 3, 11, 0
-        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 11, 1, "generic_trash"
-    AddMenuItem "-", "-", 3, 12
-    AddMenuItem "Rasterize", "layer_rasterize", 3, 13
-        AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 13, 0
-        AddMenuItem "All layers", "layer_rasterizeall", 3, 13, 1
+        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 8, 2, "generic_rotateright"
+        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 8, 3, "generic_rotateleft"
+        AddMenuItem "Rotate 180", "layer_rotate180", 3, 8, 4
+        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 8, 5
+        AddMenuItem "-", "-", 3, 8, 6
+        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 8, 7, "image_fliphorizontal"
+        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 8, 8, "image_flipvertical"
+    AddMenuItem "Size", "layer_resize", 3, 9
+        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 9, 0, "generic_reset"
+        AddMenuItem "-", "-", 3, 9, 1
+        AddMenuItem "Resize...", "layer_resize", 3, 9, 2, "image_resize"
+        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 9, 3
+    AddMenuItem "Crop to selection", "layer_crop", 3, 10, , "image_crop"
+    AddMenuItem "-", "-", 3, 11
+    AddMenuItem "Transparency", "layer_transparency", 3, 12
+        AddMenuItem "Make color transparent...", "layer_colortoalpha", 3, 12, 0
+        AddMenuItem "Remove transparency...", "layer_removealpha", 3, 12, 1, "generic_trash"
+    AddMenuItem "-", "-", 3, 13
+    AddMenuItem "Rasterize", "layer_rasterize", 3, 14
+        AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 14, 0
+        AddMenuItem "All layers", "layer_rasterizeall", 3, 14, 1
     
     'Select Menu
     AddMenuItem "&Select", "select_top", 4
@@ -845,23 +856,37 @@ End Sub
 Public Function GetCaptionFromName(ByRef mnuName As String, Optional ByVal returnTranslation As Boolean = True) As String
 
     'Resolve the menu name into an index into our menu collection
+    Dim mnuIndex As Long
+    If GetIndexFromName(mnuName, mnuIndex) Then
+        
+        If (mnuIndex >= 0) Then
+            If returnTranslation Then
+                GetCaptionFromName = m_Menus(mnuIndex).me_TextTranslated
+            Else
+                GetCaptionFromName = m_Menus(mnuIndex).me_TextEn
+            End If
+        End If
+        
+    End If
+    
+End Function
+
+'Given a menu name, return the corresponding index into the local m_Menus() collection.
+Private Function GetIndexFromName(ByRef mnuName As String, ByRef dstIndex As Long) As Boolean
+
+    'Resolve the menu name into an index into our menu collection
     Dim i As Long
-    Dim mnuIndex As Long: mnuIndex = -1
+    dstIndex = -1
     
     For i = 0 To m_NumOfMenus - 1
         If Strings.StringsEqual(mnuName, m_Menus(i).me_Name, True) Then
-            mnuIndex = i
+            dstIndex = i
             Exit For
         End If
     Next i
     
-    If (mnuIndex >= 0) Then
-        If returnTranslation Then
-            GetCaptionFromName = m_Menus(mnuIndex).me_TextTranslated
-        Else
-            GetCaptionFromName = m_Menus(mnuIndex).me_TextEn
-        End If
-    End If
+    GetIndexFromName = (dstIndex >= 0)
+    If (Not GetIndexFromName) Then InternalMenuWarning "GetIndexFromName", "no match found for name: " & mnuName
     
 End Function
 
@@ -921,17 +946,8 @@ End Sub
 Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
 
     'Resolve the menu name into an index into our menu collection
-    Dim i As Long
-    Dim mnuIndex As Long: mnuIndex = -1
-    
-    For i = 0 To m_NumOfMenus - 1
-        If Strings.StringsEqual(mnuName, m_Menus(i).me_Name, True) Then
-            mnuIndex = i
-            Exit For
-        End If
-    Next i
-    
-    If (mnuIndex >= 0) Then
+    Dim mnuIndex As Long
+    If GetIndexFromName(mnuName, mnuIndex) Then
     
         'We now need to check all parent menus in turn (because they may be disabled, which effectively
         ' means *we're* disabled too - but the API doesn't calculate that for us.)
@@ -972,11 +988,39 @@ Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
             
         End If
         
-    Else
-        InternalMenuWarning "IsMenuEnabled", "no matching menu found - check your menu name!"
     End If
 
 End Function
+
+Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As Boolean = True)
+
+    'Resolve the menu name into an index into our menu collection
+    Dim mnuIndex As Long
+    If GetIndexFromName(mnuName, mnuIndex) Then
+    
+        Dim hMenu As Long, hMenuIndex As Long
+        hMenu = GetHMenu_FromIndex(mnuIndex, True)
+        
+        If (m_Menus(mnuIndex).me_SubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_TopMenu
+        ElseIf (m_Menus(mnuIndex).me_SubSubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_SubMenu
+        Else
+            hMenuIndex = m_Menus(mnuIndex).me_SubSubMenu
+        End If
+        
+        If isEnabled Then
+            EnableMenuItem hMenu, hMenuIndex, MFE_BYPOSITION Or MFE_ENABLED
+        Else
+            EnableMenuItem hMenu, hMenuIndex, MFE_BYPOSITION Or MFE_DISABLED Or MFE_GRAYED
+        End If
+        
+        'Top-level menus need to be redrawn immediately; other ones do not
+        If (m_Menus(mnuIndex).me_SubMenu < 0) Then DrawMenuBar FormMain.hWnd
+        
+    End If
+    
+End Sub
 
 'Until I have a better place to stick this, hotkeys are handled here, by the menu module.  This is primarily done because there is
 ' fairly tight integration between hotkeys and menu captions, and both need to be handled together while accounting for the usual

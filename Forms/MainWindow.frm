@@ -501,12 +501,16 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "-"
+         Caption         =   "Visibility"
          Index           =   6
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Orientation"
+         Caption         =   "-"
          Index           =   7
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Orientation"
+         Index           =   8
          Begin VB.Menu MnuLayerOrientation 
             Caption         =   "Straighten..."
             Index           =   0
@@ -546,7 +550,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Size"
-         Index           =   8
+         Index           =   9
          Begin VB.Menu MnuLayerSize 
             Caption         =   "Reset to actual size"
             Index           =   0
@@ -566,15 +570,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Crop to selection"
-         Index           =   9
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "-"
          Index           =   10
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Transparency"
+         Caption         =   "-"
          Index           =   11
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Transparency"
+         Index           =   12
          Begin VB.Menu MnuLayerTransparency 
             Caption         =   "Make color transparent..."
             Index           =   0
@@ -586,11 +590,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   12
+         Index           =   13
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Rasterize"
-         Index           =   13
+         Index           =   14
          Begin VB.Menu MnuLayerRasterize 
             Caption         =   "Current layer"
             Index           =   0
@@ -2108,20 +2112,22 @@ Private Sub MnuLayer_Click(Index As Integer)
         Case 5
             'Order submenu
         Case 6
-            '(separator)
+            'Visibility submenu
         Case 7
-            'Orientation submenu
+            '(separator)
         Case 8
-            'Size submenu
+            'Orientation submenu
         Case 9
-            Menus.ProcessDefaultAction_ByName "layer_crop"
+            'Size submenu
         Case 10
-            '(separator)
+            Menus.ProcessDefaultAction_ByName "layer_crop"
         Case 11
-            'Transparency submenu
-        Case 12
             '(separator)
+        Case 12
+            'Transparency submenu
         Case 13
+            '(separator)
+        Case 14
             'Rasterize submenu
     End Select
 End Sub
