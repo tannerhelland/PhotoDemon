@@ -1028,7 +1028,7 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
                 ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
                 ' manually render a dab at the initial starting position.
                 If isFirstStroke Then
-                    PD2D.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
+                    PD2D.DrawLineF m_Surface, m_GDIPPen, Int(srcX), Int(srcY), Int(srcX) + 0.9999, Int(srcY) + 0.9999
                 Else
                     PD2D.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
                 End If
