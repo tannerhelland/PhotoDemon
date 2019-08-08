@@ -332,11 +332,11 @@ Private Sub SyncUI_MultipleLayerSettings()
     'Reverse layer order is always available for multi-layer images
     FormMain.MnuLayerOrder(10).Enabled = True
     
-    'Flatten is only available if one or more layers are actually *visible*
-    FormMain.MnuLayer(15).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
-    
     'Merge visible is only available if *two* or more layers are visible
-    FormMain.MnuLayer(16).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 1)
+    FormMain.MnuImage(16).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 1)
+    
+    'Flatten is only available if one or more layers are actually *visible*
+    FormMain.MnuImage(17).Enabled = (PDImages.GetActiveImage.GetNumOfVisibleLayers > 0)
     
 End Sub
 
@@ -429,8 +429,8 @@ Private Sub SetUIMode_OnlyOneLayer()
     FormMain.MnuLayer(3).Enabled = False    'Merge up/down
     FormMain.MnuLayer(4).Enabled = False
     FormMain.MnuLayer(5).Enabled = False    'Layer order
-    FormMain.MnuLayer(15).Enabled = False   'Flatten
-    FormMain.MnuLayer(16).Enabled = False   'Merge visible
+    FormMain.MnuImage(16).Enabled = False   'Flatten
+    FormMain.MnuImage(17).Enabled = False   'Merge visible
 End Sub
 
 'If an image has at least one valid layer (as they always do in PD), call this function to enable relevant layer menus and controls.
@@ -458,8 +458,8 @@ Private Sub SetUIMode_NoLayers()
     FormMain.MnuLayer(9).Enabled = False
     FormMain.MnuLayer(11).Enabled = False
     FormMain.MnuLayer(13).Enabled = False
-    FormMain.MnuLayer(15).Enabled = False
-    FormMain.MnuLayer(16).Enabled = False
+    FormMain.MnuImage(16).Enabled = False   'Flatten
+    FormMain.MnuImage(17).Enabled = False   'Merge visible
     
 End Sub
 

@@ -358,8 +358,20 @@ Begin VB.Form FormMain
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "Merge visible layers"
          Index           =   16
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Flatten image..."
+         Index           =   17
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   18
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   19
          Begin VB.Menu MnuMetadata 
             Caption         =   "Edit metadata..."
             Index           =   0
@@ -587,18 +599,6 @@ Begin VB.Form FormMain
             Caption         =   "All layers"
             Index           =   1
          End
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "-"
-         Index           =   14
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "Merge visible layers"
-         Index           =   15
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image..."
-         Index           =   16
       End
    End
    Begin VB.Menu MnuSelectTop 
@@ -2123,12 +2123,6 @@ Private Sub MnuLayer_Click(Index As Integer)
             '(separator)
         Case 13
             'Rasterize submenu
-        Case 14
-            '(separator)
-        Case 15
-            Menus.ProcessDefaultAction_ByName "layer_mergevisible"
-        Case 16
-            Menus.ProcessDefaultAction_ByName "layer_flatten"
     End Select
 End Sub
 
@@ -3094,73 +3088,46 @@ Private Sub MnuImage_Click(Index As Integer)
     ' commands with the Layer menu (e.g. "Resize", "Crop to Selection"), so we manually request
     ' actions for most items in this menu.
     Select Case Index
-    
-        'Duplicate
         Case 0
             Menus.ProcessDefaultAction_ByName "image_duplicate"
-        
-        '<separator>
         Case 1
-        
-        'Resize
+            'separator
         Case 2
             Menus.ProcessDefaultAction_ByName "image_resize"
-            
-        'Content-aware resize
         Case 3
             Menus.ProcessDefaultAction_ByName "image_contentawareresize"
-            
-        '<separator>
         Case 4
-        
-        'Canvas resize
+            'separator
         Case 5
             Menus.ProcessDefaultAction_ByName "image_canvassize"
-            
-        'Fit canvas to active layer
         Case 6
             Menus.ProcessDefaultAction_ByName "image_fittolayer"
-            
-        'Fit canvas around all layers
         Case 7
             Menus.ProcessDefaultAction_ByName "image_fitalllayers"
-            
-        '<separator>
         Case 8
-            
-        'Crop to selection
+            'separator
         Case 9
             Menus.ProcessDefaultAction_ByName "image_crop"
-            
-        'Trim empty borders
         Case 10
             Menus.ProcessDefaultAction_ByName "image_trim"
-            
-        '<separator>
         Case 11
-        
-        'Top-level Rotate
+            'separator
         Case 12
-        
-        'Flip horizontal (mirror)
+            'top-level rotate
         Case 13
             Menus.ProcessDefaultAction_ByName "image_fliphorizontal"
-            
-        'Flip vertical
         Case 14
             Menus.ProcessDefaultAction_ByName "image_flipvertical"
-            
-        'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
-        'Isometric view
-        'Case 12
-        '    Process "Isometric conversion"
-            
-        '<separator>
         Case 15
-        
-        'Metadata top-level
+            'separator
         Case 16
-    
+            Menus.ProcessDefaultAction_ByName "image_mergevisible"
+        Case 17
+            Menus.ProcessDefaultAction_ByName "image_flatten"
+        Case 18
+            'separator
+        Case 19
+            'Metadata top-level
     End Select
 
 End Sub

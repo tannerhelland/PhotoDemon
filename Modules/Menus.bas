@@ -220,12 +220,15 @@ Public Sub InitializeMenus()
     AddMenuItem "Flip horizontal", "image_fliphorizontal", 2, 13, , "image_fliphorizontal"
     AddMenuItem "Flip vertical", "image_flipvertical", 2, 14, , "image_flipvertical"
     AddMenuItem "-", "-", 2, 15
-    AddMenuItem "Metadata", "image_metadata", 2, 16
-        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 16, 0, "image_metadata"
-        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 16, 1
-        AddMenuItem "-", "-", 2, 16, 2
-        AddMenuItem "Count unique colors", "image_countcolors", 2, 16, 3
-        AddMenuItem "Map photo location...", "image_maplocation", 2, 16, 4, "image_maplocation"
+    AddMenuItem "Merge visible layers", "image_mergevisible", 2, 16, , "generic_visible"
+    AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
+    AddMenuItem "-", "0", 2, 18
+    AddMenuItem "Metadata", "image_metadata", 2, 19
+        AddMenuItem "Edit metadata...", "image_editmetadata", 2, 19, 0, "image_metadata"
+        AddMenuItem "Remove all metadata", "image_removemetadata", 2, 19, 1
+        AddMenuItem "-", "-", 2, 19, 2
+        AddMenuItem "Count unique colors", "image_countcolors", 2, 19, 3
+        AddMenuItem "Map photo location...", "image_maplocation", 2, 19, 4, "image_maplocation"
     
     'Layer menu
     AddMenuItem "&Layer", "layer_top", 3
@@ -282,9 +285,6 @@ Public Sub InitializeMenus()
     AddMenuItem "Rasterize", "layer_rasterize", 3, 13
         AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 13, 0
         AddMenuItem "All layers", "layer_rasterizeall", 3, 13, 1
-        AddMenuItem "-", "-", 3, 14
-    AddMenuItem "Merge visible layers", "layer_mergevisible", 3, 15, , "generic_visible"
-    AddMenuItem "Flatten image...", "layer_flatten", 3, 16, , "layer_flatten"
     
     'Select Menu
     AddMenuItem "&Select", "select_top", 4
@@ -1072,8 +1072,8 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyPageDown, vbCtrlMask Or vbAltMask, "Go to bottom layer", "layer_gobottom", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageUp, vbAltMask, "Go to layer above", "layer_goup", True, True, False, UNDO_Nothing
         .AddAccelerator vbKeyPageDown, vbAltMask, "Go to layer below", "layer_godown", True, True, False, UNDO_Nothing
-        .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "layer_mergevisible", True, True, False, UNDO_Image
-        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "layer_flatten", True, True, True, UNDO_Nothing
+        .AddAccelerator vbKeyE, vbCtrlMask Or vbShiftMask, "Merge visible layers", "image_mergevisible", True, True, False, UNDO_Image
+        .AddAccelerator vbKeyF, vbCtrlMask Or vbShiftMask, "Flatten image", "image_flatten", True, True, True, UNDO_Nothing
         
         'Select Menu
         .AddAccelerator vbKeyA, vbCtrlMask, "Select all", "select_all", True, True, False, UNDO_Selection
@@ -1582,6 +1582,12 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
         Case "image_flipvertical"
             Process "Flip image vertically", , , UNDO_Image
             
+        Case "image_mergevisible"
+            Process "Merge visible layers", , , UNDO_Image
+            
+        Case "image_flatten"
+            Process "Flatten image", True
+            
         Case "image_metadata"
             Case "image_editmetadata"
                 Process "Edit metadata", True
@@ -1720,12 +1726,6 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Case "layer_rasterizeall"
                 Process "Rasterize all layers", , , UNDO_Image
                 
-        Case "layer_mergevisible"
-            Process "Merge visible layers", , , UNDO_Image
-            
-        Case "layer_flatten"
-            Process "Flatten image", True
-            
         Case Else
             cmdFound = False
             
