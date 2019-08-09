@@ -1209,7 +1209,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         
         'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
         ' for a performance boost, however.
-        m_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize), Int(m_BrushSize), 0, 0, Int(m_BrushSize), Int(m_BrushSize), dabOpacity * 255
+        m_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), 0, 0, Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), dabOpacity * 255
         'PD2D.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
         
     End If
