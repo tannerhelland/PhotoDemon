@@ -503,6 +503,35 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuLayer 
          Caption         =   "Visibility"
          Index           =   6
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "Show this layer"
+            Checked         =   -1  'True
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "Show only this layer"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "Hide only this layer"
+            Index           =   3
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "-"
+            Index           =   4
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "Show all layers"
+            Index           =   5
+         End
+         Begin VB.Menu MnuLayerVisibility 
+            Caption         =   "Hide all layers"
+            Index           =   6
+         End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
@@ -1740,6 +1769,25 @@ Private Sub MnuFileImport_Click(Index As Integer)
             '(separator)
         Case 7
             Menus.ProcessDefaultAction_ByName "file_import_screenshot"
+    End Select
+End Sub
+
+Private Sub MnuLayerVisibility_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_show"
+        Case 1
+            '(separator)
+        Case 2
+            Menus.ProcessDefaultAction_ByName "layer_showonly"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "layer_hideonly"
+        Case 4
+            '(separator)
+        Case 5
+            Menus.ProcessDefaultAction_ByName "layer_showall"
+        Case 6
+            Menus.ProcessDefaultAction_ByName "layer_hideall"
     End Select
 End Sub
 

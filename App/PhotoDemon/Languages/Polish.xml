@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.90</langversion>
+<langversion>7.0.91</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1711,6 +1711,31 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 </phrase>
 
 <phrase>
+<original>Toggle layer visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Show only this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hide only this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Show all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hide all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Wyrównywanie warstwy</translation>
 </phrase>
@@ -2460,7 +2485,7 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 <translation>Wyczyść ostatnią listę makro</translation>
 </phrase>
 
-<!-- Menus.bas contains 243 phrases. 29 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
+<!-- Menus.bas contains 248 phrases. 29 were duplicates of existing phrases, so only 219 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5980,6 +6005,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>Orientacja</translation>
 </phrase>
@@ -6579,7 +6609,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+<!-- MainWindow.frm contains 345 phrases. 160 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15860,10 +15890,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2645</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4851 phrases. -->
-<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
-<!-- These 2645 phrases contain approximately 12464 total words. -->
+<!-- As of this build, PhotoDemon contains 4861 phrases. -->
+<!-- 2210 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12484 total words. -->
 
 </pdData>

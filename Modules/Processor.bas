@@ -2231,6 +2231,30 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         PDImages.GetActiveImage.ReverseLayerOrder
         Process_LayerMenu = True
     
+    'Toggle active layer visibility
+    ElseIf Strings.StringsEqual(processID, "Toggle layer visibility", True) Then
+        PDImages.GetActiveImage.GetActiveLayer.SetLayerVisibility (Not PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility)
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_LayerHeader, PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+    
+    'Show or hide just the active layer
+    ElseIf Strings.StringsEqual(processID, "Show only this layer", True) Then
+        Layers.MakeJustOneLayerVisible PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Hide only this layer", True) Then
+        Layers.MakeJustOneLayerHidden PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+    
+    'Show or hide all layers
+    ElseIf Strings.StringsEqual(processID, "Show all layers", True) Then
+        Layers.SetLayerVisibility_AllLayers True
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Hide all layers", True) Then
+        Layers.SetLayerVisibility_AllLayers False
+        Process_LayerMenu = True
+    
     'Non-destructive layer size and orientation changes
     ElseIf Strings.StringsEqual(processID, "Reset layer size", True) Then
         Layers.ResetLayerSize cParams.GetLong("layerindex")

@@ -434,6 +434,18 @@ Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
         
 End Sub
 
+'Make all layers visible or hidden
+Public Sub SetLayerVisibility_AllLayers(Optional ByVal isLayerVisible As Boolean = True)
+    
+    Dim i As Long
+    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+        PDImages.GetActiveImage.GetLayerByIndex(i).SetLayerVisibility isLayerVisible
+    Next i
+    
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_ImageHeader
+    
+End Sub
+
 'Set layer visibility.  Note that the layer's visibility state must be explicitly noted, e.g. there is no "toggle" option.
 Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisibility As Boolean, Optional ByVal alsoRedrawViewport As Boolean = False)
     
@@ -451,6 +463,30 @@ Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+'Make only one layer visible; all others will be hidden
+Public Sub MakeJustOneLayerHidden(ByVal dLayerIndex As Long)
+    
+    Dim i As Long
+    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+        PDImages.GetActiveImage.GetLayerByIndex(i).SetLayerVisibility (i <> dLayerIndex)
+    Next i
+    
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_ImageHeader
+    
+End Sub
+
+'Make only one layer visible; all others will be hidden
+Public Sub MakeJustOneLayerVisible(ByVal dLayerIndex As Long)
+    
+    Dim i As Long
+    For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
+        PDImages.GetActiveImage.GetLayerByIndex(i).SetLayerVisibility (i = dLayerIndex)
+    Next i
+    
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_ImageHeader
     
 End Sub
 

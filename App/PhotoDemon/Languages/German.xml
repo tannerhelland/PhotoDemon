@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1204</langversion>
+<langversion>7.2.1214</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1724,6 +1724,31 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Toggle layer visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Show only this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hide only this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Show all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hide all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Layer gerade ausrichten</translation>
 </phrase>
@@ -2345,7 +2370,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Fibers</original>
-<translation></translation>
+<translation>Fasern</translation>
 </phrase>
 
 <phrase>
@@ -2473,7 +2498,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 243 phrases. 29 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
+<!-- Menus.bas contains 248 phrases. 29 were duplicates of existing phrases, so only 219 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6002,6 +6027,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Orientation</original>
 <translation>Ausrichtung</translation>
 </phrase>
@@ -6604,7 +6634,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 340 phrases. 156 were duplicates of existing phrases, so only 184 new phrases were written to file. -->
+<!-- MainWindow.frm contains 345 phrases. 160 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15874,12 +15904,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>length</original>
-<translation></translation>
+<translation>Länge</translation>
 </phrase>
 
 <phrase>
 <original>Rendering fibers</original>
-<translation></translation>
+<translation>Fasern werden gerendert</translation>
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -15888,10 +15918,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2645</phrasecount>
+<phrasecount>2651</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4851 phrases. -->
-<!-- 2206 are duplicates, so only 2645 unique phrases have been written to file. -->
-<!-- These 2645 phrases contain approximately 12464 total words. -->
+<!-- As of this build, PhotoDemon contains 4861 phrases. -->
+<!-- 2210 are duplicates, so only 2651 unique phrases have been written to file. -->
+<!-- These 2651 phrases contain approximately 12484 total words. -->
 
 </pdData>

@@ -273,6 +273,12 @@ Public Sub InitializeMenus()
         AddMenuItem "Reverse", "layer_reverse", 3, 5, 10
     AddMenuItem "Visibility", "layer_visibility", 3, 6
         AddMenuItem "Show this layer", "layer_show", 3, 6, 0
+        AddMenuItem "-", "-", 3, 6, 1
+        AddMenuItem "Show only this layer", "layer_showonly", 3, 6, 2
+        AddMenuItem "Hide only this layer", "layer_hideonly", 3, 6, 3
+        AddMenuItem "-", "-", 3, 6, 4
+        AddMenuItem "Show all layers", "layer_showall", 3, 6, 5
+        AddMenuItem "Hide all layers", "layer_hideall", 3, 6, 6
     AddMenuItem "-", "-", 3, 7
     AddMenuItem "Orientation", "layer_orientation", 3, 8
         AddMenuItem "Straighten...", "layer_straighten", 3, 8, 0
@@ -1799,6 +1805,18 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
         Case "layer_visibility"
             Case "layer_show"
                 Process "Toggle layer visibility", False, vbNullString, UNDO_LayerHeader
+                
+            Case "layer_showonly"
+                Process "Show only this layer", False, vbNullString, UNDO_ImageHeader
+                
+            Case "layer_hideonly"
+                Process "Hide only this layer", False, vbNullString, UNDO_ImageHeader
+                
+            Case "layer_showall"
+                Process "Show all layers", False, vbNullString, UNDO_ImageHeader
+                
+            Case "layer_hideall"
+                Process "Hide all layers", False, vbNullString, UNDO_ImageHeader
         
         Case "layer_orientation"
             Case "layer_straighten"
