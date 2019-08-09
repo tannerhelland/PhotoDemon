@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip Vertical" control
 'Copyright 2015-2019 by Tanner Helland
 'Created: 15/March/15
-'Last updated: 25/January/16
-'Last update: mirror latest changes from the horizontal button strip update
+'Last updated: 09/August/19
+'Last update: improve visual feedback when navigating strip via keyboard
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -293,6 +293,10 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     If (vkCode = VK_DOWN) Then
         
+        'Keyboard now takes precedence over mouse
+        If (m_ButtonHoverIndex >= 0) Then m_FocusRectActive = m_ButtonHoverIndex
+        m_ButtonHoverIndex = -1
+        
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
             m_FocusRectActive = m_FocusRectActive + 1
@@ -309,7 +313,11 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         markEventHandled = True
         
     ElseIf (vkCode = VK_UP) Then
-    
+        
+        'Keyboard now takes precedence over mouse
+        If (m_ButtonHoverIndex >= 0) Then m_FocusRectActive = m_ButtonHoverIndex
+        m_ButtonHoverIndex = -1
+        
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
             m_FocusRectActive = m_FocusRectActive - 1
@@ -970,17 +978,23 @@ Private Sub RedrawBackBuffer()
         
         'The hover rect (if any) is drawn last; because it's chunkier than normal borders, we must ensure that it overlaps
         ' neighboring buttons correctly.
-        If (m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0) Then
+        If ((m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0) Or ucSupport.DoIHaveFocus) Then
         
-            'Color changes when the active button is hovered, or when we have keyboard focus and the user is attempting
-            ' to change the active button via arrow keys.
-            If (m_ButtonHoverIndex = m_ButtonIndex) Or (m_FocusRectActive = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            'Color changes when the active button is hovered, or when we have keyboard focus and
+            ' the user is attempting to change button via arrow keys.
+            curColor = btnColorSelectedBorderHover
             
             Dim targetIndex As Long
-            If (m_ButtonHoverIndex >= 0) Then targetIndex = m_ButtonHoverIndex Else targetIndex = m_FocusRectActive
+            If (m_ButtonHoverIndex >= 0) Then
+                targetIndex = m_ButtonHoverIndex
+            ElseIf (m_FocusRectActive >= 0) Then
+                targetIndex = m_FocusRectActive
+            Else
+                targetIndex = m_ButtonIndex
+            End If
             
             With m_Buttons(targetIndex).btBounds
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right, .Bottom + 1, curColor, 255, 3, False, GP_LJ_Miter
             End With
             
         End If

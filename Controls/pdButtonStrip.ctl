@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2019 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 23/January/16
-'Last update: add caption support; large overhaul of rendering logic to better work with dark themes
+'Last updated: 09/August/19
+'Last update: improve visual feedback when navigating strip via keyboard
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -328,6 +328,10 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
     If (vkCode = VK_RIGHT) Then
         
+        'Keyboard now takes precedence over mouse
+        If (m_ButtonHoverIndex >= 0) Then m_FocusRectActive = m_ButtonHoverIndex
+        m_ButtonHoverIndex = -1
+        
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
             m_FocusRectActive = m_FocusRectActive + 1
@@ -345,6 +349,10 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         
     ElseIf (vkCode = VK_LEFT) Then
     
+        'Keyboard now takes precedence over mouse
+        If (m_ButtonHoverIndex >= 0) Then m_FocusRectActive = m_ButtonHoverIndex
+        m_ButtonHoverIndex = -1
+        
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
             m_FocusRectActive = m_FocusRectActive - 1
@@ -1048,16 +1056,23 @@ Private Sub RedrawBackBuffer()
         'This button has been rendered successfully.  Move on to the next one.
         Next i
         
-        'In normal coloring mode, the hover rect is drawn last; because it's chunkier than normal borders, we must ensure that it overlaps
-        ' neighboring buttons correctly.
-        If ((m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0)) And (m_ColoringMode = CM_DEFAULT) Then
+        'A hover/focus rect is drawn last; because it's chunkier than normal borders, we must ensure that it
+        ' overlaps neighboring buttons with proper z-order handling (e.g. the border must appear "atop"
+        ' any previous rendering).
+        If ((m_ButtonHoverIndex >= 0) Or (m_FocusRectActive >= 0) Or ucSupport.DoIHaveFocus) Then
         
-            'Color changes when the active button is hovered, or when we have keyboard focus and the user is attempting
-            ' to change the active button via arrow keys.
-            If (m_ButtonHoverIndex = m_ButtonIndex) Or (m_FocusRectActive = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            'Color changes when the active button is hovered, or when we have keyboard focus and
+            ' the user is attempting to change button via arrow keys.
+            curColor = btnColorSelectedBorderHover
             
             Dim targetIndex As Long
-            If (m_ButtonHoverIndex >= 0) Then targetIndex = m_ButtonHoverIndex Else targetIndex = m_FocusRectActive
+            If (m_ButtonHoverIndex >= 0) Then
+                targetIndex = m_ButtonHoverIndex
+            ElseIf (m_FocusRectActive >= 0) Then
+                targetIndex = m_FocusRectActive
+            Else
+                targetIndex = m_ButtonIndex
+            End If
             
             With m_Buttons(targetIndex).btBounds
                 GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter

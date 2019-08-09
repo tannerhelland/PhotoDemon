@@ -30,9 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Preview custom control
 'Copyright 2013-2019 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 13/February/16
-'Last update: migrated large portions of the fxPreview control into this new pdPreview control; this allows for
-'             better separation of logic, particularly when making layout decisions at run-time.
+'Last updated: 09/August/19
+'Last update: render a highlight+chunky border on keyboard focus
 '
 'For implementation details, please refer to pdFxPreviewCtl, which was the original source of most of this
 ' control's source code.
@@ -225,6 +224,7 @@ End Property
 
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
@@ -238,6 +238,7 @@ End Sub
 
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -750,7 +751,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         borderWidth = 1!
         hoverMatters = AllowColorSelection Or AllowPointSelection Or (AllowZoomPan And Not ViewportFitFullImage)
         If hoverMatters Then
-            hoverMatters = ucSupport.IsMouseInside
+            hoverMatters = ucSupport.IsMouseInside Or ucSupport.DoIHaveFocus
             If hoverMatters Then borderWidth = 3!
         End If
         ctlBorderColor = m_Colors.RetrieveColor(PDP_PreviewBorder, True, , hoverMatters)

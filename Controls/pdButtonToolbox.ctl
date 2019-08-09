@@ -761,7 +761,9 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     If PDMain.IsProgramRunning() Then
         
         'A single-pixel border is always drawn around the control
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, 1
+        Dim borderSize As Single
+        If ucSupport.DoIHaveFocus Then borderSize = 3! Else borderSize = 1!
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, borderSize
         
         'Paint the image, if any
         If (m_ButtonWidth <> 0) Then

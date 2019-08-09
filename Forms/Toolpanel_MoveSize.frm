@@ -331,6 +331,8 @@ Private Sub btsMoveOptions_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolea
     If (btsMoveOptions.ListIndex = 0) Then
         If shiftTabWasPressed Then
             If cmdLayerMove(0).Enabled Then newTargetHwnd = cmdLayerMove(0).hWnd Else newTargetHwnd = cboLayerResizeQuality.hWnd
+        Else
+            If tudLayerMove(0).Enabled Then newTargetHwnd = tudLayerMove(0).hWnd Else newTargetHwnd = cboLayerResizeQuality.hWnd
         End If
     ElseIf (btsMoveOptions.ListIndex = 1) Then
         If shiftTabWasPressed Then

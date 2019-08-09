@@ -71,27 +71,6 @@ Begin VB.Form toolpanel_Text
    End
    Begin PhotoDemon.pdContainer pdcMain 
       Height          =   1500
-      Index           =   0
-      Left            =   2280
-      TabIndex        =   2
-      Top             =   0
-      Width           =   10980
-      _ExtentX        =   18521
-      _ExtentY        =   2646
-      Begin PhotoDemon.pdTextBox txtTextTool 
-         Height          =   1350
-         Left            =   0
-         TabIndex        =   4
-         Top             =   30
-         Width           =   10815
-         _ExtentX        =   19076
-         _ExtentY        =   2381
-         FontSize        =   9
-         Multiline       =   -1  'True
-      End
-   End
-   Begin PhotoDemon.pdContainer pdcMain 
-      Height          =   1500
       Index           =   1
       Left            =   2280
       TabIndex        =   3
@@ -301,6 +280,27 @@ Begin VB.Form toolpanel_Text
          Width           =   2430
          _ExtentX        =   4286
          _ExtentY        =   661
+      End
+   End
+   Begin PhotoDemon.pdContainer pdcMain 
+      Height          =   1500
+      Index           =   0
+      Left            =   2280
+      TabIndex        =   2
+      Top             =   0
+      Width           =   10980
+      _ExtentX        =   18521
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1350
+         Left            =   0
+         TabIndex        =   4
+         Top             =   30
+         Width           =   10815
+         _ExtentX        =   19076
+         _ExtentY        =   2381
+         FontSize        =   9
+         Multiline       =   -1  'True
       End
    End
 End
