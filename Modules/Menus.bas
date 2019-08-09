@@ -123,9 +123,10 @@ Private Const MENU_NONE As Long = -1
 Private Declare Function DrawMenuBar Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function EnableMenuItem Lib "user32" (ByVal hMenu As Long, ByVal uIDEnabledItem As Long, ByVal uEnable As Win32_EnableMenuItem) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
 Private Declare Function GetMenuState Lib "user32" (ByVal hMenu As Long, ByVal uId As Long, ByVal uFlags As Win32_MenuStateFlags) As Win32_MenuStateFlags
 Private Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
-Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Boolean
+Private Declare Function SetMenuItemInfoW Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, ByRef srcMenuItemInfo As Win32_MenuItemInfoW) As Long
 
 'Primary menu collection
 Private m_Menus() As PD_MenuEntry
@@ -271,6 +272,7 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 3, 5, 9
         AddMenuItem "Reverse", "layer_reverse", 3, 5, 10
     AddMenuItem "Visibility", "layer_visibility", 3, 6
+        AddMenuItem "Show this layer", "layer_show", 3, 6, 0
     AddMenuItem "-", "-", 3, 7
     AddMenuItem "Orientation", "layer_orientation", 3, 8
         AddMenuItem "Straighten...", "layer_straighten", 3, 8, 0
@@ -943,6 +945,40 @@ End Sub
 'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
 ' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
 ' same-named menus are enabled and disabled as a group.
+Public Function IsMenuChecked(ByRef mnuName As String) As Boolean
+
+    'Resolve the menu name into an index into our menu collection
+    Dim mnuIndex As Long
+    If GetIndexFromName(mnuName, mnuIndex) Then
+    
+        Dim hMenu As Long, hMenuIndex As Long
+        hMenu = GetHMenu_FromIndex(mnuIndex, True)
+        
+        If (m_Menus(mnuIndex).me_SubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_TopMenu
+        ElseIf (m_Menus(mnuIndex).me_SubSubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_SubMenu
+        Else
+            hMenuIndex = m_Menus(mnuIndex).me_SubSubMenu
+        End If
+        
+        'Fill a MENUITEMINFO struct
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STATE
+        If (GetMenuItemInfoW(hMenu, hMenuIndex, 1, tmpMii) <> 0) Then
+            IsMenuChecked = ((tmpMii.fState And MFS_CHECKED) <> 0)
+        Else
+            InternalMenuWarning "IsMenuChecked", "GetMenuItemInfoW failed: " & Err.LastDllError
+        End If
+        
+    End If
+    
+End Function
+
+'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
+' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
+' same-named menus are enabled and disabled as a group.
 Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
 
     'Resolve the menu name into an index into our menu collection
@@ -990,6 +1026,45 @@ Public Function IsMenuEnabled(ByRef mnuName As String) As Boolean
         
     End If
 
+End Function
+
+'Helper check for resolving menu enablement by menu name.  Note that PD *does not* enforce unique menu names; in fact, they are
+' specifically allowed by design.  As such, this function only returns the *first* matching entry, with the assumption that
+' same-named menus are enabled and disabled as a group.
+Public Function SetMenuChecked(ByRef mnuName As String, Optional ByVal isChecked As Boolean = True) As Boolean
+
+    'Resolve the menu name into an index into our menu collection
+    Dim mnuIndex As Long
+    If GetIndexFromName(mnuName, mnuIndex) Then
+    
+        Dim hMenu As Long, hMenuIndex As Long
+        hMenu = GetHMenu_FromIndex(mnuIndex, True)
+        
+        If (m_Menus(mnuIndex).me_SubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_TopMenu
+        ElseIf (m_Menus(mnuIndex).me_SubSubMenu < 0) Then
+            hMenuIndex = m_Menus(mnuIndex).me_SubMenu
+        Else
+            hMenuIndex = m_Menus(mnuIndex).me_SubSubMenu
+        End If
+        
+        'Fill a MENUITEMINFO struct and retrieve current menu state
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STATE
+        If (GetMenuItemInfoW(hMenu, hMenuIndex, 1, tmpMii) = 0) Then InternalMenuWarning "SetMenuChecked", "GetMenuItemInfoW failed: " & Err.LastDllError
+        
+        'Set the checked bit flag, then report the change to the API
+        If isChecked Then
+            tmpMii.fState = tmpMii.fState Or MFS_CHECKED
+        Else
+            tmpMii.fState = tmpMii.fState And (Not MFS_CHECKED)
+        End If
+        
+        If (SetMenuItemInfoW(hMenu, hMenuIndex, 1, tmpMii) = 0) Then InternalMenuWarning "SetMenuChecked", "SetMenuItemInfoW failed: " & Err.LastDllError
+        
+    End If
+    
 End Function
 
 Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As Boolean = True)
@@ -1720,7 +1795,11 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             
             Case "layer_reverse"
                 Process "Reverse layer order", False, vbNullString, UNDO_Image
-            
+        
+        Case "layer_visibility"
+            Case "layer_show"
+                Process "Toggle layer visibility", False, vbNullString, UNDO_LayerHeader
+        
         Case "layer_orientation"
             Case "layer_straighten"
                 Process "Straighten layer", True
@@ -2562,9 +2641,9 @@ Public Sub UpdateSpecialMenu_Language(ByVal numOfLanguages As Long, ByRef availa
     hMenu = GetSubMenu(hMenu, 0)
     
     'Prepare a MenuItemInfo struct
-    Dim tmpMII As Win32_MenuItemInfoW
-    tmpMII.cbSize = LenB(tmpMII)
-    tmpMII.fMask = MIIM_STRING
+    Dim tmpMii As Win32_MenuItemInfoW
+    tmpMii.cbSize = LenB(tmpMii)
+    tmpMii.fMask = MIIM_STRING
     
     If (hMenu <> 0) Then
         
@@ -2572,8 +2651,8 @@ Public Sub UpdateSpecialMenu_Language(ByVal numOfLanguages As Long, ByRef availa
         ' of these menu objects; we use VB itself for that.)
         Dim i As Long
         For i = 0 To numOfLanguages - 1
-            tmpMII.dwTypeData = StrPtr(availableLanguages(i).LangName)
-            SetMenuItemInfoW hMenu, i, 1&, tmpMII
+            tmpMii.dwTypeData = StrPtr(availableLanguages(i).LangName)
+            SetMenuItemInfoW hMenu, i, 1&, tmpMii
         Next i
         
     Else
@@ -2598,9 +2677,9 @@ Public Sub UpdateSpecialMenu_RecentFiles()
         hMenu = GetSubMenu(hMenu, 2&)
         
         'Prepare a MenuItemInfo struct
-        Dim tmpMII As Win32_MenuItemInfoW
-        tmpMII.cbSize = LenB(tmpMII)
-        tmpMII.fMask = MIIM_STRING
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STRING
         
         If (hMenu <> 0) Then
             
@@ -2617,20 +2696,20 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             'The position of the "load all" and "erase all" icons are hard-coded, relative to the number of displayed MRU files
             Dim tmpString As String
             tmpString = g_Language.TranslateMessage("Open all recent images")
-            tmpMII.dwTypeData = StrPtr(tmpString)
-            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMII
+            tmpMii.dwTypeData = StrPtr(tmpString)
+            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMii
             
             tmpString = g_Language.TranslateMessage("Clear recent image list")
-            tmpMII.dwTypeData = StrPtr(tmpString)
-            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 2, 1&, tmpMII
+            tmpMii.dwTypeData = StrPtr(tmpString)
+            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 2, 1&, tmpMii
                 
             'Finally, manually place the captions for all recent file filenames, while handling the special
             ' case of an empty list.
             If listIsEmpty Then
                 
                 tmpString = g_Language.TranslateMessage("Empty")
-                tmpMII.dwTypeData = StrPtr(tmpString)
-                SetMenuItemInfoW hMenu, 0&, 1&, tmpMII
+                tmpMii.dwTypeData = StrPtr(tmpString)
+                SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
                 
             Else
                 
@@ -2643,8 +2722,8 @@ Public Sub UpdateSpecialMenu_RecentFiles()
                     'Entries under "10" get a free accelerator of the form "Ctrl+i"
                     If (i < 10) Then tmpString = tmpString & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
                     
-                    tmpMII.dwTypeData = StrPtr(tmpString)
-                    SetMenuItemInfoW hMenu, i, 1&, tmpMII
+                    tmpMii.dwTypeData = StrPtr(tmpString)
+                    SetMenuItemInfoW hMenu, i, 1&, tmpMii
                     
                 Next i
                 
@@ -2673,9 +2752,9 @@ Public Sub UpdateSpecialMenu_RecentMacros()
         hMenu = GetSubMenu(hMenu, 7&)
         
         'Prepare a MenuItemInfo struct
-        Dim tmpMII As Win32_MenuItemInfoW
-        tmpMII.cbSize = LenB(tmpMII)
-        tmpMII.fMask = MIIM_STRING
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STRING
         
         If (hMenu <> 0) Then
             
@@ -2693,16 +2772,16 @@ Public Sub UpdateSpecialMenu_RecentMacros()
             Dim tmpString As String
             
             tmpString = g_Language.TranslateMessage("Clear recent macro list")
-            tmpMII.dwTypeData = StrPtr(tmpString)
-            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMII Else SetMenuItemInfoW hMenu, 2, 1&, tmpMII
+            tmpMii.dwTypeData = StrPtr(tmpString)
+            If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMii Else SetMenuItemInfoW hMenu, 2, 1&, tmpMii
                 
             'Finally, manually place the captions for all recent file filenames, while handling the special
             ' case of an empty list.
             If listIsEmpty Then
                 
                 tmpString = g_Language.TranslateMessage("Empty")
-                tmpMII.dwTypeData = StrPtr(tmpString)
-                SetMenuItemInfoW hMenu, 0&, 1&, tmpMII
+                tmpMii.dwTypeData = StrPtr(tmpString)
+                SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
                 
             Else
                 
@@ -2710,8 +2789,8 @@ Public Sub UpdateSpecialMenu_RecentMacros()
                 Dim i As Long
                 For i = 0 To numOfMRUFiles - 1
                     tmpString = g_RecentMacros.GetSpecificMRUCaption(i)
-                    tmpMII.dwTypeData = StrPtr(tmpString)
-                    SetMenuItemInfoW hMenu, i, 1&, tmpMII
+                    tmpMii.dwTypeData = StrPtr(tmpString)
+                    SetMenuItemInfoW hMenu, i, 1&, tmpMii
                 Next i
                 
             End If
@@ -2778,12 +2857,12 @@ Private Sub UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
     If (hMenu <> 0) Then
         
         'Populate a MenuItemInfo struct
-        Dim tmpMII As Win32_MenuItemInfoW
-        tmpMII.cbSize = LenB(tmpMII)
-        tmpMII.fMask = MIIM_STRING
-        tmpMII.dwTypeData = StrPtr(m_Menus(mnuIndex).me_TextFinal)
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STRING
+        tmpMii.dwTypeData = StrPtr(m_Menus(mnuIndex).me_TextFinal)
         
-        SetMenuItemInfoW hMenu, GetHMenuIndex(mnuIndex), 1&, tmpMII
+        SetMenuItemInfoW hMenu, GetHMenuIndex(mnuIndex), 1&, tmpMii
         
     Else
         InternalMenuWarning "UpdateMenuText_ByIndex", "null hMenu (" & mnuIndex & ")"
