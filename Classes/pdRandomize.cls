@@ -51,7 +51,7 @@ Private m_LowBound As Long, m_HighBound As Long
 'Intermediary calculation values for the Wichmann-Hill algorithm; thank you to
 ' http://www.vbforums.com/showthread.php?499661-Wichmann-Hill-Pseudo-Random-Number-Generator-an-alternative-for-VB-Rnd%28%29-function
 ' for notes on various VB implementations and their quirks.
-Private iX As Long, iy As Long, iZ As Long
+Private iX As Long, iY As Long, iZ As Long
 Private m_WH_Float As Double
 
 'Helper functions for generating a new (predictable) seed from various inputs
@@ -125,10 +125,10 @@ Private Sub ApplySeed()
     
     '...then we generate an initial set of offsets for the algorithm.
     iX = (m_Seed_WH_Int Mod 30269)
-    iy = (m_Seed_WH_Int Mod 30307)
+    iY = (m_Seed_WH_Int Mod 30307)
     iZ = (m_Seed_WH_Int Mod 30323)
     If (iX = 0) Then iX = 171
-    If (iy = 0) Then iy = 172
+    If (iY = 0) Then iY = 172
     If (iZ = 0) Then iZ = 170
     
 End Sub
@@ -170,14 +170,14 @@ Friend Function GetRandomFloat_WH() As Double
     
     'Generate new offsets, using the previous offsets as our inputs
     iX = (171& * iX) Mod 30269&
-    iy = (172& * iy) Mod 30307&
+    iY = (172& * iY) Mod 30307&
     iZ = (170& * iZ) Mod 30323&
     
     'Generate a random float value.  (Note that we use multiplication rather than division, for performance reasons.)
     Const RND_X_DIVISOR As Double = 1# / 30269#
     Const RND_Y_DIVISOR As Double = 1# / 30307#
     Const RND_Z_DIVISOR As Double = 1# / 30323#
-    m_WH_Float = CDbl(iX) * RND_X_DIVISOR + CDbl(iy) * RND_Y_DIVISOR + CDbl(iZ) * RND_Z_DIVISOR
+    m_WH_Float = CDbl(iX) * RND_X_DIVISOR + CDbl(iY) * RND_Y_DIVISOR + CDbl(iZ) * RND_Z_DIVISOR
     
     '...then return the floating-point portion
     GetRandomFloat_WH = m_WH_Float - Int(m_WH_Float)

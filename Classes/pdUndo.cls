@@ -991,18 +991,18 @@ Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     
     'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The ClearUndos function requires this
     ' function to generate Undo filenames.  If our parent class was terminated properly, it will have already erased
-    ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
+    ' our reference to it, so the parentPDImage.GetUniqueID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If (Not parentPDImage Is Nothing) Then
-        GenerateUndoFilename = UserPrefs.GetTempPath & "~cPDU_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        GenerateUndoFilename = UserPrefs.GetTempPath & "~cPDU_(" & parentPDImage.GetUniqueID & ")_" & uIndex & ".pdtmp"
     End If
     
 End Function
 
 'Friendly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
-Friend Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByRef originalSessionID As String) As String
-    GenerateUndoFilenameExternal = UserPrefs.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
+Friend Function GenerateUndoFilenameExternal(ByRef uniqueID As String, ByVal uIndex As Long) As String
+    GenerateUndoFilenameExternal = UserPrefs.GetTempPath & "~cPDU_(" & uniqueID & ")_" & uIndex & ".pdtmp"
 End Function
 
 'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
@@ -1013,10 +1013,10 @@ Private Function GenerateUndoHeaderFilename() As String
     
         'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The ClearUndos function requires this
         ' function to generate Undo filenames.  If our parent class was terminated properly, it will have already erased
-        ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
+        ' our reference to it, so the parentPDImage.GetUniqueID reference below will fail - to prevent that, we must check the
         ' parent reference in advance.
         If (Not parentPDImage Is Nothing) Then
-            m_HeaderFilename = UserPrefs.GetTempPath() & "~PDU_StackSummary_(" & OS.UniqueSessionID() & ")_" & parentPDImage.imageID & "_.pdtmp"
+            m_HeaderFilename = UserPrefs.GetTempPath() & "~PDU_StackSummary_(" & parentPDImage.GetUniqueID & ").pdtmp"
         End If
         
     End If
@@ -1171,11 +1171,11 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
     
     'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
     ' the AutoSave engine can use this information to reconstruct any missing images.
-    xmlEngine.WriteTag "imageID", parentPDImage.imageID
+    xmlEngine.WriteTag "imageID", parentPDImage.GetUniqueID
     
     Dim friendlyName As String
     friendlyName = parentPDImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If (Len(parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) > 0) Then friendlyName = friendlyName & "." & parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    If (LenB(parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) > 0) Then friendlyName = friendlyName & "." & parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
     
     xmlEngine.WriteTag "friendlyName", friendlyName
     xmlEngine.WriteTag "originalPath", parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
@@ -1191,10 +1191,6 @@ Friend Sub WriteUndoDataToXML(ByRef dstFilename As String)
     'We probably don't need the m_UndoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
     xmlEngine.WriteTag "UndoNumAtLastSave_Flat", m_UndoNumAtLastSave_Flat
     xmlEngine.WriteTag "UndoNumAtLastSave_PDI", m_UndoNumAtLastSave_PDI
-    
-    'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
-    ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
-    xmlEngine.WriteTag "OriginalSessionID", OS.UniqueSessionID()
     xmlEngine.WriteBlankLine
     
     'Next, we're going to write out all Undo stack entries. If PD's "PD_UndoEntry" type is ever changed, note

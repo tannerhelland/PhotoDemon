@@ -114,11 +114,11 @@ Private m_originalFileFormat As PD_IMAGE_FORMAT, m_currentFileFormat As PD_IMAGE
 
 'Original color depth (expressed as a standard BPP value, most commonly 32), whether the original image was
 ' saved in a grayscale format, and whether the original image contained alpha data.
-Private m_OriginalColorDepth As Long, m_OriginalGrayscale As Boolean, m_OriginalAlpha As Boolean
+Private m_originalColorDepth As Long, m_originalGrayscale As Boolean, m_originalAlpha As Boolean
 
 'Original palette, if any.  As you can imagine, this is only relevant if m_OriginalColorDepth is <= 8,
 ' so you must *always* check for a null object, as many pdImage instances won't initialize this object.
-Private m_OrigPalette As pdPalette
+Private m_origPalette As pdPalette
 
 'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
 Private m_hasBeenSavedPDI As Boolean, m_hasBeenSavedFlat As Boolean
@@ -155,7 +155,7 @@ Private m_CompositeCacheClean As Boolean
 ' "image data has changed" notification.  Outside functions can track this value via the wrapper functions, and use it
 ' to determine if the underlying image may have changed since they last operated on it.  (PD uses this to accelerate
 ' certain internal rendering tasks, like regenerating "magic wand selection" image copies.)
-Private m_TimeAtLastModify As Currency
+Private m_timeAtLastModify As Currency
 
 'If the current image thumbnail is clean or dirty.  Clean means that to the best of this class's knowledge, the current
 ' thumbnail accurately reflects the composited image's contents.  Dirty means that we know the current thumbnail is
@@ -167,7 +167,11 @@ Private m_IsThumbClean As Boolean
 ' than the hard-coded thumb size (in either dimension) will force creation of a custom thumbnail from scratch,
 ' so try to avoid that if at all possible!
 Private Const IMAGE_THUMB_SIZE As Long = 256
-Private m_ImageThumbnail As pdDIB, m_CurrentImageThumbSize As Long
+Private m_ImageThumbnail As pdDIB, m_currentImageThumbSize As Long
+
+'Unique hash string identifying this image.  This value is appended to Undo/Redo files, so it must be
+' unique to this object for the lifetime of the current session.
+Private m_uniqueHash As String
 
 Friend Function GetColorProfile_Original() As String
     GetColorProfile_Original = m_colorProfileOriginal
@@ -213,48 +217,48 @@ End Sub
 ' the value will almost certainly be 32.  If imported from file, it will mirror the original value of the initial
 ' pdDIB instance it was created from.
 Friend Function GetOriginalColorDepth() As Long
-    GetOriginalColorDepth = m_OriginalColorDepth
+    GetOriginalColorDepth = m_originalColorDepth
 End Function
 
 Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
-    m_OriginalColorDepth = origColorDepth
+    m_originalColorDepth = origColorDepth
 End Sub
 
 Friend Function GetOriginalGrayscale() As Boolean
-    GetOriginalGrayscale = m_OriginalGrayscale
+    GetOriginalGrayscale = m_originalGrayscale
 End Function
 
 Friend Sub SetOriginalGrayscale(ByVal origGrayscale As Boolean)
-    m_OriginalGrayscale = origGrayscale
+    m_originalGrayscale = origGrayscale
 End Sub
 
 Friend Function GetOriginalAlpha() As Boolean
-    GetOriginalAlpha = m_OriginalAlpha
+    GetOriginalAlpha = m_originalAlpha
 End Function
 
 Friend Sub SetOriginalAlpha(ByVal origAlpha As Boolean)
-    m_OriginalAlpha = origAlpha
+    m_originalAlpha = origAlpha
 End Sub
 
 'Functions related to storage/retrieval of this image's original palette, if any.
 Friend Function HasOriginalPalette() As Boolean
-    HasOriginalPalette = (Not m_OrigPalette Is Nothing)
+    HasOriginalPalette = (Not m_origPalette Is Nothing)
 End Function
 
 Friend Function GetOriginalPalette(ByRef dstPalette As pdPalette) As Boolean
     GetOriginalPalette = Me.HasOriginalPalette()
-    If GetOriginalPalette Then Set dstPalette = m_OrigPalette
+    If GetOriginalPalette Then Set dstPalette = m_origPalette
 End Function
 
 Friend Sub SetOriginalPalette(ByRef srcQuads() As RGBQuad, ByVal palSize As Long)
     If (palSize > 0) Then
-        Set m_OrigPalette = New pdPalette
-        m_OrigPalette.CreateFromPaletteArray srcQuads, palSize
+        Set m_origPalette = New pdPalette
+        m_origPalette.CreateFromPaletteArray srcQuads, palSize
     End If
 End Sub
 
 Friend Sub NotifyOriginalPaletteCount(ByVal newPalSize As Long)
-    If (Not m_OrigPalette Is Nothing) Then m_OrigPalette.SetNewPaletteCount newPalSize
+    If (Not m_origPalette Is Nothing) Then m_origPalette.SetNewPaletteCount newPalSize
 End Sub
 
 Friend Function GetOriginalFileFormat() As PD_IMAGE_FORMAT
@@ -277,8 +281,39 @@ End Sub
 
 'Time at last modification.  This cannot be directly set by external sources; instead, use the safe "NotifyImageChanged" function.
 Friend Function GetTimeOfLastChange() As Currency
-    GetTimeOfLastChange = m_TimeAtLastModify
+    GetTimeOfLastChange = m_timeAtLastModify
 End Function
+
+'Return a pseudo-unique ID string.  This *must* be unique for the life of this image object,
+' and it should never be shared by two image objects.
+Friend Function GetUniqueID() As String
+    
+    'Generate a unique ID string.
+    If (LenB(m_uniqueHash) = 0) Then
+        Dim cCrypto As pdCrypto: Set cCrypto = New pdCrypto
+        Dim tmpString As String
+        tmpString = OS.GetArbitraryGUID()
+        m_uniqueHash = cCrypto.QuickHashString(tmpString, Len(tmpString))
+        If (Len(m_uniqueHash) > 12) Then m_uniqueHash = Left$(m_uniqueHash, 12)
+    End If
+    
+    GetUniqueID = m_uniqueHash
+    
+End Function
+
+'This function should *ONLY* be called when restoring data from Autosave data.
+' (Otherwise, an ID will be auto-generated the first time GetUniqueID(), above, is called.)
+Friend Sub SetUniqueID(ByRef srcID As String)
+    
+    'If we already have an ID, erase any files associated with that ID
+    If (LenB(m_uniqueHash) <> 0) Then
+        Set UndoManager = New pdUndo
+        Set UndoManager.parentPDImage = Me
+    End If
+    
+    m_uniqueHash = srcID
+    
+End Sub
 
 'To improve performance, PD doesn't always free image resources when an image is finished.  To see if an image is
 ' "active" (the PD word for "open and editable by a user"), use this function.
@@ -364,7 +399,7 @@ End Sub
 Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal layerIndex As Long = -1)
     
     'Cache a new "image changed" timestamp
-    VBHacks.GetHighResTime m_TimeAtLastModify
+    VBHacks.GetHighResTime m_timeAtLastModify
     
     'Separate handling by type.
     
@@ -776,7 +811,7 @@ Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.WriteTag "DPI", m_DPI
     xmlEngine.WriteTag "OriginalFileFormat", m_originalFileFormat
     xmlEngine.WriteTag "CurrentFileFormat", m_currentFileFormat
-    xmlEngine.WriteTag "OriginalColorDepth", m_OriginalColorDepth
+    xmlEngine.WriteTag "OriginalColorDepth", m_originalColorDepth
     xmlEngine.WriteTag "numOfLayersEverCreated", m_numOfLayersEverCreated
     xmlEngine.WriteTag "numOfLayers", m_numOfLayers
     xmlEngine.WriteTag "curLayer", m_curLayer
@@ -997,7 +1032,7 @@ Private Sub UpdateInternalThumbnail(Optional ByVal requiredSize As Long = 0)
     'To help us coalesce multiple thumbnail requests together, we simply cache a "large enough" copy
     ' and then produce smaller copies on-demand.
     If (requiredSize < IMAGE_THUMB_SIZE) Then requiredSize = IMAGE_THUMB_SIZE
-    m_CurrentImageThumbSize = requiredSize
+    m_currentImageThumbSize = requiredSize
     
     'Determine proper dimensions for the thumbnail image.
     Dim newThumbWidth As Long, newThumbHeight As Long
@@ -1056,7 +1091,7 @@ End Sub
 Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = IMAGE_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
-    If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentImageThumbSize) Then UpdateInternalThumbnail thumbnailSize
+    If (Not m_IsThumbClean) Or (thumbnailSize > m_currentImageThumbSize) Then UpdateInternalThumbnail thumbnailSize
     
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
