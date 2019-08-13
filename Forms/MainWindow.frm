@@ -145,12 +145,20 @@ Begin VB.Form FormMain
          Caption         =   "Export"
          Index           =   12
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color profile..."
+            Caption         =   "Animated GIF..."
             Index           =   0
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "-"
             Index           =   1
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Color profile..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   3
          End
       End
       Begin VB.Menu MnuFile 
@@ -3123,7 +3131,18 @@ Private Sub MnuFile_Click(Index As Integer)
 End Sub
 
 Private Sub MnuFileExport_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuFileExport(Index).Caption
+    
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "file_export_animatedgif"
+        Case 1
+            '(separator)
+        Case 2
+            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "file_export_palette"
+    End Select
+    
 End Sub
 
 'All help menu entries are launched from here

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.413</langversion>
+<langversion>6.7.414</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -654,6 +654,16 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No %1 encoder found. Save aborted.</original>
 <translation>Nessun codificatore %1 trovato. Salvataggio interrotto.</translation>
 </phrase>
@@ -677,7 +687,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 25 phrases. 19 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1488,6 +1498,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <phrase>
 <original>Revert</original>
 <translation>Ripristina</translation>
+</phrase>
+
+<phrase>
+<original>Export animated GIF</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2495,7 +2510,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation>Lista recente macro Cancella</translation>
 </phrase>
 
-<!-- Menus.bas contains 248 phrases. 29 were duplicates of existing phrases, so only 219 new phrases were written to file. -->
+<!-- Menus.bas contains 249 phrases. 29 were duplicates of existing phrases, so only 220 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3285,12 +3300,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Salvataggio dell'immagine %1</translation>
 </phrase>
 
-<phrase>
-<original>%1 save complete.</original>
-<translation>%1 salvataggio completo.</translation>
-</phrase>
-
-<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5775,6 +5785,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated GIF</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation></translation>
 </phrase>
@@ -6627,7 +6642,7 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 <translation>Linguaggio modificato con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 345 phrases. 160 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
+<!-- MainWindow.frm contains 346 phrases. 160 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15911,10 +15926,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2651</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4861 phrases. -->
-<!-- 2210 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12484 total words. -->
+<!-- As of this build, PhotoDemon contains 4878 phrases. -->
+<!-- 2224 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12493 total words. -->
 
 </pdData>

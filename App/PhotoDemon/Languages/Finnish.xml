@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>suomi</langname>
-<langversion>6.8.3396</langversion>
+<langversion>6.8.3397</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -653,6 +653,16 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No %1 encoder found. Save aborted.</original>
 <translation>Ei %1 anturin löydetty. Tallenna keskeytetty.</translation>
 </phrase>
@@ -676,7 +686,7 @@ To käyttöön tuen tämän kuvan muodossa, kopioi FreeImage.dll tiedosto (ladat
 <translation>Tallenna ei voida toteuttaa ilman FreeImage kirjasto.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 25 phrases. 19 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1484,6 +1494,11 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <phrase>
 <original>Revert</original>
 <translation>palautua</translation>
+</phrase>
+
+<phrase>
+<original>Export animated GIF</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2491,7 +2506,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <translation>Tyhjennä viimeaikaiset makroluettelossa</translation>
 </phrase>
 
-<!-- Menus.bas contains 248 phrases. 29 were duplicates of existing phrases, so only 219 new phrases were written to file. -->
+<!-- Menus.bas contains 249 phrases. 29 were duplicates of existing phrases, so only 220 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3280,12 +3295,7 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 <translation>Tallentaminen %1 kuva</translation>
 </phrase>
 
-<phrase>
-<original>%1 save complete.</original>
-<translation> %1 save valmis.</translation>
-</phrase>
-
-<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5770,6 +5780,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated GIF</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation></translation>
 </phrase>
@@ -6622,7 +6637,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <translation>Kieli vaihdettu.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 345 phrases. 160 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
+<!-- MainWindow.frm contains 346 phrases. 160 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15908,10 +15923,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2651</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4861 phrases. -->
-<!-- 2210 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12484 total words. -->
+<!-- As of this build, PhotoDemon contains 4878 phrases. -->
+<!-- 2224 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12493 total words. -->
 
 </pdData>

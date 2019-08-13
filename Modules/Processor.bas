@@ -1295,12 +1295,16 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Revert", True) Then
-        If FormMain.MnuFile(9).Enabled Then
+        If Menus.IsMenuEnabled("file_revert") Then
             PDImages.GetActiveImage.UndoManager.RevertToLastSavedState
             Interface.NotifyImageChanged PDImages.GetActiveImageID()
         End If
         Process_FileMenu = True
     
+    ElseIf Strings.StringsEqual(processID, "Export animated GIF", True) Then
+        Saving.Export_AnimatedGIF PDImages.GetActiveImage()
+        Process_FileMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
         ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage(), raiseDialog, processParameters
         Process_FileMenu = True

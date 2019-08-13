@@ -848,11 +848,22 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     'FreeImage is currently required for animated GIF export
     If ImageFormats.IsFreeImageEnabled Then
         
-        'Start by creating a blank multipage object
-        Files.FileDeleteIfExists dstFile
+        'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+        ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+        ' the original file remains untouched).
+        Dim tmpFilename As String
+        If Files.FileExists(dstFile) Then
+            Dim cRandom As pdRandomize
+            Set cRandom = New pdRandomize
+            cRandom.SetSeed_AutomaticAndRandom
+            tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+        Else
+            tmpFilename = dstFile
+        End If
         
+        'Start by creating a blank multipage object
         Dim fi_MasterHandle As Long
-        fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, dstFile, True, False, False)
+        fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, True, False, False)
         If (fi_MasterHandle <> 0) Then
             
             Dim imgBytes() As Byte, imgPalette() As RGBQuad, palSize As Long
@@ -936,7 +947,20 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Next i
             
             'With all frames added, we can now close the multipage handle
+            Message "Finalizing image..."
             ExportGIF_Animated = FreeImage_CloseMultiBitmap(fi_MasterHandle)
+            
+            'If we wrote our data to a temp file, attempt to replace the original file
+            If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+                
+                ExportGIF_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+                
+                If (Not ExportGIF_Animated) Then
+                    Files.FileDelete tmpFilename
+                    PDDebug.LogAction "WARNING!  ImageExporter could not overwrite GIF file; original file is likely open elsewhere."
+                End If
+                
+            End If
             
         Else
             Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
@@ -950,7 +974,6 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     
     ProgressBars.SetProgBarVal 0
     ProgressBars.ReleaseProgressBar
-    Message "Save complete."
     
     Exit Function
     

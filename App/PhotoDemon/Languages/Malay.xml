@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3396</langversion>
+<langversion>6.8.3397</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -654,6 +654,16 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
+<original>Saving animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No %1 encoder found. Save aborted.</original>
 <translation>No %1 pengekod dijumpai. Simpan digugurkan.</translation>
 </phrase>
@@ -677,7 +687,7 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 <translation>Jimat tidak dapat diselesaikan tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 25 phrases. 19 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 28 phrases. 20 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1488,6 +1498,11 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <phrase>
 <original>Revert</original>
 <translation>Kembalikan</translation>
+</phrase>
+
+<phrase>
+<original>Export animated GIF</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2495,7 +2510,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <translation>Senarai jelas makro baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 248 phrases. 29 were duplicates of existing phrases, so only 219 new phrases were written to file. -->
+<!-- Menus.bas contains 249 phrases. 29 were duplicates of existing phrases, so only 220 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3286,12 +3301,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>Menyimpan imej %1</translation>
 </phrase>
 
-<phrase>
-<original>%1 save complete.</original>
-<translation> %1 jimat selesai.</translation>
-</phrase>
-
-<!-- Saving.bas contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -5776,6 +5786,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated GIF</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation></translation>
 </phrase>
@@ -6628,7 +6643,7 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <translation>Bahasa berubah dengan jayanya.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 345 phrases. 160 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
+<!-- MainWindow.frm contains 346 phrases. 160 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15914,10 +15929,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2651</phrasecount>
+<phrasecount>2654</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4861 phrases. -->
-<!-- 2210 are duplicates, so only 2651 unique phrases have been written to file. -->
-<!-- These 2651 phrases contain approximately 12484 total words. -->
+<!-- As of this build, PhotoDemon contains 4878 phrases. -->
+<!-- 2224 are duplicates, so only 2654 unique phrases have been written to file. -->
+<!-- These 2654 phrases contain approximately 12493 total words. -->
 
 </pdData>
