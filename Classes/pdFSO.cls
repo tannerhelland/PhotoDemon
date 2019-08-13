@@ -1935,7 +1935,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                                 If returnRelativeStrings Then
                                     dstFiles.AddString Me.GenerateRelativePath(basePath, Me.FileGetPath(curFolder) & chkFile, True)
                                 Else
-                                    dstFiles.AddString curFolder & chkFile
+                                    dstFiles.AddString Me.FileGetPath(curFolder) & chkFile
                                 End If
                             End If
                         
