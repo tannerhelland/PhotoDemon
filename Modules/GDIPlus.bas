@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2019 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 25/July/17
-'Last update: fix alpha premultiplication tracking after certain resize operations
+'Last updated: 12/August/19
+'Last update: extend multipage loader to support animated GIF import, including relevant animation metadata
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback
 ' for image loading and saving if the FreeImage DLL was not found, but over time it has become more and more essential
@@ -2195,7 +2195,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         If imgHasAlpha Then
             
             'Make sure the image is in 32bpp premultiplied ARGB format
-            If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage
+            If (imgPixelFormat <> GP_PF_32bppPARGB) Then
+                Dim hNewImage As Long
+                GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hNewImage
+                GDI_Plus.ReleaseGDIPlusImage hImage
+                hImage = hNewImage
+            End If
             
             'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
             
@@ -2560,12 +2565,14 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
                 End If
                 
+                Dim tmpBmpHandle As Long
+                
                 'We now copy over image data in one of two ways.  Additional transforms may be required if
                 ' the source image is in an unexpected color format (e.g. CMYK) or depth.
                 If imgHasAlpha Then
                     
                     'Make sure the image is in 32bpp premultiplied ARGB format
-                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageImage, m_hMultiPageImage
+                    If (imgPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, m_hMultiPageImage, tmpBmpHandle
                     
                     'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
                     
@@ -2587,9 +2594,10 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                     End With
                     
                     'Use LockBits to perform the copy for us.
-                    GdipBitmapLockBits m_hMultiPageImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
-                    GdipBitmapUnlockBits m_hMultiPageImage, copyBitmapData
-                
+                    GdipBitmapLockBits tmpBmpHandle, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
+                    GdipBitmapUnlockBits tmpBmpHandle, copyBitmapData
+                    GDI_Plus.ReleaseGDIPlusImage tmpBmpHandle
+                    
                 'Image does *not* have alpha
                 Else
                     
@@ -4117,7 +4125,7 @@ End Function
 Public Function ReleaseGDIPlusImage(ByRef srcHandle As Long) As Boolean
     If (srcHandle <> 0) Then
         ReleaseGDIPlusImage = (GdipDisposeImage(srcHandle) = GP_OK)
-        If ReleaseGDIPlusImage Then srcHandle = 0
+        If ReleaseGDIPlusImage Then srcHandle = 0 Else InternalGDIPlusError "ReleaseGDIPlusImage failed", , ReleaseGDIPlusImage
     Else
         ReleaseGDIPlusImage = True
     End If
