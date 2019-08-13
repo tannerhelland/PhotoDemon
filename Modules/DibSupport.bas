@@ -1656,8 +1656,7 @@ Public Function GetDIBAs8bpp_RGBA_SrcPalette(ByRef srcDIB As pdDIB, ByRef srcPal
     
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
         
-        Dim srcPixels() As Byte, tmpSA As SafeArray2D
-        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+        Dim srcPixels() As Byte, tmpSA As SafeArray1D
         
         Dim pxSize As Long
         pxSize = srcDIB.GetDIBColorDepth \ 8
@@ -1688,12 +1687,13 @@ Public Function GetDIBAs8bpp_RGBA_SrcPalette(ByRef srcDIB As pdDIB, ByRef srcPal
         Next x
     
         For y = 0 To finalY
+            srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
         For x = 0 To finalX Step pxSize
             
-            b = srcPixels(x, y)
-            g = srcPixels(x + 1, y)
-            r = srcPixels(x + 2, y)
-            a = srcPixels(x + 3, y)
+            b = srcPixels(x)
+            g = srcPixels(x + 1)
+            r = srcPixels(x + 2)
+            a = srcPixels(x + 3)
             
             'If this pixel matches the last pixel we tested, reuse our previous match results
             If ((RGB(r, g, b) <> lastColor) Or (a <> lastAlpha)) Then

@@ -575,7 +575,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
         PDDebug.LogAction "WARNING!  SavePhotoDemonImage failed after " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
     End If
     
-    If (Not suppressMessages) Then Message "%1 save complete.", sFileType
+    If (Not suppressMessages) Then Message "Save complete."
     
     Exit Function
     

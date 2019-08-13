@@ -825,6 +825,141 @@ ExportGIFError:
     
 End Function
 
+Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportGIFError
+    
+    ExportGIF_Animated = False
+    Dim sFileType As String: sFileType = "GIF"
+    
+    'Initialize a progress bar
+    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers
+    
+    'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    'Params are TODO
+    Dim gifAlphaCutoff As Long, gifBackgroundColor As Long
+    gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
+    gifBackgroundColor = cParams.GetLong("GIFBackgroundColor", vbWhite)
+        
+    'FreeImage is currently required for animated GIF export
+    If ImageFormats.IsFreeImageEnabled Then
+        
+        'Start by creating a blank multipage object
+        Files.FileDeleteIfExists dstFile
+        
+        Dim fi_MasterHandle As Long
+        fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, dstFile, True, False, False)
+        If (fi_MasterHandle <> 0) Then
+            
+            Dim imgBytes() As Byte, imgPalette() As RGBQuad, palSize As Long
+            Dim tmpLayer As pdLayer, tmpDIB As pdDIB
+            Dim tmpTag As FREE_IMAGE_TAG
+            
+            'We now need to iterate through each layer in the image (starting at the bottom),
+            ' produce an 8-bit palette version of said layer, then add it to the file alongside
+            ' any relevant metadata (e.g. frametime).
+            Dim i As Long
+            For i = 0 To srcPDImage.GetNumOfLayers - 1
+                
+                ProgressBars.SetProgBarVal i
+                Message "Saving animation frame %1 of %2...", i + 1, srcPDImage.GetNumOfLayers()
+                
+                'Make sure this layer is the same size as the parent image, and apply any non-destructive transforms
+                Set tmpLayer = New pdLayer
+                tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
+                tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+                
+                'Force alpha to 0 or 255 only (this is a GIF requirement)
+                Dim trnsTable() As Byte
+                DIBs.ApplyAlphaCutoff_Ex tmpLayer.layerDIB, trnsTable, 127
+                DIBs.ApplyBinaryTransparencyTable tmpLayer.layerDIB, trnsTable, vbWhite
+                
+                'Generate an optimal 256-color palette for the image
+                Palettes.GetOptimizedPaletteIncAlpha tmpLayer.layerDIB, imgPalette, 256, pdqs_Variance, True
+                
+                'Using the optimal palette, create an 8-bit version of the source image (WITHOUT dithering;
+                ' dithering is still to-do)
+                Dim useDithering As Boolean
+                useDithering = False
+                If useDithering Then
+                    Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, imgPalette, imgBytes, PDDM_SierraLite, 0.5
+                    palSize = UBound(imgPalette) + 1
+                Else
+                    palSize = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(tmpLayer.layerDIB, imgPalette, imgBytes)
+                End If
+                
+                'Ensure that in the course of producing an optimal palette, the optimizer didn't change
+                ' the alpha value from 0.
+                Dim pEntry As Long
+                For pEntry = LBound(imgPalette) To UBound(imgPalette)
+                    If (imgPalette(pEntry).Alpha < 255) Then imgPalette(pEntry).Alpha = 0
+                Next pEntry
+                
+                'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
+                ' palette and pixel data
+                Dim fi_DIB As Long
+                fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight, VarPtr(imgBytes(0, 0)), VarPtr(imgPalette(0)), palSize)
+                
+                'If the FI object was created successfully, append any required animation metadata,
+                ' then append the finished FI object to the parent multipage object
+                If (fi_DIB <> 0) Then
+                    
+                    'If this is the first page in the file, write the loop count (if any)
+                    If (i = 0) Then
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-loop-count", 0), 1, &H4&)
+                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    End If
+                    
+                    'For all pages (including the first one), manually specify frame disposal and frame time
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-frame-time-" & Trim$(Str$(i)), 100), 1, &H1005&)
+                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, FIFD_GIF_DISPOSAL_BACKGROUND, 1, &H1006&)
+                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    
+                    'If a transparent color is used in the source palette, notify FreeImage of the index
+                    If (imgPalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
+                    
+                    'Append the finished frame
+                    FreeImage_AppendPage fi_MasterHandle, fi_DIB
+                    
+                    'Release our local copy of the current frame (FI has copied it internally)
+                    FreeImage_Unload fi_DIB
+                    
+                Else
+                    PDDebug.LogAction "failed to produce FI DIB for frame # " & CStr(i)
+                End If
+                
+            Next i
+            
+            'With all frames added, we can now close the multipage handle
+            ExportGIF_Animated = FreeImage_CloseMultiBitmap(fi_MasterHandle)
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportGIF_Animated = False
+        End If
+        
+    'If FreeImage is unavailable, we are out of luck
+    Else
+        PDDebug.LogAction "Animated GIF export failed; FreeImage is missing."
+    End If
+    
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
+    Message "Save complete."
+    
+    Exit Function
+    
+ExportGIFError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportGIF_Animated = False
+    
+End Function
+
 'Save to JP2 format using the FreeImage library
 Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     

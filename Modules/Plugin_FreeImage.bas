@@ -3361,6 +3361,29 @@ Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette(
     
 End Function
 
+Public Function GetFIDIB_8Bit(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal ptrToPixels As Long, ByVal ptrToPalette As Long, ByVal numPaletteColors As Long) As Long
+    
+    'Allocate the base object
+    GetFIDIB_8Bit = FreeImage_AllocateT(FIT_BITMAP, imgWidth, imgHeight, 8)
+    
+    If (GetFIDIB_8Bit <> 0) Then
+    
+        'Overwrite the palette (note that FreeImage always allocates a 256-color RGBA palette, by default
+        CopyMemoryStrict FreeImage_GetPalette(GetFIDIB_8Bit), ptrToPalette, numPaletteColors * 4
+        
+        'Overwrite the pixel bits.  (Note that lines must be padded to a multiple of 4
+        Dim y As Long
+        For y = 0 To imgHeight - 1
+            CopyMemoryStrict FreeImage_GetBits(GetFIDIB_8Bit) + (((imgWidth + 3) \ 4) * 4) * y, ptrToPixels + y * imgWidth, imgWidth
+        Next y
+        
+        'Flip the image vertically
+        FreeImage_FlipVertically GetFIDIB_8Bit
+        
+    End If
+
+End Function
+
 Private Sub ResetExportPreviewDIB(ByRef trackerBool As Boolean, ByRef srcDIB As pdDIB)
     If (Not trackerBool) Then
         If (m_ExportPreviewDIB Is Nothing) Then Set m_ExportPreviewDIB = New pdDIB
