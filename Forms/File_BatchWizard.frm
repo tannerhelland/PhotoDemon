@@ -1713,7 +1713,13 @@ Private Sub PrepareForBatchConversion()
             
             'Load the current image
             If Loading.LoadFileAsNewImage(tmpFilename, , False, True, False) Then
-            
+                
+                'Manually activate the just-loaded image
+                Dim tmpStack As pdStack
+                Set tmpStack = Nothing
+                PDImages.GetListOfActiveImageIDs tmpStack
+                CanvasManager.ActivatePDImage tmpStack.GetInt(tmpStack.GetNumOfInts - 1), , , , True
+                
                 'With the image loaded, it is time to apply any requested photo editing actions.
                 If (btsPhotoOps.ListIndex = 1) Then
                 

@@ -289,6 +289,9 @@ Public Sub SyncInterfaceToCurrentImage()
     Menus.SetMenuEnabled "window_next", (PDImages.GetNumOpenImages() > 1)
     Menus.SetMenuEnabled "window_previous", (PDImages.GetNumOpenImages() > 1)
     
+    'Similarly, the "assemble images into this image as layers" menu requires multiple images to be loaded
+    Menus.SetMenuEnabled "layer_splitimagestolayers", (PDImages.GetNumOpenImages() > 1)
+    
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
     
@@ -356,7 +359,7 @@ Private Sub SyncUI_CurrentLayerSettings()
     nonDestructiveResizeActive = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier <> 1#)
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-    If (FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive) Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
+    Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
     
     If (g_CurrentTool = NAV_MOVE) Then
         toolpanel_MoveSize.cmdLayerMove(0).Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
@@ -430,6 +433,8 @@ End Sub
 Private Sub SetUIMode_MultipleLayers()
     Menus.SetMenuEnabled "layer_delete", True
     Menus.SetMenuEnabled "layer_order", True
+    Menus.SetMenuEnabled "layer_splitlayertoimage", True
+    Menus.SetMenuEnabled "layer_splitalllayerstoimages", True
 End Sub
 
 'If an image has only one layer (e.g. a loaded JPEG), call this function to disable any UI elements
@@ -441,6 +446,8 @@ Private Sub SetUIMode_OnlyOneLayer()
     Menus.SetMenuEnabled "layer_mergeup", False
     Menus.SetMenuEnabled "layer_mergedown", False
     Menus.SetMenuEnabled "layer_order", False
+    Menus.SetMenuEnabled "layer_splitlayertoimage", False
+    Menus.SetMenuEnabled "layer_splitalllayerstoimages", False
 End Sub
 
 'If an image has at least one valid layer (as they always do in PD), call this function to enable relevant layer menus and controls.

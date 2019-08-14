@@ -16,6 +16,12 @@ Attribute VB_Name = "Layers"
 
 Option Explicit
 
+'Used when converting layers to standalone images
+Private Type LayerConvertCache
+    Id As Long
+    MustConvert As Boolean
+End Type
+    
 'XML-based wrapper for AddBlankLayer(), below
 Public Sub AddBlankLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
@@ -658,6 +664,109 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
 
 End Function
 
+Public Sub SplitLayerToImage(ByRef processParameters As String)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    
+    Dim targetIndex As Long
+    targetIndex = cParams.GetLong("targetlayer", -1)
+    
+    'Process parameters specify *which* layer(s) should be converted to a standalone image.
+    ' Layers are identified by index.  We want to handle the conversion in two steps:
+    ' 1) Convert all layer(s) to standalone images
+    ' 2) Remove all converted layer(s) from the current image (typically, all but the active layer)
+    Dim i As Long
+    
+    'Make a safe local reference to the currently active image - because the active image will
+    ' change as we load other images.
+    Dim srcImage As pdImage
+    Set srcImage = PDImages.GetActiveImage
+    
+    'To simplify this process, construct an array that identifies all layers by their ID
+    ' (which is immutable, and will not change - unlike layer indices)
+    With srcImage
+        
+        Dim listOfLayers() As LayerConvertCache
+        ReDim listOfLayers(0 To .GetNumOfLayers - 1) As LayerConvertCache
+        
+        For i = 0 To .GetNumOfLayers - 1
+            listOfLayers(i).Id = .GetLayerByIndex(i).GetLayerID
+            If (targetIndex = -1) Then
+                listOfLayers(i).MustConvert = (i <> .GetActiveLayerIndex)
+            Else
+                listOfLayers(i).MustConvert = (i = targetIndex)
+            End If
+        Next i
+        
+    End With
+    
+    'We now have a list which layers require converting.  Iterate through each layer,
+    ' convert it to a null-padded layer (which greatly simplifies re-assembly later),
+    ' split it into a separate image, then remove it from the image.
+    For i = 0 To UBound(listOfLayers)
+    
+        If listOfLayers(i).MustConvert Then
+            
+            Dim tmpLayer As pdLayer
+            Set tmpLayer = srcImage.GetLayerByID(listOfLayers(i).Id)
+            
+            Message "Converting layer ""%1"" to image...", tmpLayer.GetLayerName
+            
+            'Convert the layer to a null-padded layer (a layer at the same size as the current image)
+            tmpLayer.ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
+            
+            'Load said layer as a separate image
+            Dim tmpLayerFile As String
+            tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
+            
+            Dim tmpImage As pdImage
+            Set tmpImage = New pdImage
+            
+            'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
+            Dim newLayerID As Long
+            newLayerID = tmpImage.CreateBlankLayer
+            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer tmpLayer
+            tmpImage.UpdateSize
+            
+            'Write the image out to file, then free its associated memory
+            Saving.SavePhotoDemonImage tmpImage, tmpLayerFile, True, cf_Lz4, cf_Lz4
+            Set tmpImage = Nothing
+            
+            'Construct a title (name) for the new image, and insert the original layer index.
+            ' (This is helpful if the user decides to reconstruct the layers into an image later.)
+            Dim sTitle As String
+            sTitle = tmpLayer.GetLayerName
+            If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
+            sTitle = sTitle & " (" & g_Language.TranslateMessage("layer %1", i) & ")"
+            Set tmpLayer = Nothing
+            
+            'We can now use the standard image load routine to import the temporary file
+            Loading.LoadFileAsNewImage tmpLayerFile, sTitle, False, , False
+            
+            'Be polite and remove the temporary file
+            Files.FileDeleteIfExists tmpLayerFile
+            
+            'Remove the processed layer from the current image
+            srcImage.DeleteLayerByID listOfLayers(i).Id
+        
+        End If
+    
+    Next i
+    
+    'Make sure the original image is notified of the new layer arrangement (which prompts it
+    ' to update things like its internal thumbnail cache)
+    srcImage.NotifyImageChanged UNDO_Image
+    
+    'Restore the originally active image as the image with focus.  (By default, newly loaded images
+    ' "steal" focus - this is a rare case where we don't want that.)
+    CanvasManager.ActivatePDImage srcImage.imageID, "Split layers into images", True, , True
+    
+    Message "Conversion complete."
+            
+End Sub
+
 'XML-based wrapper to DeleteLayer(), below
 Public Sub DeleteLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
@@ -676,8 +785,8 @@ Public Sub DeleteLayer(ByVal dLayerIndex As Long)
     PDImages.GetActiveImage.DeleteLayerByIndex dLayerIndex
     
     'Set a new active layer
-    If curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1 Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
-    If curLayerIndex < 0 Then curLayerIndex = 0
+    If (curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+    If (curLayerIndex < 0) Then curLayerIndex = 0
     SetActiveLayerByIndex curLayerIndex, False
     
     'Notify the parent image that the entire image now needs to be recomposited

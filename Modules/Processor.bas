@@ -324,7 +324,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'After an action completes, figure out if we need to push a new entry onto the Undo/Redo stack.  (Note that for convenience,
     ' this sub also handles roll-back of some UI elements if the current operation was canceled prematurely.)
-    FinalizeUndoRedoState thisProcData
+    FinalizeUndoRedoState thisProcData, PDImages.GetActiveImage
     
     Dim procUndoStopTime As Currency
     If (Not raiseDialog) Then VBHacks.GetHighResTime procUndoStopTime
@@ -1196,7 +1196,7 @@ Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog 
 End Sub
 
 'After a processor action completes, call this function to push a new entry onto the Undo/Redo stack (as necessary)
-Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
+Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall, ByRef targetImage As pdImage)
 
     'If the user canceled the requested action before it completed, we may need to manually roll back some processor phases
     If g_cancelCurrentAction Then
@@ -1229,7 +1229,7 @@ Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
                 If (srcProcData.pcUndoType = UNDO_Selection) Then
                     affectedLayerID = -1
                 Else
-                    affectedLayerID = PDImages.GetActiveImage.GetActiveLayerID
+                    affectedLayerID = targetImage.GetActiveLayerID
                 End If
                 
                 'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
@@ -1237,11 +1237,11 @@ Private Sub FinalizeUndoRedoState(ByRef srcProcData As PD_ProcessCall)
                 ' before calling the Undo engine.
                 If Strings.StringsEqual(srcProcData.pcID, "Fade", True) Then
                     Dim tmpDIB As pdDIB
-                    PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
+                    targetImage.UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
                 End If
             
                 'Create the Undo data
-                PDImages.GetActiveImage.UndoManager.CreateUndoData srcProcData, affectedLayerID
+                targetImage.UndoManager.CreateUndoData srcProcData, affectedLayerID
             
             End If
         End If
@@ -2084,6 +2084,16 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         Filters_Transform.MenuMirror
         Process_ImageMenu = True
     
+    'Merge visible layers
+    ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
+        Layers.MergeVisibleLayers
+        Process_ImageMenu = True
+        
+    'Flatten image
+    ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
+        Process_ImageMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Edit metadata", True) Then
         
         'Note that there is no "Else" block here; the "Else" block does nothing but notify the processor to create an Undo entry
@@ -2319,6 +2329,15 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     ElseIf Strings.StringsEqual(processID, "Remove alpha channel", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormConvert24bpp Else FormConvert24bpp.RemoveLayerTransparency processParameters
         Process_LayerMenu = True
+    
+    'Convert layers to images (or images to layers)
+    ElseIf Strings.StringsEqual(processID, "Split layers into images", True) Then
+        Layers.SplitLayerToImage processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Split images into layers", True) Then
+        'Layers.ConvertLayerToImage processParameters
+        Process_LayerMenu = True
         
     'Rasterizing
     ElseIf Strings.StringsEqual(processID, "Rasterize layer", True) Then
@@ -2329,16 +2348,6 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Layers.RasterizeLayer -1
         Process_LayerMenu = True
     
-    'Flatten image
-    ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
-        Process_LayerMenu = True
-        
-    'Merge visible layers
-    ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
-        Layers.MergeVisibleLayers
-        Process_LayerMenu = True
-        
     'On-canvas layer modifications (moving, non-destructive resizing, etc)
     ElseIf Strings.StringsEqual(processID, "Resize layer (on-canvas)", True) Then
         Layers.ResizeLayerNonDestructive PDImages.GetActiveImage.GetActiveLayerIndex, processParameters

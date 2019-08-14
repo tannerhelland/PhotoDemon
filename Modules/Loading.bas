@@ -507,7 +507,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
-        CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", , , True
+        If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", , , True
         Message "Image loaded successfully."
     Else
         If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
@@ -732,6 +732,13 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         
         LoadMultipleImageFiles = (numSuccesses > 0)
         
+        'Manually activate the last-loaded image
+        Dim imgStack As pdStack
+        If PDImages.GetListOfActiveImageIDs(imgStack) Then
+            CanvasManager.ActivatePDImage imgStack.GetInt(imgStack.GetNumOfInts - 1), "LoadFileAsNewImage", , , True
+        End If
+        
+        'Synchronize everything to all open images
         SyncInterfaceToCurrentImage
         Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages() > 1)
         
@@ -781,7 +788,7 @@ Public Sub DuplicateCurrentImage()
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
     sTitle = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If Len(sTitle) = 0 Then sTitle = g_Language.TranslateMessage("[untitled image]")
+    If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
     sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
     
     LoadFileAsNewImage tmpDuplicationFile, sTitle, False
@@ -790,5 +797,5 @@ Public Sub DuplicateCurrentImage()
     Files.FileDeleteIfExists tmpDuplicationFile
     
     Message "Image duplication complete."
-        
+    
 End Sub

@@ -306,6 +306,11 @@ Public Sub InitializeMenus()
     AddMenuItem "Rasterize", "layer_rasterize", 3, 14
         AddMenuItem "Current layer", "layer_rasterizecurrent", 3, 14, 0
         AddMenuItem "All layers", "layer_rasterizeall", 3, 14, 1
+    AddMenuItem "Split", "layer_split", 3, 15
+        AddMenuItem "Current layer into standalone image", "layer_splitlayertoimage", 3, 15, 0
+        AddMenuItem "All layers into standalone images", "layer_splitalllayerstoimages", 3, 15, 1
+        AddMenuItem "-", "-", 3, 15, 2
+        AddMenuItem "Other open images into this image (as layers)", "layer_splitimagestolayers", 3, 15, 3
     
     'Select Menu
     AddMenuItem "&Select", "select_top", 4
@@ -1864,13 +1869,23 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 
             Case "layer_removealpha"
                 Process "Remove alpha channel", True
-                
+        
         Case "layer_rasterize"
             Case "layer_rasterizecurrent"
                 Process "Rasterize layer", , , UNDO_Layer
                 
             Case "layer_rasterizeall"
                 Process "Rasterize all layers", , , UNDO_Image
+        
+        Case "layer_split"
+            Case "layer_splitlayertoimage"
+                Process "Split layers into images", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+                
+            Case "layer_splitalllayerstoimages"
+                Process "Split layers into images", False, BuildParamList("targetlayer", -1), UNDO_Image
+            
+            Case "layer_splitimagestolayers"
+                Process "Split images into layers", False, , UNDO_Image
                 
         Case Else
             cmdFound = False

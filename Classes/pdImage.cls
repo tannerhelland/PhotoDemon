@@ -746,7 +746,18 @@ Friend Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As
 
 End Sub
 
-'Delete a given layer.  The pdLayers stack will automatically be resized to match.
+'Delete a given layer by ID.  The pdLayers stack will automatically be resized to match.
+Friend Sub DeleteLayerByID(ByVal srcLayerID As Long)
+    Dim i As Long
+    For i = 0 To m_numOfLayers - 1
+        If (imgLayers(i).GetLayerID = srcLayerID) Then
+            DeleteLayerByIndex i
+            Exit For
+        End If
+    Next i
+End Sub
+
+'Delete a given layer by index.  The pdLayers stack will automatically be resized to match.
 Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index

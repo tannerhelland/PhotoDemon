@@ -641,6 +641,26 @@ Begin VB.Form FormMain
             Index           =   1
          End
       End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Split"
+         Index           =   15
+         Begin VB.Menu MnuLayerSplit 
+            Caption         =   "Current layer into standalone image"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerSplit 
+            Caption         =   "All layers into standalone images"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerSplit 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerSplit 
+            Caption         =   "Other open images into this image (as layers)"
+            Index           =   3
+         End
+      End
    End
    Begin VB.Menu MnuSelectTop 
       Caption         =   "&Select"
@@ -1777,6 +1797,19 @@ Private Sub MnuFileImport_Click(Index As Integer)
             '(separator)
         Case 7
             Menus.ProcessDefaultAction_ByName "file_import_screenshot"
+    End Select
+End Sub
+
+Private Sub MnuLayerSplit_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_splitlayertoimage"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "layer_splitalllayerstoimages"
+        Case 2
+            '(separator)
+        Case 3
+            Menus.ProcessDefaultAction_ByName "layer_splitimagestolayers"
     End Select
 End Sub
 
@@ -3360,7 +3393,12 @@ End Sub
 
 'Add / Remove / Modify a layer's alpha channel with this menu
 Private Sub MnuLayerTransparency_Click(Index As Integer)
-    Menus.ProcessDefaultAction_ByCaption MnuLayerTransparency(Index).Caption
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_colortoalpha"
+        Case 1
+            Menus.ProcessDefaultAction_ByName "layer_removealpha"
+    End Select
 End Sub
 
 'All "Window" menu items are handled here
