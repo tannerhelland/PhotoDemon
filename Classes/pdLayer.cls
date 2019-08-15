@@ -1593,14 +1593,18 @@ End Sub
 
 'Copy an existing layer.  All layer contents will be copied manually, so make sure that new layer properties are
 ' manually added to this function!
-Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
+Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer, Optional ByVal incrementLayerName As Boolean = True)
 
     'Copy all generic layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
     ' be unique for every created layer!)
     myLayerType = srcLayer.GetLayerType
     
     With myLayerData
-        .l_Name = IncrementTrailingNumber(srcLayer.GetLayerName)
+        If incrementLayerName Then
+            .l_Name = IncrementTrailingNumber(srcLayer.GetLayerName)
+        Else
+            .l_Name = srcLayer.GetLayerName()
+        End If
         .l_GroupID = srcLayer.GetLayerGroup
         .l_Opacity = srcLayer.GetLayerOpacity
         .l_BlendMode = srcLayer.GetLayerBlendMode

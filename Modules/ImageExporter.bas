@@ -881,7 +881,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 
                 'Make sure this layer is the same size as the parent image, and apply any non-destructive transforms
                 Set tmpLayer = New pdLayer
-                tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
+                tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i), False
                 tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
                 
                 'Force alpha to 0 or 255 only (this is a GIF requirement)
@@ -926,9 +926,13 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     End If
                     
                     'For all pages (including the first one), manually specify frame disposal and frame time
-                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-frame-time-" & Trim$(Str$(i)), 100), 1, &H1005&)
-                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                     tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, FIFD_GIF_DISPOSAL_BACKGROUND, 1, &H1006&)
+                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    
+                    'Frame time is extracted from layer name; if it's missing, we default to 100 ms
+                    Dim frameTime As Long
+                    frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, frameTime, 1, &H1005&)
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                     
                     'If a transparent color is used in the source palette, notify FreeImage of the index
@@ -980,6 +984,53 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
 ExportGIFError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportGIF_Animated = False
+    
+End Function
+
+Private Function GetFrameTimeFromLayerName(ByRef srcLayerName As String) As Long
+    
+    'Default to 100 ms, per convention
+    GetFrameTimeFromLayerName = 100
+    
+    'Look for a trailing parenthesis
+    Dim strStart As Long, strEnd As Long
+    strEnd = InStrRev(srcLayerName, ")", -1, vbBinaryCompare)
+    If (strEnd > 0) Then
+        
+        'Find the nearest leading parenthesis
+        strStart = InStrRev(srcLayerName, "(", strEnd, vbBinaryCompare)
+        If (strStart > 0) And (strStart < strEnd - 1) Then
+        
+            'Retrieve the text between said parentheses
+            Dim tmpString As String
+            tmpString = Mid$(srcLayerName, strStart + 1, (strEnd - strStart) - 1)
+            
+            'Finally, strip any non-numeric characters from the text.  (Frame times are typically displayed
+            ' as "100ms", and we don't want the "ms" bit.)
+            Dim ascLow As Long, ascHigh As Long
+            ascLow = AscW("0")
+            ascHigh = AscW("9")
+            
+            Dim finalString As pdString
+            Set finalString = New pdString
+            
+            Dim i As Long, singleChar As String
+            For i = 1 To Len(tmpString)
+                singleChar = Mid$(tmpString, i, 1)
+                If (AscW(singleChar) >= ascLow) And (AscW(singleChar) <= ascHigh) Then finalString.Append singleChar
+            Next i
+            
+            On Error GoTo BadNumber
+            GetFrameTimeFromLayerName = CLng(finalString.ToString())
+            
+            'Enforce a minimum frametime of 0 ms, and leave it to decoders to deal with that case as necessary
+            If (GetFrameTimeFromLayerName < 0) Then GetFrameTimeFromLayerName = 0
+            
+BadNumber:
+        
+        End If
+        
+    End If
     
 End Function
 

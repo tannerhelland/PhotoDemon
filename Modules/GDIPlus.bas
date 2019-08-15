@@ -2745,16 +2745,18 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
         
         Next pageToLoad
         
-        'For animated GIFs, we now want to cache frame times inside the parent pdImage object
+        'For animated GIFs, we now want to assign frame times to each frame.  We do this similar to other software
+        ' (e.g. GIMP, Chasys Draw) by simply adding the frame time - in ms - to each layer's name.
         If (m_OriginalFIF = PDIF_GIF) And (m_FrameCount > 0) Then
         
             If (UBound(m_FrameTimes) = m_FrameCount - 1) Then
                 
+                'Add frame count to the target image (this is not currently used)
                 targetImage.ImgStorage.AddEntry "agif-frame-count", m_FrameCount
                 
                 Dim cFrame As Long
                 For cFrame = 0 To m_FrameCount - 1
-                    targetImage.ImgStorage.AddEntry "agif-frame-time-" & Trim$(Str$(cFrame)), m_FrameTimes(cFrame)
+                    targetImage.GetLayerByIndex(cFrame).SetLayerName targetImage.GetLayerByIndex(cFrame).GetLayerName & " (" & CStr(m_FrameTimes(cFrame)) & "ms)"
                 Next cFrame
                 
             End If

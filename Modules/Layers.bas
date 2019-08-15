@@ -718,14 +718,6 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             
             Message "Copying layer ""%1"" to standalone image...", srcImage.GetLayerByID(listOfLayers(i).Id).GetLayerName()
             
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
-            tmpLayer.CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id)
-            tmpLayer.SetLayerName srcImage.GetLayerByID(listOfLayers(i).Id).GetLayerName()
-            
-            'Convert the layer to a null-padded layer (a layer at the same size as the current image)
-            tmpLayer.ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
-            
             'Load said layer as a separate image
             Dim tmpLayerFile As String
             tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
@@ -736,11 +728,10 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
             Dim newLayerID As Long
             newLayerID = tmpImage.CreateBlankLayer
-            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer tmpLayer
+            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id), False
             
-            'Ensure the layer name(s) match - we may use this later to reassemble the separate images
-            ' back into a stacked image
-            tmpImage.GetLayerByID(newLayerID).SetLayerName tmpLayer.GetLayerName()
+            'Convert the layer to a null-padded layer (a layer at the same size as the current image)
+            tmpImage.GetLayerByID(newLayerID).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
             tmpImage.UpdateSize
             
             'Write the image out to file, then free its associated memory
@@ -750,9 +741,8 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             'Construct a title (name) for the new image, and insert the original layer index.
             ' (This is helpful if the user decides to reconstruct the layers into an image later.)
             Dim sTitle As String
-            sTitle = tmpLayer.GetLayerName()
+            sTitle = srcImage.GetLayerByID(listOfLayers(i).Id).GetLayerName()
             If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
-            Set tmpLayer = Nothing
             
             'We can now use the standard image load routine to import the temporary file
             Loading.LoadFileAsNewImage tmpLayerFile, sTitle, False, , False
@@ -1643,7 +1633,7 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
         
             'GIFs are called "frames" instead of pages
             Case PDIF_GIF
-                GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex))
+                GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex + 1))
                 
             'Icons have their actual dimensions added to the layer name
             Case FIF_ICO
