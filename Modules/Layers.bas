@@ -16,10 +16,11 @@ Attribute VB_Name = "Layers"
 
 Option Explicit
 
-'Used when converting layers to standalone images
+'Used when converting layers to standalone images and vice-versa
 Private Type LayerConvertCache
     Id As Long
     MustConvert As Boolean
+    srcLayerName As String
 End Type
     
 'XML-based wrapper for AddBlankLayer(), below
@@ -317,7 +318,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             Message "New layer added successfully."
         
         Else
-            Debug.Print "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
+            PDDebug.LogAction "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
         End If
     
     End If
@@ -664,14 +665,17 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
 
 End Function
 
-Public Sub SplitLayerToImage(ByRef processParameters As String)
+Public Function SplitLayerToImage(Optional ByRef processParameters As String) As Boolean
     
+    SplitLayerToImage = False
+    
+    'Retrieve any conversion parameters
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
     
     Dim targetIndex As Long
-    targetIndex = cParams.GetLong("targetlayer", -1)
+    targetIndex = cParams.GetLong("target-layer", -1)
     
     'Process parameters specify *which* layer(s) should be converted to a standalone image.
     ' Layers are identified by index.  We want to handle the conversion in two steps:
@@ -692,12 +696,15 @@ Public Sub SplitLayerToImage(ByRef processParameters As String)
         ReDim listOfLayers(0 To .GetNumOfLayers - 1) As LayerConvertCache
         
         For i = 0 To .GetNumOfLayers - 1
+            
             listOfLayers(i).Id = .GetLayerByIndex(i).GetLayerID
+            
             If (targetIndex = -1) Then
-                listOfLayers(i).MustConvert = (i <> .GetActiveLayerIndex)
+                listOfLayers(i).MustConvert = True
             Else
                 listOfLayers(i).MustConvert = (i = targetIndex)
             End If
+            
         Next i
         
     End With
@@ -712,7 +719,7 @@ Public Sub SplitLayerToImage(ByRef processParameters As String)
             Dim tmpLayer As pdLayer
             Set tmpLayer = srcImage.GetLayerByID(listOfLayers(i).Id)
             
-            Message "Converting layer ""%1"" to image...", tmpLayer.GetLayerName
+            Message "Copying layer ""%1"" to standalone image...", tmpLayer.GetLayerName
             
             'Convert the layer to a null-padded layer (a layer at the same size as the current image)
             tmpLayer.ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
@@ -728,6 +735,10 @@ Public Sub SplitLayerToImage(ByRef processParameters As String)
             Dim newLayerID As Long
             newLayerID = tmpImage.CreateBlankLayer
             tmpImage.GetLayerByID(newLayerID).CopyExistingLayer tmpLayer
+            
+            'Ensure the layer name(s) match - we may use this later to reassemble the separate images
+            ' back into a stacked image
+            tmpImage.GetLayerByID(newLayerID).SetLayerName tmpLayer.GetLayerName()
             tmpImage.UpdateSize
             
             'Write the image out to file, then free its associated memory
@@ -737,9 +748,8 @@ Public Sub SplitLayerToImage(ByRef processParameters As String)
             'Construct a title (name) for the new image, and insert the original layer index.
             ' (This is helpful if the user decides to reconstruct the layers into an image later.)
             Dim sTitle As String
-            sTitle = tmpLayer.GetLayerName
+            sTitle = tmpLayer.GetLayerName()
             If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
-            sTitle = sTitle & " (" & g_Language.TranslateMessage("layer %1", i) & ")"
             Set tmpLayer = Nothing
             
             'We can now use the standard image load routine to import the temporary file
@@ -748,24 +758,14 @@ Public Sub SplitLayerToImage(ByRef processParameters As String)
             'Be polite and remove the temporary file
             Files.FileDeleteIfExists tmpLayerFile
             
-            'Remove the processed layer from the current image
-            srcImage.DeleteLayerByID listOfLayers(i).Id
-        
         End If
     
     Next i
     
-    'Make sure the original image is notified of the new layer arrangement (which prompts it
-    ' to update things like its internal thumbnail cache)
-    srcImage.NotifyImageChanged UNDO_Image
-    
-    'Restore the originally active image as the image with focus.  (By default, newly loaded images
-    ' "steal" focus - this is a rare case where we don't want that.)
-    CanvasManager.ActivatePDImage srcImage.imageID, "Split layers into images", True, , True
-    
+    SplitLayerToImage = True
     Message "Conversion complete."
             
-End Sub
+End Function
 
 'XML-based wrapper to DeleteLayer(), below
 Public Sub DeleteLayer_XML(ByRef processParameters As String)
@@ -776,7 +776,7 @@ Public Sub DeleteLayer_XML(ByRef processParameters As String)
 End Sub
 
 'Delete a given layer
-Public Sub DeleteLayer(ByVal dLayerIndex As Long)
+Public Sub DeleteLayer(ByVal dLayerIndex As Long, Optional ByVal updateUI As Boolean = True)
 
     'Cache the current layer index
     Dim curLayerIndex As Long
@@ -784,19 +784,23 @@ Public Sub DeleteLayer(ByVal dLayerIndex As Long)
 
     PDImages.GetActiveImage.DeleteLayerByIndex dLayerIndex
     
-    'Set a new active layer
-    If (curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
-    If (curLayerIndex < 0) Then curLayerIndex = 0
-    SetActiveLayerByIndex curLayerIndex, False
-    
-    'Notify the parent image that the entire image now needs to be recomposited
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-    
-    'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.NotifyLayerChange
-    
-    'Redraw the viewport
-    ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If updateUI Then
+        
+        'Set a new active layer
+        If (curLayerIndex > PDImages.GetActiveImage.GetNumOfLayers - 1) Then curLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+        If (curLayerIndex < 0) Then curLayerIndex = 0
+        SetActiveLayerByIndex curLayerIndex, False
+        
+        'Notify the parent image that the entire image now needs to be recomposited
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+        
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.NotifyLayerChange
+        
+        'Redraw the viewport
+        ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        
+    End If
 
 End Sub
 
@@ -849,6 +853,141 @@ Public Sub DeleteHiddenLayers()
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 
+End Sub
+
+'Given all open images (besides the current one), assemble them as layers into the current image.
+Public Sub MergeImagesToLayers()
+    
+    'This function is sort of an odd case for PD, as operations are typically strictly limited
+    ' to only affecting the active image.
+    
+    'First, we want to make a list of open images, and try to figure out where (if any) each
+    ' image should be inserted.  This is most relevant when the images were originally split using
+    ' the "Split layers into images" command - by parsing layer indices out of their titles, we can
+    ' split each image back into its original parent image *at its original location*.
+    Dim openImageIDs As pdStack
+    If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
+    
+    Dim listOfImages() As LayerConvertCache
+    ReDim listOfImages(0 To openImageIDs.GetNumOfInts - 1) As LayerConvertCache
+    
+    Dim localizedTag As String
+    
+    Dim i As Long
+    For i = 0 To UBound(listOfImages)
+        
+        'We want to convert all images *except* the currently active one
+        listOfImages(i).MustConvert = (PDImages.GetImageByID(openImageIDs.GetInt(i)).imageID <> PDImages.GetActiveImageID)
+        
+        'For each image-to-be-converted...
+        If listOfImages(i).MustConvert Then
+            
+            'Make a note of the image's ID
+            listOfImages(i).Id = openImageIDs.GetInt(i)
+            
+            'Next, pull the name of the base layer.  This is the layer name we want to match
+            ' against the layer names in our existing image, to try and identify matches.
+            listOfImages(i).srcLayerName = PDImages.GetImageByID(listOfImages(i).Id).GetLayerByIndex(0).GetLayerName()
+            
+        End If
+        
+    Next i
+    
+    'Make a safe local reference to the currently active image - because the active image may
+    ' change as we access other images.
+    Dim srcImage As pdImage
+    Set srcImage = PDImages.GetActiveImage
+    
+    'Next, we want to make a bool array to track which layer names we have matched so far
+    ' (in the active image).  On the off chance that there are 2+ layers with identical names,
+    ' we want to match the layers in-order (instead of overwriting the same one twice).
+    Dim layerMatched() As Boolean
+    ReDim layerMatched(0 To srcImage.GetNumOfLayers - 1) As Boolean
+    
+    'Next, we basically want to iterate through all images in the collection, and add each one
+    ' to this image - as a unique layer - in turn.
+    For i = 0 To UBound(listOfImages)
+        
+        If listOfImages(i).MustConvert Then
+            
+            'Ask the target file to write itself out to a temp PDI file
+            Dim tmpLayerFile As String
+            tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
+            If Saving.SavePhotoDemonImage(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
+                
+                'We now want to load the resulting image as a standalone layer.  We use a convenient
+                ' wrapper function that ensures the image is loaded as a single layer, even if it
+                ' contains multiple layers.  (This is by design, to allow the user to do things like
+                ' overlay text on a single layer, then merge that layer back into a parent image.)
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                If Loading.QuickLoadImageToDIB(tmpLayerFile, tmpDIB, False, False) Then
+                    
+                    Dim overwriteMatchingLayers As Boolean
+                    overwriteMatchingLayers = True
+                    
+                    Dim targetIndex As Long
+                    targetIndex = -1
+                    
+                    'Next, try to find a layer with this name in the current image.
+                    If overwriteMatchingLayers Then
+                        
+                        Dim j As Long
+                        For j = 0 To srcImage.GetNumOfLayers - 1
+                            If Strings.StringsEqual(srcImage.GetLayerByIndex(j).GetLayerName, listOfImages(i).srcLayerName, False) Then
+                                
+                                'Make sure we haven't matched this layer already
+                                If (Not layerMatched(j)) Then
+                                    layerMatched(j) = True
+                                    targetIndex = j
+                                    Exit For
+                                End If
+                                    
+                            End If
+                        Next j
+                        
+                    End If
+                    
+                    'Add the new layer to this image in one of two ways:
+                    ' 1) If a matching layer name was found in the current image, overwrite that layer
+                    '    with the one we've imported from file.
+                    Dim mustCreateNewLayer As Boolean
+                    mustCreateNewLayer = True
+                    If (targetIndex >= 0) Then
+                        mustCreateNewLayer = Not layerMatched(targetIndex)
+                    End If
+                    
+                    Dim newLayerID As Long
+                    newLayerID = srcImage.CreateBlankLayer(targetIndex)
+                    srcImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, listOfImages(i).srcLayerName, tmpDIB, True
+                    Set tmpDIB = Nothing
+                    
+                    If (Not mustCreateNewLayer) Then Layers.DeleteLayer targetIndex, False
+                    
+                    'Auto-crop the layer, as it will have been null-padded by a previous step
+                    srcImage.GetLayerByID(newLayerID).CropNullPaddedLayer
+                    
+                End If
+                
+                'Delete the temp file
+                Files.FileDeleteIfExists tmpLayerFile
+            
+            End If
+            
+        End If
+        
+    Next i
+    
+    'Make sure the original image is notified of the new layer arrangement (which prompts it
+    ' to update things like its internal thumbnail cache)
+    srcImage.NotifyImageChanged UNDO_Image
+    
+    'Restore the originally active image as the image with focus.  (By default, newly loaded images
+    ' "steal" focus - this is a rare case where we don't want that.)
+    CanvasManager.ActivatePDImage srcImage.imageID, "Split images into layers", True, , True
+    
+    Message "Conversion complete."
+            
 End Sub
 
 'Move a layer up or down in the stack (referred to as "raise" and "lower" in the menus)
@@ -1475,7 +1614,7 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
     
     'The first layer of single-layer images use a simpler naming system
     Else
-        If (Len(suggestedFilename) = 0) Then
+        If (LenB(suggestedFilename) = 0) Then
             GenerateInitialLayerName = Files.FileGetName(srcFile, True)
         Else
             GenerateInitialLayerName = suggestedFilename

@@ -1879,13 +1879,13 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
         
         Case "layer_split"
             Case "layer_splitlayertoimage"
-                Process "Split layers into images", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Image
+                Process "Split layer into image", True
                 
             Case "layer_splitalllayerstoimages"
-                Process "Split layers into images", False, BuildParamList("targetlayer", -1), UNDO_Image
+                Process "Split layers into images", True
             
             Case "layer_splitimagestolayers"
-                Process "Split images into layers", False, , UNDO_Image
+                Process "Split images into layers", True, , UNDO_Image
                 
         Case Else
             cmdFound = False

@@ -2331,12 +2331,16 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
     
     'Convert layers to images (or images to layers)
+    ElseIf Strings.StringsEqual(processID, "Split layer into image", True) Then
+        Layers.SplitLayerToImage BuildParamList("target-layer", PDImages.GetActiveImage.GetActiveLayerIndex)
+        Process_LayerMenu = True
+        
     ElseIf Strings.StringsEqual(processID, "Split layers into images", True) Then
-        Layers.SplitLayerToImage processParameters
+        Layers.SplitLayerToImage BuildParamList("target-layer", -1)
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Split images into layers", True) Then
-        'Layers.ConvertLayerToImage processParameters
+        Layers.MergeImagesToLayers
         Process_LayerMenu = True
         
     'Rasterizing
