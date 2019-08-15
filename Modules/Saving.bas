@@ -795,8 +795,8 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
     Set saveDialog = New pdOpenSaveDialog
     
     If saveDialog.GetSaveFileName(dstFile, , True, "GIF - Graphics Interchange Format (*.gif)|*.gif", , cdInitialFolder, cdTitle, ".gif", FormMain.hWnd) Then
-    
-        'The user supplied a path.  Settings UI is TODO!
+        
+        'The user supplied a path.
         
         'Before proceeding with the save, check for some file-level errors that may cause problems.
         
@@ -807,6 +807,11 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
             Export_AnimatedGIF = False
             Exit Function
         End If
+        
+        'Update the stored last-save-folder value
+        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
+        
+        'Settings UI is TODO!
         
         'Lock the UI
         Saving.BeginSaveProcess
