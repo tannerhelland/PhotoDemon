@@ -315,6 +315,13 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
     
     Dim r As Long, g As Long, b As Long, a As Long
     
+    Dim multTable() As Single
+    ReDim multTable(0 To 3) As Single
+    multTable(0) = 2 ^ 0
+    multTable(1) = 2 ^ 8
+    multTable(2) = 2 ^ 16
+    multTable(3) = 2 ^ 24
+        
     Dim i As Long
     For i = 0 To m_NumOfColors - 1
         
@@ -328,13 +335,13 @@ Friend Sub SortByChannel(Optional ByVal channelIndex As Long = 0)
         pSort(i).pOrigIndex = i
         
         If (channelIndex = 0) Then
-            pSort(i).pSortCriteria = r
+            pSort(i).pSortCriteria = CSng(r) * multTable(3) + CSng(g) * multTable(2) + CSng(b) * multTable(1) + CSng(a) * multTable(0)
         ElseIf (channelIndex = 1) Then
-            pSort(i).pSortCriteria = g
+            pSort(i).pSortCriteria = CSng(g) * multTable(3) + CSng(b) * multTable(2) + CSng(r) * multTable(1) + CSng(a) * multTable(0)
         ElseIf (channelIndex = 2) Then
-            pSort(i).pSortCriteria = b
+            pSort(i).pSortCriteria = CSng(b) * multTable(3) + CSng(r) * multTable(2) + CSng(g) * multTable(1) + CSng(a) * multTable(0)
         Else
-            pSort(i).pSortCriteria = a
+            pSort(i).pSortCriteria = CSng(a) * multTable(3) + CSng(g) * multTable(2) + CSng(r) * multTable(1) + CSng(b) * multTable(0)
         End If
         
     Next i
