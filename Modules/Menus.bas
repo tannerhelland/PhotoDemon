@@ -1885,7 +1885,7 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 Process "Split layers into images", True
             
             Case "layer_splitimagestolayers"
-                Process "Split images into layers", True, , UNDO_Image
+                Process "Split images into layers", True
                 
         Case Else
             cmdFound = False

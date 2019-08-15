@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.82</langversion>
+<langversion>1.0.83</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1075,6 +1075,41 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
+<original>Copying layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Conversion complete.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can automatically match imported images to existing layers with the same name.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If matches are found, would you prefer to update existing layers?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(If you select "no", each imported image will be added as a new layer, even if it matches an existing one.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Split images into layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adding image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merged layers</original>
 <translation>병합 된 레이어</translation>
 </phrase>
@@ -1144,7 +1179,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>페이지 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 46 phrases. 26 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1835,6 +1870,16 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Split layer into image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Split layers into images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Select all</original>
 <translation>모두 선택</translation>
 </phrase>
@@ -2509,7 +2554,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>최근 매크로 목록 지우기</translation>
 </phrase>
 
-<!-- Menus.bas contains 249 phrases. 29 were duplicates of existing phrases, so only 220 new phrases were written to file. -->
+<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6097,6 +6142,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Split</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Current layer into standalone image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>All layers into standalone images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Other open images into this image (as layers)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Select</original>
 <translation>고르다</translation>
 </phrase>
@@ -6638,7 +6703,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>언어가 성공적으로 변경되었습니다.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 346 phrases. 160 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
+<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15923,10 +15988,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4878 phrases. -->
-<!-- 2224 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12493 total words. -->
+<!-- As of this build, PhotoDemon contains 4899 phrases. -->
+<!-- 2232 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- These 2667 phrases contain approximately 12575 total words. -->
 
 </pdData>

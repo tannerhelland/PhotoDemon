@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.414</langversion>
+<langversion>6.7.415</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1077,6 +1077,41 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 </phrase>
 
 <phrase>
+<original>Copying layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Conversion complete.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can automatically match imported images to existing layers with the same name.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If matches are found, would you prefer to update existing layers?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(If you select "no", each imported image will be added as a new layer, even if it matches an existing one.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Split images into layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Adding image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merged layers</original>
 <translation>Couches fusionné</translation>
 </phrase>
@@ -1146,7 +1181,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 <translation>Page 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 46 phrases. 26 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1837,6 +1872,16 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
+<original>Split layer into image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Split layers into images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Select all</original>
 <translation>Sélectionner tout</translation>
 </phrase>
@@ -2511,7 +2556,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <translation>Effacer liste récente macro</translation>
 </phrase>
 
-<!-- Menus.bas contains 249 phrases. 29 were duplicates of existing phrases, so only 220 new phrases were written to file. -->
+<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6101,6 +6146,26 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Split</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Current layer into standalone image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>All layers into standalone images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Other open images into this image (as layers)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Select</original>
 <translation>&Select</translation>
 </phrase>
@@ -6643,7 +6708,7 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <translation>Langue changé avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 346 phrases. 160 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
+<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -15929,10 +15994,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2654</phrasecount>
+<phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4878 phrases. -->
-<!-- 2224 are duplicates, so only 2654 unique phrases have been written to file. -->
-<!-- These 2654 phrases contain approximately 12493 total words. -->
+<!-- As of this build, PhotoDemon contains 4899 phrases. -->
+<!-- 2232 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- These 2667 phrases contain approximately 12575 total words. -->
 
 </pdData>
