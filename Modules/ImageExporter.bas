@@ -844,7 +844,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     Dim gifAlphaCutoff As Long, gifBackgroundColor As Long
     gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
     gifBackgroundColor = cParams.GetLong("GIFBackgroundColor", vbWhite)
-        
+    
     'FreeImage is currently required for animated GIF export
     If ImageFormats.IsFreeImageEnabled Then
         
@@ -863,12 +863,50 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
         
         'Start by creating a blank multipage object
         Dim fi_MasterHandle As Long
-        fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, True, False, False)
+        fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, True, False, True)
         If (fi_MasterHandle <> 0) Then
             
             Dim imgBytes() As Byte, imgPalette() As RGBQuad, palSize As Long
             Dim tmpLayer As pdLayer, tmpDIB As pdDIB
             Dim tmpTag As FREE_IMAGE_TAG
+            
+            'GIF files support a "global palette".  This is a palette that is shared between multiple frames.
+            ' PhotoDemon always writes a global palette, because even if only the first frame uses it,
+            ' there is no increase in file size (as the first frame will simply skip storing a local palette).
+            ' If, however, the first frame does not contain a full 256-color palette, we will merge colors
+            ' from multiple subsequent frames into one shared palette.
+            Dim globalPaletteWritten As Boolean
+            globalPaletteWritten = False
+            
+            Dim globalPalette() As RGBQuad, iPal As Long
+            ReDim globalPalette(0 To 255) As RGBQuad
+            Dim numColorsInGP As Long: numColorsInGP = 0
+            Dim numColorsInLP As Long
+            
+            Dim frameUsesGP As Boolean: frameUsesGP = False
+            
+            'We also need to cache some values as-we-go, and apply them only at the *end* of the GIF
+            ' creation process.  (For example, FreeImage crashes if we flag frames as using the global palette,
+            ' before we actually assign the image a global palette.)
+            Dim usesGlobalPalette() As Boolean
+            ReDim usesGlobalPalette(0 To srcPDImage.GetNumOfLayers - 1) As Boolean
+            
+            'As we go, we want to keep a running tally of what the current on-screen frame looks like.
+            ' We can use this to make comparisons between frames, and replace identical pixels with
+            ' transparency (allowing for larger intra-frame compression)
+            Dim curStateDIB As pdDIB
+            Set curStateDIB = New pdDIB
+            curStateDIB.CreateBlank srcPDImage.Width, srcPDImage.Height, 32, 0, 0
+            
+            'GIFs are confusing because they specify a "frame disposal" parameter - which defines
+            ' what to do with the image canvas *after* the current frame is displayed (e.g. "clear").
+            ' This is messy to deal with because we don't know what to do with the previous frame until
+            ' *after* the next frame is processed, so we need to always maintain a reference to the
+            ' previous frame as we go, so that we can properly update its disposal method.
+            
+            ' (By default, the previous frame will always be left behind - unless the next frame has
+            ' transparency where the previous frame didn't, in which case we need to clear the previous
+            ' frame entirely.)
             
             'We now need to iterate through each layer in the image (starting at the bottom),
             ' produce an 8-bit palette version of said layer, then add it to the file alongside
@@ -887,28 +925,100 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 'Force alpha to 0 or 255 only (this is a GIF requirement)
                 Dim trnsTable() As Byte
                 DIBs.ApplyAlphaCutoff_Ex tmpLayer.layerDIB, trnsTable, 127
+                
+                'If this layer is not the base layer, we now want to compare it to the running
+                ' "on-screen appearance" DIB.  If this layer has full transparency in places
+                ' where the previous layer does not, we need to ensure that we clear the
+                ' *previous* frame before drawing this one.
+                Dim frameMustBeCleared As Boolean
+                frameMustBeCleared = False
+                
+                If (i <> 0) Then
+                
+                'If this *is* the base layer, simply overlay it onto the running "as it appears on-screen" DIB.
+                Else
+                    tmpLayer.layerDIB.AlphaBlendToDC curStateDIB.GetDIBDC
+                End If
+                
                 DIBs.ApplyBinaryTransparencyTable tmpLayer.layerDIB, trnsTable, vbWhite
+                
+                'TODO: loop through pixels.  If any pixels match the parent image, make them transparent.
+                
+                'TODO: loop through pixels again (or possible merge this with previous step).  If this frame
+                ' contains a transparent pixel, but the previous frame DOES NOT have a transparent pixel in
+                ' the same place, we MUST blank out the previous frame prior to rendering this one.
                 
                 'Generate an optimal 256-color palette for the image
                 Palettes.GetOptimizedPaletteIncAlpha tmpLayer.layerDIB, imgPalette, 256, pdqs_Variance, True
-                
-                'Using the optimal palette, create an 8-bit version of the source image (WITHOUT dithering;
-                ' dithering is still to-do)
-                Dim useDithering As Boolean
-                useDithering = False
-                If useDithering Then
-                    Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, imgPalette, imgBytes, PDDM_SierraLite, 0.5
-                    palSize = UBound(imgPalette) + 1
-                Else
-                    palSize = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(tmpLayer.layerDIB, imgPalette, imgBytes)
-                End If
+                numColorsInLP = UBound(imgPalette) + 1
                 
                 'Ensure that in the course of producing an optimal palette, the optimizer didn't change
-                ' the alpha value from 0.
+                ' any transparent values to number other than 0 or 255.
                 Dim pEntry As Long
                 For pEntry = LBound(imgPalette) To UBound(imgPalette)
-                    If (imgPalette(pEntry).Alpha < 255) Then imgPalette(pEntry).Alpha = 0
+                    If (imgPalette(pEntry).Alpha < 127) Then
+                        imgPalette(pEntry).Alpha = 0
+                    Else
+                        imgPalette(pEntry).Alpha = 255
+                    End If
                 Next pEntry
+                
+                'If this is the *first* frame, we will use it as the basis of our global palette.
+                If (i = 0) Then
+                
+                    'Simply copy over the palette as-is into our running global palette tracker
+                    numColorsInGP = numColorsInLP
+                    ReDim globalPalette(0 To numColorsInGP - 1) As RGBQuad
+                    
+                    For iPal = 0 To numColorsInGP - 1
+                        globalPalette(iPal) = imgPalette(iPal)
+                    Next iPal
+                    
+                    frameUsesGP = True
+                
+                'If this is *not* the first frame, and we have yet to write a global palette, append as many
+                ' unique colors from this palette as we can into the global palette.
+                Else
+                    
+                    'If we've already embedded the global palette in the file (meaning its color table is full),
+                    ' skip the appending colors step.
+                    If (Not globalPaletteWritten) Then
+                        
+                        numColorsInGP = Palettes.MergePalettes(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
+                        
+                        'Enforce a strict 256-color limit
+                        If (numColorsInGP > 256) Then
+                            numColorsInGP = 256
+                            ReDim Preserve globalPalette(0 To 255) As RGBQuad
+                        End If
+                        
+                    End If
+                    
+                    'Next, we need to see if all colors in this frame appear in the global palette.  If they do,
+                    ' we can simply use the global palette to write this frame.
+                    frameUsesGP = Palettes.DoesPaletteContainPalette(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
+                    
+                End If
+                
+                'Using either the local or global palette (whichever matches this image), create an 8-bit version
+                ' of the source image.
+                Dim useDithering As Boolean: useDithering = False
+                
+                If frameUsesGP Then
+                    palSize = numColorsInGP
+                    If useDithering Then
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, globalPalette, imgBytes, PDDM_SierraLite, 0.5
+                    Else
+                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpLayer.layerDIB, globalPalette, imgBytes
+                    End If
+                Else
+                    palSize = numColorsInLP
+                    If useDithering Then
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, imgPalette, imgBytes, PDDM_SierraLite, 0.5
+                    Else
+                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpLayer.layerDIB, imgPalette, imgBytes
+                    End If
+                End If
                 
                 'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
                 ' palette and pixel data
@@ -919,10 +1029,13 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ' then append the finished FI object to the parent multipage object
                 If (fi_DIB <> 0) Then
                     
-                    'If this is the first page in the file, write the loop count (if any)
+                    'If this is the first page in the file, write a few special values
                     If (i = 0) Then
+                    
+                        'Write the loop count (if any)
                         tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-loop-count", 0), 1, &H4&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        
                     End If
                     
                     'For all pages (including the first one), manually specify frame disposal and frame time
@@ -935,13 +1048,22 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, frameTime, 1, &H1005&)
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                     
-                    'If a transparent color is used in the source palette, notify FreeImage of the index
-                    If (imgPalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
+                    'If the frame can safely use the global palette, set a flag; we'll assign this property
+                    ' after the full GIF has been assembled.
+                    usesGlobalPalette(i) = frameUsesGP
+                    
+                    'If the palette (global or local) is making use of transparency, assign a transparency flag
+                    ' to this frame.
+                    If frameUsesGP Then
+                        If (globalPalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
+                    Else
+                        If (imgPalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
+                    End If
                     
                     'Append the finished frame
                     FreeImage_AppendPage fi_MasterHandle, fi_DIB
                     
-                    'Release our local copy of the current frame (FI has copied it internally)
+                    'Make a copy of the current frame handle, as Release our local copy of the current frame (FI has copied it internally)
                     FreeImage_Unload fi_DIB
                     
                 Else
@@ -950,8 +1072,73 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 
             Next i
             
-            'With all frames added, we can now close the multipage handle
+            'With all frames added, we can now finalize a few things.
             Message "Finalizing image..."
+            
+            'First, we have to do something extremely obnoxious: close, then reopen the image.
+            ' For some reason, FreeImage consistently crashes if you attempt to lock a frame of a
+            ' multiframe GIF image created "as new".  However, closing then reopening the image works fine.
+            ' (I have no idea why this is and am too lazy to try and patch their source.)
+            FreeImage_CloseMultiBitmap fi_MasterHandle
+            fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, False, False, True)
+            
+            'With the image reopened, FreeImage will now allow us to make certain changes.
+            
+            'First, we need to embed our finished global palette into the file
+            ' The GIF spec requires global palette color count to be a power of 2.  (It does this because
+            ' the compression table will only use n bits for each of 2 ^ n colors.)
+            If (numColorsInGP < 2) Then
+                numColorsInGP = 2
+            ElseIf (numColorsInGP < 4) Then
+                numColorsInGP = 4
+            ElseIf (numColorsInGP < 8) Then
+                numColorsInGP = 8
+            ElseIf (numColorsInGP < 16) Then
+                numColorsInGP = 16
+            ElseIf (numColorsInGP < 32) Then
+                numColorsInGP = 32
+            ElseIf (numColorsInGP < 64) Then
+                numColorsInGP = 64
+            ElseIf (numColorsInGP < 128) Then
+                numColorsInGP = 128
+            Else
+                numColorsInGP = 256
+            End If
+            
+            'Since we have to CopyMemory the palette into FreeImage, make sure we've allocated enough bytes
+            ' to match the final color count.
+            If (UBound(globalPalette) <> numColorsInGP - 1) Then ReDim Preserve globalPalette(0 To numColorsInGP - 1) As RGBQuad
+            
+            'Iterate through all pages, writing out metadata as we go.
+            For i = 0 To srcPDImage.GetNumOfLayers - 1
+            
+                fi_DIB = FreeImage_LockPage(fi_MasterHandle, i)
+                If (fi_DIB <> 0) Then
+                    
+                    'For the base frame, write out the global palette
+                    If (i = 0) Then
+                        If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then
+                            PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        End If
+                    End If
+                    
+                    'If this frame uses the global palette, set the matching FI flag
+                    If usesGlobalPalette(i) Then
+                        PDDebug.LogAction "frame #" & CStr(i + 1) & " using GLOBAL palette"
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "NoLocalPalette", FIDT_BYTE, 1, 1, &H1003&)
+                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    End If
+                    
+                    'Make sure we unlock the page, which turns it back over to FreeImage
+                    FreeImage_UnlockPage fi_MasterHandle, fi_DIB, True
+                    
+                Else
+                    PDDebug.LogAction "WARNING!  GIF encoder couldn't lock frame # " & CStr(i)
+                End If
+                
+            Next i
+            
+            'Finally, we can close the multipage handle "once and for all"; FreeImage handles the rest from here
             ExportGIF_Animated = FreeImage_CloseMultiBitmap(fi_MasterHandle)
             
             'If we wrote our data to a temp file, attempt to replace the original file

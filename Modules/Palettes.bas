@@ -76,6 +76,156 @@ Public Type PDPaletteCache
     OrigIndex As Long
 End Type
 
+'Does an arbitrary parent palette contain all colors in an arbitrary child palette?  This is used when exporting
+' animated GIF files, as a global palette that already contains all colors in a child palette can be used in place
+' of a (redundant) local palette.
+
+'Returns: TRUE if parentPalette() contains all colors in childPalette().
+Public Function DoesPaletteContainPalette(ByRef parentPalette() As RGBQuad, ByVal numColorsInParent As Long, ByRef childPalette() As RGBQuad, ByVal numColorsInChild As Long) As Boolean
+    
+    'The inner test will set this to FALSE if/when a missing color is found
+    DoesPaletteContainPalette = True
+    
+    Dim i As Long, j As Long
+    Dim matchFound As Boolean
+    Dim chkColor1 As Long, chkColor2 As Long
+    
+    For i = 0 To numColorsInChild - 1
+        
+        matchFound = False
+        
+        For j = 0 To numColorsInParent - 1
+            GetMem4 VarPtr(parentPalette(j)), chkColor1
+            GetMem4 VarPtr(childPalette(i)), chkColor2
+            If (chkColor1 = chkColor2) Then
+                matchFound = True
+                Exit For
+            End If
+        Next j
+        
+        If (Not matchFound) Then
+            DoesPaletteContainPalette = False
+            Exit For
+        End If
+        
+    Next i
+    
+End Function
+
+'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
+' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
+' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that
+' already contain black and white.
+Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
+    
+    Dim minLuminance As Long, minLuminanceIndex As Long
+    Dim maxLuminance As Long, maxLuminanceIndex As Long
+    
+    Dim pBoundL As Long, pBoundU As Long
+    pBoundL = LBound(srcPalette)
+    pBoundU = UBound(srcPalette)
+    
+    If (pBoundL <> pBoundU) Then
+    
+        With srcPalette(pBoundL)
+            minLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            minLuminanceIndex = pBoundL
+            maxLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            maxLuminanceIndex = pBoundL
+        End With
+        
+        Dim testLuminance As Long
+        
+        Dim i As Long
+        For i = pBoundL + 1 To pBoundU
+        
+            With srcPalette(i)
+                testLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            End With
+            
+            If (testLuminance > maxLuminance) Then
+                maxLuminance = testLuminance
+                maxLuminanceIndex = i
+            ElseIf (testLuminance < minLuminance) Then
+                minLuminance = testLuminance
+                minLuminanceIndex = i
+            End If
+            
+        Next i
+        
+        Dim preserveWhite As Boolean, preserveBlack As Boolean
+        preserveWhite = True
+        preserveBlack = True
+        
+        'If the caller passed us an image, see if the image contains black and/or white.  If it does *not*,
+        ' we won't worry about preserving that particular color
+        If (Not srcDIB Is Nothing) Then
+        
+            Dim srcPixels() As Byte, tmpSA As SafeArray2D
+            srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+            
+            Dim pxSize As Long
+            pxSize = srcDIB.GetDIBColorDepth \ 8
+            
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+            initX = 0
+            initY = 0
+            finalX = srcDIB.GetDIBStride - 1
+            finalY = srcDIB.GetDIBHeight - 1
+            
+            Dim r As Long, g As Long, b As Long
+            Dim blackFound As Boolean, whiteFound As Boolean
+            
+            For y = 0 To finalY
+            For x = 0 To finalX Step pxSize
+                b = srcPixels(x, y)
+                g = srcPixels(x + 1, y)
+                r = srcPixels(x + 2, y)
+                
+                If (Not blackFound) Then
+                    If (r = 0) And (g = 0) And (b = 0) Then blackFound = True
+                End If
+                
+                If (Not whiteFound) Then
+                    If (r = 255) And (g = 255) And (b = 255) Then whiteFound = True
+                End If
+                
+                If (blackFound And whiteFound) Then Exit For
+            Next x
+                If (blackFound And whiteFound) Then Exit For
+            Next y
+            
+            srcDIB.UnwrapArrayFromDIB srcPixels
+            
+            preserveBlack = blackFound
+            preserveWhite = whiteFound
+    
+        End If
+        
+        If preserveBlack Then
+            With srcPalette(minLuminanceIndex)
+                .Red = 0
+                .Green = 0
+                .Blue = 0
+            End With
+        End If
+        
+        If preserveWhite Then
+            With srcPalette(maxLuminanceIndex)
+                .Red = 255
+                .Green = 255
+                .Blue = 255
+            End With
+        End If
+        
+        EnsureBlackAndWhiteInPalette = True
+        
+    Else
+        EnsureBlackAndWhiteInPalette = False
+    End If
+
+End Function
+
 'Given a source palette and an arbitrary RGB value, return the best-matching palette index.
 ' This function is intended for one-off use only; for best performance, you should integrate
 ' pdKDTree directly into your function.
@@ -398,120 +548,6 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
         End With
     Next i
 End Sub
-
-'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
-' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
-' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that
-' already contain black and white.
-Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
-    
-    Dim minLuminance As Long, minLuminanceIndex As Long
-    Dim maxLuminance As Long, maxLuminanceIndex As Long
-    
-    Dim pBoundL As Long, pBoundU As Long
-    pBoundL = LBound(srcPalette)
-    pBoundU = UBound(srcPalette)
-    
-    If (pBoundL <> pBoundU) Then
-    
-        With srcPalette(pBoundL)
-            minLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
-            minLuminanceIndex = pBoundL
-            maxLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
-            maxLuminanceIndex = pBoundL
-        End With
-        
-        Dim testLuminance As Long
-        
-        Dim i As Long
-        For i = pBoundL + 1 To pBoundU
-        
-            With srcPalette(i)
-                testLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
-            End With
-            
-            If (testLuminance > maxLuminance) Then
-                maxLuminance = testLuminance
-                maxLuminanceIndex = i
-            ElseIf (testLuminance < minLuminance) Then
-                minLuminance = testLuminance
-                minLuminanceIndex = i
-            End If
-            
-        Next i
-        
-        Dim preserveWhite As Boolean, preserveBlack As Boolean
-        preserveWhite = True
-        preserveBlack = True
-        
-        'If the caller passed us an image, see if the image contains black and/or white.  If it does *not*,
-        ' we won't worry about preserving that particular color
-        If (Not srcDIB Is Nothing) Then
-        
-            Dim srcPixels() As Byte, tmpSA As SafeArray2D
-            srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
-            
-            Dim pxSize As Long
-            pxSize = srcDIB.GetDIBColorDepth \ 8
-            
-            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-            initX = 0
-            initY = 0
-            finalX = srcDIB.GetDIBStride - 1
-            finalY = srcDIB.GetDIBHeight - 1
-            
-            Dim r As Long, g As Long, b As Long
-            Dim blackFound As Boolean, whiteFound As Boolean
-            
-            For y = 0 To finalY
-            For x = 0 To finalX Step pxSize
-                b = srcPixels(x, y)
-                g = srcPixels(x + 1, y)
-                r = srcPixels(x + 2, y)
-                
-                If (Not blackFound) Then
-                    If (r = 0) And (g = 0) And (b = 0) Then blackFound = True
-                End If
-                
-                If (Not whiteFound) Then
-                    If (r = 255) And (g = 255) And (b = 255) Then whiteFound = True
-                End If
-                
-                If (blackFound And whiteFound) Then Exit For
-            Next x
-                If (blackFound And whiteFound) Then Exit For
-            Next y
-            
-            srcDIB.UnwrapArrayFromDIB srcPixels
-            
-            preserveBlack = blackFound
-            preserveWhite = whiteFound
-    
-        End If
-        
-        If preserveBlack Then
-            With srcPalette(minLuminanceIndex)
-                .Red = 0
-                .Green = 0
-                .Blue = 0
-            End With
-        End If
-        
-        If preserveWhite Then
-            With srcPalette(maxLuminanceIndex)
-                .Red = 255
-                .Green = 255
-                .Blue = 255
-            End With
-        End If
-        
-        EnsureBlackAndWhiteInPalette = True
-        
-    Else
-        EnsureBlackAndWhiteInPalette = False
-    End If
-
-End Function
 
 'Given an arbitrary source palette, apply said palette to the target image.  Dithering is *not* used.
 ' Colors are matched exhaustively, meaning this function slows significantly as palette size increases.
@@ -2081,6 +2117,44 @@ Public Function ExportCurrentImagePalette(ByRef srcImage As pdImage, Optional By
     End If
     
     Message "Finished."
+
+End Function
+
+'Merge two palettes into one (basePalette receives the merge).  Colors shared between the two palettes are
+' automatically identified and skipped (e.g. the merged palette will only contain one copy of the color).
+
+'Returns: the number of colors in the merged palette.
+Public Function MergePalettes(ByRef basePalette() As RGBQuad, ByVal numColorsInBasePalette As Long, ByRef appendPalette() As RGBQuad, ByVal numColorsInAppendPalette As Long) As Long
+
+    Dim i As Long, j As Long
+    Dim matchFound As Boolean
+    Dim chkColor1 As Long, chkColor2 As Long
+    
+    For i = 0 To numColorsInAppendPalette - 1
+        
+        matchFound = False
+        
+        For j = 0 To numColorsInBasePalette - 1
+            GetMem4 VarPtr(basePalette(j)), chkColor1
+            GetMem4 VarPtr(appendPalette(i)), chkColor2
+            If (chkColor1 = chkColor2) Then
+                matchFound = True
+                Exit For
+            End If
+        Next j
+        
+        'If a match *wasn't* found, append this color to the merged palette
+        If (Not matchFound) Then
+            If (UBound(basePalette) < numColorsInBasePalette) Then ReDim Preserve basePalette(0 To numColorsInBasePalette * 2 - 1) As RGBQuad
+            basePalette(numColorsInBasePalette) = appendPalette(i)
+            numColorsInBasePalette = numColorsInBasePalette + 1
+        End If
+    
+    Next i
+    
+    'Trim the UBound() of the merged palette
+    If (numColorsInBasePalette <> UBound(basePalette) + 1) Then ReDim Preserve basePalette(0 To numColorsInBasePalette - 1) As RGBQuad
+    MergePalettes = numColorsInBasePalette
 
 End Function
 

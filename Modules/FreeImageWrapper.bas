@@ -1209,7 +1209,7 @@ End Type
 
 Public Type FREE_IMAGE_TAG
    Model As FREE_IMAGE_MDMODEL
-   TagPtr As Long
+   tagPtr As Long
    Key As String
    Description As String
    Id As Long
@@ -1766,7 +1766,7 @@ Public Declare Function FreeImage_OpenMemory Lib "FreeImage.dll" Alias "_FreeIma
   Optional ByVal sizeInBytes As Long) As Long
   
 Public Declare Function FreeImage_OpenMemoryByPtr Lib "FreeImage.dll" Alias "_FreeImage_OpenMemory@8" ( _
-  Optional ByVal DataPtr As Long, _
+  Optional ByVal dataPtr As Long, _
   Optional ByVal sizeInBytes As Long) As Long
 
 Public Declare Sub FreeImage_CloseMemory Lib "FreeImage.dll" Alias "_FreeImage_CloseMemory@4" ( _
@@ -1785,7 +1785,7 @@ Private Declare Function FreeImage_SaveToMemoryInt Lib "FreeImage.dll" Alias "_F
 
 Private Declare Function FreeImage_AcquireMemoryInt Lib "FreeImage.dll" Alias "_FreeImage_AcquireMemory@12" ( _
            ByVal Stream As Long, _
-           ByRef DataPtr As Long, _
+           ByRef dataPtr As Long, _
            ByRef sizeInBytes As Long) As Long
 
 Public Declare Function FreeImage_TellMemory Lib "FreeImage.dll" Alias "_FreeImage_TellMemory@4" ( _
@@ -1877,7 +1877,23 @@ Private Declare Function FreeImage_SetTagValue Lib "FreeImage.dll" Alias "_FreeI
            ByVal Tag As Long, _
            ByVal ValuePtr As Long) As Long
 
+'Added by Tanner
+Private Declare Function FreeImage_SetTagID Lib "FreeImage.dll" Alias "_FreeImage_SetTagID@8" ( _
+           ByVal Tag As Long, _
+           ByVal newValue As Integer) As Long
+           
+Private Declare Function FreeImage_SetTagType Lib "FreeImage.dll" Alias "_FreeImage_SetTagType@8" ( _
+           ByVal Tag As Long, _
+           ByVal newValue As Integer) As Long
 
+Private Declare Function FreeImage_SetTagCount Lib "FreeImage.dll" Alias "_FreeImage_SetTagCount@8" ( _
+           ByVal Tag As Long, _
+           ByVal newValue As Long) As Long
+           
+Private Declare Function FreeImage_SetTagLength Lib "FreeImage.dll" Alias "_FreeImage_SetTagLength@8" ( _
+           ByVal Tag As Long, _
+           ByVal newValue As Long) As Long
+           
 ' metadata iterators
 Public Declare Function FreeImage_FindFirstMetadata Lib "FreeImage.dll" Alias "_FreeImage_FindFirstMetadata@12" ( _
            ByVal Model As FREE_IMAGE_MDMODEL, _
@@ -1893,7 +1909,7 @@ Public Declare Sub FreeImage_FindCloseMetadata Lib "FreeImage.dll" Alias "_FreeI
 
 
 ' metadata setters and getters
-Private Declare Function FreeImage_SetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_SetMetadata@16" ( _
+Public Declare Function FreeImage_SetMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_SetMetadata@16" ( _
            ByVal Model As Long, _
            ByVal Bitmap As Long, _
            ByVal Key As String, _
@@ -2662,12 +2678,12 @@ Public Function FreeImage_SaveToMemory(ByVal Format As FREE_IMAGE_FORMAT, _
 End Function
 
 Public Function FreeImage_AcquireMemory(ByVal Stream As Long, _
-                                        ByRef DataPtr As Long, _
+                                        ByRef dataPtr As Long, _
                                         ByRef sizeInBytes As Long) As Boolean
                                         
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_AcquireMemory = (FreeImage_AcquireMemoryInt(Stream, DataPtr, sizeInBytes) = 1)
+   FreeImage_AcquireMemory = (FreeImage_AcquireMemoryInt(Stream, dataPtr, sizeInBytes) = 1)
            
 End Function
 
@@ -2991,7 +3007,7 @@ Dim lDataPtr As Long
 End Function
 
 'Modified LoadFromMemory function, created while testing unpredictable FreeImage LoadFromMemory failures
-Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal sizeInBytes As Long, Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, Optional ByRef fileFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
+Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal dataPtr As Long, ByVal sizeInBytes As Long, Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, Optional ByRef fileFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
 
     Dim hStream As Long
     
@@ -3002,7 +3018,7 @@ Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal s
    'lDataPtr = pGetMemoryBlockPtrFromVariant(Data, SizeInBytes)
    
    ' open the memory stream
-   hStream = FreeImage_OpenMemoryByPtr(DataPtr, sizeInBytes)
+   hStream = FreeImage_OpenMemoryByPtr(dataPtr, sizeInBytes)
    If (hStream) Then
    
       ' on success, detect image type
@@ -5643,8 +5659,8 @@ Public Function FreeImage_CreateTagEx(ByVal Model As FREE_IMAGE_MDMODEL, _
    ' indicates an error condition sourced from FreeImage_CreateTag().
    
    With FreeImage_CreateTagEx
-      .TagPtr = FreeImage_CreateTag()
-      If (.TagPtr <> 0) Then
+      .tagPtr = FreeImage_CreateTag()
+      If (.tagPtr <> 0) Then
          .Model = Model
          If (LenB(Key) > 0) Then
             .Key = Key
@@ -5656,10 +5672,34 @@ Public Function FreeImage_CreateTagEx(ByVal Model As FREE_IMAGE_MDMODEL, _
             .Value = Value
          End If
          Call pTagToTagPtr(FreeImage_CreateTagEx)
-         FreeImage_CreateTagEx = pGetTagFromTagPtr(Model, .TagPtr)
+         FreeImage_CreateTagEx = pGetTagFromTagPtr(Model, .tagPtr)
       End If
    End With
 
+End Function
+
+'Smarter tag creator, which allows for specialized types like palettes
+Public Function FreeImage_CreateTagTanner(ByVal fiDIB As Long, ByVal Model As FREE_IMAGE_MDMODEL, _
+                             Optional ByVal Key As String, _
+                             Optional ByVal TagType As FREE_IMAGE_MDTYPE = FIDT_NOTYPE, _
+                             Optional ByVal dataPtr As Long, _
+                             Optional ByVal dataCount As Long, _
+                             Optional ByVal dataLength As Long, _
+                             Optional ByVal dataID As Long) As Boolean
+                                 
+    Dim tagPtr As Long
+    tagPtr = FreeImage_CreateTag()
+    
+    FreeImage_SetTagKey tagPtr, Key
+    FreeImage_SetTagID tagPtr, dataID
+    FreeImage_SetTagType tagPtr, TagType
+    FreeImage_SetTagLength tagPtr, dataLength
+    FreeImage_SetTagCount tagPtr, dataCount
+    FreeImage_SetTagValue tagPtr, dataPtr
+    
+    FreeImage_CreateTagTanner = (FreeImage_SetMetadataInt(Model, fiDIB, Key, tagPtr) <> 0)
+    FreeImage_DeleteTag tagPtr
+    
 End Function
 
 Public Function FreeImage_AppendTag(ByVal Bitmap As Long, _
@@ -5696,7 +5736,7 @@ Dim lpTag As Long
        (OverwriteExisting)) Then
       
       FreeImage_AppendTag = FreeImage_CreateTagEx(Model, Key, TagType, Value, Count, Id)
-      If (FreeImage_AppendTag.TagPtr <> 0) Then
+      If (FreeImage_AppendTag.tagPtr <> 0) Then
          Call FreeImage_SetMetadataEx(Bitmap, FreeImage_AppendTag, Key, Model, True)
       End If
    End If
@@ -5749,7 +5789,7 @@ Public Function FreeImage_SetMetadataEx(ByVal Bitmap As Long, _
       If (LenB(Key) = 0) Then
          Key = .Key
       End If
-      If (FreeImage_SetMetadataInt(Model, Bitmap, Key, .TagPtr) <> 0) Then
+      If (FreeImage_SetMetadataInt(Model, Bitmap, Key, .tagPtr) <> 0) Then
          FreeImage_SetMetadataEx = True
       End If
       If (RefreshTag) Then
@@ -5775,8 +5815,8 @@ Public Function FreeImage_GetMetadataEx(ByVal Model As FREE_IMAGE_MDMODEL, _
    ' FreeImage_DeleteTagEx().
 
    With Tag
-      If (FreeImage_GetMetadataInt(Model, Bitmap, Key, .TagPtr) <> 0) Then
-         Tag = pGetTagFromTagPtr(Model, .TagPtr)
+      If (FreeImage_GetMetadataInt(Model, Bitmap, Key, .tagPtr) <> 0) Then
+         Tag = pGetTagFromTagPtr(Model, .tagPtr)
          FreeImage_GetMetadataEx = True
       End If
    End With
@@ -5801,10 +5841,10 @@ Public Sub FreeImage_DeleteTagEx(ByRef Tag As FREE_IMAGE_TAG)
    ' function.
 
    With Tag
-      If (.TagPtr <> 0) Then
-         Call FreeImage_DeleteTag(.TagPtr)
+      If (.tagPtr <> 0) Then
+         Call FreeImage_DeleteTag(.tagPtr)
       End If
-      .TagPtr = 0
+      .tagPtr = 0
       .Count = 0
       .Description = vbNullString
       .Id = 0
@@ -5839,7 +5879,7 @@ Dim lCount As Long
 
    With Tag
    
-      lpTag = pDeref(.TagPtr)
+      lpTag = pDeref(.tagPtr)
       
       ' save current (FITAG) tag for an optional 'undo' operation
       ' invoked on failure
@@ -5851,7 +5891,7 @@ Dim lCount As Long
       Call CopyMemory(ByVal lpTag + 10, .Type, 2)
       ' set tag key (use native FreeImage function to handle
       ' memory allocation)
-      Call FreeImage_SetTagKey(.TagPtr, .Key)
+      Call FreeImage_SetTagKey(.tagPtr, .Key)
       
       ' here, we update the tag's value
       ' generally, we create a plain byte buffer containing all the
@@ -5920,7 +5960,7 @@ Dim lCount As Long
       ' set tag count
       Call CopyMemory(ByVal lpTag + 12, lCount, 4)
        
-      If (FreeImage_SetTagValue(.TagPtr, VarPtr(abValueBuffer(0))) <> 0) Then
+      If (FreeImage_SetTagValue(.tagPtr, VarPtr(abValueBuffer(0))) <> 0) Then
          
          ' update Tag's members
          ' update Count
@@ -5928,7 +5968,7 @@ Dim lCount As Long
          ' update Length
          .Length = lLength
          ' update StringValue
-         .StringValue = FreeImage_TagToString(.Model, .TagPtr)
+         .StringValue = FreeImage_TagToString(.Model, .tagPtr)
          pTagToTagPtr = True
       Else
       
@@ -6021,7 +6061,7 @@ End Function
 '--------------------------------------------------------------------------------
 
 Private Function pGetTagFromTagPtr(ByVal Model As FREE_IMAGE_MDMODEL, _
-                                   ByVal TagPtr As Long) As FREE_IMAGE_TAG
+                                   ByVal tagPtr As Long) As FREE_IMAGE_TAG
 
 Dim tTag As FITAG
 Dim lTemp As Long
@@ -6030,13 +6070,13 @@ Dim i As Long
    ' This function converts data stored in a real FreeImage tag
    ' pointer (FITAG **tag) into a VB friendly structure FREE_IMAGE_TAG.
    
-   If (TagPtr <> 0) Then
+   If (tagPtr <> 0) Then
    
       ' this is like (only like!) tTag tag = (FITAG) TagPtr; in C/C++
       ' we copy Len(tTag) bytes from the address in TagPtr in to a
       ' private FITAG structure tTag so we have easy access to all
       ' FITAG members
-      Call CopyMemory(tTag, ByVal pDeref(TagPtr), Len(tTag))
+      Call CopyMemory(tTag, ByVal pDeref(tagPtr), Len(tTag))
       
       With pGetTagFromTagPtr
       
@@ -6048,7 +6088,7 @@ Dim i As Long
          ' tag model and the pointer to the actual FreeImage FITAG
          ' structure
          .Model = Model
-         .TagPtr = TagPtr
+         .tagPtr = tagPtr
          
          ' although FITAG's 'count' and 'length' members are
          ' unsigned longs, we do not expect values greater
@@ -6072,7 +6112,7 @@ Dim i As Long
          
          ' StringValue is the result of FreeImage_TagToString(); we
          ' also store this tag representation in our structure
-         .StringValue = FreeImage_TagToString(Model, TagPtr)
+         .StringValue = FreeImage_TagToString(Model, tagPtr)
          
          ' now comes the hard part, getting the tag's value
          
