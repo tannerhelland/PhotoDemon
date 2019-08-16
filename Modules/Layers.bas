@@ -926,13 +926,19 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
         'Make a safe local reference to the currently active image - because the active image may
         ' change as we access other images.
         Dim srcImage As pdImage
-        Set srcImage = PDImages.GetActiveImage
+        Set srcImage = PDImages.GetActiveImage()
+        
+        'The number of layers in the base image may change as other images are migrated in - to avoid
+        ' our tracking array having fewer indices than the base image (whose layer count is actively
+        ' increasing), we need to cache the search limit in advance.
+        Dim ubLayers As Long
+        ubLayers = srcImage.GetNumOfLayers - 1
         
         'Next, we want to make a bool array to track which layer names we have matched so far
         ' (in the active image).  On the off chance that there are 2+ layers with identical names,
         ' we want to match the layers in-order (instead of overwriting the same one twice).
         Dim layerMatched() As Boolean
-        ReDim layerMatched(0 To srcImage.GetNumOfLayers - 1) As Boolean
+        ReDim layerMatched(0 To ubLayers) As Boolean
         
         Dim overwriteMatchingLayers As Boolean
         overwriteMatchingLayers = cParams.GetBool("overwrite-layers", False)
@@ -965,7 +971,7 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
                         If overwriteMatchingLayers Then
                             
                             Dim j As Long
-                            For j = 0 To srcImage.GetNumOfLayers - 1
+                            For j = 0 To ubLayers
                                 If Strings.StringsEqual(srcImage.GetLayerByIndex(j).GetLayerName, listOfImages(i).srcLayerName, False) Then
                                     
                                     'Make sure we haven't matched this layer already
