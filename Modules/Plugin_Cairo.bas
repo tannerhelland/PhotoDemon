@@ -384,8 +384,8 @@ Public Function Pattern_CreateLinearGradient(ByVal x0 As Double, ByVal y0 As Dou
     Pattern_CreateLinearGradient = CallCDeclW(cairo_pattern_create_linear, vbLong, x0, y0, x1, y1)
 End Function
 
-Public Function Pattern_CreateRadialGradient(ByVal cx0 As Double, ByVal cy0 As Double, ByVal radius0 As Double, ByVal cx1 As Double, ByVal cy1 As Double, ByVal radius1 As Double) As Long
-    Pattern_CreateRadialGradient = CallCDeclW(cairo_pattern_create_radial, vbLong, cx0, cy0, radius0, cx1, cy1, radius1)
+Public Function Pattern_CreateRadialGradient(ByVal cx0 As Double, ByVal cy0 As Double, ByVal radius0 As Double, ByVal cX1 As Double, ByVal cY1 As Double, ByVal radius1 As Double) As Long
+    Pattern_CreateRadialGradient = CallCDeclW(cairo_pattern_create_radial, vbLong, cx0, cy0, radius0, cX1, cY1, radius1)
 End Function
 
 'Return a pattern handle to a cairo surface; this pattern can subsequently be used for painting,
@@ -467,7 +467,12 @@ Private Function CallCDeclW(ByVal lProc As Cairo_ProcAddress, ByVal fRetType As 
     Dim numParams As Long
     If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
     
-    vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    If IsMissing(pa) Then
+        ReDim vTemp(0) As Variant
+    Else
+        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    End If
+    
     For i = 0 To numParams - 1
         If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
         m_vType(i) = VarType(vTemp(i))

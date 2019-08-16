@@ -408,7 +408,12 @@ Private Function CallCDeclW(ByVal lProc As LD_ProcAddress, ByVal fRetType As VbV
     Dim numParams As Long
     If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
     
-    vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    If IsMissing(pa) Then
+        ReDim vTemp(0) As Variant
+    Else
+        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    End If
+    
     For i = 0 To numParams - 1
         If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
         m_vType(i) = VarType(vTemp(i))
