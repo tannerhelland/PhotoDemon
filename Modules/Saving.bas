@@ -829,7 +829,7 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
             If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
                 
                 'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
-                If ImageFormats.IsExifToolRelevant(PDIF_GIF) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
+                'If ImageFormats.IsExifToolRelevant(PDIF_GIF) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
                 
             End If
             

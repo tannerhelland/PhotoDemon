@@ -802,9 +802,10 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
 
 End Function
 
-'This function will calculate an "alpha-cutoff" for a 32bpp image.  This _Ex version (which is now the *only* version supported
-' by PD) requires an input byte array, which will be initialized to the size of the image and filled with a copy of the image's
-' new transparency data, if that cut-off were applied.  (e.g. the return array will only include values of 0 or 255 for each pixel).
+'This function will calculate an "alpha-cutoff" for a 32bpp image.  This _Ex version (which is now the
+' *only* version supported by PD) requires an input byte array, which will be initialized to the size
+' of the image and filled with a copy of the image's new transparency data, if that cut-off were applied.
+' (e.g. the return array will only include values of 0 or 255 for each pixel).
 '
 'Note that - by design - the DIB is not actually modified by this function.
 Public Function ApplyAlphaCutoff_Ex(ByRef srcDIB As pdDIB, ByRef dstTransparencyTable() As Byte, Optional ByVal cutOff As Long = 127) As Boolean
@@ -853,6 +854,109 @@ Public Function ApplyAlphaCutoff_Ex(ByRef srcDIB As pdDIB, ByRef dstTransparency
             ApplyAlphaCutoff_Ex = True
             
         End If
+    End If
+    
+End Function
+
+'Given two DIBs and a pre-initialized transparency table, update the transparency table to make
+' any duplicate pixels between the two images transparent.  This is used during GIF export to
+' minimize file size, by retaining color data from the previous frame and making those pixels
+' transparent in the current frame.
+'
+'IMPORTANTLY: the dstTransparencyTable() array MUST ALREADY BE INITIALIZED, and srcDIB and dstDIB
+' MUST BE THE SAME SIZE.
+'
+'Note that - by design - neither DIB is not actually modified by this function.
+Public Function ApplyAlpha_DuplicatePixels(ByRef srcDIB1 As pdDIB, ByRef srcDIB2 As pdDIB, ByRef dstTransparencyTable() As Byte) As Boolean
+    
+    If (srcDIB1 Is Nothing) Then Exit Function
+    If (srcDIB2 Is Nothing) Then Exit Function
+    
+    'Additional failsafe checks
+    If (srcDIB1.GetDIBColorDepth = 32) Then
+    If (srcDIB1.GetDIBDC <> 0) And (srcDIB1.GetDIBWidth <> 0) And (srcDIB1.GetDIBHeight <> 0) Then
+    If (srcDIB2.GetDIBDC <> 0) And (srcDIB1.GetDIBWidth = srcDIB2.GetDIBWidth) And (srcDIB1.GetDIBHeight = srcDIB2.GetDIBHeight) Then
+        
+        Dim x As Long, y As Long, finalX As Long, finalY As Long
+        finalX = (srcDIB1.GetDIBWidth - 1)
+        finalY = (srcDIB1.GetDIBHeight - 1)
+        
+        Dim srcData1() As Long, tmpSA1 As SafeArray1D
+        Dim srcData2() As Long, tmpSA2 As SafeArray1D
+        
+        Dim chkAlpha As Byte
+        
+        'Loop through the image, checking alphas as we go
+        For y = 0 To finalY
+            srcDIB1.WrapLongArrayAroundScanline srcData1, tmpSA1, y
+            srcDIB2.WrapLongArrayAroundScanline srcData2, tmpSA2, y
+        For x = 0 To finalX
+            
+            'Make matching pixels transparent
+            If srcData1(x) = srcData2(x) Then dstTransparencyTable(x, y) = 0
+            
+        Next x
+        Next y
+
+        'With our alpha channel complete, point iData() away from the DIB and deallocate it
+        srcDIB1.UnwrapLongArrayFromDIB srcData1
+        srcDIB2.UnwrapLongArrayFromDIB srcData2
+        
+        ApplyAlpha_DuplicatePixels = True
+    
+    'Failsafe checks
+    End If
+    End If
+    End If
+    
+End Function
+
+'Given a bottom DIB and a transparency table (for a "top" DIB), return TRUE if the table contains
+' transparency where the bottom DIB does not.  This is used during GIF export to determine
+' whether we need to clear the previous frame before displaying the current one.  (By default,
+' we don't clear the previous frame unless necessary, as we can actually share data between
+' frames for idealized compression.)
+'
+'IMPORTANTLY: srcDIB and trnsTable() MUST BE THE SAME SIZE.
+'
+'Note that - by design - neither DIB is not actually modified by this function.
+Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsTable() As Byte) As Boolean
+    
+    CheckAlpha_DuplicatePixels = False
+    
+    If (bottomDIB Is Nothing) Then Exit Function
+    
+    'Additional failsafe checks
+    If (bottomDIB.GetDIBColorDepth = 32) Then
+    If (bottomDIB.GetDIBDC <> 0) And (bottomDIB.GetDIBWidth <> 0) And (bottomDIB.GetDIBHeight <> 0) Then
+        
+        Dim x As Long, y As Long, finalX As Long, finalY As Long
+        finalX = (bottomDIB.GetDIBWidth - 1)
+        finalY = (bottomDIB.GetDIBHeight - 1)
+        
+        Dim bottomPixels() As Byte, tmpSA1 As SafeArray1D
+        
+        Dim chkAlpha As Byte
+        
+        'Loop through the image, checking alphas as we go
+        For y = 0 To finalY
+            bottomDIB.WrapArrayAroundScanline bottomPixels, tmpSA1, y
+        For x = 0 To finalX
+            
+            'Make matching pixels transparent
+            If (trnsTable(x, y) = 0) And (bottomPixels(x * 4 + 3) <> 0) Then
+                bottomDIB.UnwrapArrayFromDIB bottomPixels
+                CheckAlpha_DuplicatePixels = True
+                Exit Function
+            End If
+            
+        Next x
+        Next y
+        
+        bottomDIB.UnwrapArrayFromDIB bottomPixels
+        
+    'Failsafe checks
+    End If
     End If
     
 End Function
