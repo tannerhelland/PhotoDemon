@@ -29,6 +29,18 @@ End Enum
     Private Const PDAS_NoAlpha = 0, PDAS_BinaryAlpha = 1, PDAS_ComplicatedAlpha = 2, PDAS_NewAlphaFromColor = 3
 #End If
 
+'The animated GIF exporter builds a collection of frame data during export.
+Private Type PD_GifFrame
+    usesGlobalPalette As Boolean
+    frameMustBeCleared As Boolean
+    frameIsDuplicateOrEmpty As Boolean
+    frameTime As Long
+    rectOfInterest As RectF
+    palNumColors As Long
+    framePalette() As RGBQuad
+    pixelData() As Byte
+End Type
+
 'Given an input DIB, return the most relevant output color depth.  This will be a numeric value like "32" or "24".
 ' IMPORTANT NOTE: for best results, you must also handle the optional parameter "currentAlphaStatus", which has
 '  three possible states.  If you are working with a format (like JPEG) that does not offer alpha support, convert
@@ -888,21 +900,19 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             'We also need to cache some values as-we-go, and apply them only at the *end* of the GIF
             ' creation process.  (For example, FreeImage crashes if we flag frames as using the global palette,
             ' before we actually assign the image a global palette.)
-            Dim usesGlobalPalette() As Boolean
-            ReDim usesGlobalPalette(0 To srcPDImage.GetNumOfLayers - 1) As Boolean
+            Dim frameData() As PD_GifFrame
+            ReDim frameData(0 To srcPDImage.GetNumOfLayers - 1) As PD_GifFrame
             
             'GIFs are obnoxious because each frame specifies a "frame disposal" requirement; this is
             ' what to do with the screen buffer *after* the current frame is displayed.  We calculate
             ' this using data from the next frame in line (because its transparency requirements
             ' are ultimately what determine the frame disposal requirements of the *previous* frame),
             ' then apply all metadata in a separate pass after the GIF has been assembled.
-            Dim frameMustBeCleared() As Boolean
-            ReDim frameMustBeCleared(0 To srcPDImage.GetNumOfLayers - 1) As Boolean
             
             'Frames are cleared by default; subsequent analyses may change this on a per-frame basis
             Dim i As Long
-            For i = 0 To UBound(frameMustBeCleared)
-                frameMustBeCleared(i) = True
+            For i = 0 To srcPDImage.GetNumOfLayers - 1
+                frameData(i).frameMustBeCleared = True
             Next i
             
             'As we go, we want to keep a running tally of what the current on-screen frame looks like.
@@ -912,19 +922,15 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Set curStateDIB = New pdDIB
             curStateDIB.CreateBlank srcPDImage.Width, srcPDImage.Height, 32, 0, 0
             
-            'GIFs are confusing because they specify a "frame disposal" parameter - which defines
-            ' what to do with the image canvas *after* the current frame is displayed (e.g. "clear").
-            ' This is messy to deal with because we don't know what to do with the previous frame until
-            ' *after* the next frame is processed, so we need to always maintain a reference to the
-            ' previous frame as we go, so that we can properly update its disposal method.
+            'We are now going to iterate through all layers in the image TWICE.
             
-            ' (By default, the previous frame will always be left behind - unless the next frame has
-            ' transparency where the previous frame didn't, in which case we need to clear the previous
-            ' frame entirely.)
+            'On this first pass, we will analyze each layer, produce optimized global and
+            ' local palettes, extract frame times from layer names, and determine regions
+            ' of interest in each frame.
             
-            'We now need to iterate through each layer in the image (starting at the bottom),
-            ' produce an 8-bit palette version of said layer, then add it to the file alongside
-            ' any relevant metadata (e.g. frametime).
+            'On the second pass, we will actually produce palettized versions of each layer
+            ' (using the settings we calculated in the first pass) and use FreeImage to embed
+            ' those palettized copies inside an actual GIF file.
             For i = 0 To srcPDImage.GetNumOfLayers - 1
                 
                 ProgressBars.SetProgBarVal i
@@ -945,8 +951,8 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ' rendering this one.  (Otherwise, the previous frame's colors will "show through"
                 ' to this frame.)
                 If (i > 0) Then
-                    frameMustBeCleared(i - 1) = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
-                    If frameMustBeCleared(i - 1) Then curStateDIB.ResetDIB 0
+                    frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
+                    If frameData(i - 1).frameMustBeCleared Then curStateDIB.ResetDIB 0
                 End If
                 
                 'If this layer is not the base layer, and we won't be clearing the previous frame,
@@ -954,7 +960,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ' If this layer is identical to the layer beneath it on a given pixel, we can simply
                 ' make that pixel transparent (as the previous frame will "show through").
                 If (i > 0) Then
-                    If (Not frameMustBeCleared(i - 1)) Then DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
+                    If (Not frameData(i - 1).frameMustBeCleared) Then DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
                 End If
                 
                 'Apply the finished binary transparency table to the layer
@@ -1016,6 +1022,37 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     
                 End If
                 
+                'If this frame requires a local palette, store a copy of it
+                frameData(i).usesGlobalPalette = frameUsesGP
+                If (Not frameUsesGP) Then
+                    
+                    frameData(i).palNumColors = UBound(imgPalette) + 1
+                    ReDim frameData(i).framePalette(0 To UBound(imgPalette))
+                    
+                    For iPal = 0 To UBound(imgPalette)
+                        frameData(i).framePalette(iPal) = imgPalette(iPal)
+                    Next iPal
+                    
+                End If
+                
+                'As the final step before palettizing the image, we now need to isolate the "region of interest"
+                ' in this layer.  This is basically an autocrop step that identifies fully transparent borders,
+                ' and tells us where to crop the image to achieve the smallest usable area.
+                
+                '(Note that we only do this for non-first frames - the first frame must always be full-size.)
+                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+                If (i > 0) Then
+                    frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest(tmpLayer.layerDIB, frameData(i).rectOfInterest)
+                    With frameData(i).rectOfInterest
+                        tmpDIB.CreateBlank .Width, .Height, 32, 0, 0
+                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .Width, .Height, tmpLayer.layerDIB.GetDIBDC, .Left, .Top, vbSrcCopy
+                    End With
+                Else
+                    tmpDIB.CreateFromExistingDIB tmpLayer.layerDIB
+                    frameData(i).rectOfInterest.Width = tmpLayer.layerDIB.GetDIBWidth
+                    frameData(i).rectOfInterest.Height = tmpLayer.layerDIB.GetDIBHeight
+                End If
+                
                 'Using either the local or global palette (whichever matches this image), create an 8-bit version
                 ' of the source image.
                 Dim useDithering As Boolean: useDithering = False
@@ -1023,80 +1060,28 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 If frameUsesGP Then
                     palSize = numColorsInGP
                     If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, globalPalette, imgBytes, PDDM_SierraLite, 0.5
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, globalPalette, frameData(i).pixelData, PDDM_SierraLite, 0.5
                     Else
-                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpLayer.layerDIB, globalPalette, imgBytes
+                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
                     End If
                 Else
                     palSize = numColorsInLP
                     If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpLayer.layerDIB, imgPalette, imgBytes, PDDM_SierraLite, 0.5
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.5
                     Else
-                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpLayer.layerDIB, imgPalette, imgBytes
+                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
                     End If
                 End If
                 
-                'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
-                ' palette and pixel data
-                Dim fi_DIB As Long
-                fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight, VarPtr(imgBytes(0, 0)), VarPtr(imgPalette(0)), palSize)
-                
-                'If the FI object was created successfully, append any required animation metadata,
-                ' then append the finished FI object to the parent multipage object
-                If (fi_DIB <> 0) Then
-                    
-                    'If this is the first page in the file, write the loop count for the file as a whole
-                    If (i = 0) Then
-                    
-                        'Write the loop count (if any)
-                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-loop-count", 0), 1, &H4&)
-                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
-                        
-                    End If
-                    
-                    'For all pages (including the first one), set a frame time.
-                    'Frame time is extracted from layer name; if it's missing, we default to 100 ms
-                    Dim frameTime As Long
-                    frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
-                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, frameTime, 1, &H1005&)
-                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
-                    
-                    'If the frame can safely use the global palette, set a flag; we'll assign this property
-                    ' after the full GIF has been assembled.
-                    usesGlobalPalette(i) = frameUsesGP
-                    
-                    'If this frame is using a local palette, and the local palette uses transparency,
-                    ' assign a transparency flag to this frame.
-                    If (Not frameUsesGP) Then
-                        If (imgPalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
-                    End If
-                    
-                    'Append the finished frame
-                    FreeImage_AppendPage fi_MasterHandle, fi_DIB
-                    
-                    'Make a copy of the current frame handle, as Release our local copy of the current frame (FI has copied it internally)
-                    FreeImage_Unload fi_DIB
-                    
-                Else
-                    PDDebug.LogAction "failed to produce FI DIB for frame # " & CStr(i)
-                End If
-                
+                'While here, attempt to retrieve a frame time from the source layer's name.
+                frameData(i).frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
+            
+            'We've now cached everything we require for this frame!
             Next i
             
-            'With all frames added, we can now finalize a few things.
-            Message "Finalizing image..."
-            ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
+            'We have now analyzed all frames of the image.  Before generating a GIF file, let's get our
+            ' global palette in order.
             
-            'First, we have to do something extremely obnoxious: close, then reopen the image.
-            ' For some reason, FreeImage consistently crashes if you attempt to lock a frame of a
-            ' multiframe GIF image created "as new".  However, closing then reopening the image works fine.
-            ' (I have no idea why this is and am too lazy to try and patch their source.)
-            FreeImage_CloseMultiBitmap fi_MasterHandle
-            fi_MasterHandle = FreeImage_OpenMultiBitmap(FIF_GIF, tmpFilename, False, False, True)
-            
-            'With the image reopened, FreeImage will now allow us to make certain changes.
-            
-            'First, we need to embed our finished global palette into the file
             ' The GIF spec requires global palette color count to be a power of 2.  (It does this because
             ' the compression table will only use n bits for each of 2 ^ n colors.)
             If (numColorsInGP < 2) Then
@@ -1132,47 +1117,90 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 End If
             Next i
             
-            'Iterate through all pages, writing out metadata as we go.
-            For i = 0 To srcPDImage.GetNumOfLayers - 1
+            Message "Finalizing image..."
             
-                fi_DIB = FreeImage_LockPage(fi_MasterHandle, i)
-                If (fi_DIB <> 0) Then
+            'We are now ready to write the GIF file
+            For i = 0 To srcPDImage.GetNumOfLayers - 1
+                
+                'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
+                ' palette and pixel data.  (Note that we don't actually use the local palette for frames that use
+                ' the global palette - but we have to supply *something* in order to construct the FI image.)
+                Dim fi_DIB As Long
+                With frameData(i)
                     
-                    'For the base frame, write out the global palette
-                    If (i = 0) Then
-                        If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then
-                            PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
-                        End If
+                    If .usesGlobalPalette Then
+                        fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(Int(.rectOfInterest.Width), Int(.rectOfInterest.Height), VarPtr(.pixelData(0, 0)), VarPtr(globalPalette(0)), numColorsInGP)
+                    Else
+                        fi_DIB = Plugin_FreeImage.GetFIDIB_8Bit(Int(.rectOfInterest.Width), Int(.rectOfInterest.Height), VarPtr(.pixelData(0, 0)), VarPtr(.framePalette(0)), .palNumColors)
                     End If
                     
-                    'If this frame uses the global palette, set the matching FI flag
-                    If usesGlobalPalette(i) Then
-                        PDDebug.LogAction "frame #" & CStr(i + 1) & " using GLOBAL palette"
+                    'Pixel data is now unnecessary; free it!
+                    Erase .pixelData
+                    
+                End With
+                
+                'If the FI object was created successfully, append any required animation metadata,
+                ' then append the finished FI object to the parent multipage object
+                If (fi_DIB <> 0) Then
+                    
+                    'If this is the first page in the file, write any parameters that affect the image as a whole
+                    If (i = 0) Then
+                    
+                        'Loop count
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-loop-count", 0), 1, &H4&)
+                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        
+                        'Global palette
+                        If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        
+                    End If
+                    
+                    'For all frames (including the first one), set a frame time.
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, frameData(i).frameTime, 1, &H1005&)
+                    If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    
+                    'Specify frame left/top for all but the first frame (which is always specified
+                    ' as starting at [0, 0])
+                    If (i > 0) Then
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameLeft", FIDT_SHORT, CLng(Int(frameData(i).rectOfInterest.Left)), 1, &H1001&)
+                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTop", FIDT_SHORT, CLng(Int(frameData(i).rectOfInterest.Top)), 1, &H1002&)
+                        If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                    End If
+                    
+                    'If we use the global palette, flag it now, including the transparent index
+                    If frameData(i).usesGlobalPalette Then
                         tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "NoLocalPalette", FIDT_BYTE, 1, 1, &H1003&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                         If (trnsIndex >= 0) Then FreeImage_SetTransparentIndex fi_DIB, trnsIndex
+                    Else
+                        If (frameData(i).framePalette(0).Alpha = 0) Then FreeImage_SetTransparentIndex fi_DIB, 0
                     End If
                     
                     'Set this frame to either erase to background (transparent black) or retain data
                     ' from the previous frame.
-                    If frameMustBeCleared(i) Then
-                        PDDebug.LogAction "(clearing after this frame)"
+                    If frameData(i).frameMustBeCleared Then
                         tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, FIFD_GIF_DISPOSAL_BACKGROUND, 1, &H1006&)
                     Else
-                        PDDebug.LogAction "(keeping this frame)"
                         tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "DisposalMethod", FIDT_BYTE, FIFD_GIF_DISPOSAL_LEAVE, 1, &H1006&)
                     End If
                     
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                     
-                    'Make sure we unlock the page, which turns it back over to FreeImage
-                    FreeImage_UnlockPage fi_MasterHandle, fi_DIB, True
+                    'Append the finished frame
+                    FreeImage_AppendPage fi_MasterHandle, fi_DIB
+                    
+                    'Make a copy of the current frame handle, as Release our local copy of the current frame (FI has copied it internally)
+                    FreeImage_Unload fi_DIB
                     
                 Else
-                    PDDebug.LogAction "WARNING!  GIF encoder couldn't lock frame # " & CStr(i)
+                    PDDebug.LogAction "failed to produce FI DIB for frame # " & CStr(i)
                 End If
                 
             Next i
+            
+            'With all frames added, we can now finalize a few things.
+            ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
             
             'Finally, we can close the multipage handle "once and for all"; FreeImage handles the rest from here
             ExportGIF_Animated = FreeImage_CloseMultiBitmap(fi_MasterHandle)
