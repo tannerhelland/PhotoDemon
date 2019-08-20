@@ -558,7 +558,10 @@ Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal 
         
         'If the caller supplied a length value, make sure it doesn't extend past the end of the buffer
         Else
-            If (Me.GetPosition() + readLength > m_BufferSize) Then readLength = m_BufferSize - Me.GetPosition()
+            If (Me.GetPosition() + readLength > m_BufferSize) Then
+                Debug.Print "WARNING!  Requested read extends past the end of the stream."
+                readLength = m_BufferSize - Me.GetPosition()
+            End If
         End If
         
         'Copy the relevant amount of bytes into position
@@ -900,20 +903,20 @@ Friend Function ReadString_ASCII(ByVal numOfChars As Long) As String
 
     If m_Open And (Me.GetPosition() + numOfChars <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
-            ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), False, numOfChars)
+            ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), False, numOfChars, True)
             m_Pointer = m_Pointer + numOfChars
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then
                 Dim tmpBytes() As Byte
                 ReDim tmpBytes(0 To numOfChars - 1) As Byte
                 m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars
-                ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), False, numOfChars)
+                ReadString_ASCII = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), False, numOfChars, True)
             End If
         ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
             If (Not m_FileMM Is Nothing) Then
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, numOfChars, srcPtr, srcReadMax) Then
-                    ReadString_ASCII = Strings.StringFromCharPtr(srcPtr + m_Pointer, False, numOfChars)
+                    ReadString_ASCII = Strings.StringFromCharPtr(srcPtr + m_Pointer, False, numOfChars, True)
                     m_Pointer = m_Pointer + numOfChars
                 Else
                     InternalStreamError "ReadString_ASCII failed; const pdFileMM for details."
@@ -931,20 +934,20 @@ Friend Function ReadString_Unicode(ByVal numOfChars As Long) As String
 
     If m_Open And (Me.GetPosition() + numOfChars * 2 <= m_BufferSize) Then
         If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
-            ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), True, numOfChars)
+            ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(m_MemBuffer(m_Pointer)), True, numOfChars, True)
             m_Pointer = m_Pointer + numOfChars * 2
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
             If (Not m_FSO Is Nothing) Then
                 Dim tmpBytes() As Byte
                 ReDim tmpBytes(0 To numOfChars * 2 - 1) As Byte
                 m_FSO.FileReadData m_FileHandle, VarPtr(tmpBytes(0)), numOfChars * 2
-                ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), True, numOfChars)
+                ReadString_Unicode = Strings.StringFromCharPtr(VarPtr(tmpBytes(0)), True, numOfChars, True)
             End If
         ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
             If (Not m_FileMM Is Nothing) Then
                 Dim srcPtr As Long, srcReadMax As Long
                 If m_FileMM.EnsureMapAvailable(m_Pointer, numOfChars * 2, srcPtr, srcReadMax) Then
-                    ReadString_Unicode = Strings.StringFromCharPtr(srcPtr + m_Pointer, True, numOfChars)
+                    ReadString_Unicode = Strings.StringFromCharPtr(srcPtr + m_Pointer, True, numOfChars, True)
                     m_Pointer = m_Pointer + numOfChars * 2&
                 Else
                     InternalStreamError "ReadString_Unicode failed; const pdFileMM for details."

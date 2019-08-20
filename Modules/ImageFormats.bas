@@ -218,7 +218,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
     End If
     
-    AddInputFormat "GIF - Compuserve", "*.gif", PDIF_GIF
+    AddInputFormat "GIF - Graphics Interchange Format", "*.gif", PDIF_GIF
     
     If m_FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
     
@@ -257,7 +257,7 @@ Public Sub GenerateInputFormats()
     End If
     
     'We actually have three PNG decoders: an internal one (preferred), FreeImage, and GDI+
-    AddInputFormat "PNG - Portable Network Graphic", "*.png", PDIF_PNG
+    AddInputFormat "PNG/APNG - Portable Network Graphic", "*.png;*.apng", PDIF_PNG
         
     If m_FreeImageEnabled Then
         AddInputFormat "PNM - Portable Anymap", "*.pnm", PDIF_PPM

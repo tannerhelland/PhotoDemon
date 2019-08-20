@@ -57,7 +57,7 @@ Option Explicit
 
 'If the control is resized at run-time, it will request a new thumbnail via this function.  The passed DIB will already
 ' be sized to the
-Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
+Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single, ByRef srcImage As pdImage)
 
 'When the user interacts with the navigation box, the (x, y) coordinates *in image space* will be returned in this event.
 Public Event NewViewportLocation(ByVal imgX As Single, ByVal imgY As Single)
@@ -120,8 +120,8 @@ Private Sub navInner_NewViewportLocation(ByVal imgX As Single, ByVal imgY As Sin
     RaiseEvent NewViewportLocation(imgX, imgY)
 End Sub
 
-Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single, thumbY As Single)
-    RaiseEvent RequestUpdatedThumbnail(thumbDIB, thumbX, thumbY)
+Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single, thumbY As Single, ByRef srcImage As pdImage)
+    RaiseEvent RequestUpdatedThumbnail(thumbDIB, thumbX, thumbY, srcImage)
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

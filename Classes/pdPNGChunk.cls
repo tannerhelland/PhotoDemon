@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
 'Copyright 2018-2019 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 08/March/19
-'Last update: start merging code for writing chunks
+'Last updated: 19/August/19
+'Last update: add full support for importing animated PNGs
 '
 'pdPNG leans on this class to handle storage, parsing, and creation of certain PNG chunks.
 ' This simplifies both encoding and decoding because the PNG spec requires insane things like
@@ -64,6 +64,47 @@ Private m_Flagged As Boolean
 Private m_FilteredSize As Long
 Private m_FilteredBytes() As Byte
 
+'APNG files can contain multiple frames.  For chunks associated with a specific frame (fcTL and fdAT),
+' we store an associated frame number; this greatly simplifies steps like merging fdAT chunks belonging
+' to the same frame.
+Private m_SeqNumber As Long
+
+'APNG files store a number of frame attributes in a special "fcTL" chunk that precedes actual frame pixel data.
+' This information is automagically cached during frame load, as we need to access it to make sense of each
+' frame's pixel data (as frame dimensions may not match the image's dimensions, and frames can additionally be
+' offset to positions other than [0, 0]).
+Private Enum APNG_DisposeOp
+    APNG_DISPOSE_OP_NONE = 0        'No disposal is done on this frame before rendering the next; the contents of the output buffer are left as is.
+    APNG_DISPOSE_OP_BACKGROUND = 1  'The frame's region of the output buffer is to be cleared to fully transparent black before rendering the next frame.
+    APNG_DISPOSE_OP_PREVIOUS = 2    'The frame's region of the output buffer is to be reverted to the previous contents before rendering the next frame.
+End Enum
+
+#If False Then
+    Private Const APNG_DISPOSE_OP_NONE = 0, APNG_DISPOSE_OP_BACKGROUND = 1, APNG_DISPOSE_OP_PREVIOUS = 2
+#End If
+
+Private Enum APNG_BlendOp
+    APNG_BLEND_OP_SOURCE = 0    'All color components of the frame, including alpha, overwrite the current contents of the frame's output buffer region.
+    APNG_BLEND_OP_OVER = 1      'The frame should be composited onto the output buffer based on its alpha, using a simple OVER operation as described in the Alpha Channel Processing section of the Extensions to the PNG Specification, Version 1.2.0. Note that the second variation of the sample code is applicable.
+End Enum
+
+#If False Then
+    Private Const APNG_BLEND_OP_SOURCE = 0, APNG_BLEND_OP_OVER = 1
+#End If
+
+Private Type APNG_Frame
+    FrameWidth As Long      'Width of the following frame.
+    FrameHeight As Long     'Height of the following frame.
+    FrameOffsetX As Long    'X position at which to render the following frame.
+    FrameOffsetY As Long    'Y position at which to render the following frame.
+    FrameDelayMS As Single  'Frame delay
+    FrameDisposal As APNG_DisposeOp 'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
+    FrameBlend As APNG_BlendOp      'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
+    SequenceNumber As Long     'Sequence number of critical animation chunks, starting with 0.
+End Type
+
+Private m_FrameDataCached As Boolean, m_FrameData As APNG_Frame
+
 Friend Function GetType() As String
     GetType = m_Type
 End Function
@@ -99,7 +140,47 @@ Friend Function GetDataSize() As Long
     GetDataSize = m_Size
 End Function
 
-'To allocate a new chunk during PNG exoirt, notify this class of the expected chunk type and length.
+'Only used for APNGs
+Friend Function GetFrameBlend() As Long
+    GetFrameBlend = m_FrameData.FrameBlend
+End Function
+
+Friend Function GetFrameDisposal() As Long
+    GetFrameDisposal = m_FrameData.FrameDisposal
+End Function
+
+Friend Function GetFrameDelayMS() As Long
+    GetFrameDelayMS = m_FrameData.FrameDelayMS
+End Function
+
+Friend Function GetFrameOffsetX() As Long
+    GetFrameOffsetX = m_FrameData.FrameOffsetX
+End Function
+
+Friend Function GetFrameOffsetY() As Long
+    GetFrameOffsetY = m_FrameData.FrameOffsetY
+End Function
+
+Friend Function GetFrameRect(ByRef dstFrameRect As RectL_WH) As Boolean
+    dstFrameRect.Width = m_FrameData.FrameWidth
+    dstFrameRect.Height = m_FrameData.FrameHeight
+    dstFrameRect.Left = 0
+    dstFrameRect.Top = 0
+    GetFrameRect = (dstFrameRect.Width <> 0) And (dstFrameRect.Height <> 0)
+End Function
+
+Friend Function GetSeqNumber() As Long
+    GetSeqNumber = m_SeqNumber
+End Function
+
+'In animated PNG files, sequence numbers are checked as fcTL and fdAT chunks are imported.
+' After a chunk's sequence number has been validated, it is replaced with the associated
+' frame count - this simplifies later processing steps.
+Friend Sub SetSeqNumber(ByVal newFrameNumber As Long)
+    m_SeqNumber = newFrameNumber
+End Sub
+
+'To allocate a new chunk during PNG export, notify this class of the expected chunk type and length.
 ' Note that you won't actually pass the chunk data in this step - that happens separately.  (Note that
 ' you also don't need to specify chunk size up-front - but if you know the expected data length
 ' in advance, notifying us helps us know how much memory to allocate, instead of relying on dynamic
@@ -193,10 +274,67 @@ End Sub
 Friend Function LoadChunkData(ByRef srcStream As pdStream) As Boolean
 
     If (m_Size > 0) Then
+    
         LoadChunkData = (m_Size = srcStream.ReadBytesToBarePointer(m_Data.Peek_PointerOnly(0), m_Size))
         If LoadChunkData Then
+            
             m_Data.SetSizeExternally m_Size
+            
+            'If this is an animated PNG, and this is an frame data chunk (fdAT),
+            ' cache the associated sequence number in advance.
+            ' (This greatly simplifies later validation steps.)
+            If (Me.GetType = "fdAT") Then
+                
+                'Read and cache the frame number
+                m_Data.SetPosition 0, FILE_BEGIN
+                m_SeqNumber = m_Data.ReadLong_BE()
+                LoadChunkData = m_Data.SetPosition(m_Size, FILE_BEGIN)
+                
+            'Similarly, if this is an animated PNG and this is a frame control chunk (fcTL),
+            ' cache a whole bunch of frame data in advance.
+            ElseIf (Me.GetType = "fcTL") Then
+                
+                'Ensure correct chunk size
+                If (m_Size >= 26) Then
+                    
+                    m_Data.SetPosition 0, FILE_BEGIN
+                    
+                    With m_FrameData
+                        .SequenceNumber = m_Data.ReadLong_BE()
+                        .FrameWidth = m_Data.ReadLong_BE()
+                        .FrameHeight = m_Data.ReadLong_BE()
+                        .FrameOffsetX = m_Data.ReadLong_BE()
+                        .FrameOffsetY = m_Data.ReadLong_BE()
+                        
+                        'Frame delay is stored as a numerator + denominator value
+                        Dim tmpIntNum As Long, tmpIntDem As Long
+                        tmpIntNum = m_Data.ReadIntUnsigned_BE()
+                        tmpIntDem = m_Data.ReadIntUnsigned_BE()
+                        
+                        If (tmpIntNum = 0) Then
+                            .FrameDelayMS = 0
+                        Else
+                            If (tmpIntDem = 0) Then tmpIntDem = 100
+                            .FrameDelayMS = (CDbl(tmpIntNum) / CDbl(tmpIntDem)) * 1000#
+                        End If
+                        
+                        .FrameDisposal = m_Data.ReadByte()
+                        .FrameBlend = m_Data.ReadByte()
+                        
+                    End With
+                    
+                    m_SeqNumber = m_FrameData.SequenceNumber
+                    LoadChunkData = m_Data.SetPosition(m_Size, FILE_BEGIN)
+                    m_FrameDataCached = True
+                    
+                Else
+                    InternalError "LoadChunkData", "bad chunk size for fcTL: " & m_Size
+                End If
+                
+            End If
+            
             LoadChunkData = m_Data.SetPosition(m_Size, FILE_BEGIN)
+            
         End If
     Else
         LoadChunkData = False
@@ -209,19 +347,28 @@ Friend Sub NotifyCRCs(ByVal runtimeCRC As Long, ByVal embeddedCRC As Long)
     m_CRCEmbedded = embeddedCRC
 End Sub
 
-'Pixel data can be spread across multiple IDAT chunks.  To simplify the load process, we merge these
-' separate instances into a single contiguous stream.  (As part of this process, the source chunk will
-' be automatically freed.)
+'Pixel data can be spread across multiple IDAT chunks (or in an animated PNG, fdAT chunks).
+' To simplify the load process, we merge these separate instances into a single contiguous stream.
+' (As part of this process, the source chunk will be automatically freed.)
 Friend Sub MergeOtherChunk(ByRef srcChunk As pdPNGChunk)
     
     If (Not srcChunk Is Nothing) Then
-    
-        'Merge the stream data into our stream
+        
         Dim tmpStream As pdStream
         Set tmpStream = srcChunk.BorrowData()
-        m_Size = m_Size + srcChunk.GetDataSize()
-        m_Data.WriteBytesFromPointer tmpStream.Peek_PointerOnly(0), srcChunk.GetDataSize()
         
+        'fdAT chunks in animated PNGs use a special merge strategy, owing to the presence of
+        ' a "frame number" preceding the actual frame data
+        If (Me.GetType = "fdAT") Then
+            If (srcChunk.GetDataSize > 4) Then
+                m_Size = m_Size + (srcChunk.GetDataSize() - 4)
+                m_Data.WriteBytesFromPointer tmpStream.Peek_PointerOnly(4), srcChunk.GetDataSize() - 4
+            End If
+        Else
+            m_Size = m_Size + srcChunk.GetDataSize()
+            m_Data.WriteBytesFromPointer tmpStream.Peek_PointerOnly(0), srcChunk.GetDataSize()
+        End If
+            
         'Free the source chunk
         Set tmpStream = Nothing
         Set srcChunk = Nothing
@@ -246,7 +393,7 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
     DecompressChunk = True
     Dim tmpBuffer As pdStream
     
-    If (m_Type = "IDAT") Then
+    If (m_Type = "IDAT") Or (m_Type = "fdAT") Then
         
         'Failsafe checks
         If (inflateSize = 0) Then
@@ -263,7 +410,11 @@ Friend Function DecompressChunk(ByRef warningStack As pdStringStack, Optional By
         ' exactly what we anticipated.
         Dim initSize As Long
         initSize = inflateSize
-        DecompressChunk = Compression.DecompressPtrToPtr(tmpBuffer.Peek_PointerOnly(0), inflateSize, m_Data.Peek_PointerOnly(0), m_Size, cf_Zlib)
+        If (m_Type = "IDAT") Then
+            DecompressChunk = Compression.DecompressPtrToPtr(tmpBuffer.Peek_PointerOnly(0), inflateSize, m_Data.Peek_PointerOnly(0), m_Size, cf_Zlib)
+        ElseIf (m_Type = "fdAT") Then
+            DecompressChunk = Compression.DecompressPtrToPtr(tmpBuffer.Peek_PointerOnly(0), inflateSize, m_Data.Peek_PointerOnly(4), m_Size - 4, cf_Zlib)
+        End If
         
         If DecompressChunk Then
             DecompressChunk = (initSize = inflateSize)
@@ -395,7 +546,7 @@ Friend Function UnfilterChunk(ByRef warningStack As pdStringStack, ByRef srcHead
     UnfilterChunk = True
     
     'Un-filtering only applies to IDAT chunks
-    If (m_Type <> "IDAT") Then
+    If (m_Type <> "IDAT") And (m_Type <> "fdAT") Then
         UnfilterChunk = True
         Exit Function
     End If

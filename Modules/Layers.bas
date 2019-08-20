@@ -1637,8 +1637,8 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
         
         Select Case srcImage.GetOriginalFileFormat
         
-            'GIFs are called "frames" instead of pages
-            Case PDIF_GIF
+            'GIFs and PNGs are called "frames" instead of pages
+            Case PDIF_GIF, PDIF_PNG
                 GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex + 1))
                 
             'Icons have their actual dimensions added to the layer name

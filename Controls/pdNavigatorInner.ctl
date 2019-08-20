@@ -47,7 +47,7 @@ Option Explicit
 
 'If the control is resized at run-time, it will request a new thumbnail via this function.  The passed DIB will already
 ' be sized to the
-Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
+Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single, ByRef srcImage As pdImage)
 
 'When the user interacts with the navigation box, the (x, y) coordinates *in image space* will be returned in this event.
 Public Event NewViewportLocation(ByVal imgX As Single, ByVal imgY As Single)
@@ -76,6 +76,21 @@ Private m_ThumbRect As RectF, m_ImageRegion As RectF
 
 'Last mouse (x, y) values.  We track these so we know whether to highlight the region box inside the navigator.
 Private m_LastMouseX As Single, m_LastMouseY As Single
+
+'If our parent image is animated, we need to track a whole bunch of exciting things
+Private m_Animated As Boolean
+
+Private Type PD_AnimationFrame
+    afDIB As pdDIB
+    afFrameDelayMS As Long
+    afOffsetX As Long
+    afOffsetY As Long
+End Type
+
+Private m_Frames() As PD_AnimationFrame
+Private m_FrameCount As Long
+Private m_TimeAtLastFrame As Currency
+Private m_Timer As pdTimer
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -300,7 +315,8 @@ Private Sub UpdateControlLayout()
         m_ImageThumbnail.ResetDIB 0
     End If
     
-    RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
+    Dim tmpImage As pdImage
+    RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY, tmpImage)
     
     'With the backbuffer and image thumbnail successfully created, we can finally redraw the new navigator window
     RedrawBackBuffer
@@ -424,7 +440,8 @@ Public Sub NotifyNewThumbNeeded()
         UpdateControlLayout
     Else
         m_ImageThumbnail.ResetDIB 0
-        RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
+        Dim tmpImage As pdImage
+        RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY, tmpImage)
         RedrawBackBuffer
     End If
     

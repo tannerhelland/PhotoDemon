@@ -160,7 +160,7 @@ Friend Function EnsureMapAvailable(ByVal offsetRequired As Long, ByVal sizeRequi
     ' close our current memory map handle, forcibly resize the underlying file, then re-create
     ' our map from scratch.
     If (m_MapOffset + sizeRequired > m_MapLimit) Then
-    
+        
         'We have no choice but to recreate our map from scratch.  Start by releasing our current handle.
         m_FSO.FileCloseHandle m_FileHandleMM
         
@@ -185,6 +185,7 @@ Friend Function EnsureMapAvailable(ByVal offsetRequired As Long, ByVal sizeRequi
     
     'Create the map view
     m_MapAddress = m_FSO.FileMapView(m_FileHandleMM, m_MapOffset, m_MapSize, m_WriteAccessRequired)
+    
     If (m_MapAddress = 0) Then m_MapAddress = UNMAPPED_VIEW
     EnsureMapAvailable = (m_MapAddress <> UNMAPPED_VIEW)
     
@@ -198,6 +199,8 @@ Friend Function EnsureMapAvailable(ByVal offsetRequired As Long, ByVal sizeRequi
         'Tell the user the minimum/maximum allowable offsets to which they can write.
         dstMinOffsetForThisMap = m_MapOffset
         dstMaxOffsetForThisMap = m_MapOffset + m_MapSize - 1
+    
+        'Debug.Print "Mapped region [" & dstMinOffsetForThisMap & ", " & dstMaxOffsetForThisMap & "]"
     
     'Mapping failed; offset or size is likely bad
     Else

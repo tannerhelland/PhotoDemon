@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.118</langversion>
+<langversion>1.0.119</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4616,7 +4616,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 0 phrases. -->
+<!-- pdPNG.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -15993,8 +15993,8 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <phrasecount>2667</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4899 phrases. -->
-<!-- 2232 are duplicates, so only 2667 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4900 phrases. -->
+<!-- 2233 are duplicates, so only 2667 unique phrases have been written to file. -->
 <!-- These 2667 phrases contain approximately 12575 total words. -->
 
 </pdData>

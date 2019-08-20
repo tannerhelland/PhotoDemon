@@ -356,11 +356,15 @@ End Function
 '
 'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
 ' StringFromUTF16_FixedLen() function, below.
-Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1) As String
+Public Function StringFromCharPtr(ByVal srcPointer As Long, Optional ByVal srcStringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1, Optional ByVal useMaxLengthAsStrLength As Boolean = False) As String
     
     'Check string length
     Dim strLength As Long
-    If srcStringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
+    If useMaxLengthAsStrLength Then
+        strLength = maxLength
+    Else
+        If srcStringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
+    End If
     
     'Make sure the length/pointer isn't null
     If (strLength <= 0) Then

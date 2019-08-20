@@ -100,6 +100,10 @@ Private m_colorProfileOriginal As String, m_colorProfileWorkingSpace As String
 Private m_XResolution As Double, m_YResolution As Double
 Private m_DPI As Double
 
+'If the current image is intended to be animated (e.g. an animated GIF or PNG), set this flag to TRUE.
+' PD uses this to activate contextual "play" and "pause" buttons in the navigator.
+Private m_Animated As Boolean
+
 'Current index of the associated zoom combo box; this is stored locally so zoom is preserved when switching
 ' between images.
 Private m_ZoomIndex As Long
@@ -826,6 +830,7 @@ Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.WriteTag "numOfLayersEverCreated", m_numOfLayersEverCreated
     xmlEngine.WriteTag "numOfLayers", m_numOfLayers
     xmlEngine.WriteTag "curLayer", m_curLayer
+    xmlEngine.WriteTag "animated", m_Animated
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
     If ImgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.WriteTag "pngBackgroundColor", ImgStorage.GetEntry_Long("pngBackgroundColor")
@@ -894,6 +899,7 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         m_XResolution = xmlEngine.GetUniqueTag_Double("XResolution")
         m_YResolution = xmlEngine.GetUniqueTag_Double("YResolution")
         m_DPI = xmlEngine.GetUniqueTag_Double("DPI")
+        m_Animated = xmlEngine.GetUniqueTag_Boolean("animated")
         
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
@@ -944,6 +950,14 @@ failedDataRead:
     ReadExternalData = False
     
 End Function
+
+Friend Function IsAnimated() As Boolean
+    IsAnimated = m_Animated
+End Function
+
+Friend Sub SetAnimated(ByVal newState As Boolean)
+    m_Animated = newState
+End Sub
 
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.

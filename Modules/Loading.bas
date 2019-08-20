@@ -334,10 +334,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'Before continuing on to the next image (if any), see if the just-loaded image contains multiple pages within the file.
         ' If it does, load each page into its own layer.
         '
-        'NOTE: as of v7.0, this feature has been disabled for icons and GIFs.  Why?  PD doesn't yet provide a way to
-        ' export "multipage" versions of these files.  As such, importing them as multipage is just frustrating.  I'll look
+        'NOTE: as of v7.0, this feature has been disabled for icons.  Why?  PD doesn't yet provide a way to
+        ' export "multipage" icon files.  As such, importing them as multipage is just frustrating.  I'll look
         ' at fixing this in a future release.
-        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF)) Then
+        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG)) Then
             
             'TODO: deal with UI prompt options here!
             
@@ -364,7 +364,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 loadSuccessful = Plugin_FreeImage.FinishLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
             
             'GDI+ path
-            Else
+            ElseIf (decoderUsed = id_GDIPlus) Then
             
                 'If we implement a load-time dialog in the future, and the user (for whatever reason) doesn't want
                 ' all pages loaded, call this function to free cached multipage handles:
@@ -373,16 +373,27 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 'Otherwise, assume they want all pages loaded
                 loadSuccessful = GDI_Plus.ContinueLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
             
+            'Internal multipage loader
+            Else
+            
+                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
+                
             End If
             
-            'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or ICON.
+            'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or PNG.
             ' (TIFFs don't require this, as all pages are typically the same size.)
             If (targetImage.GetNumOfLayers > 1) And (targetImage.GetOriginalFileFormat <> PDIF_TIFF) Then
+                
                 Dim pageTracker As Long
                 For pageTracker = 1 To targetImage.GetNumOfLayers - 1
                     targetImage.GetLayerByIndex(pageTracker).SetLayerVisibility False
                 Next pageTracker
+                
                 targetImage.SetActiveLayerByIndex 0
+                
+                'Also tag the image as being animated; we use this to activate some contextual UI bits
+                targetImage.SetAnimated True
+                
             End If
             
             'With all pages/frames/icons successfully loaded, redraw the main viewport

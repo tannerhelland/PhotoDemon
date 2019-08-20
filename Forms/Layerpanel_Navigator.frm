@@ -125,7 +125,7 @@ Private Sub Form_Resize()
 End Sub
 
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.
-Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
+Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single, ByRef srcImage As pdImage)
     
     If PDImages.IsImageActive() Then
         
@@ -159,10 +159,12 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
         
         'Request a copy of the current image thumbnail, at the size and offset we've calculated
         PDImages.GetActiveImage.RequestThumbnail thumbDIB, , False, VarPtr(dstRectF)
+        Set srcImage = PDImages.GetActiveImage
         
     Else
         thumbX = 0!
         thumbY = 0!
+        Set srcImage = Nothing
     End If
     
 End Sub

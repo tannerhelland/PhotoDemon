@@ -23,15 +23,16 @@ Option Explicit
 ' to be disabled, but if you want to fall back to the old FreeImage and GDI+ interface, you can set
 ' this to FALSE.
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
+Private m_PNG As pdPNG
 
 'OpenRaster support was added in the 7.2 release cycle.  I know of no reason to disable it at present,
 ' but you can use this constant to deactivate parsing support if necessary.
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
 
-'PD's internal PSD parser is still under heavy construction.  If it fails, PD will fall back to
-' FreeImage's rudimentary PSD support (e.g. no layer, just a composite image).  If you try to
-' load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.  I don't have a modern
-' copy of Photoshop for testing, so outside help is necessary for fixing esoteric PSD bugs!
+'As of v7.2, PD's internal PSD parser is both stable and feature-complete.
+' If you try to load a PSD and it doesn't load correctly, PLEASE FILE AN ISSUE ON GITHUB.
+' I don't have a modern copy of Photoshop for testing, so outside help is essential for
+' fixing esoteric PSD bugs!
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 
 Private m_JpegObeyEXIFOrientation As PD_BOOL
@@ -922,7 +923,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     'PD's internal PNG parser is preferred for all PNG images.  For backwards compatibility reasons, it does *not* rely
     ' on the .png extension.  (Instead, it will manually verify the PNG signature, then work from there.)
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PNG Then
-        CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB)
+        CascadeLoadGenericImage = LoadPNGOurselves(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
         If CascadeLoadGenericImage Then
             decoderUsed = id_PNGParser
             dstImage.SetOriginalFileFormat PDIF_PNG
@@ -1104,39 +1105,54 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
     
 End Function
 
-Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
     
     LoadPNGOurselves = False
     
     'pdPNG handles all the dirty work for us
-    Dim cPNG As pdPNG
-    Set cPNG = New pdPNG
-    LoadPNGOurselves = (cPNG.LoadPNG_Simple(srcFile, dstImage, dstDIB, False) <= png_Warning)
+    Set m_PNG = New pdPNG
+    LoadPNGOurselves = (m_PNG.LoadPNG_Simple(srcFile, dstImage, dstDIB, False) <= png_Warning)
     
     If LoadPNGOurselves Then
     
         'If we've experienced one or more warnings during the load process, dump them out to the debug file.
-        If (cPNG.Warnings_GetCount() > 0) Then cPNG.Warnings_DumpToDebugger
+        If (m_PNG.Warnings_GetCount() > 0) Then m_PNG.Warnings_DumpToDebugger
         
         'Relay any useful state information to the destination image object; this information may be useful
         ' if/when the user saves the image.
         dstImage.SetOriginalFileFormat PDIF_PNG
         dstImage.NotifyImageChanged UNDO_Everything
         
-        dstImage.SetOriginalColorDepth cPNG.GetBytesPerPixel()
-        dstImage.SetOriginalGrayscale (cPNG.GetColorType = png_Greyscale) Or (cPNG.GetColorType = png_GreyscaleAlpha)
-        dstImage.SetOriginalAlpha cPNG.HasAlpha()
-        If cPNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", cPNG.GetBackgroundColor()
-        If cPNG.HasChunk("tRNS") Then
+        dstImage.SetOriginalColorDepth m_PNG.GetBytesPerPixel()
+        dstImage.SetOriginalGrayscale (m_PNG.GetColorType = png_Greyscale) Or (m_PNG.GetColorType = png_GreyscaleAlpha)
+        dstImage.SetOriginalAlpha m_PNG.HasAlpha()
+        If m_PNG.HasChunk("bKGD") Then dstImage.ImgStorage.AddEntry "pngBackgroundColor", m_PNG.GetBackgroundColor()
+        If m_PNG.HasChunk("tRNS") Then
             Dim trnsColor As Long
-            If cPNG.GetTransparentColor(trnsColor) Then dstImage.ImgStorage.AddEntry "pngTransparentColor", trnsColor
+            If m_PNG.GetTransparentColor(trnsColor) Then dstImage.ImgStorage.AddEntry "pngTransparentColor", trnsColor
         End If
         
         'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
         dstDIB.SetAlphaPremultiplication True
         
+        'If this is not an animated PNG, free all associated memory now.
+        ' (Animated PNGs will be freed at a later stage.)
+        If (Not m_PNG.IsAnimated()) Then
+            Set m_PNG = Nothing
+        Else
+            numOfPages = m_PNG.NumAnimationFrames()
+            imageHasMultiplePages = (numOfPages > 1)
+            If (Not imageHasMultiplePages) Then Set m_PNG = Nothing
+        End If
+        
     End If
 
+End Function
+
+Public Function LoadRemainingPNGFrames(ByRef dstImage As pdImage) As Boolean
+    LoadRemainingPNGFrames = (m_PNG.ImportStage7_LoadRemainingFrames(dstImage) < png_Failure)
+    Set m_PNG = Nothing
+    dstImage.NotifyImageChanged UNDO_Image
 End Function
 
 'Use PD's internal PSD parser to attempt to load a target PSD file.
