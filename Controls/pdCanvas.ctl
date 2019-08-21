@@ -1043,6 +1043,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         'Now that everything's been updated, render a cursor to match
         SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
         
+        'Yield for timer events only.  (This allows active UI animations, if any, to proceed.)
+        VBHacks.DoEventsTimersOnly
+        
     End If
     
 End Sub

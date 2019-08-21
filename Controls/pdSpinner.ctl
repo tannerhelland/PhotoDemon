@@ -624,7 +624,7 @@ Private Sub m_DownButtonTimer_Timer()
     
     'If the resulting value change causes a long-running event to trigger, we need to manually
     ' yield for input events like WM_MOUSEUP.
-    ProgressBars.Replacement_DoEvents Me.hWnd
+    vbhacks.DoEvents_SingleHwnd Me.hWnd
     
 End Sub
 
@@ -641,7 +641,7 @@ Private Sub m_UpButtonTimer_Timer()
     
     'If the resulting value change causes a long-running event to trigger, we need to manually
     ' yield for input events like WM_MOUSEUP.
-    ProgressBars.Replacement_DoEvents Me.hWnd
+    vbhacks.DoEvents_SingleHwnd Me.hWnd
     
 End Sub
 

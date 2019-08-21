@@ -61,7 +61,7 @@ End Property
 Friend Property Let Interval(ByVal newInterval As Long)
     If (newInterval <> m_Interval) Then
         m_Interval = newInterval
-        If (m_TimerID <> 0) Then StartTimer
+        If (m_TimerID <> 0) Then Me.StartTimer
     End If
 End Property
 
@@ -71,7 +71,12 @@ End Property
 
 Friend Sub StartTimer()
 
-    If (m_TimerID <> 0) Then StopTimer
+    'Previously (as a failsafe), we would kill old timers before starting new ones, but now that this class
+    ' is used for certain animation duties, it's actually preferable to just replace the current timer as-is
+    ' (and let Windows handle disposal of the old timer for us).  Note that either way, this does *not* clear
+    ' out WM_TIMER messages already in the hWnds queue - that would need to be handled manually.
+    
+    'If (m_TimerID <> 0) Then StopTimer
     
     If (m_Interval > 0) Then
         

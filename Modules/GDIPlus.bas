@@ -2507,7 +2507,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
             
             'If the image is large, it's nice to provide status updates to the user, as this may take awhile
             Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages
-            If ((pageToLoad And 7) = 0) Then ProgressBars.Replacement_DoEvents FormMain.hWnd
+            If ((pageToLoad And 7) = 0) Then VBHacks.DoEvents_SingleHwnd FormMain.hWnd
             
             'Select the current page
             If (GdipImageSelectActiveFrame(m_hMultiPageImage, VarPtr(frameDimensionID(0)), pageToLoad) = GP_OK) Then

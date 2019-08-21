@@ -13,32 +13,6 @@ Attribute VB_Name = "ProgressBars"
 
 Option Explicit
 
-
-'API calls for our custom DoEvents replacement
-Private Type winMsg
-    hWnd As Long
-    sysMsg As Long
-    wParam As Long
-    lParam As Long
-    msgTime As Long
-    ptX As Long
-    ptY As Long
-End Type
-
-Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
-Private Declare Function DispatchMessageW Lib "user32" (ByRef lpMsg As winMsg) As Long
-Private Declare Function PeekMessageW Lib "user32" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
-
-'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
-' it only processes messages for the supplied hWnd.
-Public Sub Replacement_DoEvents(ByVal srcHwnd As Long)
-    Dim tmpMsg As winMsg
-    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1&)
-        TranslateMessage tmpMsg
-        DispatchMessageW tmpMsg
-    Loop
-End Sub
-
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar.
 Public Function GetProgBarMax() As Double
@@ -77,7 +51,7 @@ Public Sub SetProgBarVal(ByVal pbVal As Double)
         
         'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
         ' when PD is in the midst of a long-running action.
-        Replacement_DoEvents FormMain.hWnd
+        vbhacks.DoEvents_SingleHwnd FormMain.hWnd
         
     End If
     

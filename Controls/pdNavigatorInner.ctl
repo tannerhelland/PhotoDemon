@@ -21,6 +21,42 @@ Begin VB.UserControl pdNavigatorInner
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    ToolboxBitmap   =   "pdNavigatorInner.ctx":0000
+   Begin PhotoDemon.pdButtonToolbox btnPlay 
+      Height          =   375
+      Index           =   0
+      Left            =   0
+      TabIndex        =   1
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      DontHighlightDownState=   -1  'True
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdSlider sldFrame 
+      Height          =   375
+      Left            =   960
+      TabIndex        =   0
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdButtonToolbox btnPlay 
+      Height          =   375
+      Index           =   1
+      Left            =   480
+      TabIndex        =   2
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      DontHighlightDownState=   -1  'True
+      StickyToggle    =   -1  'True
+   End
 End
 Attribute VB_Name = "pdNavigatorInner"
 Attribute VB_GlobalNameSpace = False
@@ -83,14 +119,26 @@ Private m_Animated As Boolean
 Private Type PD_AnimationFrame
     afDIB As pdDIB
     afFrameDelayMS As Long
-    afOffsetX As Long
-    afOffsetY As Long
+    afHash As Long
+    
+    'At present, all animation frames default to the same size.  This may change in the future.
+    afOffsetX As Single
+    afOffsetY As Single
+    
 End Type
 
+Private m_AniFrameSize As Long
+Private m_RepeatAnimation As Boolean
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long
+Private m_CurrentFrame As Long
 Private m_TimeAtLastFrame As Currency
-Private m_Timer As pdTimer
+Private WithEvents m_Timer As pdTimer
+Attribute m_Timer.VB_VarHelpID = -1
+
+'If the current image supports animation, we will overlay animation controls over the preview window
+Private m_PlayButtonRect As RectF, m_MouseOverPlayButton As Boolean
+Private m_RepeatButtonRect As RectF, m_MouseOverRepeatButton As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -139,6 +187,100 @@ End Property
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
+
+Private Sub m_Timer_Timer()
+    
+    'Failsafe check for frame count
+    If (m_CurrentFrame >= m_FrameCount) Then
+        If m_RepeatAnimation Then
+            m_CurrentFrame = 0
+        Else
+            m_Timer.StopTimer
+            Exit Sub
+        End If
+    End If
+    
+    'If this timer event arrived extremely late, skip over frames until we arrive at one whose delay
+    ' is closer to the current timestamp.
+    Dim timeElapsedMS As Currency
+    timeElapsedMS = VBHacks.GetHighResTimeInMSEx() - m_TimeAtLastFrame
+    
+    If (timeElapsedMS > m_Frames(m_CurrentFrame).afFrameDelayMS) Then
+        
+        'See if we're also over-budget for the next frame in line - if we're not, render the
+        ' current frame, and shrink the timer budget for the next frame.
+        Dim timeElapsedTestMS As Long
+        timeElapsedTestMS = timeElapsedMS - m_Frames(m_CurrentFrame).afFrameDelayMS
+        
+        Dim keepSearchingFrames As Boolean
+        keepSearchingFrames = (timeElapsedTestMS > m_Frames(m_CurrentFrame).afFrameDelayMS)
+        
+        'Failsafe check for long delays
+        Const MAX_FRAMES_SKIPPED As Long = 10
+        Dim numFramesSkipped As Long
+        numFramesSkipped = 0
+        
+        Do While keepSearchingFrames
+            
+            'If we're out of frames (and the animation is non-repeating), bail immediately
+            m_CurrentFrame = m_CurrentFrame + 1
+            If (m_CurrentFrame >= m_FrameCount) Then
+                If m_RepeatAnimation Then
+                    m_CurrentFrame = 0
+                Else
+                    m_CurrentFrame = m_FrameCount - 1
+                    Exit Do
+                End If
+            End If
+            
+            'Are we over the next frame in line?  Continue searching frames until we're not.
+            timeElapsedTestMS = timeElapsedMS - m_Frames(m_CurrentFrame).afFrameDelayMS
+            keepSearchingFrames = (timeElapsedTestMS > m_Frames(m_CurrentFrame).afFrameDelayMS)
+            
+            numFramesSkipped = numFramesSkipped + 1
+            If (numFramesSkipped > MAX_FRAMES_SKIPPED) Then keepSearchingFrames = False
+            
+        Loop
+        
+    End If
+    
+    VBHacks.GetHighResTimeInMS m_TimeAtLastFrame
+    
+    'Render the current frame.
+    RenderAnimationFrame
+    
+    'Advance the frame counter
+    m_CurrentFrame = m_CurrentFrame + 1
+    
+    'REPEAT!
+    If m_RepeatAnimation And (m_CurrentFrame >= m_FrameCount) Then m_CurrentFrame = 0
+    
+    'If frames remain, figure out an appropriate timer interval for the next frame
+    If (m_CurrentFrame < m_FrameCount) Then
+    
+        timeElapsedMS = VBHacks.GetHighResTimeInMSEx() - m_TimeAtLastFrame
+        
+        Dim timeIntervalToRequest As Long
+        timeIntervalToRequest = m_Frames(m_CurrentFrame).afFrameDelayMS - timeElapsedMS
+        
+        If (timeIntervalToRequest < 10) Then timeIntervalToRequest = 10
+        m_Timer.Interval = timeIntervalToRequest
+        
+    Else
+        m_Timer.StopTimer
+    End If
+    
+End Sub
+
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If m_Timer.IsActive Then
+        m_Timer.StopTimer
+        RedrawBackBuffer
+    Else
+        UpdateAnimationSettings PDImages.GetActiveImage
+        PlayAnimationOnce
+    End If
+End Sub
 
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
     If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.NotifyNewThumbNeeded
@@ -191,9 +333,14 @@ End Sub
 
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    'Skip overlays while animating (the animator responds to clicks, instead)
+    If (m_Timer.IsActive) Then Exit Sub
+            
     If (Button And pdLeftButton) <> 0 Then
         If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
+    
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -201,10 +348,14 @@ Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     m_MouseInsideBox = False
     m_LastMouseX = -1: m_LastMouseY = -1
     ucSupport.RequestCursor IDC_DEFAULT
-    RedrawBackBuffer
+    
+    'Skip overlays while animation
+    If (Not m_Timer.IsActive) Then RedrawBackBuffer
+    
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -212,11 +363,21 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     m_LastMouseX = x: m_LastMouseY = y
     
     'Set the cursor depending on whether the mouse is inside the image portion of the navigator control
-    If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then
+    m_MouseOverPlayButton = PDMath.IsPointInRectF(x, y, m_PlayButtonRect)
+    m_MouseOverRepeatButton = PDMath.IsPointInRectF(x, y, m_RepeatButtonRect)
+    
+    If m_MouseOverPlayButton Then
+        ucSupport.RequestCursor IDC_HAND
+    ElseIf m_MouseOverRepeatButton Then
+        ucSupport.RequestCursor IDC_HAND
+    ElseIf PDMath.IsPointInRectF(x, y, m_ImageRegion) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT
     End If
+    
+    'Skip overlays while animating
+    If (m_Timer.IsActive) Then Exit Sub
     
     'If the mouse button is down, scroll to that (x, y) position.  Note that we don't care if the cursor is in-bounds;
     ' the ScrollToXY function will automatically fix that for us.
@@ -226,6 +387,43 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         RedrawBackBuffer
     End If
     
+End Sub
+
+'DO NOT CALL unless you have already updated animation internals!
+Private Sub PlayAnimationOnce()
+    
+    'First, we're gonna make a note of the current time
+    VBHacks.GetHighResTimeInMS m_TimeAtLastFrame
+    
+    'Reset the current animation frame
+    m_CurrentFrame = 0
+    
+    'Next, we're gonna prep a timer object based on the *second* frame of the animation.
+    ' (If rendering consumes a bit of time, this ensures that the timer still triggers at
+    ' an appropriate interval, as we expect the *next* frame to consume a similar amount
+    ' of rendering time.)
+    
+    'Note that Windows does not support timer accuracy below 10 ms, and the screen won't
+    ' update faster than 16 ms anyway.
+    Dim targetFrame As Long
+    targetFrame = m_CurrentFrame + 1
+    
+    'Make sure we actually have additional frames to play
+    If (targetFrame < m_FrameCount) Then
+    
+        Dim targetDelayMS As Long
+        targetDelayMS = m_Frames(targetFrame).afFrameDelayMS
+        If (targetDelayMS < 10) Then targetDelayMS = 10
+        
+        m_Timer.Interval = targetDelayMS
+        m_Timer.StartTimer
+        
+    End If
+    
+    'Render the current frame, then exit
+    RenderAnimationFrame
+    m_CurrentFrame = m_CurrentFrame + 1
+
 End Sub
 
 'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
@@ -281,6 +479,12 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDNavInner", colorCount
     If Not PDMain.IsProgramRunning() Then UpdateColorList
     
+    'If the program is running, create our animation timer
+    If PDMain.IsProgramRunning() Then Set m_Timer = New pdTimer
+    
+    'TESTING ONLY
+    m_RepeatAnimation = True
+    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -304,8 +508,8 @@ Private Sub UpdateControlLayout()
     
     'At present, we pad the thumbnail by a few pixels so we have room for a border.
     Dim thumbWidth As Long, thumbHeight As Long
-    thumbWidth = bWidth - FixDPIFloat(THUMB_PADDING) * 2
-    thumbHeight = bHeight - FixDPIFloat(THUMB_PADDING) * 2
+    thumbWidth = bWidth - Interface.FixDPIFloat(THUMB_PADDING) * 2
+    thumbHeight = bHeight - Interface.FixDPIFloat(THUMB_PADDING) * 2
     
     'Try to optimize re-creating the thumbnail, so we only do it when absolutely necessary
     If (m_ImageThumbnail Is Nothing) Then Set m_ImageThumbnail = New pdDIB
@@ -315,11 +519,89 @@ Private Sub UpdateControlLayout()
         m_ImageThumbnail.ResetDIB 0
     End If
     
+    'Always rough out a location for the play/pause and repeat buttons
+    With m_PlayButtonRect
+        .Width = Interface.FixDPI(24)
+        .Height = Interface.FixDPI(24)
+        .Left = Interface.FixDPIFloat(THUMB_PADDING)
+        .Top = bHeight - ((Interface.FixDPIFloat(THUMB_PADDING) * 3) + .Height)
+    End With
+    
     Dim tmpImage As pdImage
     RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY, tmpImage)
+    If (tmpImage Is Nothing) Or (m_ImageThumbnail Is Nothing) Then EndAnimations
+    'UpdateAnimationSettings srcImage
     
     'With the backbuffer and image thumbnail successfully created, we can finally redraw the new navigator window
     RedrawBackBuffer
+    
+End Sub
+
+Private Sub EndAnimations()
+    m_Animated = False
+    If m_Timer.IsActive Then m_Timer.StopTimer
+End Sub
+
+'After the thumbnail has received an "update" request, we also need to update our animation frames
+Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage)
+    
+    If (srcImage Is Nothing) Or (m_ImageThumbnail Is Nothing) Then
+        m_Animated = False
+        If m_Timer.IsActive Then m_Timer.StopTimer
+        Exit Sub
+    End If
+    
+    m_Animated = srcImage.IsAnimated()
+    
+    If m_Animated Then
+    
+        'Load all animation frames.
+        If (m_FrameCount <> srcImage.GetNumOfLayers()) Then
+            m_FrameCount = srcImage.GetNumOfLayers
+            ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
+        End If
+        
+        'Retrieving thumbnails uses the same math as the regular thumbnail; in animation files,
+        ' we assume all frames are the same size as the image itself, because this is how
+        ' PD pre-processes them.  (This may change in the future.)
+        
+        Dim bWidth As Long, bHeight As Long
+        bWidth = ucSupport.GetBackBufferWidth
+        bHeight = ucSupport.GetBackBufferHeight
+        
+        'The thumbDIB passed to this function will always be sized to the largest size the navigator can physically support.
+        ' Our job is to place a composited copy of the current image inside that DIB, automatically centered as necessary.
+        Dim thumbSize As Long
+        Dim thumbImageWidth As Long, thumbImageHeight As Long
+        PDMath.ConvertAspectRatio PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, m_ImageThumbnail.GetDIBWidth, m_ImageThumbnail.GetDIBHeight, thumbImageWidth, thumbImageHeight
+        If (thumbImageWidth > thumbImageHeight) Then thumbSize = thumbImageWidth Else thumbSize = thumbImageHeight
+        
+        Dim xThumb As Long, yThumb As Long
+        xThumb = (bWidth * 0.5) - (thumbSize * 0.5)
+        yThumb = (bHeight * 0.5) - (thumbSize * 0.5)
+        
+        'Load all thumbnails
+        Dim i As Long
+        For i = 0 To m_FrameCount - 1
+            
+            'Retrieve an updated thumbnail
+            If (m_Frames(i).afDIB Is Nothing) Then Set m_Frames(i).afDIB = New pdDIB
+            m_Frames(i).afDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
+            'If (m_Frames(i).afHash <> srcImage.GetLayerByIndex(i).GetViewportHash(CLC_Thumbnail)) Then
+                m_Frames(i).afOffsetX = xThumb
+                m_Frames(i).afOffsetY = yThumb
+                srcImage.GetLayerByIndex(i).RequestThumbnail m_Frames(i).afDIB, thumbSize, True
+                'm_Frames(i).afHash = srcImage.GetLayerByIndex(i).GetViewportHash(CLC_Thumbnail)
+            'End If
+            
+            'Retrieve layer frame times
+            m_Frames(i).afFrameDelayMS = Animation.GetFrameTimeFromLayerName(srcImage.GetLayerByIndex(i).GetLayerName())
+            
+        Next i
+    
+    Else
+        If m_Timer.IsActive Then m_Timer.StopTimer
+    End If
     
 End Sub
 
@@ -419,6 +701,9 @@ Private Sub RedrawBackBuffer()
                 
                 'Draw a canvas-style border around the relevant viewport rect
                 GDI_Plus.GDIPlusDrawCanvasRectF bufferDC, relativeRect, , useHighlightColor
+                
+                'If the current image supports animation, render those overlays last
+                If m_Animated Then RenderAnimationOverlays bufferDC, bWidth, bHeight
             
             End If
             
@@ -431,6 +716,118 @@ Private Sub RedrawBackBuffer()
     
 End Sub
 
+'Render the current animation frame
+Private Sub RenderAnimationFrame()
+    
+    'Make sure the frame request is valid; if it isn't, exit immediately
+    If (m_CurrentFrame >= 0) And (m_CurrentFrame < m_FrameCount) Then
+        
+        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+        Dim bufferDC As Long
+        bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDNI_Background, Me.Enabled))
+        If (bufferDC = 0) Then Exit Sub
+        
+        Dim bWidth As Long, bHeight As Long
+        bWidth = ucSupport.GetBackBufferWidth
+        bHeight = ucSupport.GetBackBufferHeight
+        
+        If PDMain.IsProgramRunning() Then
+            
+            'Paint a checkerboard background only over the relevant image region, followed by the frame itself
+            With m_Frames(m_CurrentFrame)
+                GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, m_ImageRegion.Left, m_ImageRegion.Top, m_ImageRegion.Width, m_ImageRegion.Height, g_CheckerboardPattern, bufferDC, True
+                GDI_Plus.GDIPlus_StretchBlt Nothing, (bWidth - .afDIB.GetDIBWidth) * 0.5, (bHeight - .afDIB.GetDIBHeight) * 0.5, .afDIB.GetDIBWidth, .afDIB.GetDIBHeight, m_Frames(m_CurrentFrame).afDIB, 0, 0, .afDIB.GetDIBWidth, .afDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, bufferDC
+                m_Frames(m_CurrentFrame).afDIB.FreeFromDC
+            End With
+            
+            'Before exiting, render animation overlays over the top
+            RenderAnimationOverlays bufferDC, bWidth, bHeight
+            
+        End If
+        
+        'Paint the final result to the screen, as relevant
+        ucSupport.RequestRepaint True
+    
+    'If our frame counter is invalid, end all animations
+    Else
+        m_Timer.StopTimer
+        RedrawBackBuffer
+    End If
+        
+End Sub
+
+'Render animation controls over the top of the current backbuffer.  The backbuffer *must* be passed as an argument.
+Private Sub RenderAnimationOverlays(ByVal bufferDC As Long, ByVal bWidth As Long, ByVal bHeight As Long)
+    
+    Exit Sub
+    
+    'If the current image supports animation, render play/pause and once/repeat controls over the top of the buffer
+    If m_Animated Then
+    
+        'The play/pause button rect has already been configured in a previous step
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        
+        Dim cPen As pd2DPen, cBrush As pd2DBrush
+         
+        'Do a little coordinate math to automatically calculate a triangle or double-bar pause vector
+        Dim cPath As pd2DPath
+        Set cPath = New pd2DPath
+        Dim cPoints() As PointFloat
+        
+        If m_Timer.IsActive Then
+        
+            ReDim cPoints(0 To 3) As PointFloat
+            cPoints(0).x = m_PlayButtonRect.Left + (m_PlayButtonRect.Width * 0.3)
+            cPoints(0).y = m_PlayButtonRect.Top + (m_PlayButtonRect.Height * 0.15)
+            cPoints(1).x = cPoints(0).x
+            cPoints(1).y = m_PlayButtonRect.Top + (m_PlayButtonRect.Top + m_PlayButtonRect.Height - cPoints(0).y)
+            
+            cPoints(2).x = m_PlayButtonRect.Left + (m_PlayButtonRect.Left + m_PlayButtonRect.Width - cPoints(0).x)
+            cPoints(2).y = cPoints(0).y
+            cPoints(3).x = cPoints(2).x
+            cPoints(3).y = cPoints(1).y
+            
+            cPath.AddLines 2, VarPtr(cPoints(0))
+            cPath.CloseCurrentFigure
+            cPath.AddLines 2, VarPtr(cPoints(2))
+            cPath.CloseCurrentFigure
+            
+            Drawing2D.QuickCreateSolidPen cPen, m_PlayButtonRect.Width * 0.15, g_Themer.GetGenericUIColor(UI_Accent, True, True, m_MouseOverPlayButton)
+            PD2D.DrawPath cSurface, cPen, cPath
+            
+        Else
+        
+            Dim cX As Single, cY As Single
+            cX = m_PlayButtonRect.Left + m_PlayButtonRect.Width * 0.5
+            cY = m_PlayButtonRect.Top + m_PlayButtonRect.Height * 0.5
+            
+            Dim cRadius As Single
+            cRadius = (m_PlayButtonRect.Width * 0.4)
+            
+            ReDim cPoints(0 To 2) As PointFloat
+            cPoints(0).x = cX + cRadius
+            cPoints(0).y = cY
+            
+            PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, cX, cY, (2# * PI) / 3#, cPoints(1).x, cPoints(1).y
+            PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, cX, cY, -1 * (2# * PI) / 3#, cPoints(2).x, cPoints(2).y
+            
+            cPath.AddLines 3, VarPtr(cPoints(0))
+            cPath.CloseCurrentFigure
+            
+            Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Accent, True, True, m_MouseOverPlayButton)
+            PD2D.FillPath cSurface, cBrush, cPath
+            
+        End If
+        
+        'Clear all drawing objects
+        Set cSurface = Nothing: Set cPen = Nothing: Set cBrush = Nothing
+        
+    End If
+
+End Sub
+
 'Call this when a new thumbnail needs to be set.  The class will reset its thumb DIB to match its current size, then raise
 ' a RequestUpdatedThumbnail function.
 Public Sub NotifyNewThumbNeeded()
@@ -439,10 +836,18 @@ Public Sub NotifyNewThumbNeeded()
     If (m_ImageThumbnail Is Nothing) Then
         UpdateControlLayout
     Else
+    
         m_ImageThumbnail.ResetDIB 0
         Dim tmpImage As pdImage
         RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY, tmpImage)
+        
+        'Stop animations, if any, and reset our animation tracker (in case the active image has changed)
+        m_Timer.StopTimer
+        If (tmpImage Is Nothing) Then m_Animated = False Else m_Animated = tmpImage.IsAnimated
+        
+        'Redraw the preview
         RedrawBackBuffer
+        
     End If
     
 End Sub
@@ -450,7 +855,10 @@ End Sub
 'Call this when the viewport position has changed.  This function operates independently of the NotifyNewThumbNeeded() function,
 ' because the viewport and thumbnail are unlikely to change simultaneously.
 Public Sub NotifyNewViewportPosition()
-    RedrawBackBuffer
+    
+    'Skip viewport-based redraws when the navigator is actively animating
+    If (Not m_Timer.IsActive) Then RedrawBackBuffer
+    
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

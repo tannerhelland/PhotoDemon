@@ -1472,7 +1472,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
         If UserPrefs.GenerateDebugLogs Then
         
-            If UBound(ExtraText) < LBound(ExtraText) Then
+            If (UBound(ExtraText) < LBound(ExtraText)) Then
                 PDDebug.LogAction tmpDupeCheckString, PDM_User_Message
             Else
             

@@ -79,7 +79,9 @@ Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, 
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 
 Private Declare Function DispatchMessageA Lib "user32" (ByRef lpMsg As winMsg) As Long
+Private Declare Function DispatchMessageW Lib "user32" (ByRef lpMsg As winMsg) As Long
 Private Declare Function PeekMessageA Lib "user32" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessageW Lib "user32" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
@@ -374,11 +376,31 @@ Public Function GetHighResTimeEx() As Currency
     QueryPerformanceCounter GetHighResTimeEx
 End Function
 
+Public Sub GetHighResTimeInMS(ByRef dstTimeInMS As Currency)
+    QueryPerformanceCounter dstTimeInMS
+    dstTimeInMS = dstTimeInMS * (m_TimerFrequency * 1000@)
+End Sub
+
+Public Function GetHighResTimeInMSEx() As Currency
+    QueryPerformanceCounter GetHighResTimeInMSEx
+    GetHighResTimeInMSEx = GetHighResTimeInMSEx * (m_TimerFrequency * 1000@)
+End Function
+
 Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToCompare As Long) As Boolean
     Dim bytesEqual As Long
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
     MemCmp = (bytesEqual = bytesToCompare)
 End Function
+
+'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
+' it only processes messages for the supplied hWnd.
+Public Sub DoEvents_SingleHwnd(ByVal srcHwnd As Long)
+    Dim tmpMsg As winMsg
+    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1&)
+        TranslateMessage tmpMsg
+        DispatchMessageW tmpMsg
+    Loop
+End Sub
 
 'PD sometimes wants to yield for asynchronous timers (we use pipes in a number of places to communicate with
 ' 3rd-party libraries), and rather than use DoEvents and risk all kinds of havoc, we simply yield for timer
