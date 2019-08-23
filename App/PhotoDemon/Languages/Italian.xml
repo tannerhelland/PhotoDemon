@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.417</langversion>
+<langversion>6.7.418</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1181,7 +1181,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Pagina 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -5418,12 +5418,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for pdNavigator.ctl -->
 
 <phrase>
-<original>Play the current animation</original>
+<original>Pause the current animation</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Pause the current animation</original>
+<original>Play the current animation</original>
 <translation></translation>
 </phrase>
 
@@ -16015,12 +16015,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Animation.bas-->
 
+<!-- BEGIN text for pdSpriteSheet.cls -->
+
+<!-- pdSpriteSheet.cls contains 0 phrases. -->
+
+<!-- END text for pdSpriteSheet.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4905 phrases. -->
-<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4906 phrases. -->
+<!-- 2235 are duplicates, so only 2671 unique phrases have been written to file. -->
 <!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>

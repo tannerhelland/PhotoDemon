@@ -1,25 +1,31 @@
-Attribute VB_Name = "UIImages"
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
+END
+Attribute VB_Name = "pdSpriteSheet"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Central UI image cache
+'PhotoDemon spritesheet cache
 'Copyright 2018-2019 by Tanner Helland
 'Created: 13/July/18
-'Last updated: 13/July/18
-'Last update: initial build
+'Last updated: 23/August/19
+'Last update: spin-off a dedicated class from the UIImages module
 '
-'PhotoDemon uses a *lot* of UI images.  The amount of GDI objects required for these surfaces is
-' substantial, and we can greatly reduce requirements by using something akin to "sprite sheets",
-' e.g. shared image storage for images with similar dimensions.
+'When storing large amounts of small images, it is more resource- and performance-friendly
+' to stick the images in dedicated spritesheets.
 '
-'At present, this module accepts images of any size, but it only provides a benefit when images are
-' the *same* size - this allows it to automatically "coalesce" images into shared sheets, which callers
-' can then access by index (rather than managing their own pdDIB instance).
-'
-'This module really only makes sense for images that are kept alive for the duration of the program.
-' One-off images (e.g. temp images) should *not* be used, as it is non-trivial to release shared images
-' in a performance-friendly manner.
-'
-'At present, PD limits usage of this cache to pdButtonToolbox images.  (They are the perfect use-case
-' for shared caching.)
+'This class can be used as an arbitrary spritesheet manager for any group of source images.
+' For best results, the images should all be identical sizes, but this class will still
+' function correctly if images are different sizes.  Just note that separate spritesheets
+' are created for each set of source sizes - so if all images are different sizes, you don't
+' gain anything by storing them here.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -28,9 +34,7 @@ Attribute VB_Name = "UIImages"
 
 Option Explicit
 
-'Number of images allowed on a single sheet column.  Once the number of images on a sheet exceeds this,
-' a new column will be created.  (The number of allowed columns is currently unbounded.)
-Private Const MAX_SPRITES_IN_COLUMN As Long = 8
+Private Const MAX_SPRITES_IN_COLUMN As Long = 12
 
 'Individual cache object.  This module manages a one-dimensional array of these headers.
 Private Type ImgCacheEntry
@@ -61,7 +65,7 @@ Private m_NumOfCacheObjects As Long
 ' duplication check.  Once added, an image's handle is all that's required to retrieve it.
 '
 'RETURNS: non-zero value if successful; zero if the function fails.
-Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String) As Long
+Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String) As Long
 
     'Failsafe checks
     If (srcDIB Is Nothing) Then Exit Function
@@ -156,13 +160,30 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             With m_ImageCache(targetIndex)
                 GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
                 .ImgSpriteSheet.FreeFromDC
+                srcDIB.FreeFromDC
                 .NumImages = .NumImages + 1
                 targetID = .NumImages
                 .SpriteNames.AddString uniqueImageName
             End With
             
         Else
-            'Duplicate entry found; that's okay - reuse it as-is!
+            
+            'Duplicate entry found; that's okay - replace the existing version, then return the index as-is!
+            'Paint the new DIB into place, and update all target references to reflect the correct index
+            'Dim targetRow As Long, targetColumn As Long
+            Dim imgID As Long
+            imgID = GetCombinedIndexAndID(targetIndex, targetID)
+            
+            If GetRowColumnPos(imgID, targetIndex, targetRow, targetColumn) Then
+                
+                With m_ImageCache(targetIndex)
+                    GDI.BitBltWrapper .ImgSpriteSheet.GetDIBDC, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    .ImgSpriteSheet.FreeFromDC
+                    srcDIB.FreeFromDC
+                End With
+                
+            End If
+            
         End If
             
     'If we didn't find a matching spritesheet, we must create a new one
@@ -204,41 +225,97 @@ Public Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
     ' 4-byte long
     '   - 1st 2-bytes: index into the cache
     '   - 2nd 2-bytes: index into that cache object's spritesheet
-    Dim tmpDWord As FakeDWord
-    tmpDWord.WordOne = targetIndex
-    tmpDWord.WordTwo = targetID
-    
-    CopyMemoryStrict VarPtr(AddImage), VarPtr(tmpDWord), 4
+    AddImage = GetCombinedIndexAndID(targetIndex, targetID)
     
     'Finally, free the target sprite sheet from its DC; the DC will automatically be re-created as necessary
     m_ImageCache(targetIndex).ImgSpriteSheet.FreeFromDC
     
 End Function
 
-Public Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
+Friend Function DoesImageExist(ByRef srcImageName As String) As Boolean
+    
+    DoesImageExist = False
+    
+    If (m_NumOfCacheObjects > 0) Then
+        
+        'Look for a cache with matching dimensions
+        Dim i As Long
+        For i = 0 To m_NumOfCacheObjects - 1
+            If (m_ImageCache(i).SpriteNames.ContainsString(srcImageName, False) >= 0) Then
+                DoesImageExist = True
+                Exit Function
+            End If
+        Next i
+        
+    End If
+    
+End Function
 
-    'Resolve the image ID into a target index and image number
-    Dim targetIndex As Long, imgNumber As Long, tmpDWord As FakeDWord
+Private Function GetCombinedIndexAndID(ByVal targetIndex As Long, ByVal targetID As Long) As Long
+    Dim tmpDWord As FakeDWord
+    tmpDWord.WordOne = targetIndex
+    tmpDWord.WordTwo = targetID
+    CopyMemoryStrict VarPtr(GetCombinedIndexAndID), VarPtr(tmpDWord), 4
+End Function
+
+Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
+
+    'Resolve the image number into a sprite row and column
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        
+        'Paint the result!
+        If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
+            With m_ImageCache(targetIndex)
+                .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
+                .ImgSpriteSheet.FreeFromDC
+            End With
+        Else
+            PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+        
+    End If
+        
+End Function
+
+'Similar to the PaintCachedImage() function, above, but with full support for GDI+ stretching
+Friend Function StretchBltCachedImage(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcImgID As Long, Optional ByVal newAlpha As Single = 1!, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False) As Boolean
+    
+    'Resolve the image number into a sprite row and column
+    Dim targetIndex As Long, targetRow As Long, targetColumn As Long
+    If GetRowColumnPos(srcImgID, targetIndex, targetRow, targetColumn) Then
+        
+        'Paint the result!
+        If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
+            With m_ImageCache(targetIndex)
+                GDI_Plus.GDIPlus_StretchBlt dstDIB, x1, y1, dstWidth, dstHeight, .ImgSpriteSheet, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, newAlpha, interpolationType, useThisDestinationDCInstead, disableEdgeFix, isZoomedIn, dstCopyIsOkay
+                .ImgSpriteSheet.FreeFromDC
+            End With
+        Else
+            PDDebug.LogAction "WARNING!  UIImages.StretchBltCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
+        End If
+        
+    End If
+    
+End Function
+
+Private Function GetRowColumnPos(ByVal srcImgID As Long, ByRef dstIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long) As Boolean
+    
+    GetRowColumnPos = True
+    
+    Dim imgNumber As Long, tmpDWord As FakeDWord
     CopyMemoryStrict VarPtr(tmpDWord), VarPtr(srcImgID), 4
-    targetIndex = tmpDWord.WordOne
+    dstIndex = tmpDWord.WordOne
     imgNumber = tmpDWord.WordTwo - 1
     
     'Failsafe checks
-    If (targetIndex > UBound(m_ImageCache)) Then Exit Function
+    If (dstIndex > UBound(m_ImageCache)) Then
+        GetRowColumnPos = False
+        Exit Function
+    End If
     
     'Resolve the image number into a sprite row and column
-    Dim targetRow As Long, targetColumn As Long
-    GetNumRowsColumns targetIndex, imgNumber, targetRow, targetColumn
-    
-    'Paint the result!
-    If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
-        With m_ImageCache(targetIndex)
-            .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
-            .ImgSpriteSheet.FreeFromDC
-        End With
-    Else
-        PDDebug.LogAction "WARNING!  UIImages.PaintCachedImage failed to paint image number " & imgNumber & " in spritesheet " & targetIndex
-    End If
+    GetNumRowsColumns dstIndex, imgNumber, dstRow, dstColumn
     
 End Function
 
@@ -250,13 +327,7 @@ End Sub
 
 'Fully reset the cache.  NOTE: this will invalidate all previously returned handles, so you *must*
 ' re-add any required images to the cache.
-Public Sub ResetCache()
+Friend Sub ResetCache()
     ReDim m_ImageCache(0) As ImgCacheEntry
     m_NumOfCacheObjects = 0
-End Sub
-
-Public Sub TestCacheOnly()
-    GDI.BitBltWrapper PDImages.GetActiveImage.GetActiveDIB.GetDIBDC, 0, 0, m_ImageCache(0).ImgSpriteSheet.GetDIBWidth, m_ImageCache(0).ImgSpriteSheet.GetDIBHeight, m_ImageCache(0).ImgSpriteSheet.GetDIBDC, 0, 0, vbSrcCopy
-    PDImages.GetActiveImage.NotifyImageChanged UNDO_Everything
-    ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub

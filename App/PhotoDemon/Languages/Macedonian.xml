@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.213</langversion>
+<langversion>1.0.214</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1180,7 +1180,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>Страница %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -5419,12 +5419,12 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdNavigator.ctl -->
 
 <phrase>
-<original>Play the current animation</original>
+<original>Pause the current animation</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Pause the current animation</original>
+<original>Play the current animation</original>
 <translation></translation>
 </phrase>
 
@@ -16018,12 +16018,18 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Animation.bas-->
 
+<!-- BEGIN text for pdSpriteSheet.cls -->
+
+<!-- pdSpriteSheet.cls contains 0 phrases. -->
+
+<!-- END text for pdSpriteSheet.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4905 phrases. -->
-<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4906 phrases. -->
+<!-- 2235 are duplicates, so only 2671 unique phrases have been written to file. -->
 <!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>

@@ -493,6 +493,8 @@ Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
         If (newX = -1) Then newX = m_CustomCaptionRect.Left
         If (newY = -1) Then newY = m_CustomCaptionRect.Top
         m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, newX, newY, m_BackBuffer.GetDIBWidth - newX, m_BackBuffer.GetDIBHeight - newY, customColor, useEllipses
+        'NOTE: normally, we free the back buffer DC after painting with it, but we can't do that here as controls typically
+        '      call this function inside RedrawBackBuffer
     End If
 End Sub
 
@@ -502,6 +504,8 @@ Friend Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, 
         PDDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
     Else
         m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
+        'NOTE: normally, we free the back buffer DC after painting with it, but we can't do that here as controls typically
+        '      call this function inside RedrawBackBuffer
     End If
 End Sub
 
@@ -676,6 +680,7 @@ Private Sub ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Optional 
                 GDI.FillRectToDC m_BackBuffer.GetDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
             End If
         End If
+        m_BackBuffer.FreeFromDC
     End If
             
 End Sub
@@ -754,6 +759,9 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             DrawFocusRect m_BackBuffer.GetDIBDC, tmpRect
             
         End If
+        
+        'Keep GDI object count low
+        m_BackBuffer.FreeFromDC
     
     End If
     

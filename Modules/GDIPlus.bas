@@ -1871,6 +1871,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     'Clone the bitmap area from source to destination, while converting format as necessary
     Dim gdipReturn As Long
     gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, GP_PF_32bppPARGB, srcBitmap, dstBitmap)
+    GdipDisposeImage srcBitmap
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim hGraphics As Long
@@ -1884,7 +1885,6 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     'Release our bitmap copies and GDI+ instances
-    GdipDisposeImage srcBitmap
     GdipDisposeImage dstBitmap
     GdipDeleteGraphics hGraphics
  

@@ -84,9 +84,15 @@ Private m_Animated As Boolean
 
 Private Type PD_AnimationFrame
     
-    afDIB As pdDIB
+    'DIB parameters
+    afThumbKey As Long
+    afWidth As Long
+    afHeight As Long
+    
+    'Metadata
     afFrameDelayMS As Long
-    afHash As Long
+    
+    'Timestamps are used to avoid unnecessary thumbnail updates
     afTimeStamp As Currency
     
     'At present, all animation frames default to the same size.  This may change in the future.
@@ -95,6 +101,7 @@ Private Type PD_AnimationFrame
     
 End Type
 
+Private m_Thumbs As pdSpriteSheet
 Private m_RepeatAnimation As Boolean
 Private m_Frames() As PD_AnimationFrame
 Private m_FrameCount As Long, m_CurrentFrame As Long
@@ -472,9 +479,20 @@ Public Sub PlayAnimation()
 End Sub
 
 Public Sub StopAnimation()
-    If m_Timer.IsActive Then RaiseEvent AnimationEnded
+    
+    If m_Timer.IsActive Then
+        
+        'Because the animation timer post-updates the current frame (e.g. it increments it *after* rendering
+        ' the current frame), the current frame marker is going to be 1 higher than whatever is displayed on-screen.
+        ' Decrement it to ensure that the on-screen image matches our internal tracker.
+        If (m_CurrentFrame > 0) And (m_CurrentFrame < m_FrameCount - 1) Then m_CurrentFrame = m_CurrentFrame - 1
+        RaiseEvent AnimationEnded
+        
+    End If
+    
     m_Timer.StopTimer
     m_ExpectedTimeToDisplay = 0
+    
 End Sub
 
 'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
@@ -531,7 +549,10 @@ Private Sub UserControl_Initialize()
     If Not PDMain.IsProgramRunning() Then UpdateColorList
     
     'If the program is running, create our animation timer
-    If PDMain.IsProgramRunning() Then Set m_Timer = New pdTimer
+    If PDMain.IsProgramRunning() Then
+        Set m_Timer = New pdTimer
+        Set m_Thumbs = New pdSpriteSheet
+    End If
     
 End Sub
 
@@ -582,8 +603,15 @@ Private Sub UpdateControlLayout()
     
     'Update animation parameters, as necessary
     If (LenB(m_LastImageID) = 0) Or (lastImageID <> m_LastImageID) Or (m_LastThumbWidth <> thumbWidth) Or (m_LastThumbHeight <> thumbHeight) Then
+        
         If (Not tmpImage Is Nothing) Then m_Animated = tmpImage.IsAnimated()
-        If m_Animated Then UpdateAnimationSettings tmpImage, m_CurrentFrame, True
+        
+        'If the image or thumbnail size has changed, we need to regenerate our thumbnail cache
+        If m_Animated Then
+            If (lastImageID <> m_LastImageID) Or (m_LastThumbWidth <> thumbWidth) Or (m_LastThumbHeight <> thumbHeight) Then m_Thumbs.ResetCache
+            UpdateAnimationSettings tmpImage, m_CurrentFrame, True
+        End If
+        
     End If
     
     m_LastThumbWidth = thumbWidth
@@ -605,6 +633,7 @@ Private Sub EndAnimations()
     m_Animated = False
     m_FrameCount = 1
     ReDim m_Frames(0) As PD_AnimationFrame
+    If (Not m_Thumbs Is Nothing) Then m_Thumbs.ResetCache
     StopAnimation
 End Sub
 
@@ -627,6 +656,7 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         If (m_FrameCount <> srcImage.GetNumOfLayers()) Then
             m_FrameCount = srcImage.GetNumOfLayers
             ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
+            m_Thumbs.ResetCache
         End If
         
         'Retrieving thumbnails uses the same math as the regular thumbnail; in animation files,
@@ -670,15 +700,17 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
         loopEnd = m_FrameCount - 1
         
         If fastUpdate And (forciblyUpdateIndex >= 0) Then
+            If (forciblyUpdateIndex > m_FrameCount - 1) Then forciblyUpdateIndex = m_FrameCount - 1
             loopStart = forciblyUpdateIndex
             loopEnd = forciblyUpdateIndex
         End If
-            
+        
+        Dim tmpDIB As pdDIB
+        
         For i = loopStart To loopEnd
             
             Dim needToUpdate As Boolean
-            needToUpdate = False
-            If (Not m_Frames(i).afDIB Is Nothing) Then needToUpdate = (m_Frames(i).afDIB.GetDIBWidth <> thumbSize)
+            needToUpdate = (m_Frames(i).afWidth <> thumbSize)
             If (Not needToUpdate) Then needToUpdate = (m_Frames(i).afTimeStamp <> srcImage.GetLayerByIndex(i).GetTimeOfLastChange())
             
             If (i = forciblyUpdateIndex) Or needToUpdate Then
@@ -686,12 +718,16 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
                 m_Frames(i).afTimeStamp = srcImage.GetLayerByIndex(i).GetTimeOfLastChange()
                 
                 'Retrieve an updated thumbnail
-                If (m_Frames(i).afDIB Is Nothing) Then Set m_Frames(i).afDIB = New pdDIB
-                m_Frames(i).afDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
+                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+                tmpDIB.CreateBlank thumbSize, thumbSize, 32, 0, 0
                 
+                m_Frames(i).afWidth = thumbSize
+                m_Frames(i).afHeight = thumbSize
                 m_Frames(i).afOffsetX = xThumb
                 m_Frames(i).afOffsetY = yThumb
-                srcImage.GetLayerByIndex(i).RequestThumbnail m_Frames(i).afDIB, thumbSize, True
+                
+                srcImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, thumbSize, True
+                m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
                 
             End If
             
@@ -849,8 +885,12 @@ Private Sub RenderAnimationFrame()
             'Paint a checkerboard background only over the relevant image region, followed by the frame itself
             With m_Frames(m_CurrentFrame)
                 GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, m_AniThumbBounds.Left, m_AniThumbBounds.Top, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, bufferDC, True
-                GDI_Plus.GDIPlus_StretchBlt Nothing, (bWidth - .afDIB.GetDIBWidth) * 0.5, (bHeight - .afDIB.GetDIBHeight) * 0.5, .afDIB.GetDIBWidth, .afDIB.GetDIBHeight, .afDIB, 0, 0, .afDIB.GetDIBWidth, .afDIB.GetDIBHeight, , GP_IM_HighQualityBicubic, bufferDC
-                .afDIB.FreeFromDC
+                
+                'Make sure we have the necessary image in the spritesheet cache
+                If (Not m_Thumbs.DoesImageExist(Str$(m_CurrentFrame) & "|" & Str$(.afWidth))) Then UpdateAnimationSettings PDImages.GetActiveImage, m_CurrentFrame, True
+                'GDI_Plus.GDIPlus_StretchBlt Nothing, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, .afWidth, .afHeight, .afDIB, 0, 0, .afWidth, .afHeight, , GP_IM_HighQualityBicubic, bufferDC
+                '.afDIB.FreeFromDC
+                m_Thumbs.StretchBltCachedImage Nothing, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, .afWidth, .afHeight, m_Frames(m_CurrentFrame).afThumbKey, , GP_IM_HighQualityBicubic, bufferDC
             End With
             
         End If

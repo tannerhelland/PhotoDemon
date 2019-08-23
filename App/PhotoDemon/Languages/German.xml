@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1241</langversion>
+<langversion>7.2.1299</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -151,17 +151,17 @@
 
 <phrase>
 <original>Cut special</original>
-<translation>Special ausschneiden</translation>
+<translation>Speziell ausschneiden</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation>Special kopieren</translation>
+<translation>Speziell kopieren</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation>Special einfügen</translation>
+<translation>Speziell einfügen</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -1080,37 +1080,37 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Copying layer</original>
-<translation></translation>
+<translation>Layer wird kopiert</translation>
 </phrase>
 
 <phrase>
 <original>Conversion complete.</original>
-<translation></translation>
+<translation>Konvertierung abgeschlossen.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon can automatically match imported images to existing layers with the same name.</original>
-<translation></translation>
+<translation>PhotoDemon kann importierte Bilder automatisch mit vorhandenen Layern mit demselben Name abgleichen.</translation>
 </phrase>
 
 <phrase>
 <original>If matches are found, would you prefer to update existing layers?</original>
-<translation></translation>
+<translation>Wenn Übereinstimmungen gefunden werden, möchten Sie lieber vorhandene Layer aktualisieren?</translation>
 </phrase>
 
 <phrase>
 <original>(If you select "no", each imported image will be added as a new layer, even if it matches an existing one.)</original>
-<translation></translation>
+<translation>(Wenn Sie "Nein" auswählen, wird jedes importierte Bild als neuer Layer hinzugefügt, auch wenn es einem vorhandenen entspricht.)</translation>
 </phrase>
 
 <phrase>
 <original>Split images into layers</original>
-<translation></translation>
+<translation>Bilder in Layer splitten</translation>
 </phrase>
 
 <phrase>
 <original>Adding image</original>
-<translation></translation>
+<translation>Bild wird hinzugefügt</translation>
 </phrase>
 
 <phrase>
@@ -1183,7 +1183,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Seite %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1860,7 +1860,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Remove alpha channel</original>
-<translation>Alphakanal entfernen</translation>
+<translation>Alpha-Kanal entfernen</translation>
 </phrase>
 
 <phrase>
@@ -1875,12 +1875,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Split layer into image</original>
-<translation></translation>
+<translation>Layer in Bild splitten</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation></translation>
+<translation>Layer in Bilder splitten</translation>
 </phrase>
 
 <phrase>
@@ -2120,7 +2120,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Split toning</original>
-<translation>Splittönung</translation>
+<translation>Split-Tönung</translation>
 </phrase>
 
 <phrase>
@@ -3119,7 +3119,7 @@ Beschreibung: %2
 
 <phrase>
 <original>alpha mode</original>
-<translation>Alphamodus</translation>
+<translation>Alpha-Modus</translation>
 </phrase>
 
 <phrase>
@@ -5424,23 +5424,23 @@ oder die Menüs "Datei > Öffnen" respektive "Datei > Importieren".</translation
 <!-- BEGIN text for pdNavigator.ctl -->
 
 <phrase>
-<original>Play the current animation</original>
-<translation></translation>
+<original>Pause the current animation</original>
+<translation>Die aktuelle Animation pausieren</translation>
 </phrase>
 
 <phrase>
-<original>Pause the current animation</original>
-<translation></translation>
+<original>Play the current animation</original>
+<translation>Die aktuelle Animation abspielen</translation>
 </phrase>
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation></translation>
+<translation>Umschalten zwischen 1x und wiederholenden Vorschauen</translation>
 </phrase>
 
 <phrase>
 <original>Current frame: %1</original>
-<translation></translation>
+<translation>Aktuelles Frame: %1</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
@@ -5928,7 +5928,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Special</original>
-<translation>Special</translation>
+<translation>Speziell</translation>
 </phrase>
 
 <phrase>
@@ -6173,22 +6173,22 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Split</original>
-<translation></translation>
+<translation>Splitten</translation>
 </phrase>
 
 <phrase>
 <original>Current layer into standalone image</original>
-<translation></translation>
+<translation>Aktuellen Layer in eigenständiges Bild</translation>
 </phrase>
 
 <phrase>
 <original>All layers into standalone images</original>
-<translation></translation>
+<translation>Alle Layer in eigenständige Bilder</translation>
 </phrase>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation></translation>
+<translation>Andere offene Bilder in dieses Bild (als Layer)</translation>
 </phrase>
 
 <phrase>
@@ -8019,7 +8019,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Split-toning image</original>
-<translation>Splittönung des Bildes</translation>
+<translation>Split-Tönungsbild</translation>
 </phrase>
 
 <!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10782,7 +10782,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use palette's alpha values</original>
-<translation>Alphawerte der Palette verwenden</translation>
+<translation>Alpha-Werte der Palette verwenden</translation>
 </phrase>
 
 <phrase>
@@ -12606,7 +12606,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation>Dateierweiterung entsprechend Farbmodell ändern</translation>
+<translation>Dateierweiterung entsprechend dem Farbmodell ändern</translation>
 </phrase>
 
 <phrase>
@@ -13525,7 +13525,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Adding new alpha channel to image</original>
-<translation>Neuer Alphakanal wird dem Bild hinzugefügt</translation>
+<translation>Neuer Alpha-Kanal wird dem Bild hinzugefügt</translation>
 </phrase>
 
 <!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -14068,7 +14068,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>blend / alpha mode</original>
-<translation>Überblendungs- / Alphamodus</translation>
+<translation>Überblendungs- / Alpha-Modus</translation>
 </phrase>
 
 <phrase>
@@ -15464,12 +15464,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Klick, um die erste Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+<translation>Klick, um die erste Schachbrett-Hintergrundfarbe für Alpha-Kanäle zu ändern</translation>
 </phrase>
 
 <phrase>
 <original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Klick, um die zweite Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+<translation>Klick, um die zweite Schachbrett-Hintergrundfarbe für Alpha-Kanäle zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -16022,12 +16022,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Animation.bas-->
 
+<!-- BEGIN text for pdSpriteSheet.cls -->
+
+<!-- pdSpriteSheet.cls contains 0 phrases. -->
+
+<!-- END text for pdSpriteSheet.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4905 phrases. -->
-<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4906 phrases. -->
+<!-- 2235 are duplicates, so only 2671 unique phrases have been written to file. -->
 <!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>

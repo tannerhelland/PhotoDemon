@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.120</langversion>
+<langversion>1.0.121</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1181,7 +1181,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>पृष्ठ 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 60 phrases. 33 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -5417,12 +5417,12 @@ or the File > Open and File > Import menus.</original>
 <!-- BEGIN text for pdNavigator.ctl -->
 
 <phrase>
-<original>Play the current animation</original>
+<original>Pause the current animation</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Pause the current animation</original>
+<original>Play the current animation</original>
 <translation></translation>
 </phrase>
 
@@ -16015,12 +16015,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Animation.bas-->
 
+<!-- BEGIN text for pdSpriteSheet.cls -->
+
+<!-- pdSpriteSheet.cls contains 0 phrases. -->
+
+<!-- END text for pdSpriteSheet.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4905 phrases. -->
-<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4906 phrases. -->
+<!-- 2235 are duplicates, so only 2671 unique phrases have been written to file. -->
 <!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>
