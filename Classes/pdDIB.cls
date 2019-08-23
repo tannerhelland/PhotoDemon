@@ -154,7 +154,7 @@ Private m_OriginalBackgroundColor As Long
 
 'DIBs created from loaded image files will have their original color depth stored here.  Note that PD only works in 24/32 bpp
 ' mode at present, but this value may contain other bit-depths (e.g. 8bpp if the source data was a GIF).
-Private m_OriginalColorDepth As Long
+Private m_originalColorDepth As Long
 
 'If FreeImage is active, it allows us to retrieve even more detailed color depth information (vs GDI+, which downsamples unpredictably).
 ' While I don't really make use of this value at present, it could be helpful in the future, for example when editing icons (which contain
@@ -196,11 +196,11 @@ End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
 Friend Function GetOriginalColorDepth() As Long
-    GetOriginalColorDepth = m_OriginalColorDepth
+    GetOriginalColorDepth = m_originalColorDepth
 End Function
 
 Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
-    m_OriginalColorDepth = origColorDepth
+    m_originalColorDepth = origColorDepth
 End Sub
 
 'Get/set original file color depth.  This is set prior to any tone-mapping or explicit FreeImage conversions.  As such, it may be quite large.
@@ -1709,17 +1709,17 @@ Friend Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = Tru
         'Copy the source line to a temporary array
         dstPointer = VarPtr(tmpScanLine(0))
         srcPointer = dibPointer + scanlineSize * (finalY - y)
-        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
         
         'Copy the destination line over the source line
         dstPointer = srcPointer
         srcPointer = dibPointer + scanlineSize * y
-        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
         
         'Copy the temporary array into the destination line
         dstPointer = srcPointer
         srcPointer = VarPtr(tmpScanLine(0))
-        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        CopyMemoryStrict dstPointer, srcPointer, scanlineSize
         
     Next y
     
@@ -1884,8 +1884,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         dibPointer = Me.GetDIBPointer
         
         Dim dibPixels() As Byte, dibSA As SafeArray1D
-        PrepInternalSafeArray1D dibSA
-        CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
+        Me.WrapArrayAroundScanline dibPixels, dibSA, initY
         
         Dim x As Long, y As Long
         Dim r As Long, g As Long, b As Long
@@ -1894,8 +1893,9 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         'Loop through the image, converting alpha as we go
         For y = initY To finalY
             
-            'Point our 1D pixel array at the proper scanline
-            dibSA.pvData = dibPointer + scanlineSize * y
+            'Point our 1D pixel array at the proper scanline.  The odd construction of this line
+            ' is meant to work around issues near the 2GB boundary.
+            If (y > initY) Then dibSA.pvData = VBHacks.UnsignedAdd(dibSA.pvData, scanlineSize)
             
         For x = initX To finalX Step 4
             
@@ -1970,7 +1970,7 @@ Friend Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Next y
         
         'With our alpha channel complete, point dibPixels() away from the DIB
-        CopyMemory ByVal VarPtrArray(dibPixels), 0&, 4
+        Me.UnwrapArrayFromDIB dibPixels
         
         'Mark the new premultiplication state
         m_IsAlphaPremultiplied = applyPremultiplication
