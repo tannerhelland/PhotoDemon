@@ -3326,7 +3326,8 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     GdipDisposeImage hBitmap
     GdipDeleteGraphics hGraphics
     
-    'To keep resources low, free the destination DIB from its DC
+    'To keep resources low, free both DIBs from their DCs
+    If (Not srcDIB Is Nothing) Then srcDIB.FreeFromDC
     If (Not dstDIB Is Nothing) Then dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports

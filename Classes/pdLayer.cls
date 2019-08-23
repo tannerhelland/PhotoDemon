@@ -1589,6 +1589,9 @@ Friend Sub InitializeNewLayer(ByVal newLayerType As PD_LayerType, Optional ByVal
         If (Not srcDIB Is Nothing) Then Set layerDIB = srcDIB Else Set layerDIB = New pdDIB
     End If
     
+    'Keep GDI object count down as much as possible
+    layerDIB.FreeFromDC
+    
     'Set default offsets
     myLayerData.l_OffsetX = 0
     myLayerData.l_OffsetY = 0
