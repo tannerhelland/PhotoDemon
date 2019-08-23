@@ -603,6 +603,8 @@ End Sub
 
 Private Sub EndAnimations()
     m_Animated = False
+    m_FrameCount = 1
+    ReDim m_Frames(0) As PD_AnimationFrame
     StopAnimation
 End Sub
 

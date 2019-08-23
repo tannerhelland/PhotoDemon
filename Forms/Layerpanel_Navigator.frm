@@ -85,7 +85,11 @@ Private Sub ReflowInterface()
 
     'For now, make the navigator UC the same size as the underlying form
     If (Me.ScaleWidth > 10) Then
-        nvgMain.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
+        If (Not g_WindowManager Is Nothing) Then
+            nvgMain.SetPositionAndSize 0, 0, g_WindowManager.GetClientWidth(Me.hWnd) - Interface.FixDPI(10), g_WindowManager.GetClientHeight(Me.hWnd)
+        Else
+            nvgMain.Move 0, 0, Me.ScaleWidth - Interface.FixDPI(10), Me.ScaleHeight
+        End If
     End If
     
     'Refresh the panel immediately, so the user can see the result of the resize

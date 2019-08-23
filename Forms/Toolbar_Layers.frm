@@ -36,8 +36,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   3840
       Width           =   2535
-      _extentx        =   4471
-      _extenty        =   1085
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -46,10 +46,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   0
       Top             =   60
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "search"
-      draggable       =   -1  'True
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "search"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -58,10 +58,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   960
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "color selector"
-      draggable       =   -1  'True
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "color selector"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -70,10 +70,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   2
       Top             =   480
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "overview"
-      draggable       =   -1  'True
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "overview"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
@@ -82,8 +82,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   4
       Top             =   4560
       Width           =   2535
-      _extentx        =   4471
-      _extenty        =   1085
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
@@ -92,8 +92,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   5
       Top             =   5280
       Width           =   2535
-      _extentx        =   4471
-      _extenty        =   1085
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -102,10 +102,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   6
       Top             =   1440
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "layers"
-      draggable       =   -1  'True
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "layers"
+      Draggable       =   -1  'True
    End
    Begin PhotoDemon.pdContainer ctlContainer 
       Height          =   615
@@ -114,8 +114,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   7
       Top             =   6000
       Width           =   2535
-      _extentx        =   4471
-      _extenty        =   1085
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
 End
 Attribute VB_Name = "toolbar_Layers"
