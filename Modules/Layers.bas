@@ -852,32 +852,72 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-            
-    If showPrompt Then
     
-        Dim msgText As pdString
-        Set msgText = New pdString
-        msgText.AppendLine g_Language.TranslateMessage("PhotoDemon can automatically match imported images to existing layers with the same name.")
-        msgText.AppendLineBreak
-        msgText.AppendLine g_Language.TranslateMessage("If matches are found, would you prefer to update existing layers?")
-        msgText.AppendLineBreak
-        msgText.Append g_Language.TranslateMessage("(If you select ""no"", each imported image will be added as a new layer, even if it matches an existing one.)")
+    Dim i As Long, j As Long
+    Dim openImageIDs As pdStack
+    
+    If showPrompt Then
         
-        Dim msgResult As VbMsgBoxResult
-        msgResult = PDMsgBox(msgText.ToString(), vbInformation Or vbYesNoCancel, "Split images into layers")
+        'We only want to display "merge" options if there are matches between imported image names
+        ' and imported layer names.  If there are no matches, the user's selection doesn't matter,
+        ' so we should avoid interrupting their workflow.
+        Dim matchesFound As Boolean
         
-        If (msgResult = vbCancel) Then
-            Exit Sub
-        Else
+        'Get a list of open image IDs
+        If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
+        
+        'Look for matches between those and layer IDs in the current image
+        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
             
-            If (msgResult = vbNo) Then
-                cParams.AddParam "overwrite-layers", False
+            If (i <> PDImages.GetActiveImageID) Then
+                
+                With PDImages.GetActiveImage.GetActiveLayer
+                
+                    For j = 0 To openImageIDs.GetNumOfInts - 1
+                        If Strings.StringsEqual(.GetLayerName(), PDImages.GetImageByID(openImageIDs.GetInt(i)).GetLayerByIndex(0).GetLayerName(), True) Then
+                            matchesFound = True
+                            Exit For
+                        End If
+                    Next j
+                    
+                End With
+                
+            End If
+                
+            If matchesFound Then Exit For
+                
+        Next i
+        
+        'Only prompt if some names match
+        If matchesFound Then
+            
+            Dim msgText As pdString
+            Set msgText = New pdString
+            msgText.AppendLine g_Language.TranslateMessage("PhotoDemon can automatically match imported images to existing layers with the same name.")
+            msgText.AppendLineBreak
+            msgText.AppendLine g_Language.TranslateMessage("If matches are found, would you prefer to update existing layers?")
+            msgText.AppendLineBreak
+            msgText.Append g_Language.TranslateMessage("(If you select ""no"", each imported image will be added as a new layer, even if it matches an existing one.)")
+            
+            Dim msgResult As VbMsgBoxResult
+            msgResult = PDMsgBox(msgText.ToString(), vbInformation Or vbYesNoCancel, "Split images into layers")
+            
+            If (msgResult = vbCancel) Then
+                Exit Sub
             Else
-                cParams.AddParam "overwrite-layers", True
+                
+                If (msgResult = vbNo) Then
+                    cParams.AddParam "overwrite-layers", False
+                Else
+                    cParams.AddParam "overwrite-layers", True
+                End If
+                
+                Process "Split images into layers", False, cParams.GetParamString, UNDO_Everything
+                
             End If
             
-            Process "Split images into layers", False, cParams.GetParamString, UNDO_Everything
-            
+        Else
+            Process "Split images into layers", False, vbNullString, UNDO_Everything
         End If
     
     Else
@@ -891,7 +931,6 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
         ' image should be inserted.  This is most relevant when the images were originally split using
         ' the "Split layers into images" command - by parsing layer indices out of their titles, we can
         ' split each image back into its original parent image *at its original location*.
-        Dim openImageIDs As pdStack
         If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
         
         Dim listOfImages() As LayerConvertCache
@@ -899,7 +938,6 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
         
         Dim localizedTag As String
         
-        Dim i As Long
         For i = 0 To UBound(listOfImages)
             
             'We want to convert all images *except* the currently active one
@@ -970,7 +1008,6 @@ Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal proce
                         'Next, try to find a layer with this name in the current image.
                         If overwriteMatchingLayers Then
                             
-                            Dim j As Long
                             For j = 0 To ubLayers
                                 If Strings.StringsEqual(srcImage.GetLayerByIndex(j).GetLayerName, listOfImages(i).srcLayerName, False) Then
                                     
