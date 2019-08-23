@@ -335,10 +335,10 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Menus.ProcessDefaultAction_ByName "layer_deletecurrent"
             
         Case LYR_BTN_MOVE_UP
-            Menus.ProcessDefaultAction_ByName "layer_up"
+            Menus.ProcessDefaultAction_ByName "layer_moveup"
             
         Case LYR_BTN_MOVE_DOWN
-            Menus.ProcessDefaultAction_ByName "layer_down"
+            Menus.ProcessDefaultAction_ByName "layer_movedown"
             
     End Select
     

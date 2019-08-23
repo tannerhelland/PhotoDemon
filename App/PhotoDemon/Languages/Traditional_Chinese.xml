@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.86</langversion>
+<langversion>7.0.87</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5377,7 +5377,27 @@ or the File > Open and File > Import menus.</original>
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
-<!-- pdNavigator.ctl contains 0 phrases. -->
+<phrase>
+<original>Play the current animation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pause the current animation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Current frame: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdNavigator.ctl contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
 <!-- END text for pdNavigator.ctl-->
 
@@ -15933,12 +15953,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Effects_Render_Fibers.frm-->
 
+<!-- BEGIN text for Animation.bas -->
+
+<!-- Animation.bas contains 0 phrases. -->
+
+<!-- END text for Animation.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2667</phrasecount>
+<phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4900 phrases. -->
-<!-- 2233 are duplicates, so only 2667 unique phrases have been written to file. -->
-<!-- These 2667 phrases contain approximately 12575 total words. -->
+<!-- As of this build, PhotoDemon contains 4905 phrases. -->
+<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>

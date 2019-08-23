@@ -224,7 +224,7 @@ Private lodDIB() As pdDIB
 'Layer thumbnail.  A DIB of this size is cached locally, then passed to external functions only when necessary.
 ' Note that requests for sizes larger than the hard-coded thumb size (in either dimension) will force creation of a
 ' custom thumbnail from scratch, so try to avoid that if at all possible!
-Private Const LAYER_THUMB_SIZE As Long = 128
+Private Const LAYER_THUMB_SIZE As Long = 256
 Private m_LayerThumbnail As pdDIB, m_CurrentLayerThumbSize As Long
 
 'If the current thumbnail is clean or dirty.  Clean means that to the best of this class's knowledge, the current thumbnail accurately
@@ -240,6 +240,11 @@ Private m_ViewportStateHashes() As Long
 'If a layer has changed since the last hash cache, we must still recomposite the DIB, even though the automatic hash function won't
 ' generate a new value (because it primarily relies on layer metadata, not actual DIB contents)
 Private m_DIBChangedSinceLastHash() As Boolean
+
+'Whenever we are notified of destructive changes, we make a current high-res time stamp.
+' Outside callers can use this to synchronize any state trackers, and they can safely skip updates
+' if their stored timestamp matches this one.
+Private m_TimeAtLastDestructiveChange As Currency
 
 'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
@@ -259,8 +264,9 @@ Private m_PlgPoints() As PointFloat
 ' absolutely necessary.
 Friend Sub NotifyOfDestructiveChanges()
 
-    'Mark the layer thumbnail as dirty
+    'Mark the layer thumbnail as dirty and update our tracking timestamp
     m_IsThumbClean = False
+    m_TimeAtLastDestructiveChange = VBHacks.GetHighResTimeInMSEx()
     
     'Note that the layer has changed since a past hash request
     Dim i As Long
@@ -786,6 +792,10 @@ Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal
     If (Not m_VectorDIBSynched) Then m_IsThumbClean = False
     
 End Sub
+
+Friend Function GetTimeOfLastChange() As Currency
+    GetTimeOfLastChange = m_TimeAtLastDestructiveChange
+End Function
 
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.

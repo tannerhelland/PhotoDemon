@@ -284,7 +284,8 @@ Public Sub AssignImage(ByRef resName As String, Optional ByRef srcDIB As pdDIB =
     
     If (m_ButtonWidth <> 0) And (m_ButtonHeight <> 0) Then
         
-        'Add this image to the central UI image cache
+        'Add this image to the central UI image cache (and if no name exists, invent a random one)
+        If (LenB(resName) = 0) Then resName = OS.GetArbitraryGUID()
         m_SpriteHandles(st_Normal) = UIImages.AddImage(srcDIB, resName)
         
         'Unpremultiply the source image
@@ -324,7 +325,8 @@ Public Sub AssignImage_Pressed(ByRef resName As String, Optional ByRef srcDIB As
         
         m_ButtonImagesPressed = True
         
-        'Add this image to the central UI image cache
+        'Add this image to the central UI image cache (and if no name exists, invent a random one)
+        If (LenB(resName) = 0) Then resName = OS.GetArbitraryGUID()
         m_SpriteHandles(st_NormalPressed) = UIImages.AddImage(srcDIB, resName)
         
         'Unpremultiply the source image

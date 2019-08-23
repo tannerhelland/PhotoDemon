@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3399</langversion>
+<langversion>6.8.3400</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5418,7 +5418,27 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
-<!-- pdNavigator.ctl contains 0 phrases. -->
+<phrase>
+<original>Play the current animation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pause the current animation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle between 1x and repeating previews</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Current frame: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- pdNavigator.ctl contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
 <!-- END text for pdNavigator.ctl-->
 
@@ -15992,12 +16012,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Effects_Render_Fibers.frm-->
 
+<!-- BEGIN text for Animation.bas -->
+
+<!-- Animation.bas contains 0 phrases. -->
+
+<!-- END text for Animation.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2667</phrasecount>
+<phrasecount>2671</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4900 phrases. -->
-<!-- 2233 are duplicates, so only 2667 unique phrases have been written to file. -->
-<!-- These 2667 phrases contain approximately 12575 total words. -->
+<!-- As of this build, PhotoDemon contains 4905 phrases. -->
+<!-- 2234 are duplicates, so only 2671 unique phrases have been written to file. -->
+<!-- These 2671 phrases contain approximately 12590 total words. -->
 
 </pdData>
