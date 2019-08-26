@@ -166,6 +166,11 @@ Private m_MouseOverLayerBox As Boolean
 ' changes upward, and our parent control maintains the actual scroll bar object.
 Private m_ScrollValue As Long, m_ScrollMax As Long
 
+'Popup menu when a layer is right-clicked
+Private WithEvents m_LayerPopup As pdPopupMenu
+Attribute m_LayerPopup.VB_VarHelpID = -1
+Private m_RightClickIndex As Long
+
 Public Function GetControlType() As PD_ControlType
     GetControlType = pdct_LayerListInner
 End Function
@@ -246,6 +251,21 @@ Public Property Let ScrollValue(ByRef newValue As Long)
         RedrawBackBuffer
     End If
 End Property
+
+Private Sub m_LayerPopup_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption As String)
+    
+    'Make sure a valid layer was clicked
+    If (m_RightClickIndex < 0) Then Exit Sub
+    
+    Select Case mnuIndex
+    
+        'Hide all layers but this one
+        Case 0
+            Process "Show only this layer", False, BuildParamList("layerindex", m_RightClickIndex), UNDO_ImageHeader
+    
+    End Select
+
+End Sub
 
 'If the layer name textbox is visible and the Enter key is pressed, commit the changed layer name and hide the text box
 Private Sub txtLayerName_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
@@ -352,45 +372,70 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
     
+    m_RightClickIndex = -1
+    
     Dim clickedLayer As Long
     clickedLayer = GetLayerAtPosition(x, y)
     
     If (clickedLayer >= 0) Then
         
-        If (PDImages.IsImageActive() And (Button = pdLeftButton)) Then
-            
-            'If the user has initiated an action, this value will be set to TRUE.  We don't currently make use of it,
-            ' but it could prove helpful in the future (for optimizing redraws, for example).
-            Dim actionInitiated As Boolean
-            actionInitiated = False
-            
-            'Check the clicked position against a series of rects, each one representing a unique interaction.
-            
-            'Has the user clicked a visibility rectangle?
-            If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
-                Layers.SetLayerVisibilityByIndex clickedLayer, Not PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerVisibility, True
-                actionInitiated = True
-            
-            'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
-            ' the active layer.
-            Else
-            
-                'See if the clicked layer differs from the current active layer
-                If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
-                    Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
-                    Layers.SetActiveLayerByIndex clickedLayer, False
-                    ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+        If PDImages.IsImageActive() Then
+        
+            If ((Button And pdLeftButton) <> 0) Then
+                
+                'If the user has initiated an action, this value will be set to TRUE.  We don't currently make use of it,
+                ' but it could prove helpful in the future (for optimizing redraws, for example).
+                Dim actionInitiated As Boolean
+                actionInitiated = False
+                
+                'Check the clicked position against a series of rects, each one representing a unique interaction.
+                
+                'Has the user clicked a visibility rectangle?
+                If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
+                    Layers.SetLayerVisibilityByIndex clickedLayer, Not PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerVisibility, True
+                    actionInitiated = True
+                
+                'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+                ' the active layer.
+                Else
+                
+                    'See if the clicked layer differs from the current active layer
+                    If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(clickedLayer).GetLayerID) Then
+                        Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
+                        Layers.SetActiveLayerByIndex clickedLayer, False
+                        ViewportEngine.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                    End If
+                    
                 End If
                 
-            End If
+                'Redraw the layer box to represent any changes from this interaction.
+                ' NOTE: this is not currently necessary, as all interactions automatically force a redraw on their own.
+                'RedrawLayerBox
+                
+            ElseIf ((Button And pdRightButton) <> 0) Then
             
-            'Redraw the layer box to represent any changes from this interaction.
-            ' NOTE: this is not currently necessary, as all interactions automatically force a redraw on their own.
-            'RedrawLayerBox
+                'Note the clicked layer index; we'll need this if the user chooses to do something to this layer
+                m_RightClickIndex = clickedLayer
+                
+                'Display the popup menu; it will raise additional events, as necessary
+                ShowLayerPopupMenu x, y
+                
+            End If
                         
         End If
         
     End If
+    
+End Sub
+
+Private Sub ShowLayerPopupMenu(ByVal srcX As Long, ByVal srcY As Long)
+    
+    m_LayerPopup.Reset
+    
+    'Construct the menu
+    m_LayerPopup.AddMenuItem g_Language.TranslateMessage("Show only this layer")
+    
+    m_LayerPopup.ShowMenu Me.hWnd, srcX, srcY
     
 End Sub
 
@@ -699,6 +744,7 @@ Private Sub UserControl_Initialize()
     m_MouseY = -1
     m_ScrollValue = 0
     m_ScrollMax = 0
+    Set m_LayerPopup = New pdPopupMenu
     
 End Sub
 

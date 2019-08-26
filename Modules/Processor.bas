@@ -2253,11 +2253,11 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
     
     'Show or hide just the active layer
     ElseIf Strings.StringsEqual(processID, "Show only this layer", True) Then
-        Layers.MakeJustOneLayerVisible PDImages.GetActiveImage.GetActiveLayerIndex
+        Layers.MakeJustOneLayerVisible cParams.GetLong("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex)
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Hide only this layer", True) Then
-        Layers.MakeJustOneLayerHidden PDImages.GetActiveImage.GetActiveLayerIndex
+        Layers.MakeJustOneLayerHidden cParams.GetLong("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex)
         Process_LayerMenu = True
     
     'Show or hide all layers

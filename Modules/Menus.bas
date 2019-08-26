@@ -1817,10 +1817,10 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
                 Process "Toggle layer visibility", False, vbNullString, UNDO_LayerHeader
                 
             Case "layer_showonly"
-                Process "Show only this layer", False, vbNullString, UNDO_ImageHeader
+                Process "Show only this layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
             Case "layer_hideonly"
-                Process "Hide only this layer", False, vbNullString, UNDO_ImageHeader
+                Process "Hide only this layer", False, BuildParamList("layerindex", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_ImageHeader
                 
             Case "layer_showall"
                 Process "Show all layers", False, vbNullString, UNDO_ImageHeader
