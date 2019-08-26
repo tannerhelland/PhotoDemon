@@ -2519,7 +2519,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 GdipGetImageWidth m_hMultiPageImage, imgWidth
                 GdipGetImageHeight m_hMultiPageImage, imgHeight
                 
-                PDDebug.LogAction "Loading page with dimensions (" & CStr(imgWidth) & "x" & CStr(imgHeight) & ")"
+                'PDDebug.LogAction "Loading page with dimensions (" & CStr(imgWidth) & "x" & CStr(imgHeight) & ")"
                 
                 'Retrieve this frame's horizontal and vertical resolution (if any)
                 GdipGetImageHorizontalResolution m_hMultiPageImage, imgHResolution

@@ -223,6 +223,7 @@ Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single
         sldFrame.Min = 0
         sldFrame.Max = PDImages.GetActiveImage.GetNumOfLayers - 1
         m_DoNotUpdate = False
+        navInner.ChangeActiveFrame sldFrame.Value
     End If
     
 End Sub

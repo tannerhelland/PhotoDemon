@@ -102,15 +102,12 @@ Private Type PD_AnimationFrame
 End Type
 
 Private m_Thumbs As pdSpriteSheet
-Private m_RepeatAnimation As Boolean
 Private m_Frames() As PD_AnimationFrame
-Private m_FrameCount As Long, m_CurrentFrame As Long
-Private m_TimeAtLastFrame As Currency, m_ExpectedTimeToDisplay As Currency
-Private WithEvents m_Timer As pdTimer
-Attribute m_Timer.VB_VarHelpID = -1
+Private m_FrameCount As Long
 
-'These values are only used for profiling; they can be commented-out in production code
-Private m_FramesDisplayed As Long, m_FrameTimes As Double
+'A dedicated animation timer is used; it auto-corrects for frame time variations during rendering
+Private WithEvents m_Timer As pdTimerAnimation
+Attribute m_Timer.VB_VarHelpID = -1
 
 'ID of the last associated image.  When this value changes, we reset all animation parameters.
 Private m_LastImageID As String, m_LastThumbWidth As Long, m_LastThumbHeight As Long
@@ -166,172 +163,27 @@ Public Property Get ContainerHwnd() As Long
 End Property
 
 Public Function GetAnimationRepeat() As Boolean
-    GetAnimationRepeat = m_RepeatAnimation
+    GetAnimationRepeat = m_Timer.GetRepeat()
 End Function
 
 Public Sub SetAnimationRepeat(ByVal newState As Boolean)
-    m_RepeatAnimation = newState
+    m_Timer.SetRepeat newState
 End Sub
 
-Private Sub m_Timer_Timer()
-        
-    'Failsafe check for "still animating".  (Remember that WM_TIMER messages are low-priority; they may
-    ' stack up as other messages are processed.)
-    If (Not m_Timer.IsActive) Then Exit Sub
-        
-    'Failsafe check for frame count
-    If OutOfFrames() Then Exit Sub
-    
+Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
+
     'Notify outside callers of the frame change
-    RaiseEvent AnimationFrameChanged(m_CurrentFrame)
-    
-    'Delays are calculated according to the *previous* frame's delay
-    Dim relevantFrame As Long
-    relevantFrame = m_CurrentFrame - 1
-    
-    If (relevantFrame < 0) And m_RepeatAnimation Then relevantFrame = m_FrameCount - 1
-    
-    'If this frame went over-budget, we want to subtract the difference from the next frame's
-    ' requested delay; as long as delays are small, this is enough to keep rendering reasonably
-    ' well synchronized.
-    Dim frameDeficit As Currency, timeElapsedMS As Currency
-    frameDeficit = 0
-    
-    'Perform drop-frame testing (but never on the first frame!)
-    If (relevantFrame >= 0) And (m_ExpectedTimeToDisplay <> 0) Then
-        
-        'If more time has elapsed than the frame delay we originally requested, we may need to skip
-        ' the current frame - and possibly even more frames after that.  (Note that timer events are
-        ' not especially precise, especially on Win 8+ because we use coalescing timers to improve
-        ' battery life - so the likelihood of a "perfect" timer interval is very low.)
-        timeElapsedMS = (VBHacks.GetHighResTimeInMSEx() - m_ExpectedTimeToDisplay)
-        
-        If (timeElapsedMS > 0@) Then
-            
-            'This frame arrived late.
-            
-            'See if we're also over-budget for the next frame in line (by measuring the delay of
-            ' the *current* frame - remember, delays in animated files specify the delay *after*
-            ' the current frame).
-            If (timeElapsedMS > m_Frames(m_CurrentFrame).afFrameDelayMS) Then
-                
-                'Damn - we're too late to render this frame in time.  Start searching through the
-                ' frame list until we arrive at the frame nearest our current delay.
-                Dim netDelay As Long
-                netDelay = m_Frames(m_CurrentFrame).afFrameDelayMS
-                relevantFrame = GetNextFrame(m_CurrentFrame)
-                
-                'We'll also add a failsafe check for long delays, in case something crazy happens
-                ' like suspending the PC mid-animation, then returning later
-                Const MAX_FRAMES_SKIPPED As Long = 15
-                Dim numFramesSkipped As Long
-                numFramesSkipped = 0
-                
-                Do While (timeElapsedMS > netDelay) And (relevantFrame < m_FrameCount) And (numFramesSkipped < MAX_FRAMES_SKIPPED)
-                
-                    'Increment the net delay
-                    netDelay = netDelay + m_Frames(relevantFrame).afFrameDelayMS
-                    relevantFrame = GetNextFrame(relevantFrame)
-                    numFramesSkipped = numFramesSkipped + 1
-                
-                Loop
-                
-                'The net delay now exceeds the delay that has already occurred.  Calculate a time deficit,
-                ' then display the frame *before* the currently calculated one.
-                relevantFrame = relevantFrame - 1
-                If (relevantFrame < 0) Then relevantFrame = m_FrameCount - 1
-                netDelay = netDelay - m_Frames(relevantFrame).afFrameDelayMS
-                
-                frameDeficit = -1 * (timeElapsedMS - netDelay)
-                
-                'Note that we don't need to check "repeat animation" status here, as a single-play animation
-                ' will still want to display the final frame before exiting
-                m_CurrentFrame = relevantFrame
-                
-            'This frame arrived late, but there's still plenty of time to display it.  Subtract the
-            ' already-acquired delay amount from our next timer request, which will hopefully bring
-            ' timings back in line.
-            Else
-                frameDeficit = -1 * Int(timeElapsedMS + 0.5)
-            End If
-            
-        'Frame is early or exactly on-time.  Calculate a frame deficit, if any, which we'll add to
-        ' the next frame's delay.  (This helps correct for millisecond-level variations in timer events.)
-        Else
-            frameDeficit = Int(timeElapsedMS + 0.5)
-        End If
-    
-    End If
-    
-    'Want to know average frame-times?  Uncomment these lines.
-    'm_FramesDisplayed = m_FramesDisplayed + 1
-    'm_FrameTimes = m_FrameTimes + (VBHacks.GetHighResTimeInMSEx() - m_TimeAtLastFrame)
-    'Debug.Print Format$(CDbl(m_FrameTimes) / CDbl(m_FramesDisplayed), "0.000")
-    
-    'Note the current time (so the next frame has a reference point)
-    VBHacks.GetHighResTimeInMS m_TimeAtLastFrame
+    RaiseEvent AnimationFrameChanged(idxFrame)
     
     'Render the current frame
     RenderAnimationFrame
     
-    'Advance the frame counter
-    m_CurrentFrame = m_CurrentFrame + 1
-    
-    'If infinite repeats are active, roll the frame counter around m_framecount
-    If m_RepeatAnimation And (m_CurrentFrame >= m_FrameCount) Then m_CurrentFrame = 0
-    
-    'If frames remain, figure out an appropriate timer interval for the next frame
-    If (m_CurrentFrame < m_FrameCount) Then
-        
-        relevantFrame = m_CurrentFrame - 1
-        If (relevantFrame < 0) Then relevantFrame = m_FrameCount - 1
-        
-        Dim timeIntervalToRequest As Long
-        timeIntervalToRequest = m_Frames(relevantFrame).afFrameDelayMS + frameDeficit
-        
-        'Cache what time we expect the next frame to display; the next iteration will use this value
-        ' to recenter itself accordingly.
-        m_ExpectedTimeToDisplay = m_TimeAtLastFrame + timeIntervalToRequest
-        
-        'Windows timers don't allow timers to trigger faster than 10 ms
-        If (timeIntervalToRequest < 10) Then timeIntervalToRequest = 10
-        m_Timer.Interval = timeIntervalToRequest
-    
-    'This is a 1x animation.  Ensure the frame position is valid, then exit
-    Else
-        m_CurrentFrame = m_FrameCount - 1
-        StopAnimation
-    End If
-    
 End Sub
 
-'Given a frame index, return the "next" one.  For loop animations, this automatically wraps frame indices.
-' For non-repeating animations, this will return an invalid index (m_FrameCount) by design.  You must
-' check for this return and respond accordingly.
-Private Function GetNextFrame(ByVal curFrame As Long) As Long
-    GetNextFrame = curFrame + 1
-    If (GetNextFrame >= m_FrameCount) Then
-        If m_RepeatAnimation Then GetNextFrame = 0
-    End If
-End Function
-
-'Check to see if we've run out of frames to display; this is used for "play once" functionality
-Private Function OutOfFrames() As Boolean
-    
-    OutOfFrames = False
-    
-    'Failsafe check for frame count
-    If (m_CurrentFrame >= m_FrameCount) Then
-        If m_RepeatAnimation Then
-            m_CurrentFrame = 0
-        Else
-            m_CurrentFrame = m_FrameCount - 1
-            StopAnimation
-            OutOfFrames = True
-        End If
-    End If
-    
-End Function
+Private Sub m_Timer_EndOfAnimation()
+    RaiseEvent AnimationEnded
+    RenderAnimationFrame
+End Sub
 
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
     If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.NotifyNewThumbNeeded
@@ -383,7 +235,7 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 Public Function GetCurrentFrame() As Long
-    GetCurrentFrame = m_CurrentFrame
+    GetCurrentFrame = m_Timer.GetCurrentFrame()
 End Function
 
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
@@ -391,7 +243,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     
     'Skip overlays while animating (the animator responds to clicks, instead)
     If (m_Timer.IsActive) Then Exit Sub
-            
+    
     If (Button And pdLeftButton) <> 0 Then
         If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
@@ -408,7 +260,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     m_LastMouseX = -1: m_LastMouseY = -1
     ucSupport.RequestCursor IDC_DEFAULT
     
-    'Skip overlays while animation
+    'Skip overlays while animating
     If (Not m_Timer.IsActive) Then RedrawBackBuffer
     
 End Sub
@@ -439,13 +291,10 @@ End Sub
 
 'Outside callers can modify the currently active frame using this slider.
 Public Sub ChangeActiveFrame(ByVal newFrameIndex As Long)
-    If (newFrameIndex <> m_CurrentFrame) Then
-        StopAnimation
-        m_CurrentFrame = newFrameIndex
-        If (m_CurrentFrame < 0) Then m_CurrentFrame = 0
-        If (m_CurrentFrame >= m_FrameCount) Then m_CurrentFrame = m_FrameCount - 1
+    If (newFrameIndex <> m_Timer.GetCurrentFrame()) Then
+        m_Timer.StopTimer
         UpdateAnimationSettings PDImages.GetActiveImage, newFrameIndex
-        RenderAnimationFrame
+        m_Timer.SetCurrentFrame newFrameIndex
     End If
 End Sub
 
@@ -459,40 +308,18 @@ Public Sub PlayAnimation()
     If (Not m_Animated) Then Exit Sub
     
     'Reset the current animation frame, as necessary
-    If (m_CurrentFrame >= m_FrameCount - 1) Then m_CurrentFrame = 0
+    If (m_Timer.GetCurrentFrame() >= m_FrameCount - 1) Then m_Timer.SetCurrentFrame 0
     
-    'Next, we're gonna prep a timer object based on the required delay for this animation frame.
-    ' (Note that Windows does not support timer accuracy below 10 ms, so we lock our timer
-    ' requests to never be less than 10ms.)
-    Dim targetDelayMS As Long
-    targetDelayMS = m_Frames(m_CurrentFrame).afFrameDelayMS
-    If (targetDelayMS < 10) Then targetDelayMS = 10
-        
-    m_Timer.Interval = targetDelayMS
+    'Relay animation settings to the animation timer
+    RelayAnimationSettings
+    
+    'The animation timer handles the rest!
     m_Timer.StartTimer
     
-    'Render the current frame, then exit
-    VBHacks.GetHighResTimeInMS m_TimeAtLastFrame
-    RenderAnimationFrame
-    m_CurrentFrame = m_CurrentFrame + 1
-
 End Sub
 
 Public Sub StopAnimation()
-    
-    If m_Timer.IsActive Then
-        
-        'Because the animation timer post-updates the current frame (e.g. it increments it *after* rendering
-        ' the current frame), the current frame marker is going to be 1 higher than whatever is displayed on-screen.
-        ' Decrement it to ensure that the on-screen image matches our internal tracker.
-        If (m_CurrentFrame > 0) And (m_CurrentFrame < m_FrameCount - 1) Then m_CurrentFrame = m_CurrentFrame - 1
-        RaiseEvent AnimationEnded
-        
-    End If
-    
     m_Timer.StopTimer
-    m_ExpectedTimeToDisplay = 0
-    
 End Sub
 
 'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
@@ -550,7 +377,7 @@ Private Sub UserControl_Initialize()
     
     'If the program is running, create our animation timer
     If PDMain.IsProgramRunning() Then
-        Set m_Timer = New pdTimer
+        Set m_Timer = New pdTimerAnimation
         Set m_Thumbs = New pdSpriteSheet
     End If
     
@@ -602,14 +429,19 @@ Private Sub UpdateControlLayout()
     End If
     
     'Update animation parameters, as necessary
-    If (LenB(m_LastImageID) = 0) Or (lastImageID <> m_LastImageID) Or (m_LastThumbWidth <> thumbWidth) Or (m_LastThumbHeight <> thumbHeight) Then
+    Dim needToUpdateFrames As Boolean
+    needToUpdateFrames = (LenB(m_LastImageID) = 0)  'Frames have never been generated
+    If (Not needToUpdateFrames) Then needToUpdateFrames = (lastImageID <> m_LastImageID) 'Active image has changed
+    If (Not needToUpdateFrames) Then needToUpdateFrames = (m_LastThumbWidth <> thumbWidth) Or (m_LastThumbHeight <> thumbHeight) 'Image size has changed
+    If (Not needToUpdateFrames) And (Not tmpImage Is Nothing) Then needToUpdateFrames = (m_FrameCount <> tmpImage.GetNumOfLayers)   'Number of frames has changed
+    If needToUpdateFrames Then
         
         If (Not tmpImage Is Nothing) Then m_Animated = tmpImage.IsAnimated()
         
         'If the image or thumbnail size has changed, we need to regenerate our thumbnail cache
         If m_Animated Then
             If (lastImageID <> m_LastImageID) Or (m_LastThumbWidth <> thumbWidth) Or (m_LastThumbHeight <> thumbHeight) Then m_Thumbs.ResetCache
-            UpdateAnimationSettings tmpImage, m_CurrentFrame, True
+            UpdateAnimationSettings tmpImage, m_Timer.GetCurrentFrame(), True
         End If
         
     End If
@@ -620,8 +452,8 @@ Private Sub UpdateControlLayout()
     'On new image loads, reset the current frame to 0
     If (lastImageID <> m_LastImageID) Then
         StopAnimation
-        m_CurrentFrame = 0
-        RaiseEvent AnimationFrameChanged(m_CurrentFrame)
+        m_Timer.SetCurrentFrame 0
+        RaiseEvent AnimationFrameChanged(0)
     End If
     
     'With the backbuffer and image thumbnail successfully created, we can finally redraw the new navigator window
@@ -633,8 +465,20 @@ Private Sub EndAnimations()
     m_Animated = False
     m_FrameCount = 1
     ReDim m_Frames(0) As PD_AnimationFrame
-    If (Not m_Thumbs Is Nothing) Then m_Thumbs.ResetCache
     StopAnimation
+    RelayAnimationSettings
+    If (Not m_Thumbs Is Nothing) Then m_Thumbs.ResetCache
+End Sub
+
+Private Sub RelayAnimationSettings()
+    
+    m_Timer.NotifyFrameCount m_FrameCount
+    
+    Dim i As Long
+    For i = 0 To m_FrameCount - 1
+        m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
+    Next i
+    
 End Sub
 
 'After the thumbnail has received an "update" request, we also need to update our animation frames
@@ -657,6 +501,7 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
             m_FrameCount = srcImage.GetNumOfLayers
             ReDim m_Frames(0 To m_FrameCount - 1) As PD_AnimationFrame
             m_Thumbs.ResetCache
+            m_Timer.NotifyFrameCount m_FrameCount
         End If
         
         'Retrieving thumbnails uses the same math as the regular thumbnail; in animation files,
@@ -731,8 +576,9 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
                 
             End If
             
-            'Retrieve layer frame times
+            'Retrieve layer frame times and relay them to the animation object
             m_Frames(i).afFrameDelayMS = Animation.GetFrameTimeFromLayerName(srcImage.GetLayerByIndex(i).GetLayerName())
+            m_Timer.NotifyFrameTime m_Frames(i).afFrameDelayMS, i
             
         Next i
     
@@ -751,10 +597,15 @@ Private Sub RedrawBackBuffer(Optional ByVal skipAnimationStep As Boolean = False
     
     'If the current image is animated, use the separate animation-specific render function
     If m_Animated And (Not skipAnimationStep) Then
-        If (m_CurrentFrame < 0) Then m_CurrentFrame = 0
-        If (m_CurrentFrame >= m_FrameCount) Then m_CurrentFrame = m_FrameCount - 1
+        
+        Dim idxFrame As Long
+        idxFrame = m_Timer.GetCurrentFrame()
+        
+        If (idxFrame < 0) Then idxFrame = 0
+        If (idxFrame >= m_FrameCount) Then idxFrame = idxFrame - 1
         RenderAnimationFrame
         Exit Sub
+        
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
@@ -768,8 +619,6 @@ Private Sub RedrawBackBuffer(Optional ByVal skipAnimationStep As Boolean = False
     
     If PDMain.IsProgramRunning() Then
     
-        'TODO: move rect calculation into a previous step
-        
         'If an image has been loaded, determine a centered position for the image's thumbnail
         If (Not PDImages.IsImageActive()) Then
             With m_ThumbRect
@@ -868,8 +717,11 @@ Private Sub RenderAnimationFrame()
     
     If m_DoNotRenderAnimation Then Exit Sub
     
+    Dim idxFrame As Long
+    idxFrame = m_Timer.GetCurrentFrame()
+    
     'Make sure the frame request is valid; if it isn't, exit immediately
-    If (m_CurrentFrame >= 0) And (m_CurrentFrame < m_FrameCount) Then
+    If (idxFrame >= 0) And (idxFrame < m_FrameCount) Then
         
         'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
         Dim bufferDC As Long
@@ -883,14 +735,12 @@ Private Sub RenderAnimationFrame()
         If PDMain.IsProgramRunning() Then
             
             'Paint a checkerboard background only over the relevant image region, followed by the frame itself
-            With m_Frames(m_CurrentFrame)
+            With m_Frames(idxFrame)
                 GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, m_AniThumbBounds.Left, m_AniThumbBounds.Top, m_AniThumbBounds.Width, m_AniThumbBounds.Height, g_CheckerboardPattern, bufferDC, True
                 
                 'Make sure we have the necessary image in the spritesheet cache
-                If (Not m_Thumbs.DoesImageExist(Str$(m_CurrentFrame) & "|" & Str$(.afWidth))) Then UpdateAnimationSettings PDImages.GetActiveImage, m_CurrentFrame, True
-                'GDI_Plus.GDIPlus_StretchBlt Nothing, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, .afWidth, .afHeight, .afDIB, 0, 0, .afWidth, .afHeight, , GP_IM_HighQualityBicubic, bufferDC
-                '.afDIB.FreeFromDC
-                m_Thumbs.StretchBltCachedImage Nothing, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, .afWidth, .afHeight, m_Frames(m_CurrentFrame).afThumbKey, , GP_IM_HighQualityBicubic, bufferDC
+                If (Not m_Thumbs.DoesImageExist(Str$(idxFrame) & "|" & Str$(.afWidth))) Then UpdateAnimationSettings PDImages.GetActiveImage, idxFrame, True
+                m_Thumbs.PaintCachedImage bufferDC, (bWidth - .afWidth) * 0.5, (bHeight - .afHeight) * 0.5, m_Frames(idxFrame).afThumbKey
             End With
             
         End If

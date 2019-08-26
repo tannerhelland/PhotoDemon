@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.86</langversion>
+<langversion>1.0.87</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -57,6 +57,12 @@
 <!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
+
+<!-- BEGIN text for Animation.bas -->
+
+<!-- Animation.bas contains 0 phrases. -->
+
+<!-- END text for Animation.bas-->
 
 <!-- BEGIN text for CanvasManager.bas -->
 
@@ -4083,6 +4089,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- END text for pdEdgeDetector.cls-->
 
+<!-- BEGIN text for pdFileMM.cls -->
+
+<!-- pdFileMM.cls contains 0 phrases. -->
+
+<!-- END text for pdFileMM.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -4565,6 +4577,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
+<!-- BEGIN text for pdPackageChunky.cls -->
+
+<!-- pdPackageChunky.cls contains 0 phrases. -->
+
+<!-- END text for pdPackageChunky.cls-->
+
 <!-- BEGIN text for pdPackager2.cls -->
 
 <!-- pdPackager2.cls contains 0 phrases. -->
@@ -4623,6 +4641,12 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- pdPNGChunk.cls contains 0 phrases. -->
 
 <!-- END text for pdPNGChunk.cls-->
+
+<!-- BEGIN text for pdPopupMenu.cls -->
+
+<!-- pdPopupMenu.cls contains 0 phrases. -->
+
+<!-- END text for pdPopupMenu.cls-->
 
 <!-- BEGIN text for pdProfiler.cls -->
 
@@ -4689,6 +4713,12 @@ P 숫자 값을 입력하십시오.</translation>
 
 <!-- END text for pdSelection.cls-->
 
+<!-- BEGIN text for pdSpriteSheet.cls -->
+
+<!-- pdSpriteSheet.cls contains 0 phrases. -->
+
+<!-- END text for pdSpriteSheet.cls-->
+
 <!-- BEGIN text for pdStack.cls -->
 
 <!-- pdStack.cls contains 0 phrases. -->
@@ -4730,6 +4760,12 @@ P 숫자 값을 입력하십시오.</translation>
 <!-- pdTimer.cls contains 0 phrases. -->
 
 <!-- END text for pdTimer.cls-->
+
+<!-- BEGIN text for pdTimerAnimation.cls -->
+
+<!-- pdTimerAnimation.cls contains 0 phrases. -->
+
+<!-- END text for pdTimerAnimation.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -9056,6 +9092,47 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 
 <!-- END text for Dialog_UpdateAvailable.frm-->
 
+<!-- BEGIN text for Edit_Clipboard.frm (FormClipboard) -->
+
+<phrase>
+<original>use merged image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available formats</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bitmap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>DIB v5</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNG</original>
+<translation></translation>
+</phrase>
+
+<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for Edit_Clipboard.frm-->
+
 <!-- BEGIN text for Edit_Fade.frm (FormFadeLast) -->
 
 <phrase>
@@ -10662,6 +10739,63 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 
 <!-- END text for Effects_Pixelate_Mosaic.frm-->
 
+<!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
+
+<phrase>
+<original>generator</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering clouds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>simple</original>
+<translation>단순한</translation>
+</phrase>
+
+<phrase>
+<original>Perlin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Simplex</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OpenSimplex</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Clouds.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for Effects_Render_Clouds.frm-->
+
+<!-- BEGIN text for Effects_Render_Fibers.frm (FormFxFibers) -->
+
+<phrase>
+<original>length</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grain</original>
+<translation>곡물</translation>
+</phrase>
+
+<phrase>
+<original>Rendering fibers</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Render_Fibers.frm-->
+
 <!-- BEGIN text for Effects_Sharpen_Sharpen.frm (FormSharpen) -->
 
 <!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
@@ -10697,11 +10831,6 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 </phrase>
 
 <phrase>
-<original>grain</original>
-<translation>곡물</translation>
-</phrase>
-
-<phrase>
 <original>fade edges</original>
 <translation>페이드 에지</translation>
 </phrase>
@@ -10711,7 +10840,7 @@ If 다른 파일 이름으로 저장하려면 '취소'를 선택한 다음 파�
 <translation>제 시간에 이미지 보내기</translation>
 </phrase>
 
-<!-- Effects_Stylize_Antique.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Stylize_Antique.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Antique.frm-->
 
@@ -13054,11 +13183,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>simple</original>
-<translation>단순한</translation>
-</phrase>
-
-<phrase>
 <original>technical</original>
 <translation>전문인</translation>
 </phrase>
@@ -13258,7 +13382,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>한 줄에 하나씩 항목  %1 목록</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 118 phrases. 67 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 118 phrases. 68 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15899,124 +16023,6 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdPopupMenu.cls -->
-
-<!-- pdPopupMenu.cls contains 0 phrases. -->
-
-<!-- END text for pdPopupMenu.cls-->
-
-<!-- BEGIN text for pdPackageChunky.cls -->
-
-<!-- pdPackageChunky.cls contains 0 phrases. -->
-
-<!-- END text for pdPackageChunky.cls-->
-
-<!-- BEGIN text for pdFileMM.cls -->
-
-<!-- pdFileMM.cls contains 0 phrases. -->
-
-<!-- END text for pdFileMM.cls-->
-
-<!-- BEGIN text for Edit_Clipboard.frm (FormClipboard) -->
-
-<phrase>
-<original>use merged image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>available formats</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Bitmap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIB</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIB v5</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PNG</original>
-<translation></translation>
-</phrase>
-
-<!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Edit_Clipboard.frm-->
-
-<!-- BEGIN text for Effects_Render_Clouds.frm (FormFxClouds) -->
-
-<phrase>
-<original>generator</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Rendering clouds</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Perlin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Simplex</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OpenSimplex</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Render_Clouds.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Render_Clouds.frm-->
-
-<!-- BEGIN text for Effects_Render_Fibers.frm (FormFxFibers) -->
-
-<phrase>
-<original>length</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Rendering fibers</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Render_Fibers.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Effects_Render_Fibers.frm-->
-
-<!-- BEGIN text for Animation.bas -->
-
-<!-- Animation.bas contains 0 phrases. -->
-
-<!-- END text for Animation.bas-->
-
-<!-- BEGIN text for pdSpriteSheet.cls -->
-
-<!-- pdSpriteSheet.cls contains 0 phrases. -->
-
-<!-- END text for pdSpriteSheet.cls-->
 
 <!-- Automatic text extraction complete. -->
 

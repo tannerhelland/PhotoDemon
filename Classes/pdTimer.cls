@@ -112,8 +112,9 @@ Friend Sub StopTimer()
     
 End Sub
 
-'This sub will be called by the VBHacks module whenever a new timer event arrives.  Note that stopping a timer does not
-' remove already-posted WM_TIMER messages from the message queue; to prevent those from firing, we check the timer ID here.
+'This sub will be called by the VBHacks module whenever a new timer event arrives.
+' Note that stopping a timer does *not* remove already-posted WM_TIMER messages from the message queue;
+' to prevent those from firing, we check the timer ID here.
 Friend Sub TimerEventArrived()
     If (m_TimerID <> 0) Then RaiseEvent Timer
 End Sub
