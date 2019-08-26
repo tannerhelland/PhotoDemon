@@ -43,7 +43,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = True
+Private Const PNG_DEBUG_VERBOSE As Boolean = False
 
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
@@ -1645,7 +1645,7 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
     'Now we can actually composite the results
     For curFrame = 0 To Me.NumAnimationFrames - 1
         
-        Message "Multipage image found.  Loading page #%1 of %2...", CStr(curFrame + 1), Me.NumAnimationFrames
+        Message "Multipage image found.  Loading page #%1 of %2...", CStr(curFrame + 1), Me.NumAnimationFrames, "DONOTLOG"
         
         'Frame 0 is a special case.  In most animated PNGs, it will also be the first frame - but this is
         ' *not* guaranteed.

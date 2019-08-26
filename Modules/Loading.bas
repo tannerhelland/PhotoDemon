@@ -290,7 +290,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         PDDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format$(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
         PDDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
         PDDebug.LogAction vbTab & "ICC profile embedded: " & (LenB(targetImage.GetColorProfile_Original) <> 0), , True
-        PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
+        PDDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages) & " (" & numOfPages & ")", , True
         PDDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
         PDDebug.LogAction vbTab & "Time to load: " & VBHacks.GetTimeDiffNowAsString(justImageLoadTime), , True
         PDDebug.LogAction "~ End of image summary ~", , True

@@ -2506,7 +2506,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
         For pageToLoad = 1 To numOfPages - 1
             
             'If the image is large, it's nice to provide status updates to the user, as this may take awhile
-            Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages
+            Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages, "DONOTLOG"
             If ((pageToLoad And 7) = 0) Then VBHacks.DoEvents_SingleHwnd FormMain.hWnd
             
             'Select the current page

@@ -733,7 +733,7 @@ Public Function FinishLoadingMultipageImage(ByRef srcFilename As String, ByRef d
     Dim pageToLoad As Long
     For pageToLoad = 1 To numOfPages - 1
         
-        Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages
+        Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages, "DONOTLOG"
         If ((pageToLoad And 7) = 0) Then VBHacks.DoEvents_SingleHwnd FormMain.hWnd
         
         'Lock the current page
