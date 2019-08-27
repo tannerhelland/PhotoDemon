@@ -637,3 +637,17 @@ Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
     Set FormClipboard = Nothing
     
 End Sub
+
+Public Function PromptExportAnimation(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportAnimation
+    dialog_ExportAnimation.ShowDialog srcImage
+    
+    PromptExportAnimation = dialog_ExportAnimation.GetDialogResult
+    dstFormatParams = dialog_ExportAnimation.GetFormatParams
+    dstMetadataParams = dialog_ExportAnimation.GetMetadataParams
+    
+    Unload dialog_ExportAnimation
+    Set dialog_ExportAnimation = Nothing
+    
+End Function

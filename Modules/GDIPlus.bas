@@ -1735,7 +1735,7 @@ End Function
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
 ' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is faster,
 ' and there should never be a need to alpha-blend the checkerboard pattern atop something.
-Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
+Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal fixBoundaryPainting As Boolean = False, Optional ByVal noAntialiasing As Boolean = False) As Boolean
     
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
@@ -1746,7 +1746,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
         GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     End If
     
-    GdipSetSmoothingMode hGraphics, GP_SM_Antialias
+    If noAntialiasing Then GdipSetSmoothingMode hGraphics, GP_SM_None Else GdipSetSmoothingMode hGraphics, GP_SM_Antialias
     GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
@@ -2497,7 +2497,7 @@ Public Function ContinueLoadingMultipageImage(ByRef srcFilename As String, ByRef
                 'The returned value is a ushort; copy it into a signed long
                 Dim tmpLoopCount As Long
                 CopyMemoryStrict VarPtr(tmpLoopCount), VarPtr(tmpPropBuffer(0)), 2
-                If (Not targetImage Is Nothing) Then targetImage.ImgStorage.AddEntry "agif-loop-count", Trim$(Str$(tmpLoopCount))
+                If (Not targetImage Is Nothing) Then targetImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(tmpLoopCount))
                 
             End If
         End If

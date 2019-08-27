@@ -1903,7 +1903,7 @@ Private Sub LoadGradientCollectionPreviewDIB(ByVal itemIndex As Long)
     
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     Dim i As Long
     
@@ -1912,7 +1912,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'See if an existing has been selected.
     Dim tmpPoint As Long
-    tmpPoint = GetPointAtPosition(X, Y)
+    tmpPoint = GetPointAtPosition(x, y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
     If (tmpPoint >= 0) Then
@@ -1947,7 +1947,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
             With m_GradientPoints(m_NumOfGradientPoints)
                 
                 .PointOpacity = 100
-                .PointPosition = ConvertPixelCoordsToNodeCoords(X)
+                .PointPosition = ConvertPixelCoordsToNodeCoords(x)
                 
                 'Preset the RGB value to match whatever the gradient already is at this point
                 Dim newRGBA As RGBQuad
@@ -1970,18 +1970,18 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 
 End Sub
 
-Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseEvents.SetCursor_System IDC_HAND
 End Sub
 
-Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
     m_CurHoverX = -1
     m_MouseEvents.SetCursor_System IDC_DEFAULT
     DrawGradientNodes
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'First, separate our handling by mouse button state
     If (Button And pdLeftButton) <> 0 Then
@@ -1991,7 +1991,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         'The left mouse button is down.  Assign the new position to the active node.
         If (m_CurPoint >= 0) Then
             If chkDistributeEvenly.Value Then chkDistributeEvenly.Value = False
-            m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(X)
+            m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(x)
         End If
         
         'Redraw the gradient interaction nodes and the gradient itself
@@ -2004,14 +2004,14 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'See if a new point is currently being hovered.
         Dim tmpPoint As Long
-        tmpPoint = GetPointAtPosition(X, Y)
+        tmpPoint = GetPointAtPosition(x, y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
         If (tmpPoint <> m_CurHoverPoint) Then
             m_CurHoverPoint = tmpPoint
             m_CurHoverX = -1
         Else
-            m_CurHoverX = X
+            m_CurHoverX = x
         End If
         
         DrawGradientNodes
@@ -2021,11 +2021,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 'Given an x-position in the interaction box, return the currently hovered point.  If multiple points are hovered, the nearest one will be returned.
-Private Function GetPointAtPosition(ByVal X As Long, Y As Long) As Long
+Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
     
     'Start by converting the current x-position into the range [0, 1]
     Dim convPoint As Single
-    convPoint = ConvertPixelCoordsToNodeCoords(X)
+    convPoint = ConvertPixelCoordsToNodeCoords(x)
     
     'convPoint now contains the position of the mouse on the range [0, 1].  Find the nearest point.
     Dim minDistance As Single, curDistance As Single, minIndex As Long
@@ -2051,7 +2051,7 @@ Private Function GetPointAtPosition(ByVal X As Long, Y As Long) As Long
 End Function
 
 'Given an (x, y) position on the gradient interaction window, convert it to the [0, 1] range used by the gradient control.
-Private Function ConvertPixelCoordsToNodeCoords(ByVal X As Long) As Single
+Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
@@ -2062,13 +2062,13 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal X As Long) As Single
         g_WindowManager.GetWindowRect_API picNodePreview.hWnd, nodePreviewRect
         
         Dim tmpPoint As PointAPI
-        tmpPoint.X = nodePreviewRect.x1
-        tmpPoint.Y = nodePreviewRect.y1
+        tmpPoint.x = nodePreviewRect.x1
+        tmpPoint.y = nodePreviewRect.y1
         
         g_WindowManager.GetScreenToClient Me.hWnd, tmpPoint
         
-        uiMin = tmpPoint.X + 1
-        uiMax = tmpPoint.X + (nodePreviewRect.x2 - nodePreviewRect.x1)
+        uiMin = tmpPoint.x + 1
+        uiMax = tmpPoint.x + (nodePreviewRect.x2 - nodePreviewRect.x1)
     
     'This branch should never trigger (as g_WindowManager will always exist), but I've left it here as a
     ' (non-DPI friendly) failsafe.
@@ -2078,7 +2078,7 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal X As Long) As Single
     End If
     
     uiRange = uiMax - uiMin
-    ConvertPixelCoordsToNodeCoords = (CSng(X) - uiMin) / uiRange
+    ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
     
     If (ConvertPixelCoordsToNodeCoords < 0) Then
         ConvertPixelCoordsToNodeCoords = 0

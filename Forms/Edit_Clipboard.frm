@@ -29,9 +29,9 @@ Begin VB.Form FormClipboard
       TabIndex        =   2
       Top             =   3000
       Width           =   6135
-      _extentx        =   10821
-      _extenty        =   661
-      caption         =   "use merged image"
+      _ExtentX        =   10821
+      _ExtentY        =   661
+      Caption         =   "use merged image"
    End
    Begin PhotoDemon.pdListBox lstFormats 
       Height          =   2655
@@ -39,9 +39,9 @@ Begin VB.Form FormClipboard
       TabIndex        =   1
       Top             =   120
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   7435
-      caption         =   "available formats"
+      _ExtentX        =   10610
+      _ExtentY        =   7435
+      Caption         =   "available formats"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBar 
       Align           =   2  'Align Bottom
@@ -51,9 +51,9 @@ Begin VB.Form FormClipboard
       TabIndex        =   0
       Top             =   3510
       Width           =   6360
-      _extentx        =   11218
-      _extenty        =   1296
-      dontautounloadparent=   -1  'True
+      _ExtentX        =   11218
+      _ExtentY        =   1296
+      DontAutoUnloadParent=   -1  'True
    End
 End
 Attribute VB_Name = "FormClipboard"

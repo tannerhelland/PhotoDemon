@@ -185,10 +185,12 @@ Private Sub btnPlay_Click(Index As Integer)
 End Sub
 
 Private Sub navInner_AnimationEnded()
+    
     m_DoNotUpdate = True
-        If btnPlay(0).Value Then btnPlay(0).Value = False
-        sldFrame.Value = navInner.GetCurrentFrame()
+    If btnPlay(0).Value Then btnPlay(0).Value = False
+    sldFrame.Value = navInner.GetCurrentFrame()
     m_DoNotUpdate = False
+    
 End Sub
 
 Private Sub navInner_AnimationFrameChanged(ByVal newFrameIndex As Long)
@@ -413,11 +415,12 @@ End Sub
 
 Private Sub UpdateButtonTooltips()
     
-    If btnPlay(0).Value Then
-        btnPlay(0).AssignTooltip "Pause the current animation"
-    Else
-        btnPlay(0).AssignTooltip "Play the current animation"
-    End If
+    'I'm not enabling these tooltips at present, as they should be abundantly clear from the icons used
+    'If btnPlay(0).Value Then
+    '    btnPlay(0).AssignTooltip "Pause the current animation"
+    'Else
+    '    btnPlay(0).AssignTooltip "Play the current animation"
+    'End If
     
     btnPlay(1).AssignTooltip "Toggle between 1x and repeating previews"
     
@@ -435,82 +438,14 @@ End Sub
 Private Sub CreateButtonIcons()
 
     'Play and pause icons are generated at run-time, using the current UI accent color
-    
     Dim btnIconSize As Long
     btnIconSize = btnPlay(0).GetWidth - Interface.FixDPI(4)
     
-    Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
-    
     Dim icoPlay As pdDIB
-    Set icoPlay = New pdDIB
-    icoPlay.CreateBlank btnIconSize, btnIconSize, 32, 0, 0
-    icoPlay.SetInitialAlphaPremultiplicationState True
+    Set icoPlay = Interface.GetRuntimeUIDIB(pdri_Play, btnIconSize)
     
-    'Play icon first
-    Drawing2D.QuickCreateSurfaceFromDIB cSurface, icoPlay, True
-    cSurface.SetSurfacePixelOffset P2_PO_Half
-    
-    'Do a little coordinate math to automatically calculate a triangle or double-bar pause vector
-    Dim cPath As pd2DPath
-    Set cPath = New pd2DPath
-    
-    Dim cPoints() As PointFloat
-    
-    Dim cx As Single, cy As Single
-    cx = btnIconSize * 0.5
-    cy = btnIconSize * 0.5
-    
-    Dim cRadius As Single
-    cRadius = (btnIconSize * 0.35)
-    
-    ReDim cPoints(0 To 2) As PointFloat
-    cPoints(0).x = cx + cRadius
-    cPoints(0).y = cy
-    
-    PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, cx, cy, (2# * PI) / 3#, cPoints(1).x, cPoints(1).y
-    PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, cx, cy, -1 * (2# * PI) / 3#, cPoints(2).x, cPoints(2).y
-    
-    cPath.AddLines 3, VarPtr(cPoints(0))
-    cPath.CloseCurrentFigure
-    
-    'Re-center the path (as the triangle will be biased rightward due to the angles used)
-    cPath.TranslatePath -1! * (cRadius - (cx - cPoints(1).x)) * 0.5, 0!
-    
-    Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Accent)
-    PD2D.FillPath cSurface, cBrush, cPath
-    
-    'Next, a pause icon
     Dim icoPause As pdDIB
-    Set icoPause = New pdDIB
-    icoPause.CreateBlank btnIconSize, btnIconSize, 32, 0, 0
-    icoPause.SetInitialAlphaPremultiplicationState True
-    
-    'Set cSurface = Nothing
-    Drawing2D.QuickCreateSurfaceFromDIB cSurface, icoPause, True
-    cSurface.SetSurfacePixelOffset P2_PO_Half
-    
-    ReDim cPoints(0 To 3) As PointFloat
-    cPoints(0).x = (btnIconSize * 0.33)
-    cPoints(0).y = (btnIconSize * 0.2)
-    cPoints(1).x = cPoints(0).x
-    cPoints(1).y = btnIconSize - cPoints(0).y
-    
-    cPoints(2).x = btnIconSize - cPoints(0).x
-    cPoints(2).y = cPoints(0).y
-    cPoints(3).x = cPoints(2).x
-    cPoints(3).y = cPoints(1).y
-    
-    cPath.ResetPath
-    cPath.AddLines 2, VarPtr(cPoints(0))
-    cPath.CloseCurrentFigure
-    cPath.AddLines 2, VarPtr(cPoints(2))
-    cPath.CloseCurrentFigure
-    
-    Drawing2D.QuickCreateSolidPen cPen, btnIconSize * 0.15, g_Themer.GetGenericUIColor(UI_Accent)
-    PD2D.DrawPath cSurface, cPen, cPath
-        
-    'Clear all drawing objects
-    Set cSurface = Nothing: Set cPen = Nothing: Set cBrush = Nothing
+    Set icoPause = Interface.GetRuntimeUIDIB(pdri_Pause, btnIconSize)
     
     'Assign the icons
     btnPlay(0).AssignImage vbNullString, icoPlay

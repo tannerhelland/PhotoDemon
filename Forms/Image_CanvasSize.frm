@@ -227,21 +227,21 @@ Private Sub UpdateAnchorButtons()
                 Dim tmpDIB As pdDIB
                 
                 If (StrComp(m_ArrowLocations(i), "arrow_up", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UP, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowUp, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_upr", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UPR, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowUpR, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_right", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_RIGHT, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowRight, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_downr", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWNR, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowDownR, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_down", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWN, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowDown, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_downl", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWNL, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowDownL, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_left", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_LEFT, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowLeft, dibSize)
                 ElseIf (StrComp(m_ArrowLocations(i), "arrow_upl", vbBinaryCompare) = 0) Then
-                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UPL, dibSize)
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(pdri_ArrowUpL, dibSize)
                 End If
                 
                 cmdAnchor(i).AssignImage vbNullString, tmpDIB, dibSize, dibSize

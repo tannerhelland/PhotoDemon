@@ -593,10 +593,10 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     
     Dim btnImageSize As Long
-    btnImageSize = FixDPI(16)
-    btsChannel.AssignImageToItem 0, vbNullString, Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, btnImageSize, 2), btnImageSize, btnImageSize
-    btsChannel.AssignImageToItem 1, vbNullString, Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, btnImageSize, 2), btnImageSize, btnImageSize
-    btsChannel.AssignImageToItem 2, vbNullString, Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, btnImageSize, 2), btnImageSize, btnImageSize
+    btnImageSize = Interface.FixDPI(16)
+    btsChannel.AssignImageToItem 0, vbNullString, Interface.GetRuntimeUIDIB(pdri_ChannelRed, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 1, vbNullString, Interface.GetRuntimeUIDIB(pdri_ChannelGreen, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 2, vbNullString, Interface.GetRuntimeUIDIB(pdri_ChannelBlue, btnImageSize, 2), btnImageSize, btnImageSize
     
     btsChannel.ListIndex = 0
             

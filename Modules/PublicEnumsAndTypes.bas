@@ -296,24 +296,26 @@ End Enum
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
-Public Enum PD_RUNTIME_UI_DIB
-    PDRUID_CHANNEL_RED = 0
-    PDRUID_CHANNEL_GREEN = 1
-    PDRUID_CHANNEL_BLUE = 2
-    PDRUID_CHANNEL_RGB = 3
-    PRDUID_ARROW_UP = 4
-    PRDUID_ARROW_UPR = 5
-    PRDUID_ARROW_RIGHT = 6
-    PRDUID_ARROW_DOWNR = 7
-    PRDUID_ARROW_DOWN = 8
-    PRDUID_ARROW_DOWNL = 9
-    PRDUID_ARROW_LEFT = 10
-    PRDUID_ARROW_UPL = 11
+Public Enum PD_RuntimeIcon
+    pdri_ChannelRed = 0
+    pdri_ChannelGreen = 1
+    pdri_ChannelBlue = 2
+    pdri_ChannelRGB = 3
+    pdri_ArrowUp = 4
+    pdri_ArrowUpR = 5
+    pdri_ArrowRight = 6
+    pdri_ArrowDownR = 7
+    pdri_ArrowDown = 8
+    pdri_ArrowDownL = 9
+    pdri_ArrowLeft = 10
+    pdri_ArrowUpL = 11
+    pdri_Play = 12
+    pdri_Pause = 13
 End Enum
 
 #If False Then
-    Private Const PDRUID_CHANNEL_RED = 0, PDRUID_CHANNEL_GREEN = 1, PDRUID_CHANNEL_BLUE = 2, PDRUID_CHANNEL_RGB = 3, PRDUID_ARROW_UP = 4, PRDUID_ARROW_UPR = 5, PRDUID_ARROW_RIGHT = 6, PRDUID_ARROW_DOWNR = 7, PRDUID_ARROW_DOWN = 8, PRDUID_ARROW_DOWNL = 9
-    Private Const PRDUID_ARROW_LEFT = 10, PRDUID_ARROW_UPL = 11
+    Private Const pdri_ChannelRed = 0, pdri_ChannelGreen = 1, pdri_ChannelBlue = 2, pdri_ChannelRGB = 3, pdri_ArrowUp = 4, pdri_ArrowUpR = 5, pdri_ArrowRight = 6, pdri_ArrowDownR = 7, pdri_ArrowDown = 8, pdri_ArrowDownL = 9
+    Private Const pdri_ArrowLeft = 10, pdri_ArrowUpL = 11, pdri_Play = 12, pdri_Pause = 13
 #End If
 
 'Metadata formats.  These are important when writing metadata to a file that is being saved to a different format

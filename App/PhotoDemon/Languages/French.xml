@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.419</langversion>
+<langversion>6.7.420</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -5378,7 +5378,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <translation>Eéorganiser couches </translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdLayerListInner.ctl-->
 
@@ -5455,16 +5455,6 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- BEGIN text for pdNavigator.ctl -->
 
 <phrase>
-<original>Pause the current animation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Play the current animation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Toggle between 1x and repeating previews</original>
 <translation></translation>
 </phrase>
@@ -5474,7 +5464,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- pdNavigator.ctl contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdNavigator.ctl-->
 
@@ -16030,12 +16020,43 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for File_Export_Animation.frm (dialog_ExportAnimation) -->
+
+<phrase>
+<original>Animation export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>none (play once)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forever</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom amount</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This button only affects the above preview.  The repeat setting on the right is the setting stored in the exported image file.</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Animation.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for File_Export_Animation.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2671</phrasecount>
+<phrasecount>2674</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4906 phrases. -->
-<!-- 2235 are duplicates, so only 2671 unique phrases have been written to file. -->
-<!-- These 2671 phrases contain approximately 12590 total words. -->
+<!-- As of this build, PhotoDemon contains 4917 phrases. -->
+<!-- 2243 are duplicates, so only 2674 unique phrases have been written to file. -->
+<!-- These 2674 phrases contain approximately 12614 total words. -->
 
 </pdData>

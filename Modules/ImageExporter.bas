@@ -1147,7 +1147,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     If (i = 0) Then
                     
                         'Loop count
-                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, srcPDImage.ImgStorage.GetEntry_Long("agif-loop-count", 0), 1, &H4&)
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, cParams.GetLong("animation-loop-count", 1), 1, &H4&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                         
                         'Global palette

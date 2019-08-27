@@ -568,10 +568,10 @@ Private Sub Form_Load()
     Dim btnImageSize As Long, btnImageSizeGroup As Long
     btnImageSize = Interface.FixDPI(16)
     btnImageSizeGroup = Interface.FixDPI(24)
-    btsChannel.AssignImageToItem 0, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, btnImageSize, 2), btnImageSize, btnImageSize
-    btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, btnImageSize, 2), btnImageSize, btnImageSize
-    btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, btnImageSize, 2), btnImageSize, btnImageSize
-    btsChannel.AssignImageToItem 3, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, btnImageSizeGroup, 2), btnImageSizeGroup, btnImageSizeGroup
+    btsChannel.AssignImageToItem 0, , Interface.GetRuntimeUIDIB(pdri_ChannelRed, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(pdri_ChannelGreen, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(pdri_ChannelBlue, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 3, , Interface.GetRuntimeUIDIB(pdri_ChannelRGB, btnImageSizeGroup, 2), btnImageSizeGroup, btnImageSizeGroup
     
     'Populate the histogram display options
     btsHistogram.AddItem "on", 0

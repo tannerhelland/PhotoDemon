@@ -1709,30 +1709,33 @@ End Sub
 ' Note that the requested size is in PIXELS, so it is up to the caller to determine the proper size IN PIXELS of
 ' any requested UI elements.  This value will be automatically scaled to the current DPI, so make sure the passed
 ' pixel value is relevant to 100% DPI only (96 DPI).
-Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal BackColor As Long = 0) As pdDIB
+Public Function GetRuntimeUIDIB(ByVal dibType As PD_RuntimeIcon, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0) As pdDIB
 
     'Adjust the dib size and padding to account for DPI
-    dibSize = FixDPI(dibSize)
-    dibPadding = FixDPI(dibPadding)
+    dibSize = Interface.FixDPI(dibSize)
+    dibPadding = Interface.FixDPI(dibPadding)
 
     'Create the target DIB
     Set GetRuntimeUIDIB = New pdDIB
-    GetRuntimeUIDIB.CreateBlank dibSize, dibSize, 32, BackColor, 0
+    GetRuntimeUIDIB.CreateBlank dibSize, dibSize, 32, 0, 0
     GetRuntimeUIDIB.SetInitialAlphaPremultiplicationState True
     
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen, cPath As pd2DPath
+    Dim cPoints() As PointFloat, cRadius As Single
+    Dim xCenter As Single, yCenter As Single
     Dim paintColor As Long
     
     'Dynamically create the requested icon
     Select Case dibType
     
         'Red, green, and blue channel icons are all created similarly.
-        Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
+        Case pdri_ChannelRed, pdri_ChannelGreen, pdri_ChannelBlue
             
-            If (dibType = PDRUID_CHANNEL_RED) Then
+            If (dibType = pdri_ChannelRed) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelRed)
-            ElseIf (dibType = PDRUID_CHANNEL_GREEN) Then
+            ElseIf (dibType = pdri_ChannelGreen) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelGreen)
-            ElseIf (dibType = PDRUID_CHANNEL_BLUE) Then
+            ElseIf (dibType = pdri_ChannelBlue) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
             End If
             
@@ -1740,7 +1743,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
         
         'The RGB DIB is a triad of the individual RGB circles
-        Case PDRUID_CHANNEL_RGB
+        Case pdri_ChannelRGB
         
             'Draw the red, green, and blue circles, with slight overlap toward the middle
             Dim circleSize As Long
@@ -1751,7 +1754,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelRed), True, 210
             
         'Arrows are all drawn using the same code
-        Case PRDUID_ARROW_UP, PRDUID_ARROW_UPR, PRDUID_ARROW_RIGHT, PRDUID_ARROW_DOWNR, PRDUID_ARROW_DOWN, PRDUID_ARROW_DOWNL, PRDUID_ARROW_LEFT, PRDUID_ARROW_UPL
+        Case pdri_ArrowUp, pdri_ArrowUpR, pdri_ArrowRight, pdri_ArrowDownR, pdri_ArrowDown, pdri_ArrowDownL, pdri_ArrowLeft, pdri_ArrowUpL
         
             'Calculate button points.  (Note that these are calculated uniformly for all arrow directions.)
             Dim buttonPts() As PointFloat
@@ -1772,30 +1775,82 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             tmpPath.AddPolygon 3, VarPtr(buttonPts(0)), True
             
             'Rotate the path, as necessary
-            If (dibType = PRDUID_ARROW_UPR) Then
+            If (dibType = pdri_ArrowUpR) Then
                 tmpPath.RotatePathAroundItsCenter 45#
-            ElseIf (dibType = PRDUID_ARROW_RIGHT) Then
+            ElseIf (dibType = pdri_ArrowRight) Then
                 tmpPath.RotatePathAroundItsCenter 90#
-            ElseIf (dibType = PRDUID_ARROW_DOWNR) Then
+            ElseIf (dibType = pdri_ArrowDownR) Then
                 tmpPath.RotatePathAroundItsCenter 135#
-            ElseIf (dibType = PRDUID_ARROW_DOWN) Then
+            ElseIf (dibType = pdri_ArrowDown) Then
                 tmpPath.RotatePathAroundItsCenter 180#
-            ElseIf (dibType = PRDUID_ARROW_DOWNL) Then
+            ElseIf (dibType = pdri_ArrowDownL) Then
                 tmpPath.RotatePathAroundItsCenter 225#
-            ElseIf (dibType = PRDUID_ARROW_LEFT) Then
+            ElseIf (dibType = pdri_ArrowLeft) Then
                 tmpPath.RotatePathAroundItsCenter 270#
-            ElseIf (dibType = PRDUID_ARROW_UPL) Then
+            ElseIf (dibType = pdri_ArrowUpL) Then
                 tmpPath.RotatePathAroundItsCenter 315#
             End If
             
             'Render the path
-            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
             Drawing2D.QuickCreateSurfaceFromDC cSurface, GetRuntimeUIDIB.GetDIBDC, True
             Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_GrayDark)
             PD2D.FillPath cSurface, cBrush, tmpPath
-            Set cBrush = Nothing: Set cSurface = Nothing
+            
+        'Play/pause buttons are used by animation windows
+        Case pdri_Play
+            
+            xCenter = dibSize * 0.5
+            yCenter = dibSize * 0.5
+            
+            cRadius = (dibSize * 0.35)
+            
+            ReDim cPoints(0 To 2) As PointFloat
+            cPoints(0).x = xCenter + cRadius
+            cPoints(0).y = yCenter
+            
+            PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, xCenter, yCenter, (2# * PI) / 3#, cPoints(1).x, cPoints(1).y
+            PDMath.RotatePointAroundPoint cPoints(0).x, cPoints(0).y, xCenter, yCenter, -1 * (2# * PI) / 3#, cPoints(2).x, cPoints(2).y
+            
+            Set cPath = New pd2DPath
+            cPath.AddLines 3, VarPtr(cPoints(0))
+            cPath.CloseCurrentFigure
+            
+            'Re-center the path (as the triangle will be biased rightward due to the angles used)
+            cPath.TranslatePath -1! * (cRadius - (xCenter - cPoints(1).x)) * 0.5, 0!
+            
+            Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Accent)
+            Drawing2D.QuickCreateSurfaceFromDIB cSurface, GetRuntimeUIDIB, True
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            PD2D.FillPath cSurface, cBrush, cPath
+                
+        Case pdri_Pause
+            
+            ReDim cPoints(0 To 3) As PointFloat
+            cPoints(0).x = (dibSize * 0.33)
+            cPoints(0).y = (dibSize * 0.2)
+            cPoints(1).x = cPoints(0).x
+            cPoints(1).y = dibSize - cPoints(0).y
+            
+            cPoints(2).x = dibSize - cPoints(0).x
+            cPoints(2).y = cPoints(0).y
+            cPoints(3).x = cPoints(2).x
+            cPoints(3).y = cPoints(1).y
+            
+            Set cPath = New pd2DPath
+            cPath.ResetPath
+            cPath.AddLines 2, VarPtr(cPoints(0))
+            cPath.CloseCurrentFigure
+            cPath.AddLines 2, VarPtr(cPoints(2))
+            cPath.CloseCurrentFigure
     
+            Drawing2D.QuickCreateSolidPen cPen, dibSize * 0.15, g_Themer.GetGenericUIColor(UI_Accent)
+            Drawing2D.QuickCreateSurfaceFromDIB cSurface, GetRuntimeUIDIB, True
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            PD2D.DrawPath cSurface, cPen, cPath
+        
     End Select
+    
+    Set cBrush = Nothing: Set cPen = Nothing: Set cSurface = Nothing: Set cPath = Nothing
     
     'If the user requested any padding, apply it now
     If (dibPadding > 0) Then PadDIB GetRuntimeUIDIB, dibPadding

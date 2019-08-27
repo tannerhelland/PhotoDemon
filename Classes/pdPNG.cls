@@ -1718,6 +1718,9 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         
     Next curFrame
     
+    'With all frames loaded, cache any other relevant animation metadata inside the destination image
+    dstImage.ImgStorage.AddEntry "animation-loop-count", Trim$(Str$(Me.NumAnimationLoops))
+    
     Exit Function
     
 InternalVBError:

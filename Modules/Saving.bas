@@ -811,14 +811,24 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
         'Update the stored last-save-folder value
         UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
         
-        'Settings UI is TODO!
+        'Next, retrieve export settings
+        ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported
+        ' by the batch processor.)
+        Dim formatParams As String, metadataParams As String
+        Dim promptResult As VbMsgBoxResult
+        promptResult = Dialogs.PromptExportAnimation(srcImage, formatParams, metadataParams)
+        
+        If (promptResult <> vbOK) Then
+            Export_AnimatedGIF = False
+            Exit Function
+        End If
         
         'Lock the UI
         Saving.BeginSaveProcess
         
         'Perform the actual save
         Dim saveResult As Boolean
-        saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile)
+        saveResult = ImageExporter.ExportGIF_Animated(srcImage, dstFile, formatParams, metadataParams)
         
         If saveResult Then
         
