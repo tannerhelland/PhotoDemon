@@ -28,8 +28,8 @@ Begin VB.UserControl pdSlider
       TabIndex        =   0
       Top             =   60
       Width           =   4335
-      _extentx        =   8281
-      _extenty        =   635
+      _ExtentX        =   8281
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdSpinner tudPrimary 
       Height          =   345
@@ -37,8 +37,8 @@ Begin VB.UserControl pdSlider
       TabIndex        =   1
       Top             =   45
       Width           =   1260
-      _extentx        =   2223
-      _extenty        =   609
+      _ExtentX        =   2223
+      _ExtentY        =   609
    End
 End
 Attribute VB_Name = "pdSlider"
@@ -635,6 +635,9 @@ Private Sub UpdateControlLayout()
     
     'Apply the new height to this UC instance
     If (ucSupport.GetControlHeight <> newControlHeight) Then ucSupport.RequestNewSize , newControlHeight
+    
+    'If the text up/down control has a huge upper limit, increase its width (to ensure all digits are visible)
+    If (tudPrimary.Max >= 100000) Then tudPrimary.SetWidth Interface.FixDPI(92) Else tudPrimary.SetWidth Interface.FixDPI(84)
     
     'With height correctly set, we next want to left-align the spinner against the slider region
     newLeft_TUD = ucSupport.GetControlWidth - (tudPrimary.GetWidth + FixDPI(2))
