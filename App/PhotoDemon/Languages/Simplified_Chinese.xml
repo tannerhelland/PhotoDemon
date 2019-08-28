@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1156</langversion>
+<langversion>7.1.1157</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -16017,6 +16017,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>matte</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat count</original>
 <translation></translation>
 </phrase>
@@ -16056,16 +16061,16 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- File_Export_Animation.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Export_Animation.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2678</phrasecount>
+<phrasecount>2679</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4925 phrases. -->
-<!-- 2247 are duplicates, so only 2678 unique phrases have been written to file. -->
-<!-- These 2678 phrases contain approximately 12630 total words. -->
+<!-- As of this build, PhotoDemon contains 4932 phrases. -->
+<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
+<!-- These 2679 phrases contain approximately 12631 total words. -->
 
 </pdData>

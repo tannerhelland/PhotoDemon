@@ -25,6 +25,53 @@ Begin VB.Form dialog_ExportAnimation
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsDither 
+      Height          =   975
+      Left            =   6600
+      TabIndex        =   10
+      Top             =   4440
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1720
+      Caption         =   "dithering"
+      FontSizeCaption =   10
+   End
+   Begin PhotoDemon.pdSlider sldAlphaCutoff 
+      Height          =   735
+      Left            =   9300
+      TabIndex        =   9
+      Top             =   5520
+      Width           =   2595
+      _ExtentX        =   4577
+      _ExtentY        =   1296
+      Caption         =   "alpha cut-off"
+      FontSizeCaption =   10
+      Max             =   255
+      Value           =   64
+      NotchPosition   =   2
+      NotchValueCustom=   64
+   End
+   Begin PhotoDemon.pdColorSelector csMatte 
+      Height          =   735
+      Left            =   6600
+      TabIndex        =   8
+      Top             =   5520
+      Width           =   2595
+      _ExtentX        =   4577
+      _ExtentY        =   1296
+      Caption         =   "matte"
+      FontSize        =   10
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   6240
+      Top             =   3960
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+      Caption         =   "advanced settings"
+      FontSize        =   12
+   End
    Begin PhotoDemon.pdButtonStrip btsLoop 
       Height          =   975
       Left            =   6240
@@ -40,7 +87,7 @@ Begin VB.Form dialog_ExportAnimation
       Index           =   0
       Left            =   120
       TabIndex        =   2
-      Top             =   5880
+      Top             =   6000
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -50,18 +97,18 @@ Begin VB.Form dialog_ExportAnimation
       Height          =   375
       Left            =   600
       TabIndex        =   1
-      Top             =   5880
+      Top             =   6000
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdPictureBox picPreview 
-      Height          =   5655
+      Height          =   5775
       Left            =   120
       Top             =   120
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   9975
+      _ExtentY        =   10186
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -78,7 +125,7 @@ Begin VB.Form dialog_ExportAnimation
       Index           =   1
       Left            =   5640
       TabIndex        =   3
-      Top             =   5880
+      Top             =   6000
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -228,6 +275,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsFrameTimes.AddItem "fixed", 0
     btsFrameTimes.AddItem "pull from layer names", 1
     btsFrameTimes.ListIndex = 0
+    
+    btsDither.AddItem "auto", 0
+    btsDither.AddItem "off", 1
+    btsDither.AddItem "on", 2
+    btsDither.ListIndex = 0
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
@@ -392,6 +444,16 @@ Private Function GetExportParamString() As String
     
     cParams.AddParam "use-fixed-frame-delay", (btsFrameTimes.ListIndex = 0)
     cParams.AddParam "frame-delay-default", sldFrameTime.Value
+    cParams.AddParam "matte-color", csMatte.Color
+    cParams.AddParam "alpha-cutoff", sldAlphaCutoff.Value
+    
+    If (btsDither.ListIndex = 1) Then
+        cParams.AddParam "dither", "off"
+    ElseIf (btsDither.ListIndex = 2) Then
+        cParams.AddParam "dither", "on"
+    Else
+        cParams.AddParam "dither", "auto"
+    End If
     
     GetExportParamString = cParams.GetParamString
     
@@ -605,8 +667,9 @@ End Sub
 
 Private Sub ReflowInterface()
     
-    Dim yPadding As Long
+    Dim yPadding As Long, yPaddingTitle As Long
     yPadding = Interface.FixDPI(8)
+    yPaddingTitle = Interface.FixDPI(12)
     
     Dim yOffset As Long
     yOffset = btsLoop.GetTop + btsLoop.GetHeight + yPadding
@@ -614,7 +677,9 @@ Private Sub ReflowInterface()
     sldLoop.Visible = (btsLoop.ListIndex = 2)
     If sldLoop.Visible Then
         sldLoop.SetTop yOffset
-        yOffset = yOffset + sldLoop.GetHeight + yPadding
+        yOffset = yOffset + sldLoop.GetHeight + yPaddingTitle
+    Else
+        yOffset = yOffset - yPadding + yPaddingTitle
     End If
     
     btsFrameTimes.SetTop yOffset
@@ -627,7 +692,15 @@ Private Sub ReflowInterface()
     End If
     
     sldFrameTime.SetTop yOffset
-    yOffset = yOffset + sldFrameTime.GetHeight + yPadding
+    yOffset = yOffset + sldFrameTime.GetHeight + yPaddingTitle
+    
+    lblTitle.SetTop yOffset
+    yOffset = yOffset + lblTitle.GetHeight + yPadding
+    btsDither.SetTop yOffset
+    yOffset = yOffset + btsDither.GetHeight + yPadding
+    csMatte.SetTop yOffset
+    sldAlphaCutoff.SetTop yOffset
+    yOffset = yOffset + csMatte.GetHeight + yPadding
     
 End Sub
 

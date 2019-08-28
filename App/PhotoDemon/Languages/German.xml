@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1302</langversion>
+<langversion>7.2.1324</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -653,12 +653,12 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler mittels "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Bitte melden Sie diesen Fehler mittels "Hilfe > Fehlerbericht einreichen".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Bitte melden Sie diesen Fehler mittels "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -687,7 +687,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>FreeImage Interface Error</original>
-<translation>Fehler in FreeImage-Interface</translation>
+<translation>Fehler bei FreeImage-Interface</translation>
 </phrase>
 
 <phrase>
@@ -2982,7 +2982,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Bitte melden Sie diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".</translation>
+Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -3018,9 +3018,9 @@ Bitte melden Sie diesen Fehler via dem Menü "Hilfe > Fehlerbericht einreichen".
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann keine additionalen Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Fehler ist und er behoben werden muss!
+<translation>PhotoDemon kann keine additionalen Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass dieser Fehler ein Bug ist und er behoben werden muss!
 
-Möchten Sie einen Fehlerbericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
+Möchten Sie einen Bug-Bericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
 
 <phrase>
@@ -3307,14 +3307,14 @@ Beschreibung: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat die Website für Fehlerberichte automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Fehlerbericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
+<translation>PhotoDemon hat die Bug-Bericht-Webseite automatisch für Sie geöffnet. Bitte klicken Sie auf den Button "Neues Problem", dann wählen Sie "Bug-Bericht" aus. Beantworten Sie die Fragen so gut Sie können und fügen Sie die folgende Fehlernummer irgendwo in Ihren Bericht ein: %1
 
 Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</translation>
 </phrase>
 
 <phrase>
 <original>Bug report instructions</original>
-<translation>Fehlerbericht-Instruktionen</translation>
+<translation>Bug-Bericht-Instruktionen</translation>
 </phrase>
 
 <!-- Processor.bas contains 125 phrases. 62 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
@@ -3344,12 +3344,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
+In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Bug-Bericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte verwenden Sie das Menüitem "Hilfe > Fehlerbericht einreichen", um dieses Vorfall zu melden.</translation>
+<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Bitte verwenden Sie das Menüitem "Hilfe > Bug-Bericht einreichen", um dieses Vorfall zu melden.</translation>
 </phrase>
 
 <phrase>
@@ -6679,7 +6679,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Submit bug report or feedback</original>
-<translation>Fehlerbericht oder Feedback einreichen</translation>
+<translation>Bug-Bericht oder Feedback einreichen</translation>
 </phrase>
 
 <phrase>
@@ -8661,7 +8661,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Fehlermeldungen hinsichtlich IDE-Abstürzen oder Freezes ein. Die Entwickler von PhotoDemon können sich nur Probleme und Fehler adressieren, welche die kompilierte und ausführbare Datei betreffen.</translation>
+<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Bugs hinsichtlich IDE-Abstürzen oder Freezes ein. Die Entwickler von PhotoDemon können sich nur Probleme und Bugs adressieren, welche die kompilierte .exe (ausführbare Datei) betreffen.</translation>
 </phrase>
 
 <!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -13459,7 +13459,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>Resampling beeinflusst die Qualität eines in der Größe geänderten Bildes. Für eine gute Zusammenfassung der Resampling-Verfahren schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
+<translation>Resampling wirkt sich auf die Qualität eines in der Größe geänderten Bildes aus. Für eine gute Zusammenfassung der Resampling-Verfahren schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
 </phrase>
 
 <phrase>
@@ -15803,7 +15803,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen immer Zugriff auf die neuesten Programmverbesserungen, allerdings mit dem Risiko von Programmfehlern.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
 </phrase>
 
 <phrase>
@@ -15831,12 +15831,12 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>In Entwickler-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Fehler stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird Entwicklern helfen, Ihr Problem zu lösen.</translation>
+<translation>In Entwickler-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Bugs stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird Entwicklern helfen, Ihr Problem zu lösen.</translation>
 </phrase>
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Fehler von Windows. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
+<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Mausverhalten wiederherzustellen.</translation>
 </phrase>
 
 <phrase>
@@ -16028,59 +16028,64 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>Animation export options</original>
+<translation>Animations-Exportoptionen</translation>
+</phrase>
+
+<phrase>
+<original>matte</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>repeat count</original>
-<translation></translation>
+<translation>Wiederholungsanzahl</translation>
 </phrase>
 
 <phrase>
 <original>animation speed</original>
-<translation></translation>
+<translation>Animationsgeschwindigkeit</translation>
 </phrase>
 
 <phrase>
 <original>forever</original>
-<translation></translation>
+<translation>Für immer</translation>
 </phrase>
 
 <phrase>
 <original>fixed</original>
-<translation></translation>
+<translation>Festgelegt</translation>
 </phrase>
 
 <phrase>
 <original>pull from layer names</original>
-<translation></translation>
+<translation>Aus Layer-Namen ziehen</translation>
 </phrase>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation></translation>
+<translation>Dieser Button wirkt sich nur auf die obige Vorschau aus. Die Wiederholungseinstellung auf der rechten Seite ist das, was von der exportierten Bilddatei verwendet wird.</translation>
 </phrase>
 
 <phrase>
 <original>frame time (in ms)</original>
-<translation></translation>
+<translation>Frame-Zeit (in ms)</translation>
 </phrase>
 
 <phrase>
 <original>frame time for undefined layers (in ms)</original>
-<translation></translation>
+<translation>Frame-Zeit für undefinierte Layer (in ms)</translation>
 </phrase>
 
-<!-- File_Export_Animation.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Export_Animation.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2678</phrasecount>
+<phrasecount>2679</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4925 phrases. -->
-<!-- 2247 are duplicates, so only 2678 unique phrases have been written to file. -->
-<!-- These 2678 phrases contain approximately 12630 total words. -->
+<!-- As of this build, PhotoDemon contains 4932 phrases. -->
+<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
+<!-- These 2679 phrases contain approximately 12631 total words. -->
 
 </pdData>

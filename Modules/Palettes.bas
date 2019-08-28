@@ -76,12 +76,62 @@ Public Type PDPaletteCache
     OrigIndex As Long
 End Type
 
+'Return the number of unique colors in a given DIB.  Often helpful for making subsequent palette decisions.
+Public Function GetDIBColorCount(ByRef srcDIB As pdDIB, Optional ByVal includeAlpha As Boolean = True) As Long
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim imageData() As Byte, tmpSA As SafeArray1D
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim qvDepth As Long
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    'A special color counting class is used to count unique RGB and RGBA values
+    Dim cTree As pdColorCount
+    Set cTree = New pdColorCount
+    cTree.SetAlphaTracking includeAlpha
+    
+    'Iterate through all pixels, counting unique values as we go.
+    For y = initY To finalY
+        srcDIB.WrapArrayAroundScanline imageData, tmpSA, y
+    For x = initX To finalX Step qvDepth
+    
+        b = imageData(x)
+        g = imageData(x + 1)
+        r = imageData(x + 2)
+        a = imageData(x + 3)
+        cTree.AddColor r, g, b, a
+        
+    Next x
+    Next y
+    
+    'Safely deallocate imageData()
+    srcDIB.UnwrapArrayFromDIB imageData
+    
+    If includeAlpha Then
+        GetDIBColorCount = cTree.GetUniqueRGBACount()
+    Else
+        GetDIBColorCount = cTree.GetUniqueRGBCount()
+    End If
+    
+End Function
+
 'Does an arbitrary parent palette contain all colors in an arbitrary child palette?  This is used when exporting
 ' animated GIF files, as a global palette that already contains all colors in a child palette can be used in place
 ' of a (redundant) local palette.
 
 'Returns: TRUE if parentPalette() contains all colors in childPalette().
-Public Function DoesPaletteContainPalette(ByRef parentPalette() As RGBQuad, ByVal numColorsInParent As Long, ByRef childPalette() As RGBQuad, ByVal numColorsInChild As Long) As Boolean
+Public Function DoesPaletteContainPalette(ByRef parentPalette() As RGBQuad, ByVal numColorsInParent As Long, ByRef srcChildPalette() As RGBQuad, ByVal numColorsInChild As Long) As Boolean
     
     'The inner test will set this to FALSE if/when a missing color is found
     DoesPaletteContainPalette = True
@@ -96,7 +146,7 @@ Public Function DoesPaletteContainPalette(ByRef parentPalette() As RGBQuad, ByVa
         
         For j = 0 To numColorsInParent - 1
             GetMem4 VarPtr(parentPalette(j)), chkColor1
-            GetMem4 VarPtr(childPalette(i)), chkColor2
+            GetMem4 VarPtr(srcChildPalette(i)), chkColor2
             If (chkColor1 = chkColor2) Then
                 matchFound = True
                 Exit For

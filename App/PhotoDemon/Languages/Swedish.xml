@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3404</langversion>
+<langversion>6.8.3405</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16023,6 +16023,11 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>matte</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat count</original>
 <translation></translation>
 </phrase>
@@ -16062,16 +16067,16 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation></translation>
 </phrase>
 
-<!-- File_Export_Animation.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Export_Animation.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2678</phrasecount>
+<phrasecount>2679</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4925 phrases. -->
-<!-- 2247 are duplicates, so only 2678 unique phrases have been written to file. -->
-<!-- These 2678 phrases contain approximately 12630 total words. -->
+<!-- As of this build, PhotoDemon contains 4932 phrases. -->
+<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
+<!-- These 2679 phrases contain approximately 12631 total words. -->
 
 </pdData>

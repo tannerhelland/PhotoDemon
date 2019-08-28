@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.89</langversion>
+<langversion>1.0.90</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16022,6 +16022,11 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 </phrase>
 
 <phrase>
+<original>matte</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>repeat count</original>
 <translation></translation>
 </phrase>
@@ -16061,16 +16066,16 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation></translation>
 </phrase>
 
-<!-- File_Export_Animation.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Export_Animation.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2678</phrasecount>
+<phrasecount>2679</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4925 phrases. -->
-<!-- 2247 are duplicates, so only 2678 unique phrases have been written to file. -->
-<!-- These 2678 phrases contain approximately 12630 total words. -->
+<!-- As of this build, PhotoDemon contains 4932 phrases. -->
+<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
+<!-- These 2679 phrases contain approximately 12631 total words. -->
 
 </pdData>

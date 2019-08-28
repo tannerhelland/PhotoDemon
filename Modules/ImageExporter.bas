@@ -856,10 +856,23 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
     frameDelayDefault = cParams.GetLong("frame-delay-default", 100)
     
-    'Params are TODO
-    Dim gifAlphaCutoff As Long, gifBackgroundColor As Long
-    gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
-    gifBackgroundColor = cParams.GetLong("GIFBackgroundColor", vbWhite)
+    Dim gifAlphaCutoff As Long, gifMatteColor As Long
+    gifAlphaCutoff = cParams.GetLong("alpha-cutoff", 64)
+    gifMatteColor = cParams.GetLong("matte-color", vbWhite)
+    
+    Dim autoDither As Boolean, useDithering As Boolean, ditherText As String
+    ditherText = cParams.GetString("dither", "auto")
+    autoDither = Strings.StringsEqual(ditherText, "auto", True)
+    If (Not autoDither) Then useDithering = Strings.StringsEqual(ditherText, "on", True)
+    
+    Dim optimizeGlobalPalette As Boolean
+    optimizeGlobalPalette = True
+    
+    Dim optimizeFrameDeltas As Boolean
+    optimizeFrameDeltas = True
+    
+    Dim optimizeFrameCropping As Boolean
+    optimizeFrameCropping = True
     
     'FreeImage is currently required for animated GIF export
     If ImageFormats.IsFreeImageEnabled Then
@@ -886,11 +899,14 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Dim tmpLayer As pdLayer, tmpDIB As pdDIB
             Dim tmpTag As FREE_IMAGE_TAG
             
-            'GIF files support a "global palette".  This is a palette that is shared between multiple frames.
-            ' PhotoDemon always writes a global palette, because even if only the first frame uses it,
+            'GIF files support a "global palette".  This is a shared palette that any frame can choose to
+            ' use (in place of a "local palette").
+            
+            'PhotoDemon always writes a global palette, because even if just the first frame uses it,
             ' there is no increase in file size (as the first frame will simply skip storing a local palette).
-            ' If, however, the first frame does not contain a full 256-color palette, we will merge colors
-            ' from multiple subsequent frames into one shared palette.
+            ' If, however, the first frame does *not* require a full 256-color palette, we will merge colors
+            ' from subsequent frames into the global palette, until we arrive at 256 colors (or until all
+            ' colors in all frames have been assembled).
             Dim globalPaletteWritten As Boolean
             globalPaletteWritten = False
             
@@ -947,32 +963,37 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 
                 'Force alpha to 0 or 255 only (this is a GIF requirement)
                 Dim trnsTable() As Byte
-                DIBs.ApplyAlphaCutoff_Ex tmpLayer.layerDIB, trnsTable, 127
+                DIBs.ApplyAlphaCutoff_Ex tmpLayer.layerDIB, trnsTable, gifAlphaCutoff
                 
                 'With the transparency table calculated, loop through pixels again.  If this frame
                 ' contains one or more transparent pixels in a position where the previous frame
                 ' DOES NOT contain transparency, we MUST blank out the previous frame prior to
                 ' rendering this one.  (Otherwise, the previous frame's colors will "show through"
                 ' to this frame.)
-                If (i > 0) Then
+                If (i > 0) And optimizeFrameDeltas Then
+                
                     frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
                     If frameData(i - 1).frameMustBeCleared Then curStateDIB.ResetDIB 0
-                End If
-                
-                'If this layer is not the base layer, and we won't be clearing the previous frame,
-                ' we now want to compare this layer to the running "on-screen appearance" DIB.
-                ' If this layer is identical to the layer beneath it on a given pixel, we can simply
-                ' make that pixel transparent (as the previous frame will "show through").
-                If (i > 0) Then
+                    
+                    'If this layer is not the base layer, and we won't be clearing the previous frame,
+                    ' we now want to compare this layer to the running "on-screen appearance" DIB.
+                    ' If this layer is identical to the layer beneath it on a given pixel, we can simply
+                    ' make that pixel transparent (as the previous frame will "show through").
                     If (Not frameData(i - 1).frameMustBeCleared) Then DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
+                    
                 End If
                 
                 'Apply the finished binary transparency table to the layer
-                DIBs.ApplyBinaryTransparencyTable tmpLayer.layerDIB, trnsTable, vbWhite
+                DIBs.ApplyBinaryTransparencyTable tmpLayer.layerDIB, trnsTable, gifMatteColor
                 
                 'Always update the running "current state" DIB with this frame's results, so the next
                 ' frame has something to compare itself to.
                 tmpLayer.layerDIB.AlphaBlendToDC curStateDIB.GetDIBDC
+                
+                'If the user has requested auto-dithering, and this is the first frame of the image,
+                ' run some quick color analyses.  If the image contains more than 256 colors, we will
+                ' use dithering; otherwise, we will not.
+                If autoDither And (i = 0) Then useDithering = (Palettes.GetDIBColorCount(tmpLayer.layerDIB, True) > 256)
                 
                 'Generate an optimal 256-color palette for the image
                 Palettes.GetOptimizedPaletteIncAlpha tmpLayer.layerDIB, imgPalette, 256, pdqs_Variance, True
@@ -990,40 +1011,46 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 Next pEntry
                 
                 'If this is the *first* frame, we will use it as the basis of our global palette.
-                If (i = 0) Then
-                
-                    'Simply copy over the palette as-is into our running global palette tracker
-                    numColorsInGP = numColorsInLP
-                    ReDim globalPalette(0 To numColorsInGP - 1) As RGBQuad
+                If optimizeGlobalPalette Then
                     
-                    For iPal = 0 To numColorsInGP - 1
-                        globalPalette(iPal) = imgPalette(iPal)
-                    Next iPal
+                    If (i = 0) Then
                     
-                    frameUsesGP = True
-                
-                'If this is *not* the first frame, and we have yet to write a global palette, append as many
-                ' unique colors from this palette as we can into the global palette.
-                Else
-                    
-                    'If we've already embedded the global palette in the file (meaning its color table is full),
-                    ' skip the appending colors step.
-                    If (Not globalPaletteWritten) Then
+                        'Simply copy over the palette as-is into our running global palette tracker
+                        numColorsInGP = numColorsInLP
+                        ReDim globalPalette(0 To numColorsInGP - 1) As RGBQuad
                         
-                        numColorsInGP = Palettes.MergePalettes(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
+                        For iPal = 0 To numColorsInGP - 1
+                            globalPalette(iPal) = imgPalette(iPal)
+                        Next iPal
                         
-                        'Enforce a strict 256-color limit
-                        If (numColorsInGP > 256) Then
-                            numColorsInGP = 256
-                            ReDim Preserve globalPalette(0 To 255) As RGBQuad
+                        frameUsesGP = True
+                    
+                    'If this is *not* the first frame, and we have yet to write a global palette, append as many
+                    ' unique colors from this palette as we can into the global palette.
+                    Else
+                        
+                        'If we've already embedded the global palette in the file (meaning its color table is full),
+                        ' skip the appending colors step.
+                        If (Not globalPaletteWritten) Then
+                            
+                            numColorsInGP = Palettes.MergePalettes(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
+                            
+                            'Enforce a strict 256-color limit
+                            If (numColorsInGP > 256) Then
+                                numColorsInGP = 256
+                                ReDim Preserve globalPalette(0 To 255) As RGBQuad
+                            End If
+                            
                         End If
+                        
+                        'Next, we need to see if all colors in this frame appear in the global palette.  If they do,
+                        ' we can simply use the global palette to write this frame.
+                        frameUsesGP = Palettes.DoesPaletteContainPalette(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
                         
                     End If
                     
-                    'Next, we need to see if all colors in this frame appear in the global palette.  If they do,
-                    ' we can simply use the global palette to write this frame.
-                    frameUsesGP = Palettes.DoesPaletteContainPalette(globalPalette, numColorsInGP, imgPalette, numColorsInLP)
-                    
+                Else
+                    frameUsesGP = False
                 End If
                 
                 'If this frame requires a local palette, store a copy of it
@@ -1045,7 +1072,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 
                 '(Note that we only do this for non-first frames - the first frame must always be full-size.)
                 If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-                If (i > 0) Then
+                If (i > 0) And optimizeFrameCropping Then
                     frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest(tmpLayer.layerDIB, frameData(i).rectOfInterest)
                     With frameData(i).rectOfInterest
                         tmpDIB.CreateBlank .Width, .Height, 32, 0, 0
@@ -1059,19 +1086,17 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 
                 'Using either the local or global palette (whichever matches this image), create an 8-bit version
                 ' of the source image.
-                Dim useDithering As Boolean: useDithering = False
-                
                 If frameUsesGP Then
                     palSize = numColorsInGP
                     If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, globalPalette, frameData(i).pixelData, PDDM_SierraLite, 0.5
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, globalPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
                     Else
                         DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
                     End If
                 Else
                     palSize = numColorsInLP
                     If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.5
+                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
                     Else
                         DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
                     End If
@@ -1158,7 +1183,9 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                         
                         'Global palette
-                        If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        If optimizeGlobalPalette Then
+                            If (Not FreeImage_CreateTagTanner(fi_DIB, FIMD_ANIMATION, "GlobalPalette", FIDT_PALETTE, VarPtr(globalPalette(0)), numColorsInGP, numColorsInGP * 4, &H3)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
+                        End If
                         
                     End If
                     

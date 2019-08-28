@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 '
 'The class is implemented as a specialized b-tree, with a standard VB array underlying the actual
 ' data storage.  A pure class-based implementation was tested at first, but construction/destruction
-' times for the occasional 1+ mln classes was a nightmare.  This new array+custom type implementation is
-' multiple orders of magnitude faster (and significantly lighter on resources).
+' times for the occasional 1+ million classes was a nightmare.  This new array+custom type
+' implementation is multiple orders of magnitude faster (and significantly lighter on resources).
 '
 'Memory usage is quite good, even on images with large (1+ mln) counts of unique RGBA quads.
 ' I've even tested it on a specially constructed PNG image with all 16.7 million possible RGB triplets
