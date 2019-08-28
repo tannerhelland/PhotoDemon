@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1157</langversion>
+<langversion>7.1.1158</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3348,7 +3348,17 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>正在保存图像 %1 </translation>
 </phrase>
 
-<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>This is a still image (only one frame of animation).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
+<translation></translation>
+</phrase>
+
+<!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -16067,10 +16077,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2679</phrasecount>
+<phrasecount>2681</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4932 phrases. -->
-<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
-<!-- These 2679 phrases contain approximately 12631 total words. -->
+<!-- As of this build, PhotoDemon contains 4937 phrases. -->
+<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
+<!-- These 2681 phrases contain approximately 12658 total words. -->
 
 </pdData>

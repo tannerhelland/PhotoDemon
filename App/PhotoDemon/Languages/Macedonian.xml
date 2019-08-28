@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.218</langversion>
+<langversion>1.0.219</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -3352,7 +3352,17 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Заштеда на %1 слика</translation>
 </phrase>
 
-<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>This is a still image (only one frame of animation).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
+<translation></translation>
+</phrase>
+
+<!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -16078,10 +16088,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2679</phrasecount>
+<phrasecount>2681</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4932 phrases. -->
-<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
-<!-- These 2679 phrases contain approximately 12631 total words. -->
+<!-- As of this build, PhotoDemon contains 4937 phrases. -->
+<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
+<!-- These 2681 phrases contain approximately 12658 total words. -->
 
 </pdData>

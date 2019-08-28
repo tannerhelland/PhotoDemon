@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1324</langversion>
+<langversion>7.2.1325</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3357,7 +3357,17 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 <translation>Bild %1 wird gespeichert</translation>
 </phrase>
 
-<!-- Saving.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>This is a still image (only one frame of animation).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
+<translation></translation>
+</phrase>
+
+<!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -16082,10 +16092,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2679</phrasecount>
+<phrasecount>2681</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4932 phrases. -->
-<!-- 2253 are duplicates, so only 2679 unique phrases have been written to file. -->
-<!-- These 2679 phrases contain approximately 12631 total words. -->
+<!-- As of this build, PhotoDemon contains 4937 phrases. -->
+<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
+<!-- These 2681 phrases contain approximately 12658 total words. -->
 
 </pdData>

@@ -776,6 +776,23 @@ End Function
 Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
     
     Export_AnimatedGIF = False
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a normal GIF.
+    If (srcImage.GetNumOfLayers <= 1) Then
+        
+        Dim msgText As pdString
+        Set msgText = New pdString
+        
+        msgText.AppendLine g_Language.TranslateMessage("This is a still image (only one frame of animation).")
+        msgText.AppendLineBreak
+        msgText.Append g_Language.TranslateMessage("You may proceed, but the image will be saved as a standard GIF, not an animated one.")
+        
+        Dim msgResult As VbMsgBoxResult
+        msgResult = PDMsgBox(msgText.ToString(), vbOKCancel Or vbApplicationModal Or vbExclamation, "Export animated GIF")
+        If (msgResult = vbCancel) Then Exit Function
+        
+    End If
     
     'Reuse the user's current "save image" path for the export
     Dim cdInitialFolder As String
