@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.98</langversion>
+<langversion>7.0.99</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -16004,7 +16004,12 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 </phrase>
 
 <phrase>
-<original>none (play once)</original>
+<original>repeat count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>animation speed</original>
 <translation></translation>
 </phrase>
 
@@ -16014,25 +16019,40 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 </phrase>
 
 <phrase>
-<original>custom amount</original>
+<original>fixed</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>This button only affects the above preview.  The repeat setting on the right is the setting stored in the exported image file.</original>
+<original>pull from layer names</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Export_Animation.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time (in ms)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time for undefined layers (in ms)</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_Animation.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_Export_Animation.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2674</phrasecount>
+<phrasecount>2678</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4917 phrases. -->
-<!-- 2243 are duplicates, so only 2674 unique phrases have been written to file. -->
-<!-- These 2674 phrases contain approximately 12614 total words. -->
+<!-- As of this build, PhotoDemon contains 4925 phrases. -->
+<!-- 2247 are duplicates, so only 2678 unique phrases have been written to file. -->
+<!-- These 2678 phrases contain approximately 12630 total words. -->
 
 </pdData>
