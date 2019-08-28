@@ -17,10 +17,10 @@ Attribute VB_Name = "Animation"
 '
 '***************************************************************************
 
-Public Function GetFrameTimeFromLayerName(ByRef srcLayerName As String) As Long
+Public Function GetFrameTimeFromLayerName(ByRef srcLayerName As String, Optional ByVal defaultTimeIfMissing As Long = 100) As Long
     
     'Default to 100 ms, per convention
-    GetFrameTimeFromLayerName = 100
+    GetFrameTimeFromLayerName = defaultTimeIfMissing
     
     'Look for a trailing parenthesis
     Dim strStart As Long, strEnd As Long

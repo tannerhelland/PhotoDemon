@@ -852,6 +852,10 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     Set cParams = New pdParamXML
     cParams.SetParamString formatParams
     
+    Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
+    useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
+    frameDelayDefault = cParams.GetLong("frame-delay-default", 100)
+    
     'Params are TODO
     Dim gifAlphaCutoff As Long, gifBackgroundColor As Long
     gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
@@ -1147,7 +1151,10 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     If (i = 0) Then
                     
                         'Loop count
-                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, cParams.GetLong("animation-loop-count", 1), 1, &H4&)
+                        Dim loopCount As Long
+                        loopCount = cParams.GetLong("animation-loop-count", 1)
+                        If (loopCount > 65536) Then loopCount = 65536
+                        tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "Loop", FIDT_LONG, loopCount, 1, &H4&)
                         If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                         
                         'Global palette
@@ -1156,7 +1163,16 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     End If
                     
                     'For all frames (including the first one), set a frame time.
-                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, frameData(i).frameTime, 1, &H1005&)
+                    Dim finalFrameTime As Long
+                    finalFrameTime = frameData(i).frameTime
+                    If (useFixedFrameDelay Or (finalFrameTime = 0)) Then finalFrameTime = frameDelayDefault
+                    
+                    'GIFs store frame time in centiseconds - I know, a bizarre amount that makes it impossible
+                    ' to achieve proper 30 or 60 fps display.  To improve output, round the specified msec amount
+                    ' to the nearest csec equivalent.  Note also that most browsers enforce a minimum display rate
+                    ' of their own, independent of this value (20 msec is prevalent as of 2019).
+                    finalFrameTime = Int((finalFrameTime + 5) \ 10) * 10
+                    tmpTag = Outside_FreeImageV3.FreeImage_CreateTagEx(FIMD_ANIMATION, "FrameTime", FIDT_LONG, finalFrameTime, 1, &H1005&)
                     If (Not Outside_FreeImageV3.FreeImage_SetMetadataEx(fi_DIB, tmpTag)) Then PDDebug.LogAction "WARNING! ImageExporter.ExportGIF_Animated failed to set a tag"
                     
                     'Specify frame left/top for all but the first frame (which is always specified
