@@ -728,7 +728,7 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
             Dim newLayerID As Long
             newLayerID = tmpImage.CreateBlankLayer
-            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id), False
+            tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id)
             
             'Convert the layer to a null-padded layer (a layer at the same size as the current image)
             tmpImage.GetLayerByID(newLayerID).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height

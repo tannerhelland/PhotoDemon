@@ -922,7 +922,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             ' before we actually assign the image a global palette.)
             Dim frameData() As PD_GifFrame
             ReDim frameData(0 To srcPDImage.GetNumOfLayers - 1) As PD_GifFrame
-            
+                
             'GIFs are obnoxious because each frame specifies a "frame disposal" requirement; this is
             ' what to do with the screen buffer *after* the current frame is displayed.  We calculate
             ' this using data from the next frame in line (because its transparency requirements
@@ -934,6 +934,17 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             For i = 0 To srcPDImage.GetNumOfLayers - 1
                 frameData(i).frameMustBeCleared = True
             Next i
+            
+            'We also want to know if the source image is non-paletted (e.g. "full color").
+            ' If it isn't, the source pixel data probably came from an animated GIF file,
+            ' which means we want to optimize the data differently.  Also, if auto-dithering is enabled,
+            ' we will dither frames *only* if the source data is full-color.
+            Dim sourceIsFullColor As Boolean
+            Set tmpLayer = New pdLayer
+            tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(0)
+            tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+            sourceIsFullColor = (Palettes.GetDIBColorCount(tmpLayer.layerDIB, True) > 256)
+            If autoDither Then useDithering = sourceIsFullColor
             
             'As we go, we want to keep a running tally of what the current on-screen frame looks like.
             ' We can use this to make comparisons between frames, and replace identical pixels with
@@ -956,10 +967,18 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ProgressBars.SetProgBarVal i
                 Message "Saving animation frame %1 of %2...", i + 1, srcPDImage.GetNumOfLayers()
                 
-                'Make sure this layer is the same size as the parent image, and apply any non-destructive transforms
-                Set tmpLayer = New pdLayer
-                tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i), False
-                tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+                'Before dealing with pixel data, attempt to retrieve a frame time from the source layer's name.
+                ' (If the layer name does not provide a frame time, this value will be overwritten in a later
+                ' step with a "default" frame time.)
+                frameData(i).frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
+                
+                'Make sure this layer is the same size as the parent image, and apply any
+                ' non-destructive transforms.  (Note that we *don't* do this for the first frame,
+                ' because we already performed that step above as part of image heuristics!)
+                If (i > 0) Then
+                    tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
+                    tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+                End If
                 
                 'Force alpha to 0 or 255 only (this is a GIF requirement)
                 Dim trnsTable() As Byte
@@ -973,13 +992,18 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 If (i > 0) And optimizeFrameDeltas Then
                 
                     frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
-                    If frameData(i - 1).frameMustBeCleared Then curStateDIB.ResetDIB 0
+                    If frameData(i - 1).frameMustBeCleared Then
+                        curStateDIB.ResetDIB 0
+                        
+                    Else
                     
-                    'If this layer is not the base layer, and we won't be clearing the previous frame,
-                    ' we now want to compare this layer to the running "on-screen appearance" DIB.
-                    ' If this layer is identical to the layer beneath it on a given pixel, we can simply
-                    ' make that pixel transparent (as the previous frame will "show through").
-                    If (Not frameData(i - 1).frameMustBeCleared) Then DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
+                        'If this layer is not the base layer, and we won't be clearing the previous frame,
+                        ' we now want to compare this layer to the running "on-screen appearance" DIB.
+                        ' If this layer is identical to the layer beneath it on a given pixel, we can simply
+                        ' make that pixel transparent (as the previous frame will "show through").
+                        DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
+                        
+                    End If
                     
                 End If
                 
@@ -989,11 +1013,6 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 'Always update the running "current state" DIB with this frame's results, so the next
                 ' frame has something to compare itself to.
                 tmpLayer.layerDIB.AlphaBlendToDC curStateDIB.GetDIBDC
-                
-                'If the user has requested auto-dithering, and this is the first frame of the image,
-                ' run some quick color analyses.  If the image contains more than 256 colors, we will
-                ' use dithering; otherwise, we will not.
-                If autoDither And (i = 0) Then useDithering = (Palettes.GetDIBColorCount(tmpLayer.layerDIB, True) > 256)
                 
                 'Generate an optimal 256-color palette for the image
                 Palettes.GetOptimizedPaletteIncAlpha tmpLayer.layerDIB, imgPalette, 256, pdqs_Variance, True
@@ -1069,47 +1088,90 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 'As the final step before palettizing the image, we now need to isolate the "region of interest"
                 ' in this layer.  This is basically an autocrop step that identifies fully transparent borders,
                 ' and tells us where to crop the image to achieve the smallest usable area.
+                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
                 
                 '(Note that we only do this for non-first frames - the first frame must always be full-size.)
-                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
                 If (i > 0) And optimizeFrameCropping Then
+                    
                     frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest(tmpLayer.layerDIB, frameData(i).rectOfInterest)
+                    
                     With frameData(i).rectOfInterest
                         tmpDIB.CreateBlank .Width, .Height, 32, 0, 0
                         GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .Width, .Height, tmpLayer.layerDIB.GetDIBDC, .Left, .Top, vbSrcCopy
                     End With
+                    
                 Else
                     tmpDIB.CreateFromExistingDIB tmpLayer.layerDIB
                     frameData(i).rectOfInterest.Width = tmpLayer.layerDIB.GetDIBWidth
                     frameData(i).rectOfInterest.Height = tmpLayer.layerDIB.GetDIBHeight
                 End If
                 
-                'Using either the local or global palette (whichever matches this image), create an 8-bit version
-                ' of the source image.
-                If frameUsesGP Then
-                    palSize = numColorsInGP
-                    If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, globalPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
+                'If this frame is a duplicate of the previous frame, we don't need to perform any more
+                ' optimizations on its pixel data, because we will simply reuse the previous frame in
+                ' its place.
+                If (Not frameData(i).frameIsDuplicateOrEmpty) Then
+                    
+                    'Using either the local or global palette (whichever matches this image), create an 8-bit version
+                    ' of the source image.
+                    If frameUsesGP Then
+                        palSize = numColorsInGP
+                        If useDithering Then
+                            Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, globalPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
+                        Else
+                            DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
+                        End If
                     Else
-                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
+                        palSize = numColorsInLP
+                        If useDithering Then
+                            Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
+                        Else
+                            DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
+                        End If
                     End If
-                Else
-                    palSize = numColorsInLP
-                    If useDithering Then
-                        Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
-                    Else
-                        DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
-                    End If
+                    
                 End If
                 
-                'While here, attempt to retrieve a frame time from the source layer's name.
-                frameData(i).frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
-            
             'We've now cached everything we require for this frame!
             Next i
             
-            'We have now analyzed all frames of the image.  Before generating a GIF file, let's get our
-            ' global palette in order.
+            'We have now analyzed all frames of the image.
+            
+            'Before continuing, let's remove any duplicate frames from the frame collection.  This reduces
+            ' file size "for free".
+            Dim numLayersFinal As Long, idxLastGoodFrame As Long
+            numLayersFinal = 0
+            idxLastGoodFrame = 0
+            
+            For i = 0 To srcPDImage.GetNumOfLayers - 1
+            
+                'Skip the first frame in the image (as it will always be written)
+                If (i > 0) Then
+                    
+                    'If this frame is a duplicate (or empty), merge its frame time with the previous frame.
+                    If frameData(i).frameIsDuplicateOrEmpty Then
+                        frameData(idxLastGoodFrame).frameTime = frameData(idxLastGoodFrame).frameTime + frameData(i).frameTime
+                    Else
+                        
+                        'If one or more frames have been removed from the image, shift this entry earlier
+                        ' in the list.
+                        If (numLayersFinal < i) Then frameData(numLayersFinal) = frameData(i)
+                        
+                        idxLastGoodFrame = numLayersFinal
+                        numLayersFinal = numLayersFinal + 1
+                        
+                    End If
+                
+                Else
+                    numLayersFinal = numLayersFinal + 1
+                    idxLastGoodFrame = i
+                End If
+            
+            Next i
+            
+            'From here on out, we must use the numLayersFinal value instead of the original layer count,
+            ' as layers may have been merged.
+            
+            'Before generating a GIF file, let's get our global palette in order.
             
             ' The GIF spec requires global palette color count to be a power of 2.  (It does this because
             ' the compression table will only use n bits for each of 2 ^ n colors.)
@@ -1149,7 +1211,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Message "Finalizing image..."
             
             'We are now ready to write the GIF file
-            For i = 0 To srcPDImage.GetNumOfLayers - 1
+            For i = 0 To numLayersFinal - 1
                 
                 'Allocate an 8-bpp FreeImage DIB at the same size as the source layer, and populate it with our
                 ' palette and pixel data.  (Note that we don't actually use the local palette for frames that use
