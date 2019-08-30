@@ -865,14 +865,12 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     autoDither = Strings.StringsEqual(ditherText, "auto", True)
     If (Not autoDither) Then useDithering = Strings.StringsEqual(ditherText, "on", True)
     
-    Dim optimizeGlobalPalette As Boolean
+    Dim optimizeGlobalPalette As Boolean, optimizeFrameDeltas As Boolean, optimizeFrameCropping As Boolean
+    Dim optimizeSortPalette As Boolean
     optimizeGlobalPalette = True
-    
-    Dim optimizeFrameDeltas As Boolean
     optimizeFrameDeltas = True
-    
-    Dim optimizeFrameCropping As Boolean
     optimizeFrameCropping = True
+    optimizeSortPalette = True
     
     'FreeImage is currently required for animated GIF export
     If ImageFormats.IsFreeImageEnabled Then
@@ -953,6 +951,10 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Set curStateDIB = New pdDIB
             curStateDIB.CreateBlank srcPDImage.Width, srcPDImage.Height, 32, 0, 0
             
+            Dim prevStateDIB As pdDIB
+            Set prevStateDIB = New pdDIB
+            prevStateDIB.CreateFromExistingDIB curStateDIB
+            
             'We are now going to iterate through all layers in the image TWICE.
             
             'On this first pass, we will analyze each layer, produce optimized global and
@@ -984,34 +986,36 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 Dim trnsTable() As Byte
                 DIBs.ApplyAlphaCutoff_Ex tmpLayer.layerDIB, trnsTable, gifAlphaCutoff
                 
-                'With the transparency table calculated, loop through pixels again.  If this frame
-                ' contains one or more transparent pixels in a position where the previous frame
-                ' DOES NOT contain transparency, we MUST blank out the previous frame prior to
-                ' rendering this one.  (Otherwise, the previous frame's colors will "show through"
-                ' to this frame.)
-                If (i > 0) And optimizeFrameDeltas Then
+                'With the transparency table calculated, loop through pixels again.  If this frame contains
+                ' transparent pixels in a position where the previous frame DOES NOT contain transparency,
+                ' we need to blank out the previous frame prior to rendering this one.  (Otherwise, the
+                ' previous frame's colors will "show through" the transparent regions of this frame.)
+                If (i > 0) Then
                 
                     frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
                     If frameData(i - 1).frameMustBeCleared Then
                         curStateDIB.ResetDIB 0
-                        
                     Else
-                    
-                        'If this layer is not the base layer, and we won't be clearing the previous frame,
-                        ' we now want to compare this layer to the running "on-screen appearance" DIB.
-                        ' If this layer is identical to the layer beneath it on a given pixel, we can simply
-                        ' make that pixel transparent (as the previous frame will "show through").
-                        DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
                         
-                    End If
+                        If optimizeFrameDeltas Then
+                            
+                            'If this layer is not the base layer, and we won't be clearing the previous frame,
+                            ' we now want to compare this layer to the running "on-screen appearance" DIB.
+                            ' If this layer is identical to the layer beneath it on a given pixel, we can simply
+                            ' make that pixel transparent (as the previous frame will "show through").
+                            DIBs.ApplyAlpha_DuplicatePixels tmpLayer.layerDIB, curStateDIB, trnsTable
+                            
+                        End If
                     
+                    End If
+                
                 End If
                 
                 'Apply the finished binary transparency table to the layer
                 DIBs.ApplyBinaryTransparencyTable tmpLayer.layerDIB, trnsTable, gifMatteColor
                 
-                'Always update the running "current state" DIB with this frame's results, so the next
-                ' frame has something to compare itself to.
+                'Update our running "how the merged animation looks" frame; subsequent steps may use this
+                ' as part of optimizing frame storage.
                 tmpLayer.layerDIB.AlphaBlendToDC curStateDIB.GetDIBDC
                 
                 'Generate an optimal 256-color palette for the image
@@ -1044,7 +1048,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                         
                         'Sort the palette by popularity (with a few tweaks), which can eke out slightly
                         ' better compression ratios.
-                        Palettes.SortPaletteForCompression_IncAlpha tmpLayer.layerDIB, globalPalette
+                        If optimizeSortPalette Then Palettes.SortPaletteForCompression_IncAlpha tmpLayer.layerDIB, globalPalette
                         
                         frameUsesGP = True
                     
@@ -1076,9 +1080,58 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     frameUsesGP = False
                 End If
                 
-                'If this frame requires a local palette, store a copy of it
                 frameData(i).usesGlobalPalette = frameUsesGP
-                If (Not frameUsesGP) Then
+                
+                'As the final step before palettizing the image, we now need to isolate the "region of interest"
+                ' in this layer.  This is basically an autocrop step that identifies fully transparent borders,
+                ' and tells us where to crop the image to achieve the smallest usable area.
+                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
+                
+                '(Note that we only do this for non-first frames - the first frame must always be full-size.)
+                If (i > 0) And optimizeFrameCropping Then
+                    
+                    'If optimizing w/ frame deltas, any portions of this image that overlay the previous image
+                    ' will be automatically set to transparent - as such, we need to find the largest non-transparent
+                    ' region of this frame.
+                    If optimizeFrameDeltas Then
+                        frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest(tmpLayer.layerDIB, frameData(i).rectOfInterest)
+                    
+                    'If we are NOT optimizing frame deltas, we want to find the largest portion of this frame
+                    ' that does *not* match the previous one - but note that we can only do this if the previous
+                    ' frame is being retained.
+                    Else
+                        If frameData(i - 1).frameMustBeCleared Then
+                            tmpDIB.CreateFromExistingDIB tmpLayer.layerDIB
+                            frameData(i).rectOfInterest.Left = 0
+                            frameData(i).rectOfInterest.Top = 0
+                            frameData(i).rectOfInterest.Width = tmpLayer.layerDIB.GetDIBWidth
+                            frameData(i).rectOfInterest.Height = tmpLayer.layerDIB.GetDIBHeight
+                        Else
+                            frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, prevStateDIB, frameData(i).rectOfInterest)
+                        End If
+                    End If
+                    
+                    With frameData(i).rectOfInterest
+                        tmpDIB.CreateBlank .Width, .Height, 32, 0, 0
+                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .Width, .Height, tmpLayer.layerDIB.GetDIBDC, .Left, .Top, vbSrcCopy
+                    End With
+                    
+                Else
+                    tmpDIB.CreateFromExistingDIB tmpLayer.layerDIB
+                    frameData(i).rectOfInterest.Left = 0
+                    frameData(i).rectOfInterest.Top = 0
+                    frameData(i).rectOfInterest.Width = tmpLayer.layerDIB.GetDIBWidth
+                    frameData(i).rectOfInterest.Height = tmpLayer.layerDIB.GetDIBHeight
+                End If
+                
+                'With all optimizations applied, we are finally ready to palettize this layer.
+                
+                'If this frame requires a local palette, sort the local palette (to optimize compression ratios),
+                ' then cache a copy of the palette before proceeding.
+                If (Not frameData(i).usesGlobalPalette) Then
+                    
+                    'Sort the palette prior to saving it; this can improve compression ratios
+                    If optimizeSortPalette Then Palettes.SortPaletteForCompression_IncAlpha tmpDIB, imgPalette
                     
                     frameData(i).palNumColors = UBound(imgPalette) + 1
                     ReDim frameData(i).framePalette(0 To UBound(imgPalette))
@@ -1089,26 +1142,9 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                     
                 End If
                 
-                'As the final step before palettizing the image, we now need to isolate the "region of interest"
-                ' in this layer.  This is basically an autocrop step that identifies fully transparent borders,
-                ' and tells us where to crop the image to achieve the smallest usable area.
-                If (tmpDIB Is Nothing) Then Set tmpDIB = New pdDIB
-                
-                '(Note that we only do this for non-first frames - the first frame must always be full-size.)
-                If (i > 0) And optimizeFrameCropping Then
-                    
-                    frameData(i).frameIsDuplicateOrEmpty = Not DIBs.GetRectOfInterest(tmpLayer.layerDIB, frameData(i).rectOfInterest)
-                    
-                    With frameData(i).rectOfInterest
-                        tmpDIB.CreateBlank .Width, .Height, 32, 0, 0
-                        GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, .Width, .Height, tmpLayer.layerDIB.GetDIBDC, .Left, .Top, vbSrcCopy
-                    End With
-                    
-                Else
-                    tmpDIB.CreateFromExistingDIB tmpLayer.layerDIB
-                    frameData(i).rectOfInterest.Width = tmpLayer.layerDIB.GetDIBWidth
-                    frameData(i).rectOfInterest.Height = tmpLayer.layerDIB.GetDIBHeight
-                End If
+                'Before palettizing this layer, make a note of how the current frame looks; we may use this
+                ' for compression analyses on subsequent frames.
+                prevStateDIB.CreateFromExistingDIB curStateDIB
                 
                 'If this frame is a duplicate of the previous frame, we don't need to perform any more
                 ' optimizations on its pixel data, because we will simply reuse the previous frame in
@@ -1125,17 +1161,12 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                             DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
                         End If
                     Else
-                        
-                        'Sort the palette prior to applying it; this can improve compression ratios
                         palSize = numColorsInLP
-                        Palettes.SortPaletteForCompression_IncAlpha tmpDIB, imgPalette
-                        
                         If useDithering Then
                             Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
                         Else
                             DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
                         End If
-                        
                     End If
                     
                 End If
