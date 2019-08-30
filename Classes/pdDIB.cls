@@ -782,6 +782,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                     If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
                     
                     Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.GetDIBDC, False
+                    cSurface.SetSurfaceCompositing P2_CM_Overwrite
                     Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
                     PD2D.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
                     Set cSurface = Nothing

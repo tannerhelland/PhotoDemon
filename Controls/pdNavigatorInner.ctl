@@ -571,7 +571,7 @@ Private Sub UpdateAnimationSettings(ByRef srcImage As pdImage, Optional ByVal fo
                 m_Frames(i).afOffsetX = xThumb
                 m_Frames(i).afOffsetY = yThumb
                 
-                srcImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, thumbSize, True
+                srcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, srcImage, thumbSize, True
                 m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
                 
             End If

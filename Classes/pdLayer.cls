@@ -1939,40 +1939,33 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
-    Dim thumbWidth As Long, thumbHeight As Long, thumbLeft As Single, thumbTop As Single
+    Dim thumbWidth As Long, thumbHeight As Long
     PDMath.ConvertAspectRatio m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, thumbnailSize, thumbnailSize, thumbWidth, thumbHeight
-        
+    
+    Dim tmpRectF As RectF
+    
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     If thumbIsSquare Then
     
         'If the image is wider than it is tall, center the thumbnail vertically
         If (thumbWidth > thumbHeight) Then
-            thumbLeft = 0!
-            thumbTop = (thumbnailSize - thumbHeight) * 0.5
+            tmpRectF.Left = 0!
+            tmpRectF.Top = (thumbnailSize - thumbHeight) * 0.5
         
         '...otherwise, center it horizontally
         Else
-            thumbTop = 0!
-            thumbLeft = (thumbnailSize - thumbWidth) * 0.5
+            tmpRectF.Top = 0!
+            tmpRectF.Left = (thumbnailSize - thumbWidth) * 0.5
         End If
         
-        'Prep the destination thumbnail
-        If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
-        If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
-            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
-        Else
-            dstThumbnailDIB.ResetDIB 0
-        End If
+        tmpRectF.Width = thumbWidth
+        tmpRectF.Height = thumbHeight
         
-        'Paint the thumbnail into place
-        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, thumbLeft, thumbTop, thumbWidth, thumbHeight, m_LayerThumbnail, 0!, 0!, m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
-    
     'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
     ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
     Else
         
-        Dim tmpRectF As RectF
         If (ptrToRectF <> 0) Then
             CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
         Else
@@ -1982,20 +1975,165 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
                 .Width = thumbWidth
                 .Height = thumbHeight
             End With
-            If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB Else dstThumbnailDIB.ResetDIB 0
-            dstThumbnailDIB.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
         End If
-        
-        GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_LayerThumbnail, 0!, 0!, m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
         
     End If
     
+    'If the caller has manually specified a destination rectangle, we do *not* want to prepare a DIB for them
+    ' (as they will have prepared it themselves, at whatever size they require).
+    Dim prepDstDIB As Boolean: prepDstDIB = True
+    If (Not thumbIsSquare) And (ptrToRectF <> 0) Then prepDstDIB = False
+    
+    If prepDstDIB Then
+        If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+        If thumbIsSquare Then
+            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
+        Else
+            dstThumbnailDIB.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
+        End If
+    End If
+    
+    'Paint the thumbnail into place!
+    GDI_Plus.GDIPlus_StretchBlt dstThumbnailDIB, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, m_LayerThumbnail, 0!, 0!, m_LayerThumbnail.GetDIBWidth, m_LayerThumbnail.GetDIBHeight, , UserPrefs.GetThumbnailInterpolationPref(), , , , True
     dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
     
     'NOTE: the thumbnail *has already been color-managed*, so the caller doesn't need to manage it further.
     RequestThumbnail = True
     
 End Function
+
+'Specialized thumbnail function; renders a layer thumbnail while taking into account offsets and
+' non-destructive transforms.  This produces a thumbnail of how the layer appears *in the current image*,
+' so for small layers, it may use a ton of dead space.  This is by design.
+'
+'Note that this specialized function cannot physically make use of the current thumbnail cache, as it
+' requires specialized transforms.  As such, its performance will possibly be (much) slower than the
+' normal thumbnail function.
+'
+'TODO: color-management
+Friend Function RequestThumbnail_ImageCoords(ByRef dstThumbnail As pdDIB, ByRef srcImage As pdImage, Optional ByVal thumbnailSize As Long = LAYER_THUMB_SIZE, Optional ByVal thumbIsSquare As Boolean = True, Optional ByVal ptrToRectF As Long = 0) As Boolean
+    
+    RequestThumbnail_ImageCoords = False
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Is the current thumbnail dirty?  If so, regenerate it.
+    'If (Not m_IsThumbClean) Or (thumbnailSize > m_CurrentLayerThumbSize) Then UpdateInternalThumbnail thumbnailSize
+    
+    'We now need to figure out where the hell to position the layer inside the new DIB.  Rather than use manual
+    ' coordinate calculations, we're simply going to use a transformation matrix.
+    Dim cTransform As pd2DTransform
+    Me.GetCopyOfLayerTransformationMatrix_Full cTransform
+    
+    'The default transformation matrix produces a transformation of the current layer (at full-size) into its
+    ' parent image (at full size).  Unfortunately, we are not working at full-size - we are working at some
+    ' (unpredictable) thumbnail size.  As such, we need to append additional scaling operations, based on what
+    ' kind of thumbnail has been requested.
+    Dim thumbWidth As Long, thumbHeight As Long
+    PDMath.ConvertAspectRatio srcImage.Width, srcImage.Height, thumbnailSize, thumbnailSize, thumbWidth, thumbHeight
+    
+    Dim tmpRectF As RectF
+    
+    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
+    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    If thumbIsSquare Then
+    
+        'If the image is wider than it is tall, center the thumbnail vertically
+        If (thumbWidth > thumbHeight) Then
+            tmpRectF.Left = 0!
+            tmpRectF.Top = (thumbnailSize - thumbHeight) * 0.5
+        
+        '...otherwise, center it horizontally
+        Else
+            tmpRectF.Top = 0!
+            tmpRectF.Left = (thumbnailSize - thumbWidth) * 0.5
+        End If
+        
+        tmpRectF.Width = thumbWidth
+        tmpRectF.Height = thumbHeight
+        
+    'If this is a non-standard request (e.g. a square thumbnail isn't needed), paint out the thumbnail at whatever
+    ' size the caller wants.  Note that they are responsible for preparing the target DIB in this scenario.
+    Else
+        
+        If (ptrToRectF <> 0) Then
+            CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
+        Else
+            With tmpRectF
+                .Left = 0!
+                .Top = 0!
+                .Width = thumbWidth
+                .Height = thumbHeight
+            End With
+        End If
+        
+    End If
+    
+    'We now have transform settings for the image as a whole.  Use these to calculate an x/y scaling ratio.
+    Dim xScale As Single, yScale As Single
+    xScale = tmpRectF.Width / srcImage.Width
+    yScale = tmpRectF.Height / srcImage.Height
+    
+    'Append the scale settings to the transform matrix
+    cTransform.ApplyScaling xScale, yScale
+    
+    'Finally, append transform settings using the current layer x/y offset
+    'cTransform.ApplyTranslation Me.GetLayerOffsetX * xScale, Me.GetLayerOffsetY * yScale
+    cTransform.ApplyTranslation tmpRectF.Left, tmpRectF.Top
+    
+    'If the caller has manually specified a destination rectangle, we do *not* want to prepare a DIB for them
+    ' (as they will have prepared it themselves, at whatever size they require).
+    Dim prepDstDIB As Boolean: prepDstDIB = True
+    If (Not thumbIsSquare) And (ptrToRectF <> 0) Then prepDstDIB = False
+    
+    If prepDstDIB Then
+        If (dstThumbnail Is Nothing) Then Set dstThumbnail = New pdDIB
+        If thumbIsSquare Then
+            dstThumbnail.CreateBlank thumbnailSize, thumbnailSize, 32, 0, 0
+        Else
+            dstThumbnail.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
+        End If
+    End If
+    
+    'Transform the layer's corner points
+    Dim cPoints() As PointFloat
+    ReDim cPoints(0 To 2) As PointFloat
+    cPoints(0).x = 0
+    cPoints(0).y = 0
+    cPoints(1).x = Me.layerDIB.GetDIBWidth - 1
+    cPoints(1).y = 0
+    cPoints(2).x = 0
+    cPoints(2).y = Me.layerDIB.GetDIBHeight - 1
+    
+    cTransform.ApplyTransformToPointFs VarPtr(cPoints(0)), 3
+    
+    'Prep both surfaces using pd2D (including a cropping region for transparent portions of the thumbnail-)
+    Dim cSurfaceDst As pd2DSurface, cSurfaceSrc As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDIB cSurfaceDst, dstThumbnail, False
+    Drawing2D.QuickCreateSurfaceFromDIB cSurfaceSrc, Me.layerDIB, False
+    cSurfaceDst.SetSurfaceClip_FromRectF tmpRectF
+    cSurfaceDst.SetSurfaceCompositing P2_CM_Overwrite
+    
+    'Convert the user's thumbnail performance preference into a usable resample mode
+    Dim thumbPerf As PD_PerformanceSetting
+    thumbPerf = UserPrefs.GetThumbnailPerformancePref
+    If (thumbPerf = PD_PERF_FASTEST) Then
+        cSurfaceDst.SetSurfaceResizeQuality P2_RQ_Fast
+    ElseIf (thumbPerf = PD_PERF_BALANCED) Then
+        cSurfaceDst.SetSurfaceResizeQuality P2_RQ_Bilinear
+    ElseIf (thumbPerf = PD_PERF_BESTQUALITY) Then
+        cSurfaceDst.SetSurfaceResizeQuality P2_RQ_Bicubic
+    End If
+    
+    'Paint the thumbnail into place!
+    PD2D.DrawSurfaceTransformedF cSurfaceDst, cSurfaceSrc, cTransform, 0, 0, Me.layerDIB.GetDIBWidth, Me.layerDIB.GetDIBHeight
+    Set cSurfaceDst = Nothing: Set cSurfaceSrc = Nothing
+    dstThumbnail.SetInitialAlphaPremultiplicationState True
+    
+    'NOTE: the thumbnail *has already been color-managed*, so the caller doesn't need to manage it further.
+    RequestThumbnail_ImageCoords = True
+    
+End Function
+
 
 'This function can be used to populate a valid SAFEARRAY2D structure against the layer's current DIB
 Private Sub PrepInternalSafeArray(ByRef srcSA As SafeArray2D)

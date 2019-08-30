@@ -316,7 +316,7 @@ Friend Function GetPalette(ByRef dstPalette() As RGBQuad) As Boolean
         ReDim dstPalette(0 To Me.GetUniqueRGBACount - 1) As RGBQuad
         
         Dim r As Long, g As Long, b As Long, a As Long, cCount As Long
-        Dim rIndex As Long, gIndex As Long, bIndex As Long, aIndex As Long
+        Dim gIndex As Long, bIndex As Long, aIndex As Long
         cCount = 0
         
         'Iterate encountered r values
@@ -425,7 +425,7 @@ Friend Function GetUnusedColor(ByRef dstRed As Long, ByRef dstGreen As Long, ByR
         GetUnusedColor = True
         
         Dim r As Long, g As Long, b As Long
-        Dim rIndex As Long, gIndex As Long, bIndex As Long, aIndex As Long
+        Dim gIndex As Long, bIndex As Long
         
         'Iterate encountered r values
         For r = 0 To 255
