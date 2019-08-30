@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>македонски</langname>
-<langversion>1.0.219</langversion>
+<langversion>1.0.220</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1632,8 +1632,8 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Намали празни граници</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1802,6 +1802,21 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Поправете слој на избор</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Исправете слој</translation>
 </phrase>
@@ -1849,11 +1864,6 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Content-слој свесни за менување на големината</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Поправете слој на избор</translation>
 </phrase>
 
 <phrase>
@@ -2561,7 +2571,7 @@ In верзија 6.0, PhotoDemon макро документи беа реди�
 <translation>Clear recent макро листа</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6002,6 +6012,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Намали празни граници</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>Исправете</translation>
 </phrase>
@@ -6138,6 +6153,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6764,7 +6784,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16088,10 +16108,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

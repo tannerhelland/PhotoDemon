@@ -282,22 +282,26 @@ Public Sub InitializeMenus()
         AddMenuItem "Show all layers", "layer_showall", 3, 6, 5
         AddMenuItem "Hide all layers", "layer_hideall", 3, 6, 6
     AddMenuItem "-", "-", 3, 7
-    AddMenuItem "Orientation", "layer_orientation", 3, 8
-        AddMenuItem "Straighten...", "layer_straighten", 3, 8, 0
+    AddMenuItem "Crop", "layer_crop", 3, 8
+        AddMenuItem "Crop to selection", "layer_cropselection", 3, 8, 0, "image_crop"
         AddMenuItem "-", "-", 3, 8, 1
-        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 8, 2, "generic_rotateright"
-        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 8, 3, "generic_rotateleft"
-        AddMenuItem "Rotate 180", "layer_rotate180", 3, 8, 4
-        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 8, 5
-        AddMenuItem "-", "-", 3, 8, 6
-        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 8, 7, "image_fliphorizontal"
-        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 8, 8, "image_flipvertical"
-    AddMenuItem "Size", "layer_resize", 3, 9
-        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 9, 0, "generic_reset"
+        AddMenuItem "Pad to image size", "layer_pad", 3, 8, 2
+        AddMenuItem "Trim empty borders", "layer_trim", 3, 8, 3
+    AddMenuItem "Orientation", "layer_orientation", 3, 9
+        AddMenuItem "Straighten...", "layer_straighten", 3, 9, 0
         AddMenuItem "-", "-", 3, 9, 1
-        AddMenuItem "Resize...", "layer_resize", 3, 9, 2, "image_resize"
-        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 9, 3
-    AddMenuItem "Crop to selection", "layer_crop", 3, 10, , "image_crop"
+        AddMenuItem "Rotate 90 clockwise", "layer_rotate90", 3, 9, 2, "generic_rotateright"
+        AddMenuItem "Rotate 90 counter-clockwise", "layer_rotate270", 3, 9, 3, "generic_rotateleft"
+        AddMenuItem "Rotate 180", "layer_rotate180", 3, 9, 4
+        AddMenuItem "Rotate arbitrary...", "layer_rotatearbitrary", 3, 9, 5
+        AddMenuItem "-", "-", 3, 9, 6
+        AddMenuItem "Flip horizontal", "layer_fliphorizontal", 3, 9, 7, "image_fliphorizontal"
+        AddMenuItem "Flip vertical", "layer_flipvertical", 3, 9, 8, "image_flipvertical"
+    AddMenuItem "Size", "layer_resize", 3, 10
+        AddMenuItem "Reset to actual size", "layer_resetsize", 3, 10, 0, "generic_reset"
+        AddMenuItem "-", "-", 3, 10, 1
+        AddMenuItem "Resize...", "layer_resize", 3, 10, 2, "image_resize"
+        AddMenuItem "Content-aware resize...", "layer_contentawareresize", 3, 10, 3
     AddMenuItem "-", "-", 3, 11
     AddMenuItem "Transparency", "layer_transparency", 3, 12
         AddMenuItem "Make color transparent...", "layer_colortoalpha", 3, 12, 0
@@ -1693,7 +1697,7 @@ Private Function PDA_ByName_MenuImage(ByRef srcMenuName As String) As Boolean
             Process "Crop", True
             
         Case "image_trim"
-            Process "Trim empty borders", , , UNDO_ImageHeader
+            Process "Trim empty image borders", , , UNDO_ImageHeader
             
         Case "image_rotate"
             Case "image_straighten"
@@ -1828,6 +1832,16 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Case "layer_hideall"
                 Process "Hide all layers", False, vbNullString, UNDO_ImageHeader
         
+        Case "layer_crop"
+            Case "layer_cropselection"
+                Process "Crop layer to selection", , , UNDO_Layer
+            
+            Case "layer_pad"
+                Process "Pad layer to image size", , , UNDO_Layer
+                
+            Case "layer_trim"
+                Process "Trim empty layer borders", , , UNDO_Layer
+            
         Case "layer_orientation"
             Case "layer_straighten"
                 Process "Straighten layer", True
@@ -1860,9 +1874,6 @@ Private Function PDA_ByName_MenuLayer(ByRef srcMenuName As String) As Boolean
             Case "layer_contentawareresize"
                 Process "Content-aware layer resize", True
                 
-        Case "layer_crop"
-            Process "Crop layer to selection", , , UNDO_Layer
-            
         Case "layer_transparency"
             Case "layer_colortoalpha"
                 Process "Color to alpha", True

@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3406</langversion>
+<langversion>6.8.3407</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1632,8 +1632,8 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Obrišite prazne granice</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1802,6 +1802,21 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Slojeviti sloj za odabir</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Ispravite sloj</translation>
 </phrase>
@@ -1849,11 +1864,6 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Promjena veličine sloja koji prati sadržaj</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Slojeviti sloj za odabir</translation>
 </phrase>
 
 <phrase>
@@ -2561,7 +2571,7 @@ In 6.0, PhotoDemon makronaredbe su redizajnirane kako bi podržale nove značajk
 <translation>Izbriši posljednji popis makronaredbi</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5999,6 +6009,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Obrišite prazne granice</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>Ispraviti</translation>
 </phrase>
@@ -6135,6 +6150,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6760,7 +6780,7 @@ VBCRLPod ažuriranje se automatski obrađuje u pozadini. Kada završite, primit 
 <translation>Jezik je uspješno promijenjen.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16084,10 +16104,10 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

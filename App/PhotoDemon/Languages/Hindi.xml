@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.126</langversion>
+<langversion>1.0.127</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1633,8 +1633,8 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>खाली सीमाएं ट्रिम करें</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1803,6 +1803,21 @@ In संस्करण 6.0 के द्वारा समर्थित न
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>चयन के लिए परत काटना</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>सीधा सीधा परत</translation>
 </phrase>
@@ -1850,11 +1865,6 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>सामग्री-अवगत परत का आकार बदलना</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>चयन के लिए परत काटना</translation>
 </phrase>
 
 <phrase>
@@ -2562,7 +2572,7 @@ In संस्करण 6.0 के द्वारा समर्थित न
 <translation>हाल ही की मैक्रो सूची साफ़ करें</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6000,6 +6010,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>खाली सीमाएं ट्रिम करें</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>सीधा करना</translation>
 </phrase>
@@ -6136,6 +6151,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6762,7 +6782,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>भाषा सफलतापूर्वक बदल गई</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16085,10 +16105,10 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

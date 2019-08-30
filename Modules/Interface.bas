@@ -474,7 +474,7 @@ Private Sub SetUIMode_NoLayers()
     Menus.SetMenuEnabled "layer_visibility", False
     Menus.SetMenuEnabled "layer_orientation", False
     Menus.SetMenuEnabled "layer_resize", False
-    Menus.SetMenuEnabled "layer_crop", False
+    Menus.SetMenuEnabled "layer_cropselection", False
     Menus.SetMenuEnabled "layer_transparency", False
     Menus.SetMenuEnabled "layer_rasterize", False
     
@@ -766,7 +766,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                                     
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
             Menus.SetMenuEnabled "image_crop", newState
-            Menus.SetMenuEnabled "layer_crop", newState
+            Menus.SetMenuEnabled "layer_cropselection", newState
             
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>6.7.426</langversion>
+<langversion>6.7.427</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia (7.0 updates by Google Translate)</author>
@@ -1631,8 +1631,8 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Recortar bordes vacíos</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1801,6 +1801,21 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Recortar capa a selección</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>enderezar capa</translation>
 </phrase>
@@ -1848,11 +1863,6 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Redimensionamiento capa Content-consciente</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Recortar capa a selección</translation>
 </phrase>
 
 <phrase>
@@ -2560,7 +2570,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Borrar lista macro reciente</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6001,6 +6011,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Recortar bordes vacíos</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>enderezar</translation>
 </phrase>
@@ -6137,6 +6152,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6763,7 +6783,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <translation>Idioma cambiado correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16086,10 +16106,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

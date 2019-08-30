@@ -2052,7 +2052,7 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
         If raiseDialog Then Filters_Transform.SeeIfCropCanBeAppliedNonDestructively Else Filters_Transform.CropToSelection_XML processParameters
         Process_ImageMenu = True
             
-    ElseIf Strings.StringsEqual(processID, "Trim empty borders", True) Then
+    ElseIf Strings.StringsEqual(processID, "Trim empty image borders", True) Then
         Filters_Transform.TrimImage
         Process_ImageMenu = True
             
@@ -2269,6 +2269,19 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Layers.SetLayerVisibility_AllLayers False
         Process_LayerMenu = True
     
+    'Crop tasks
+    ElseIf Strings.StringsEqual(processID, "Crop layer to selection", True) Then
+        Filters_Transform.CropToSelection PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Pad layer to image size", True) Then
+        Layers.PadToImageSize PDImages.GetActiveImage, PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Trim empty layer borders", True) Then
+        Layers.TrimEmptyBorders PDImages.GetActiveImage, PDImages.GetActiveImage.GetActiveLayerIndex
+        Process_LayerMenu = True
+    
     'Non-destructive layer size and orientation changes
     ElseIf Strings.StringsEqual(processID, "Reset layer size", True) Then
         Layers.ResetLayerSize cParams.GetLong("layerindex")
@@ -2315,10 +2328,6 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         
     ElseIf Strings.StringsEqual(processID, "Content-aware layer resize", True) Then
         If raiseDialog Then ShowContentAwareResizeDialog PD_AT_SINGLELAYER Else FormResizeContentAware.SmartResizeImage processParameters
-        Process_LayerMenu = True
-        
-    ElseIf Strings.StringsEqual(processID, "Crop layer to selection", True) Then
-        Filters_Transform.CropToSelection PDImages.GetActiveImage.GetActiveLayerIndex
         Process_LayerMenu = True
         
     'Change layer alpha

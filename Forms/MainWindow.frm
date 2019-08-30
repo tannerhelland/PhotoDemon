@@ -546,8 +546,28 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Orientation"
+         Caption         =   "Crop"
          Index           =   8
+         Begin VB.Menu MnuLayerCrop 
+            Caption         =   "Crop to selection"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerCrop 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerCrop 
+            Caption         =   "Pad to image size"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerCrop 
+            Caption         =   "Trim empty borders"
+            Index           =   3
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Orientation"
+         Index           =   9
          Begin VB.Menu MnuLayerOrientation 
             Caption         =   "Straighten..."
             Index           =   0
@@ -587,7 +607,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Size"
-         Index           =   9
+         Index           =   10
          Begin VB.Menu MnuLayerSize 
             Caption         =   "Reset to actual size"
             Index           =   0
@@ -604,10 +624,6 @@ Begin VB.Form FormMain
             Caption         =   "Content-aware resize..."
             Index           =   3
          End
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "Crop to selection"
-         Index           =   10
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
@@ -1800,6 +1816,19 @@ Private Sub MnuFileImport_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuLayerCrop_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Menus.ProcessDefaultAction_ByName "layer_cropselection"
+        Case 1
+            '(separator)
+        Case 2
+            Menus.ProcessDefaultAction_ByName "layer_pad"
+        Case 3
+            Menus.ProcessDefaultAction_ByName "layer_trim"
+    End Select
+End Sub
+
 Private Sub MnuLayerSplit_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -2205,11 +2234,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         Case 7
             '(separator)
         Case 8
-            'Orientation submenu
+            'Crop submenu
         Case 9
-            'Size submenu
+            'Orientation submenu
         Case 10
-            Menus.ProcessDefaultAction_ByName "layer_crop"
+            'Size submenu
         Case 11
             '(separator)
         Case 12

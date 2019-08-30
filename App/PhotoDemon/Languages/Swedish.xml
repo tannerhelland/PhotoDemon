@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3406</langversion>
+<langversion>6.8.3407</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1628,8 +1628,8 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Trim tomma gränser</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1798,6 +1798,21 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Gröda skiktet till urvalet</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Räta skiktet</translation>
 </phrase>
@@ -1845,11 +1860,6 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Innehållsmedveten skikt resize</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Gröda skiktet till urvalet</translation>
 </phrase>
 
 <phrase>
@@ -2557,7 +2567,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Rensa senaste makro listan</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5998,6 +6008,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Trim tomma gränser</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>Räta</translation>
 </phrase>
@@ -6134,6 +6149,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6760,7 +6780,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Språk ändrats.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16083,10 +16103,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.91</langversion>
+<langversion>1.0.92</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1631,8 +1631,8 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>빈 테두리 다듬기</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1801,6 +1801,21 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>선택한 레이어 자르기</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>레이어 직선화</translation>
 </phrase>
@@ -1848,11 +1863,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>콘텐츠 인식 레이어 크기 변경</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>선택한 레이어 자르기</translation>
 </phrase>
 
 <phrase>
@@ -2560,7 +2570,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>최근 매크로 목록 지우기</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -5998,6 +6008,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>빈 테두리 다듬기</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>바르게 되다</translation>
 </phrase>
@@ -6134,6 +6149,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6759,7 +6779,7 @@ VBCRL 업데이트가 백그라운드에서 자동으로 처리됩니다. 완료
 <translation>언어가 성공적으로 변경되었습니다.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16082,10 +16102,10 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

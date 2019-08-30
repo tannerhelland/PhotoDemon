@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.423</langversion>
+<langversion>6.7.424</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1633,8 +1633,8 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Trim lege randen</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1803,6 +1803,21 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Verklein laag naar selectie</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Rechten laag</translation>
 </phrase>
@@ -1850,11 +1865,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Inhoudbewuste laagherschaling</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Verklein laag naar selectie</translation>
 </phrase>
 
 <phrase>
@@ -2562,7 +2572,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Wis recente macro-lijst</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6003,6 +6013,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Trim lege randen</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>Rechten</translation>
 </phrase>
@@ -6139,6 +6154,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6765,7 +6785,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16089,10 +16109,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

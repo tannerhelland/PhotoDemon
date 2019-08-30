@@ -1702,3 +1702,23 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
     End If
     
 End Function
+
+Public Sub PadToImageSize(ByRef srcImage As pdImage, Optional ByVal srcLayerIndex As Long = -1)
+    
+    If (srcImage Is Nothing) Then Exit Sub
+    If (srcLayerIndex = -1) Then srcLayerIndex = srcImage.GetActiveLayerIndex
+    
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height, True
+    
+End Sub
+
+Public Sub TrimEmptyBorders(ByRef srcImage As pdImage, Optional ByVal srcLayerIndex As Long = -1)
+    
+    If (srcImage Is Nothing) Then Exit Sub
+    If (srcLayerIndex = -1) Then srcLayerIndex = srcImage.GetActiveLayerIndex
+    
+    'Make sure the layer is null-padded before trimming
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height, True
+    PDImages.GetActiveImage.GetLayerByIndex(srcLayerIndex).CropNullPaddedLayer
+    
+End Sub

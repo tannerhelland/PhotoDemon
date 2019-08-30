@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.423</langversion>
+<langversion>6.7.424</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1633,8 +1633,8 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Coupez frontières vides</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1803,6 +1803,21 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Rogner la couche à la sélection</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>Redresser couche</translation>
 </phrase>
@@ -1850,11 +1865,6 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Redimensionnement couche contenu-courant</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Rogner la couche à la sélection</translation>
 </phrase>
 
 <phrase>
@@ -2562,7 +2572,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <translation>Effacer liste récente macro</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6002,6 +6012,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Coupez frontières vides</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>Redresser</translation>
 </phrase>
@@ -6138,6 +6153,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6764,7 +6784,7 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <translation>Langue changé avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16088,10 +16108,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>

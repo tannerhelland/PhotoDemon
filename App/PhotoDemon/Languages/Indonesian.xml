@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.365</langversion>
+<langversion>6.6.366</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra (7.0 updates by Google Translate)</author>
@@ -1638,8 +1638,8 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
-<original>Trim empty borders</original>
-<translation>Garis Batas kosong</translation>
+<original>Trim empty image borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1808,6 +1808,21 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation>Crop layer untuk seleksi</translation>
+</phrase>
+
+<phrase>
+<original>Pad layer to image size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trim empty layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Straighten layer</original>
 <translation>meluruskan lapisan</translation>
 </phrase>
@@ -1855,11 +1870,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <phrase>
 <original>Content-aware layer resize</original>
 <translation>Lapisan resize konten-sadar</translation>
-</phrase>
-
-<phrase>
-<original>Crop layer to selection</original>
-<translation>Crop layer untuk seleksi</translation>
 </phrase>
 
 <phrase>
@@ -2567,7 +2577,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Daftar makro yang jelas baru-baru ini</translation>
 </phrase>
 
-<!-- Menus.bas contains 252 phrases. 30 were duplicates of existing phrases, so only 222 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -6008,6 +6018,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Trim empty borders</original>
+<translation>Garis Batas kosong</translation>
+</phrase>
+
+<phrase>
 <original>Straighten</original>
 <translation>meluruskan</translation>
 </phrase>
@@ -6144,6 +6159,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show this layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pad to image size</original>
 <translation></translation>
 </phrase>
 
@@ -6770,7 +6790,7 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 350 phrases. 160 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16094,10 +16114,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2681</phrasecount>
+<phrasecount>2685</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4937 phrases. -->
-<!-- 2256 are duplicates, so only 2681 unique phrases have been written to file. -->
-<!-- These 2681 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4942 phrases. -->
+<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
+<!-- These 2685 phrases contain approximately 12675 total words. -->
 
 </pdData>
