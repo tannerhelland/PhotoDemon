@@ -3209,3 +3209,155 @@ Public Function GetPalettizedImage_Dithered_IncAlpha(ByRef srcDIB As pdDIB, ByRe
     GetPalettizedImage_Dithered_IncAlpha = True
     
 End Function
+
+'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), match said palette to a
+' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
+' eight most popular colors are matched to power-of-two values (e.g. the most compressible indices).
+'
+'This operation is lossless for the DIB - it is treated as read-only - but the passed palette will obviously
+' be modified by the function!
+Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+    
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    
+    Dim pxSize As Long
+    pxSize = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim lastAlpha As Long: lastAlpha = -1
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim tmpQuad As RGBQuad, palIndex As Long, lastPalIndex As Long
+    
+    'Build the initial tree
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTreeIncAlpha srcPalette, UBound(srcPalette) + 1
+    
+    'Also construct a histogram; this is how we measure popularity
+    Dim palPopularity() As Long
+    ReDim palPopularity(0 To UBound(srcPalette)) As Long
+    
+    'Start matching pixels
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX Step pxSize
+    
+        b = srcPixels(x)
+        g = srcPixels(x + 1)
+        r = srcPixels(x + 2)
+        a = srcPixels(x + 3)
+        
+        'If this pixel matches the last pixel we tested, reuse our previous match results
+        If ((RGB(r, g, b) <> lastColor) Or (a <> lastAlpha)) Then
+            
+            tmpQuad.Red = r
+            tmpQuad.Green = g
+            tmpQuad.Blue = b
+            tmpQuad.Alpha = a
+            
+            'Ask the tree for its best match
+            palIndex = kdTree.GetNearestPaletteIndexIncAlpha(tmpQuad)
+            
+            lastColor = RGB(r, g, b)
+            lastAlpha = a
+            lastPalIndex = palIndex
+            
+        Else
+            palIndex = lastPalIndex
+        End If
+        
+        'Increment the histogram for the matched palette index
+        palPopularity(palIndex) = palPopularity(palIndex) + 1
+        
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcPixels
+    
+    'Do a quick insertion sort.  Points are likely to be somewhat close to sorted, as the first color(s)
+    ' we encounter are likely to consume most of the image, especially in e.g. a GIF.
+    Dim numColors As Long
+    numColors = UBound(srcPalette) + 1
+    
+    Dim i As Long, j As Long
+    Dim tmpSortQ As RGBQuad, tmpSortL As Long, searchCont As Boolean
+    i = 1
+    
+    Do While (i < numColors)
+        tmpSortQ = srcPalette(i)
+        tmpSortL = palPopularity(i)
+        j = i - 1
+        
+        'Because VB6 doesn't short-circuit And statements, we split this check into separate parts.
+        searchCont = False
+        If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        
+        Do While searchCont
+            srcPalette(j + 1) = srcPalette(j)
+            palPopularity(j + 1) = palPopularity(j)
+            j = j - 1
+            searchCont = False
+            If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        Loop
+        
+        srcPalette(j + 1) = tmpSortQ
+        palPopularity(j + 1) = tmpSortL
+        i = i + 1
+        
+    Loop
+    
+    'The palette has now been sorted by popularity.
+    
+    'We now want to place the 8 most popular entries at power-of-two positions,
+    ' as these positions are most compressible (all or mostly 0-bits).
+    
+    '(The first three entries are already taken care of, obviously, so start at 00000100 and
+    ' continue through 10000000)
+    If (numColors > 4) Then
+        tmpSortQ = srcPalette(4)
+        srcPalette(4) = srcPalette(3)
+        srcPalette(3) = tmpSortQ
+    End If
+    
+    If (numColors > 8) Then
+        tmpSortQ = srcPalette(8)
+        srcPalette(8) = srcPalette(3)
+        srcPalette(3) = srcPalette(8)
+    End If
+    
+    If (numColors > 16) Then
+        tmpSortQ = srcPalette(16)
+        srcPalette(16) = srcPalette(5)
+        srcPalette(5) = srcPalette(16)
+    End If
+    
+    If (numColors > 32) Then
+        tmpSortQ = srcPalette(32)
+        srcPalette(32) = srcPalette(6)
+        srcPalette(6) = tmpSortQ
+    End If
+    
+    If (numColors > 64) Then
+        tmpSortQ = srcPalette(64)
+        srcPalette(64) = srcPalette(7)
+        srcPalette(7) = tmpSortQ
+    End If
+    
+    If (numColors > 128) Then
+        tmpSortQ = srcPalette(128)
+        srcPalette(128) = srcPalette(9)
+        srcPalette(9) = tmpSortQ
+    End If
+    
+    SortPaletteForCompression_IncAlpha = True
+    
+End Function

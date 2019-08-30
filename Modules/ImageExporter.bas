@@ -1042,6 +1042,10 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                             globalPalette(iPal) = imgPalette(iPal)
                         Next iPal
                         
+                        'Sort the palette by popularity (with a few tweaks), which can eke out slightly
+                        ' better compression ratios.
+                        Palettes.SortPaletteForCompression_IncAlpha tmpLayer.layerDIB, globalPalette
+                        
                         frameUsesGP = True
                     
                     'If this is *not* the first frame, and we have yet to write a global palette, append as many
@@ -1121,12 +1125,17 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                             DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, globalPalette, frameData(i).pixelData
                         End If
                     Else
+                        
+                        'Sort the palette prior to applying it; this can improve compression ratios
                         palSize = numColorsInLP
+                        Palettes.SortPaletteForCompression_IncAlpha tmpDIB, imgPalette
+                        
                         If useDithering Then
                             Palettes.GetPalettizedImage_Dithered_IncAlpha tmpDIB, imgPalette, frameData(i).pixelData, PDDM_SierraLite, 0.67, True
                         Else
                             DIBs.GetDIBAs8bpp_RGBA_SrcPalette tmpDIB, imgPalette, frameData(i).pixelData
                         End If
+                        
                     End If
                     
                 End If
