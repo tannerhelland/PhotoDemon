@@ -261,8 +261,16 @@ Private Sub m_LayerPopup_MenuClicked(ByVal mnuIndex As Long, clickedMenuCaption 
     
         'Hide all layers but this one
         Case 0
+            
+            'See if the clicked layer differs from the current active layer; if it does, we want to activate
+            ' the clicked layer (as the user is unlikely to want a soon-to-be-invisible layer as the active one!)
+            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerID <> PDImages.GetActiveImage.GetLayerByIndex(m_RightClickIndex).GetLayerID) Then
+                Processor.FlagFinalNDFXState_Generic pgp_Visibility, PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility
+                Layers.SetActiveLayerByIndex m_RightClickIndex, False
+            End If
+            
             Process "Show only this layer", False, BuildParamList("layerindex", m_RightClickIndex), UNDO_ImageHeader
-    
+            
     End Select
 
 End Sub
