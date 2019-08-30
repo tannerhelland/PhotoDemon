@@ -220,7 +220,7 @@ Public Sub FxRenderFibers(ByVal effectParams As String, Optional ByVal toPreview
     ' potential set of effect parameters.
     Dim fxSize As Double, fxStrength As Double, fxNoise As Double, fxContrast As Double
     Dim fxOpacity As Double, fxBlendMode As PD_BlendMode, fxSeed As String
-    Dim fxColorShadow As Long, fxColorHighlight As Long, fxQuality As Long
+    Dim fxColorShadow As Long, fxColorHighlight As Long
     Dim cGradient As pd2DGradient, useGradient As Boolean, fxGenerator As PD_NoiseGenerator
     
     With cParams

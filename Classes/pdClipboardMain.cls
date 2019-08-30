@@ -249,7 +249,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean, Optional ByVal cFormat As PD
     Processor.MarkProgramBusyState True, True
     
     'Cut begins as a normal Copy operation
-    ClipboardCopy cutMerged, False
+    ClipboardCopy cutMerged, False, cFormat
     
     'Once the copy is complete, we take the extra step of erasing the selected area from the screen.  Note that "Cut merged" requires us
     ' to delete the selected region from *all visible layers*, so in advance, let's figure out which layers are affected.
@@ -309,7 +309,6 @@ Friend Sub ClipboardCutSpecial(ByRef paramString As String)
     cParams.SetParamString paramString
     
     With cParams
-        Dim clipFormat As PD_ClipboardFormats
         Me.ClipboardCut cParams.GetBool("merged", True), cParams.GetLong("clipboard-format", pdcf_All)
     End With
 
@@ -383,7 +382,6 @@ Friend Sub ClipboardCopySpecial(ByRef paramString As String)
     cParams.SetParamString paramString
     
     With cParams
-        Dim clipFormat As PD_ClipboardFormats
         Me.ClipboardCopy cParams.GetBool("merged", True), True, cParams.GetLong("clipboard-format", pdcf_All)
     End With
     

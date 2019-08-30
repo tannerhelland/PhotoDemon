@@ -453,7 +453,7 @@ Private Sub RebuildPreview()
         picThumb.Picture = LoadPicture(vbNullString)
         picThumb.Width = iSrc.Width
         picThumb.Height = iSrc.Height
-        DrawPreviewImage picThumb, , , True
+        DrawPreviewImage picThumb, True
         
         'Now we need to get the source image at the size expected post-rotation
         picThumb90.Picture = LoadPicture(vbNullString)
@@ -463,7 +463,7 @@ Private Sub RebuildPreview()
         picThumbFinal.Width = iSrc.Width
         picThumbFinal.Height = iSrc.Height
 
-        DrawPreviewImage picThumb90, , , True
+        DrawPreviewImage picThumb90, True
         
         'Now comes the rotation itself.
         picThumbFinal.Picture = FreeImage_RotateIOP(picThumb90.Picture, 90)
@@ -532,7 +532,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Used to draw the main image onto a preview picture box
-Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdDIB, Optional forceWhiteBackground As Boolean = False)
+Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional forceWhiteBackground As Boolean = False)
     
     Dim tmpDIB As pdDIB
     
@@ -564,4 +564,3 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     End If
     
 End Sub
-

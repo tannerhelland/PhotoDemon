@@ -114,7 +114,7 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
             'We have an existing sprite sheet with dimensions identical to this one!  Figure out
             ' if we need to resize the sprite sheet to account for another addition to it.
             Dim targetRow As Long, targetColumn As Long
-            GetNumRowsColumns targetIndex, m_ImageCache(targetIndex).NumImages, targetRow, targetColumn
+            GetNumRowsColumns m_ImageCache(targetIndex).NumImages, targetRow, targetColumn
             
             'If this sprite sheet is still only one-column tall, we may need to resize it vertically
             Dim newDibRequired As Boolean
@@ -315,12 +315,12 @@ Private Function GetRowColumnPos(ByVal srcImgID As Long, ByRef dstIndex As Long,
     End If
     
     'Resolve the image number into a sprite row and column
-    GetNumRowsColumns dstIndex, imgNumber, dstRow, dstColumn
+    GetNumRowsColumns imgNumber, dstRow, dstColumn
     
 End Function
 
 'Return the row and column location [0-based] of entry (n) in a target cache entry.
-Private Sub GetNumRowsColumns(ByVal srcCacheIndex As Long, ByVal srcImageIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long)
+Private Sub GetNumRowsColumns(ByVal srcImageIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long)
     dstRow = srcImageIndex Mod MAX_SPRITES_IN_COLUMN
     dstColumn = srcImageIndex \ MAX_SPRITES_IN_COLUMN
 End Sub

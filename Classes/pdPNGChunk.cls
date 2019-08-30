@@ -1100,10 +1100,10 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     
 End Function
 
-Friend Function GetFilteredBytesData(ByRef dstPtr As Long, ByRef dstLength As Long)
+Friend Sub GetFilteredBytesData(ByRef dstPtr As Long, ByRef dstLength As Long)
     dstPtr = VarPtr(m_FilteredBytes(0))
     dstLength = m_FilteredSize
-End Function
+End Sub
 
 'If this chunk is a PLTE chunk, use this function to retrieve a palette.  (By default, all alpha values will be set to 255.)
 Friend Function GetPalette(ByRef dstQuads() As RGBQuad, ByRef numOfColors As Long, ByRef warningStack As pdStringStack) As Boolean

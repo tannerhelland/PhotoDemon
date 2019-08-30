@@ -597,6 +597,6 @@ Public Sub AssignTooltip(ByRef newTooltip As String, Optional ByRef newTooltipTi
     If (Not m_EditBox Is Nothing) Then
         Dim targetHWnd As Long
         If m_EditBox.hWnd = 0 Then targetHWnd = UserControl.hWnd Else targetHWnd = m_EditBox.hWnd
-        ucSupport.AssignTooltip targetHWnd, newTooltip, newTooltipTitle
+        ucSupport.AssignTooltip targetHWnd, newTooltip, newTooltipTitle, raiseTipsImmediately
     End If
 End Sub

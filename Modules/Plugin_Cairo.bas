@@ -356,29 +356,29 @@ Public Function WrapCairoSurfaceAroundDC(ByVal dstDC As Long, ByRef dstContext A
     If (WrapCairoSurfaceAroundDC <> 0) Then dstContext = CallCDeclW(cairo_create, vbLong, WrapCairoSurfaceAroundDC)
 End Function
 
-Public Function Context_Fill(ByVal dstContext As Long)
+Public Sub Context_Fill(ByVal dstContext As Long)
     CallCDeclW cairo_fill, vbEmpty, dstContext
-End Function
+End Sub
 
-Public Function Context_FillPreserve(ByVal dstContext As Long)
+Public Sub Context_FillPreserve(ByVal dstContext As Long)
     CallCDeclW cairo_fill_preserve, vbEmpty, dstContext
-End Function
+End Sub
 
-Public Function Context_Rectangle(ByVal dstContext As Long, ByVal dstX As Double, ByVal dstY As Double, ByVal dstWidth As Double, ByVal dstHeight As Double)
+Public Sub Context_Rectangle(ByVal dstContext As Long, ByVal dstX As Double, ByVal dstY As Double, ByVal dstWidth As Double, ByVal dstHeight As Double)
     CallCDeclW cairo_rectangle, vbEmpty, dstContext, dstX, dstY, dstWidth, dstHeight
-End Function
+End Sub
 
-Public Function Context_SetAntialias(ByVal dstContext As Long, ByVal newAA As Cairo_Antialias)
+Public Sub Context_SetAntialias(ByVal dstContext As Long, ByVal newAA As Cairo_Antialias)
     CallCDeclW cairo_set_operator, vbEmpty, dstContext, newAA
-End Function
+End Sub
 
-Public Function Context_SetOperator(ByVal dstContext As Long, ByVal newOperator As Cairo_Operator)
+Public Sub Context_SetOperator(ByVal dstContext As Long, ByVal newOperator As Cairo_Operator)
     CallCDeclW cairo_set_operator, vbEmpty, dstContext, newOperator
-End Function
+End Sub
 
-Public Function Context_SetSourcePattern(ByVal dstContext As Long, ByVal srcPattern As Long)
+Public Sub Context_SetSourcePattern(ByVal dstContext As Long, ByVal srcPattern As Long)
     CallCDeclW cairo_set_source, vbEmpty, dstContext, srcPattern
-End Function
+End Sub
 
 Public Function Pattern_CreateLinearGradient(ByVal x0 As Double, ByVal y0 As Double, ByVal x1 As Double, ByVal y1 As Double) As Long
     Pattern_CreateLinearGradient = CallCDeclW(cairo_pattern_create_linear, vbLong, x0, y0, x1, y1)

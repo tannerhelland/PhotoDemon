@@ -344,12 +344,7 @@ Private Sub btnPlay_Click(Index As Integer)
 End Sub
 
 Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
-    
     ReflowInterface
-    
-    'If a fixed time is specified, use that instead of layer names
-    
-    
 End Sub
 
 Private Sub btsLoop_Click(ByVal buttonIndex As Long)
@@ -357,11 +352,13 @@ Private Sub btsLoop_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_CancelClick()
+    m_Timer.StopTimer
     m_UserDialogAnswer = vbCancel
     Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
+    m_Timer.StopTimer
     m_FormatParamString = GetExportParamString
     'm_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
@@ -505,14 +502,6 @@ Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
     
 End Sub
 
-'Outside callers can modify the currently active frame using this slider.
-Private Sub ChangeActiveFrame(ByVal newFrameIndex As Long)
-    If (newFrameIndex <> m_Timer.GetCurrentFrame()) Then
-        m_Timer.StopTimer
-        m_Timer.SetCurrentFrame newFrameIndex
-    End If
-End Sub
-
 'Call at dialog initiation to produce a collection of animation thumbnails (and associated metadata,
 ' like frame delay times)
 Private Sub UpdateAnimationSettings()
@@ -584,7 +573,7 @@ Private Sub UpdateAnimationSettings()
         m_Frames(i).afOffsetX = xThumb
         m_Frames(i).afOffsetY = yThumb
         
-        m_SrcImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, thumbSize, False, VarPtr(m_AniThumbBounds)
+        m_SrcImage.GetLayerByIndex(i).RequestThumbnail_ImageCoords tmpDIB, m_SrcImage, thumbSize, False, VarPtr(m_AniThumbBounds)
         m_Frames(i).afThumbKey = m_Thumbs.AddImage(tmpDIB, Str$(i) & "|" & Str$(thumbSize))
         
         'Retrieve layer frame times and relay them to the animation object

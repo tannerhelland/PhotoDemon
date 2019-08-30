@@ -396,7 +396,7 @@ End Type
 Private Type UcsAesExtraDataType
     HeaderId            As Integer                  ' Extra field header ID (0x9901)
     Size                As Integer                  ' Data size (currently 7, but subject to possible increase in the future)
-    version             As Integer                  ' Integer version number specific to the zip vendor
+    ZipVersion          As Integer                  ' Integer version number specific to the zip vendor; modified by Tanner to address casing issues
     VendorId            As Integer                  ' 2-character vendor ID
     strength            As Byte                     ' Integer mode value indicating AES encryption strength
     '--- padding
@@ -762,7 +762,7 @@ Public Function CompressArchive( _
                         '--- update AE-1/2 in extra data
                         uAes.HeaderId = LNG_EXTRADATA_AES_HEADER
                         uAes.Size = LNG_EXTRADATA_AES_SIZE - 4
-                        uAes.version = IIf(.Size <= LNG_EXTRADATA_AE_2_MAXSIZE, 2, 1)
+                        uAes.ZipVersion = IIf(.Size <= LNG_EXTRADATA_AE_2_MAXSIZE, 2, 1)
                         uAes.VendorId = LNG_EXTRADATA_AES_VENDOR
                         uAes.strength = lSaltSize / 4 - 1
                         uAes.Method = uLocal.Method
@@ -773,7 +773,7 @@ Public Function CompressArchive( _
                         '--- update local header
                         uLocal.Method = LNG_METHOD_AES
                         uLocal.cSize = uLocal.cSize + lSaltSize + 2 + LNG_AES_AUTHCODE_SIZE
-                        If uAes.version = 2 Then
+                        If uAes.ZipVersion = 2 Then
                             uLocal.crc32 = 0
                         End If
                     End If
@@ -1403,7 +1403,7 @@ Public Function Extract( _
                                 Err.Raise vbObjectError, , ERR_INVALID_PASSWORD
                             End If
                             '-- don't calc CRC32 for AE-2
-                            If .Aes.version = 2 Then
+                            If .Aes.ZipVersion = 2 Then
                                 pCrc32 = 0
                             End If
                             '--- note: LNG_AES_AUTHCODE_SIZE chunk comes after file data
@@ -1889,7 +1889,7 @@ Private Function pvVfsOpen(File As Variant) As UcsVfsFileType
 End Function
 
 Private Function pvCreateFile(ByVal lpFileName As String, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal NoSecurity As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
-    Select Case LCase(lpFileName)
+    Select Case LCase$(lpFileName)
     Case "stdin:"
         pvCreateFile = GetStdHandle(STD_INPUT_HANDLE)
     Case "stdout:"
@@ -2075,7 +2075,7 @@ Private Function pvFromOemString(baBuffer() As Byte, Optional ByVal lCodePage As
     If UBound(baBuffer) >= 0 Then
         lSize = MultiByteToWideChar(lCodePage, 0, baBuffer(0), UBound(baBuffer) + 1, 0, 0)
         If lSize > 0 Then
-            pvFromOemString = String(lSize, 0)
+            pvFromOemString = String$(lSize, 0)
             lSize = MultiByteToWideChar(lCodePage, 0, baBuffer(0), UBound(baBuffer) + 1, ByVal StrPtr(pvFromOemString), lSize)
         End If
     End If

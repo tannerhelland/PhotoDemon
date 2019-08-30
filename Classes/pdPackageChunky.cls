@@ -423,10 +423,10 @@ End Sub
 'Start a new chunk.  The chunk can be written to in segments, but you *must* finish an in-progress chunk
 ' before starting a new one.  (Starting a new chunk erases any data left-over from previous in-progress
 ' chunks.)  If you want compression and/or encryption, you will specify that in the EndChunk() function.
-Friend Function StartChunk(ByVal chunkID As String)
+Friend Sub StartChunk(ByVal chunkID As String)
     m_TmpChunkID = chunkID
     ReadyTmpChunkSrc
-End Function
+End Sub
 
 'Start a new pdPackage file.
 ' REQUIRED PARAMETERS:
@@ -622,9 +622,9 @@ Private Function WriteChunkFromPtr_Safe(ByRef chunkID As String, ByVal ptrChunkD
     
 End Function
 
-Private Function InternalError(ByVal fncName As String, ByVal errDescription As String)
+Private Sub InternalError(ByVal fncName As String, ByVal errDescription As String)
     PDDebug.LogAction "WARNING!  pdPackageChunky." & fncName & "() reported an error: " & errDescription
-End Function
+End Sub
 
 Private Sub Class_Terminate()
     If (Not m_Stream Is Nothing) Then m_Stream.StopStream

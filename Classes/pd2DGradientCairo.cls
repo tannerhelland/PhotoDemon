@@ -49,11 +49,6 @@ Private m_Path As pd2DPath
 'This class is capable of serializing itself to/from XML strings
 Private m_Serializer As pdParamXML
 
-'Quick and dirty memory swap APIs
-Private Type tmpLong
-    lngResult As Long
-End Type
-
 'When this class is instantiated, we create a default gradient object.  If this object has never been modified,
 ' however, we flag it to avoid things like serializing the default gradient values upon request.
 Private m_GradientIsDefault As Boolean
@@ -504,7 +499,6 @@ Friend Function GetPatternHandle(Optional ByVal forceToLinearMode As Boolean = F
     
     'Note, however, that PD's "reflection" gradient type is an in-house creation, and if it's active, we need to
     ' manually assemble a "reflected" list of gradient points (while also dividing all existing points by 2).
-    Dim finalPointCount As Long
     If (m_GradientShape = P2_GS_Reflection) And (Not forceToLinearMode) Then
         
         'Start by cutting all positions in half.

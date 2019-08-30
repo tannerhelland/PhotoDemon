@@ -74,14 +74,14 @@ Private m_MapSize As Long
 Private m_MapLimit As Long
 
 'Close all open views, close the memory-mapped handle, and close the underlying file itself.
-Friend Function CloseFile(Optional ByVal finalFileSize As Long = -1)
+Friend Sub CloseFile(Optional ByVal finalFileSize As Long = -1)
     ResetMapTrackers
     If (m_FileHandleMM <> 0) Then m_FSO.FileCloseHandle m_FileHandleMM
     If (m_FileHandle <> 0) Then
         If (finalFileSize >= 0) And m_WriteAccessRequired Then m_FSO.FileSetLength m_FileHandle, finalFileSize
         m_FSO.FileCloseHandle m_FileHandle
     End If
-End Function
+End Sub
 
 'Before performing a read/write operation, call this function to ensure all necessary bytes have been
 ' mapped into view.  The required offset must always be absolute (e.g. 0-based, not relative to any
@@ -347,12 +347,12 @@ Private Sub InternalError(ByRef functionName As String, ByRef errText As String,
         
 End Sub
 
-Private Function ResetMapTrackers()
+Private Sub ResetMapTrackers()
     If (m_MapAddress <> UNMAPPED_VIEW) Then m_FSO.FileUnmapView m_MapAddress
     m_MapAddress = UNMAPPED_VIEW
     m_MapOffset = UNMAPPED_VIEW
     m_MapSize = UNMAPPED_VIEW
-End Function
+End Sub
 
 Private Sub Class_Initialize()
     Set m_FSO = New pdFSO

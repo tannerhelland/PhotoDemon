@@ -175,7 +175,7 @@ Public Sub ShowClipboardDialog(ByVal opMode As PD_ClipboardOp)
 
 End Sub
 
-Private Function ListSupportedFormats()
+Private Sub ListSupportedFormats()
     lstFormats.SetAutomaticRedraws False
     lstFormats.Clear
     lstFormats.AddItem "PhotoDemon Image", 0
@@ -184,7 +184,7 @@ Private Function ListSupportedFormats()
     lstFormats.AddItem "DIB v5", 3
     lstFormats.AddItem "PNG", 4
     lstFormats.SetAutomaticRedraws True, True
-End Function
+End Sub
 
 Private Function GetClipFormatFromListIndex_CutCopy() As PD_ClipboardFormats
 

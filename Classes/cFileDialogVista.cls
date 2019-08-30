@@ -910,10 +910,10 @@ Public Function Customize_CreateGroup(ByVal GroupType As CustomControlGroupTypeE
     If pvValidateKey(GroupKey, GroupType, ListCount) = False Then Exit Function
     On Error GoTo ExitRoutine
     pRevert = m_IDtoKey.Count
-    sID = "&H" & Hex(pRevert + CTRLIDOFFSET Or GroupType * &H1000000) & "&"
+    sID = "&H" & Hex$(pRevert + CTRLIDOFFSET Or GroupType * &H1000000) & "&"
     sPath = sID
     For lItem = 0& To ListCount - 1&
-        lID = pRevert + CTRLIDOFFSET + lItem + 1&: sID = "&H" & Hex(lID) & "&"
+        lID = pRevert + CTRLIDOFFSET + lItem + 1&: sID = "&H" & Hex$(lID) & "&"
         m_IDtoKey.Add GroupKey, CStr(lID)    ' ID > parent key
         sPath = sPath & sID    ' Add child key in children list
         m_CtrlSetup(m_IDtoKey.Count).Text = GroupItems(lItem)
@@ -941,7 +941,7 @@ Public Function Customize_AppendGroupItem(ByVal GroupKey As String, ByVal Item A
     If VarType(m_KeyToID(GroupKey)) = vbString Then
         If pvValidateKey(vbNullChar, 0&, 0&) = False Then Exit Function
         m_IDtoKey.Add GroupKey, CStr(m_IDtoKey.Count + CTRLIDOFFSET + 1&)
-        sID = "&H" & Hex(m_IDtoKey.Count + CTRLIDOFFSET) & "&"
+        sID = "&H" & Hex$(m_IDtoKey.Count + CTRLIDOFFSET) & "&"
         sPath = m_KeyToID(GroupKey) & sID
         m_KeyToID.Remove GroupKey
         m_KeyToID.Add sPath, GroupKey

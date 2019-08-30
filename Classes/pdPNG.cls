@@ -2778,8 +2778,6 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
     Set cColorTree = New pdColorCount
     cColorTree.SetAlphaTracking True
     
-    Dim i As Long
-    
     'Total number of unique colors counted so far
     Dim numUniqueColors As Long, non255Alpha As Boolean, nonBinaryAlpha As Boolean
     numUniqueColors = 0
@@ -3269,8 +3267,8 @@ End Function
 Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'Grayscale mode supports 1/2/4/8/16-bit output
-    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
-    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, dstOffsetX As Long, curOffset As Long
+    Dim tmpByte As Byte, srcHeightInPixels As Long
+    Dim xLimit As Long, yDstOffset As Long, dstOffsetX As Long, curOffset As Long
     Dim x As Long, y As Long
     
     'Some params are identical for all image types (such as number of scanlines)
@@ -3445,8 +3443,8 @@ End Function
 Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
     
     'Indexed mode supports 1/2/4/8-bit output
-    Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
-    Dim xLimit As Long, yDstOffset As Long, ySrcOffset As Long, dstOffsetX As Long, curOffset As Long
+    Dim srcHeightInPixels As Long
+    Dim xLimit As Long, yDstOffset As Long, dstOffsetX As Long, curOffset As Long
     Dim x As Long, y As Long
     
     'Unlike other color modes, note that dstStride has already been calculated for us; this was necessary
@@ -4631,7 +4629,7 @@ Friend Function GetTransparentColor(ByRef dstColor As Long, Optional ByVal scale
     
     'If a tRNS chunk exists, retrieve its information, too.  (Note that we only check for tRNS under certain
     ' color type combinations; in particular, it is forbidden if the image contains a full alpha channel.)
-    Dim hasTransparency As Boolean, trnsRed As Long, trnsGreen As Long, trnsBlue As Long
+    Dim trnsRed As Long, trnsGreen As Long, trnsBlue As Long
     trnsRed = -1: trnsGreen = -1: trnsBlue = -1
     
     If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_Truecolor) Then

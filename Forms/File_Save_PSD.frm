@@ -211,10 +211,6 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub sltQuality_Change()
-    UpdatePreview
-End Sub
-
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     

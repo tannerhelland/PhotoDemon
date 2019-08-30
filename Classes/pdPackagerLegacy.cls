@@ -397,7 +397,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         If CopyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
+            Debug.Print "Node data compressed successfully; compressed data is " & Format$(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
             
         Else
             
@@ -1868,7 +1868,7 @@ End Function
 
 'If you want to use compression functions, you must provide the class with a path to a standard copy of libdeflate, including
 ' "/libdeflate.dll" at the end of the path.
-Public Function Init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveInitToCaller As Boolean = False, Optional callerInitiationSuccess As Boolean = True) As Boolean
+Public Function Init_ZLib() As Boolean
     
     m_ZLibAvailable = Compression.IsFormatSupported(cf_Zlib)
     

@@ -2999,7 +2999,7 @@ Friend Sub WriteLayerData(ByRef cStream As pdStream, ByRef srcLayer As pdLayer, 
         ' uselessness of this string in the first place, let's just write a UTF-8 string (which plays nicely
         ' with some 3rd-party readers written in e.g. Python) and assume that very few programs, if any,
         ' will use this data in a way that makes UTF-8 problematic.
-        Dim lName As String, lNameLength As Long, lNameLengthBytes As Long, tmpBytes() As Byte
+        Dim lName As String, lNameLengthBytes As Long, tmpBytes() As Byte
         lName = .GetLayerName()
         If (Len(lName) > 0) Then
         

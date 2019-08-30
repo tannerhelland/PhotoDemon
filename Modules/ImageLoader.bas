@@ -1318,7 +1318,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     ' data bits from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
+    pdiReader.Init_ZLib
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1549,7 +1549,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
+    pdiReader.Init_ZLib
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1666,7 +1666,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
     ' from the source file.
     Dim pdiReader As pdPackagerLegacy
     Set pdiReader = New pdPackagerLegacy
-    pdiReader.Init_ZLib vbNullString, True, PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
+    pdiReader.Init_ZLib
     
     'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.

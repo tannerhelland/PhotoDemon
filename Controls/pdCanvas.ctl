@@ -228,22 +228,6 @@ Private m_InternalResize As Boolean
 'Are various canvas elements currently visible?  Outside callers can access/modify these via dedicated Get/Set functions.
 Private m_RulersVisible As Boolean, m_StatusBarVisible As Boolean
 
-'In Feb '15, Raj added a great context menu to the image tabstrip.  To help simplify menu enable/disable behavior,
-' this enum can be used to identify individual menu entries.
-Private Enum PopupMenuIndices
-    pm_Save = 0
-    pm_SaveCopy = 1
-    pm_SaveAs = 2
-    pm_Revert = 3
-    pm_OpenInExplorer = 5
-    pm_Close = 7
-    pm_CloseOthers = 8
-End Enum
-
-#If False Then
-    Private Const pm_Save = 0, pm_SaveCopy = 1, pm_SaveAs = 2, pm_Revert = 3, pm_OpenInExplorer = 5, pm_Close = 7, pm_CloseOthers = 8
-#End If
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport

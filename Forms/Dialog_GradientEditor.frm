@@ -748,7 +748,7 @@ End Sub
 
 Private Sub ChangeActivePanel(ByVal buttonIndex As Long)
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = picContainer.lBound To picContainer.UBound
         
         'Show the primary container for this panel
@@ -1305,7 +1305,7 @@ Private Sub ImportGradientFile()
     initialFolder = UserPrefs.GetGradientPath()
     
     'Build a common dialog filter list
-    Dim cdFilter As pdString, cdFilterExtensions As pdString
+    Dim cdFilter As pdString
     Set cdFilter = New pdString
     
     cdFilter.Append g_Language.TranslateMessage("All supported gradients") & "|*.svg;*.ggr|"
