@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon spritesheet cache
 'Copyright 2018-2019 by Tanner Helland
 'Created: 13/July/18
-'Last updated: 23/August/19
-'Last update: spin-off a dedicated class from the UIImages module
+'Last updated: 30/August/19
+'Last update: allow the user to update images in-place when calling AddImage with an existing ID
 '
 'When storing large amounts of small images, it is more resource- and performance-friendly
 ' to stick the images in dedicated spritesheets.
@@ -34,7 +34,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Const MAX_SPRITES_IN_COLUMN As Long = 12
+'This value can be set by the caller (it defaults to DEFAULT_MAX_SPRITES_IN_COLUMN),
+' but it is VERY IMPORTANT to note that it SHOULD NOT BE CHANGED AFTER ONE OR MORE
+' IMAGES HAVE BEEN LOADED.  Images are just indices into the sprite list, and changing
+' the max column size wrecks existing indices - so don't attempt this.
+Private m_MaxSpritesInColumn As Long
+Private Const DEFAULT_MAX_SPRITES_IN_COLUMN As Long = 16
 
 'Individual cache object.  This module manages a one-dimensional array of these headers.
 Private Type ImgCacheEntry
@@ -169,11 +174,10 @@ Friend Function AddImage(ByRef srcDIB As pdDIB, ByRef uniqueImageName As String)
         Else
             
             'Duplicate entry found; that's okay - replace the existing version, then return the index as-is!
-            'Paint the new DIB into place, and update all target references to reflect the correct index
-            'Dim targetRow As Long, targetColumn As Long
             Dim imgID As Long
             imgID = GetCombinedIndexAndID(targetIndex, targetID)
             
+            'Failsafe check only
             If GetRowColumnPos(imgID, targetIndex, targetRow, targetColumn) Then
                 
                 With m_ImageCache(targetIndex)
@@ -255,10 +259,10 @@ Private Function GetCombinedIndexAndID(ByVal targetIndex As Long, ByVal targetID
     Dim tmpDWord As FakeDWord
     tmpDWord.WordOne = targetIndex
     tmpDWord.WordTwo = targetID
-    CopyMemoryStrict VarPtr(GetCombinedIndexAndID), VarPtr(tmpDWord), 4
+    GetMem4 VarPtr(tmpDWord), GetCombinedIndexAndID
 End Function
 
-Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long) As Boolean
+Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long, Optional ByVal customAlpha As Long = 255) As Boolean
 
     'Resolve the image number into a sprite row and column
     Dim targetIndex As Long, targetRow As Long, targetColumn As Long
@@ -267,7 +271,7 @@ Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
         'Paint the result!
         If (Not m_ImageCache(targetIndex).ImgSpriteSheet Is Nothing) Then
             With m_ImageCache(targetIndex)
-                .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight
+                .ImgSpriteSheet.AlphaBlendToDCEx dstDC, dstX, dstY, .SpriteWidth, .SpriteHeight, targetColumn * .SpriteWidth, targetRow * .SpriteHeight, .SpriteWidth, .SpriteHeight, customAlpha
                 .ImgSpriteSheet.FreeFromDC
             End With
         Else
@@ -321,8 +325,8 @@ End Function
 
 'Return the row and column location [0-based] of entry (n) in a target cache entry.
 Private Sub GetNumRowsColumns(ByVal srcImageIndex As Long, ByRef dstRow As Long, ByRef dstColumn As Long)
-    dstRow = srcImageIndex Mod MAX_SPRITES_IN_COLUMN
-    dstColumn = srcImageIndex \ MAX_SPRITES_IN_COLUMN
+    dstRow = srcImageIndex Mod m_MaxSpritesInColumn
+    dstColumn = srcImageIndex \ m_MaxSpritesInColumn
 End Sub
 
 'Fully reset the cache.  NOTE: this will invalidate all previously returned handles, so you *must*
@@ -330,4 +334,16 @@ End Sub
 Friend Sub ResetCache()
     ReDim m_ImageCache(0) As ImgCacheEntry
     m_NumOfCacheObjects = 0
+End Sub
+
+Friend Sub SetMaxSpritesInColumn(ByVal newMax As Long)
+    If (m_NumOfCacheObjects = 0) Then
+        m_MaxSpritesInColumn = newMax
+    Else
+        PDDebug.LogAction "WARNING!  You cannot change the maximum sprite count *after* caching images!"
+    End If
+End Sub
+
+Private Sub Class_Initialize()
+    m_MaxSpritesInColumn = DEFAULT_MAX_SPRITES_IN_COLUMN
 End Sub

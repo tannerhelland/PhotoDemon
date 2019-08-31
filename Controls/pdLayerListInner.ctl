@@ -111,12 +111,14 @@ Private m_Colors As pdThemeColors
 ' to manipulate, not just because layers can change frequently - but because layer *order* can also change frequently.
 ' For this reason, layers are tracked by their canonical ID, *not* their index (position in the layer stack).
 Private Type LayerThumbDisplay
-    thumbDIB As pdDIB
+    spriteIDInt As Long
+    spriteIDStr As String
     CanonicalLayerID As Long
 End Type
 
 Private m_LayerThumbnails() As LayerThumbDisplay
 Private m_NumOfThumbnails As Long
+Private m_ThumbCollection As pdSpriteSheet
 
 'Thumbnail image width/height values, declared as variables so we can dynamically adjust them at run-time.
 Private m_ThumbWidth As Long, m_ThumbHeight As Long
@@ -728,7 +730,7 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub UserControl_Initialize()
-
+    
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
@@ -745,6 +747,8 @@ Private Sub UserControl_Initialize()
     'Reset all internal storage objects (used to track layer thumbnails, among other things)
     m_NumOfThumbnails = 0
     ReDim m_LayerThumbnails(0 To m_NumOfThumbnails) As LayerThumbDisplay
+    Set m_ThumbCollection = New pdSpriteSheet
+    
     m_MouseOverLayerBox = False
     m_LayerRearrangingMode = False
     m_CurLayerHover = -1
@@ -828,6 +832,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
             ' - If a valid layerID (>= 0) was specified, we can update just that layer.
             ' - If a layerID was NOT specified, we need to update all layers.
             Dim layerUpdateSuccessful As Boolean: layerUpdateSuccessful = False
+            Dim tmpDIB As pdDIB
             Dim i As Long
             
             'A layer ID was provided.  Search our thumbnail collection for this layer ID.  If we have an entry for it,
@@ -835,21 +840,23 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
             If (layerID >= 0) And (m_NumOfThumbnails > 0) Then
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
-                        PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
-                        m_LayerThumbnails(i).thumbDIB.FreeFromDC
+                        PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, m_ThumbHeight
+                        m_LayerThumbnails(i).spriteIDStr = Str$(layerID)
+                        m_LayerThumbnails(i).spriteIDInt = m_ThumbCollection.AddImage(tmpDIB, m_LayerThumbnails(i).spriteIDStr)
                         layerUpdateSuccessful = True
                         Exit For
                     End If
                 Next i
             End If
             
-            'If we failed to find the requested layer in our collection (or if our collection is currently empty), rebuild our
-            ' entire thumbnail collection from scratch.
+            'If we failed to find the requested layer in our collection (or if our collection is currently empty),
+            ' rebuild our entire thumbnail collection from scratch.
             If (Not layerUpdateSuccessful) Then
                 
                 'Retrieve the number of layers in the current image and prepare the thumbnail cache
                 m_NumOfThumbnails = PDImages.GetActiveImage.GetNumOfLayers
                 If (UBound(m_LayerThumbnails) <> (m_NumOfThumbnails - 1)) Then ReDim m_LayerThumbnails(0 To m_NumOfThumbnails - 1) As LayerThumbDisplay
+                m_ThumbCollection.ResetCache
                 
                 If (m_NumOfThumbnails > 0) Then
                 
@@ -859,8 +866,9 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                         ' reuse thumbnails if layer order changes.
                         If (Not PDImages.GetActiveImage.GetLayerByIndex(i) Is Nothing) Then
                             m_LayerThumbnails(i).CanonicalLayerID = PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerID
-                            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
-                            m_LayerThumbnails(i).thumbDIB.FreeFromDC
+                            m_LayerThumbnails(i).spriteIDStr = Str$(m_LayerThumbnails(i).CanonicalLayerID)
+                            PDImages.GetActiveImage.GetLayerByIndex(i).RequestThumbnail tmpDIB, m_ThumbHeight
+                            m_LayerThumbnails(i).spriteIDInt = m_ThumbCollection.AddImage(tmpDIB, m_LayerThumbnails(i).spriteIDStr)
                         End If
                         
                     Next i
@@ -872,11 +880,13 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
         Else
             m_NumOfThumbnails = 0
             If (UBound(m_LayerThumbnails) <> 0) Then ReDim m_LayerThumbnails(0) As LayerThumbDisplay
+            m_ThumbCollection.ResetCache
         End If
         
     Else
         m_NumOfThumbnails = 0
         If (UBound(m_LayerThumbnails) <> 0) Then ReDim m_LayerThumbnails(0) As LayerThumbDisplay
+        m_ThumbCollection.ResetCache
     End If
     
     'See if the list's scrollability has changed
@@ -1095,19 +1105,17 @@ Private Sub RedrawBackBuffer()
                             
                         End If
                         
-                        'Next comes the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
-                        If Not (m_LayerThumbnails(layerIndex).thumbDIB Is Nothing) Then
+                        'Next comes the layer thumbnail.  If the layer is not currently visible, render it at partial opacity.
+                        If m_ThumbCollection.DoesImageExist(m_LayerThumbnails(layerIndex).spriteIDStr) Then
                             
                             objOffsetX = offsetX + HORIZONTAL_ITEM_PADDING
                             objOffsetY = offsetY + (blockHeightDPIAware - m_ThumbHeight) \ 2
                             
                             If tmpLayerRef.GetLayerVisibility Then
-                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
+                                m_ThumbCollection.PaintCachedImage bufferDC, objOffsetX, objOffsetY, m_LayerThumbnails(layerIndex).spriteIDInt
                             Else
-                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 76, objOffsetX, objOffsetY
+                                m_ThumbCollection.PaintCachedImage bufferDC, objOffsetX, objOffsetY, m_LayerThumbnails(layerIndex).spriteIDInt, 127
                             End If
-                            
-                            m_LayerThumbnails(layerIndex).thumbDIB.FreeFromDC
                             
                         End If
                         
