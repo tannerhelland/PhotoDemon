@@ -172,3 +172,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumb
     End If
     
 End Sub
+
+Public Sub NotifyStopAnimations()
+    nvgMain.EndAnimations
+End Sub

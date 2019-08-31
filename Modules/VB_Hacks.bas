@@ -227,7 +227,7 @@ End Sub
 ' function instead.  The unique TimerID we specify is actually a handle to the timer instance.
 ' (Thank you to Karl Peterson for suggesting this excellent trick: http://vb.mvps.org/samples/TimerObj/)
 Public Sub StandInTimerProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal cTimer As pdTimer, ByVal dwTime As Long)
-    cTimer.TimerEventArrived
+    If (Not cTimer Is Nothing) Then cTimer.TimerEventArrived
 End Sub
 
 'This beautiful little function comes courtesy of coder Merri:
@@ -411,6 +411,17 @@ Public Sub DoEventsTimersOnly()
     Do While PeekMessageA(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
         TranslateMessage tmpMsg
         DispatchMessageA tmpMsg
+    Loop
+End Sub
+
+Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
+    Dim tmpMsg As winMsg
+    Const WM_TIMER As Long = &H113
+    Do While PeekMessageA(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
+        If (tmpMsg.wParam <> nIDEvent) Then
+            TranslateMessage tmpMsg
+            DispatchMessageA tmpMsg
+        End If
     Loop
 End Sub
 

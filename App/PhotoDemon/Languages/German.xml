@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1324</langversion>
+<langversion>7.2.1341</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1636,7 +1636,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation></translation>
+<translation>Leere Bildrahmungen trimmen</translation>
 </phrase>
 
 <phrase>
@@ -1811,12 +1811,12 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Pad layer to image size</original>
-<translation></translation>
+<translation>Layer auf Bildgröße auffüllen</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation></translation>
+<translation>Leere Layer-Rahmungen trimmen</translation>
 </phrase>
 
 <phrase>
@@ -3255,7 +3255,7 @@ Beschreibung: %2
 
 <phrase>
 <original>background border style</original>
-<translation>Hintergrund-Rahmungsstil</translation>
+<translation>Hintergrundrahmungsstil</translation>
 </phrase>
 
 <phrase>
@@ -3369,12 +3369,12 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>This is a still image (only one frame of animation).</original>
-<translation></translation>
+<translation>Dies ist ein Standbild (nur ein Frame der Animation).</translation>
 </phrase>
 
 <phrase>
 <original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
-<translation></translation>
+<translation>Sie können fortfahren, aber das Bild wird als Standard-GIF gespeichert, nicht als animiertes GIF.</translation>
 </phrase>
 
 <!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -6164,7 +6164,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Pad to image size</original>
-<translation></translation>
+<translation>Auf Bildgröße auffüllen</translation>
 </phrase>
 
 <phrase>
@@ -14710,12 +14710,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>h. padding</original>
-<translation>Padding horiz.</translation>
+<translation>Auffüllen horiz.</translation>
 </phrase>
 
 <phrase>
 <original>v. padding</original>
-<translation>Padding vert.</translation>
+<translation>Auffüllen vert.</translation>
 </phrase>
 
 <phrase>
@@ -16063,7 +16063,7 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>matte</original>
-<translation></translation>
+<translation>Matte</translation>
 </phrase>
 
 <phrase>

@@ -289,6 +289,11 @@ End Function
 Private Function OutOfFrames() As Boolean
     
     OutOfFrames = False
+    If (m_FrameCount = 0) Then
+        OutOfFrames = True
+        StopAnimation
+        Exit Function
+    End If
     
     'Failsafe check for frame count
     If (m_CurrentFrame >= m_FrameCount) Then
@@ -303,9 +308,11 @@ Private Function OutOfFrames() As Boolean
     
 End Function
 
-Private Sub StopAnimation()
+Friend Sub StopAnimation()
     
     If m_Timer.IsActive Then
+        
+        m_Timer.StopTimer
         
         'Because the animation timer post-updates the current frame (e.g. it increments it *after* rendering
         ' the current frame), the current frame marker is going to be 1 higher than whatever is displayed on-screen.
@@ -315,7 +322,6 @@ Private Sub StopAnimation()
         
     End If
     
-    m_Timer.StopTimer
     m_ExpectedTimeToDisplay = 0
     
 End Sub

@@ -185,12 +185,10 @@ Private Sub btnPlay_Click(Index As Integer)
 End Sub
 
 Private Sub navInner_AnimationEnded()
-    
     m_DoNotUpdate = True
     If btnPlay(0).Value Then btnPlay(0).Value = False
     sldFrame.Value = navInner.GetCurrentFrame()
     m_DoNotUpdate = False
-    
 End Sub
 
 Private Sub navInner_AnimationFrameChanged(ByVal newFrameIndex As Long)
@@ -210,6 +208,7 @@ Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single
     If (srcImage Is Nothing) Then
         If m_Animated Then
             m_Animated = False
+            navInner.StopAnimation
             UpdateControlLayout
         End If
     Else
@@ -231,8 +230,10 @@ Private Sub navInner_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single
 End Sub
 
 Private Sub sldFrame_Change()
-    If (Not m_DoNotUpdate) Then navInner.ChangeActiveFrame sldFrame.Value
-    UpdateSliderTooltip
+    If m_Animated Then
+        If (Not m_DoNotUpdate) Then navInner.ChangeActiveFrame sldFrame.Value
+        UpdateSliderTooltip
+    End If
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -278,6 +279,10 @@ End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+Public Sub EndAnimations()
+    navInner.StopAnimation
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -427,7 +432,7 @@ Private Sub UpdateButtonTooltips()
 End Sub
 
 Private Sub UpdateSliderTooltip()
-    If (Not g_Language Is Nothing) And PDImages.IsImageActive Then
+    If (Not g_Language Is Nothing) And PDImages.IsImageActive And m_Animated Then
         Dim frameToolText As String
         frameToolText = g_Language.TranslateMessage("Current frame: %1", PDImages.GetActiveImage.GetLayerByIndex(sldFrame.Value).GetLayerName)
         sldFrame.AssignTooltip frameToolText

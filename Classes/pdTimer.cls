@@ -75,7 +75,6 @@ Friend Sub StartTimer()
     ' is used for certain animation duties, it's actually preferable to just replace the current timer as-is
     ' (and let Windows handle disposal of the old timer for us).  Note that either way, this does *not* clear
     ' out WM_TIMER messages already in the hWnds queue - that would need to be handled manually.
-    
     'If (m_TimerID <> 0) Then StopTimer
     
     If (m_Interval > 0) Then
@@ -97,10 +96,16 @@ End Sub
 Friend Sub StopTimer()
 
     If (m_TimerID <> 0) Then
-    
+        
+        Dim backupTimerID As Long
+        backupTimerID = ObjPtr(Me)
+        
         Dim timerReleaseCheck As Boolean
         timerReleaseCheck = (KillTimer(OS.ThunderMainHWnd, ObjPtr(Me)) <> 0)
         m_TimerID = 0
+        
+        'Purge all messages remaining for this timer
+        VBHacks.PurgeTimerMessagesByID backupTimerID
         
         If timerReleaseCheck Then
             UserControls.NotifyTimerDestroyed

@@ -1592,7 +1592,7 @@ Public Sub EnableUserInput()
     
     '*WHILE THE MAIN FORM IS STILL DISABLED*, flush the keyboard/mouse queue.  (This prevents any stray
     ' keypresses or mouse events, applied while a background task was running, from suddenly firing.)
-    DoEvents
+    VBHacks.DoEvents_SingleHwnd OS.ThunderMainHWnd
     
     'Re-enable the main form
     FormMain.Enabled = True
@@ -1968,6 +1968,9 @@ Public Sub NotifyImageRemoved(Optional ByVal oldImageIndex As Long = -1, Optiona
     
     'The image tabstrip has to recalculate internal metrics whenever an image is unloaded
     FormMain.MainCanvas(0).NotifyTabstripRemoveThumb oldImageIndex, redrawImmediately
+    
+    'Any active UI animations also need to be suspended, as they may be tied to the removed image
+    layerpanel_Navigator.NotifyStopAnimations
     
 End Sub
 

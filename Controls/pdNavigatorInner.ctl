@@ -171,13 +171,21 @@ Public Sub SetAnimationRepeat(ByVal newState As Boolean)
 End Sub
 
 Private Sub m_Timer_DrawFrame(ByVal idxFrame As Long)
-
-    'Notify outside callers of the frame change
-    RaiseEvent AnimationFrameChanged(idxFrame)
     
-    'Render the current frame
-    RenderAnimationFrame
-    
+    'Failsafe check for valid drawing conditions
+    If PDImages.IsImageActive Then
+        
+        'Notify outside callers of the frame change
+        RaiseEvent AnimationFrameChanged(idxFrame)
+        
+        'Render the current frame
+        RenderAnimationFrame
+        
+    Else
+        m_Timer.StopTimer
+        EndAnimations
+    End If
+        
 End Sub
 
 Private Sub m_Timer_EndOfAnimation()
@@ -319,7 +327,7 @@ Public Sub PlayAnimation()
 End Sub
 
 Public Sub StopAnimation()
-    m_Timer.StopTimer
+    If m_Timer.IsActive Then m_Timer.StopAnimation
 End Sub
 
 'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
@@ -418,11 +426,13 @@ Private Sub UpdateControlLayout()
     Dim tmpImage As pdImage
     RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY, tmpImage)
     
+    'Animation is always paused if the control is being resized
+    If m_Animated Then StopAnimation
+    
     If (tmpImage Is Nothing) Or (m_ImageThumbnail Is Nothing) Then
         EndAnimations
         m_LastImageID = vbNullString
     Else
-        StopAnimation
         Dim lastImageID As String
         lastImageID = m_LastImageID
         m_LastImageID = tmpImage.GetUniqueID()
@@ -452,8 +462,12 @@ Private Sub UpdateControlLayout()
     'On new image loads, reset the current frame to 0
     If (lastImageID <> m_LastImageID) Then
         StopAnimation
-        m_Timer.SetCurrentFrame 0
-        RaiseEvent AnimationFrameChanged(0)
+        If m_Animated Then
+            m_Timer.SetCurrentFrame 0
+            RaiseEvent AnimationFrameChanged(0)
+        Else
+            EndAnimations
+        End If
     End If
     
     'With the backbuffer and image thumbnail successfully created, we can finally redraw the new navigator window
@@ -465,7 +479,6 @@ Private Sub EndAnimations()
     m_Animated = False
     m_FrameCount = 1
     ReDim m_Frames(0) As PD_AnimationFrame
-    StopAnimation
     RelayAnimationSettings
     If (Not m_Thumbs Is Nothing) Then m_Thumbs.ResetCache
 End Sub
@@ -748,9 +761,9 @@ Private Sub RenderAnimationFrame()
         'Paint the final result to the screen, as relevant
         ucSupport.RequestRepaint True
     
-    'If our frame counter is invalid, end all animations
+    'If our frame counter is invalid, skip rendering entirely
     Else
-        StopAnimation
+        
     End If
         
 End Sub

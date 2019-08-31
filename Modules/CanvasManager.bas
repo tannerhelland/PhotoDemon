@@ -341,12 +341,12 @@ Public Sub UnloadPDImage(ByVal imageIndex As Long, Optional ByVal displayMessage
     
     If displayMessages Then Message "Closing image..."
     
-    'Ask the central image collection to free resources associated with the target image
-    PDImages.RemovePDImageFromCollection imageIndex
-    
     'Remove this image from the thumbnail toolbar, and explicitly ask it to *not* repaint itself.  (It will repaint
     ' automatically later in this function.)
     Interface.NotifyImageRemoved imageIndex, False
+    
+    'Ask the central image collection to free resources associated with the target image
+    PDImages.RemovePDImageFromCollection imageIndex
     
     'If this image was also the active canvas, activate the next image in line (if any others exist).
     If (PDImages.GetNumOpenImages > 0) And (PDImages.GetActiveImageID() = imageIndex) Then
