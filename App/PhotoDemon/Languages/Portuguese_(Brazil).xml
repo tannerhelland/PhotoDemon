@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>português (Brasil)</langname>
-<langversion>6.8.3407</langversion>
+<langversion>6.8.3409</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1093,26 +1093,6 @@ To ativar o suporte para esse formato de imagem, copie o arquivo FreeImage.dll (
 </phrase>
 
 <phrase>
-<original>PhotoDemon can automatically match imported images to existing layers with the same name.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>If matches are found, would you prefer to update existing layers?</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(If you select "no", each imported image will be added as a new layer, even if it matches an existing one.)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Split images into layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Adding image</original>
 <translation></translation>
 </phrase>
@@ -1187,7 +1167,7 @@ To ativar o suporte para esse formato de imagem, copie o arquivo FreeImage.dll (
 <translation>Página 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1897,6 +1877,11 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 </phrase>
 
 <phrase>
+<original>Split images into layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Select all</original>
 <translation>selecionar todos</translation>
 </phrase>
@@ -2571,7 +2556,7 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <translation>Lista macro recente Limpar</translation>
 </phrase>
 
-<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 29 were duplicates of existing phrases, so only 225 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -16105,12 +16090,83 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for File_Export_Animation.frm-->
 
+<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
+
+<phrase>
+<original>after importing source images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>align imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if imported layer names match existing layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source image(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep current size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize to fit imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>replace existing layers with imported ones</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add duplicates as new layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>leave images open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images normally (prompt for unsaved changes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images without prompting</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Layer_Split_ImagesToLayers.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2685</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4942 phrases. -->
-<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
-<!-- These 2685 phrases contain approximately 12675 total words. -->
+<!-- As of this build, PhotoDemon contains 4948 phrases. -->
+<!-- 2253 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 12684 total words. -->
 
 </pdData>

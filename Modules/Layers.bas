@@ -21,6 +21,8 @@ Private Type LayerConvertCache
     Id As Long
     MustConvert As Boolean
     srcLayerName As String
+    srcImageWidth As Long
+    srcImageHeight As Long
 End Type
     
 'XML-based wrapper for AddBlankLayer(), below
@@ -730,6 +732,9 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             newLayerID = tmpImage.CreateBlankLayer
             tmpImage.GetLayerByID(newLayerID).CopyExistingLayer srcImage.GetLayerByID(listOfLayers(i).Id)
             
+            'Force the layer to visible
+            tmpImage.GetLayerByID(newLayerID).SetLayerVisibility True
+            
             'Convert the layer to a null-padded layer (a layer at the same size as the current image)
             tmpImage.GetLayerByID(newLayerID).ConvertToNullPaddedLayer srcImage.Width, srcImage.Height
             tmpImage.UpdateSize
@@ -753,6 +758,9 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
         End If
     
     Next i
+    
+    'PDImages.SetActiveImageID srcImage.imageID
+    CanvasManager.ActivatePDImage srcImage.imageID
     
     SplitLayerToImage = True
     Message "Conversion complete."
@@ -848,226 +856,264 @@ Public Sub DeleteHiddenLayers()
 End Sub
 
 'Given all open images (besides the current one), assemble them as layers into the current image.
-Public Sub MergeImagesToLayers(ByVal showPrompt As Boolean, Optional ByVal processParameters As String = vbNullString)
+Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNullString)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
     
     Dim i As Long, j As Long
     Dim openImageIDs As pdStack
     
-    If showPrompt Then
-        
-        'We only want to display "merge" options if there are matches between imported image names
-        ' and imported layer names.  If there are no matches, the user's selection doesn't matter,
-        ' so we should avoid interrupting their workflow.
-        Dim matchesFound As Boolean
-        
-        'Get a list of open image IDs
-        If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
-        
-        'Look for matches between those and layer IDs in the current image
-        For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
-            
-            If (i <> PDImages.GetActiveImageID) Then
-                
-                With PDImages.GetActiveImage.GetActiveLayer
-                
-                    For j = 0 To openImageIDs.GetNumOfInts - 1
-                        If Strings.StringsEqual(.GetLayerName(), PDImages.GetImageByID(openImageIDs.GetInt(i)).GetLayerByIndex(0).GetLayerName(), True) Then
-                            matchesFound = True
-                            Exit For
-                        End If
-                    Next j
-                    
-                End With
-                
-            End If
-                
-            If matchesFound Then Exit For
-                
-        Next i
-        
-        'Only prompt if some names match
-        If matchesFound Then
-            
-            Dim msgText As pdString
-            Set msgText = New pdString
-            msgText.AppendLine g_Language.TranslateMessage("PhotoDemon can automatically match imported images to existing layers with the same name.")
-            msgText.AppendLineBreak
-            msgText.AppendLine g_Language.TranslateMessage("If matches are found, would you prefer to update existing layers?")
-            msgText.AppendLineBreak
-            msgText.Append g_Language.TranslateMessage("(If you select ""no"", each imported image will be added as a new layer, even if it matches an existing one.)")
-            
-            Dim msgResult As VbMsgBoxResult
-            msgResult = PDMsgBox(msgText.ToString(), vbInformation Or vbYesNoCancel, "Split images into layers")
-            
-            If (msgResult = vbCancel) Then
-                Exit Sub
-            Else
-                
-                If (msgResult = vbNo) Then
-                    cParams.AddParam "overwrite-layers", False
-                Else
-                    cParams.AddParam "overwrite-layers", True
-                End If
-                
-                Process "Split images into layers", False, cParams.GetParamString, UNDO_Everything
-                
-            End If
-            
-        Else
-            Process "Split images into layers", False, vbNullString, UNDO_Everything
-        End If
+    'This function is sort of an odd case for PD, as operations are typically strictly limited
+    ' to only affecting the active image.
     
-    Else
+    'First, we want to make a list of open images, and try to figure out where (if any) each
+    ' image should be inserted.  This is most relevant when the images were originally split using
+    ' the "Split layers into images" command - by parsing layer indices out of their titles, we can
+    ' split each image back into its original parent image *at its original location*.
+    If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
+    
+    Dim listOfImages() As LayerConvertCache
+    ReDim listOfImages(0 To openImageIDs.GetNumOfInts - 1) As LayerConvertCache
+    
+    Dim localizedTag As String
+    
+    Dim maxWidth As Long, maxHeight As Long
+    
+    For i = 0 To UBound(listOfImages)
         
-        cParams.SetParamString processParameters
+        'We want to convert all images *except* the currently active one
+        listOfImages(i).MustConvert = (PDImages.GetImageByID(openImageIDs.GetInt(i)).imageID <> PDImages.GetActiveImageID)
         
-        'This function is sort of an odd case for PD, as operations are typically strictly limited
-        ' to only affecting the active image.
-        
-        'First, we want to make a list of open images, and try to figure out where (if any) each
-        ' image should be inserted.  This is most relevant when the images were originally split using
-        ' the "Split layers into images" command - by parsing layer indices out of their titles, we can
-        ' split each image back into its original parent image *at its original location*.
-        If (Not PDImages.GetListOfActiveImageIDs(openImageIDs)) Then Exit Sub
-        
-        Dim listOfImages() As LayerConvertCache
-        ReDim listOfImages(0 To openImageIDs.GetNumOfInts - 1) As LayerConvertCache
-        
-        Dim localizedTag As String
-        
-        For i = 0 To UBound(listOfImages)
+        'For each image-to-be-converted...
+        If listOfImages(i).MustConvert Then
             
-            'We want to convert all images *except* the currently active one
-            listOfImages(i).MustConvert = (PDImages.GetImageByID(openImageIDs.GetInt(i)).imageID <> PDImages.GetActiveImageID)
+            'Make a note of the image's ID and size
+            listOfImages(i).Id = openImageIDs.GetInt(i)
+            listOfImages(i).srcImageWidth = PDImages.GetImageByID(listOfImages(i).Id).Width
+            listOfImages(i).srcImageHeight = PDImages.GetImageByID(listOfImages(i).Id).Height
             
-            'For each image-to-be-converted...
-            If listOfImages(i).MustConvert Then
-                
-                'Make a note of the image's ID
-                listOfImages(i).Id = openImageIDs.GetInt(i)
-                
-                'Next, pull the name of the base layer.  This is the layer name we want to match
-                ' against the layer names in our existing image, to try and identify matches.
-                listOfImages(i).srcLayerName = PDImages.GetImageByID(listOfImages(i).Id).GetLayerByIndex(0).GetLayerName()
-                
-            End If
+            'Track max width/height; we may need these to resize the image
+            If (listOfImages(i).srcImageWidth > maxWidth) Then maxWidth = listOfImages(i).srcImageWidth
+            If (listOfImages(i).srcImageHeight > maxHeight) Then maxHeight = listOfImages(i).srcImageHeight
             
-        Next i
-        
-        'Make a note of the currently active layer index
-        Dim activeLayerIndex As Long
-        activeLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
-        
-        'Make a safe local reference to the currently active image - because the active image may
-        ' change as we access other images.
-        Dim srcImage As pdImage
-        Set srcImage = PDImages.GetActiveImage()
-        
-        'The number of layers in the base image may change as other images are migrated in - to avoid
-        ' our tracking array having fewer indices than the base image (whose layer count is actively
-        ' increasing), we need to cache the search limit in advance.
-        Dim ubLayers As Long
-        ubLayers = srcImage.GetNumOfLayers - 1
-        
-        'Next, we want to make a bool array to track which layer names we have matched so far
-        ' (in the active image).  On the off chance that there are 2+ layers with identical names,
-        ' we want to match the layers in-order (instead of overwriting the same one twice).
-        Dim layerMatched() As Boolean
-        ReDim layerMatched(0 To ubLayers) As Boolean
-        
-        Dim overwriteMatchingLayers As Boolean
-        overwriteMatchingLayers = cParams.GetBool("overwrite-layers", False)
-        
-        'Next, we basically want to iterate through all images in the collection, and add each one
-        ' to this image - as a unique layer - in turn.
-        For i = 0 To UBound(listOfImages)
+            'Next, pull the name of the base layer.  This is the layer name we want to match
+            ' against the layer names in our existing image, to try and identify matches.
+            listOfImages(i).srcLayerName = PDImages.GetImageByID(listOfImages(i).Id).GetLayerByIndex(0).GetLayerName()
             
-            If listOfImages(i).MustConvert Then
+        End If
+        
+    Next i
+
+    'Make a note of the currently active layer index
+    Dim activeLayerIndex As Long
+    activeLayerIndex = PDImages.GetActiveImage.GetActiveLayerIndex()
+    
+    'Make a safe local reference to the currently active image - because the active image may
+    ' change as we access other images.
+    Dim srcImage As pdImage
+    Set srcImage = PDImages.GetActiveImage()
+    
+    'If the user wants us to resize the image to fit imported layers, do so now
+    If cParams.GetBool("resize-canvas-fit", False) Then
+        If (srcImage.Width > maxWidth) Then maxWidth = srcImage.Width
+        If (srcImage.Height > maxHeight) Then maxHeight = srcImage.Height
+        srcImage.UpdateSize False, maxWidth, maxHeight
+    End If
+    
+    'We may need to set a custom anchor position; pull the relevant parameter value now
+    Dim anchorPosition As Long
+    anchorPosition = cParams.GetLong("layer-anchor", 0)
+    
+    'The number of layers in the base image may change as other images are migrated in - to avoid
+    ' our tracking array having fewer indices than the base image (whose layer count is actively
+    ' increasing), we need to cache the search limit in advance.
+    Dim ubLayers As Long
+    ubLayers = srcImage.GetNumOfLayers - 1
+    
+    'Next, we want to make a bool array to track which layer names we have matched so far
+    ' (in the active image).  On the off chance that there are 2+ layers with identical names,
+    ' we want to match the layers in-order (instead of overwriting the same one twice).
+    Dim layerMatched() As Boolean
+    ReDim layerMatched(0 To ubLayers) As Boolean
+    
+    Dim overwriteMatchingLayers As Boolean
+    overwriteMatchingLayers = cParams.GetBool("overwrite-layers", False)
+    
+    'Next, we basically want to iterate through all images in the collection, and add each one
+    ' to this image - as a unique layer - in turn.
+    For i = 0 To UBound(listOfImages)
+        
+        If listOfImages(i).MustConvert Then
+            
+            Message "Adding image ""%1"" as layer...", listOfImages(i).srcLayerName
+            
+            'Ask the target file to write itself out to a temp PDI file
+            Dim tmpLayerFile As String
+            tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
+            If Saving.SavePhotoDemonImage(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
                 
-                Message "Adding image ""%1"" as layer...", listOfImages(i).srcLayerName
-                
-                'Ask the target file to write itself out to a temp PDI file
-                Dim tmpLayerFile As String
-                tmpLayerFile = UserPrefs.GetTempPath & "LayerConvert.pdi"
-                If Saving.SavePhotoDemonImage(PDImages.GetImageByID(listOfImages(i).Id), tmpLayerFile, True, cf_Lz4, cf_Lz4) Then
+                'We now want to load the resulting image as a standalone layer.  We use a convenient
+                ' wrapper function that ensures the image is loaded as a single layer, even if it
+                ' contains multiple layers.  (This is by design, to allow the user to do things like
+                ' overlay text on a single layer, then merge that layer back into a parent image.)
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                If Loading.QuickLoadImageToDIB(tmpLayerFile, tmpDIB, False, False) Then
                     
-                    'We now want to load the resulting image as a standalone layer.  We use a convenient
-                    ' wrapper function that ensures the image is loaded as a single layer, even if it
-                    ' contains multiple layers.  (This is by design, to allow the user to do things like
-                    ' overlay text on a single layer, then merge that layer back into a parent image.)
-                    Dim tmpDIB As pdDIB
-                    Set tmpDIB = New pdDIB
-                    If Loading.QuickLoadImageToDIB(tmpLayerFile, tmpDIB, False, False) Then
+                    Dim targetIndex As Long
+                    targetIndex = -1
+                    
+                    'Next, try to find a layer with this name in the current image.
+                    If overwriteMatchingLayers Then
                         
-                        Dim targetIndex As Long
-                        targetIndex = -1
-                        
-                        'Next, try to find a layer with this name in the current image.
-                        If overwriteMatchingLayers Then
-                            
-                            For j = 0 To ubLayers
-                                If Strings.StringsEqual(srcImage.GetLayerByIndex(j).GetLayerName, listOfImages(i).srcLayerName, False) Then
-                                    
-                                    'Make sure we haven't matched this layer already
-                                    If (Not layerMatched(j)) Then
-                                        layerMatched(j) = True
-                                        targetIndex = j
-                                        Exit For
-                                    End If
-                                        
+                        For j = 0 To ubLayers
+                            If Strings.StringsEqual(srcImage.GetLayerByIndex(j).GetLayerName, listOfImages(i).srcLayerName, False) Then
+                                
+                                'Make sure we haven't matched this layer already
+                                If (Not layerMatched(j)) Then
+                                    layerMatched(j) = True
+                                    targetIndex = j
+                                    Exit For
                                 End If
-                            Next j
-                            
-                        End If
-                        
-                        'Add the new layer to this image in one of two ways:
-                        ' 1) If a matching layer name was found in the current image, overwrite that layer
-                        '    with the one we've imported from file.
-                        Dim mustCreateNewLayer As Boolean
-                        mustCreateNewLayer = True
-                        If (targetIndex >= 0) Then
-                            mustCreateNewLayer = Not layerMatched(targetIndex)
-                        End If
-                        
-                        Dim newLayerID As Long
-                        newLayerID = srcImage.CreateBlankLayer(targetIndex)
-                        srcImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, listOfImages(i).srcLayerName, tmpDIB, True
-                        Set tmpDIB = Nothing
-                        
-                        If (Not mustCreateNewLayer) Then Layers.DeleteLayer targetIndex, False
-                        
-                        'Auto-crop the layer, as it will have been null-padded by a previous step
-                        srcImage.GetLayerByID(newLayerID).CropNullPaddedLayer
+                                    
+                            End If
+                        Next j
                         
                     End If
                     
-                    'Delete the temp file
-                    Files.FileDeleteIfExists tmpLayerFile
-                
+                    'Add the new layer to this image in one of two ways:
+                    ' 1) If a matching layer name was found in the current image, overwrite that layer
+                    '    with the one we've imported from file.
+                    Dim mustCreateNewLayer As Boolean
+                    mustCreateNewLayer = True
+                    If (targetIndex >= 0) Then
+                        mustCreateNewLayer = Not layerMatched(targetIndex)
+                    End If
+                    
+                    'Because layers are automatically null-padded when they're split into separate images,
+                    ' we *always* create a new layer during import, then crop the null padding to determine
+                    ' the new layer's position.  This provides maximum flexibility for the user.
+                    Dim newLayerID As Long
+                    newLayerID = srcImage.CreateBlankLayer(targetIndex)
+                    srcImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, listOfImages(i).srcLayerName, tmpDIB, True
+                    Set tmpDIB = Nothing
+                    
+                    If (Not mustCreateNewLayer) Then Layers.DeleteLayer targetIndex, False
+                    
+                    'Based on the anchor position, determine x and y locations for the new layer
+                    Dim dstX As Long, dstY As Long
+                    Dim imgWidth As Long, imgHeight As Long, layWidth As Long, layHeight As Long
+                    imgWidth = srcImage.Width
+                    imgHeight = srcImage.Height
+                    layWidth = srcImage.GetLayerByID(newLayerID).GetLayerWidth
+                    layHeight = srcImage.GetLayerByID(newLayerID).GetLayerHeight
+                    
+                    Select Case anchorPosition
+                    
+                        'Top-left
+                        Case 0
+                            dstX = 0
+                            dstY = 0
+                        
+                        'Top-center
+                        Case 1
+                            dstX = (imgWidth - layWidth) \ 2
+                            dstY = 0
+                        
+                        'Top-right
+                        Case 2
+                            dstX = (imgWidth - layWidth)
+                            dstY = 0
+                        
+                        'Middle-left
+                        Case 3
+                            dstX = 0
+                            dstY = (imgHeight - layHeight) \ 2
+                        
+                        'Middle-center
+                        Case 4
+                            dstX = (imgWidth - layWidth) \ 2
+                            dstY = (imgHeight - layHeight) \ 2
+                        
+                        'Middle-right
+                        Case 5
+                            dstX = (imgWidth - layWidth)
+                            dstY = (imgHeight - layHeight) \ 2
+                        
+                        'Bottom-left
+                        Case 6
+                            dstX = 0
+                            dstY = (imgHeight - layHeight)
+                        
+                        'Bottom-center
+                        Case 7
+                            dstX = (imgWidth - layWidth) \ 2
+                            dstY = (imgHeight - layHeight)
+                        
+                        'Bottom right
+                        Case 8
+                            dstX = (imgWidth - layWidth)
+                            dstY = (imgHeight - layHeight)
+                    
+                    End Select
+                    
+                    srcImage.GetLayerByID(newLayerID).SetLayerOffsetX dstX
+                    srcImage.GetLayerByID(newLayerID).SetLayerOffsetY dstY
+                    
+                    'Finally, auto-crop the layer, as it will have been null-padded by a previous step
+                    srcImage.GetLayerByID(newLayerID).CropNullPaddedLayer
+                    
                 End If
                 
+                'Delete the temp file
+                Files.FileDeleteIfExists tmpLayerFile
+            
+            End If
+            
+        End If
+        
+    Next i
+    
+    'Restore the currently active layer index
+    PDImages.GetActiveImage.SetActiveLayerByIndex activeLayerIndex
+    
+    'Make sure the original image is notified of the new layer arrangement (which prompts it
+    ' to update things like its internal thumbnail cache)
+    srcImage.NotifyImageChanged UNDO_Image
+    
+    'If the user requested it, unload each merged image in turn
+    Dim unloadSourceImages As Long
+    unloadSourceImages = cParams.GetLong("close-source-images", 0)
+    If (unloadSourceImages <> 0) Then
+        
+        For i = 0 To UBound(listOfImages)
+        
+            If listOfImages(i).MustConvert Then
+            
+                'Prompt before closing
+                If (unloadSourceImages = 1) Then
+                    CanvasManager.FullPDImageUnload listOfImages(i).Id
+                
+                'Close without prompting
+                ElseIf (unloadSourceImages = 2) Then
+                    CanvasManager.UnloadPDImage listOfImages(i).Id
+                    
+                End If
+            
             End If
             
         Next i
         
-        'Restore the currently active layer index
-        PDImages.GetActiveImage.SetActiveLayerByIndex activeLayerIndex
-        
-        'Make sure the original image is notified of the new layer arrangement (which prompts it
-        ' to update things like its internal thumbnail cache)
-        srcImage.NotifyImageChanged UNDO_Image
-        
-        'Restore the originally active image as the image with focus.  (By default, newly loaded images
-        ' "steal" focus - this is a rare case where we don't want that.)
-        CanvasManager.ActivatePDImage srcImage.imageID, "Split images into layers", True, , True
-        
-        Message "Conversion complete."
-        
     End If
-            
+    
+    'Restore the originally active image as the image with focus.  (By default, newly loaded images
+    ' "steal" focus - this is a rare case where we don't want that.)
+    CanvasManager.ActivatePDImage srcImage.imageID, "Split images into layers", True, , True
+    
+    Message "Conversion complete."
+     
 End Sub
 
 'Move a layer up or down in the stack (referred to as "raise" and "lower" in the menus)

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1341</langversion>
+<langversion>7.2.1343</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1095,26 +1095,6 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>PhotoDemon can automatically match imported images to existing layers with the same name.</original>
-<translation>PhotoDemon kann importierte Bilder automatisch mit vorhandenen Layern mit demselben Name abgleichen.</translation>
-</phrase>
-
-<phrase>
-<original>If matches are found, would you prefer to update existing layers?</original>
-<translation>Wenn Übereinstimmungen gefunden werden, möchten Sie lieber vorhandene Layer aktualisieren?</translation>
-</phrase>
-
-<phrase>
-<original>(If you select "no", each imported image will be added as a new layer, even if it matches an existing one.)</original>
-<translation>(Wenn Sie "Nein" auswählen, wird jedes importierte Bild als neuer Layer hinzugefügt, auch wenn es einem vorhandenen entspricht.)</translation>
-</phrase>
-
-<phrase>
-<original>Split images into layers</original>
-<translation>Bilder in Layer splitten</translation>
-</phrase>
-
-<phrase>
 <original>Adding image</original>
 <translation>Bild wird hinzugefügt</translation>
 </phrase>
@@ -1189,7 +1169,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Seite %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 61 phrases. 34 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -1900,6 +1880,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Split images into layers</original>
+<translation>Bilder in Layer splitten</translation>
+</phrase>
+
+<phrase>
 <original>Select all</original>
 <translation>Alles auswählen</translation>
 </phrase>
@@ -2574,7 +2559,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 254 phrases. 30 were duplicates of existing phrases, so only 224 new phrases were written to file. -->
+<!-- Menus.bas contains 254 phrases. 29 were duplicates of existing phrases, so only 225 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -16110,12 +16095,83 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for File_Export_Animation.frm-->
 
+<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
+
+<phrase>
+<original>after importing source images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>align imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if imported layer names match existing layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source image(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep current size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize to fit imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>replace existing layers with imported ones</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add duplicates as new layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>leave images open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images normally (prompt for unsaved changes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images without prompting</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Layer_Split_ImagesToLayers.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2685</phrasecount>
+<phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4942 phrases. -->
-<!-- 2257 are duplicates, so only 2685 unique phrases have been written to file. -->
-<!-- These 2685 phrases contain approximately 12675 total words. -->
+<!-- As of this build, PhotoDemon contains 4948 phrases. -->
+<!-- 2253 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- These 2695 phrases contain approximately 12684 total words. -->
 
 </pdData>

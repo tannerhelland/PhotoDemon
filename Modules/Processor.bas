@@ -2349,7 +2349,7 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
         Process_LayerMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Split images into layers", True) Then
-        If raiseDialog Then Layers.MergeImagesToLayers True Else Layers.MergeImagesToLayers False, processParameters
+        If raiseDialog Then ShowPDDialog vbModal, FormLayerSplit Else Layers.MergeImagesToLayers processParameters
         Process_LayerMenu = True
         
     'Rasterizing

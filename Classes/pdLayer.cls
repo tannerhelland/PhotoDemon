@@ -1632,7 +1632,7 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     End With
     
     'Copy the source layer's DIB, if one exists.
-    If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcLayer.layerDIB
+    If Not (srcLayer.layerDIB Is Nothing) Then Me.layerDIB.CreateFromExistingDIB srcLayer.layerDIB
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
