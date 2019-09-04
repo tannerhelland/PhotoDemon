@@ -128,6 +128,11 @@ Private m_FrameRects() As RectL_WH
 Private m_fcTLIndices() As Long
 Private m_fdATIndices() As Long
 
+'Animated PNGs do *not* require the first frame (the normal IDAT-based PNG frame) to be part of
+' the animation.  Instead, it can be a fallback image for use in viewers that don't support APNGs.
+' To help this class know how to deal with that first frame, we flag it during initial chunk parsing.
+Private m_IDATIsFrame As Boolean
+
 'Animated PNGs cache some extra animation data, to simplify loading+rendering.  Note also that the
 ' structure of PD's image loader always attempts to load a single frame first, and only if it succeeds
 ' does it come back to us and request additional frames.  As such, it's simpler for us to cache all
@@ -490,12 +495,16 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
     ' this will obviously represent just the first frame.)
     If Me.IsAnimated() Then
         
-        'The IsAnimated() function call, above, will cache frame count for the image
-        ReDim m_FrameRects(0 To m_FrameCount - 1) As RectL_WH
+        'The IsAnimated() function call, above, will cache frame count for the image.  Note that we
+        ' actually allocate one extra space for frame information; we do this because PNGs allow the
+        ' standalone PNG data to *not* be part of the animation - it can be a separate placeholder
+        ' image, distinct from all animation frames.  As such, there may be m_FrameCount + 1 images
+        ' inside an animated PNG.
+        ReDim m_FrameRects(0 To m_FrameCount) As RectL_WH
         
         'We're also going to store indices of the fcTL and fdAT chunks for each frame
-        ReDim m_fcTLIndices(0 To m_FrameCount - 1) As Long
-        ReDim m_fdATIndices(0 To m_FrameCount - 1) As Long
+        ReDim m_fcTLIndices(0 To m_FrameCount) As Long
+        ReDim m_fdATIndices(0 To m_FrameCount) As Long
 
         lastFrameNumber = 0
         
@@ -507,7 +516,7 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
             
             If (m_Chunks(i).GetType = "fcTL") Then
                 
-                If (lastFrameNumber < m_FrameCount) Then
+                If (lastFrameNumber <= UBound(m_fcTLIndices)) Then
                     m_Chunks(i).GetFrameRect m_FrameRects(lastFrameNumber)
                     m_fcTLIndices(lastFrameNumber) = i
                     lastFrameNumber = lastFrameNumber + 1
@@ -540,7 +549,7 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
         End With
     End If
     
-    'Before doing any decompression, let's merge our various IDAT chunks into a single instance.
+    'Before doing any decompression, let's merge our various IDAT (and fdAT chunks) into single instances.
     Dim firstIDATIndex As Long, numChunksRemoved As Long
     firstIDATIndex = -1
     numChunksRemoved = 0
@@ -563,7 +572,18 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
                 'If this is an animated PNG, and we've already encountered an fcTL chunk, flag this
                 ' as the position of the first frame's data.
                 If Me.IsAnimated Then
-                    If (m_fcTLIndices(0) <> 0) And (m_fcTLIndices(0) < i) Then m_fdATIndices(0) = i
+                    
+                    'Ensure this file contains at least one valid animation control chunk
+                    If (m_fcTLIndices(0) <> 0) Then
+                        
+                        'See if the IDAT chunk is part of the animation, or if it is a standalone "placeholder" frame
+                        m_IDATIsFrame = (m_fcTLIndices(0) < i)
+                        
+                        'If this frame *is* part of the animation, store its index
+                        If m_IDATIsFrame Then m_fdATIndices(0) = i
+                        
+                    End If
+                    
                 End If
             
             'If this is *not* the first IDAT chunk we've found, merge the contents of this chunk into
@@ -653,6 +673,10 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
     
     'If multiple IDAT chunks were condensed into a single chunk, update our net chunk count
     m_NumOfChunks = m_NumOfChunks - numChunksRemoved
+    
+    For i = 0 To UBound(m_fcTLIndices)
+        Debug.Print m_fcTLIndices(i), m_fdATIndices(i), m_IDATIsFrame
+    Next i
     
     'Double-check chunk merging:
     'For i = 0 To m_NumOfChunks - 1
@@ -839,7 +863,7 @@ Friend Function ImportStage4_UnfilterIDAT(ByRef srcFile As String) As PD_PNGResu
                 
                 'Perform the actual unfilter
                 m_Chunks(i).UnfilterChunk m_Warnings, fakeHeader, m_XPixelCount, m_YPixelCount, m_XByteCount
-            
+                
             End If
         Next i
     
@@ -995,6 +1019,8 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 Set targetDIB = dstDIB
                 targetWidth = m_Header.Width
                 targetHeight = m_Header.Height
+                
+                If (Not m_IDATIsFrame) Then idatIndex = m_fdATIndices(curFrame)
                 
             Else
                 
@@ -1648,12 +1674,8 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         Message "Multipage image found.  Loading page #%1 of %2...", CStr(curFrame + 1), Me.NumAnimationFrames, "DONOTLOG"
         
         'Frame 0 is a special case.  In most animated PNGs, it will also be the first frame - but this is
-        ' *not* guaranteed.
-        
-        'Dealing with this case is TBD.
-        
-        'Always start the composite buffer by rendering the first image atop it.
-        If (curFrame = 0) Then renderBuffer.CreateFromExistingDIB m_FrameDIBs(curFrame)
+        ' *not* guaranteed.  Note that this has already been handled in a previous step, by pointing the
+        ' original DIBs buffer at the first fdAT chunk instead of the IDAT chunk.
         
         'Frame disposal and blend ops are defined by mozilla:
         ' https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
@@ -1662,6 +1684,14 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         Const APNG_DISPOSE_OP_PREVIOUS = 2
         Const APNG_BLEND_OP_SOURCE = 0
         Const APNG_BLEND_OP_OVER = 1
+        
+        'Always start the composite buffer by rendering the first image atop it, unless the first frame
+        ' has the (weird but valid) dispose op DISPOSE_OP_PREVIOUS - in which case the spec requires us
+        ' to reset the entire buffer to transparent black.
+        If (curFrame = 0) Then
+            renderBuffer.CreateFromExistingDIB m_FrameDIBs(curFrame)
+            If (m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal = APNG_DISPOSE_OP_PREVIOUS) Then renderBuffer.ResetDIB 0
+        End If
         
         'If this frame's disposal method is "PREVIOUS", the spec requires us to perform the following:
         ' "The frame's region of the output buffer is to be reverted to the previous contents before
@@ -1687,9 +1717,6 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
                     m_FrameDIBs(curFrame).AlphaBlendToDC renderBuffer.GetDIBDC, , xOffset, yOffset
             End Select
             
-            'The current frame DIB is no longer required
-            Set m_FrameDIBs(curFrame) = Nothing
-            
             'Create a blank layer in the receiving image, and copy our DIB into it
             Dim newLayerID As Long, newLayerName As String
             newLayerID = dstImage.CreateBlankLayer
@@ -1706,16 +1733,46 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
             .NotifyOfDestructiveChanges
         End With
         
+        'Next, prepare a frame rectangle; we need this for calculating a "disposal region" - specifically,
+        ' to prepare for the next frame, do we reset or revert the region where this frame was drawn?
+        Dim dstSurface As pd2DSurface, srcSurface As pd2DSurface, cBrush As pd2DBrush, disposeRect As RectF
+        disposeRect.Left = m_Chunks(m_fcTLIndices(curFrame)).GetFrameOffsetX
+        disposeRect.Top = m_Chunks(m_fcTLIndices(curFrame)).GetFrameOffsetY
+        If (curFrame = 0) Then
+            disposeRect.Width = m_Header.Width + 1
+            disposeRect.Height = m_Header.Height + 1
+        Else
+            disposeRect.Width = m_FrameDIBs(curFrame).GetDIBWidth
+            disposeRect.Height = m_FrameDIBs(curFrame).GetDIBHeight
+        End If
+        
         'Update the running render buffer according to this frame's disposal requirements
         Select Case m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal
+            
+            'nop
             Case APNG_DISPOSE_OP_NONE
-                'nop
+                
+            'Fill w/ background color - but *only* the frame rect!
             Case APNG_DISPOSE_OP_BACKGROUND
-                renderBuffer.ResetDIB 0
+                Drawing2D.QuickCreateSolidBrush cBrush, vbBlack, 0
+                Drawing2D.QuickCreateSurfaceFromDIB dstSurface, renderBuffer, False
+                dstSurface.SetSurfaceCompositing P2_CM_Overwrite
+                PD2D.FillRectangleF_FromRectF dstSurface, cBrush, disposeRect
+                
+            'Fill w/ previous composite data - but *only* the frame rect!
             Case APNG_DISPOSE_OP_PREVIOUS
-                renderBuffer.CreateFromExistingDIB frameBackup
+                Drawing2D.QuickCreateSurfaceFromDIB dstSurface, renderBuffer, False
+                Drawing2D.QuickCreateSurfaceFromDIB srcSurface, frameBackup, False
+                dstSurface.SetSurfaceCompositing P2_CM_Overwrite
+                PD2D.DrawSurfaceCroppedF dstSurface, disposeRect.Left, disposeRect.Top, disposeRect.Width, disposeRect.Height, srcSurface, disposeRect.Left, disposeRect.Top
+                
         End Select
         
+        Set dstSurface = Nothing: Set srcSurface = Nothing: Set cBrush = Nothing
+        
+        'The current frame DIB is no longer required - free it to reduce memory consumption
+        Set m_FrameDIBs(curFrame) = Nothing
+            
     Next curFrame
     
     'With all frames loaded, cache any other relevant animation metadata inside the destination image

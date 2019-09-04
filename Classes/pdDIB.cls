@@ -939,8 +939,8 @@ Friend Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
     '32-bpp requires GDI+
     Else
         
-        'Just like the 24-bpp block above, we can chat with black and white values in 32-bpp mode too - BUT ONLY
-        ' if the alpha byte value matches.
+        'Just like the 24-bpp block above, we can cheat with black and white values in 32-bpp mode too,
+        ' BUT ONLY if the alpha byte value matches.
         Dim fillAlphaL As Long
         fillAlphaL = fillAlpha * 2.55
         
