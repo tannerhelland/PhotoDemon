@@ -98,8 +98,8 @@ Private Type APNG_Frame
     FrameOffsetX As Long    'X position at which to render the following frame.
     FrameOffsetY As Long    'Y position at which to render the following frame.
     FrameDelayMS As Single  'Frame delay
-    FrameDisposal As APNG_DisposeOp 'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
-    FrameBlend As APNG_BlendOp      'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
+    frameDisposal As APNG_DisposeOp 'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
+    frameBlend As APNG_BlendOp      'See https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
     SequenceNumber As Long     'Sequence number of critical animation chunks, starting with 0.
 End Type
 
@@ -142,11 +142,11 @@ End Function
 
 'Only used for APNGs
 Friend Function GetFrameBlend() As Long
-    GetFrameBlend = m_FrameData.FrameBlend
+    GetFrameBlend = m_FrameData.frameBlend
 End Function
 
 Friend Function GetFrameDisposal() As Long
-    GetFrameDisposal = m_FrameData.FrameDisposal
+    GetFrameDisposal = m_FrameData.frameDisposal
 End Function
 
 Friend Function GetFrameDelayMS() As Long
@@ -186,7 +186,7 @@ End Sub
 ' in advance, notifying us helps us know how much memory to allocate, instead of relying on dynamic
 ' allocations as-we-go.)
 '
-'Note that this function automatically sets aside 12-bytes for chunk length, name, and CRC, and it
+'Note that this function automatically sets aside 12 bytes for chunk length, name, and CRC, and it
 ' will automatically embed the chunk type where it goes in the stream.  This greatly simplifies the
 ' subsequent process of calculating a CRC value.
 '
@@ -244,7 +244,7 @@ Friend Sub FinalizeChunk()
         m_Data.SetPosition pBackup, FILE_BEGIN
         
     Else
-        InternalError "WriteCRCNow", "Chunk size too small"
+        InternalError "FinalizeChunk", "Chunk size too small"
     End If
 
 End Sub
@@ -318,8 +318,8 @@ Friend Function LoadChunkData(ByRef srcStream As pdStream) As Boolean
                             .FrameDelayMS = (CDbl(tmpIntNum) / CDbl(tmpIntDem)) * 1000#
                         End If
                         
-                        .FrameDisposal = m_Data.ReadByte()
-                        .FrameBlend = m_Data.ReadByte()
+                        .frameDisposal = m_Data.ReadByte()
+                        .frameBlend = m_Data.ReadByte()
                         
                     End With
                     
@@ -786,7 +786,7 @@ End Function
 ' It is up to the caller to prepare the source data for
 '
 'RETURNS: TRUE if unfiltering was successful.  FALSE is a critical error; you must suspend processing after receiving it.
-Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByVal srcPtr As Long, ByVal srcStride As Long, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterOptimal) As Boolean
+Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader As PD_PNGHeader, ByVal srcPtr As Long, ByVal srcWidthInPixels As Long, ByVal srcHeightInPixels As Long, ByVal srcStride As Long, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterOptimal) As Boolean
     
     'Because this function is a potential time sink (especially during batch processes), it has been heavily profiled.
     ' To activate profile logging, set the class-level PNG_DEBUG_VERBOSE constant to TRUE.
@@ -800,9 +800,6 @@ Friend Function FilterChunk(ByRef warningStack As pdStringStack, ByRef srcHeader
     
     'We now want to assemble a temporary staging area for filtering pixel data.  The precise structure
     ' of this data is dependent on the outgoing bit-depth and color type of the image.
-    Dim srcWidthInPixels As Long, srcHeightInPixels As Long
-    srcWidthInPixels = srcHeader.Width
-    srcHeightInPixels = srcHeader.Height
     
     'Calculate the required size of the staging area
     Dim dstStride As Long

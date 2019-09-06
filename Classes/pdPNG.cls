@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2019 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 19/August/19
-'Last update: add full support for importing animated PNGs
+'Last updated: 05/September/19
+'Last update: start work on exporting APNGs; 32-bpp animations are already working well!
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -82,6 +82,26 @@ End Enum
     Private Const png_FilterUndefined = -1, png_FilterAuto = 0, png_FilterFast = 1, png_FilterOptimal = 2, png_FilterNone = 3, png_FilterSubOnly = 4, png_FilterUpOnly = 5, png_FilterAverageOnly = 6, png_FilterPaethOnly = 7
 #End If
 
+'APNG enums.  Frame disposal and blend ops are defined by mozilla: https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
+Private Enum PD_APNG_FrameDisposal
+    APNG_DisposeOp_None = 0
+    APNG_DisposeOp_Background = 1
+    APNG_DisposeOp_Previous = 2
+End Enum
+
+#If False Then
+    Private Const APNG_DisposeOp_None = 0, APNG_DisposeOp_Background = 1, APNG_DisposeOp_Previous = 2
+#End If
+
+Private Enum PD_APNG_BlendOp
+    APNG_BlendOp_Source = 0
+    APNG_BlendOp_Over = 1
+End Enum
+
+#If False Then
+    Private Const APNG_BlendOp_Source = 0, APNG_BlendOp_Over = 1
+#End If
+
 'PNGs use a standard header, which we convert into this VB-friendly version.  Note that not all information
 ' from the IHDR chunk is stored here; entries like Compression and Filter only have one allowed value, so while
 ' we validate these at load-time, we don't go to the trouble of storing them internally.  Similarly, some of
@@ -140,6 +160,16 @@ Private m_IDATIsFrame As Boolean
 Private m_AnimationDataCached As Boolean
 Private m_FrameCount As Long, m_LoopCount As Long
 Private m_FrameDIBs() As pdDIB
+Private m_FrameSequence As Long
+
+'Private type used during APNG exporting to collect frame data.
+Private Type PD_APNGFrame
+    frameDisposal As PD_APNG_FrameDisposal
+    frameBlend As PD_APNG_BlendOp
+    frameIsDuplicateOrEmpty As Boolean
+    frameTime As Long
+    rectOfInterest As RectF
+End Type
 
 'When exporting the image, we need to cache various export parameters to share between export functions.
 ' (This is required to maintain chunk order, as some chunk data must be written in specific places -
@@ -674,9 +704,9 @@ Friend Function ImportStage3_Decompress(ByRef srcFile As String) As PD_PNGResult
     'If multiple IDAT chunks were condensed into a single chunk, update our net chunk count
     m_NumOfChunks = m_NumOfChunks - numChunksRemoved
     
-    For i = 0 To UBound(m_fcTLIndices)
-        Debug.Print m_fcTLIndices(i), m_fdATIndices(i), m_IDATIsFrame
-    Next i
+    'For i = 0 To UBound(m_fcTLIndices)
+    '    Debug.Print m_fcTLIndices(i), m_fdATIndices(i), m_IDATIsFrame
+    'Next i
     
     'Double-check chunk merging:
     'For i = 0 To m_NumOfChunks - 1
@@ -1020,11 +1050,19 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 targetWidth = m_Header.Width
                 targetHeight = m_Header.Height
                 
-                If (Not m_IDATIsFrame) Then idatIndex = m_fdATIndices(curFrame)
+                'On APNGs, we need to cover a weird case where the first frame in the animation is
+                ' just a "placeholder" image to satisfy non-APNG-compatible readers, but it's *not*
+                ' actually part of the animation - if this occurs, we want to skip the default image
+                ' and move directly to the first animation frame.
+                If Me.IsAnimated() Then
+                    If (Not m_IDATIsFrame) Then idatIndex = m_fdATIndices(curFrame)
+                End If
                 
             Else
                 
-                'TODO: handle the weird case of the first frame occurring *after* the default frame
+                'In an APNG, all subsequent frames need to be created in turn.  This is a large memory hit,
+                ' but we'll incur it one way or another since we need to do this step when constructing the
+                ' final pdImage object anyway (and it's more convenient to take the hit now).
                 Set m_FrameDIBs(curFrame) = New pdDIB
                 targetWidth = m_FrameRects(curFrame).Width
                 targetHeight = m_FrameRects(curFrame).Height
@@ -1677,20 +1715,12 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         ' *not* guaranteed.  Note that this has already been handled in a previous step, by pointing the
         ' original DIBs buffer at the first fdAT chunk instead of the IDAT chunk.
         
-        'Frame disposal and blend ops are defined by mozilla:
-        ' https://developer.mozilla.org/en-US/docs/Mozilla/Tech/APNG
-        Const APNG_DISPOSE_OP_NONE = 0
-        Const APNG_DISPOSE_OP_BACKGROUND = 1
-        Const APNG_DISPOSE_OP_PREVIOUS = 2
-        Const APNG_BLEND_OP_SOURCE = 0
-        Const APNG_BLEND_OP_OVER = 1
-        
         'Always start the composite buffer by rendering the first image atop it, unless the first frame
-        ' has the (weird but valid) dispose op DISPOSE_OP_PREVIOUS - in which case the spec requires us
+        ' has the (weird but valid) dispose op DisposeOp_PREVIOUS - in which case the spec requires us
         ' to reset the entire buffer to transparent black.
         If (curFrame = 0) Then
             renderBuffer.CreateFromExistingDIB m_FrameDIBs(curFrame)
-            If (m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal = APNG_DISPOSE_OP_PREVIOUS) Then renderBuffer.ResetDIB 0
+            If (m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal = APNG_DisposeOp_Previous) Then renderBuffer.ResetDIB 0
         End If
         
         'If this frame's disposal method is "PREVIOUS", the spec requires us to perform the following:
@@ -1698,7 +1728,7 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         ' rendering the next frame."
         ' Because of this, we need a backup copy of the current frame
         Dim frameBackup As pdDIB
-        If (m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal = APNG_DISPOSE_OP_PREVIOUS) Then
+        If (m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal = APNG_DisposeOp_Previous) Then
             If (frameBackup Is Nothing) Then Set frameBackup = New pdDIB
             frameBackup.CreateFromExistingDIB renderBuffer
         End If
@@ -1711,9 +1741,9 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
             yOffset = m_Chunks(m_fcTLIndices(curFrame)).GetFrameOffsetY
             
             Select Case m_Chunks(m_fcTLIndices(curFrame)).GetFrameBlend
-                Case APNG_BLEND_OP_SOURCE
+                Case APNG_BlendOp_Source
                     GDI.BitBltWrapper renderBuffer.GetDIBDC, xOffset, yOffset, m_FrameDIBs(curFrame).GetDIBWidth, m_FrameDIBs(curFrame).GetDIBHeight, m_FrameDIBs(curFrame).GetDIBDC, 0, 0, vbSrcCopy
-                Case APNG_BLEND_OP_OVER
+                Case APNG_BlendOp_Over
                     m_FrameDIBs(curFrame).AlphaBlendToDC renderBuffer.GetDIBDC, , xOffset, yOffset
             End Select
             
@@ -1750,17 +1780,17 @@ Friend Function ImportStage7_LoadRemainingFrames(ByRef dstImage As pdImage) As P
         Select Case m_Chunks(m_fcTLIndices(curFrame)).GetFrameDisposal
             
             'nop
-            Case APNG_DISPOSE_OP_NONE
+            Case APNG_DisposeOp_None
                 
             'Fill w/ background color - but *only* the frame rect!
-            Case APNG_DISPOSE_OP_BACKGROUND
+            Case APNG_DisposeOp_Background
                 Drawing2D.QuickCreateSolidBrush cBrush, vbBlack, 0
                 Drawing2D.QuickCreateSurfaceFromDIB dstSurface, renderBuffer, False
                 dstSurface.SetSurfaceCompositing P2_CM_Overwrite
                 PD2D.FillRectangleF_FromRectF dstSurface, cBrush, disposeRect
                 
             'Fill w/ previous composite data - but *only* the frame rect!
-            Case APNG_DISPOSE_OP_PREVIOUS
+            Case APNG_DisposeOp_Previous
                 Drawing2D.QuickCreateSurfaceFromDIB dstSurface, renderBuffer, False
                 Drawing2D.QuickCreateSurfaceFromDIB srcSurface, frameBackup, False
                 dstSurface.SetSurfaceCompositing P2_CM_Overwrite
@@ -1868,7 +1898,6 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     
     'Prep a header; this contains standard IHDR information, and storing it module-level prevents us from
     ' needing to pass it to individual functions over-and-over
-    ' TODO: pull this data from a passed param string, obviously.
     With m_Header
         
         .Width = srcImage.GetDIBWidth
@@ -1900,7 +1929,7 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     
     'Start by writing out a basic PNG header.
     Dim keepGoing As PD_PNGResult
-    keepGoing = Me.ExportStep1_StartFile(cStream, srcImage)
+    keepGoing = Me.ExportStep1_StartFile(cStream)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > initialization " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1912,7 +1941,7 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     ' sub-tasks are automatically handled by the pdPNGChunk class.
     
     'PNG files must start with a special "IHDR" chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream, srcImage)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > IHDR creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -1939,7 +1968,7 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     End If
     
     'PNG files end with a special "IEND" chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream, srcImage)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream)
     
     'The write is finished.  Close the file handle and exit.
     Dim finalFileSize As Long
@@ -2030,7 +2059,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     
     'Start by writing out a basic PNG header.
     Dim keepGoing As PD_PNGResult
-    keepGoing = Me.ExportStep1_StartFile(cStream, srcImage)
+    keepGoing = Me.ExportStep1_StartFile(cStream)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > initialization " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2042,7 +2071,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     ' sub-tasks are automatically handled by the pdPNGChunk class.
     
     'PNG files must start with a special "IHDR" chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream, srcImage)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > IHDR creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2068,7 +2097,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     End If
     
     'PNG files end with a special "IEND" chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream, srcImage)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream)
     
     'The write is finished.  Copy the complete stream into the destination array.
     Dim finalFileSize As Long
@@ -2100,6 +2129,231 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
 CouldNotSaveFile:
     InternalError "SavePNG_ToMemory", "Internal VB error #" & Err.Number & ": " & Err.Description
     SavePNG_ToMemory = False
+    
+End Function
+
+'Simplified wrapper to save an animated PNG automatically.  At present, I don't intend to provide the same
+' level of comprehensive output settings that still PNGs support; instead, output settings are largely
+' designed to be auto-detected.  This is particularly critical for animated files as they are much more
+' size-sensitive than single-frame ones.
+Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString, Optional ByVal numPlays As Long = 1) As PD_PNGResult
+    
+    On Error GoTo CouldNotSaveFile
+    
+    If (srcPDImage Is Nothing) Or (LenB(dstFile) = 0) Then
+        InternalError "SaveAPNG_ToFile", "invalid function parameters"
+        SaveAPNG_ToFile = False
+        Exit Function
+    End If
+    
+    'Before proceeding, if the output requires image analysis (due to "automatic" color mode / bit-depth detection,
+    ' or the presence of a full PD-compatible parameter string), perform those analyses before proceeding further.
+    'If (outColorType = png_AutoColorType) Or (outBitsPerChannel = 0) Or (LenB(fullParamString) <> 0) Then
+    '    SetupExportSettings srcImage, srcPDImage, outColorType, outBitsPerChannel, fullParamString
+    '    PDDebug.LogAction "Color type: " & outColorType & ", bpc: " & outBitsPerChannel
+    'End If
+    
+    'DEBUG ONLY: start with 32-bpp RGBA output
+    outColorType = png_TruecolorAlpha
+    outBitsPerChannel = 8
+    
+    'Failsafe check only; PD enforces safe overwriting in a parent function.
+    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+    
+    'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, srcPDImage.Width * srcPDImage.Height, , OptimizeSequentialAccess
+    
+    Dim startTime As Currency, firstStartTime As Currency
+    VBHacks.GetHighResTime startTime
+    firstStartTime = startTime
+    
+    'Prep a header; this contains standard IHDR information, and storing it module-level prevents us from
+    ' needing to pass it to individual functions over-and-over
+    With m_Header
+        
+        .Width = srcPDImage.Width
+        .Height = srcPDImage.Height
+        .BitDepth = outBitsPerChannel
+        .ColorType = outColorType
+        
+        PDDebug.LogAction "Writing animated PNG color type " & outColorType & " with channel bit-depth " & outBitsPerChannel
+        
+        'From color type and bit-depth, determine a "friendly" representation of bits-per-pixel
+        Select Case outColorType
+            Case png_Indexed
+                .BitsPerPixel = outBitsPerChannel
+            Case png_Greyscale
+                .BitsPerPixel = outBitsPerChannel
+            Case png_GreyscaleAlpha
+                .BitsPerPixel = outBitsPerChannel * 2
+            Case png_Truecolor
+                .BitsPerPixel = outBitsPerChannel * 3
+            Case png_TruecolorAlpha
+                .BitsPerPixel = outBitsPerChannel * 4
+        End Select
+        
+        'We never write interlaced PNGs, because interlaced PNGs are much larger and entirely pointless in
+        ' the 21st century.
+        .Interlaced = False
+        
+    End With
+    
+    'Start by writing out a basic PNG header.  (This is identical to static PNGs.)
+    Dim keepGoing As PD_PNGResult
+    keepGoing = Me.ExportStep1_StartFile(cStream)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > initialization " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+        
+    'All subsequent writes must be written as standalone chunks.  Note that chunks contain more than just "data" -
+    ' they also embed length markers, chunk IDs (4-byte ASCII strings), and checksums.  Most of these tedious
+    ' sub-tasks are automatically handled by the pdPNGChunk class.
+    
+    'PNG files must start with a special "IHDR" chunk.  (This is identical to static PNGs.)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep2_WriteIHDR(cStream)
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "PNG export > IHDR creation took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Next, we need to write an acTL - or "animation control" - chunk.  This marks the file as an animated PNG.
+    ExportStep2a_WriteacTL cStream, srcPDImage.GetNumOfLayers, numPlays
+    
+    'Now it is time to prepare and write individual animation frames.  Each frame consists of two parts:
+    ' an fcTL - or "frame control" - chunk that describes frame size and timing, and an fdAT - or
+    ' "frame data" - chunk that describes frame pixel data.  fdAT is nearly identical to a regular IDAT chunk,
+    ' and we use the same function to produce and write said chunks.
+    
+    'These chunks are unique among PNG chunks because they both include a "sequence_number" value -
+    ' an ascending value that ensures chunks are in the correct order (used because traditional PNGs only impose
+    ' a small subset of ordering rules).  This sequence number is individually tracked (and incremented) by the
+    ' fcTL chunk writer, but because the IDAT/fdAT writer is shared between static and animated PNGs, we must
+    ' manually increment the sequence number after calling those functions.
+    Dim numFrames As Long
+    numFrames = srcPDImage.GetNumOfLayers - 1
+    m_FrameSequence = 0
+    
+    'As part of this step, we also need to retrieve and/or apply any per-frame optimizations and settings.
+    Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
+    'useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
+    'frameDelayDefault = cParams.GetLong("frame-delay-default", 100)
+    useFixedFrameDelay = False
+    frameDelayDefault = 100
+    
+    Dim allFrames() As PD_APNGFrame
+    ReDim allFrames(0 To numFrames) As PD_APNGFrame
+    
+    'Layer sizes may be jostled around as part of optimizing the animation; as such, we don't want to
+    ' operate directly on the source layers - instead, we make temporary copies
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    
+    'Filtering an animated PNG is more time-consuming than filtering a static PNG (obviously), so it may
+    ' be worthwhile to use a faster filter strategy
+    Dim tmpChunk As pdPNGChunk, filterStrategy As PD_PNG_FilterStrategy
+    If (cmpLevel = 0) Then filterStrategy = png_FilterNone Else filterStrategy = png_FilterUndefined
+    
+    'During debug it proved helpful to time portions of the APNG export process
+    Dim timeTakenPrep As Currency, timeTakenFilter As Currency, timeTakenDeflate As Currency
+    
+    Dim i As Long
+    For i = 0 To numFrames
+        
+        Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1
+        
+        'TODO: optimize frames!
+        
+        If PNG_DEBUG_VERBOSE Then VBHacks.GetHighResTimeInMS startTime
+        
+        With allFrames(i)
+            
+            'Before dealing with pixel data, attempt to retrieve a frame time from the source layer's name.
+            ' (If the layer name does not provide a frame time, this value will be overwritten in a later
+            ' step with a "default" frame time.)
+            .frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
+            
+            .frameBlend = APNG_BlendOp_Over
+            .frameDisposal = APNG_DisposeOp_Background
+            .frameIsDuplicateOrEmpty = False
+            .rectOfInterest.Left = 0
+            .rectOfInterest.Top = 0
+            .rectOfInterest.Width = srcPDImage.Width
+            .rectOfInterest.Height = srcPDImage.Height
+            
+        End With
+        
+        'Convert the source layer to an image-sized, zero-offsets, all-transforms-applied layer
+        tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
+        tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+        
+        'Write the animation metadata out (before writing any pixel data)
+        With allFrames(i)
+            ExportStep3a_WritefcTL cStream, .rectOfInterest, .frameTime, .frameDisposal, .frameBlend
+        End With
+        
+        If PNG_DEBUG_VERBOSE Then
+            timeTakenPrep = timeTakenPrep + (VBHacks.GetHighResTimeInMSEx - startTime)
+            VBHacks.GetHighResTimeInMS startTime
+        End If
+        
+        'Next, we need to prepare the pixel data for this layer.  The precise steps involved in this
+        ' vary depending on optimization settings.
+        Set tmpChunk = Nothing
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, tmpLayer.layerDIB, tmpChunk, fullParamString, filterStrategy, (i = 0))
+        
+        If PNG_DEBUG_VERBOSE Then
+            timeTakenFilter = timeTakenFilter + (VBHacks.GetHighResTimeInMSEx - startTime)
+            VBHacks.GetHighResTimeInMS startTime
+        End If
+        
+        'Filtered pixel data can now be added in the form of an IDAT chunk (first frame) or fdAT chunk
+        ' (all subsequent frames).
+        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpLayer.layerDIB, tmpChunk, cmpLevel, (i > 0))
+    
+        If PNG_DEBUG_VERBOSE Then
+            timeTakenDeflate = timeTakenDeflate + (VBHacks.GetHighResTimeInMSEx - startTime)
+            VBHacks.GetHighResTimeInMS startTime
+        End If
+        
+    Next i
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > prep took " & Int(timeTakenPrep)
+        PDDebug.LogAction "APNG export > filter took " & Int(timeTakenFilter)
+        PDDebug.LogAction "APNG export > deflate took " & Int(timeTakenDeflate)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'Just like regular PNG files, APNGs end with a special "IEND" chunk
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep5_WriteIEND(cStream)
+    
+    'The write is finished.  Close the file handle and exit.
+    Dim finalFileSize As Long
+    finalFileSize = cStream.GetStreamSize()
+    
+    cStream.StopStream
+    Set cStream = Nothing
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > IEND + finalize data took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    PDDebug.LogAction "APNG export took: " & VBHacks.GetTimeDiffNowAsString(firstStartTime)
+    PDDebug.LogAction "Final APNG size is " & Files.GetFormattedFileSize(finalFileSize)
+    
+    SaveAPNG_ToFile = keepGoing
+    
+    Exit Function
+    
+CouldNotSaveFile:
+    InternalError "SaveAPNG_ToFile", "Internal VB error #" & Err.Number & ": " & Err.Description
+    SaveAPNG_ToFile = False
     
 End Function
 
@@ -2926,7 +3180,7 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
     
 End Sub
 
-Friend Function ExportStep1_StartFile(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+Friend Function ExportStep1_StartFile(ByRef cStream As pdStream) As PD_PNGResult
     
     'Start with the PNG "magic numbers".  From the spec:
     ' 5.2 PNG signature
@@ -2940,7 +3194,7 @@ Friend Function ExportStep1_StartFile(ByRef cStream As pdStream, ByRef srcImage 
 End Function
 
 'Make sure you have populated the module-level m_Header struct before calling this function!
-Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream) As PD_PNGResult
 
     'Initialize a chunk object
     Dim dstChunk As pdPNGChunk
@@ -2980,7 +3234,32 @@ Friend Function ExportStep2_WriteIHDR(ByRef cStream As pdStream, ByRef srcImage 
 End Function
 
 'Make sure you have populated the module-level m_Header struct before calling this function!
-Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByRef fullParamString As String = vbNullString, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterUndefined) As PD_PNGResult
+Friend Function ExportStep2a_WriteacTL(ByRef cStream As pdStream, ByVal numFrames As Long, ByVal numPlays As Long) As PD_PNGResult
+
+    'Initialize a chunk object
+    Dim dstChunk As pdPNGChunk
+    Set dstChunk = New pdPNGChunk
+    
+    'The header is always 13-bytes long.  (Note that we never include length, chunk type, or CRC lengths -
+    ' the chunk class handles all that for us.)
+    dstChunk.CreateChunkForExport "acTL", 8
+    
+    'Write animation frame count
+    dstChunk.BorrowData.WriteLong_BE numFrames
+    
+    'Write number of plays (0 = repeat infinitely)
+    dstChunk.BorrowData.WriteLong_BE numPlays
+    
+    'Finalize the chunk and copy its contents into the destination stream
+    dstChunk.FinalizeChunk
+    cStream.WriteStream dstChunk.BorrowData
+    
+    ExportStep2a_WriteacTL = png_Success
+    
+End Function
+
+'Make sure you have populated the module-level m_Header struct before calling this function!
+Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByRef fullParamString As String = vbNullString, Optional ByVal useFilterStrategy As PD_PNG_FilterStrategy = png_FilterUndefined, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -3058,9 +3337,11 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     End If
     
-    'Note that we no longer require the original DIB; we can safely free it before continuing.
-    ' (NOTE: in the future, we may want to iterate multiple output types to find the best one; consider keeping
-    ' the image around in that case?)
+    'Note that we no longer require the original DIB; we can safely free it before continuing, so long as we note
+    ' the image's dimensions (as the chunk filter code requires these)
+    Dim srcImageWidth As Long, srcImageHeight As Long
+    srcImageWidth = srcImage.GetDIBWidth
+    srcImageHeight = srcImage.GetDIBHeight
     srcImage.EraseDIB True
     
     If PNG_DEBUG_VERBOSE Then
@@ -3082,7 +3363,54 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'The temporary chunk handles the actual filtering for us
     If (tmpChunk Is Nothing) Then Set tmpChunk = New pdPNGChunk
-    If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), dstStride, useFilterStrategy) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
+    If tmpChunk.FilterChunk(m_Warnings, m_Header, VarPtr(finalBytes(0)), srcImageWidth, srcImageHeight, dstStride, useFilterStrategy) Then ExportStep3_FilterBytes = png_Success Else ExportStep3_FilterBytes = png_Failure
+    
+End Function
+
+'This function auto-increments the module-level m_FrameSequence value.
+Friend Function ExportStep3a_WritefcTL(ByRef cStream As pdStream, ByRef srcFrameRect As RectF, ByVal srcFrameDelayInMS As Long, ByVal frameDisposal As PD_APNG_FrameDisposal, ByVal frameBlend As PD_APNG_BlendOp) As PD_PNGResult
+    
+    'Initialize a chunk object
+    Dim dstChunk As pdPNGChunk
+    Set dstChunk = New pdPNGChunk
+    
+    'Frame control chunks are always 26-bytes long.  (Note that we never include length, chunk type, or CRC lengths -
+    ' the chunk class handles all that for us.)
+    dstChunk.CreateChunkForExport "fcTL", 16
+    
+    'Write the current frame sequence count, then increment it
+    dstChunk.BorrowData.WriteLong_BE m_FrameSequence
+    m_FrameSequence = m_FrameSequence + 1
+    
+    'Write out the frame rectangle (where this frame appears on the canvas)
+    dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Width + 0.5)
+    dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Height + 0.5)
+    dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Left + 0.5)
+    dstChunk.BorrowData.WriteLong_BE Int(srcFrameRect.Top + 0.5)
+    
+    'Frame delay is written as (sigh) a ushort numerator/denominator pair.
+    Dim delayNumerator As Long, delayDenominator As Long
+    PDMath.ConvertToFraction CDbl(srcFrameDelayInMS) * 0.001, delayNumerator, delayDenominator, 0.0001
+    If (delayNumerator > 65535) Then
+        delayDenominator = Int(CDbl(delayDenominator) * (65535 / delayNumerator) + 0.5)
+        delayNumerator = Int(CDbl(delayNumerator) * (65535 / delayNumerator) + 0.5)
+    End If
+    If (delayDenominator > 65535) Then
+        delayNumerator = Int(CDbl(delayNumerator) * (65535 / delayDenominator) + 0.5)
+        delayDenominator = Int(CDbl(delayDenominator) * (65535 / delayDenominator) + 0.5)
+    End If
+    dstChunk.BorrowData.WriteIntU_BE Int(delayNumerator + 0.5)
+    dstChunk.BorrowData.WriteIntU_BE Int(delayDenominator + 0.5)
+    
+    'Finally, a one-byte frame disposal and blend op must be specified
+    dstChunk.BorrowData.WriteByte frameDisposal
+    dstChunk.BorrowData.WriteByte frameBlend
+    
+    'Finalize the chunk and copy its contents into the destination stream
+    dstChunk.FinalizeChunk
+    cStream.WriteStream dstChunk.BorrowData
+    
+    ExportStep3a_WritefcTL = png_Success
     
 End Function
 
@@ -3160,7 +3488,7 @@ End Sub
 '
 'Note that the finalBytes() array will already be initialized to the size specified by sizeOfPngBytes; this is performed
 ' externally as a convenience to the caller, so they can simply proceed with filling the array.
-Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
+Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'TrueColor+Alpha mode supports 32/64-bpp output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long
@@ -3168,7 +3496,7 @@ Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef cStre
     Dim x As Long, y As Long
     
     'If the caller wants us to write a bKGD chunk, do so now.
-    If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+    If m_EmbedBkgdColor And writeAncillaryChunks Then WriteBkgdChunk cStream
     
     'Some color-depths (e.g. HDR) require us to directly reference discrete pixels inside the
     ' source DIB; we cannot accelerate the process using pointer-based math, alas.
@@ -3233,7 +3561,7 @@ Private Function Step3Helper_TruecolorAlpha(ByRef srcImage As pdDIB, ByRef cStre
 
 End Function
 
-Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
+Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'TrueColor mode supports 24/48-bpp output
     Dim tmpByte As Byte, srcStride As Long, srcHeightInPixels As Long, srcPtr As Long
@@ -3247,11 +3575,15 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'If the caller wants us to write a tRNS chunk, do so now.
-    If m_WriteTrns Then WriteTRNSNow cStream
+    If writeAncillaryChunks Then
     
-    'If the caller wants us to write a bKGD chunk, do so now.
-    If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+        'If the caller wants us to write a tRNS chunk, do so now.
+        If m_WriteTrns Then WriteTRNSNow cStream
+    
+        'If the caller wants us to write a bKGD chunk, do so now.
+        If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+        
+    End If
     
     'Start by "removing" alpha by compositing the image against whatever backcolor the caller requested
     srcImage.CompositeBackgroundColor Colors.ExtractRed(m_BkgdColor), Colors.ExtractGreen(m_BkgdColor), Colors.ExtractBlue(m_BkgdColor)
@@ -3321,7 +3653,7 @@ Private Function Step3Helper_Truecolor(ByRef srcImage As pdDIB, ByRef cStream As
     
 End Function
 
-Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
+Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'Grayscale mode supports 1/2/4/8/16-bit output
     Dim tmpByte As Byte, srcHeightInPixels As Long
@@ -3331,11 +3663,17 @@ Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
     
-    'If the caller wants us to write a tRNS chunk, do so now.
-    If m_WriteTrns Then WriteTRNSNow cStream
+    'If this is a static PNG (or the first frame of an animated PNG), write out any extra data before
+    ' writing out pixel bits
+    If writeAncillaryChunks Then
     
-    'If the caller wants us to write a bKGD chunk, do so now.
-    If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+        'If the caller wants us to write a tRNS chunk, do so now.
+        If m_WriteTrns Then WriteTRNSNow cStream
+        
+        'If the caller wants us to write a bKGD chunk, do so now.
+        If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+        
+    End If
     
     'If it isn't already, composite the source image against the specified backcolor
     srcImage.ConvertTo24bpp m_BkgdColor
@@ -3451,7 +3789,7 @@ Private Function Step3Helper_Grayscale(ByRef srcImage As pdDIB, ByRef cStream As
     
 End Function
 
-Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
+Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'Grayscale+Alpha mode supports 16/32-bpp output
     Dim srcHeightInPixels As Long
@@ -3459,7 +3797,7 @@ Private Function Step3Helper_GrayscaleAlpha(ByRef srcImage As pdDIB, ByRef cStre
     Dim x As Long, y As Long
     
     'If the caller wants us to write a bKGD chunk, do so now.
-    If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+    If m_EmbedBkgdColor And writeAncillaryChunks Then WriteBkgdChunk cStream
     
     'Some params are identical for all image types (such as number of scanlines)
     srcHeightInPixels = srcImage.GetDIBHeight
@@ -3497,7 +3835,7 @@ End Function
 
 'Unlike other modes, indexed color images require a reference to the underlying pdStream object because they must
 ' write a separate palette chunk (and perhaps an optional transparency chunk)
-Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long) As PD_PNGResult
+Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As pdStream, ByRef finalBytes() As Byte, ByRef sizeOfPngBytes As Long, ByRef dstStride As Long, Optional ByVal writeAncillaryChunks As Boolean = True) As PD_PNGResult
     
     'Indexed mode supports 1/2/4/8-bit output
     Dim srcHeightInPixels As Long
@@ -3532,10 +3870,12 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
         numColors = DIBs.GetDIBAs8bpp_RGBA_Forcibly(srcImage, imgPalette, imgPixels, maxColorCount)
     End If
     
-    'Overwrite the module-level m_ImgPalette with the palette we just generated; if we don't do this,
-    ' subsequent steps (like writing a bKGD chunk) will produce bad data.  (Similarly, if we're using a
-    ' palette calculated in a *previous* step, we need to make sure it syncs up with the one we're
-    ' about to embed in the PNG file.)
+    'Ensure the module-level palette (m_ImgPalette) and our local palette (imgPalette) are in agreement.
+    ' If we had to forcibly downsample the source image due to caller settings, our locally produced
+    ' palette gets precedence - otherwise, the module-level palette will be used.
+    
+    '(It's critical that these two palettes are in agreement; if they vary, subsequent steps - like
+    ' writing a bKGD chunk - will produce bad files because palette indices won't be in alignment.)
     If m_ImgPaletteSafe Then
         ReDim imgPalette(0 To numColors - 1) As RGBQuad
         CopyMemoryStrict VarPtr(imgPalette(0)), VarPtr(m_ImgPalette(0)), numColors * 4
@@ -3545,26 +3885,33 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     End If
     
     'Before passing pixel data off to the encoder, we need to write a palette (and possibly transparency) chunk.
-    Dim palChunk As pdPNGChunk
-    Set palChunk = New pdPNGChunk
-    palChunk.CreateChunkForExport "PLTE", numColors * 3
-    
-    With palChunk.BorrowData
-    
-        Dim i As Long
-        For i = 0 To numColors - 1
-            .WriteByte imgPalette(i).Red
-            .WriteByte imgPalette(i).Green
-            .WriteByte imgPalette(i).Blue
-        Next i
+    ' (Note that the "writeAncillaryChunks" parameter here is not accurately named - PLTE is a *critical* chunk,
+    '  but because we also support animated PNGs, I needed a way to flag chunks that don't need these extra,
+    '  non-IDAT/fdAT chunks prepended!)
+    If writeAncillaryChunks Then
         
-    End With
-    
-    palChunk.FinalizeChunk
-    
-    cStream.WriteStream palChunk.BorrowData
-    Set palChunk = Nothing
-    
+        Dim palChunk As pdPNGChunk
+        Set palChunk = New pdPNGChunk
+        palChunk.CreateChunkForExport "PLTE", numColors * 3
+        
+        With palChunk.BorrowData
+        
+            Dim i As Long
+            For i = 0 To numColors - 1
+                .WriteByte imgPalette(i).Red
+                .WriteByte imgPalette(i).Green
+                .WriteByte imgPalette(i).Blue
+            Next i
+            
+        End With
+        
+        palChunk.FinalizeChunk
+        
+        cStream.WriteStream palChunk.BorrowData
+        Set palChunk = Nothing
+        
+    End If
+        
     'If any of the palette indices are non-zero, we also need to write a tRNS chunk
     Dim palHasTransparency As Boolean
     palHasTransparency = False
@@ -3576,7 +3923,7 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
         End If
     Next i
     
-    If palHasTransparency Then
+    If palHasTransparency And writeAncillaryChunks Then
     
         Dim trnsChunk As pdPNGChunk
         Set trnsChunk = New pdPNGChunk
@@ -3607,7 +3954,7 @@ Private Function Step3Helper_Indexed(ByRef srcImage As pdDIB, ByRef cStream As p
     End If
     
     'If the caller wants us to write a bKGD chunk, do so now.
-    If m_EmbedBkgdColor Then WriteBkgdChunk cStream
+    If m_EmbedBkgdColor And writeAncillaryChunks Then WriteBkgdChunk cStream
     
     'Finally, we need to copy the pixel data into the final "ready to write" buffer.  For 8-bpp data,
     ' this is as simple as CopyMemory.  For lower bit-depths, we need to transform the data into
@@ -3744,7 +4091,7 @@ End Sub
 
 'This function requires a temporary chunk object that has already filtered pixel bytes; this is handled by export step 3,
 ' which *MUST* be called before calling this function.
-Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByVal cmpLevel As Long = -1) As PD_PNGResult
+Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByVal cmpLevel As Long = -1, Optional ByVal writefdATInstead As Boolean = False) As PD_PNGResult
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
@@ -3756,8 +4103,8 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
     'Prep a temporary buffer to receive the compressed bytes
     Dim tmpBytes() As Byte
     
-    'Perform compression.  Note that a libdeflate setting of 7 correlates pretty closely to a final
-    ' deflate stream size of zlib level 9.  At matching levels, however, libdeflate will always produce
+    'Determine compression level.  Note that a libdeflate setting of 7 correlates pretty closely to a
+    ' final deflate stream size of zlib level 9.  At matching levels, however, libdeflate will produce
     ' *faster* results.  (And of course, if you ratchet its level up to a max of 12 you'll get extremely
     ' good compression, at some penalty to processing speed.)
     Dim cmpSize As Long
@@ -3767,7 +4114,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     End If
     
-    PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
+    If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
     
     'This next bit of code is a failsafe so that this class can support two different write modes:
     ' memory-mapped files (which are faster but use slightly more memory) and traditional file writes
@@ -3775,6 +4122,8 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
     ' interface because of its obvious perf benefits, but I'm leaving the old interface in case I
     ' ever decide to revert back.
     If (cStream.GetStreamMode = PD_SM_FileBacked) Then
+        
+        'NOTE: this file-backed approach does *not* currently support animated PNGs!
         
         Compression.CompressPtrToDstArray tmpBytes, cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
         
@@ -3829,16 +4178,21 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
     ' (instead of wasting time and energy on an intermediary one).
     Else
         
-        'Ensure the stream has sufficient space for a worst-case compression, plus 12 bytes for
-        ' a PNG chunk ID, size, and CRC checksum.
+        'Ensure the stream has sufficient space for a worst-case compression, plus 16 bytes for
+        ' a PNG chunk ID, size, CRC checksum, and (optionally) an animated PNG frame sequence number.
         Dim worstCaseCompressedSize As Long
         worstCaseCompressedSize = Compression.GetWorstCaseSize(srcLen, cf_Zlib, cmpLevel)
-        cStream.EnsureBufferSpaceAvailable worstCaseCompressedSize + 12
+        If writefdATInstead Then worstCaseCompressedSize = worstCaseCompressedSize + 16 Else worstCaseCompressedSize = worstCaseCompressedSize + 12
+        cStream.EnsureBufferSpaceAvailable worstCaseCompressedSize
         
         'Compress directly into the final buffer, and remember that it needs to be offset by 8
-        ' (for the PNG chunk ID and size)
+        ' in an IDAT chunk (for the PNG chunk ID and size, which preface the pixel data), and 12
+        ' in an fdAT chunk (because the frame sequence will also be prepended)
         cmpSize = worstCaseCompressedSize
-        Compression.CompressPtrToPtr cStream.Peek_PointerOnly(cStream.GetPosition + 8, worstCaseCompressedSize + 8), cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
+        
+        Dim peekOffset As Long
+        If writefdATInstead Then peekOffset = 12 Else peekOffset = 8
+        Compression.CompressPtrToPtr cStream.Peek_PointerOnly(cStream.GetPosition + peekOffset, worstCaseCompressedSize - peekOffset), cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -3848,18 +4202,32 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         'We're done with the temporary chunk, and because it consumes a *lot* of memory, free it immediately
         Set tmpChunk = Nothing
         
-        'At the current (unmoved) pointer position, write the final compressed length
-        cStream.WriteLong_BE cmpSize
+        'At the current (unmoved) pointer position, write the final compressed length.
+        ' (On APNGs, we must manually append 4 for the frame sequence value)
+        If writefdATInstead Then
+            cStream.WriteLong_BE cmpSize + 4
+        Else
+            cStream.WriteLong_BE cmpSize
+        End If
         
         'Next, the chunk name
-        cStream.WriteString_ASCII "IDAT"
+        If writefdATInstead Then
+            cStream.WriteString_ASCII "fdAT"
+        Else
+            cStream.WriteString_ASCII "IDAT"
+        End If
+        
+        'For an fdAT stream, write the sequence number and increment it
+        If writefdATInstead Then
+            cStream.WriteLong_BE m_FrameSequence
+            m_FrameSequence = m_FrameSequence + 1
+        End If
         
         'Next, the compressed data stream already exists - so we don't need to write it!  We simply need to
-        ' (manually) move the stream pointer to match.
+        ' (manually) notify the stream that the data exists.
         Dim posData As Long
         posData = cStream.GetPosition()
         cStream.SetSizeExternally posData + cmpSize
-        cStream.SetPosition cmpSize, FILE_CURRENT
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -3868,14 +4236,17 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         
         'Finally, a CRC value.  We need to manually calculate this, and the calculation must include the
         ' chunk name (but not its length) and obviously the compressed data itself.
-        crcFinal = Plugin_libdeflate.GetCrc32(cStream.Peek_PointerOnly(posData - 4, cmpSize + 4), cmpSize + 4, 0&, True)
+        If writefdATInstead Then peekOffset = 8 Else peekOffset = 4
+        crcFinal = Plugin_libdeflate.GetCrc32(cStream.Peek_PointerOnly(posData - peekOffset, cmpSize + peekOffset), cmpSize + peekOffset, 0&, True)
         
         If PNG_DEBUG_VERBOSE Then
             PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
         
-        'Write the final CRC out to file
+        'Manually move the file pointer to the end of the compressed data (remember - the pointer hasn't moved
+        ' since we wrote the chunk name (and possible frame sequence), then write the final CRC out to file.
+        cStream.SetPosition cmpSize, FILE_CURRENT
         cStream.WriteLong_BE crcFinal
         
     End If
@@ -3885,7 +4256,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
 End Function
 
 'Make sure you have populated the module-level m_Header struct before calling this function!
-Friend Function ExportStep5_WriteIEND(ByRef cStream As pdStream, ByRef srcImage As pdDIB) As PD_PNGResult
+Friend Function ExportStep5_WriteIEND(ByRef cStream As pdStream) As PD_PNGResult
 
     'Initialize a chunk object
     Dim dstChunk As pdPNGChunk

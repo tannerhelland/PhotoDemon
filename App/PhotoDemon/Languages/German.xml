@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1343</langversion>
+<langversion>7.2.1356</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1146,7 +1146,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation>In Zukunft automatisch rastern ohne mich aufzufordern</translation>
+<translation>In Zukunft automatisch rastern, ohne mich aufzufordern</translation>
 </phrase>
 
 <phrase>
@@ -4645,7 +4645,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<!-- pdPNG.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -9066,7 +9066,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Keep working</original>
-<translation>Arbeit behalten</translation>
+<translation>Weiterarbeiten</translation>
 </phrase>
 
 <phrase>
@@ -9096,7 +9096,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Wenn Sie in der Mitte von Etwas sind, können Sie Ihre Arbeit problemlos behalten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
+<translation>Wenn Sie in der Mitte von etwas sind, fühlen Sie sich frei, weiter zu arbeiten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -11719,7 +11719,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Step 3: choose a destination image format</original>
-<translation>Schritt 3: Wählen Sie ein Ziel-Bildformat</translation>
+<translation>Schritt 3: Wählen Sie ein Zielbildformat</translation>
 </phrase>
 
 <phrase>
@@ -11729,17 +11729,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Originalfor- mat behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem originalen Format zu speichern. Wenn das Originalfor- mat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Originalformat behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem originalen Format zu speichern. Wenn das Originalformat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Bei- spiel, Bilder mit Transparenz sollten in einem Format gespeichert wer- den, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel, Bilder mit Transparenz sollten in einem Format gespeichert wer- den, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
 <original>In the final step, you will choose how you want the saved files to be named.</original>
-<translation>Im letzten Schritt wählen Sie, wie Sie die gespeicherten Dateien benen- nen wollen.</translation>
+<translation>Im letzten Schritt wählen Sie, wie Sie die gespeicherten Dateien benennen wollen.</translation>
 </phrase>
 
 <phrase>
@@ -13894,7 +13894,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>Wenn das aktuelle Bild nicht gespeichert worden ist, werden Sie aufgefordert, es vor dem Schließen zu speichern.</translation>
+<translation>Wenn das aktuelle Bild nicht gespeichert worden ist, werden Sie eine Aufforderung erhalten, es vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -13904,7 +13904,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Da Sie Eingabeaufforderungen zum Speichern abgeschaltet haben (via Bearbeiten > Voreinstellungen), werden Sie KEINE Aufforderung erhalten, um dieses Bild vor dem Schließen zu speichern.</translation>
+<translation>Da Sie Speicheraufforderungen ausgeschaltet haben (via Bearbeiten > Voreinstellungen), werden Sie KEINE Aufforderung erhalten, um dieses Bild vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -15394,7 +15394,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when closing images, warn me me about unsaved changes</original>
-<translation>Beim Schließen von Bildern mich bei ungesicherten Änderungen warnen</translation>
+<translation>Mich beim Schließen von Bildern über ungesicherte Änderungen warnen</translation>
 </phrase>
 
 <phrase>
@@ -15832,7 +15832,7 @@ Wollen Sie wirklich fortfahren?</translation>
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
 <translation>Sie haben PhotoDemon in einem eingeschränkten Systemordner platziert. Sicherheitsvorkehrungen verhindern, dass PhotoDemon diesen Ordner modifiziert. Daher sind automatische Updates jetzt deaktiviert. Um diese wiederherzustellen, müssen Sie PhotoDemon in einen Nicht-Admin-Ordner (wie Desktop, Documents oder Downloads) verschieben.
 
-(Wenn Sie PhotoDemon an diesem Ort belassen, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
+(Wenn Sie PhotoDemon lassen, wo es ist, vergessen Sie bitte nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.)</translation>
 </phrase>
 
 <phrase>
@@ -16099,67 +16099,67 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrase>
 <original>after importing source images</original>
-<translation></translation>
+<translation>Nach dem Importieren von Quellbildern</translation>
 </phrase>
 
 <phrase>
 <original>canvas size</original>
-<translation></translation>
+<translation>Leinwandgröße</translation>
 </phrase>
 
 <phrase>
 <original>align imported layers</original>
-<translation></translation>
+<translation>Importierte Layer ausrichten</translation>
 </phrase>
 
 <phrase>
 <original>if imported layer names match existing layer names</original>
-<translation></translation>
+<translation>Wenn importierte Layer-Namen mit vorhandenen Layer-Namen übereinstimmen</translation>
 </phrase>
 
 <phrase>
 <original>destination image</original>
-<translation></translation>
+<translation>Zielbild</translation>
 </phrase>
 
 <phrase>
 <original>source image(s)</original>
-<translation></translation>
+<translation>Quellbild(er)</translation>
 </phrase>
 
 <phrase>
 <original>keep current size</original>
-<translation></translation>
+<translation>Aktuelle Größe behalten</translation>
 </phrase>
 
 <phrase>
 <original>resize to fit imported layers</original>
-<translation></translation>
+<translation>Größenänderung auf importierte Layer anpassen</translation>
 </phrase>
 
 <phrase>
 <original>replace existing layers with imported ones</original>
-<translation></translation>
+<translation>Vorhandene Layer durch importierte Layer ersetzen</translation>
 </phrase>
 
 <phrase>
 <original>add duplicates as new layers</original>
-<translation></translation>
+<translation>Duplikate als neue Layer hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>leave images open</original>
-<translation></translation>
+<translation>Bilder geöffnet lassen</translation>
 </phrase>
 
 <phrase>
 <original>close images normally (prompt for unsaved changes)</original>
-<translation></translation>
+<translation>Bilder normal schließen (Aufforderung für ungesicherte Änderungen)</translation>
 </phrase>
 
 <phrase>
 <original>close images without prompting</original>
-<translation></translation>
+<translation>Bilder ohne Aufforderung schließen</translation>
 </phrase>
 
 <!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -16170,8 +16170,8 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrasecount>2695</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4948 phrases. -->
-<!-- 2253 are duplicates, so only 2695 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4949 phrases. -->
+<!-- 2254 are duplicates, so only 2695 unique phrases have been written to file. -->
 <!-- These 2695 phrases contain approximately 12684 total words. -->
 
 </pdData>
