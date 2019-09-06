@@ -137,6 +137,22 @@ Begin VB.Form dialog_ExportAnimatedPNG
       NotchPosition   =   2
       NotchValueCustom=   100
    End
+   Begin PhotoDemon.pdSlider sldCompression 
+      Height          =   735
+      Left            =   6600
+      TabIndex        =   8
+      Top             =   4440
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   1296
+      Caption         =   "compression level"
+      FontSizeCaption =   10
+      Max             =   12
+      Value           =   9
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   9
+   End
 End
 Attribute VB_Name = "dialog_ExportAnimatedPNG"
 Attribute VB_GlobalNameSpace = False
@@ -400,6 +416,7 @@ Private Function GetExportParamString() As String
     
     cParams.AddParam "use-fixed-frame-delay", (btsFrameTimes.ListIndex = 0)
     cParams.AddParam "frame-delay-default", sldFrameTime.Value
+    cParams.AddParam "compression-level", sldCompression.Value
     
     GetExportParamString = cParams.GetParamString
     
@@ -634,6 +651,8 @@ Private Sub ReflowInterface()
     
     lblTitle.SetTop yOffset
     yOffset = yOffset + lblTitle.GetHeight + yPadding
+    sldCompression.SetTop yOffset
+    yOffset = yOffset + sldCompression.GetHeight + yPadding
     
 End Sub
 

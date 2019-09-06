@@ -1958,7 +1958,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     'The only settings we need to extract here is compression level; everything else is handled automatically
     ' by the PNG export class.
     Dim pngCompressionLevel As Long
-    pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 9)
+    pngCompressionLevel = cParams.GetLong("compression-level", 9)
     
     Dim imgSavedOK As Boolean
     imgSavedOK = False
