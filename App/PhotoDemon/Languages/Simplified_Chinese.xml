@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1163</langversion>
+<langversion>7.1.1164</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -11905,6 +11905,88 @@ Would you like to save your batch list before exiting?</original>
 
 <!-- END text for File_BatchWizard.frm-->
 
+<!-- BEGIN text for File_Export_AnimatedGIF.frm (dialog_ExportAnimatedGIF) -->
+
+<phrase>
+<original>Animation export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
+<original>matte</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>高级设置</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation>重复</translation>
+</phrase>
+
+<phrase>
+<original>repeat count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>animation speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>等待用户指定导出选项</translation>
+</phrase>
+
+<phrase>
+<original>forever</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pull from layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time (in ms)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time for undefined layers (in ms)</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for File_Export_AnimatedGIF.frm-->
+
+<!-- BEGIN text for File_Export_AnimatedPNG.frm (dialog_ExportAnimatedPNG) -->
+
+<!-- File_Export_AnimatedPNG.frm contains 19 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for File_Export_AnimatedPNG.frm-->
+
 <!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
 
 <phrase>
@@ -11967,12 +12049,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Adobe Swatch Exchange（ASE）文件可以在单个文件中存储多个调色板。 如果选择“追加”选项，PhotoDemon会将此调色板添加到现有的ASE文件中。 不会修改文件中已有的任何调色板。</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>等待用户指定导出选项</translation>
-</phrase>
-
-<!-- File_Export_Palette.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
 
@@ -12527,11 +12604,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>透明颜色（右键选择图像）</translation>
 </phrase>
@@ -12551,7 +12623,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>通过颜色</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12787,11 +12859,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>advanced settings</original>
-<translation>高级设置</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>元数据设置</translation>
 </phrase>
@@ -12933,7 +13000,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 16 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13644,6 +13711,77 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for Layer_Flatten.frm-->
 
+<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
+
+<phrase>
+<original>after importing source images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>align imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if imported layer names match existing layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source image(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep current size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize to fit imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>replace existing layers with imported ones</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add duplicates as new layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>leave images open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images normally (prompt for unsaved changes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images without prompting</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Layer_Split_ImagesToLayers.frm-->
+
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -14261,11 +14399,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
-<original>repeat</original>
-<translation>重复</translation>
-</phrase>
-
-<phrase>
 <original>linear</original>
 <translation>线性</translation>
 </phrase>
@@ -14305,7 +14438,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>反射</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16039,139 +16172,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_Export_Animation.frm (dialog_ExportAnimation) -->
-
-<phrase>
-<original>Animation export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>matte</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>repeat count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>animation speed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>forever</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fixed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pull from layer names</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>frame time (in ms)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>frame time for undefined layers (in ms)</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for File_Export_Animation.frm-->
-
-<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
-
-<phrase>
-<original>after importing source images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>align imported layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if imported layer names match existing layer names</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>destination image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>source image(s)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep current size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize to fit imported layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>replace existing layers with imported ones</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>add duplicates as new layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>leave images open</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>close images normally (prompt for unsaved changes)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>close images without prompting</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<!-- END text for Layer_Split_ImagesToLayers.frm-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2698</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4960 phrases. -->
-<!-- 2262 are duplicates, so only 2698 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4979 phrases. -->
+<!-- 2281 are duplicates, so only 2698 unique phrases have been written to file. -->
 <!-- These 2698 phrases contain approximately 12691 total words. -->
 
 </pdData>

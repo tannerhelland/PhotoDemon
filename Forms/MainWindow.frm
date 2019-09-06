@@ -1891,10 +1891,6 @@ Private Sub MnuTest_Click()
     
     On Error GoTo StopTestImmediately
     
-    Dim cPNG As pdPNG
-    Set cPNG = New pdPNG
-    cPNG.SaveAPNG_ToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\test.png", PDImages.GetActiveImage, png_TruecolorAlpha, 8, , , 0
-    
     'Filters_Scientific.InternalFFTTest
     
     'Want to test a new dialog?  Call it here, using a line like the following:

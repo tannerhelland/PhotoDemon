@@ -1951,15 +1951,14 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     ExportPNG_Animated = False
     Dim sFileType As String: sFileType = "PNG"
     
-    'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString formatParams
-     
+    
     'The only settings we need to extract here is compression level; everything else is handled automatically
     ' by the PNG export class.
     Dim pngCompressionLevel As Long
-    pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 12)
+    pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 9)
     
     Dim imgSavedOK As Boolean
     imgSavedOK = False
@@ -1972,7 +1971,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             
         Dim cPNG As pdPNG
         Set cPNG = New pdPNG
-        imgSavedOK = (cPNG.SaveAPNG_ToFile(dstFile, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, 1) < png_Failure)
+        imgSavedOK = (cPNG.SaveAPNG_ToFile(dstFile, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
         
     End If
     

@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.96</langversion>
+<langversion>1.0.97</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -11907,6 +11907,88 @@ Would you like to save your batch list before exiting?</original>
 
 <!-- END text for File_BatchWizard.frm-->
 
+<!-- BEGIN text for File_Export_AnimatedGIF.frm (dialog_ExportAnimatedGIF) -->
+
+<phrase>
+<original>Animation export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>알파 컷오프</translation>
+</phrase>
+
+<phrase>
+<original>matte</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation>고급 설정</translation>
+</phrase>
+
+<phrase>
+<original>repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>repeat count</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>animation speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>사용자가 내보내기 옵션을 지정하기를 기다리는 중입니다.</translation>
+</phrase>
+
+<phrase>
+<original>forever</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pull from layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time (in ms)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame time for undefined layers (in ms)</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for File_Export_AnimatedGIF.frm-->
+
+<!-- BEGIN text for File_Export_AnimatedPNG.frm (dialog_ExportAnimatedPNG) -->
+
+<!-- File_Export_AnimatedPNG.frm contains 19 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for File_Export_AnimatedPNG.frm-->
+
 <!-- BEGIN text for File_Export_Palette.frm (dialog_ExportPalette) -->
 
 <phrase>
@@ -11969,12 +12051,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>사용자가 내보내기 옵션을 지정하기를 기다리는 중입니다.</translation>
-</phrase>
-
-<!-- File_Export_Palette.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Export_Palette.frm-->
 
@@ -12531,11 +12608,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>알파 컷오프</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>투명한 색 (선택할 이미지를 마우스 오른쪽 단추로 클릭)</translation>
 </phrase>
@@ -12555,7 +12627,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>색상으로</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -12791,11 +12863,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>advanced settings</original>
-<translation>고급 설정</translation>
-</phrase>
-
-<phrase>
 <original>metadata settings</original>
 <translation>메타 데이터 설정</translation>
 </phrase>
@@ -12935,7 +13002,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>이러한 손실 최적화 설정은 파일 크기를  %1 줄였습니다.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 15 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 16 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13646,6 +13713,77 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 
 <!-- END text for Layer_Flatten.frm-->
 
+<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
+
+<phrase>
+<original>after importing source images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>canvas size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>align imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if imported layer names match existing layer names</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source image(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep current size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize to fit imported layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>replace existing layers with imported ones</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>add duplicates as new layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>leave images open</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images normally (prompt for unsaved changes)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>close images without prompting</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Layer_Split_ImagesToLayers.frm-->
+
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -14263,11 +14401,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for Toolpanel_Gradient.frm (toolpanel_Gradient) -->
 
 <phrase>
-<original>repeat</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>linear</original>
 <translation></translation>
 </phrase>
@@ -14307,7 +14440,7 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Gradient.frm-->
 
@@ -16044,139 +16177,12 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_Export_Animation.frm (dialog_ExportAnimation) -->
-
-<phrase>
-<original>Animation export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>matte</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>repeat count</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>animation speed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>forever</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fixed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pull from layer names</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>frame time (in ms)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>frame time for undefined layers (in ms)</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Export_Animation.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for File_Export_Animation.frm-->
-
-<!-- BEGIN text for Layer_Split_ImagesToLayers.frm (FormLayerSplit) -->
-
-<phrase>
-<original>after importing source images</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>canvas size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>align imported layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if imported layer names match existing layer names</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>destination image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>source image(s)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep current size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize to fit imported layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>replace existing layers with imported ones</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>add duplicates as new layers</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>leave images open</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>close images normally (prompt for unsaved changes)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>close images without prompting</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
-
-<!-- END text for Layer_Split_ImagesToLayers.frm-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2698</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4960 phrases. -->
-<!-- 2262 are duplicates, so only 2698 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4979 phrases. -->
+<!-- 2281 are duplicates, so only 2698 unique phrases have been written to file. -->
 <!-- These 2698 phrases contain approximately 12691 total words. -->
 
 </pdData>

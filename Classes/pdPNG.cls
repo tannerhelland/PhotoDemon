@@ -2136,7 +2136,7 @@ End Function
 ' level of comprehensive output settings that still PNGs support; instead, output settings are largely
 ' designed to be auto-detected.  This is particularly critical for animated files as they are much more
 ' size-sensitive than single-frame ones.
-Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString, Optional ByVal numPlays As Long = 1) As PD_PNGResult
+Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdImage, Optional ByVal outColorType As PD_PNGColorType = png_AutoColorType, Optional ByVal outBitsPerChannel As Long = 0, Optional ByVal cmpLevel As Long = -1, Optional ByRef fullParamString As String = vbNullString) As PD_PNGResult
     
     On Error GoTo CouldNotSaveFile
     
@@ -2145,6 +2145,15 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         SaveAPNG_ToFile = False
         Exit Function
     End If
+    
+    'Parse all relevant APNG parameters.  (See the APNG export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString fullParamString
+     
+    'Retrieve loop count (0 = infinite loops)
+    Dim loopCount As Long
+    loopCount = cParams.GetLong("animation-loop-count", 1)
     
     'Before proceeding, if the output requires image analysis (due to "automatic" color mode / bit-depth detection,
     ' or the presence of a full PD-compatible parameter string), perform those analyses before proceeding further.
@@ -2225,7 +2234,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     End If
     
     'Next, we need to write an acTL - or "animation control" - chunk.  This marks the file as an animated PNG.
-    ExportStep2a_WriteacTL cStream, srcPDImage.GetNumOfLayers, numPlays
+    keepGoing = ExportStep2a_WriteacTL(cStream, srcPDImage.GetNumOfLayers, loopCount)
     
     'Now it is time to prepare and write individual animation frames.  Each frame consists of two parts:
     ' an fcTL - or "frame control" - chunk that describes frame size and timing, and an fdAT - or
@@ -2240,19 +2249,17 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim numFrames As Long
     numFrames = srcPDImage.GetNumOfLayers - 1
     m_FrameSequence = 0
-    
-    'As part of this step, we also need to retrieve and/or apply any per-frame optimizations and settings.
+                    
+    'Retrieve frame delay defaults and overrides
     Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
-    'useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
-    'frameDelayDefault = cParams.GetLong("frame-delay-default", 100)
-    useFixedFrameDelay = False
-    frameDelayDefault = 100
+    useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
+    frameDelayDefault = cParams.GetLong("frame-delay-default", 100)
     
     Dim allFrames() As PD_APNGFrame
     ReDim allFrames(0 To numFrames) As PD_APNGFrame
     
     'Layer sizes may be jostled around as part of optimizing the animation; as such, we don't want to
-    ' operate directly on the source layers - instead, we make temporary copies
+    ' operate directly on the source layers - instead, we make temporary copies as-we-go
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     
@@ -2277,10 +2284,15 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         With allFrames(i)
             
             'Before dealing with pixel data, attempt to retrieve a frame time from the source layer's name.
-            ' (If the layer name does not provide a frame time, this value will be overwritten in a later
-            ' step with a "default" frame time.)
-            .frameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName)
+            ' (If the layer name does not provide a frame time, or if the user has specified a fixed frame time,
+            ' this value will be overwritten with their specified value.)
+            Dim finalFrameTime As Long
+            finalFrameTime = GetFrameTimeFromLayerName(srcPDImage.GetLayerByIndex(i).GetLayerName, 0)
+            If (useFixedFrameDelay Or (finalFrameTime = 0)) Then finalFrameTime = frameDelayDefault
+            .frameTime = finalFrameTime
             
+            'Remaining parameters are contingent on optimization passes; for now, populate with default
+            ' parameters, and leave subsequent optimizations steps to overwrite these as necessary.
             .frameBlend = APNG_BlendOp_Over
             .frameDisposal = APNG_DisposeOp_Background
             .frameIsDuplicateOrEmpty = False
@@ -2307,6 +2319,9 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         
         'Next, we need to prepare the pixel data for this layer.  The precise steps involved in this
         ' vary depending on optimization settings.
+        
+        'Convert the optimized frame to a filtered PNG byte stream.  (Filtering reorders scanline data
+        ' according to one of several optimization strategies; see the PNG spec for details.)
         Set tmpChunk = Nothing
         If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, tmpLayer.layerDIB, tmpChunk, fullParamString, filterStrategy, (i = 0))
         
@@ -2315,10 +2330,10 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             VBHacks.GetHighResTimeInMS startTime
         End If
         
-        'Filtered pixel data can now be added in the form of an IDAT chunk (first frame) or fdAT chunk
-        ' (all subsequent frames).
+        'Filtered pixel data can now be finalized in the form of a compressed IDAT (first frame) or fdAT
+        ' (all subsequent frames) chunk.
         If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpLayer.layerDIB, tmpChunk, cmpLevel, (i > 0))
-    
+        
         If PNG_DEBUG_VERBOSE Then
             timeTakenDeflate = timeTakenDeflate + (VBHacks.GetHighResTimeInMSEx - startTime)
             VBHacks.GetHighResTimeInMS startTime

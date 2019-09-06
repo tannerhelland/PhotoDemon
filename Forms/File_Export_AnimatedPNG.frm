@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form dialog_ExportAnimation 
+Begin VB.Form dialog_ExportAnimatedPNG 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -25,43 +25,6 @@ Begin VB.Form dialog_ExportAnimation
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsDither 
-      Height          =   975
-      Left            =   6600
-      TabIndex        =   10
-      Top             =   4440
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1720
-      Caption         =   "dithering"
-      FontSizeCaption =   10
-   End
-   Begin PhotoDemon.pdSlider sldAlphaCutoff 
-      Height          =   735
-      Left            =   9300
-      TabIndex        =   9
-      Top             =   5520
-      Width           =   2595
-      _ExtentX        =   4577
-      _ExtentY        =   1296
-      Caption         =   "alpha cut-off"
-      FontSizeCaption =   10
-      Max             =   255
-      Value           =   64
-      NotchPosition   =   2
-      NotchValueCustom=   64
-   End
-   Begin PhotoDemon.pdColorSelector csMatte 
-      Height          =   735
-      Left            =   6600
-      TabIndex        =   8
-      Top             =   5520
-      Width           =   2595
-      _ExtentX        =   4577
-      _ExtentY        =   1296
-      Caption         =   "matte"
-      FontSize        =   10
-   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
       Left            =   6240
@@ -175,7 +138,7 @@ Begin VB.Form dialog_ExportAnimation
       NotchValueCustom=   100
    End
 End
-Attribute VB_Name = "dialog_ExportAnimation"
+Attribute VB_Name = "dialog_ExportAnimatedPNG"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -276,11 +239,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsFrameTimes.AddItem "pull from layer names", 1
     btsFrameTimes.ListIndex = 0
     
-    btsDither.AddItem "auto", 0
-    btsDither.AddItem "off", 1
-    btsDither.AddItem "on", 2
-    btsDither.ListIndex = 0
-    
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
     If (Not m_SrcImage Is Nothing) Then
@@ -344,6 +302,7 @@ Private Sub btnPlay_Click(Index As Integer)
 End Sub
 
 Private Sub btsFrameTimes_Click(ByVal buttonIndex As Long)
+    NotifyNewFrameTimes
     ReflowInterface
 End Sub
 
@@ -441,16 +400,6 @@ Private Function GetExportParamString() As String
     
     cParams.AddParam "use-fixed-frame-delay", (btsFrameTimes.ListIndex = 0)
     cParams.AddParam "frame-delay-default", sldFrameTime.Value
-    cParams.AddParam "matte-color", csMatte.Color
-    cParams.AddParam "alpha-cutoff", sldAlphaCutoff.Value
-    
-    If (btsDither.ListIndex = 1) Then
-        cParams.AddParam "dither", "off"
-    ElseIf (btsDither.ListIndex = 2) Then
-        cParams.AddParam "dither", "on"
-    Else
-        cParams.AddParam "dither", "auto"
-    End If
     
     GetExportParamString = cParams.GetParamString
     
@@ -685,11 +634,6 @@ Private Sub ReflowInterface()
     
     lblTitle.SetTop yOffset
     yOffset = yOffset + lblTitle.GetHeight + yPadding
-    btsDither.SetTop yOffset
-    yOffset = yOffset + btsDither.GetHeight + yPadding
-    csMatte.SetTop yOffset
-    sldAlphaCutoff.SetTop yOffset
-    yOffset = yOffset + csMatte.GetHeight + yPadding
     
 End Sub
 

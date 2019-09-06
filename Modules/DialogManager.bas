@@ -638,16 +638,31 @@ Public Sub ShowClipboardDialog(ByVal clipMode As PD_ClipboardOp)
     
 End Sub
 
-Public Function PromptExportAnimation(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+Public Function PromptExportAnimatedGIF(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
-    Load dialog_ExportAnimation
-    dialog_ExportAnimation.ShowDialog srcImage
+    Load dialog_ExportAnimatedGIF
+    dialog_ExportAnimatedGIF.ShowDialog srcImage
     
-    PromptExportAnimation = dialog_ExportAnimation.GetDialogResult
-    dstFormatParams = dialog_ExportAnimation.GetFormatParams
-    dstMetadataParams = dialog_ExportAnimation.GetMetadataParams
+    PromptExportAnimatedGIF = dialog_ExportAnimatedGIF.GetDialogResult
+    dstFormatParams = dialog_ExportAnimatedGIF.GetFormatParams
+    dstMetadataParams = dialog_ExportAnimatedGIF.GetMetadataParams
     
-    Unload dialog_ExportAnimation
-    Set dialog_ExportAnimation = Nothing
+    Unload dialog_ExportAnimatedGIF
+    Set dialog_ExportAnimatedGIF = Nothing
     
 End Function
+
+Public Function PromptExportAnimatedPNG(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportAnimatedPNG
+    dialog_ExportAnimatedPNG.ShowDialog srcImage
+    
+    PromptExportAnimatedPNG = dialog_ExportAnimatedPNG.GetDialogResult
+    dstFormatParams = dialog_ExportAnimatedPNG.GetFormatParams
+    dstMetadataParams = dialog_ExportAnimatedPNG.GetMetadataParams
+    
+    Unload dialog_ExportAnimatedPNG
+    Set dialog_ExportAnimatedPNG = Nothing
+    
+End Function
+

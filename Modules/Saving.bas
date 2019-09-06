@@ -822,7 +822,7 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
         ' by the batch processor.)
         Dim formatParams As String, metadataParams As String
         Dim promptResult As VbMsgBoxResult
-        promptResult = Dialogs.PromptExportAnimation(srcImage, formatParams, metadataParams)
+        promptResult = Dialogs.PromptExportAnimatedGIF(srcImage, formatParams, metadataParams)
         
         If (promptResult <> vbOK) Then
             Export_AnimatedGIF = False
@@ -937,8 +937,8 @@ Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
         ' by the batch processor.)
         Dim formatParams As String, metadataParams As String
         Dim promptResult As VbMsgBoxResult
-        'promptResult = Dialogs.PromptExportAnimation(srcImage, formatParams, metadataParams)
-        promptResult = vbOK
+        promptResult = Dialogs.PromptExportAnimatedPNG(srcImage, formatParams, metadataParams)
+        
         If (promptResult <> vbOK) Then
             Export_AnimatedPNG = False
             Exit Function
