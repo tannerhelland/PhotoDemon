@@ -941,6 +941,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
             Set tmpLayer = New pdLayer
             tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(0)
             tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+            
             sourceIsFullColor = (Palettes.GetDIBColorCount(tmpLayer.layerDIB, True) > 256)
             If autoDither Then useDithering = sourceIsFullColor
             
@@ -1850,8 +1851,6 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Set tmpImageCopy = New pdDIB
     srcPDImage.GetCompositedImage tmpImageCopy, False
     
-    Dim fi_DIB As Long
-    
     'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -1880,6 +1879,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         
         'Quickly dump out a PNG file; we don't need to spend time here finding optimal outputs, as subsequent
         ' optimization passes will find the most appropriate color depth for us.
+        Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 32, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
         If FreeImage_Save(FIF_PNG, fi_DIB, dstFile, FISO_PNG_Z_BEST_SPEED) Then
             FreeImage_Unload fi_DIB
@@ -1941,6 +1941,48 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportPNGError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportPNG = False
+    
+End Function
+
+Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportPNGError
+    
+    ExportPNG_Animated = False
+    Dim sFileType As String: sFileType = "PNG"
+    
+    'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+     
+    'The only settings we need to extract here is compression level; everything else is handled automatically
+    ' by the PNG export class.
+    Dim pngCompressionLevel As Long
+    pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 12)
+    
+    Dim imgSavedOK As Boolean
+    imgSavedOK = False
+    
+    'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
+    ' and format coverage than either FreeImage or GDI+.
+    If (Not imgSavedOK) Then
+        
+        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+            
+        Dim cPNG As pdPNG
+        Set cPNG = New pdPNG
+        imgSavedOK = (cPNG.SaveAPNG_ToFile(dstFile, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, 1) < png_Failure)
+        
+    End If
+    
+    ExportPNG_Animated = imgSavedOK
+    
+    Exit Function
+    
+ExportPNGError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPNG_Animated = False
     
 End Function
 

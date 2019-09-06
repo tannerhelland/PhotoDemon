@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>magyar</langname>
-<langversion>6.8.3410</langversion>
+<langversion>6.8.3411</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1521,6 +1521,11 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 </phrase>
 
 <phrase>
+<original>Export animated PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation></translation>
 </phrase>
@@ -2550,7 +2555,7 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>Tiszta elmúlt makrólistát</translation>
 </phrase>
 
-<!-- Menus.bas contains 254 phrases. 29 were duplicates of existing phrases, so only 225 new phrases were written to file. -->
+<!-- Menus.bas contains 255 phrases. 29 were duplicates of existing phrases, so only 226 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3341,11 +3346,16 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 </phrase>
 
 <phrase>
-<original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
+<original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
 <translation></translation>
 </phrase>
 
-<!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Export animation</original>
+<translation></translation>
+</phrase>
+
+<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -4628,7 +4638,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdPNG.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -5873,6 +5883,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Animated PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation></translation>
 </phrase>
@@ -6752,7 +6767,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Nyelv módosítása sikeres volt.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
+<!-- MainWindow.frm contains 354 phrases. 161 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16141,10 +16156,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2698</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4949 phrases. -->
-<!-- 2254 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 12684 total words. -->
+<!-- As of this build, PhotoDemon contains 4960 phrases. -->
+<!-- 2262 are duplicates, so only 2698 unique phrases have been written to file. -->
+<!-- These 2698 phrases contain approximately 12691 total words. -->
 
 </pdData>

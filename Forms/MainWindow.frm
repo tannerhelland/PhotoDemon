@@ -149,16 +149,20 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "-"
+            Caption         =   "Animated PNG..."
             Index           =   1
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Color profile..."
+            Caption         =   "-"
             Index           =   2
          End
          Begin VB.Menu MnuFileExport 
-            Caption         =   "Palette..."
+            Caption         =   "Color profile..."
             Index           =   3
+         End
+         Begin VB.Menu MnuFileExport 
+            Caption         =   "Palette..."
+            Index           =   4
          End
       End
       Begin VB.Menu MnuFile 
@@ -3202,10 +3206,12 @@ Private Sub MnuFileExport_Click(Index As Integer)
         Case 0
             Menus.ProcessDefaultAction_ByName "file_export_animatedgif"
         Case 1
-            '(separator)
+            Menus.ProcessDefaultAction_ByName "file_export_animatedpng"
         Case 2
-            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+            '(separator)
         Case 3
+            Menus.ProcessDefaultAction_ByName "file_export_colorprofile"
+        Case 4
             Menus.ProcessDefaultAction_ByName "file_export_palette"
     End Select
     

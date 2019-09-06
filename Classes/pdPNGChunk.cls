@@ -35,7 +35,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = True
+Private Const PNG_DEBUG_VERBOSE As Boolean = False
 
 'Chunk-specific enums
 Private Enum PD_PNGFilter

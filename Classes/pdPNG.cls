@@ -43,7 +43,7 @@ Option Explicit
 'PNG files can contain a lot of extra information.  To aid debugging, you can activate "verbose" output;
 ' this will dump all kinds of diagnostic information to the debug log.  (Note that other PNG-adjacent
 ' classes have their own version of this constant.)
-Private Const PNG_DEBUG_VERBOSE As Boolean = False
+Private Const PNG_DEBUG_VERBOSE As Boolean = True
 
 'Even the PNG designers admit that their CRC validation is "overkill"
 ' (see http://www.dalkescientific.com/writings/diary/archive/2014/07/10/png_checksum.html)
@@ -2160,6 +2160,9 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     'Failsafe check only; PD enforces safe overwriting in a parent function.
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
+    'Initialize a progress bar
+    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers
+    
     'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
     Dim cStream As pdStream
     Set cStream = New pdStream
@@ -2264,7 +2267,8 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim i As Long
     For i = 0 To numFrames
         
-        Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1
+        ProgressBars.SetProgBarVal i
+        Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         'TODO: optimize frames!
         
@@ -2322,10 +2326,14 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         
     Next i
     
+    'With all frames added, we can now finalize the file
+    ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
+    Message "Finalizing image..."
+            
     If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "APNG export > prep took " & Int(timeTakenPrep)
-        PDDebug.LogAction "APNG export > filter took " & Int(timeTakenFilter)
-        PDDebug.LogAction "APNG export > deflate took " & Int(timeTakenDeflate)
+        PDDebug.LogAction "APNG export > prep took " & Format$(timeTakenPrep, "#,##0.0") & " ms"
+        PDDebug.LogAction "APNG export > filter took " & Format$(timeTakenFilter, "#,##0.0") & " ms"
+        PDDebug.LogAction "APNG export > deflate took " & Format$(timeTakenDeflate, "#,##0.0") & " ms"
         VBHacks.GetHighResTime startTime
     End If
     
@@ -2346,6 +2354,9 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     
     PDDebug.LogAction "APNG export took: " & VBHacks.GetTimeDiffNowAsString(firstStartTime)
     PDDebug.LogAction "Final APNG size is " & Files.GetFormattedFileSize(finalFileSize)
+    
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
     
     SaveAPNG_ToFile = keepGoing
     
@@ -3345,7 +3356,7 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     srcImage.EraseDIB True
     
     If PNG_DEBUG_VERBOSE Then
-        PDDebug.LogAction "- IDAT creation: prepping pixel data took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        If writeAncillaryChunks Then PDDebug.LogAction "- IDAT creation: prepping pixel data took " & VBHacks.GetTimeDiffNowAsString(startTime)
     End If
     
     'From the original param string, determine a filter strategy (unless overridden by the caller).
@@ -4114,7 +4125,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         cmpLevel = Compression.GetMaxCompressionLevel(cf_Zlib)
     End If
     
-    If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
+    If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then PDDebug.LogAction "- Requested DEFLATE compression level: " & cmpLevel
     
     'This next bit of code is a failsafe so that this class can support two different write modes:
     ' memory-mapped files (which are faster but use slightly more memory) and traditional file writes
@@ -4127,7 +4138,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         
         Compression.CompressPtrToDstArray tmpBytes, cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -4148,7 +4159,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         'Next, the data itself
         cStream.WriteBytesFromPointer VarPtr(tmpBytes(0)), cmpSize
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -4166,7 +4177,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         ' to ensure a correct final value!
         crcFinal = Plugin_libdeflate.GetCrc32(VarPtr(tmpBytes(0)), cmpSize, crcBase, False)
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -4194,7 +4205,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         If writefdATInstead Then peekOffset = 12 Else peekOffset = 8
         Compression.CompressPtrToPtr cStream.Peek_PointerOnly(cStream.GetPosition + peekOffset, worstCaseCompressedSize - peekOffset), cmpSize, srcPtr, srcLen, cf_Zlib, cmpLevel
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: DEFLATE took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -4229,7 +4240,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         posData = cStream.GetPosition()
         cStream.SetSizeExternally posData + cmpSize
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: copy IDAT to file took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If
@@ -4239,7 +4250,7 @@ Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage 
         If writefdATInstead Then peekOffset = 8 Else peekOffset = 4
         crcFinal = Plugin_libdeflate.GetCrc32(cStream.Peek_PointerOnly(posData - peekOffset, cmpSize + peekOffset), cmpSize + peekOffset, 0&, True)
         
-        If PNG_DEBUG_VERBOSE Then
+        If PNG_DEBUG_VERBOSE And (Not writefdATInstead) Then
             PDDebug.LogAction "- IDAT write: checksum calculation took " & VBHacks.GetTimeDiffNowAsString(startTime)
             VBHacks.GetHighResTime startTime
         End If

@@ -1304,6 +1304,10 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
     ElseIf Strings.StringsEqual(processID, "Export animated GIF", True) Then
         Saving.Export_AnimatedGIF PDImages.GetActiveImage()
         Process_FileMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Export animated PNG", True) Then
+        Saving.Export_AnimatedPNG PDImages.GetActiveImage()
+        Process_FileMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Export color profile", True) Then
         ColorManagement.SaveImageProfileToFile PDImages.GetActiveImage(), raiseDialog, processParameters

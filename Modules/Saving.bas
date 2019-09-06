@@ -778,20 +778,9 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
     Export_AnimatedGIF = False
     If (srcImage Is Nothing) Then Exit Function
     
-    'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a normal GIF.
+    'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
     If (srcImage.GetNumOfLayers <= 1) Then
-        
-        Dim msgText As pdString
-        Set msgText = New pdString
-        
-        msgText.AppendLine g_Language.TranslateMessage("This is a still image (only one frame of animation).")
-        msgText.AppendLineBreak
-        msgText.Append g_Language.TranslateMessage("You may proceed, but the image will be saved as a standard GIF, not an animated one.")
-        
-        Dim msgResult As VbMsgBoxResult
-        msgResult = PDMsgBox(msgText.ToString(), vbOKCancel Or vbApplicationModal Or vbExclamation, "Export animated GIF")
-        If (msgResult = vbCancel) Then Exit Function
-        
+        If Not PromptSingleFrameSave() Then Exit Function
     End If
     
     'Reuse the user's current "save image" path for the export
@@ -894,6 +883,122 @@ Public Function Export_AnimatedGIF(ByRef srcImage As pdImage) As Boolean
     Else
         Export_AnimatedGIF = False
     End If
+    
+End Function
+
+'In 2019, PD gained animated PNG export support.  Because the process for exporting an animation is so different
+' from normal still images, it is split out into its own function.
+Public Function Export_AnimatedPNG(ByRef srcImage As pdImage) As Boolean
+    
+    Export_AnimatedPNG = False
+    If (srcImage Is Nothing) Then Exit Function
+    
+    'Before proceeding, make sure the image has multiple frames.  If it doesn't, we only need to save a static image.
+    If (srcImage.GetNumOfLayers <= 1) Then
+        If Not PromptSingleFrameSave() Then Exit Function
+    End If
+    
+    'Reuse the user's current "save image" path for the export
+    Dim cdInitialFolder As String
+    cdInitialFolder = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    
+    'Suggest a default file name.  (At present, we just reuse the current image's name.)
+    Dim dstFile As String
+    dstFile = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If (LenB(dstFile) = 0) Then dstFile = g_Language.TranslateMessage("New image")
+    dstFile = cdInitialFolder & dstFile
+    
+    Dim cdTitle As String
+    cdTitle = g_Language.TranslateMessage("Export animated PNG")
+    
+    'Start by prompting the user for an export path
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
+    If saveDialog.GetSaveFileName(dstFile, , True, "APNG/PNG - Animated Portable Network Graphics (*.apng, *.png)|*.apng;*.png", , cdInitialFolder, cdTitle, ".apng", FormMain.hWnd) Then
+        
+        'The user supplied a path.
+        
+        'Before proceeding with the save, check for some file-level errors that may cause problems.
+        
+        'If the file already exists, ensure we have write+delete access
+        If (Not Files.FileTestAccess_Write(dstFile)) Then
+            Message "Warning - file locked: %1", dstFile
+            PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbExclamation Or vbOKOnly, "File locked", dstFile
+            Export_AnimatedPNG = False
+            Exit Function
+        End If
+        
+        'Update the stored last-save-folder value
+        UserPrefs.SetPref_String "Paths", "Save Image", Files.FileGetPath(dstFile)
+        
+        'Next, retrieve export settings
+        ' (Batch processor behavior is currently TBD - but note that the export menu is *not* currently supported
+        ' by the batch processor.)
+        Dim formatParams As String, metadataParams As String
+        Dim promptResult As VbMsgBoxResult
+        'promptResult = Dialogs.PromptExportAnimation(srcImage, formatParams, metadataParams)
+        promptResult = vbOK
+        If (promptResult <> vbOK) Then
+            Export_AnimatedPNG = False
+            Exit Function
+        End If
+        
+        'Lock the UI
+        Saving.BeginSaveProcess
+        
+        'Perform the actual save
+        Dim saveResult As Boolean
+        saveResult = ImageExporter.ExportPNG_Animated(srcImage, dstFile, formatParams, metadataParams)
+        
+        If saveResult Then
+        
+            'If the file was successfully written, we can now embed any additional metadata.
+            ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
+            ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
+            ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+            If PluginManager.IsPluginCurrentlyEnabled(CCP_ExifTool) And (Not srcImage.ImgMetadata Is Nothing) Then
+                
+                'Some export formats aren't supported by ExifTool; we don't even attempt to write metadata on such images
+                'If ImageFormats.IsExifToolRelevant(PDIF_PNG) Then srcImage.ImgMetadata.WriteAllMetadata dstFile, srcImage
+                
+            End If
+            
+            'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
+            ' only applied if we are *not* in the midst  of a batch conversion.
+            If (Macros.GetMacroStatus <> MacroBATCH) Then
+                g_RecentFiles.AddFileToList dstFile, srcImage
+                Interface.SyncInterfaceToCurrentImage
+                Interface.NotifyImageChanged PDImages.GetActiveImageID()
+            End If
+            
+        End If
+        
+        'Free the UI
+        Saving.EndSaveProcess
+        Message "Save complete."
+        
+    Else
+        Export_AnimatedPNG = False
+    End If
+    
+End Function
+
+'If the current image only has one frame of animation, we can still save it, but the image (obviously) won't animate.
+' Call this function to ask the user if they still want to proceed.
+'RETURNS: TRUE if the user still wants to proceed, FALSE if they do not.
+Private Function PromptSingleFrameSave() As Boolean
+
+    Dim msgText As pdString
+    Set msgText = New pdString
+    
+    msgText.AppendLine g_Language.TranslateMessage("This is a still image (only one frame of animation).")
+    msgText.AppendLineBreak
+    msgText.Append g_Language.TranslateMessage("You may proceed, but the image will be saved as a static image, not an animated one.")
+    
+    Dim msgResult As VbMsgBoxResult
+    msgResult = PDMsgBox(msgText.ToString(), vbOKCancel Or vbApplicationModal Or vbExclamation, "Export animation")
+    If (msgResult = vbCancel) Then Exit Function
     
 End Function
 

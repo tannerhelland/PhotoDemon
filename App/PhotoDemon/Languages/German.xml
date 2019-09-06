@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1356</langversion>
+<langversion>7.2.1357</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1530,6 +1530,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 </phrase>
 
 <phrase>
+<original>Export animated PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Export palette</original>
 <translation>Palette exportieren</translation>
 </phrase>
@@ -2559,7 +2564,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 <translation>Liste jüngster Makros löschen</translation>
 </phrase>
 
-<!-- Menus.bas contains 254 phrases. 29 were duplicates of existing phrases, so only 225 new phrases were written to file. -->
+<!-- Menus.bas contains 255 phrases. 29 were duplicates of existing phrases, so only 226 new phrases were written to file. -->
 
 <!-- END text for Menus.bas-->
 
@@ -3358,11 +3363,16 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 </phrase>
 
 <phrase>
-<original>You may proceed, but the image will be saved as a standard GIF, not an animated one.</original>
-<translation>Sie können fortfahren, aber das Bild wird als Standard-GIF gespeichert, nicht als animiertes GIF.</translation>
+<original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
+<translation></translation>
 </phrase>
 
-<!-- Saving.bas contains 31 phrases. 25 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Export animation</original>
+<translation></translation>
+</phrase>
+
+<!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Saving.bas-->
 
@@ -4645,7 +4655,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- pdPNG.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -5893,6 +5903,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>Animated PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Color profile</original>
 <translation>Farbprofil</translation>
 </phrase>
@@ -6775,7 +6790,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 353 phrases. 161 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
+<!-- MainWindow.frm contains 354 phrases. 161 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16168,10 +16183,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2698</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4949 phrases. -->
-<!-- 2254 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 12684 total words. -->
+<!-- As of this build, PhotoDemon contains 4960 phrases. -->
+<!-- 2262 are duplicates, so only 2698 unique phrases have been written to file. -->
+<!-- These 2698 phrases contain approximately 12691 total words. -->
 
 </pdData>
