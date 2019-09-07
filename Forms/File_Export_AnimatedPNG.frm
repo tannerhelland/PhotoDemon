@@ -160,14 +160,14 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Animated image (GIF/PNG) export dialog
+'Animated PNG export dialog
 'Copyright 2012-2019 by Tanner Helland
 'Created: 26/August/19
-'Last updated: 27/August/19
-'Last update: custom-build the preview area, instead of attempting to repurpose a navigation control
+'Last updated: 06/September/19
+'Last update: separate from original animated GIF export dialog, as the two exporters have different needs
 '
-'In v7.2, PhotoDemon gained the ability to export animated GIF and PNG files.  This dialog is shared by
-' the two exporters, since most parameters are supported by both exporters.
+'In v7.2, PhotoDemon gained the ability to export animated PNG files.  This dialog exposes relevant
+' export parameters to the user.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/

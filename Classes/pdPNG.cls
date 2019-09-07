@@ -169,6 +169,7 @@ Private Type PD_APNGFrame
     frameIsDuplicateOrEmpty As Boolean
     frameTime As Long
     rectOfInterest As RectF
+    frameDIB As pdDIB
 End Type
 
 'When exporting the image, we need to cache various export parameters to share between export functions.
@@ -1960,7 +1961,7 @@ Friend Function SavePNG_ToFile(ByRef dstFile As String, ByRef srcImage As pdDIB,
     End If
     
     'Filtered pixel data can now be added in the form of an IDAT chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, srcImage, tmpChunk, cmpLevel)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpChunk, cmpLevel)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > deflate + write IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2089,7 +2090,7 @@ Friend Function SavePNG_ToMemory(ByRef dstArray() As Byte, ByRef srcImage As pdD
     End If
     
     'Filtered pixel data can now be added in the form of an IDAT chunk
-    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, srcImage, tmpChunk, cmpLevel)
+    If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpChunk, cmpLevel)
     
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "PNG export > deflate + write IDAT took " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2170,7 +2171,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
     'Initialize a progress bar
-    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers
+    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 2
     
     'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
     Dim cStream As pdStream
@@ -2233,9 +2234,6 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
         VBHacks.GetHighResTime startTime
     End If
     
-    'Next, we need to write an acTL - or "animation control" - chunk.  This marks the file as an animated PNG.
-    keepGoing = ExportStep2a_WriteacTL(cStream, srcPDImage.GetNumOfLayers, loopCount)
-    
     'Now it is time to prepare and write individual animation frames.  Each frame consists of two parts:
     ' an fcTL - or "frame control" - chunk that describes frame size and timing, and an fdAT - or
     ' "frame data" - chunk that describes frame pixel data.  fdAT is nearly identical to a regular IDAT chunk,
@@ -2249,7 +2247,14 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim numFrames As Long
     numFrames = srcPDImage.GetNumOfLayers - 1
     m_FrameSequence = 0
-                    
+    
+    'If we detect two identical back-to-back frames (surprisingly common in GIFs "in the wild"), we will
+    ' simply merge their frame times into a single value and remove the duplicate frame.  This reduces
+    ' file size "for free".
+    Dim numGoodFrames As Long, lastGoodFrame As Long
+    numGoodFrames = 0
+    lastGoodFrame = 0
+    
     'Retrieve frame delay defaults and overrides
     Dim useFixedFrameDelay As Boolean, frameDelayDefault As Long
     useFixedFrameDelay = cParams.GetBool("use-fixed-frame-delay", False)
@@ -2271,15 +2276,38 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     'During debug it proved helpful to time portions of the APNG export process
     Dim timeTakenPrep As Currency, timeTakenFilter As Currency, timeTakenDeflate As Currency
     
+    'Before proceeding with export, we perform a pre-processing step to handle a bunch of optimization
+    ' tasks (e.g. checking for duplicate frames, cropping relevant frame regions, determining optimal
+    ' frame disposal methods, etc).
+    
+    'This is necessary because PNG files are *extremely* unpleasant to rewind and modify as-you-go,
+    ' because chunks must be decompressed and re-checksummed whenever their contents change.
+    
+    'As such, we consume a lot of memory during this step, and this could be avoided by writing out
+    ' (suboptimal, unoptimized) frames in a single pass - but I consider this a worthwhile tradeoff,
+    ' as the resulting PNGs are *way* smaller.
+    
+    'This step is technically optional, as the spec doesn't care about duplicate frames - we just do it
+    ' to cut down file size.
+    
+    'Duplicate frame detection remains TODO!
+    
+    'As we go, we want to keep a running list of how the current on-screen image appears.  This is relevant
+    ' as APNGs provide several different frame disposal mechanisms - we can clear after rendering, leave the
+    ' frame after rendering, or reset it to its pre-rendered state.  Each of these have potential trade-offs
+    ' depending on frame contents.
+    Dim prevFrame As pdDIB, bufferFrame As pdDIB, curFrameBackup As pdDIB
+    Set prevFrame = New pdDIB
+    Set bufferFrame = New pdDIB
+    Set curFrameBackup = New pdDIB
+    
+    If PNG_DEBUG_VERBOSE Then VBHacks.GetHighResTimeInMS startTime
+        
     Dim i As Long
     For i = 0 To numFrames
         
         ProgressBars.SetProgBarVal i
-        Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
-        
-        'TODO: optimize frames!
-        
-        If PNG_DEBUG_VERBOSE Then VBHacks.GetHighResTimeInMS startTime
+        Message "Optimizing animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         With allFrames(i)
             
@@ -2293,8 +2321,8 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             
             'Remaining parameters are contingent on optimization passes; for now, populate with default
             ' parameters, and leave subsequent optimizations steps to overwrite these as necessary.
-            .frameBlend = APNG_BlendOp_Over
-            .frameDisposal = APNG_DisposeOp_Background
+            .frameBlend = APNG_BlendOp_Source
+            .frameDisposal = APNG_DisposeOp_None
             .frameIsDuplicateOrEmpty = False
             .rectOfInterest.Left = 0
             .rectOfInterest.Top = 0
@@ -2303,48 +2331,183 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             
         End With
         
-        'Convert the source layer to an image-sized, zero-offsets, all-transforms-applied layer
+        'Convert the source layer to an image-sized, zero-offsets, all-transforms-applied layer,
+        ' and make a local copy of it.
+        Set tmpLayer = New pdLayer
         tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
         tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+        curFrameBackup.CreateFromExistingDIB tmpLayer.layerDIB
         
-        'Write the animation metadata out (before writing any pixel data)
-        With allFrames(i)
-            ExportStep3a_WritefcTL cStream, .rectOfInterest, .frameTime, .frameDisposal, .frameBlend
-        End With
+        Set allFrames(i).frameDIB = New pdDIB
         
-        If PNG_DEBUG_VERBOSE Then
-            timeTakenPrep = timeTakenPrep + (VBHacks.GetHighResTimeInMSEx - startTime)
-            VBHacks.GetHighResTimeInMS startTime
+        'The first frame in the file must always be full-size.  Do not optimize it.
+        If (i = 0) Then
+        
+            'Cache the temporary layer DIB; we'll write it in a later step
+            Set allFrames(i).frameDIB = tmpLayer.layerDIB
+            
+            'Initialize the frame buffer to be the same as the first frame
+            bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
+            
+            'Mark this as the "last good frame" (in case subsequent frames are duplicates of this one)
+            lastGoodFrame = 0
+            numGoodFrames = 1
+        
+        'If this is *not* the first frame, there are many ways we can optimize frame contents.
+        Else
+        
+            'First, we want to figure out how much of this frame is actually necessary.  We can reduce
+            ' frame size one of several ways:
+            ' 1) By blanking the previous frame before drawing this one, then cropping any fully
+            '    transparent border lines from this frame
+            ' 2) By leaving the previous frame's contents on the buffer, and only drawing the pixels
+            '    from this frame that have changed from that frame.
+            ' 3) By reverting the previous frame to the original buffer state before it was drawn
+            '    (which may be fully transparent, per (1)), and only drawing the pixels this frame that
+            '    have changed from *that* frame.
+            
+            'It's impossible to know for sure which method is best, as the subsequent frame contents
+            ' will be further altered by blanking duplicate pixels, changing color depth, filtering
+            ' scanlines, and deflating whatever is left.  As such, we operate on the assumption that...
+            ' 1) Fewer net pixels are always preferable
+            ' 2) More fully transparent pixels are preferable (as runs of these compress well)
+            
+            'Start by seeing what the size of this frame is if we crop all transparent pixels from it
+            Dim trnsArea As RectF
+            If DIBs.GetRectOfInterest(tmpLayer.layerDIB, trnsArea) Then
+            
+            'Frame is empty; ensure the previous frame is set to clear the current buffer, and set this
+            ' frame to full-size to match.
+            Else
+                allFrames(i - 1).frameDisposal = APNG_DisposeOp_Background
+                With allFrames(i).rectOfInterest
+                    .Left = 0
+                    .Top = 0
+                    .Width = tmpLayer.layerDIB.GetDIBWidth
+                    .Height = tmpLayer.layerDIB.GetDIBHeight
+                End With
+            End If
+            
+            'Next, we want to see what the size of this frame is if we crop all duplicate pixels from it
+            ' (e.g. pixels that match the previous frame)
+            Dim dupArea As RectF
+            If DIBs.GetRectOfInterest_Overlay(tmpLayer.layerDIB, bufferFrame, dupArea) Then
+            
+            'Frame is empty
+            Else
+                allFrames(i).frameIsDuplicateOrEmpty = True
+            End If
+            
+            'If the frame is empty, merge its frame time with the previous frame's and mark this frame
+            ' for deletion.
+            If allFrames(i).frameIsDuplicateOrEmpty Then
+                allFrames(lastGoodFrame).frameTime = allFrames(lastGoodFrame).frameTime + allFrames(i).frameTime
+                Set allFrames(i).frameDIB = Nothing
+            
+            'This frame is *not* a duplicate; keep optimizing it!
+            Else
+                
+                'This is a valid frame.  Increment the "good frame" count.
+                numGoodFrames = numGoodFrames + 1
+                lastGoodFrame = i
+                
+                'Take whichever frame measurements are smaller, and make those the basis of this frame.
+                ' If both are equal, favor the "previous frame" rect as we can perform additional optimizations
+                ' later (by blanking duplicate pixels *within* the frame).
+                
+                'Duplicate area is smaller...
+                If (dupArea.Width * dupArea.Height) <= (trnsArea.Width * trnsArea.Height) Then
+                    
+                    'Crop the DIB accordingly, and update its rect of interest to match
+                    allFrames(i).frameDIB.CreateBlank Int(dupArea.Width), Int(dupArea.Height), 32, 0, 0
+                    GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(dupArea.Width), Int(dupArea.Height), tmpLayer.layerDIB.GetDIBDC, Int(dupArea.Left), Int(dupArea.Top), vbSrcCopy
+                    allFrames(i).rectOfInterest = dupArea
+                    allFrames(i - 1).frameDisposal = APNG_DisposeOp_None
+                
+                'Non-transparent area is smaller...
+                Else
+                
+                    'Crop the DIB accordingly, and update its rect of interest to match
+                    allFrames(i).frameDIB.CreateBlank Int(trnsArea.Width), Int(trnsArea.Height), 32, 0, 0
+                    GDI.BitBltWrapper allFrames(i).frameDIB.GetDIBDC, 0, 0, Int(trnsArea.Width), Int(trnsArea.Height), tmpLayer.layerDIB.GetDIBDC, Int(trnsArea.Left), Int(trnsArea.Top), vbSrcCopy
+                    allFrames(i).rectOfInterest = trnsArea
+                    allFrames(i - 1).frameDisposal = APNG_DisposeOp_Background
+            
+                End If
+                
+            End If
+            
+            'Overwrite the frame buffer with an (untouched) copy of this frame
+            bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
+        
+        'i !/= 0 branch
         End If
         
-        'Next, we need to prepare the pixel data for this layer.  The precise steps involved in this
-        ' vary depending on optimization settings.
+    Next i
+    
+    If PNG_DEBUG_VERBOSE Then
+        PDDebug.LogAction "APNG export > optimization pass took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
+    'With all frames optimized, we can finally write an acTL - or "animation control" - chunk.
+    ' This marks the file as an animated PNG, and it lists the number of frames in the file (which may
+    ' have changed as a result of the optimization step, above, which finds and removes duplicate frames).
+    keepGoing = ExportStep2a_WriteacTL(cStream, numGoodFrames, loopCount)
+    
+    For i = 0 To numFrames
+    
+        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() + i
+        Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
-        'Convert the optimized frame to a filtered PNG byte stream.  (Filtering reorders scanline data
-        ' according to one of several optimization strategies; see the PNG spec for details.)
-        Set tmpChunk = Nothing
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, tmpLayer.layerDIB, tmpChunk, fullParamString, filterStrategy, (i = 0))
-        
-        If PNG_DEBUG_VERBOSE Then
-            timeTakenFilter = timeTakenFilter + (VBHacks.GetHighResTimeInMSEx - startTime)
-            VBHacks.GetHighResTimeInMS startTime
+        'Skip frames marked as duplicates
+        If (Not allFrames(i).frameIsDuplicateOrEmpty) Then
+            
+            If PNG_DEBUG_VERBOSE Then VBHacks.GetHighResTimeInMS startTime
+            
+            'Write the animation metadata out (before writing any pixel data)
+            With allFrames(i)
+                ExportStep3a_WritefcTL cStream, .rectOfInterest, .frameTime, .frameDisposal, .frameBlend
+            End With
+            
+            If PNG_DEBUG_VERBOSE Then
+                timeTakenPrep = timeTakenPrep + (VBHacks.GetHighResTimeInMSEx - startTime)
+                VBHacks.GetHighResTimeInMS startTime
+            End If
+            
+            'Next, we need to prepare the pixel data for this layer.  The precise steps involved in this
+            ' vary depending on optimization settings.
+            
+            'Convert the optimized frame to a filtered PNG byte stream.  (Filtering reorders scanline data
+            ' according to one of several optimization strategies; see the PNG spec for details.)
+            Set tmpChunk = Nothing
+            If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep3_FilterBytes(cStream, allFrames(i).frameDIB, tmpChunk, fullParamString, filterStrategy, (i = 0))
+            
+            'Free our DIB copy as it's no longer needed
+            Set allFrames(i).frameDIB = Nothing
+            
+            If PNG_DEBUG_VERBOSE Then
+                timeTakenFilter = timeTakenFilter + (VBHacks.GetHighResTimeInMSEx - startTime)
+                VBHacks.GetHighResTimeInMS startTime
+            End If
+            
+            'Filtered pixel data can now be finalized in the form of a compressed IDAT (first frame) or fdAT
+            ' (all subsequent frames) chunk.
+            If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpChunk, cmpLevel, (i > 0))
+            
+            If PNG_DEBUG_VERBOSE Then
+                timeTakenDeflate = timeTakenDeflate + (VBHacks.GetHighResTimeInMSEx - startTime)
+                VBHacks.GetHighResTimeInMS startTime
+            End If
+            
         End If
-        
-        'Filtered pixel data can now be finalized in the form of a compressed IDAT (first frame) or fdAT
-        ' (all subsequent frames) chunk.
-        If (keepGoing < png_Failure) Then keepGoing = Me.ExportStep4_WriteIDAT(cStream, tmpLayer.layerDIB, tmpChunk, cmpLevel, (i > 0))
-        
-        If PNG_DEBUG_VERBOSE Then
-            timeTakenDeflate = timeTakenDeflate + (VBHacks.GetHighResTimeInMSEx - startTime)
-            VBHacks.GetHighResTimeInMS startTime
-        End If
-        
+            
     Next i
     
     'With all frames added, we can now finalize the file
     ProgressBars.SetProgBarVal ProgressBars.GetProgBarMax()
     Message "Finalizing image..."
-            
+    
     If PNG_DEBUG_VERBOSE Then
         PDDebug.LogAction "APNG export > prep took " & Format$(timeTakenPrep, "#,##0.0") & " ms"
         PDDebug.LogAction "APNG export > filter took " & Format$(timeTakenFilter, "#,##0.0") & " ms"
@@ -4117,7 +4280,7 @@ End Sub
 
 'This function requires a temporary chunk object that has already filtered pixel bytes; this is handled by export step 3,
 ' which *MUST* be called before calling this function.
-Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef srcImage As pdDIB, ByRef tmpChunk As pdPNGChunk, Optional ByVal cmpLevel As Long = -1, Optional ByVal writefdATInstead As Boolean = False) As PD_PNGResult
+Friend Function ExportStep4_WriteIDAT(ByRef cStream As pdStream, ByRef tmpChunk As pdPNGChunk, Optional ByVal cmpLevel As Long = -1, Optional ByVal writefdATInstead As Boolean = False) As PD_PNGResult
     
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
