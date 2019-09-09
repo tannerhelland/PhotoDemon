@@ -863,44 +863,49 @@ End Function
 ' minimize file size, by retaining color data from the previous frame and making those pixels
 ' transparent in the current frame.
 '
-'IMPORTANTLY: the dstTransparencyTable() array MUST ALREADY BE INITIALIZED, and srcDIB and dstDIB
-' MUST BE THE SAME SIZE.
+'IMPORTANTLY: the dstTransparencyTable() array MUST ALREADY BE INITIALIZED to the size of topDIB,
+' and topDIB MUST BE smaller (and positioned inclusively) or the same size as bottomDIB.  If it is
+' larger or positioned outside of bottomDIB, this function will fail, by design.
 '
-'Note that - by design - neither DIB is not actually modified by this function.
-Public Function ApplyAlpha_DuplicatePixels(ByRef srcDIB1 As pdDIB, ByRef srcDIB2 As pdDIB, ByRef dstTransparencyTable() As Byte) As Boolean
+'Note that - by design - neither DIB is modified by this function.  Only the transparency table
+' is modified.
+Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByRef dstTransparencyTable() As Byte, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
     
-    If (srcDIB1 Is Nothing) Then Exit Function
-    If (srcDIB2 Is Nothing) Then Exit Function
+    If (topDIB Is Nothing) Then Exit Function
+    If (bottomDIB Is Nothing) Then Exit Function
     
     'Additional failsafe checks
-    If (srcDIB1.GetDIBColorDepth = 32) Then
-    If (srcDIB1.GetDIBDC <> 0) And (srcDIB1.GetDIBWidth <> 0) And (srcDIB1.GetDIBHeight <> 0) Then
-    If (srcDIB2.GetDIBDC <> 0) And (srcDIB1.GetDIBWidth = srcDIB2.GetDIBWidth) And (srcDIB1.GetDIBHeight = srcDIB2.GetDIBHeight) Then
+    If (topDIB.GetDIBColorDepth = 32) And (bottomDIB.GetDIBColorDepth = 32) Then
+    If (topDIB.GetDIBDC <> 0) And (topDIB.GetDIBWidth <> 0) And (topDIB.GetDIBHeight <> 0) Then
+    If (bottomDIB.GetDIBDC <> 0) And (bottomDIB.GetDIBWidth <> 0) And (bottomDIB.GetDIBHeight <> 0) Then
+    If (topOffsetX < bottomDIB.GetDIBWidth) And (topOffsetY < bottomDIB.GetDIBHeight) Then
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
-        finalX = (srcDIB1.GetDIBWidth - 1)
-        finalY = (srcDIB1.GetDIBHeight - 1)
+        finalX = (bottomDIB.GetDIBWidth - 1)
+        finalY = (bottomDIB.GetDIBHeight - 1)
+        If (finalX > (topDIB.GetDIBWidth + topOffsetX - 1)) Then finalX = topDIB.GetDIBWidth + topOffsetX - 1
+        If (finalY > (topDIB.GetDIBHeight + topOffsetY - 1)) Then finalY = topDIB.GetDIBHeight + topOffsetY - 1
         
-        Dim srcData1() As Long, tmpSA1 As SafeArray1D
-        Dim srcData2() As Long, tmpSA2 As SafeArray1D
+        Dim srcDataTop() As Long, tmpSATop As SafeArray1D
+        Dim srcDataBottom() As Long, tmpSABottom As SafeArray1D
         
         Dim chkAlpha As Byte
         
         'Loop through the image, checking alphas as we go
-        For y = 0 To finalY
-            srcDIB1.WrapLongArrayAroundScanline srcData1, tmpSA1, y
-            srcDIB2.WrapLongArrayAroundScanline srcData2, tmpSA2, y
-        For x = 0 To finalX
+        For y = topOffsetY To finalY
+            topDIB.WrapLongArrayAroundScanline srcDataTop, tmpSATop, y - topOffsetY
+            bottomDIB.WrapLongArrayAroundScanline srcDataBottom, tmpSABottom, y
+        For x = topOffsetX To finalX
             
             'Make matching pixels transparent
-            If srcData1(x) = srcData2(x) Then dstTransparencyTable(x, y) = 0
+            If srcDataTop(x - topOffsetX) = srcDataBottom(x) Then dstTransparencyTable(x - topOffsetX, y - topOffsetY) = 0
             
         Next x
         Next y
 
         'With our alpha channel complete, point iData() away from the DIB and deallocate it
-        srcDIB1.UnwrapLongArrayFromDIB srcData1
-        srcDIB2.UnwrapLongArrayFromDIB srcData2
+        topDIB.UnwrapLongArrayFromDIB srcDataTop
+        bottomDIB.UnwrapLongArrayFromDIB srcDataBottom
         
         ApplyAlpha_DuplicatePixels = True
     
@@ -908,19 +913,25 @@ Public Function ApplyAlpha_DuplicatePixels(ByRef srcDIB1 As pdDIB, ByRef srcDIB2
     End If
     End If
     End If
+    End If
     
 End Function
 
 'Given a bottom DIB and a transparency table (for a "top" DIB), return TRUE if the table contains
-' transparency where the bottom DIB does not.  This is used during GIF export to determine
-' whether we need to clear the previous frame before displaying the current one.  (By default,
-' we don't clear the previous frame unless necessary, as we can actually share data between
-' frames for idealized compression.)
+' transparency where the bottom DIB does not.  This is used during animated GIF/PNG export to
+' determine whether we need to clear the previous frame before displaying the current one.
+' (By default, we don't clear the previous frame unless necessary, as we can actually share data
+' between frames for improved compression.)
 '
-'IMPORTANTLY: srcDIB and trnsTable() MUST BE THE SAME SIZE.
+'IMPORTANTLY: the dstTransparencyTable() array MUST ALREADY BE INITIALIZED to the size of topDIB,
+' and topDIB MUST BE smaller (and positioned inclusively) or the same size as bottomDIB.  If it is
+' larger or positioned outside of bottomDIB, this function will fail, by design.
 '
-'Note that - by design - neither DIB is not actually modified by this function.
-Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsTable() As Byte) As Boolean
+'RETURNS: TRUE if the top image's alpha is incompatible with the bottom image's; you MUST clear the
+'         previous frame if this function returns TRUE.
+'
+'Note that - by design - this function does not modify any of the input parameters.  They are all CONST.
+Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsTable() As Byte, ByVal trnsTableWidth As Long, ByVal trnsTableHeight As Long, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
     
     CheckAlpha_DuplicatePixels = False
     
@@ -933,18 +944,21 @@ Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsT
         Dim x As Long, y As Long, finalX As Long, finalY As Long
         finalX = (bottomDIB.GetDIBWidth - 1)
         finalY = (bottomDIB.GetDIBHeight - 1)
+        If (finalX > (trnsTableWidth + topOffsetX - 1)) Then finalX = trnsTableWidth + topOffsetX - 1
+        If (finalY > (trnsTableHeight + topOffsetY - 1)) Then finalY = trnsTableHeight + topOffsetY - 1
         
         Dim bottomPixels() As Byte, tmpSA1 As SafeArray1D
         
         Dim chkAlpha As Byte
         
         'Loop through the image, checking alphas as we go
-        For y = 0 To finalY
+        For y = topOffsetY To finalY
             bottomDIB.WrapArrayAroundScanline bottomPixels, tmpSA1, y
-        For x = 0 To finalX
+        For x = topOffsetX To finalX
             
-            'Make matching pixels transparent
-            If (trnsTable(x, y) = 0) And (bottomPixels(x * 4 + 3) <> 0) Then
+            'If the top image has any amount of transparency in this pixel, but the bottom image
+            ' *does not*, exit immediately.
+            If (trnsTable(x - topOffsetX, y - topOffsetY) < 255) And (bottomPixels(x * 4 + 3) <> 0) Then
                 bottomDIB.UnwrapArrayFromDIB bottomPixels
                 CheckAlpha_DuplicatePixels = True
                 Exit Function

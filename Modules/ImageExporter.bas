@@ -993,7 +993,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ' previous frame's colors will "show through" the transparent regions of this frame.)
                 If (i > 0) Then
                 
-                    frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable)
+                    frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, trnsTable, tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight)
                     If frameData(i - 1).frameMustBeCleared Then
                         curStateDIB.ResetDIB 0
                     Else

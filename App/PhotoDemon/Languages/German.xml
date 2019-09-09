@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1358</langversion>
+<langversion>7.2.1374</langversion>
 <langstatus>Complete</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -302,7 +302,7 @@ Verlustfreie Kopien werden in demselben Ordner wie dieses initiale Bild gespeich
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
 <translation>Beim Versuch dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Bitte versuchen Sie, das Bild in ein alternatives Format zu speichern.
 
-Wenn das Problem bestehen bleibt, melden Sie es bitte den Entwicklern von PhotoDemon via photodemon.org/contact</translation>
+Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developern via photodemon.org/contact</translation>
 </phrase>
 
 <phrase>
@@ -1531,7 +1531,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Features zu
 
 <phrase>
 <original>Export animated PNG</original>
-<translation></translation>
+<translation>Animiertes PNG exportieren</translation>
 </phrase>
 
 <phrase>
@@ -2814,7 +2814,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Bitte stellen Sie sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem bestehen bleibt, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte stellen Sie sicher, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3344,7 +3344,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via dem Menü "Hilfe > Bug-Bericht einreichen" darüber informieren.</translation>
+In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die PhotoDemon-Developer via dem Menü "Hilfe > Bug-Bericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
@@ -3364,12 +3364,12 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu 
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation></translation>
+<translation>Sie können fortfahren, aber das Bild wird als statisches Bild gespeichert, nicht als animiertes.</translation>
 </phrase>
 
 <phrase>
 <original>Export animation</original>
-<translation></translation>
+<translation>Animation exportieren</translation>
 </phrase>
 
 <!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -3833,7 +3833,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei und versuchen es erneut. Wenn das Problem bestehen bleibt, reduzieren Sie den Zoom-Wert und versuchen es erneut.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei und versuchen es erneut. Wenn das Problem weiterhin besteht, reduzieren Sie den Zoom-Wert und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -4655,7 +4655,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPNG.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -5904,7 +5909,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Animated PNG</original>
-<translation></translation>
+<translation>Animiertes PNG</translation>
 </phrase>
 
 <phrase>
@@ -6534,7 +6539,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Developers</original>
-<translation>Entwickler</translation>
+<translation>Developer</translation>
 </phrase>
 
 <phrase>
@@ -8691,7 +8696,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Bugs hinsichtlich IDE-Abstürzen oder Freezes ein. Die Entwickler von PhotoDemon können sich nur Probleme und Bugs adressieren, welche die kompilierte .exe (ausführbare Datei) betreffen.</translation>
+<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Bugs hinsichtlich IDE-Abstürzen oder Freezes ein. Die Developer von PhotoDemon können sich nur Probleme und Bugs adressieren, welche die kompilierte .exe (ausführbare Datei) betreffen.</translation>
 </phrase>
 
 <!-- Dialog_IDEWarning.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11994,7 +11999,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <!-- BEGIN text for File_Export_AnimatedPNG.frm (dialog_ExportAnimatedPNG) -->
 
-<!-- File_Export_AnimatedPNG.frm contains 19 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>compression level</original>
+<translation>Kompressionslevel</translation>
+</phrase>
+
+<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Export_AnimatedPNG.frm-->
 
@@ -12098,7 +12108,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jede andere Bilddatei öffnen.</translation>
+<translation>%1 konnte keine Internetverbindung herstellen. Bitte prüfen Sie Ihre Verbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, das Bild unter Verwendung eines Internet-Browsers Ihrer Wahl manuell herunterzuladen. Einmal heruntergeladen, können Sie die Datei in %1 nun wie jede andere Bilddatei öffnen.</translation>
 </phrase>
 
 <phrase>
@@ -12113,7 +12123,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 konnte unter dieser URL keine gültige Datei lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
+<translation>%1 konnte unter dieser URL keine gültige Datei lokalisieren. Bitte prüfen Sie den Pfad gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -12128,7 +12138,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 hat Zugriff auf das Internet verloren. Bitte prüfen Sie Ihre Internetverbindung gegen. Wenn das Problem bestehen bleibt, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
+<translation>%1 hat Zugriff auf das Internet verloren. Bitte prüfen Sie Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie, die Datei unter Verwendung Ihres Internet-Browsers manuell herunterzuladen.</translation>
 </phrase>
 
 <phrase>
@@ -12887,11 +12897,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>compression level</original>
-<translation>Kompressionslevel</translation>
-</phrase>
-
-<phrase>
 <original>embed background color (bKGD chunk)</original>
 <translation>Hintergrundfarbe einbetten (bKGD chunk)</translation>
 </phrase>
@@ -13011,7 +13016,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße bis %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 16 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13122,7 +13127,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation>Beteiligen Sie sich an Entwicklungs-, Design- oder Übersetzungsarbeiten</translation>
+<translation>Beteiligen Sie sich an Development-, Design- oder Übersetzungsarbeiten</translation>
 </phrase>
 
 <phrase>
@@ -13162,12 +13167,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation>Spenden Sie für die PhotoDemon-Entwicklung</translation>
+<translation>Spenden Sie für die PhotoDemon-Development</translation>
 </phrase>
 
 <phrase>
 <original>SUPER PATRONS</original>
-<translation>SUPER FÖRDERER</translation>
+<translation>SUPER PATRONS</translation>
 </phrase>
 
 <phrase>
@@ -15159,7 +15164,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <original>Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Entwicklungs- oder Beta-Builds.
+<translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, möglicherweise aber nicht in Development- oder Beta-Builds.
 
 Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
@@ -15961,12 +15966,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation>Stabile, Beta- und Entwickler-Releases</translation>
+<translation>Stabile, Beta- und Developer-Releases</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Enwickler-Releases versuchen. (Entwickler-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist beim Testen neuer Releases zu helfen. Standardmäßig werden Ihnen sowohl stabile als auch Beta-Releases zum Update angeboten. Wer richtig abenteuerlustig ist, kann auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, Sie könnten aber auf etwaige Bugs stoßen.)</translation>
 </phrase>
 
 <phrase>
@@ -15987,14 +15992,14 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plug-ins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>In Entwickler-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Bugs stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird Entwicklern helfen, Ihr Problem zu lösen.</translation>
+<translation>In Developer-Builds werden Debug-Daten im Ordner \Data\Debug des Programms automatisch protokolliert. Wenn Sie in einem stabilen Release auf Bugs stoßen, aktivieren Sie diese Einstellung bitte manuell. Dies wird den Developern helfen, Ihr Problem zu lösen.</translation>
 </phrase>
 
 <phrase>
@@ -16189,10 +16194,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2698</phrasecount>
+<phrasecount>2699</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4979 phrases. -->
-<!-- 2281 are duplicates, so only 2698 unique phrases have been written to file. -->
-<!-- These 2698 phrases contain approximately 12691 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2282 are duplicates, so only 2699 unique phrases have been written to file. -->
+<!-- These 2699 phrases contain approximately 12695 total words. -->
 
 </pdData>

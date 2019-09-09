@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe</langname>
-<langversion>6.8.3412</langversion>
+<langversion>6.8.3413</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4646,7 +4646,12 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdPNG.cls -->
 
-<!-- pdPNG.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Optimizing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPNG.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -11982,7 +11987,12 @@ Would bu toplu çalışmaya devam edebilir?</translation>
 
 <!-- BEGIN text for File_Export_AnimatedPNG.frm (dialog_ExportAnimatedPNG) -->
 
-<!-- File_Export_AnimatedPNG.frm contains 19 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>compression level</original>
+<translation>sıkıştırma seviyesi</translation>
+</phrase>
+
+<!-- File_Export_AnimatedPNG.frm contains 20 phrases. 19 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Export_AnimatedPNG.frm-->
 
@@ -12875,11 +12885,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>compression level</original>
-<translation>sıkıştırma seviyesi</translation>
-</phrase>
-
-<phrase>
 <original>embed background color (bKGD chunk)</original>
 <translation>Arka plan rengini embed (bKGD yığın)</translation>
 </phrase>
@@ -12999,7 +13004,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Bu kayıplı optimizasyon ayarları %1 dosya boyutunu azaltır.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 47 phrases. 16 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -16172,10 +16177,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2698</phrasecount>
+<phrasecount>2699</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4979 phrases. -->
-<!-- 2281 are duplicates, so only 2698 unique phrases have been written to file. -->
-<!-- These 2698 phrases contain approximately 12691 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2282 are duplicates, so only 2699 unique phrases have been written to file. -->
+<!-- These 2699 phrases contain approximately 12695 total words. -->
 
 </pdData>
