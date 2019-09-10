@@ -889,8 +889,6 @@ Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDI
         Dim srcDataTop() As Long, tmpSATop As SafeArray1D
         Dim srcDataBottom() As Long, tmpSABottom As SafeArray1D
         
-        Dim chkAlpha As Byte
-        
         'Loop through the image, checking alphas as we go
         For y = topOffsetY To finalY
             topDIB.WrapLongArrayAroundScanline srcDataTop, tmpSATop, y - topOffsetY
@@ -931,7 +929,7 @@ End Function
 '         previous frame if this function returns TRUE.
 '
 'Note that - by design - this function does not modify any of the input parameters.  They are all CONST.
-Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsTable() As Byte, ByVal trnsTableWidth As Long, ByVal trnsTableHeight As Long, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
+Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, ByRef trnsTable() As Byte, ByVal trnsTableWidth As Long, ByVal trnsTableHeight As Long, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
     
     CheckAlpha_DuplicatePixels = False
     
@@ -948,25 +946,36 @@ Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef trnsT
         If (finalY > (trnsTableHeight + topOffsetY - 1)) Then finalY = trnsTableHeight + topOffsetY - 1
         
         Dim bottomPixels() As Byte, tmpSA1 As SafeArray1D
+        Dim topPixels() As Byte, tmpSA2 As SafeArray1D
         
+        Dim xCheck As Long
         Dim chkAlpha As Byte
         
         'Loop through the image, checking alphas as we go
         For y = topOffsetY To finalY
             bottomDIB.WrapArrayAroundScanline bottomPixels, tmpSA1, y
+            topDIB.WrapArrayAroundScanline topPixels, tmpSA2, y - topOffsetY
         For x = topOffsetX To finalX
             
             'If the top image has any amount of transparency in this pixel, but the bottom image
             ' *does not*, exit immediately.
             If (trnsTable(x - topOffsetX, y - topOffsetY) < 255) And (bottomPixels(x * 4 + 3) <> 0) Then
-                bottomDIB.UnwrapArrayFromDIB bottomPixels
-                CheckAlpha_DuplicatePixels = True
-                Exit Function
+                
+                'Also confirm that the pixels in both positions are *not* identical (because if they are,
+                ' they will be getting blanked anyway!)
+                xCheck = (x - topOffsetX) * 4
+                If (topPixels(xCheck) <> bottomPixels(x * 4)) Or (topPixels(xCheck + 1) <> bottomPixels(x * 4 + 1)) Or (topPixels(xCheck + 2) <> bottomPixels(x * 4 + 2)) Or (topPixels(xCheck + 3) <> bottomPixels(x * 4 + 3)) Then
+                    topDIB.UnwrapArrayFromDIB topPixels
+                    bottomDIB.UnwrapArrayFromDIB bottomPixels
+                    CheckAlpha_DuplicatePixels = True
+                    Exit Function
+                End If
             End If
             
         Next x
         Next y
         
+        topDIB.UnwrapArrayFromDIB topPixels
         bottomDIB.UnwrapArrayFromDIB bottomPixels
         
     'Failsafe checks

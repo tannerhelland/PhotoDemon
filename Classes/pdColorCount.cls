@@ -418,6 +418,11 @@ End Function
 
 'After counting colors, you can use this function to find an unused color in the current tree.
 ' (This is extremely helpful during PNG export, to try and find a good tRNS candidate.)
+'
+'Returns: TRUE if a valid color is found, FALSE if this function fails.  It will only fail if
+' either the tree does not contain any colors yet (your fault), or if the tree contains all
+' 16.7 million colors and there is no unused one to return (highly unlikely, but we're awesome
+' so we do actually cover this case ;).
 Friend Function GetUnusedColor(ByRef dstRed As Long, ByRef dstGreen As Long, ByRef dstBlue As Long) As Boolean
     
     If (Me.GetUniqueRGBACount > 0) Then

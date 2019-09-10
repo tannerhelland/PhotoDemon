@@ -179,6 +179,11 @@ Private m_EmbedBkgdColor As Boolean, m_BkgdColor As Long
 Private m_ImgPalette() As RGBQuad, m_ImgColorCount As Long, m_ImgMaxColorCount As Long, m_ImgPaletteSafe As Boolean
 Private m_WriteTrns As Boolean, m_TrnsValueR As Long, m_TrnsValueG As Long, m_TrnsValueB As Long
 
+'For APNGs only, we set a flag specifying whether full transparency is available for each frame;
+' if it isn't (e.g. if the image uses all 256 colors with no room left over for a transparent index),
+' this will be set to FALSE; optimizations like frame differentials then need to be deactivated.
+Private m_apngTrnsAvailable As Boolean
+
 'Simplified wrapper to load a PNG automatically.
 Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
     
@@ -2152,26 +2157,30 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Set cParams = New pdParamXML
     cParams.SetParamString fullParamString
      
+    'Initialize a progress bar
+    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 3
+    
+    'Unlike static PNGs, PD always enforces strict automatic output color model analysis for APNGs.
+    ' (This is a necessity for producing optimized APNGs; user settings can't achieve the same results as
+    ' automatic heuristics, alas.)  This value must be set early in the save process, as we will use its
+    ' results to determine what animation properties we can/can't use.
+    If (outColorType = png_AutoColorType) Or (outBitsPerChannel = 0) Or (LenB(fullParamString) <> 0) Then
+        SetupExportSettings_APNG srcPDImage, outColorType, outBitsPerChannel, fullParamString
+        PDDebug.LogAction "Color type: " & outColorType & ", bpc: " & outBitsPerChannel
+    End If
+    
+    'If you want to simplify debugging, you can force output to 32-bpp RGBA.
+    ' Do NOT enable these next two lines in production code; they still produce valid APNG files,
+    ' but most files will be much larger than they need to be.
+    'outColorType = png_TruecolorAlpha
+    'outBitsPerChannel = 8
+    
     'Retrieve loop count (0 = infinite loops)
     Dim loopCount As Long
     loopCount = cParams.GetLong("animation-loop-count", 1)
     
-    'Before proceeding, if the output requires image analysis (due to "automatic" color mode / bit-depth detection,
-    ' or the presence of a full PD-compatible parameter string), perform those analyses before proceeding further.
-    'If (outColorType = png_AutoColorType) Or (outBitsPerChannel = 0) Or (LenB(fullParamString) <> 0) Then
-    '    SetupExportSettings srcImage, srcPDImage, outColorType, outBitsPerChannel, fullParamString
-    '    PDDebug.LogAction "Color type: " & outColorType & ", bpc: " & outBitsPerChannel
-    'End If
-    
-    'DEBUG ONLY: start with 32-bpp RGBA output
-    outColorType = png_TruecolorAlpha
-    outBitsPerChannel = 8
-    
     'Failsafe check only; PD enforces safe overwriting in a parent function.
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
-    
-    'Initialize a progress bar
-    ProgressBars.SetProgBarMax srcPDImage.GetNumOfLayers() * 2
     
     'As usual, a pdStream object is used to simplify the process of saving to file *or* memory
     Dim cStream As pdStream
@@ -2268,6 +2277,9 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim tmpLayer As pdLayer
     Set tmpLayer = New pdLayer
     
+    'Transparency tables are used for a bunch of different optimization settings
+    Dim trnsTable() As Byte
+    
     'Filtering an animated PNG is more time-consuming than filtering a static PNG (obviously), so it may
     ' be worthwhile to use a faster filter strategy
     Dim tmpChunk As pdPNGChunk, filterStrategy As PD_PNG_FilterStrategy
@@ -2310,7 +2322,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     Dim i As Long
     For i = 0 To numFrames
         
-        ProgressBars.SetProgBarVal i
+        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() + i
         Message "Optimizing animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         With allFrames(i)
@@ -2463,7 +2475,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                         ' transparent, allowing the previous frame to "show through" in those regions (instead
                         ' of storing all that pixel data again in the current frame).
                         
-                        'This strategy can produce large frame savings if it 's able to turn large regions of
+                        'This strategy can produce large frame savings if it's able to turn large regions of
                         ' the current frame transparent, but note that there are two major caveats.
                         ' Specifically:
                         
@@ -2479,9 +2491,8 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                         
                         'Because (1) has already been taken care of by the frame disposal If/Then statement above,
                         ' we now want to address (2).
-                        Dim trnsTable() As Byte
                         If DIBs.RetrieveTransparencyTable(allFrames(i).frameDIB, trnsTable) Then
-                        If DIBs.CheckAlpha_DuplicatePixels(refFrame, trnsTable, allFrames(i).rectOfInterest.Width, allFrames(i).rectOfInterest.Height, allFrames(i).rectOfInterest.Left, allFrames(i).rectOfInterest.Top) Then
+                        If DIBs.CheckAlpha_DuplicatePixels(refFrame, allFrames(i).frameDIB, trnsTable, allFrames(i).rectOfInterest.Width, allFrames(i).rectOfInterest.Height, allFrames(i).rectOfInterest.Left, allFrames(i).rectOfInterest.Top) Then
                         
                             'The previous frame must be blanked.  Skip frame differentials entirely.
                             allFrames(i - 1).frameDisposal = APNG_DisposeOp_Background
@@ -2490,53 +2501,63 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                         
                             'This frame is a candidate for frame differentials.
                             
-                            'Before proceeding, let's get a rough idea of the current frame's entropy.  If subsequent
-                            ' optimizations increase entropy (and thus decrease compression), we'll just revert to the
-                            ' current frame as-is.
-                            
-                            'An easy (and fast) way to estimate entropy is to just try compressing the current frame
-                            ' as-is. Better compression ratios typically correlate with lower source entropy, and this
-                            ' is faster than a formal entropy calculation (in VB6 code, anyway).
-                            Dim initSize As Long, initCmpSize As Long
-                            initCmpSize = cmpTestBufferSize
-                            initSize = allFrames(i).frameDIB.GetDIBStride * allFrames(i).frameDIB.GetDIBHeight
-                            Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), initCmpSize, allFrames(i).frameDIB.GetDIBPointer, initSize, 1, cf_Zlib
-                            
-                            'With current entropy established (well, estimated), we're next going to try blanking out
-                            ' any pixels that are identical between this frame and its reference frame.  This can
-                            ' create large patches of pure transparency, which compress brilliantly - but note that
-                            ' on extremely noisy images, like full-color images that were converted to animated GIFs,
-                            ' this may produce noisy results, which in turn *hurts* compression.  This is why we
-                            ' estimated entropy for the untouched frame data (above), and why we're gonna perform
-                            ' all our tests on a temporary frame copy (in case we have to throw them away).
-                            Dim testDIB As pdDIB
-                            Set testDIB = New pdDIB
-                            testDIB.CreateFromExistingDIB allFrames(i).frameDIB
-                            
-                            If DIBs.RetrieveTransparencyTable(testDIB, trnsTable) Then
-                            If DIBs.ApplyAlpha_DuplicatePixels(testDIB, refFrame, trnsTable, allFrames(i).rectOfInterest.Left, allFrames(i).rectOfInterest.Top) Then
-                            If DIBs.ApplyTransparencyTable(testDIB, trnsTable) Then
-                            
-                                'See if this frame compresses better than the original one did
-                                Dim testSize As Long
-                                testSize = cmpTestBufferSize
-                                Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), testSize, testDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                            'Note that some esoteric color mode settings may *still* prevent us from calculating
+                            ' frame differentials (e.g. an image with a full 256-color palette and no room left
+                            ' for a transparent index - we couldn't use frame differentials without bumping the
+                            ' color model up to full RGBA output, which would likely harm compression).  If this
+                            ' state was flagged by a previous step, skip frame differentials entirely.
+                            If m_apngTrnsAvailable Then
                                 
-                                'If this frame compressed better, replace it and set the frame blend to OVER
-                                ' (which will allow pixels from the previous frame to "show through" this one).
-                                If (testSize < initCmpSize) Then
-                                    Set allFrames(i).frameDIB = testDIB
-                                    allFrames(i).frameBlend = APNG_BlendOp_Over
+                                'Before proceeding, let's get a rough idea of the current frame's entropy.  If subsequent
+                                ' optimizations increase entropy (and thus decrease compression), we'll just revert to the
+                                ' current frame as-is.
                                 
-                                'If this frame compressed worse (or identically), leave current frame settings
-                                ' as they are (and throw away our temporary data copy).
-                                Else
-                                    Set testDIB = Nothing
+                                'An easy (and fast) way to estimate entropy is to just try compressing the current frame
+                                ' as-is. Better compression ratios typically correlate with lower source entropy, and this
+                                ' is faster than a formal entropy calculation (in VB6 code, anyway).
+                                Dim initSize As Long, initCmpSize As Long
+                                initCmpSize = cmpTestBufferSize
+                                initSize = allFrames(i).frameDIB.GetDIBStride * allFrames(i).frameDIB.GetDIBHeight
+                                Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), initCmpSize, allFrames(i).frameDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                                
+                                'With current entropy established (well, estimated), we're next going to try blanking out
+                                ' any pixels that are identical between this frame and its reference frame.  This can
+                                ' create large patches of pure transparency, which compress brilliantly - but note that
+                                ' on extremely noisy images, like full-color images that were converted to animated GIFs,
+                                ' this may produce noisy results, which in turn *hurts* compression.  This is why we
+                                ' estimated entropy for the untouched frame data (above), and why we're gonna perform
+                                ' all our tests on a temporary frame copy (in case we have to throw them away).
+                                Dim testDIB As pdDIB
+                                Set testDIB = New pdDIB
+                                testDIB.CreateFromExistingDIB allFrames(i).frameDIB
+                                
+                                If DIBs.RetrieveTransparencyTable(testDIB, trnsTable) Then
+                                If DIBs.ApplyAlpha_DuplicatePixels(testDIB, refFrame, trnsTable, allFrames(i).rectOfInterest.Left, allFrames(i).rectOfInterest.Top) Then
+                                If DIBs.ApplyTransparencyTable(testDIB, trnsTable) Then
+                                
+                                    'See if this frame compresses better than the original one did
+                                    Dim testSize As Long
+                                    testSize = cmpTestBufferSize
+                                    Plugin_libdeflate.CompressPtrToPtr VarPtr(cmpTestBuffer(0)), testSize, testDIB.GetDIBPointer, initSize, 1, cf_Zlib
+                                    
+                                    'If this frame compressed better, replace it and set the frame blend to OVER
+                                    ' (which will allow pixels from the previous frame to "show through" this one).
+                                    If (testSize < initCmpSize) Then
+                                        Set allFrames(i).frameDIB = testDIB
+                                        allFrames(i).frameBlend = APNG_BlendOp_Over
+                                    
+                                    'If this frame compressed worse (or identically), leave current frame settings
+                                    ' as they are (and throw away our temporary data copy).
+                                    Else
+                                        Set testDIB = Nothing
+                                    End If
+                                
+                                '/end failsafe "retrieve and apply duplicate pixel test" checks
+                                End If
+                                End If
                                 End If
                                 
-                            '/end failsafe "retrieve and apply duplicate pixel test" checks
-                            End If
-                            End If
+                            '/end m_apngTrnsAvailable = False
                             End If
                         
                         '/end "previous frame is opaque where this frame is transparent"
@@ -2554,15 +2575,25 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
                 ' transparent 1-px frame.  This effectively gives us a copy of the frame two-frames-previous
                 ' "for free".
                 Else
-                    allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
-                    With allFrames(i).rectOfInterest
-                        .Left = 0
-                        .Top = 0
-                        .Width = 1
-                        .Height = 1
-                    End With
-                    allFrames(i).frameBlend = APNG_BlendOp_Source
-                    allFrames(i - 1).frameDisposal = APNG_DisposeOp_Previous
+                
+                    'Ensure transparency is available
+                    If m_apngTrnsAvailable Then
+                        allFrames(i).frameDIB.CreateBlank 1, 1, 32, 0, 0
+                        With allFrames(i).rectOfInterest
+                            .Left = 0
+                            .Top = 0
+                            .Width = 1
+                            .Height = 1
+                        End With
+                        allFrames(i).frameBlend = APNG_BlendOp_Source
+                        allFrames(i - 1).frameDisposal = APNG_DisposeOp_Previous
+                    
+                    'This branch should still be safe; unfortunately, we won't gain any optimizations,
+                    ' as the full frame will need to be written out to file :(
+                    Else
+                        
+                    End If
+                    
                 End If
                 
             'If the GetRectOfInterest() check failed, it means this frame is 100% identical to the
@@ -2581,7 +2612,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             
             'Overwrite the *current* frame buffer with an (untouched) copy of this frame; the *next* frame
             ' can use this for its own optimization passes.
-            bufferFrame.CreateFromExistingDIB tmpLayer.layerDIB
+            bufferFrame.CreateFromExistingDIB curFrameBackup
         
         'i !/= 0 branch
         End If
@@ -2600,7 +2631,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
     
     For i = 0 To numFrames
     
-        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() + i
+        ProgressBars.SetProgBarVal srcPDImage.GetNumOfLayers() * 2 + i
         Message "Saving animation frame %1 of %2...", i + 1, numFrames + 1, "DONOTLOG"
         
         'Skip frames marked as duplicates
@@ -2611,6 +2642,7 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             'Write the animation metadata out (before writing any pixel data)
             With allFrames(i)
                 ExportStep3a_WritefcTL cStream, .rectOfInterest, .frameTime, .frameDisposal, .frameBlend
+                PDDebug.LogAction i & ", " & .frameDisposal & ", " & .frameBlend, PDM_Normal, True
             End With
             
             If PNG_DEBUG_VERBOSE Then
@@ -2620,6 +2652,13 @@ Friend Function SaveAPNG_ToFile(ByRef dstFile As String, ByRef srcPDImage As pdI
             
             'Next, we need to prepare the pixel data for this layer.  The precise steps involved in this
             ' vary depending on optimization settings.
+            
+            'If the saved PNG color mode is "true color", *and* we are using a transparent color flag,
+            ' we need to convert the alpha channel of the incoming image to that flag color
+            If (outColorType = png_Truecolor) And m_apngTrnsAvailable Then
+                DIBs.RetrieveTransparencyTable allFrames(i).frameDIB, trnsTable
+                DIBs.ApplyBinaryTransparencyTableColor allFrames(i).frameDIB, trnsTable, RGB(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB), m_BkgdColor
+            End If
             
             'Convert the optimized frame to a filtered PNG byte stream.  (Filtering reorders scanline data
             ' according to one of several optimization strategies; see the PNG spec for details.)
@@ -3098,7 +3137,8 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
                     m_ImgPaletteSafe = True
                     
                     'Monochrome is a weird exception, as we can write the image as monochrome if either black or white
-                    ' is transparent, but not both.
+                    ' is transparent, but not both; note that we don't have to worry about this in PD, however,
+                    ' because we premultiply alpha (so fully transparent pixels will *always* be black).
                     If (m_ImgColorCount <= 2) Then
                         outBitsPerChannel = 1
                     ElseIf (m_ImgColorCount <= 4) Then
@@ -3334,6 +3374,346 @@ Private Sub SetupExportSettings_Auto(ByRef srcImage As pdDIB, ByRef srcPDImage A
     
 End Sub
 
+'APNGs require a separate, specialized export analysis, because we have to analyze *all* output frames
+' in order to determine which color mode(s) will work.
+Private Sub SetupExportSettings_APNG(ByRef srcPDImage As pdImage, ByRef outColorType As PD_PNGColorType, ByRef outBitsPerChannel As Long, ByRef fullParamString As String)
+    
+    'Unlike a regular static PNG, we need to perform the (ugly) task of analyzing *every*
+    ' frame of the animated image.  Note that we can shortcut the process if we determine that
+    ' the image requires 32-bpp output (because the auto-exporter won't recommend any "higher"
+    ' output depths than that, at least at present), but for paletted images, we need to check
+    ' every frame to ensure that its colors fit into a pre-constructed palette.  This is
+    ' especially critical when the source is an animated GIF, as animated GIFs allow each
+    ' frame to have its *own* palette, but animated PNGs do not - so APNGs will have to
+    ' work around this by writing 24-bpp data (with a bonus transparent color, as required).
+    
+    'Note that unlike the actual writing step, this step analyzes raw source layer data.
+    ' It *does not* apply non-destructive transforms or crop regions, making it entirely lossless.
+    ' We do this because it makes the analysis a hell of a lot faster (and less memory-intensive).
+    Dim outputAlphaMode As PD_ALPHA_STATUS, frameAlphaStatus As PD_ALPHA_STATUS
+    Dim frameIsGrayscale As Boolean, allFramesAreGrayscale As Boolean
+    Dim mergedPalette() As RGBQuad, localPalette() As RGBQuad
+    Dim frameColorCount As Long
+    
+    allFramesAreGrayscale = True
+    outputAlphaMode = PDAS_NoAlpha
+    
+    Dim cColorCount As pdColorCount
+    Set cColorCount = New pdColorCount
+    cColorCount.SetAlphaTracking True
+    
+    Dim i As Long
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
+        
+        ProgressBars.SetProgBarVal i
+        Message "Analyzing animation frame %1 of %2...", i + 1, srcPDImage.GetNumOfLayers(), "DONOTLOG"
+        
+        'Analyze the current frame
+        Export_AnalyzeImage srcPDImage.GetLayerByIndex(i).layerDIB, frameColorCount, frameIsGrayscale, frameAlphaStatus, localPalette, cColorCount, True
+        
+        'If any one frame is *not* grayscale, no frames are grayscale.  (Note that PD doesn't currently
+        ' do anything special with grayscale; instead, grayscale animations are deliberately identified
+        ' as paletted images because paletted images are much easier to "drop" transparency into.)
+        If (Not frameIsGrayscale) Then allFramesAreGrayscale = False
+        
+        'If this frame requires complicated alpha, and it has more than 256 colors (or any previous frames
+        ' have more than 256 colors, or our running global palette now exceeds 256 colors), we know we have
+        ' to use 32-bpp export mode - so we can exit immediately.
+        If ((frameColorCount > 256) Or (cColorCount.GetUniqueRGBACount() > 256)) And ((frameAlphaStatus = PDAS_ComplicatedAlpha) Or (outputAlphaMode = PDAS_ComplicatedAlpha)) Then
+            outColorType = png_TruecolorAlpha
+            outBitsPerChannel = 8
+            m_ImgColorCount = 257
+            m_ImgMaxColorCount = m_ImgColorCount
+            m_apngTrnsAvailable = True
+            m_WriteTrns = False
+            Exit Sub
+        
+        'If this frame does not require 32-bpp color mode, we need to merge any settings we found
+        ' into image-wide trackers.
+        Else
+            
+            'If any one frame requires complex alpha, the image as a whole requires complex alpha
+            If (frameAlphaStatus = PDAS_ComplicatedAlpha) Then
+                outputAlphaMode = PDAS_ComplicatedAlpha
+            
+            Else
+                
+                'If any one frame requires binary alpha, the image as a whole requires binary alpha,
+                ' but note that this setting is not as critical as PD will attempt to add a mechanism
+                ' for transparency to the current image using whatever means is appropriate for its
+                ' particular color model, because we want a transparent color available for use in
+                ' optimizing frame differentials.
+                If (frameAlphaStatus = PDAS_BinaryAlpha) And (outputAlphaMode <> PDAS_ComplicatedAlpha) Then outputAlphaMode = PDAS_BinaryAlpha
+                
+            End If
+            
+        End If
+        
+    Next i
+    
+    'Perform one last check for "image requires full 32-bpp mode", as the final frame in the image
+    ' may have triggered this (so the early-exit check didn't catch it).
+    If (cColorCount.GetUniqueRGBACount > 256) And (outputAlphaMode = PDAS_ComplicatedAlpha) Then
+        outColorType = png_TruecolorAlpha
+        outBitsPerChannel = 8
+        m_ImgColorCount = 257
+        m_ImgMaxColorCount = m_ImgColorCount
+        m_apngTrnsAvailable = True
+        m_WriteTrns = False
+        Exit Sub
+    End If
+    
+    'If we're still here, this image probably doesn't need to be exported as 32-bpp RGBA.  Let's figure
+    ' out the best combination of settings for it.
+    
+    'Start by cloning our final global palette into the module-level image palette.  (Other functions
+    ' need to analyze this to determine special color mode settings.)
+    m_ImgColorCount = cColorCount.GetUniqueRGBACount()
+    If (m_ImgColorCount <= 256) Then
+        
+        ReDim m_ImgPalette(0 To m_ImgColorCount - 1) As RGBQuad
+        cColorCount.GetPalette m_ImgPalette
+        
+        'Look for a fully transparent index in the palette.  If it doesn't have one, we want
+        ' to add one (as that will allow us to optimize via frame differentials).
+        Dim palHasZeroTransparency As Boolean
+        For i = 0 To m_ImgColorCount - 1
+            If (m_ImgPalette(i).Alpha = 0) Then
+                palHasZeroTransparency = True
+                Exit For
+            End If
+        Next i
+        
+        'If the palette does NOT have a zero-transparency index, and it has room for more colors,
+        ' add a zero-transparency index now.
+        If (Not palHasZeroTransparency) Then
+        
+            If (m_ImgColorCount < 256) Then
+                
+                ReDim Preserve m_ImgPalette(0 To m_ImgColorCount) As RGBQuad
+                With m_ImgPalette(m_ImgColorCount)
+                    .Red = 0
+                    .Green = 0
+                    .Blue = 0
+                    .Alpha = 0
+                End With
+                m_ImgColorCount = m_ImgColorCount + 1
+                m_apngTrnsAvailable = True
+                
+            'There is no room in the palette for transparency.  This sucks, but rather than
+            ' "promote" the entire image to RGB output (which would require three bytes per pixel -
+            ' a potentially big increase in space), simply mark the image as "transparency
+            ' unavailable".  The optimizer will detect this case and skip frame differentials.
+            Else
+                m_apngTrnsAvailable = False
+            End If
+            
+        Else
+            m_apngTrnsAvailable = True
+        End If
+        
+        m_WriteTrns = m_apngTrnsAvailable
+        
+        'Sort the palette by transparency index; PNGs can conserve a little space this way due to
+        ' the way transparency is encoded.
+        If m_apngTrnsAvailable Then
+            Dim tmpPalette As pdPaletteChild
+            Set tmpPalette = New pdPaletteChild
+            tmpPalette.CreateFromRGBQuads m_ImgPalette
+            tmpPalette.SortByChannel 3
+            tmpPalette.CopyRGBQuadsToArray m_ImgPalette
+        End If
+    
+    Else
+        m_ImgColorCount = 257
+    End If
+    
+    m_ImgMaxColorCount = m_ImgColorCount
+    
+    'Use the analyzer's findings to see if a truecolor output mode is required
+    Dim isTrueColor As Boolean
+    isTrueColor = (m_ImgColorCount > 256)
+    
+    'Some frame optimizations rely on a fully transparent color (or index), e.g. frame differentials.
+    ' If the current image/palette has one available, set a corresponding flag.  If it *doesn't* have
+    ' one available, we'll add one "for free" if we can (e.g. specifying an unused palette index as
+    ' transparent, or prepping a tRNS chunk for a true-color image).
+    If (outputAlphaMode = PDAS_ComplicatedAlpha) Or (outputAlphaMode = PDAS_BinaryAlpha) Then m_apngTrnsAvailable = True
+    
+    'If this image is true-color *and* it doesn't have transparency, add a transparent color flag now.
+    If isTrueColor And (Not m_apngTrnsAvailable) Then
+        
+        'Before proceeding, see if this image came from an existing PNG file with an existing tRNS chunk.
+        ' (If it did, we'll try to reuse the original file's settings as much as possible.)
+        Dim hasOrigTrnsColor As Boolean, origTrnsColor As Long
+        If (Not srcPDImage Is Nothing) Then
+            hasOrigTrnsColor = srcPDImage.ImgStorage.DoesKeyExist("pngTransparentColor")
+            If hasOrigTrnsColor Then
+                origTrnsColor = srcPDImage.ImgStorage.GetEntry_Long("pngTransparentColor", 0)
+                m_TrnsValueR = Colors.ExtractRed(origTrnsColor)
+                m_TrnsValueG = Colors.ExtractGreen(origTrnsColor)
+                m_TrnsValueB = Colors.ExtractBlue(origTrnsColor)
+            Else
+                m_TrnsValueR = 0
+                m_TrnsValueG = 0
+                m_TrnsValueB = 0
+            End If
+        End If
+
+        'Next, query the object for an unused color, and start the search with the image's original
+        ' transparent color (if any; if it didn't supply one, we'll just start at black).
+        If cColorCount.DoesColorExist(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+            
+            'The original transparent color now appears in the image, which means we can't use it for export.
+            ' We need to find a new one.
+            If cColorCount.GetUnusedColor(m_TrnsValueR, m_TrnsValueG, m_TrnsValueB) Then
+                
+                'A new, unused color was found.  Use it to add transparency to the image.
+                m_apngTrnsAvailable = True
+            
+            'By some (horrifying) miracle, all 16.7 million colors are used in this image.  We can't use a tRNS
+            ' chunk to write transparency data; fall back to 32-bit RGBA
+            Else
+                m_apngTrnsAvailable = False
+            End If
+        
+        'The original transparent color does not appear in the image!  Use it as our transparent color.
+        Else
+            m_apngTrnsAvailable = True
+        End If
+        
+    End If
+    
+    'We now know whether the image is true-color or paletted, and what it's current alpha state is
+    ' (e.g. whether it supports *any* alpha whatsoever).  Keep an eye on these parameters as we
+    ' progress through the function, because they'll be reused when making decisions about export settings.
+    
+    'Interlacing is currently forcibly disabled, as it is unsupported in major web browsers (the images will
+    ' still load but they are not displayed progressively) and it greatly increases file size, especially
+    ' for APNGs.
+    'Dim pngInterlacing As Boolean
+    'pngInterlacing = cParams.GetBool("PNGInterlacing", False)
+    
+    'Background color and chunk creation need to be detected up front, as they must be added to the PNG file
+    ' in a specific order ("After PLTE; before IDAT" per the spec)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString fullParamString
+    
+    m_BkgdColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+    m_EmbedBkgdColor = cParams.GetBool("PNGCreateBkgdChunk", False)
+    
+    'We now know enough (finally) to construct an output color model and suggested bit-depth.  Whew!
+    
+    'Complicated (full) alpha is required
+    If (outputAlphaMode = PDAS_ComplicatedAlpha) Then
+        
+        m_apngTrnsAvailable = True
+        
+        'Simplest combination: full RGBA output
+        If isTrueColor Then
+            outColorType = png_TruecolorAlpha
+            outBitsPerChannel = 8
+            m_apngTrnsAvailable = True
+            m_WriteTrns = False
+            
+        'If true color isn't required, we can get away with a simpler color space
+        Else
+            
+            'We could deal with grayscale images here, but because they have additional restrictions
+            ' that make transparency a pain, it's easier to just identify them as paletted; the end
+            ' display result is identical.
+            outColorType = png_Indexed
+            m_ImgPaletteSafe = True
+            If (m_ImgColorCount <= 2) Then
+                outBitsPerChannel = 1
+            ElseIf (m_ImgColorCount <= 4) Then
+                outBitsPerChannel = 2
+            ElseIf (m_ImgColorCount <= 16) Then
+                outBitsPerChannel = 4
+            Else
+                outBitsPerChannel = 8
+            End If
+            
+            'Make sure a tRNS chunk gets written, as the frames themselves require it!
+            m_apngTrnsAvailable = True
+            m_WriteTrns = True
+            
+        End If
+    
+    'Next, handle images without alpha data in the frames themselves (but which likely has had
+    ' transparency "added" by us, so we can use it during frame optimizations).
+    ElseIf (outputAlphaMode = PDAS_NoAlpha) Then
+        
+        If isTrueColor Then
+            outColorType = png_Truecolor
+            outBitsPerChannel = 8
+            m_WriteTrns = m_apngTrnsAvailable
+        Else
+            
+            outColorType = png_Indexed
+            m_ImgPaletteSafe = True
+            If (m_ImgColorCount <= 2) Then
+                outBitsPerChannel = 1
+            ElseIf (m_ImgColorCount <= 4) Then
+                outBitsPerChannel = 2
+            ElseIf (m_ImgColorCount <= 16) Then
+                outBitsPerChannel = 4
+            Else
+                outBitsPerChannel = 8
+            End If
+            
+            m_WriteTrns = m_apngTrnsAvailable
+            
+        End If
+        
+    'Binary alpha (meaning the image only contains alpha values that are 0 or 255, nothing in-between).
+    ' As APNGs often come from GIF sources, this is a likely outcome and PNG deals with it very well.
+    Else
+        
+        m_WriteTrns = True
+        
+        If isTrueColor Then
+            
+            outColorType = png_Truecolor
+            outBitsPerChannel = 8
+            
+            'This is an insane possibility, but if the animation uses all 16.7 million colors *and*
+            ' has binary transparency, upgrade the image to full 32-bpp output as we don't have a spare
+            ' color available for transparency flagging.
+            If (Not m_apngTrnsAvailable) Then
+                m_apngTrnsAvailable = True
+                m_WriteTrns = True
+                outColorType = png_TruecolorAlpha
+            End If
+            
+        'Not truecolor, which leaves grayscale and indexed modes
+        Else
+            
+            'Grayscale images are treated as indexed images, and indexed image require no
+            ' special treatment.
+            outColorType = png_Indexed
+            m_ImgPaletteSafe = True
+            If (m_ImgColorCount <= 2) Then
+                outBitsPerChannel = 1
+            ElseIf (m_ImgColorCount <= 4) Then
+                outBitsPerChannel = 2
+            ElseIf (m_ImgColorCount <= 16) Then
+                outBitsPerChannel = 4
+            Else
+                outBitsPerChannel = 8
+            End If
+            
+            m_apngTrnsAvailable = True
+            m_WriteTrns = True
+            
+        End If
+    
+    '/End alpha output mode checks
+    End If
+    
+End Sub
+
 'The module-level m_ImgColorCount and m_ImgPalette values must be populated before calling this function.
 Private Sub CountPaletteAlphaEntries(ByRef numNon255Or0 As Long, ByRef numZero As Long)
     
@@ -3396,16 +3776,17 @@ End Function
 
 'Given a 32-bpp source (the source *MUST BE 32-bpp*, but its alpha channel can be constant), fill various critical
 ' pieces of information about the image's color+opacity makeup:
-' 1) netColorCount: an integer on the range [1, 257].  257 = more than 256 unique colors
-' 2) isGrayscale: TRUE if the image consists of only gray shades
-' 3) currentAlphaStatus: custom enum describing the alpha channel contents of the image
+' 1) netColorCount: an integer on the range [1, 257].  257 = more than 256 unique colors, so full RGB output is required
+' 2) isGrayscale: TRUE if the image consists of only gray shades (PNG supports grayscale-only output modes)
+' 3) currentAlphaStatus: custom enum describing the alpha channel contents of the image (determines tRNS viability)
 ' 4) uniqueColors(): if the image contains 256 unique color + opacity combinations (or less), this will return an exact palette
+'                    (important because PNGs allow for full RGBA palettes, unlike GIF)
 '
 'The function as a whole returns TRUE if the source image was scanned correctly; FALSE otherwise.  (FALSE probably means you passed
 ' it a 24-bpp image!)
-Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS, ByRef uniqueColors() As RGBQuad)
+Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Long, ByRef isGrayscale As Boolean, ByRef currentAlphaStatus As PD_ALPHA_STATUS, ByRef uniqueColors() As RGBQuad, Optional ByRef cColorTree As pdColorCount = Nothing, Optional ByVal countAllColors As Boolean = False)
 
-    PDDebug.LogAction "Analyzing image prior to PNG export..."
+    If PNG_DEBUG_VERBOSE And (Not countAllColors) Then PDDebug.LogAction "Analyzing image prior to PNG export..."
     
     Dim srcPixels() As Byte, tmpSA As SafeArray1D
     
@@ -3415,15 +3796,20 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
     If (srcDIB.GetDIBColorDepth = 32) Then pxSize = 4 Else pxSize = 3
     finalX = finalX * pxSize
     
-    'Use a dedicated color counting class to collect a palette for this image.  (Note that in a PNG context,
-    ' "color" means "RGBA quad", not "RGB triplet".)
-    Dim cColorTree As pdColorCount
-    Set cColorTree = New pdColorCount
+    'Use a dedicated color counting class to "collect" a palette for this image.
+    ' (Note that in a PNG context, "color" means "RGBA quad", not "RGB triplet".)
+    Dim numUniqueColors As Long
+    If (cColorTree Is Nothing) Then
+        Set cColorTree = New pdColorCount
+        numUniqueColors = 0
+    Else
+        numUniqueColors = cColorTree.GetUniqueRGBACount()
+    End If
+    
     cColorTree.SetAlphaTracking True
     
     'Total number of unique colors counted so far
-    Dim numUniqueColors As Long, non255Alpha As Boolean, nonBinaryAlpha As Boolean
-    numUniqueColors = 0
+    Dim non255Alpha As Boolean, nonBinaryAlpha As Boolean
     non255Alpha = False
     nonBinaryAlpha = False
     isGrayscale = True
@@ -3456,7 +3842,7 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
         End If
         
         'Until we find at least 257 unique colors, we need to investigate colors more closely
-        If (numUniqueColors <= 256) Then
+        If (numUniqueColors <= 256) Or countAllColors Then
         
             If cColorTree.AddColor(r, g, b, a) Then numUniqueColors = numUniqueColors + 1
             
@@ -3471,10 +3857,14 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
         
         'If an image looks grayscale (so far), or if we haven't found alpha values other than 0 and 255,
         ' or we haven't found more than 256 unique colors, we need to keep scanning the image.
-        If (Not isGrayscale) And nonBinaryAlpha And (numUniqueColors > 256) Then Exit For
+        If (Not countAllColors) Then
+            If (Not isGrayscale) And nonBinaryAlpha And (numUniqueColors > 256) Then Exit For
+        End If
         
     Next x
-        If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
+        If (Not countAllColors) Then
+            If (numUniqueColors > 256) And nonBinaryAlpha Then Exit For
+        End If
     Next y
     
     srcDIB.UnwrapArrayFromDIB srcPixels
@@ -3482,7 +3872,7 @@ Private Sub Export_AnalyzeImage(ByRef srcDIB As pdDIB, ByRef netColorCount As Lo
     netColorCount = numUniqueColors
     
     'Further checks are only relevant if the image contains 256 colors or less
-    If (numUniqueColors <= 256) Then
+    If (numUniqueColors <= 256) And (Not countAllColors) Then
         
         'Retrieve the current color palette for this image
         cColorTree.GetPalette uniqueColors
@@ -3649,23 +4039,23 @@ Friend Function ExportStep3_FilterBytes(ByRef cStream As pdStream, ByRef srcImag
     
     'RGBA data
     If (m_Header.ColorType = png_TruecolorAlpha) Then
-        ExportStep3_FilterBytes = Step3Helper_TruecolorAlpha(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
+        ExportStep3_FilterBytes = Step3Helper_TruecolorAlpha(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, writeAncillaryChunks)
         
     'RGB data
     ElseIf (m_Header.ColorType = png_Truecolor) Then
-        ExportStep3_FilterBytes = Step3Helper_Truecolor(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
+        ExportStep3_FilterBytes = Step3Helper_Truecolor(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, writeAncillaryChunks)
         
     'Grayscale
     ElseIf (m_Header.ColorType = png_Greyscale) Then
-        ExportStep3_FilterBytes = Step3Helper_Grayscale(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
+        ExportStep3_FilterBytes = Step3Helper_Grayscale(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, writeAncillaryChunks)
         
     'Greyscale + alpha
     ElseIf (m_Header.ColorType = png_GreyscaleAlpha) Then
-        ExportStep3_FilterBytes = Step3Helper_GrayscaleAlpha(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
+        ExportStep3_FilterBytes = Step3Helper_GrayscaleAlpha(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, writeAncillaryChunks)
         
     'Indexed
     ElseIf (m_Header.ColorType = png_Indexed) Then
-        ExportStep3_FilterBytes = Step3Helper_Indexed(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride)
+        ExportStep3_FilterBytes = Step3Helper_Indexed(srcImage, cStream, finalBytes, sizeOfPngBytes, dstStride, writeAncillaryChunks)
     
     End If
     
