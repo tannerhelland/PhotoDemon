@@ -993,7 +993,7 @@ Public Function ExportGIF_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
                 ' previous frame's colors will "show through" the transparent regions of this frame.)
                 If (i > 0) Then
                 
-                    frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, tmpLayer.layerDIB, trnsTable, tmpLayer.layerDIB.GetDIBWidth, tmpLayer.layerDIB.GetDIBHeight)
+                    frameData(i - 1).frameMustBeCleared = DIBs.CheckAlpha_DuplicatePixels(curStateDIB, tmpLayer.layerDIB, trnsTable)
                     If frameData(i - 1).frameMustBeCleared Then
                         curStateDIB.ResetDIB 0
                     Else
@@ -1923,7 +1923,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 
             Dim cPNG As pdPNG
             Set cPNG = New pdPNG
-            imgSavedOK = (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
+            imgSavedOK = (cPNG.SavePNG_ToFile(dstFile, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
             
         End If
         
@@ -1949,7 +1949,7 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     On Error GoTo ExportPNGError
     
     ExportPNG_Animated = False
-    Dim sFileType As String: sFileType = "PNG"
+    Dim sFileType As String: sFileType = "APNG"
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -1960,22 +1960,38 @@ Public Function ExportPNG_Animated(ByRef srcPDImage As pdImage, ByVal dstFile As
     Dim pngCompressionLevel As Long
     pngCompressionLevel = cParams.GetLong("compression-level", 9)
     
-    Dim imgSavedOK As Boolean
-    imgSavedOK = False
-    
-    'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
-    ' and format coverage than either FreeImage or GDI+.
-    If (Not imgSavedOK) Then
-        
-        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-            
-        Dim cPNG As pdPNG
-        Set cPNG = New pdPNG
-        imgSavedOK = (cPNG.SaveAPNG_ToFile(dstFile, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
-        
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Dim cRandom As pdRandomize
+        Set cRandom = New pdRandomize
+        cRandom.SetSeed_AutomaticAndRandom
+        tmpFilename = dstFile & Hex$(cRandom.GetRandomInt_WH()) & ".pdtmp"
+    Else
+        tmpFilename = dstFile
     End If
     
-    ExportPNG_Animated = imgSavedOK
+    'PD uses its own custom-built PNG encoder to create APNG files.  (Neither FreeImage nor GDI+ support APNGs,
+    ' and we use a comprehensive optimization tree that produces much better files than those would anyway! ;)
+    PDDebug.LogAction "Using internal PNG encoder for this operation..."
+        
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    ExportPNG_Animated = (cPNG.SaveAPNG_ToFile(tmpFilename, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams) < png_Failure)
+    
+    'If we wrote the APNG to a temp file, attempt to replace the original file with it now
+    If ExportPNG_Animated And Strings.StringsNotEqual(dstFile, tmpFilename) Then
+        
+        ExportPNG_Animated = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+        
+        If (Not ExportPNG_Animated) Then
+            Files.FileDelete tmpFilename
+            PDDebug.LogAction "WARNING!  ImageExporter could not overwrite APNG file; original file is likely open elsewhere."
+        End If
+        
+    End If
     
     Exit Function
     

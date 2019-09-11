@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.121</langversion>
+<langversion>1.0.122</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -4653,7 +4653,12 @@ P数値を入力してください。</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdPNG.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>Analyzing animation frame %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdPNG.cls-->
 
@@ -16185,10 +16190,10 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2699</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4981 phrases. -->
-<!-- 2282 are duplicates, so only 2699 unique phrases have been written to file. -->
-<!-- These 2699 phrases contain approximately 12695 total words. -->
+<!-- As of this build, PhotoDemon contains 4982 phrases. -->
+<!-- 2282 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

@@ -878,25 +878,23 @@ Public Function ApplyAlpha_DuplicatePixels(ByRef topDIB As pdDIB, ByRef bottomDI
     If (topDIB.GetDIBColorDepth = 32) And (bottomDIB.GetDIBColorDepth = 32) Then
     If (topDIB.GetDIBDC <> 0) And (topDIB.GetDIBWidth <> 0) And (topDIB.GetDIBHeight <> 0) Then
     If (bottomDIB.GetDIBDC <> 0) And (bottomDIB.GetDIBWidth <> 0) And (bottomDIB.GetDIBHeight <> 0) Then
-    If (topOffsetX < bottomDIB.GetDIBWidth) And (topOffsetY < bottomDIB.GetDIBHeight) Then
+    If (topOffsetX + topDIB.GetDIBWidth <= bottomDIB.GetDIBWidth) And (topOffsetY + topDIB.GetDIBHeight <= bottomDIB.GetDIBHeight) Then
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
-        finalX = (bottomDIB.GetDIBWidth - 1)
-        finalY = (bottomDIB.GetDIBHeight - 1)
-        If (finalX > (topDIB.GetDIBWidth + topOffsetX - 1)) Then finalX = topDIB.GetDIBWidth + topOffsetX - 1
-        If (finalY > (topDIB.GetDIBHeight + topOffsetY - 1)) Then finalY = topDIB.GetDIBHeight + topOffsetY - 1
+        finalX = (topDIB.GetDIBWidth - 1)
+        finalY = (topDIB.GetDIBHeight - 1)
         
         Dim srcDataTop() As Long, tmpSATop As SafeArray1D
         Dim srcDataBottom() As Long, tmpSABottom As SafeArray1D
         
         'Loop through the image, checking alphas as we go
-        For y = topOffsetY To finalY
-            topDIB.WrapLongArrayAroundScanline srcDataTop, tmpSATop, y - topOffsetY
-            bottomDIB.WrapLongArrayAroundScanline srcDataBottom, tmpSABottom, y
-        For x = topOffsetX To finalX
+        For y = 0 To finalY
+            topDIB.WrapLongArrayAroundScanline srcDataTop, tmpSATop, y
+            bottomDIB.WrapLongArrayAroundScanline srcDataBottom, tmpSABottom, y + topOffsetY
+        For x = 0 To finalX
             
             'Make matching pixels transparent
-            If srcDataTop(x - topOffsetX) = srcDataBottom(x) Then dstTransparencyTable(x - topOffsetX, y - topOffsetY) = 0
+            If srcDataTop(x) = srcDataBottom(x + topOffsetX) Then dstTransparencyTable(x, y) = 0
             
         Next x
         Next y
@@ -929,42 +927,42 @@ End Function
 '         previous frame if this function returns TRUE.
 '
 'Note that - by design - this function does not modify any of the input parameters.  They are all CONST.
-Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, ByRef trnsTable() As Byte, ByVal trnsTableWidth As Long, ByVal trnsTableHeight As Long, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
+Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, ByRef trnsTable() As Byte, Optional ByVal topOffsetX As Long = 0, Optional ByVal topOffsetY As Long = 0) As Boolean
     
     CheckAlpha_DuplicatePixels = False
     
-    If (bottomDIB Is Nothing) Then Exit Function
+    If (bottomDIB Is Nothing) Then
+        Debug.Print "dib is nothing"
+        Exit Function
+    End If
     
     'Additional failsafe checks
     If (bottomDIB.GetDIBColorDepth = 32) Then
     If (bottomDIB.GetDIBDC <> 0) And (bottomDIB.GetDIBWidth <> 0) And (bottomDIB.GetDIBHeight <> 0) Then
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
-        finalX = (bottomDIB.GetDIBWidth - 1)
-        finalY = (bottomDIB.GetDIBHeight - 1)
-        If (finalX > (trnsTableWidth + topOffsetX - 1)) Then finalX = trnsTableWidth + topOffsetX - 1
-        If (finalY > (trnsTableHeight + topOffsetY - 1)) Then finalY = trnsTableHeight + topOffsetY - 1
+        finalX = (topDIB.GetDIBWidth - 1)
+        finalY = (topDIB.GetDIBHeight - 1)
         
         Dim bottomPixels() As Byte, tmpSA1 As SafeArray1D
         Dim topPixels() As Byte, tmpSA2 As SafeArray1D
         
         Dim xCheck As Long
-        Dim chkAlpha As Byte
         
         'Loop through the image, checking alphas as we go
-        For y = topOffsetY To finalY
-            bottomDIB.WrapArrayAroundScanline bottomPixels, tmpSA1, y
-            topDIB.WrapArrayAroundScanline topPixels, tmpSA2, y - topOffsetY
-        For x = topOffsetX To finalX
+        For y = 0 To finalY
+            bottomDIB.WrapArrayAroundScanline bottomPixels, tmpSA1, y + topOffsetY
+            topDIB.WrapArrayAroundScanline topPixels, tmpSA2, y
+        For x = 0 To finalX
             
             'If the top image has any amount of transparency in this pixel, but the bottom image
             ' *does not*, exit immediately.
-            If (trnsTable(x - topOffsetX, y - topOffsetY) < 255) And (bottomPixels(x * 4 + 3) <> 0) Then
+            If (trnsTable(x, y) < 255) And (bottomPixels((x + topOffsetX) * 4 + 3) <> 0) Then
                 
                 'Also confirm that the pixels in both positions are *not* identical (because if they are,
                 ' they will be getting blanked anyway!)
-                xCheck = (x - topOffsetX) * 4
-                If (topPixels(xCheck) <> bottomPixels(x * 4)) Or (topPixels(xCheck + 1) <> bottomPixels(x * 4 + 1)) Or (topPixels(xCheck + 2) <> bottomPixels(x * 4 + 2)) Or (topPixels(xCheck + 3) <> bottomPixels(x * 4 + 3)) Then
+                xCheck = (x + topOffsetX) * 4
+                If (topPixels(x * 4) <> bottomPixels(xCheck)) Or (topPixels(x * 4 + 1) <> bottomPixels(xCheck + 1)) Or (topPixels(x * 4 + 2) <> bottomPixels(xCheck + 2)) Or (topPixels(x * 4 + 3) <> bottomPixels(xCheck + 3)) Then
                     topDIB.UnwrapArrayFromDIB topPixels
                     bottomDIB.UnwrapArrayFromDIB bottomPixels
                     CheckAlpha_DuplicatePixels = True
@@ -979,7 +977,11 @@ Public Function CheckAlpha_DuplicatePixels(ByRef bottomDIB As pdDIB, ByRef topDI
         bottomDIB.UnwrapArrayFromDIB bottomPixels
         
     'Failsafe checks
+    Else
+        Debug.Print "bad DC or dimensions"
     End If
+    Else
+        Debug.Print "bad color depth"
     End If
     
 End Function
@@ -2151,8 +2153,15 @@ Public Function GetRectOfInterest_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB
     
     GetRectOfInterest_Overlay = False
     
-    If (topDIB Is Nothing) Or (bottomDIB Is Nothing) Then Exit Function
-    If (topDIB.GetDIBWidth <> bottomDIB.GetDIBWidth) Or (topDIB.GetDIBHeight <> bottomDIB.GetDIBHeight) Then Exit Function
+    If (topDIB Is Nothing) Or (bottomDIB Is Nothing) Then
+        PDDebug.LogAction "GetRectOfInterest_Overlay failed!  Top or bottom DIB was empty!"
+        Exit Function
+    End If
+    
+    If (topDIB.GetDIBWidth <> bottomDIB.GetDIBWidth) Or (topDIB.GetDIBHeight <> bottomDIB.GetDIBHeight) Then
+        PDDebug.LogAction "GetRectOfInterest_Overlay failed!  Top and bottom DIB sizes don't match ! (" & topDIB.GetDIBWidth & ", " & bottomDIB.GetDIBWidth & ", " & topDIB.GetDIBHeight & ", " & bottomDIB.GetDIBHeight & ")"
+        Exit Function
+    End If
     
     'The image will be analyzed in four steps.  Each edge will be analyzed separately, starting with the top.
     

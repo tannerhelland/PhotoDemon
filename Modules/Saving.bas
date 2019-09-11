@@ -740,11 +740,13 @@ Public Function QuickSaveDIBAsPNG(ByRef dstFilename As String, ByRef srcDIB As p
     'Perform a few failsafe checks
     If (srcDIB Is Nothing) Then
         QuickSaveDIBAsPNG = False
+        PDDebug.LogAction "Can't save null PNG!"
         Exit Function
     End If
     
     If (srcDIB.GetDIBWidth = 0) Or (srcDIB.GetDIBHeight = 0) Then
         QuickSaveDIBAsPNG = False
+        PDDebug.LogAction "Can't save zero-width/height PNG!"
         Exit Function
     End If
     
