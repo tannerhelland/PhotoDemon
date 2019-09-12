@@ -1,18 +1,51 @@
 # PhotoDemon 7.2 pre-alpha
 
+### PhotoDemon is a portable photo editor focused on performance and usability. 
+
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-### PhotoDemon is a portable photo editor focused on performance and usability.  
+It provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick or portable drive.
 
-It provides a comprehensive photo editor in a 12 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick or portable drive.
+PhotoDemon is open-source and available under a permissive BSD license.  Contributors have translated the program into more than twenty languages.
 
-PhotoDemon is completely open-source and available under a permissive BSD license.  Contributors have translated the program into more than twenty languages.
+You can support its ongoing development [through Patreon](https://www.patreon.com/photodemon) or [with a one-time donation](https://photodemon.org/donate/).
 
 New contributions from coders, designers, translators, and enthusiasts are always welcome.
 
 * For information on the latest stable release, visit https://photodemon.org
 * To download the program's source code, visit https://github.com/tannerhelland/PhotoDemon
 * To download a nightly build of the latest source code, visit https://photodemon.org/download/
+
+***
+
+## What's new in this release
+
+[Current developer builds](https://photodemon.org/download/) offer the following improvements over the 7.0.1 stable release:
+
+- Comprehensive support for [Adobe Photoshop (PSD) files](https://photodemon.org/2019/02/20/psd-support-now-available.html) and their open-source equivalent, OpenRaster (ORA) files
+- Comprehensive support for [animated PNG and GIF files](https://github.com/tannerhelland/PhotoDemon/issues/278)
+- New [custom-built PNG engine](https://github.com/tannerhelland/PhotoDemon/commit/8206ae38831bc095afa49556420bbb7d5c15778f) with a fully integrated color-mangement pipeline; the engine also [auto-optimizes PNGs losslessly](https://github.com/tannerhelland/PhotoDemon/commit/10c78b3cc12c7e99af49d1667f5d8887b99a054c) for maximum file size reductions, with additional options for lossy quantization (similar to [pngquant](https://pngquant.org/)).
+- Main UI support for viewing animated images
+- New best-in-class [gradient tool](https://www.patreon.com/posts/photodemons-new-26199115) and gradient editor
+- Main UI now provides [a search bar](https://www.patreon.com/posts/photodemon-now-26904685) for locating features and tools
+- Main UI now provides [on-canvas rulers](https://www.patreon.com/posts/canvas-rulers-to-19178070)
+- New on-canvas [measure tool](https://www.patreon.com/posts/how-to-use-new-7-20466383) with support for auto-straightening the image
+- New [Effects > Render menu](https://www.patreon.com/posts/photodemon-7-2-29679659) with Clouds and Fibers tools.
+- Macros can now be [automatically created from session history](https://github.com/tannerhelland/PhotoDemon/issues/265)
+- [Many](https://github.com/tannerhelland/PhotoDemon/issues/244) [improvements](https://github.com/tannerhelland/PhotoDemon/issues/243) to [keyboard](https://github.com/tannerhelland/PhotoDemon/commit/730f2ebe7a8121e7c5c633ce7b3ff7aea01dc273) [navigation](https://github.com/tannerhelland/PhotoDemon/issues/277)
+- All-new [digital palette features](https://www.patreon.com/posts/how-to-use-new-7-19823148), including import/export support for all major palette file formats (Adobe PhotoShop, PaintShop Pro, Paint.NET, GIMP, JASC)
+- Color selector now provides a [palette UI mode](https://github.com/tannerhelland/PhotoDemon/commit/904b1c6d5b72a9e4488648f50bcebe6bb51a2080) for selecting colors from a palette file
+- Right-side UI panels are now user-resizable
+- Improved [auto-correct and auto-enhance tools](https://github.com/tannerhelland/PhotoDemon/commit/1800489ce2f59277833b2eebd5319139ab7050cc)
+- Input boxes now support [simple math equations](https://github.com/tannerhelland/PhotoDemon/issues/263)
+- Selection tools now support [locked aspect ratios](https://github.com/tannerhelland/PhotoDemon/commit/d263e3bb3777db27ae1953bd15b25d299b96fc08) for easier cropping
+- New Layer > Split menu for automatically splitting layers into individual images, or merging separate images into a single layered image
+- Disk I/O tasks have been moved to a new [memory-mapped interface](https://en.wikipedia.org/wiki/Memory-mapped_file), improving performance when e.g. loading/saving image files
+- Saved presets on all tools can now be edited, deleted, and rearranged from within the tool UI
+- Users on stable builds can now invoke PD's internal debug tool, and the debugger will also auto-start (if user preferences allow) when it detects a program crash
+- Numerous bug-fixes, memory reductions, and performance improvements
+
+For a full list of changes, please consult [the commit log](https://github.com/tannerhelland/PhotoDemon/commits/master).
 
 ***
 
