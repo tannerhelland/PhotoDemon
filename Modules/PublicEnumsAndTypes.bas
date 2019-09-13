@@ -377,7 +377,7 @@ Public Enum PD_UPDATE_FREQUENCY
 End Enum
 
 #If False Then
-    Private Const PDUF_DAILY = 0, PDUF_WEEKLY = 1, PDUF_MONTHLY = 2, PDUF_NEVER = 3
+    Private Const PDUF_EACH_SESSION = 0, PDUF_WEEKLY = 1, PDUF_MONTHLY = 2, PDUF_NEVER = 3
 #End If
 
 Public Enum PD_UpdateTrack

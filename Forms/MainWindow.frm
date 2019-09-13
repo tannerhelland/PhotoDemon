@@ -1962,7 +1962,28 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             End If
             
         Else
-            PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & AsyncDownloader.GetLastErrorNumber & " - " & AsyncDownloader.GetLastErrorDescription
+            
+            'If the update check fails on XP due to known secure channel issues - error 0x80072F7D -
+            ' display a meaningful message to the user.
+            If (AsyncDownloader.GetLastErrorNumber = -2147012739) Then
+                
+                PDDebug.LogAction "Can't download update file; Windows XP is likely the problem."
+                
+                Dim xpErrorMsg As pdString
+                Set xpErrorMsg = New pdString
+                xpErrorMsg.AppendLine "Unfortunately, PhotoDemon is unable to check for updates.  This copy of Windows lacks the necessary security protocol (TLS 1.2) to securely connect to the update server."
+                xpErrorMsg.AppendLineBreak
+                xpErrorMsg.AppendLine "To protect your privacy and safety, PhotoDemon will not auto-update without a secure connection.  If you are using Windows 7 or later, please run Windows Update to ensure that all security patches have been applied to this PC."
+                xpErrorMsg.AppendLineBreak
+                xpErrorMsg.AppendLine "If you are using Windows XP, Microsoft has unfortunately chosen not to provide an update with these security features.  You will need to manually download new versions of PhotoDemon from photodemon.org using a secure 3rd-party web browser (like Mozilla Firefox)."
+                xpErrorMsg.AppendLineBreak
+                xpErrorMsg.Append "(To prevent this message from interrupting you again, PhotoDemon will now deactivate automatic updates.  You can always reactivate this feature from the Tools > Options menu.)"
+                UserPrefs.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
+                PDMsgBox xpErrorMsg.ToString(), vbInformation Or vbOKOnly Or vbApplicationModal, "Updates unavailable"
+                
+            Else
+                PDDebug.LogAction "Update file was not downloaded.  asyncDownloader returned this error message: " & AsyncDownloader.GetLastErrorNumber & " - " & AsyncDownloader.GetLastErrorDescription
+            End If
         End If
     
     'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
