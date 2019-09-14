@@ -2660,7 +2660,7 @@ Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
             toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT, True, True
         
         Case "tool_pencil"
-            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH, True, True
+            toolbar_Toolbox.SelectNewTool PAINT_PENCIL, True, True
         
         Case "tool_paintbrush"
             toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH, True, True

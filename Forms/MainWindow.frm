@@ -2529,7 +2529,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         ElseIf Strings.StringsEqual(keyName, "tool_activate_text", True) Then
             If (g_CurrentTool = VECTOR_TEXT) Then toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT Else toolbar_Toolbox.SelectNewTool VECTOR_TEXT
         ElseIf Strings.StringsEqual(keyName, "tool_activate_pencil", True) Then
-            toolbar_Toolbox.SelectNewTool PAINT_BASICBRUSH
+            toolbar_Toolbox.SelectNewTool PAINT_PENCIL
         ElseIf Strings.StringsEqual(keyName, "tool_activate_brush", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
         ElseIf Strings.StringsEqual(keyName, "tool_activate_eraser", True) Then
@@ -2895,6 +2895,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Destroy all paint-related resources
     PDDebug.LogAction "Destroying paint tool resources..."
     Tools_Paint.FreeBrushResources
+    Tools_Pencil.FreeBrushResources
     Tools_Fill.FreeFillResources
         
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
@@ -2940,7 +2941,7 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
         Unload toolpanel_FancyText
         Set toolpanel_FancyText = Nothing
-    ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Then
+    ElseIf (g_CurrentTool = PAINT_PENCIL) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
         Unload toolpanel_Pencil
         Set toolpanel_Pencil = Nothing

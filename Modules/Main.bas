@@ -341,6 +341,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     g_Resources.NotifyThemeChange
     Drawing.CacheUIPensAndBrushes
     Tools_Paint.InitializeBrushEngine
+    Tools_Pencil.InitializeBrushEngine
     Selections.InitializeSelectionRendering
     
     '*************************************************************************************************************************************

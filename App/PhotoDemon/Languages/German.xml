@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1375</langversion>
-<langstatus>Complete</langstatus>
+<langversion>7.2.1409</langversion>
+<langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -610,7 +610,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation>Mehrseitiges Bild gefunden. Geladen wird Seite #%1 von %2</translation>
+<translation>Mehrseitiges Bild gefunden. Seite #%1 von %2 wird geladen</translation>
 </phrase>
 
 <phrase>
@@ -631,7 +631,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Analyzing image histogram for maximum and minimum values</original>
-<translation>Bildhistogramm wird auf maximale und minimale Werte analysiert</translation>
+<translation>Bildhistogramm wird für maximale und minimale Werte analysiert</translation>
 </phrase>
 
 <phrase>
@@ -4657,12 +4657,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
+<translation>Animations-Frame %1 von %2 wird optimiert</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation></translation>
+<translation>Animations-Frame %1 von %2 wird analysiert</translation>
 </phrase>
 
 <!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6776,6 +6776,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>Updates unavailable</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
 <translation>Asynchrone Metadaten-Prüfung abgeschlossen! Aktualisierung der Metadaten-Sammlung</translation>
 </phrase>
@@ -6800,7 +6805,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 354 phrases. 161 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 355 phrases. 161 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11352,7 +11357,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Verarbeitet wird Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
+<translation>Datei %1 von %2 wird verarbeitet (%3 Reparaturen durchgeführt)</translation>
 </phrase>
 
 <phrase>
@@ -11889,7 +11894,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Processing image # %1 of %2</original>
-<translation>Verarbeitet wird Bild # %1 von %2</translation>
+<translation>Bild # %1 von %2 wird verarbeitet</translation>
 </phrase>
 
 <phrase>
@@ -12913,7 +12918,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>lossy optimization is provided by pngquant</original>
-<translation>Verlustbehaftete Optimierung wird von pngquant bereitgestellt</translation>
+<translation>Verlustbehaftete Optimierung wird bereitgestellt von pngquant</translation>
 </phrase>
 
 <phrase>
@@ -12953,7 +12958,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>lossless optimization is provided by OptiPNG</original>
-<translation>Verlustfreie Optimierung wird von OptiPNG bereitgestellt</translation>
+<translation>Verlustfreie Optimierung wird bereitgestellt von OptiPNG</translation>
 </phrase>
 
 <phrase>
@@ -13018,7 +13023,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße bis %1.</translation>
+<translation>Diese verlustbehafteten Optimierungseinstellungen reduzieren die Dateigröße um %1.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 47 phrases. 17 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
@@ -15084,12 +15089,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Automatic translation warning</original>
-<translation>Warnung zur automatischen Übersetzung</translation>
+<translation>Automatische Übersetzungswarnung</translation>
 </phrase>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>Verarbeitet wird Textpassage %1 von %2</translation>
+<translation>Textpassage %1 von %2 wird verarbeitet</translation>
 </phrase>
 
 <phrase>
@@ -15099,7 +15104,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die vorhandene Arbeit ist autom. gespeichert worden.</translation>
+<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt hat Reagieren gestoppt). Die bestehende Arbeit ist autom. gespeichert worden.</translation>
 </phrase>
 
 <phrase>
@@ -16197,12 +16202,29 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPaintbrush.cls -->
+
+<!-- pdPaintbrush.cls contains 0 phrases. -->
+
+<!-- END text for pdPaintbrush.cls-->
+
+<!-- BEGIN text for PencilTool.bas -->
+
+<phrase>
+<original>Pencil stroke</original>
+<translation></translation>
+</phrase>
+
+<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for PencilTool.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4982 phrases. -->
-<!-- 2282 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 12699 total words. -->
+<!-- As of this build, PhotoDemon contains 4987 phrases. -->
+<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 12703 total words. -->
 
 </pdData>

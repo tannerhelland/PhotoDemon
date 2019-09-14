@@ -152,8 +152,11 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                     Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, localViewportParams.curPOI
                 End If
                     
-            'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
-            ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
+            'Pencil and brush tools use the brush engine to paint a custom brush outline at the current mouse position
+            ElseIf (g_CurrentTool = PAINT_PENCIL) Then
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Pencil.RenderBrushOutline dstCanvas
+                
+            ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Paint.RenderBrushOutline dstCanvas
             
             'Fill tools also render a custom cursor

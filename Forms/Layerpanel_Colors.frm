@@ -399,7 +399,10 @@ Private Sub RelayColorChange(ByVal newColor As Long)
     'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
     Select Case g_CurrentTool
     
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
+        Case PAINT_PENCIL
+            Tools_Pencil.SetBrushSourceColor newColor
+        
+        Case PAINT_SOFTBRUSH
             Tools_Paint.SetBrushSourceColor newColor
             
         Case PAINT_FILL

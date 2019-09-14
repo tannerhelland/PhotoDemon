@@ -266,6 +266,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         If Strings.StringsEqual(processID, "Paint stroke", True) Then
             processFound = True
         
+        ElseIf Strings.StringsEqual(processID, "Pencil stroke", True) Then
+            processFound = True
+            
         ElseIf Strings.StringsEqual(processID, "Fill tool", True) Then
             processFound = True
             

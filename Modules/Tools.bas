@@ -548,7 +548,7 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
         
         'Paint tools are handled as a special case
         Dim toolIsPaint As Boolean
-        toolIsPaint = (g_CurrentTool = PAINT_BASICBRUSH) Or (g_CurrentTool = PAINT_SOFTBRUSH)
+        toolIsPaint = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH)
         toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
         toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_GRADIENT)
         
@@ -569,7 +569,13 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
             'If the active image has changed, or the image state has changed enough to warrant
             ' creating a new scratch layer, we also need to reset some other paint tool parameters
             ' (such as last stroke position tracking)
-            If activeImageChanged Or scratchLayerResetRequired Then Tools_Paint.NotifyActiveImageChanged
+            If activeImageChanged Or scratchLayerResetRequired Then
+                If (g_CurrentTool = PAINT_PENCIL) Then
+                    Tools_Pencil.NotifyActiveImageChanged
+                ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
+                    Tools_Paint.NotifyActiveImageChanged
+                End If
+            End If
             
         Else
             

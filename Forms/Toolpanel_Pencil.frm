@@ -133,11 +133,11 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
         'Blend mode
         Case 0
-            Tools_Paint.SetBrushBlendMode cboBrushSetting(Index).ListIndex
+            Tools_Pencil.SetBrushBlendMode cboBrushSetting(Index).ListIndex
         
         'Alpha mode
         Case 1
-            Tools_Paint.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
+            Tools_Pencil.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
             
     End Select
     
@@ -145,9 +145,9 @@ End Sub
 
 Private Sub chkAntialiasing_Click()
     If chkAntialiasing.Value Then
-        Tools_Paint.SetBrushAntialiasing P2_AA_HighQuality
+        Tools_Pencil.SetBrushAntialiasing P2_AA_HighQuality
     Else
-        Tools_Paint.SetBrushAntialiasing P2_AA_None
+        Tools_Pencil.SetBrushAntialiasing P2_AA_None
     End If
 End Sub
 
@@ -194,31 +194,31 @@ Private Sub sltBrushSetting_Change(Index As Integer)
     
         'Radius
         Case 0
-            Tools_Paint.SetBrushSize sltBrushSetting(Index).Value
+            Tools_Pencil.SetBrushSize sltBrushSetting(Index).Value
         
         'Opacity
         Case 1
-            Tools_Paint.SetBrushOpacity sltBrushSetting(Index).Value
+            Tools_Pencil.SetBrushOpacity sltBrushSetting(Index).Value
     
     End Select
     
 End Sub
 
 'If you want to set all paintbrush settings at once, use this function
-Public Sub SyncAllPaintbrushSettingsToUI()
-    Tools_Paint.SetBrushSize sltBrushSetting(0).Value
-    Tools_Paint.SetBrushOpacity sltBrushSetting(1).Value
-    Tools_Paint.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
-    Tools_Paint.SetBrushBlendMode cboBrushSetting(0).ListIndex
-    Tools_Paint.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If chkAntialiasing.Value Then Tools_Paint.SetBrushAntialiasing P2_AA_HighQuality Else Tools_Paint.SetBrushAntialiasing P2_AA_None
+Public Sub SyncAllPencilSettingsToUI()
+    Tools_Pencil.SetBrushSize sltBrushSetting(0).Value
+    Tools_Pencil.SetBrushOpacity sltBrushSetting(1).Value
+    Tools_Pencil.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
+    Tools_Pencil.SetBrushBlendMode cboBrushSetting(0).ListIndex
+    Tools_Pencil.SetBrushAlphaMode cboBrushSetting(1).ListIndex
+    If chkAntialiasing.Value Then Tools_Pencil.SetBrushAntialiasing P2_AA_HighQuality Else Tools_Pencil.SetBrushAntialiasing P2_AA_None
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
-Public Sub SyncUIToAllPaintbrushSettings()
-    sltBrushSetting(0).Value = Tools_Paint.GetBrushSize
-    sltBrushSetting(1).Value = Tools_Paint.GetBrushOpacity
-    cboBrushSetting(0).ListIndex = Tools_Paint.GetBrushBlendMode()
-    cboBrushSetting(1).ListIndex = Tools_Paint.GetBrushAlphaMode()
-    chkAntialiasing.Value = (Tools_Paint.GetBrushAntialiasing = P2_AA_HighQuality)
+Public Sub SyncUIToAllPencilSettings()
+    sltBrushSetting(0).Value = Tools_Pencil.GetBrushSize
+    sltBrushSetting(1).Value = Tools_Pencil.GetBrushOpacity
+    cboBrushSetting(0).ListIndex = Tools_Pencil.GetBrushBlendMode()
+    cboBrushSetting(1).ListIndex = Tools_Pencil.GetBrushAlphaMode()
+    chkAntialiasing.Value = (Tools_Pencil.GetBrushAntialiasing = P2_AA_HighQuality)
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.134</langversion>
+<langversion>1.0.135</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6768,6 +6768,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Updates unavailable</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
 <translation>अतुल्यकालिक मेटाडेटा जांच पूर्ण! मेटाडेटा संग्रहण अपडेट करना</translation>
 </phrase>
@@ -6792,7 +6797,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>भाषा सफलतापूर्वक बदल गई</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 354 phrases. 161 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 355 phrases. 161 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16190,12 +16195,29 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPaintbrush.cls -->
+
+<!-- pdPaintbrush.cls contains 0 phrases. -->
+
+<!-- END text for pdPaintbrush.cls-->
+
+<!-- BEGIN text for PencilTool.bas -->
+
+<phrase>
+<original>Pencil stroke</original>
+<translation></translation>
+</phrase>
+
+<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for PencilTool.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4982 phrases. -->
-<!-- 2282 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 12699 total words. -->
+<!-- As of this build, PhotoDemon contains 4987 phrases. -->
+<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 12703 total words. -->
 
 </pdData>

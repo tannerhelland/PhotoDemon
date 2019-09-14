@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>svenska</langname>
-<langversion>6.8.3414</langversion>
+<langversion>6.8.3415</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -6766,6 +6766,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Updates unavailable</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
 <translation>Asynkrona metadata Kontroll slutförd! Uppdaterar metadata insamling</translation>
 </phrase>
@@ -6790,7 +6795,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <translation>Språk ändrats.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 354 phrases. 161 were duplicates of existing phrases, so only 193 new phrases were written to file. -->
+<!-- MainWindow.frm contains 355 phrases. 161 were duplicates of existing phrases, so only 194 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -16188,12 +16193,29 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdPaintbrush.cls -->
+
+<!-- pdPaintbrush.cls contains 0 phrases. -->
+
+<!-- END text for pdPaintbrush.cls-->
+
+<!-- BEGIN text for PencilTool.bas -->
+
+<phrase>
+<original>Pencil stroke</original>
+<translation></translation>
+</phrase>
+
+<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for PencilTool.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2700</phrasecount>
+<phrasecount>2702</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4982 phrases. -->
-<!-- 2282 are duplicates, so only 2700 unique phrases have been written to file. -->
-<!-- These 2700 phrases contain approximately 12699 total words. -->
+<!-- As of this build, PhotoDemon contains 4987 phrases. -->
+<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
+<!-- These 2702 phrases contain approximately 12703 total words. -->
 
 </pdData>

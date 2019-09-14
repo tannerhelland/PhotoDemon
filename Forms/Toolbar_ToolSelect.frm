@@ -736,7 +736,7 @@ Private Sub ReflowToolboxLayout()
     
     'Paint group
     PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
-    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_GRADIENT, hOffset, vOffset
+    ReflowButtonSet 5, True, PAINT_PENCIL, PAINT_GRADIENT, hOffset, vOffset
     
     'Macro recording message
     If (vOffset < cmdTools(cmdTools.UBound).GetTop + cmdTools(cmdTools.UBound).GetHeight) Then
@@ -862,18 +862,15 @@ Private Sub NewToolSelected()
                 
             End If
         
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER
             
             'Synchronize all brush settings to the current UI
-            If (g_CurrentTool = PAINT_BASICBRUSH) Then
-                toolpanel_Pencil.SyncAllPaintbrushSettingsToUI
-                Tools_Paint.SetBrushStyle BS_Pencil
+            If (g_CurrentTool = PAINT_PENCIL) Then
+                toolpanel_Pencil.SyncAllPencilSettingsToUI
             ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
                 toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
-                Tools_Paint.SetBrushStyle BS_SoftBrush
             ElseIf (g_CurrentTool = PAINT_ERASER) Then
                 toolpanel_Eraser.SyncAllPaintbrushSettingsToUI
-                Tools_Paint.SetBrushStyle BS_SoftBrush
             End If
             
         Case PAINT_FILL
@@ -984,7 +981,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_FancyText.hWnd
         
         'Paint tools
-        Case PAINT_BASICBRUSH
+        Case PAINT_PENCIL
             Load toolpanel_Pencil
             toolpanel_Pencil.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Pencil
@@ -1308,7 +1305,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(VECTOR_TEXT).AssignImage "text_basic", , buttonImageSize, buttonImageSize
     cmdTools(VECTOR_FANCYTEXT).AssignImage "text_fancy", , buttonImageSize, buttonImageSize
     
-    cmdTools(PAINT_BASICBRUSH).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_PENCIL).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_ERASER).AssignImage "paint_erase", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_FILL).AssignImage "paint_fill", , buttonImageSize, buttonImageSize
@@ -1380,7 +1377,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     '...then paint tools...
     shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "P")
-    cmdTools(PAINT_BASICBRUSH).AssignTooltip shortcutText
+    cmdTools(PAINT_PENCIL).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "B")
     cmdTools(PAINT_SOFTBRUSH).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Eraser") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "E")

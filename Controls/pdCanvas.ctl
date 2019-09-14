@@ -690,8 +690,12 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
                 
-            'Paint tools redraw cursors under certain conditions
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            'Pencil and paint tools redraw cursors under certain conditions
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+                
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
             
@@ -720,8 +724,12 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 Selections.NotifySelectionKeyUp Me, Shift, vkCode, markEventHandled
                 
-            'Paint tools redraw cursors under certain conditions
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            'Pencil and paint tools redraw cursors under certain conditions
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+                
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
@@ -863,7 +871,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                 End If
             
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+            
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
@@ -902,7 +913,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
+        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
     End Select
     
@@ -971,7 +982,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Unlike other tools, the paintbrush engine controls when the main viewport gets redrawn.
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
@@ -1011,7 +1025,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Text tools
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+            
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
@@ -1157,7 +1174,11 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Tools.TerminateGenericToolTracking
             
             'Notify the brush engine of the final result, then permanently commit this round of brush work
-            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+            Case PAINT_PENCIL
+                Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                Tools_Pencil.CommitBrushResults
+                
+            Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 Tools_Paint.CommitBrushResults
                 
@@ -1904,7 +1925,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         'Paint tools are a little weird, because we custom-draw the current brush outline - but *only*
         ' if no mouse button is down.  (If a button *is* down, the paint operation will automatically
         ' request a viewport refresh.)
-        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH, PAINT_ERASER
+        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER
             CanvasView.RequestCursor_System IDC_ICON
             If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             

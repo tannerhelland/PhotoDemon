@@ -157,8 +157,7 @@ End Sub
 
 'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.
 ' I also append "--" to the start and end of the string, to help me see if extra whitespace chars are present.
-Friend Sub DEBUG_dumpResultsToImmediateWindow()
-    
+Friend Sub DEBUG_DumpResultsToImmediateWindow()
     If (m_NumOfInts > 0) Then
         Dim i As Long
         For i = 0 To m_NumOfInts - 1
@@ -168,4 +167,3 @@ Friend Sub DEBUG_dumpResultsToImmediateWindow()
         Debug.Print " -- String stack is empty -- "
     End If
 End Sub
-
