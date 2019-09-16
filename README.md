@@ -6,7 +6,7 @@
 2. [What makes PhotoDemon unique?](#what-makes-photodemon-unique)
 3. [What's new since 7.0](#whats-new-in-this-release)
 4. [Contributing](#contributing)
-5. [Licenses](#how-is-photodemon-and-its-source-code-licensed)
+5. [Licensing](#licensing)
 
 ## Overview
 
@@ -79,9 +79,7 @@ For a full list of changes, please consult [the commit log](https://github.com/t
 
 ## Contributing
 
-PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like monthly tutorials and updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit PhotoDemon’s Patreon page:
-
-[PhotoDemon on Patreon](https://www.patreon.com/photodemon)
+PhotoDemon is primarily supported by an [ongoing Patreon campaign](https://www.patreon.com/photodemon). Donating through Patreon comes with extra benefits, like monthly tutorials and updates on new PhotoDemon features, and an interactive area where you can submit feature requests. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon):
 
 PhotoDemon's lone developer is also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  Thank you!
 
