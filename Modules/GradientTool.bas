@@ -1380,64 +1380,23 @@ End Sub
 'Want to commit your current gradient work?  Call this function to make the gradient results permanent.
 Public Sub CommitGradientResults()
     
-    'Committing gradient results is actually pretty easy!
+    'This dummy string only exists to ensure that the processor name gets localized properly
+    ' (as that text is used for Undo/Redo descriptions).  PD's translation engine will detect
+    ' the TranslateMessage() call and produce a matching translation entry.
+    Dim strDummy As String
+    strDummy = g_Language.TranslateMessage("Gradient tool")
     
-    'First, if the layer beneath the gradient is a raster layer, we simply want to merge the scratch
-    ' layer onto it.
-    If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
-        
-        Dim bottomLayerFullSize As Boolean
-        With PDImages.GetActiveImage.GetActiveLayer
-            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
-        End With
-        
-        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True  ', VarPtr(tmpRectF)
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-        
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Gradient tool", , , UNDO_Layer, g_CurrentTool
-        
-        'Reset the scratch layer
-        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+    'Note that gradients do not (currently) maintain a changed-area rect.  Pass a rect that matches the
+    ' full size of the scratch layer.
+    Dim tmpRectF As RectF
+    With tmpRectF
+        .Left = 0
+        .Top = 0
+        .Width = PDImages.GetActiveImage.ScratchLayer.GetLayerWidth
+        .Height = PDImages.GetActiveImage.ScratchLayer.GetLayerHeight
+    End With
     
-    'If the layer beneath this one is *not* a raster layer, let's add the gradient as a new layer, instead.
-    Else
-        
-        'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
-        ' the paint layer against it.
-        If PDImages.GetActiveImage.IsSelectionActive Then
-            
-            'A selection is active.  Pre-mask the paint scratch layer against it.
-            Dim cBlender As pdPixelBlender
-            Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB  ', VarPtr(tmpRectF)
-            
-        End If
-        
-        Dim newLayerID As Long
-        newLayerID = PDImages.GetActiveImage.CreateBlankLayer(PDImages.GetActiveImage.GetActiveLayerIndex)
-        
-        'Point the new layer index at our scratch layer
-        PDImages.GetActiveImage.PointLayerAtNewObject newLayerID, PDImages.GetActiveImage.ScratchLayer
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Gradient layer")
-        Set PDImages.GetActiveImage.ScratchLayer = Nothing
-        
-        'Activate the new layer
-        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
-        
-        'Notify the parent image of the new layer
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-        
-        'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.NotifyLayerChange
-        
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Gradient tool", , , UNDO_Image_VectorSafe, g_CurrentTool
-        
-        'Create a new scratch layer
-        Tools.InitializeToolsDependentOnImage
-        
-    End If
+    Layers.CommitScratchLayer "Gradient tool", tmpRectF
     
 End Sub
 

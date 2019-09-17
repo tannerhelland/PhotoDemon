@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.432</langversion>
+<langversion>6.7.433</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -1148,6 +1148,11 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 </phrase>
 
 <phrase>
+<original>Paint layer</original>
+<translation>Couche de peinture</translation>
+</phrase>
+
+<phrase>
 <original>Frame %1</original>
 <translation>Cadre %1</translation>
 </phrase>
@@ -1167,7 +1172,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 <translation>Page 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3609,12 +3614,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Outil de remplissage</translation>
 </phrase>
 
-<phrase>
-<original>Fill layer</original>
-<translation>Couche de remplissage</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3625,12 +3625,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Gradient layer</original>
-<translation></translation>
-</phrase>
-
-<!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for GradientTool.bas-->
 
@@ -3668,12 +3663,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Trait de peinture</translation>
 </phrase>
 
-<phrase>
-<original>Paint layer</original>
-<translation>Couche de peinture</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
 
@@ -16211,16 +16201,16 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation></translation>
 </phrase>
 
-<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for PencilTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4987 phrases. -->
-<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12703 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2281 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

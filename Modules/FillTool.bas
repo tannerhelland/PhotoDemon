@@ -374,77 +374,12 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
     'If useCustomDIB is FALSE, the current scratch layer contains everything we need for the blend.
     Else
         
-        'Start by grabbing the boundaries of the fill area, and clipping it to the image's bounds, as necessary
-        Dim tmpRectF As RectF
-        tmpRectF = m_FillOutline.GetPathBoundariesF
-        
-        With tmpRectF
-            If (.Left < 0) Then .Left = 0
-            If (.Top < 0) Then .Top = 0
-            If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
-            If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
-        End With
-        
-        'First, if the layer being filled is a raster layer, we simply want to merge the scratch layer onto it.
-        If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
-            
-            Dim bottomLayerFullSize As Boolean
-            With PDImages.GetActiveImage.GetActiveLayer
-                bottomLayerFullSize = ((.GetLayerOffsetX = 0!) And (.GetLayerOffsetY = 0!) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
-            End With
-            
-            PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True   ', VarPtr(tmpRectF)
-            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-            
-            'Before proceeding, trim any empty borders in the resulting layer.  (It will always be the size of the image,
-            ' because the scratch layer is always image-sized.)
-            PDImages.GetActiveImage.GetActiveLayer.CropNullPaddedLayer
-            
-            'Ask the central processor to create Undo/Redo data for us
-            Processor.Process "Fill tool", , , UNDO_Layer, g_CurrentTool
-            
-            'Reset the scratch layer
-            PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
-        
-        'If the layer beneath this one is *not* a raster layer, let's add the fill as a new layer, instead.
-        Else
-            
-            'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
-            ' the fill layer against it.
-            If PDImages.GetActiveImage.IsSelectionActive Then
-                
-                'A selection is active.  Pre-mask the scratch layer against it.
-                cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(tmpRectF)
-                
-            End If
-            
-            Dim newLayerID As Long
-            newLayerID = PDImages.GetActiveImage.CreateBlankLayer(PDImages.GetActiveImage.GetActiveLayerIndex)
-            
-            'Point the new layer index at our scratch layer
-            PDImages.GetActiveImage.PointLayerAtNewObject newLayerID, PDImages.GetActiveImage.ScratchLayer
-            PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Fill layer")
-            Set PDImages.GetActiveImage.ScratchLayer = Nothing
-            
-            'Activate the new layer
-            PDImages.GetActiveImage.SetActiveLayerByID newLayerID
-            
-            'Crop any dead space from the scratch layer
-            PDImages.GetActiveImage.GetActiveLayer.CropNullPaddedLayer
-            
-            'Notify the parent image of the new layer
-            PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-            
-            'Redraw the layer box, and note that thumbnails need to be re-cached
-            toolbar_Layers.NotifyLayerChange
-            
-            'Ask the central processor to create Undo/Redo data for us
-            Processor.Process "Fill tool", , , UNDO_Image_VectorSafe, g_CurrentTool
-            
-            'Create a new scratch layer
-            Tools.InitializeToolsDependentOnImage
-            
-        End If
+        'This dummy string only exists to ensure that the processor name gets localized properly
+        ' (as that text is used for Undo/Redo descriptions).  PD's translation engine will detect
+        ' the TranslateMessage() call and produce a matching translation entry.
+        Dim strDummy As String
+        strDummy = g_Language.TranslateMessage("Fill tool")
+        Layers.CommitScratchLayer "Fill tool", m_FillOutline.GetPathBoundariesF
     
     End If
     

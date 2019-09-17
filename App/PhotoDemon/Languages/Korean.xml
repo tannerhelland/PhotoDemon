@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.100</langversion>
+<langversion>1.0.101</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1146,6 +1146,11 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 </phrase>
 
 <phrase>
+<original>Paint layer</original>
+<translation>페인트 레이어</translation>
+</phrase>
+
+<phrase>
 <original>Frame %1</original>
 <translation>프레임  %1</translation>
 </phrase>
@@ -1165,7 +1170,7 @@ VBCRL이 이미지 형식에 대한 지원을 활성화하려면 FreeImage.dll �
 <translation>페이지 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3606,12 +3611,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>채우기 도구</translation>
 </phrase>
 
-<phrase>
-<original>Fill layer</original>
-<translation>채우기 레이어</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3622,12 +3622,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Gradient layer</original>
-<translation></translation>
-</phrase>
-
-<!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for GradientTool.bas-->
 
@@ -3665,12 +3660,7 @@ P 숫자 값을 입력하십시오.</translation>
 <translation>획 그리기</translation>
 </phrase>
 
-<phrase>
-<original>Paint layer</original>
-<translation>페인트 레이어</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
 
@@ -16205,16 +16195,16 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 <translation></translation>
 </phrase>
 
-<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for PencilTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4987 phrases. -->
-<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12703 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2281 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

@@ -1628,7 +1628,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         If (Not fullCacheCreationRequired) Then
             If (g_CurrentTool = PAINT_PENCIL) Then
                 GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Pencil.GetModifiedUpdateRectF()
-            ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
+            ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
                 GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Paint.GetModifiedUpdateRectF()
             End If
             GetDstRectFromSrcRectF intRectDstStroke, intRectSrcStroke, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height

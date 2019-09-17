@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.123</langversion>
+<langversion>1.0.124</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1147,6 +1147,11 @@ Toこの画像フォーマットのサポートを有効にするには、FreeIm
 </phrase>
 
 <phrase>
+<original>Paint layer</original>
+<translation>ペイントレイヤー</translation>
+</phrase>
+
+<phrase>
 <original>Frame %1</original>
 <translation>フレーム％1</translation>
 </phrase>
@@ -1166,7 +1171,7 @@ Toこの画像フォーマットのサポートを有効にするには、FreeIm
 <translation>ページ1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3607,12 +3612,7 @@ P数値を入力してください。</translation>
 <translation>塗りつぶしツール</translation>
 </phrase>
 
-<phrase>
-<original>Fill layer</original>
-<translation>塗りつぶしレイヤー</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3623,12 +3623,7 @@ P数値を入力してください。</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Gradient layer</original>
-<translation></translation>
-</phrase>
-
-<!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for GradientTool.bas-->
 
@@ -3666,12 +3661,7 @@ P数値を入力してください。</translation>
 <translation>ストロークペイント</translation>
 </phrase>
 
-<phrase>
-<original>Paint layer</original>
-<translation>ペイントレイヤー</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
 
@@ -16206,16 +16196,16 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 <translation></translation>
 </phrase>
 
-<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for PencilTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4987 phrases. -->
-<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12703 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2281 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

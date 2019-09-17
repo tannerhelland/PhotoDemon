@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>ру́сский</langname>
-<langversion>6.8.3415</langversion>
+<langversion>6.8.3416</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1147,6 +1147,11 @@ To включить поддержку этого формата изображ�
 </phrase>
 
 <phrase>
+<original>Paint layer</original>
+<translation>слой краски</translation>
+</phrase>
+
+<phrase>
 <original>Frame %1</original>
 <translation>Кадр %1</translation>
 </phrase>
@@ -1166,7 +1171,7 @@ To включить поддержку этого формата изображ�
 <translation>Страница 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3609,12 +3614,7 @@ Please enter a numeric value.</original>
 <translation>Инструмент заполнения</translation>
 </phrase>
 
-<phrase>
-<original>Fill layer</original>
-<translation>Уровень заполнения</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3625,12 +3625,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Gradient layer</original>
-<translation></translation>
-</phrase>
-
-<!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for GradientTool.bas-->
 
@@ -3668,12 +3663,7 @@ Please enter a numeric value.</original>
 <translation>штриха</translation>
 </phrase>
 
-<phrase>
-<original>Paint layer</original>
-<translation>слой краски</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
 
@@ -16211,16 +16201,16 @@ If вы все еще отключить обновления, не забудь
 <translation></translation>
 </phrase>
 
-<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for PencilTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4987 phrases. -->
-<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12703 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2281 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

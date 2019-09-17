@@ -549,8 +549,8 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
         'Paint tools are handled as a special case
         Dim toolIsPaint As Boolean
         toolIsPaint = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH)
-        toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
-        toolIsPaint = toolIsPaint Or (g_CurrentTool = PAINT_GRADIENT)
+        If (Not toolIsPaint) Then toolIsPaint = (g_CurrentTool = PAINT_ERASER) Or (g_CurrentTool = PAINT_FILL)
+        If (Not toolIsPaint) Then toolIsPaint = (g_CurrentTool = PAINT_GRADIENT)
         
         If toolIsPaint Then
             
@@ -572,7 +572,7 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
             If activeImageChanged Or scratchLayerResetRequired Then
                 If (g_CurrentTool = PAINT_PENCIL) Then
                     Tools_Pencil.NotifyActiveImageChanged
-                ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
+                ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
                     Tools_Paint.NotifyActiveImageChanged
                 End If
             End If

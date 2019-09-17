@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.135</langversion>
+<langversion>1.0.136</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1148,6 +1148,11 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
+<original>Paint layer</original>
+<translation>पेंट परत</translation>
+</phrase>
+
+<phrase>
 <original>Frame %1</original>
 <translation>फ़्रेम %1</translation>
 </phrase>
@@ -1167,7 +1172,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>पृष्ठ 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 52 phrases. 29 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 54 phrases. 30 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -3608,12 +3613,7 @@ Please enter a numeric value.</original>
 <translation>भरें उपकरण</translation>
 </phrase>
 
-<phrase>
-<original>Fill layer</original>
-<translation>भरें परत</translation>
-</phrase>
-
-<!-- FillTool.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for FillTool.bas-->
 
@@ -3624,12 +3624,7 @@ Please enter a numeric value.</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Gradient layer</original>
-<translation></translation>
-</phrase>
-
-<!-- GradientTool.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for GradientTool.bas-->
 
@@ -3667,12 +3662,7 @@ Please enter a numeric value.</original>
 <translation>पेंट स्ट्रोक</translation>
 </phrase>
 
-<phrase>
-<original>Paint layer</original>
-<translation>पेंट परत</translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
 
@@ -16208,16 +16198,16 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 <translation></translation>
 </phrase>
 
-<!-- PencilTool.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for PencilTool.bas-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2700</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4987 phrases. -->
-<!-- 2285 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12703 total words. -->
+<!-- As of this build, PhotoDemon contains 4981 phrases. -->
+<!-- 2281 are duplicates, so only 2700 unique phrases have been written to file. -->
+<!-- These 2700 phrases contain approximately 12699 total words. -->
 
 </pdData>

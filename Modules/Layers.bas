@@ -1707,6 +1707,83 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
 
 End Sub
 
+'Commit the current scratch layer onto the active layer.  The caller *must* supply a Processor.Process
+' ID to use, and they are responsible for localizing this string as well (since it won't be auto-detected
+' by PD's translation file generator).  Also required is the boundary rectangle to commit; for performance
+' reasons, this should obviously be the smallest size you can get away with.
+Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF As RectF)
+
+    With srcRectF
+        If (.Left < 0) Then .Left = 0
+        If (.Top < 0) Then .Top = 0
+        If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
+        If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
+    End With
+    
+    'Committing brush results is actually pretty easy!
+    
+    'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
+    ' layer onto it.
+    If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
+        
+        Dim bottomLayerFullSize As Boolean
+        With PDImages.GetActiveImage.GetActiveLayer
+            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
+        End With
+        
+        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True, VarPtr(srcRectF)
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        'Ask the central processor to create Undo/Redo data for us
+        Processor.Process processNameToUse, , , UNDO_Layer, g_CurrentTool
+        
+        'Reset the scratch layer
+        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
+    
+    'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
+    Else
+        
+        'Before creating the new layer, check for an active selection.  If one exists, we need to pre-process
+        ' the paint layer against it.
+        If PDImages.GetActiveImage.IsSelectionActive Then
+            
+            'A selection is active.  Pre-mask the paint scratch layer against it.
+            Dim cBlender As pdPixelBlender
+            Set cBlender = New pdPixelBlender
+            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(srcRectF)
+            
+        End If
+        
+        Dim newLayerID As Long
+        newLayerID = PDImages.GetActiveImage.CreateBlankLayer(PDImages.GetActiveImage.GetActiveLayerIndex)
+        
+        'Point the new layer index at our scratch layer
+        PDImages.GetActiveImage.PointLayerAtNewObject newLayerID, PDImages.GetActiveImage.ScratchLayer
+        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Paint layer")
+        Set PDImages.GetActiveImage.ScratchLayer = Nothing
+        
+        'Activate the new layer
+        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
+        
+        'Crop any dead space from the scratch layer
+        PDImages.GetActiveImage.GetActiveLayer.CropNullPaddedLayer
+        
+        'Notify the parent image of the new layer
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+        
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.NotifyLayerChange
+        
+        'Ask the central processor to create Undo/Redo data for us
+        Processor.Process processNameToUse, , , UNDO_Image_VectorSafe, g_CurrentTool
+        
+        'Create a new scratch layer
+        Tools.InitializeToolsDependentOnImage
+        
+    End If
+    
+End Sub
+
 'When a non-layered image is first loaded, the image itself is created as the base layer.  Unlike other software
 ' (which just assigns a stupid "Background" label), PD tries to generate a meaningful name for this layer.
 ' IMPORTANT NOTE: if passing a page index, note that the value is 0-BASED, so page "1" should be passed as "0".

@@ -939,76 +939,13 @@ End Function
 
 'Want to commit your current brush work?  Call this function to make the brush results permanent.
 Public Sub CommitBrushResults()
-    
-    'Make a local copy of the paintbrush's bounding rect, and clip it to the layer's boundaries
-    Dim tmpRectF As RectF
-    tmpRectF = m_TotalModifiedRectF
-    
-    With tmpRectF
-        If (.Left < 0) Then .Left = 0
-        If (.Top < 0) Then .Top = 0
-        If (.Width > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth) Then .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
-        If (.Height > PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight) Then .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
-    End With
-    
-    'Committing brush results is actually pretty easy!
-    
-    'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
-    ' layer onto it.
-    If PDImages.GetActiveImage.GetActiveLayer.IsLayerRaster Then
-        
-        Dim bottomLayerFullSize As Boolean
-        With PDImages.GetActiveImage.GetActiveLayer
-            bottomLayerFullSize = ((.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = PDImages.GetActiveImage.Width) And (.layerDIB.GetDIBHeight = PDImages.GetActiveImage.Height))
-        End With
-        
-        PDImages.GetActiveImage.MergeTwoLayers PDImages.GetActiveImage.ScratchLayer, PDImages.GetActiveImage.GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
-        
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Paint stroke", , , UNDO_Layer, g_CurrentTool
-        
-        'Reset the scratch layer
-        PDImages.GetActiveImage.ScratchLayer.layerDIB.ResetDIB 0
-    
-    'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
-    Else
-        
-        'Before creating the new layer, check for an active selection.  If one exists, we need to preprocess
-        ' the paint layer against it.
-        If PDImages.GetActiveImage.IsSelectionActive Then
-            
-            'A selection is active.  Pre-mask the paint scratch layer against it.
-            Dim cBlender As pdPixelBlender
-            Set cBlender = New pdPixelBlender
-            cBlender.ApplyMaskToTopDIB PDImages.GetActiveImage.ScratchLayer.layerDIB, PDImages.GetActiveImage.MainSelection.GetMaskDIB, VarPtr(tmpRectF)
-            
-        End If
-        
-        Dim newLayerID As Long
-        newLayerID = PDImages.GetActiveImage.CreateBlankLayer(PDImages.GetActiveImage.GetActiveLayerIndex)
-        
-        'Point the new layer index at our scratch layer
-        PDImages.GetActiveImage.PointLayerAtNewObject newLayerID, PDImages.GetActiveImage.ScratchLayer
-        PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Paint layer")
-        Set PDImages.GetActiveImage.ScratchLayer = Nothing
-        
-        'Activate the new layer
-        PDImages.GetActiveImage.SetActiveLayerByID newLayerID
-        
-        'Notify the parent image of the new layer
-        PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
-        
-        'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.NotifyLayerChange
-        
-        'Ask the central processor to create Undo/Redo data for us
-        Processor.Process "Paint stroke", , , UNDO_Image_VectorSafe, g_CurrentTool
-        
-        'Create a new scratch layer
-        Tools.InitializeToolsDependentOnImage
-        
-    End If
+
+    'This dummy string only exists to ensure that the processor name gets localized properly
+    ' (as that text is used for Undo/Redo descriptions).  PD's translation engine will detect
+    ' the TranslateMessage() call and produce a matching translation entry.
+    Dim strDummy As String
+    strDummy = g_Language.TranslateMessage("Paint stroke")
+    Layers.CommitScratchLayer "Paint stroke", m_TotalModifiedRectF
     
 End Sub
 

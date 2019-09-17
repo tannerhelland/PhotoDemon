@@ -1,6 +1,6 @@
 # PhotoDemon 7.2 alpha
 
-## PhotoDemon is a portable photo editor focused on performance and usability. 
+### PhotoDemon is a portable photo editor focused on performance and usability. 
 
 1. [Overview](#overview)
 2. [What makes PhotoDemon unique?](#what-makes-photodemon-unique)
@@ -12,11 +12,11 @@
 
 ![Screenshot](https://photodemon.org/media/PD_screenshot_master.jpg)
 
-It provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 14 MB download.  It runs on any Windows machine (XP through Win 10) and it *does not* require installation.  Feel free to run it from a USB stick, SD card, or portable drive.
 
-PhotoDemon is open-source and available under a permissive BSD license.  Contributors have translated the program into more than twenty languages.
+PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than twenty languages.
 
-You can support its ongoing development [through Patreon](https://www.patreon.com/photodemon) or [with a one-time donation](https://photodemon.org/donate/).
+You can support PhotoDemon's ongoing development [through Patreon](https://www.patreon.com/photodemon) or [with a one-time donation](https://photodemon.org/donate/).
 
 New contributions from coders, designers, translators, and enthusiasts are always welcome.
 
