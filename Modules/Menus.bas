@@ -1142,6 +1142,7 @@ Public Sub InitializeAllHotkeys()
         .AddAccelerator vbKeyP, , "tool_activate_pencil", , , , False
         .AddAccelerator vbKeyB, , "tool_activate_brush", , , , False
         .AddAccelerator vbKeyE, , "tool_activate_eraser", , , , False
+        .AddAccelerator vbKeyC, , "tool_activate_clone", , , , False
         .AddAccelerator vbKeyF, , "tool_activate_fill", , , , False
         .AddAccelerator vbKeyG, , "tool_activate_gradient", , , , False
         
@@ -2667,6 +2668,9 @@ Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
         
         Case "tool_erase"
             toolbar_Toolbox.SelectNewTool PAINT_ERASER, True, True
+        
+        Case "tool_clone"
+            toolbar_Toolbox.SelectNewTool PAINT_CLONE, True, True
         
         Case "tool_paintbucket"
             toolbar_Toolbox.SelectNewTool PAINT_FILL, True, True

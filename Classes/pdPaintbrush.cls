@@ -251,7 +251,8 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         ' and just add this point "as-is"
         If m_MouseDown Then
             
-            If ((srcX <> m_LastPoint.x) Or (srcY <> m_LastPoint.y)) And ((m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)) Then
+            'If ((srcX <> m_LastPoint.x) Or (srcY <> m_LastPoint.y)) And ((m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)) Then
+            If ((m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)) Then
                 AddPoints_VoxelStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
             Else
                 AddSinglePoint srcX, srcY

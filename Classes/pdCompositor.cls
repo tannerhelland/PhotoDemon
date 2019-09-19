@@ -1603,8 +1603,10 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Dim isFirstPaintEvent As Boolean
         If (g_CurrentTool = PAINT_PENCIL) Then
             isFirstPaintEvent = Tools_Pencil.IsFirstDab()
-        Else
+        ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
             isFirstPaintEvent = Tools_Paint.IsFirstDab()
+        ElseIf (g_CurrentTool = PAINT_CLONE) Then
+            isFirstPaintEvent = Tools_Clone.IsFirstDab()
         End If
         
         'Note: by forcing isFirstPaintEvent to TRUE, you can forcibly regenerate the full cached image on each stroke.
@@ -1630,6 +1632,8 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                 GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Pencil.GetModifiedUpdateRectF()
             ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
                 GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Paint.GetModifiedUpdateRectF()
+            ElseIf (g_CurrentTool = PAINT_CLONE) Then
+                GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Tools_Clone.GetModifiedUpdateRectF()
             End If
             GetDstRectFromSrcRectF intRectDstStroke, intRectSrcStroke, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
         End If

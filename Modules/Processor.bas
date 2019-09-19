@@ -268,7 +268,10 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
         ElseIf Strings.StringsEqual(processID, "Pencil stroke", True) Then
             processFound = True
-            
+        
+        ElseIf Strings.StringsEqual(processID, "Clone stamp", True) Then
+            processFound = True
+        
         ElseIf Strings.StringsEqual(processID, "Fill tool", True) Then
             processFound = True
             

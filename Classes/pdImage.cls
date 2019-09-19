@@ -586,8 +586,8 @@ Friend Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
 End Function
 
-'Retrieve a layer using its canonical ID.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
-' Also, this function does not check bounds, so make sure the passed index is valid!
+'Retrieve a layer using its canonical ID.  (ID is unique and guaranteed valid for the life of a layer,
+' even across sessions.)
 Friend Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long

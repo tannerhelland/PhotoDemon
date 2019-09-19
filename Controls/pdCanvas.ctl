@@ -699,6 +699,10 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
             
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+            
             'Same goes for gradient tools
             Case PAINT_GRADIENT
                 Tools_Gradient.NotifyToolXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
@@ -731,6 +735,10 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                 
             Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
+                SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
+                
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, m_LastImageX, m_LastImageY, 0&, Me
                 SetCanvasCursor pMouseMove, 0&, m_LastCanvasX, m_LastCanvasY, m_LastImageX, m_LastImageY, m_LastImageX, m_LastImageY
                 
             'Same goes for gradient tools
@@ -877,6 +885,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+            
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
                 
@@ -913,7 +924,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
+        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE, PAINT_FILL, PAINT_GRADIENT, COLOR_PICKER
             ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
     End Select
     
@@ -987,6 +998,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 
             Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+            
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY True, imgX, imgY, Me
@@ -1030,6 +1044,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY False, imgX, imgY, Me
@@ -1181,6 +1198,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             Case PAINT_SOFTBRUSH, PAINT_ERASER
                 Tools_Paint.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
                 Tools_Paint.CommitBrushResults
+            
+            Case PAINT_CLONE
+                Tools_Clone.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
+                Tools_Clone.CommitBrushResults
                 
             Case PAINT_FILL
                 Tools_Fill.NotifyMouseXY m_LMBDown, imgX, imgY, Me
@@ -1925,7 +1946,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         'Paint tools are a little weird, because we custom-draw the current brush outline - but *only*
         ' if no mouse button is down.  (If a button *is* down, the paint operation will automatically
         ' request a viewport refresh.)
-        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER
+        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER, PAINT_CLONE
             CanvasView.RequestCursor_System IDC_ICON
             If (Button = 0) Then ViewportEngine.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me
             

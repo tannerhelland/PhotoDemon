@@ -364,6 +364,16 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   17
+      Left            =   1560
+      TabIndex        =   31
+      Top             =   7680
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
 End
 Attribute VB_Name = "toolbar_Toolbox"
 Attribute VB_GlobalNameSpace = False
@@ -470,8 +480,9 @@ Private Enum PD_ToolPanels
     TP_Pencil = 6
     TP_Paintbrush = 7
     TP_Eraser = 8
-    TP_Fill = 9
-    TP_Gradient = 10
+    TP_Clone = 9
+    TP_Fill = 10
+    TP_Gradient = 11
 End Enum
 
 Private Const NUM_OF_TOOL_PANELS As Long = 11
@@ -479,7 +490,7 @@ Private Const NUM_OF_TOOL_PANELS As Long = 11
 #If False Then
     Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Selections = 3
     Private Const TP_Text = 4, TP_Typography = 5, TP_Pencil = 6, TP_Paintbrush = 7, TP_Eraser = 8
-    Private Const TP_Fill = 9, TP_Gradient = 10
+    Private Const TP_Clone = 9, TP_Fill = 10, TP_Gradient = 11
 #End If
 
 'The currently active tool panel will be mirrored to this value
@@ -862,17 +873,18 @@ Private Sub NewToolSelected()
                 
             End If
         
-        Case PAINT_PENCIL, PAINT_SOFTBRUSH, PAINT_ERASER
+        Case PAINT_PENCIL
+            toolpanel_Pencil.SyncAllPencilSettingsToUI
             
-            'Synchronize all brush settings to the current UI
-            If (g_CurrentTool = PAINT_PENCIL) Then
-                toolpanel_Pencil.SyncAllPencilSettingsToUI
-            ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
-                toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
-            ElseIf (g_CurrentTool = PAINT_ERASER) Then
-                toolpanel_Eraser.SyncAllPaintbrushSettingsToUI
-            End If
+        Case PAINT_SOFTBRUSH
+            toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
             
+        Case PAINT_ERASER
+            toolpanel_Eraser.SyncAllPaintbrushSettingsToUI
+        
+        Case PAINT_CLONE
+            toolpanel_Clone.SyncAllPaintbrushSettingsToUI
+        
         Case PAINT_FILL
             toolpanel_Fill.SyncAllFillSettingsToUI
             
@@ -998,6 +1010,12 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             toolpanel_Eraser.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Eraser
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Eraser.hWnd
+        
+        Case PAINT_CLONE
+            Load toolpanel_Clone
+            toolpanel_Clone.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_Clone
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Clone.hWnd
             
         Case PAINT_FILL
             Load toolpanel_Fill
@@ -1142,6 +1160,10 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
                         Unload toolpanel_Eraser
                         Set toolpanel_Eraser = Nothing
                         
+                    Case TP_Clone
+                        Unload toolpanel_Clone
+                        Set toolpanel_Clone = Nothing
+                    
                     Case TP_Fill
                         Unload toolpanel_Fill
                         Set toolpanel_Fill = Nothing
@@ -1308,6 +1330,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_PENCIL).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_ERASER).AssignImage "paint_erase", , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_CLONE).AssignImage "clone_stamp", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_FILL).AssignImage "paint_fill", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_GRADIENT).AssignImage "nd_gradient", , buttonImageSize, buttonImageSize
     
@@ -1382,12 +1405,17 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(PAINT_SOFTBRUSH).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Eraser") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "E")
     cmdTools(PAINT_ERASER).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Clone stamp") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "C")
+    cmdTools(PAINT_CLONE).AssignTooltip shortcutText
+    
     shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
     cmdTools(PAINT_FILL).AssignTooltip shortcutText
     shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
     cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
     'And finally, tool names and their corresponding action strings
+    m_ToolNames.ResetStack
+    
     m_ToolNames.AddString g_Language.TranslateMessage("Hand tool")
     m_ToolActions.AddString "tool_hand"
     
@@ -1432,6 +1460,9 @@ Public Sub UpdateAgainstCurrentTheme()
     
     m_ToolNames.AddString g_Language.TranslateMessage("Erase tool")
     m_ToolActions.AddString "tool_erase"
+    
+    m_ToolNames.AddString g_Language.TranslateMessage("Clone stamp tool")
+    m_ToolActions.AddString "tool_clone"
     
     m_ToolNames.AddString g_Language.TranslateMessage("Paint bucket tool")
     m_ToolActions.AddString "tool_paintbucket"

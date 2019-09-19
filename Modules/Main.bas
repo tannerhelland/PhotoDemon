@@ -342,6 +342,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     Drawing.CacheUIPensAndBrushes
     Tools_Paint.InitializeBrushEngine
     Tools_Pencil.InitializeBrushEngine
+    Tools_Clone.InitializeBrushEngine
     Selections.InitializeSelectionRendering
     
     '*************************************************************************************************************************************

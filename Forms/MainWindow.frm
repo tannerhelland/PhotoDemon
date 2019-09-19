@@ -2534,6 +2534,8 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
             toolbar_Toolbox.SelectNewTool PAINT_SOFTBRUSH
         ElseIf Strings.StringsEqual(keyName, "tool_activate_eraser", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_ERASER
+        ElseIf Strings.StringsEqual(keyName, "tool_activate_clone", True) Then
+            toolbar_Toolbox.SelectNewTool PAINT_CLONE
         ElseIf Strings.StringsEqual(keyName, "tool_activate_fill", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_FILL
         ElseIf Strings.StringsEqual(keyName, "tool_activate_gradient", True) Then
@@ -2896,6 +2898,7 @@ Private Sub Form_Unload(Cancel As Integer)
     PDDebug.LogAction "Destroying paint tool resources..."
     Tools_Paint.FreeBrushResources
     Tools_Pencil.FreeBrushResources
+    Tools_Clone.FreeBrushResources
     Tools_Fill.FreeFillResources
         
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
@@ -2953,6 +2956,10 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_Eraser.hWnd
         Unload toolpanel_Eraser
         Set toolpanel_Eraser = Nothing
+    ElseIf (g_CurrentTool = PAINT_CLONE) Then
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Clone.hWnd
+        Unload toolpanel_Clone
+        Set toolpanel_Clone = Nothing
     ElseIf (g_CurrentTool = PAINT_FILL) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_Fill.hWnd
         Unload toolpanel_Fill

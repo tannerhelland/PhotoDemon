@@ -159,6 +159,9 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Or (g_CurrentTool = PAINT_ERASER) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Paint.RenderBrushOutline dstCanvas
             
+            ElseIf (g_CurrentTool = PAINT_CLONE) Then
+                If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Clone.RenderBrushOutline dstCanvas
+            
             'Fill tools also render a custom cursor
             ElseIf (g_CurrentTool = PAINT_FILL) Then
                 If FormMain.MainCanvas(0).IsMouseOverCanvas Then Tools_Fill.RenderFillCursor dstCanvas
