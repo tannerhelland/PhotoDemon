@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1412</langversion>
+<langversion>7.2.1413</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3609,11 +3609,16 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- BEGIN text for Clonestamp.bas -->
 
 <phrase>
+<original>Ctrl+Click to set clone source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Clone stamp</original>
 <translation></translation>
 </phrase>
 
-<!-- Clonestamp.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for Clonestamp.bas-->
 
@@ -16233,10 +16238,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4995 phrases. -->
-<!-- 2293 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12704 total words. -->
+<!-- As of this build, PhotoDemon contains 4996 phrases. -->
+<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>

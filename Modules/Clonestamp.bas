@@ -22,8 +22,8 @@ Option Explicit
 Private m_BrushOutlinePath As pd2DPath
 
 'Brush resources, used only as necessary.  Check for null values before using.
-Private m_GDIPPen As pd2DPen
-Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
+Private m_SrcPenDIB As pdDIB
+Private m_Mask() As Byte, m_MaskSize As Long
 
 'Brush attributes are stored in these variables
 Private m_BrushSource As PD_BrushSource
@@ -80,10 +80,10 @@ Private m_SourceExists As Boolean
 'The user can clone from a *different* source or *different* layer!  (Note that the layer setting can
 ' be overridden by the Sample Merged setting)
 Private m_SourceImageID As Long, m_SourceLayerID As Long
-Private m_SourcePoint As PointFloat
+Private m_SourcePoint As PointFloat, m_SourceSetThisClick As Boolean
 Private m_SourceOffsetX As Single, m_SourceOffsetY As Single
 Private m_SampleMerged As Boolean
-Private m_Sample As pdDIB
+Private m_Sample As pdDIB, m_SampleUntouched As pdDIB
 Private m_CtrlKeyDown As Boolean
 
 Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
@@ -277,7 +277,6 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         'Build a new brush reference image that reflects the current brush properties
         m_BrushSizeInt = Int(m_BrushSize + 0.999999)
         CreateSoftBrushReference_PD
-        m_SrcPenDIB.SetInitialAlphaPremultiplicationState True
         
         'We also need to calculate a brush spacing reference.  A spacing of 1 means that every pixel in
         ' the current stroke is dabbed.  From a performance perspective, this is simply not feasible for
@@ -296,131 +295,16 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         m_BrushSpacingCheck = Int(tmpBrushSpacing + 0.5)
         If (m_BrushSpacingCheck < 1) Then m_BrushSpacingCheck = 1
         
-        'Want to use some arbitrary DIB for testing purposes?  Uncomment the lines below.
-        'Dim testImgPath As String
-        'testImgPath = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\brush_test_500.png"
-        '
-        'If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
-        'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False
-        'SetBrushSize m_SrcPenDIB.GetDIBWidth
-        
-        'Want to the GDI+ renderer (instead of GDI)?  Uncomment these two lines, then visit the
-        ' ApplyPaintDab() function and uncomment the GDI+ renderer comment there.
-        ' (This will be needed in the future for rotating and/or skewing the brush "on the fly"
-        '  based on brush dynamics.)
-        'If (m_CustomPenImage Is Nothing) Then Set m_CustomPenImage = New pd2DSurface
-        'm_CustomPenImage.CreateSurfaceFromFile testImgPath
-        
         'Whenever we create a new brush, we should also refresh the current brush outline
         If alsoCreateBrushOutline Then CreateCurrentBrushOutline
         
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
         
-        PDDebug.LogAction "Tools_Paint.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        PDDebug.LogAction "Tools_Clone.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
     
-End Sub
-
-Private Sub CreateSoftBrushReference_MyPaint()
-
-    'Initialize our reference DIB as necessary
-    If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
-    If (m_SrcPenDIB.GetDIBWidth < m_BrushSizeInt - 1) Or (m_SrcPenDIB.GetDIBHeight < m_BrushSizeInt - 1) Then
-        m_SrcPenDIB.CreateBlank m_BrushSizeInt, m_BrushSizeInt, 32, 0, 0
-    Else
-        m_SrcPenDIB.ResetDIB 0
-    End If
-    
-    'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
-    ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
-    ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
-    ' setting each byte individually.
-    Dim tmpR As Long, tmpG As Long, tmpB As Long
-    tmpR = Colors.ExtractRed(m_BrushSourceColor)
-    tmpG = Colors.ExtractGreen(m_BrushSourceColor)
-    tmpB = Colors.ExtractBlue(m_BrushSourceColor)
-    
-    Dim cLookup() As Long
-    ReDim cLookup(0 To 255) As Long
-    
-    Dim x As Long, y As Long, tmpMult As Single
-    For x = 0 To 255
-        tmpMult = CSng(x) / 255
-        cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
-    Next x
-    
-    'Prep manual per-pixel loop variables
-    Dim dstImageData() As Long
-    Dim tmpSA As SafeArray2D
-    PrepSafeArray_Long tmpSA, m_SrcPenDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
-    
-    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = m_SrcPenDIB.GetDIBWidth - 1
-    finalY = m_SrcPenDIB.GetDIBHeight - 1
-    
-    'At present, we use a MyPaint-compatible system for calculating brush hardness.  This gives us comparable
-    ' paint behavior against programs like MyPaint (obviously), Krita, and new versions of GIMP.
-    ' Reference: https://github.com/mypaint/libmypaint/wiki/Using-Brushlib
-    Dim brushAspectRatio As Single, brushAngle As Single
-    
-    'Some MyPaint-supported features are not currently exposed to the user.  Their hard-coded values appear below,
-    ' and in the future, we may migrate these over to the UI.
-    brushAspectRatio = 1#   '[1, #INF]
-    brushAngle = 0#         '[0, 180] in degrees
-    
-    Dim refCos As Single, refSin As Single
-    refCos = Cos(brushAngle / 360# * 2# * PI)
-    refSin = Sin(brushAngle / 360# * 2# * PI)
-    
-    Dim dx As Single, dy As Single
-    Dim dXr As Single, dYr As Single
-    Dim brushRadius As Single, brushRadiusSquare As Single
-    brushRadius = (m_BrushSize - 1#) / 2#
-    brushRadiusSquare = brushRadius * brushRadius
-    
-    Dim dd As Single, pxOpacity As Single
-    Dim brushHardness As Single
-    brushHardness = m_BrushHardness
-    If (brushHardness < 0.001) Then brushHardness = 0.001
-    If (brushHardness > 0.999) Then brushHardness = 0.999
-    
-    'Loop through each pixel in the image, calculating per-pixel brush values as we go
-    For x = initX To finalX
-    For y = initY To finalY
-    
-        dx = x - brushRadius
-        dy = y - brushRadius
-        dXr = (dy * refSin + dx * refCos)
-        dYr = (dy * refCos - dx * refSin) * brushAspectRatio
-        
-        dd = (dYr * dYr + dXr * dXr) / brushRadiusSquare
-        
-        If (dd > 1) Then
-            pxOpacity = 0
-        ElseIf (dd < brushHardness) Then
-            pxOpacity = dd + 1 - (dd / brushHardness)
-        Else
-            pxOpacity = brushHardness / (1 - brushHardness) * (1 - dd)
-        End If
-        
-        'NOTE: if you wanted to, you could apply flow here (e.g. pxOpacity * [0, 1])
-        ' We ignore this for now as the MyPaint brush calculator isn't made available to the user.
-        dstImageData(x, y) = cLookup(pxOpacity * 255)
-        
-        'TODO: optimize this function by only processing one quadrant, then mirroring the results to the
-        ' other three matching quadrants.  (Obviously, this only works while aspect ratio = 1#)
-        
-    Next y
-    Next x
-    
-    'Safely deallocate imageData()
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-
 End Sub
 
 Private Sub CreateSoftBrushReference_PD()
@@ -480,18 +364,12 @@ Private Sub CreateSoftBrushReference_PD()
         tmpBrushRequired = (m_BrushSize < BRUSH_SIZE_MIN_CUTOFF)
         
         'Prep manual per-pixel loop variables
-        Dim dstImageData() As Long
-        Dim tmpSA As SafeArray2D
+        Dim dstImageData() As Long, tmpSA As SafeArray1D
         
         If tmpBrushRequired Then
             Set tmpDIB = New pdDIB
             tmpDIB.CreateBlank BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, 32, 0, 0
-            PrepSafeArray_Long tmpSA, tmpDIB
-        Else
-            PrepSafeArray_Long tmpSA, m_SrcPenDIB
         End If
-        
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
         Dim initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -540,6 +418,11 @@ Private Sub CreateSoftBrushReference_PD()
         
         'Loop through each pixel in the image, calculating per-pixel brush values as we go
         For y = initY To finalY
+            If tmpBrushRequired Then
+                tmpDIB.WrapLongArrayAroundScanline dstImageData, tmpSA, y
+            Else
+                m_SrcPenDIB.WrapLongArrayAroundScanline dstImageData, tmpSA, y
+            End If
         For x = initX To finalX
         
             'Calculate distance between this point and the idealized "center" of the brush
@@ -553,7 +436,7 @@ Private Sub CreateSoftBrushReference_PD()
                 
                 'If pixels lie *inside* the inner radius, set them to maximum opacity
                 If (pxDistance <= innerRadiusSquare) Then
-                    dstImageData(x, y) = cLookup(255)
+                    dstImageData(x) = cLookup(255)
                 
                 'If pixels lie somewhere between the inner radius and the brush radius, feather them appropriately
                 Else
@@ -566,7 +449,7 @@ Private Sub CreateSoftBrushReference_PD()
                     pxOpacity = pxOpacity * pxOpacity * pxOpacity
                     
                     'Pull the matching result from our lookup table
-                    dstImageData(x, y) = cLookup(pxOpacity * 255#)
+                    dstImageData(x) = cLookup(pxOpacity * 255#)
                     
                 End If
                 
@@ -576,7 +459,11 @@ Private Sub CreateSoftBrushReference_PD()
         Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        If tmpBrushRequired Then
+            tmpDIB.UnwrapLongArrayFromDIB dstImageData
+        Else
+            m_SrcPenDIB.UnwrapLongArrayFromDIB dstImageData
+        End If
         
         'If a temporary brush was required (because the target brush is so small), downscale it to its
         ' final size now.
@@ -585,6 +472,32 @@ Private Sub CreateSoftBrushReference_PD()
         End If
         
     End If
+    
+    'Brushes are always premultiplied
+    m_SrcPenDIB.SetInitialAlphaPremultiplicationState True
+    
+    'We now want to do something unique to the clone brush.  We don't actually need a full image for the
+    ' brush source (as we're going to be producing one "on the fly" using the base image's pixels) - so instead
+    ' of maintaining a full mask, just copy the relevant alpha bytes into a dedicated byte array.
+    
+    'Why not just produce a byte array in the first place, you ask?  Because we want this brush to produce
+    ' identical border results to a standard brush, which means we want to mimic GDI+ antialiasing precisely -
+    ' so we still need to lean on it for conditions like tiny brushes or 100% hardness brushes.
+    If (m_MaskSize = 0) Or (m_MaskSize <> m_BrushSizeInt) Then
+        m_MaskSize = m_BrushSizeInt
+        ReDim m_Mask(0 To m_MaskSize - 1, 0 To m_MaskSize - 1) As Byte
+    Else
+        FillMemory VarPtr(m_Mask(0, 0)), m_MaskSize * m_MaskSize, 0
+    End If
+    
+    For y = 0 To m_MaskSize - 1
+        m_SrcPenDIB.WrapLongArrayAroundScanline dstImageData, tmpSA, y
+    For x = 0 To m_MaskSize - 1
+        m_Mask(x, y) = dstImageData(x) And &HFF&
+    Next x
+    Next y
+    
+    m_SrcPenDIB.UnwrapLongArrayFromDIB dstImageData
 
 End Sub
 
@@ -630,15 +543,21 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             
         End If
         
+        m_SourceSetThisClick = True
+        
         'Nothing else needs to be done here; exit immediately
         Exit Sub
         
     Else
+        Message "Ctrl+Click to set clone source", "DONOTLOG"
         m_CtrlKeyDown = False
     End If
     
     'Relay this action to the brush engine; it calculates dab positions for us.
     m_Paintbrush.NotifyBrushXY mouseButtonDown, Shift, srcX, srcY, mouseTimeStamp
+    
+    'Reset source-set mode
+    If m_Paintbrush.IsFirstDab And (Not m_CtrlKeyDown) Then m_SourceSetThisClick = False
     
     'Regardless of mouse button state (up *or* down), cache a local copy of mouse coords; we require these for
     ' rendering a brush outline.
@@ -827,23 +746,27 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         If (m_Sample.GetDIBWidth <> m_BrushSizeInt) Or (m_Sample.GetDIBHeight <> m_BrushSizeInt) Then
             m_Sample.CreateBlank m_BrushSizeInt, m_BrushSizeInt, 32, 0, 0
         Else
-            m_Sample.ResetDIB
+            m_Sample.ResetDIB 0
         End If
         
         'Next, we need to calculate relevant source and destination rectangles.  GDI's AlphaBlend is incredibly picky
         ' about rectangles that don't lie off the edge of a given image, and we also get a performance boost by only
         ' masking a minimal amount of the brush.
         Dim srcRectL As RectL_WH, dstRectL As RectL_WH
-        If CalculateSrcDstRects(Int(srcX + 0.5), Int(srcY + 0.5), srcRectL, dstRectL, srcDIB) Then
+        Dim dstX As Long, dstY As Long
+        If CalculateSrcDstRects(Int(srcX + 0.5), Int(srcY + 0.5), dstX, dstY, srcRectL, dstRectL, srcDIB, PDImages.GetActiveImage.ScratchLayer.layerDIB) Then
             
-            'Retrieve the relevant portion of the source image
-            srcDIB.AlphaBlendToDCEx m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcRectL.Left, srcRectL.Top, srcRectL.Width, srcRectL.Height
+            'Retrieve the relevant portion of the source image, then make an *untouched* copy of it
             m_Sample.SetInitialAlphaPremultiplicationState True
+            srcDIB.AlphaBlendToDCEx m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcRectL.Left, srcRectL.Top, srcRectL.Width, srcRectL.Height
             Set srcDIB = Nothing
             
+            If (m_SampleUntouched Is Nothing) Then Set m_SampleUntouched = New pdDIB
+            m_SampleUntouched.CreateFromExistingDIB m_Sample
+            
             'Mask the outline of the current brush over the source image.
-            Dim pxMask() As Byte, pxSample() As Byte
-            Dim maskSA As SafeArray1D, sampleSA As SafeArray1D
+            Dim pxMask() As Byte, pxSample() As Byte, pxDst() As Byte
+            Dim maskSA As SafeArray1D, sampleSA As SafeArray1D, dstSA As SafeArray1D
             
             Dim x As Long, y As Long, xStride As Long, tmpFloat As Single
             Dim fLookup() As Single
@@ -860,11 +783,10 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             yEnd = dstRectL.Top + dstRectL.Height - 1
             
             For y = yStart To yEnd
-                m_SrcPenDIB.WrapArrayAroundScanline pxMask, maskSA, y
                 m_Sample.WrapArrayAroundScanline pxSample, sampleSA, y
             For x = xStart To xEnd
                 xStride = x * 4
-                tmpFloat = fLookup(pxMask(xStride + 3))
+                tmpFloat = fLookup(m_Mask(x, y))
                 pxSample(xStride) = pxSample(xStride) * tmpFloat
                 pxSample(xStride + 1) = pxSample(xStride + 1) * tmpFloat
                 pxSample(xStride + 2) = pxSample(xStride + 2) * tmpFloat
@@ -872,15 +794,73 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             Next x
             Next y
             
-            m_SrcPenDIB.UnwrapArrayFromDIB pxMask
             m_Sample.UnwrapArrayFromDIB pxSample
             
-            'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
-            ' for a performance boost, however.
-            'm_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), 0, 0, Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), dabOpacity * 255
-            m_Sample.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2) + dstRectL.Left, Int(srcY - m_BrushSize \ 2) + dstRectL.Top, dstRectL.Width, dstRectL.Height, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, dabOpacity * 255
-            'PD2D.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
-        
+            'Apply the dab
+            Dim dstDIB As pdDIB
+            Set dstDIB = PDImages.GetActiveImage.ScratchLayer.layerDIB
+            m_Sample.AlphaBlendToDCEx dstDIB.GetDIBDC, dstX, dstY, dstRectL.Width, dstRectL.Height, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, dabOpacity * 255
+            
+            'GoTo SkipAlphaFix
+            
+            'We now need to do something special for semi-transparent pixels.  These pixels *cannot* be allowed
+            ' to become more transparent than the source pixel data (otherwise it wouldn't be a clone operation).
+            ' As such, we need to scan the pixels we just painted, and ensure that they do not exceed their
+            ' original transparency values.
+            
+            'Why not just perform the alpha-blend ourselves and do this as we go?  Because for fully opaque clones
+            ' (e.g. photos!), a GDI AlphaBlend is hardware-accelerated - much faster than we can possibly blend -
+            ' while this secondary step is extremely fast as the CPU can branch-predict it with 100% accuracy.
+            ' So nearly no time is lost compared to a regular alpha blend op for the most common use-case.
+            
+            'Normally we would need to do some messy boundary checks here, but this was already handled by the
+            ' CalculateSrcDstRects() function, above.
+            Dim pxSampleL() As Byte, pxDstL() As Byte
+            Dim refAlpha As Long, testAlpha As Long
+            
+            Dim xOffset As Long, yOffset As Long
+            xOffset = (dstX - dstRectL.Left) * 4
+            yOffset = dstY - dstRectL.Top
+            
+            xStart = dstRectL.Left * 4
+            xEnd = (dstRectL.Left + dstRectL.Width - 1) * 4
+            yStart = dstRectL.Top
+            yEnd = dstRectL.Top + dstRectL.Height - 1
+            
+            For y = yStart To yEnd
+                m_SampleUntouched.WrapArrayAroundScanline pxSampleL, sampleSA, y
+                dstDIB.WrapArrayAroundScanline pxDstL, dstSA, yOffset + y
+            For x = xStart To xEnd Step 4
+                
+                'Retrieve our "reference" alpha values from the sample
+                refAlpha = pxSampleL(x + 3)
+                
+                'Ignore opaque pixels
+                If (refAlpha < 255) Then
+                
+                    'Is the destination alpha higher than this?
+                    testAlpha = pxDstL(xOffset + x + 3)
+                    If (testAlpha > refAlpha) Then
+                    
+                        'Yep, alpha is too high.  Clone the destination pixel.
+                        pxDstL(xOffset + x) = pxSampleL(x)
+                        pxDstL(xOffset + x + 1) = pxSampleL(x + 1)
+                        pxDstL(xOffset + x + 2) = pxSampleL(x + 2)
+                        pxDstL(xOffset + x + 3) = pxSampleL(x + 3)
+                        
+                    End If
+                    
+                End If
+            
+            Next x
+            Next y
+            
+            'Free array references
+            m_SampleUntouched.UnwrapArrayFromDIB pxSampleL
+            dstDIB.UnwrapArrayFromDIB pxDstL
+            
+SkipAlphaFix:
+            
         '/end clone regions are valid
         End If
         
@@ -894,7 +874,7 @@ End Sub
 
 'Determine source+dest blends for the current clone region.  Returns TRUE if the region is non-zero; FALSE otherwise.
 ' (Do *NOT* waste time rendering a dab if the return value is FALSE.)
-Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, ByRef srcRectL As RectL_WH, ByRef dstRectL As RectL_WH, ByRef srcDIB As pdDIB) As Boolean
+Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long, ByRef srcRectL As RectL_WH, ByRef dstRectL As RectL_WH, ByRef srcDIB As pdDIB, ByRef scratchLayerDIB As pdDIB) As Boolean
 
     'Start by populating both rects with default values
     With srcRectL
@@ -937,6 +917,42 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
     
     If (srcRectL.Top + srcRectL.Height > srcDIB.GetDIBHeight) Then
         tmpOffset = (srcRectL.Top + srcRectL.Height) - srcDIB.GetDIBHeight
+        dstRectL.Height = dstRectL.Height - tmpOffset
+        srcRectL.Height = srcRectL.Height - tmpOffset
+    End If
+    
+    'As a convenience, let's also calculate out-of-bounds destination pixels (which use scratch layer boundaries)
+    
+    'Determine where an "ideal" dab will be placed
+    dstX = Int(srcX - m_BrushSize \ 2) + dstRectL.Left
+    dstY = Int(srcY - m_BrushSize \ 2) + dstRectL.Top
+        
+    If (dstX < 0) Then
+        tmpOffset = dstX
+        dstX = 0
+        dstRectL.Left = dstRectL.Left - tmpOffset
+        dstRectL.Width = dstRectL.Width + tmpOffset
+        srcRectL.Left = srcRectL.Left - tmpOffset
+        srcRectL.Width = srcRectL.Width + tmpOffset
+    End If
+    
+    If (dstY < 0) Then
+        tmpOffset = dstY
+        dstY = 0
+        dstRectL.Top = dstRectL.Top - tmpOffset
+        dstRectL.Height = dstRectL.Height + tmpOffset
+        srcRectL.Top = srcRectL.Top - tmpOffset
+        srcRectL.Height = srcRectL.Height + tmpOffset
+    End If
+    
+    If (dstX + dstRectL.Width > scratchLayerDIB.GetDIBWidth) Then
+        tmpOffset = (dstX + dstRectL.Width) - scratchLayerDIB.GetDIBWidth
+        dstRectL.Width = dstRectL.Width - tmpOffset
+        srcRectL.Width = srcRectL.Width - tmpOffset
+    End If
+    
+    If (dstY + dstRectL.Height > scratchLayerDIB.GetDIBHeight) Then
+        tmpOffset = (dstY + dstRectL.Height) - scratchLayerDIB.GetDIBHeight
         dstRectL.Height = dstRectL.Height - tmpOffset
         srcRectL.Height = srcRectL.Height - tmpOffset
     End If
@@ -1048,7 +1064,10 @@ End Function
 
 'Want to commit your current brush work?  Call this function to make the brush results permanent.
 Public Sub CommitBrushResults()
-
+    
+    'Check ctrl key status and skip this step accordingly
+    If m_SourceSetThisClick Then Exit Sub
+    
     'This dummy string only exists to ensure that the processor name gets localized properly
     ' (as that text is used for Undo/Redo descriptions).  PD's translation engine will detect
     ' the TranslateMessage() call and produce a matching translation entry.
@@ -1091,6 +1110,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim lastPoint As PointFloat
     Dim crossLength As Single, outerCrossBorder As Single
     Dim copyOfBrushOutline As pd2DPath
+    Dim backupWidth As Single, dashSizes() As Single
     Dim okToProceed As Boolean
     
     'If the user is currently holding down the ctrl key, they're trying to set a source point.
@@ -1123,8 +1143,23 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
             Set copyOfBrushOutline = New pd2DPath
             copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
             copyOfBrushOutline.ApplyTransformation canvasMatrix
+    
+            backupWidth = outerPen.GetPenWidth
+            outerPen.SetPenWidth 1.6
+            
+            innerPen.SetPenStyle P2_DS_Custom
+            innerPen.SetPenDashCap P2_DC_Round
+            
+            ReDim dashSizes(0 To 1) As Single
+            dashSizes(0) = 2.5!
+            dashSizes(1) = 2.5!
+            innerPen.SetPenDashes_UNSAFE VarPtr(dashSizes(0)), 2
+            
             PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
             PD2D.DrawPath cSurface, innerPen, copyOfBrushOutline
+            
+            innerPen.SetPenStyle P2_DS_Solid
+            outerPen.SetPenWidth backupWidth
             
         End If
         
@@ -1141,6 +1176,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         
             'Skip all steps for the source point if it doesn't exist
             If (i = 1) And (Not m_SourceExists) Then GoTo DrawNextPoint
+            If (i = 1) And (m_SourceImageID <> PDImages.GetActiveImageID) Then GoTo DrawNextPoint
             
             'Set the relevant source point (i = 0, use cursor position; i = 1, use source point)
             If (i = 0) Then
@@ -1207,8 +1243,30 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                 Set copyOfBrushOutline = New pd2DPath
                 copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
                 copyOfBrushOutline.ApplyTransformation canvasMatrix
-                PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
-                PD2D.DrawPath cSurface, innerPen, copyOfBrushOutline
+                
+                If (i = 1) Then
+                    
+                    backupWidth = outerPen.GetPenWidth
+                    outerPen.SetPenWidth 1.6
+                    
+                    innerPen.SetPenStyle P2_DS_Custom
+                    innerPen.SetPenDashCap P2_DC_Round
+                    
+                    ReDim dashSizes(0 To 1) As Single
+                    dashSizes(0) = 2.5!
+                    dashSizes(1) = 2.5!
+                    innerPen.SetPenDashes_UNSAFE VarPtr(dashSizes(0)), 2
+                    
+                    PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
+                    PD2D.DrawPath cSurface, innerPen, copyOfBrushOutline
+                    
+                    innerPen.SetPenStyle P2_DS_Solid
+                    outerPen.SetPenWidth backupWidth
+                    
+                Else
+                    PD2D.DrawPath cSurface, outerPen, copyOfBrushOutline
+                    PD2D.DrawPath cSurface, innerPen, copyOfBrushOutline
+                End If
                 
             End If
     
@@ -1243,7 +1301,6 @@ End Sub
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).
 Public Sub FreeBrushResources()
-    Set m_GDIPPen = Nothing
-    Set m_CustomPenImage = Nothing
     Set m_BrushOutlinePath = Nothing
+    Set m_SrcPenDIB = Nothing
 End Sub

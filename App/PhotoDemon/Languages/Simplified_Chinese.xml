@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1170</langversion>
+<langversion>7.1.1171</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3599,11 +3599,16 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for Clonestamp.bas -->
 
 <phrase>
+<original>Ctrl+Click to set clone source</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Clone stamp</original>
 <translation></translation>
 </phrase>
 
-<!-- Clonestamp.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for Clonestamp.bas-->
 
@@ -16218,10 +16223,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2702</phrasecount>
+<phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4995 phrases. -->
-<!-- 2293 are duplicates, so only 2702 unique phrases have been written to file. -->
-<!-- These 2702 phrases contain approximately 12704 total words. -->
+<!-- As of this build, PhotoDemon contains 4996 phrases. -->
+<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>
