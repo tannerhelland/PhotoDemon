@@ -4,7 +4,7 @@
 
 1. [Overview](#overview)
 2. [What makes PhotoDemon unique?](#what-makes-photodemon-unique)
-3. [What's new since 7.0](#whats-new-in-this-release)
+3. [What's new in nightly builds](#whats-new-in-nightly-builds)
 4. [Contributing](#contributing)
 5. [Licensing](#licensing)
 
@@ -46,17 +46,18 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 ### Limitations
 
-* PhotoDemon isn't designed for OSes other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
+* PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow it to work on OSX, Linux, or BSD systems, but program stability and performance may suffer.
 
-## What's new in this release
+## What's new in nightly builds
 
-[Current developer builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2017/11/28/photodemon-7-0-release.html):
+[Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2017/11/28/photodemon-7-0-release.html):
 
 - Comprehensive support for [Adobe Photoshop (PSD) files](https://photodemon.org/2019/02/20/psd-support-now-available.html) and their open-source equivalent, [OpenRaster (ORA) files](https://www.openraster.org/)
 - Comprehensive support for [animated PNG and GIF files](https://github.com/tannerhelland/PhotoDemon/issues/278)
 - New [custom-built PNG engine](https://github.com/tannerhelland/PhotoDemon/commit/8206ae38831bc095afa49556420bbb7d5c15778f) with a fully integrated color-mangement pipeline; the engine also [auto-optimizes PNGs losslessly](https://github.com/tannerhelland/PhotoDemon/commit/10c78b3cc12c7e99af49d1667f5d8887b99a054c) for maximum file size reductions, with additional options for lossy quantization (similar to [pngquant](https://pngquant.org/)).
 - Main UI support for viewing animated images
 - New best-in-class [gradient tool](https://www.patreon.com/posts/photodemons-new-26199115) and gradient editor
+- New clone stamp tool
 - Main UI now provides [a search bar](https://www.patreon.com/posts/photodemon-now-26904685) for locating features and tools
 - Main UI now provides [on-canvas rulers](https://www.patreon.com/posts/canvas-rulers-to-19178070)
 - New on-canvas [measure tool](https://www.patreon.com/posts/how-to-use-new-7-20466383) with support for auto-straightening the image

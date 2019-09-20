@@ -899,6 +899,20 @@ Private Sub NewToolSelected()
                 
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage
+    
+    'Finally, free any resources tied to the old tool
+    Select Case g_PreviousTool
+    
+        Case PAINT_SOFTBRUSH
+            Tools_Paint.ReduceMemoryIfPossible
+            
+        Case PAINT_CLONE
+            Tools_Clone.ReduceMemoryIfPossible
+            
+        Case PAINT_FILL
+            Tools_Fill.ReduceMemoryIfPossible
+    
+    End Select
         
 End Sub
 

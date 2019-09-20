@@ -470,12 +470,21 @@ Public Sub SetFillTolerance(ByVal newTolerance As Single)
     If EnsureFillerExists Then m_FloodFill.SetTolerance newTolerance
 End Sub
 
+'Want to free up memory without completely releasing everything tied to this class?  That's what this function
+' is for.  It should (ideally) be called whenever this tool is deactivated.
+'
+'Importantly, this sub does *not* touch anything that may require the underlying tool engine to be re-initialized.
+' It only releases objects that the tool will auto-generate as necessary.
+Public Sub ReduceMemoryIfPossible()
+    If (Not m_FloodFill Is Nothing) Then m_FloodFill.FreeUpResources
+    Set m_FillOutline = Nothing
+    Set m_FillImage = Nothing
+End Sub
+
 'Before PD closes, you *must* call this function!  It will free any lingering fill resources (which are cached
 ' for performance reasons).  You can also call this function any time without penalty, if you need to free
 ' up memory or GDI resources.  (Freed objects are automatically recreated as-needed.)
 Public Sub FreeFillResources()
-    If (Not m_FloodFill Is Nothing) Then m_FloodFill.FreeUpResources
-    Set m_FillOutline = Nothing
-    Set m_FillImage = Nothing
+    ReduceMemoryIfPossible
 End Sub
 

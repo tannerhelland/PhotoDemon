@@ -52,7 +52,6 @@ End Enum
 Private m_BrushOutlinePath As pd2DPath
 
 'Brush resources, used only as necessary.  Check for null values before using.
-Private m_GDIPPen As pd2DPen
 Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
 
 'Brush attributes are stored in these variables
@@ -1014,10 +1013,26 @@ Public Sub InitializeBrushEngine()
     
 End Sub
 
+'Want to free up memory without completely releasing everything tied to this class?  That's what this function
+' is for.  It should (ideally) be called whenever this tool is deactivated.
+'
+'Importantly, this sub does *not* touch anything that may require the underlying tool engine to be re-initialized.
+' It only releases objects that the tool will auto-generate as necessary.
+Public Sub ReduceMemoryIfPossible()
+    
+    Set m_BrushOutlinePath = Nothing
+    
+    'When freeing the underlying brush, we also need to reset its creation flags
+    ' (to ensure it gets re-created correctly)
+    m_BrushIsReady = False
+    m_BrushCreatedAtLeastOnce = False
+    Set m_SrcPenDIB = Nothing
+    
+End Sub
+
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).
 Public Sub FreeBrushResources()
-    Set m_GDIPPen = Nothing
+    ReduceMemoryIfPossible
     Set m_CustomPenImage = Nothing
-    Set m_BrushOutlinePath = Nothing
 End Sub

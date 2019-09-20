@@ -1,10 +1,10 @@
 Attribute VB_Name = "Tools_Clone"
 '***************************************************************************
 'Clone stamp tool interface
-'Copyright 2016-2019 by Tanner Helland
-'Created: 1/November/16
-'Last updated: 16/September/19
-'Last update: split off from soft brush into its own engine
+'Copyright 2019-2019 by Tanner Helland
+'Created: 16/September/19
+'Last updated: 20/September/19
+'Last update: add "sample merged" option
 '
 'The clone tool is nearly identical to the standard soft brush tool.  The only difference is in how the
 ' source overlay is calculated (e.g. instead of a solid fill, it samples from a source image/layer).
@@ -82,7 +82,7 @@ Private m_SourceExists As Boolean
 Private m_SourceImageID As Long, m_SourceLayerID As Long
 Private m_SourcePoint As PointFloat, m_SourceSetThisClick As Boolean
 Private m_SourceOffsetX As Single, m_SourceOffsetY As Single
-Private m_SampleMerged As Boolean
+Private m_SampleMerged As Boolean, m_SampleMergedCopy As pdDIB
 Private m_Sample As pdDIB, m_SampleUntouched As pdDIB
 Private m_CtrlKeyDown As Boolean
 
@@ -586,6 +586,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         PDImages.GetActiveImage.ScratchLayer.SetLayerOpacity m_BrushOpacity
         PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
+        PDImages.GetActiveImage.ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
         
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX
@@ -1298,9 +1299,32 @@ Public Sub InitializeBrushEngine()
     
 End Sub
 
+'Want to free up memory without completely releasing everything tied to this class?  That's what this function
+' is for.  It should (ideally) be called whenever this tool is deactivated.
+'
+'Importantly, this sub does *not* touch anything that may require the underlying tool engine to be re-initialized.
+' It only releases objects that the tool will auto-generate as necessary.
+Public Sub ReduceMemoryIfPossible()
+    
+    Set m_BrushOutlinePath = Nothing
+    
+    'When freeing the underlying brush, we also need to reset its creation flags
+    ' (to ensure it gets re-created correctly)
+    m_BrushIsReady = False
+    m_BrushCreatedAtLeastOnce = False
+    Set m_SrcPenDIB = Nothing
+    
+    m_MaskSize = 0
+    Erase m_Mask
+    
+    Set m_SampleMergedCopy = Nothing
+    Set m_Sample = Nothing
+    Set m_SampleUntouched = Nothing
+    
+End Sub
+
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).
 Public Sub FreeBrushResources()
-    Set m_BrushOutlinePath = Nothing
-    Set m_SrcPenDIB = Nothing
+    ReduceMemoryIfPossible
 End Sub
