@@ -123,6 +123,10 @@ Public Function GetBrushOpacity() As Single
     GetBrushOpacity = m_BrushOpacity
 End Function
 
+Public Function GetBrushSampleMerged() As Boolean
+    GetBrushSampleMerged = m_SampleMerged
+End Function
+
 Public Function GetBrushSize() As Single
     GetBrushSize = m_BrushSize
 End Function
@@ -180,6 +184,13 @@ End Sub
 Public Sub SetBrushOpacity(ByVal newOpacity As Single)
     If (newOpacity <> m_BrushOpacity) Then
         m_BrushOpacity = newOpacity
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushSampleMerged(ByVal newState As Boolean)
+    If (newState <> m_SampleMerged) Then
+        m_SampleMerged = newState
         m_BrushIsReady = False
     End If
 End Sub
@@ -606,6 +617,23 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
         
+        'If "sample merged" is active, retrieve said merged sample now
+        If m_SampleMerged Then
+            
+            'If the source image is a single-layer image, skip making a copy and instead just point the
+            ' object directly at the source layer.  (The copy is *never* modified.)
+            Dim mergeShortcutOK As Boolean
+            mergeShortcutOK = (PDImages.GetImageByID(m_SourceImageID).GetNumOfLayers = 1)
+            If mergeShortcutOK Then mergeShortcutOK = (Not PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).AffineTransformsActive(True))
+            If mergeShortcutOK Then
+                Set m_SampleMergedCopy = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+            Else
+                If (m_SampleMergedCopy Is Nothing) Then Set m_SampleMergedCopy = New pdDIB
+                PDImages.GetImageByID(m_SourceImageID).GetCompositedImage m_SampleMergedCopy, True
+            End If
+            
+        End If
+        
     End If
     
     'Next, determine if the shift key is being pressed.  If it is, and if the user has already committed a
@@ -619,7 +647,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     
     'If the mouse button is down, perform painting between the old and new points.
     ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
-    If mouseButtonDown And m_SourceExists Then
+    If (mouseButtonDown Or m_Paintbrush.IsLastDab()) And m_SourceExists Then
     
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
         VBHacks.GetHighResTime startTime
@@ -738,7 +766,11 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
     If allowedToDab Then
         
         Dim srcDIB As pdDIB
-        Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+        If m_SampleMerged Then
+            Set srcDIB = m_SampleMergedCopy
+        Else
+            Set srcDIB = PDImages.GetImageByID(m_SourceImageID).GetLayerByID(m_SourceLayerID).layerDIB
+        End If
         
         'Prep the sampling DIB.  Note that it is *always* full size, regardless of the actual brush size we're gonna use
         ' (e.g. the brush may shrink because it's beyond the border of the image, but to reduce memory thrashing, we
@@ -759,7 +791,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             
             'Retrieve the relevant portion of the source image, then make an *untouched* copy of it
             m_Sample.SetInitialAlphaPremultiplicationState True
-            srcDIB.AlphaBlendToDCEx m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcRectL.Left, srcRectL.Top, srcRectL.Width, srcRectL.Height
+            GDI.BitBltWrapper m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcDIB.GetDIBDC, srcRectL.Left, srcRectL.Top
             Set srcDIB = Nothing
             
             If (m_SampleUntouched Is Nothing) Then Set m_SampleUntouched = New pdDIB
@@ -802,8 +834,6 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             Set dstDIB = PDImages.GetActiveImage.ScratchLayer.layerDIB
             m_Sample.AlphaBlendToDCEx dstDIB.GetDIBDC, dstX, dstY, dstRectL.Width, dstRectL.Height, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, dabOpacity * 255
             
-            'GoTo SkipAlphaFix
-            
             'We now need to do something special for semi-transparent pixels.  These pixels *cannot* be allowed
             ' to become more transparent than the source pixel data (otherwise it wouldn't be a clone operation).
             ' As such, we need to scan the pixels we just painted, and ensure that they do not exceed their
@@ -816,40 +846,33 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             
             'Normally we would need to do some messy boundary checks here, but this was already handled by the
             ' CalculateSrcDstRects() function, above.
-            Dim pxSampleL() As Byte, pxDstL() As Byte
+            Dim pxSampleL() As RGBQuad, pxDstL() As RGBQuad
             Dim refAlpha As Long, testAlpha As Long
             
             Dim xOffset As Long, yOffset As Long
-            xOffset = (dstX - dstRectL.Left) * 4
+            xOffset = (dstX - dstRectL.Left)
             yOffset = dstY - dstRectL.Top
             
-            xStart = dstRectL.Left * 4
-            xEnd = (dstRectL.Left + dstRectL.Width - 1) * 4
+            xStart = dstRectL.Left
+            xEnd = (dstRectL.Left + dstRectL.Width - 1)
             yStart = dstRectL.Top
             yEnd = dstRectL.Top + dstRectL.Height - 1
             
             For y = yStart To yEnd
-                m_SampleUntouched.WrapArrayAroundScanline pxSampleL, sampleSA, y
-                dstDIB.WrapArrayAroundScanline pxDstL, dstSA, yOffset + y
-            For x = xStart To xEnd Step 4
+                m_SampleUntouched.WrapRGBQuadArrayAroundScanline pxSampleL, sampleSA, y
+                dstDIB.WrapRGBQuadArrayAroundScanline pxDstL, dstSA, yOffset + y
+            For x = xStart To xEnd
                 
                 'Retrieve our "reference" alpha values from the sample
-                refAlpha = pxSampleL(x + 3)
+                refAlpha = pxSampleL(x).Alpha
                 
                 'Ignore opaque pixels
                 If (refAlpha < 255) Then
                 
-                    'Is the destination alpha higher than this?
-                    testAlpha = pxDstL(xOffset + x + 3)
-                    If (testAlpha > refAlpha) Then
-                    
-                        'Yep, alpha is too high.  Clone the destination pixel.
-                        pxDstL(xOffset + x) = pxSampleL(x)
-                        pxDstL(xOffset + x + 1) = pxSampleL(x + 1)
-                        pxDstL(xOffset + x + 2) = pxSampleL(x + 2)
-                        pxDstL(xOffset + x + 3) = pxSampleL(x + 3)
-                        
-                    End If
+                    'Is the destination alpha higher than the original source's alpha?
+                    ' If it is, clone the destination pixel in its place.
+                    testAlpha = pxDstL(xOffset + x).Alpha
+                    If (testAlpha > refAlpha) Then pxDstL(xOffset + x) = pxSampleL(x)
                     
                 End If
             
@@ -857,10 +880,8 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             Next y
             
             'Free array references
-            m_SampleUntouched.UnwrapArrayFromDIB pxSampleL
-            dstDIB.UnwrapArrayFromDIB pxDstL
-            
-SkipAlphaFix:
+            m_SampleUntouched.UnwrapRGBQuadArrayFromDIB pxSampleL
+            dstDIB.UnwrapRGBQuadArrayFromDIB pxDstL
             
         '/end clone regions are valid
         End If
@@ -888,8 +909,8 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
     With dstRectL
         .Left = 0
         .Top = 0
-        .Width = m_BrushSizeInt
-        .Height = m_BrushSizeInt
+        'dstRectL width and height will *always* be identical to srcRectL width and height; as such,
+        ' we don't populate them until the end of this function
     End With
     
     'Next, perform boundary checks on the source rectangle, and modify *both* rectangles to account for any changes
@@ -898,7 +919,6 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = srcRectL.Left
         srcRectL.Left = 0
         dstRectL.Left = dstRectL.Left - tmpOffset
-        dstRectL.Width = dstRectL.Width + tmpOffset
         srcRectL.Width = srcRectL.Width + tmpOffset
     End If
     
@@ -906,19 +926,16 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = srcRectL.Top
         srcRectL.Top = 0
         dstRectL.Top = dstRectL.Top - tmpOffset
-        dstRectL.Height = dstRectL.Height + tmpOffset
         srcRectL.Height = srcRectL.Height + tmpOffset
     End If
     
     If (srcRectL.Left + srcRectL.Width > srcDIB.GetDIBWidth) Then
         tmpOffset = (srcRectL.Left + srcRectL.Width) - srcDIB.GetDIBWidth
-        dstRectL.Width = dstRectL.Width - tmpOffset
         srcRectL.Width = srcRectL.Width - tmpOffset
     End If
     
     If (srcRectL.Top + srcRectL.Height > srcDIB.GetDIBHeight) Then
         tmpOffset = (srcRectL.Top + srcRectL.Height) - srcDIB.GetDIBHeight
-        dstRectL.Height = dstRectL.Height - tmpOffset
         srcRectL.Height = srcRectL.Height - tmpOffset
     End If
     
@@ -932,7 +949,6 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = dstX
         dstX = 0
         dstRectL.Left = dstRectL.Left - tmpOffset
-        dstRectL.Width = dstRectL.Width + tmpOffset
         srcRectL.Left = srcRectL.Left - tmpOffset
         srcRectL.Width = srcRectL.Width + tmpOffset
     End If
@@ -941,22 +957,23 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = dstY
         dstY = 0
         dstRectL.Top = dstRectL.Top - tmpOffset
-        dstRectL.Height = dstRectL.Height + tmpOffset
         srcRectL.Top = srcRectL.Top - tmpOffset
         srcRectL.Height = srcRectL.Height + tmpOffset
     End If
     
-    If (dstX + dstRectL.Width > scratchLayerDIB.GetDIBWidth) Then
-        tmpOffset = (dstX + dstRectL.Width) - scratchLayerDIB.GetDIBWidth
-        dstRectL.Width = dstRectL.Width - tmpOffset
+    If (dstX + srcRectL.Width > scratchLayerDIB.GetDIBWidth) Then
+        tmpOffset = (dstX + srcRectL.Width) - scratchLayerDIB.GetDIBWidth
         srcRectL.Width = srcRectL.Width - tmpOffset
     End If
     
-    If (dstY + dstRectL.Height > scratchLayerDIB.GetDIBHeight) Then
-        tmpOffset = (dstY + dstRectL.Height) - scratchLayerDIB.GetDIBHeight
-        dstRectL.Height = dstRectL.Height - tmpOffset
+    If (dstY + srcRectL.Height > scratchLayerDIB.GetDIBHeight) Then
+        tmpOffset = (dstY + srcRectL.Height) - scratchLayerDIB.GetDIBHeight
         srcRectL.Height = srcRectL.Height - tmpOffset
     End If
+    
+    'Mirror the source width/height to the destination
+    dstRectL.Width = srcRectL.Width
+    dstRectL.Height = srcRectL.Height
     
     'Rects with sub-zero (or zero) dimensions are invalid, and we can skip painting them entirely
     CalculateSrcDstRects = (srcRectL.Width > 0) And (srcRectL.Height > 0)
@@ -1297,6 +1314,12 @@ Public Sub InitializeBrushEngine()
     m_BrushIsReady = False
     m_BrushCreatedAtLeastOnce = False
     
+    'Flow and spacing are *not* currently available to the user (in the tool UI).  They may be restored
+    ' in a future update, and as such, no work is required to integrate them - the values are "ready to go".
+    ' For now, we just set them to default values.
+    m_BrushSpacing = 0#
+    m_BrushFlow = 100#
+    
 End Sub
 
 'Want to free up memory without completely releasing everything tied to this class?  That's what this function
@@ -1320,6 +1343,9 @@ Public Sub ReduceMemoryIfPossible()
     Set m_SampleMergedCopy = Nothing
     Set m_Sample = Nothing
     Set m_SampleUntouched = Nothing
+    
+    'While we're here, remove the source point
+    m_SourceExists = False
     
 End Sub
 

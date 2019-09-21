@@ -6,7 +6,7 @@
 
 <langid>ko-KR</langid>
 <langname>한국어</langname>
-<langversion>1.0.104</langversion>
+<langversion>1.0.105</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14306,11 +14306,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <!-- BEGIN text for Toolpanel_Clone.frm (toolpanel_Clone) -->
 
 <phrase>
-<original>spacing</original>
-<translation>간격</translation>
-</phrase>
-
-<phrase>
 <original>blend / alpha mode</original>
 <translation>혼합</translation>
 </phrase>
@@ -14321,11 +14316,11 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 </phrase>
 
 <phrase>
-<original>flow</original>
-<translation>흐름</translation>
+<original>sample all layers</original>
+<translation>모든 레이어 샘플링</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -14334,11 +14329,6 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <phrase>
 <original>sample radius</original>
 <translation>샘플 반경</translation>
-</phrase>
-
-<phrase>
-<original>sample all layers</original>
-<translation>모든 레이어 샘플링</translation>
 </phrase>
 
 <phrase>
@@ -14356,13 +14346,23 @@ I이 불편을 끼쳐 드려 죄송합니다. 불행히도  %2는 할 수있는 
 <translation>엔</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>spacing</original>
+<translation>간격</translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation>흐름</translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
 
@@ -16230,8 +16230,8 @@ I 여전히 업데이트를 비활성화하도록 선택하는 경우 때때로 
 
 <phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4996 phrases. -->
-<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4993 phrases. -->
+<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
 <!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>

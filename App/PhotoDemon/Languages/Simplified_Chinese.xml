@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1171</langversion>
+<langversion>7.1.1172</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -14304,11 +14304,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Toolpanel_Clone.frm (toolpanel_Clone) -->
 
 <phrase>
-<original>spacing</original>
-<translation>间距</translation>
-</phrase>
-
-<phrase>
 <original>blend / alpha mode</original>
 <translation>混合/ Alpha模式</translation>
 </phrase>
@@ -14319,11 +14314,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>flow</original>
-<translation>连续性</translation>
+<original>sample all layers</original>
+<translation>采样所有层</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -14332,11 +14327,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>sample radius</original>
 <translation>样品半径</translation>
-</phrase>
-
-<phrase>
-<original>sample all layers</original>
-<translation>采样所有层</translation>
 </phrase>
 
 <phrase>
@@ -14354,13 +14344,23 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>N / A</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>spacing</original>
+<translation>间距</translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation>连续性</translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
 
@@ -16225,8 +16225,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4996 phrases. -->
-<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4993 phrases. -->
+<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
 <!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>

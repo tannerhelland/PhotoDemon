@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1413</langversion>
+<langversion>7.2.1414</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14315,11 +14315,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <!-- BEGIN text for Toolpanel_Clone.frm (toolpanel_Clone) -->
 
 <phrase>
-<original>spacing</original>
-<translation>Abstand</translation>
-</phrase>
-
-<phrase>
 <original>blend / alpha mode</original>
 <translation>Überblendungs- / Alpha-Modus</translation>
 </phrase>
@@ -14330,11 +14325,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>flow</original>
-<translation>Fluss</translation>
+<original>sample all layers</original>
+<translation>Alle Layer samplen</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -14343,11 +14338,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <phrase>
 <original>sample radius</original>
 <translation>Sample-Radius</translation>
-</phrase>
-
-<phrase>
-<original>sample all layers</original>
-<translation>Alle Layer samplen</translation>
 </phrase>
 
 <phrase>
@@ -14365,13 +14355,23 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>spacing</original>
+<translation>Abstand</translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation>Fluss</translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
 
@@ -16240,8 +16240,8 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4996 phrases. -->
-<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4993 phrases. -->
+<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
 <!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>

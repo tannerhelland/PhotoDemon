@@ -26,33 +26,6 @@ Begin VB.Form toolpanel_Clone
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdSlider sldSpacing 
-      Height          =   495
-      Left            =   10560
-      TabIndex        =   6
-      Top             =   960
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   1000
-      ScaleStyle      =   1
-      ScaleExponent   =   5
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
-   Begin PhotoDemon.pdButtonStrip btsSpacing 
-      Height          =   855
-      Left            =   10560
-      TabIndex        =   5
-      Top             =   0
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   1508
-      Caption         =   "spacing"
-      FontSizeCaption =   10
-   End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
@@ -133,23 +106,15 @@ Begin VB.Form toolpanel_Clone
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.pdSlider sltBrushSetting 
-      CausesValidation=   0   'False
-      Height          =   690
-      Index           =   3
-      Left            =   6720
-      TabIndex        =   7
-      Top             =   660
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "flow"
-      FontSizeCaption =   10
-      Max             =   100
-      SigDigits       =   1
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
+   Begin PhotoDemon.pdCheckBox chkSampleMerged 
+      Height          =   375
+      Left            =   6750
+      TabIndex        =   5
+      Top             =   945
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   450
+      Caption         =   "sample all layers"
    End
 End
 Attribute VB_Name = "toolpanel_Clone"
@@ -166,6 +131,11 @@ Attribute VB_Exposed = False
 '
 'This form includes all user-editable settings for the "clone stamp" canvas tool.
 '
+'Some brush settings in this panel are currently commented out.  This is not a bug - these features
+' are already implemented in the tools_clone module, but PD's brush UI is being reworked to remove
+' some of these dedicated controls in favor of merging them into a separate brush UI (where the user
+' can pick brushes from a pre-built list or design their own, similar to the gradients dialog).
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
 '
@@ -177,9 +147,9 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
-Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
-    UpdateSpacingVisibility
-End Sub
+'Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
+'    UpdateSpacingVisibility
+'End Sub
 
 Private Sub cboBrushSetting_Click(Index As Integer)
 
@@ -197,17 +167,21 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
 End Sub
 
+Private Sub chkSampleMerged_Click()
+    Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
+End Sub
+
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
     
-    'Populate any other list-style UI elements
-    btsSpacing.AddItem "auto", 0
-    btsSpacing.AddItem "manual", 1
-    btsSpacing.ListIndex = 0
-    UpdateSpacingVisibility
+    ''Populate any other list-style UI elements
+    'btsSpacing.AddItem "auto", 0
+    'btsSpacing.AddItem "manual", 1
+    'btsSpacing.ListIndex = 0
+    'UpdateSpacingVisibility
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -240,9 +214,9 @@ Public Sub UpdateAgainstCurrentTheme()
 
 End Sub
 
-Private Sub sldSpacing_Change()
-    Tools_Clone.SetBrushSpacing sldSpacing.Value
-End Sub
+'Private Sub sldSpacing_Change()
+'    Tools_Clone.SetBrushSpacing sldSpacing.Value
+'End Sub
 
 Private Sub sltBrushSetting_Change(Index As Integer)
     
@@ -260,9 +234,9 @@ Private Sub sltBrushSetting_Change(Index As Integer)
         Case 2
             Tools_Clone.SetBrushHardness sltBrushSetting(Index).Value
             
-        'Flow
-        Case 3
-            Tools_Clone.SetBrushFlow sltBrushSetting(Index).Value
+        ''Flow
+        'Case 3
+        '    Tools_Clone.SetBrushFlow sltBrushSetting(Index).Value
     
     End Select
     
@@ -273,11 +247,12 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushSize sltBrushSetting(0).Value
     Tools_Clone.SetBrushOpacity sltBrushSetting(1).Value
     Tools_Clone.SetBrushHardness sltBrushSetting(2).Value
-    Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
     Tools_Clone.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Tools_Clone.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Clone.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
+    Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
+    'Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
+    'If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -285,23 +260,24 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(0).Value = Tools_Clone.GetBrushSize()
     sltBrushSetting(1).Value = Tools_Clone.GetBrushOpacity()
     sltBrushSetting(2).Value = Tools_Clone.GetBrushHardness()
-    sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
     cboBrushSetting(0).ListIndex = Tools_Clone.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Tools_Clone.GetBrushAlphaMode()
-    If (Tools_Clone.GetBrushSpacing() = 0#) Then
-        btsSpacing.ListIndex = 0
-    Else
-        btsSpacing.ListIndex = 1
-        sldSpacing.Value = Tools_Clone.GetBrushSpacing()
-    End If
+    chkSampleMerged.Value = Tools_Clone.GetBrushSampleMerged()
+    'sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
+    'If (Tools_Clone.GetBrushSpacing() = 0#) Then
+    '    btsSpacing.ListIndex = 0
+    'Else
+    '    btsSpacing.ListIndex = 1
+    '    sldSpacing.Value = Tools_Clone.GetBrushSpacing()
+    'End If
 End Sub
 
-Private Sub UpdateSpacingVisibility()
-    If (btsSpacing.ListIndex = 0) Then
-        sldSpacing.Visible = False
-        Tools_Clone.SetBrushSpacing 0#
-    Else
-        sldSpacing.Visible = True
-        Tools_Clone.SetBrushSpacing sldSpacing.Value
-    End If
-End Sub
+'Private Sub UpdateSpacingVisibility()
+'    If (btsSpacing.ListIndex = 0) Then
+'        sldSpacing.Visible = False
+'        Tools_Clone.SetBrushSpacing 0#
+'    Else
+'        sldSpacing.Visible = True
+'        Tools_Clone.SetBrushSpacing sldSpacing.Value
+'    End If
+'End Sub

@@ -323,6 +323,20 @@ Friend Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
     PutMem4 VarPtrArray(srcArray), 0&
 End Sub
 
+Friend Sub WrapRGBQuadArrayAroundDIB(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray2D)
+    PrepInternalLongSafeArray srcSafeArray
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
+Friend Sub WrapRGBQuadArrayAroundScanline(ByRef srcArray() As RGBQuad, ByRef srcSafeArray As SafeArray1D, Optional ByVal dstScanLine As Long = 0)
+    PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
+Friend Sub UnwrapRGBQuadArrayFromDIB(ByRef srcArray() As RGBQuad)
+    PutMem4 VarPtrArray(srcArray), 0
+End Sub
+
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
 ' alpha accordingly, if the DIB will be rendered to the screen.
 Friend Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean

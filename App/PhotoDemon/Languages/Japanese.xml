@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語</langname>
-<langversion>1.0.127</langversion>
+<langversion>1.0.128</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14307,11 +14307,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <!-- BEGIN text for Toolpanel_Clone.frm (toolpanel_Clone) -->
 
 <phrase>
-<original>spacing</original>
-<translation>間隔</translation>
-</phrase>
-
-<phrase>
 <original>blend / alpha mode</original>
 <translation>ブレンド</translation>
 </phrase>
@@ -14322,11 +14317,11 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 </phrase>
 
 <phrase>
-<original>flow</original>
-<translation>フロー</translation>
+<original>sample all layers</original>
+<translation>すべてのレイヤーをサンプリングする</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -14335,11 +14330,6 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <phrase>
 <original>sample radius</original>
 <translation>サンプル半径</translation>
-</phrase>
-
-<phrase>
-<original>sample all layers</original>
-<translation>すべてのレイヤーをサンプリングする</translation>
 </phrase>
 
 <phrase>
@@ -14357,13 +14347,23 @@ Iは、この不便を心からお詫び申し上げますが、残念ながら�
 <translation>n</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 43 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_ColorPicker.frm contains 48 phrases. 44 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_ColorPicker.frm-->
 
 <!-- BEGIN text for Toolpanel_Eraser.frm (toolpanel_Eraser) -->
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>spacing</original>
+<translation>間隔</translation>
+</phrase>
+
+<phrase>
+<original>flow</original>
+<translation>フロー</translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
 
@@ -16231,8 +16231,8 @@ Iまだ更新を無効にする場合は、随時新しいバージョンを確�
 
 <phrasecount>2703</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4996 phrases. -->
-<!-- 2293 are duplicates, so only 2703 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4993 phrases. -->
+<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
 <!-- These 2703 phrases contain approximately 12708 total words. -->
 
 </pdData>
