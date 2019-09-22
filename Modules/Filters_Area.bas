@@ -486,7 +486,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, quickX2 As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, quickX2 As Long, quickY As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
@@ -509,15 +509,13 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     Dim nu As Double, boundaryScale As Double, postScale As Double
     Dim step As Long
     
-    'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
+    'Calculate sigma from the radius, using a similar formula to ImageJ (per this link - http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur)
     Dim sigma As Double
-    sigma = Sqr(-(radius * radius) / (2# * Log(1# / 255#)))
+    Const LOG_255_BASE_10 As Double = 2.40654018043395
+    sigma = (radius + 1) / Sqr(2 * LOG_255_BASE_10)
     
-    'Another possible sigma formula, per this link (http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur):
-    'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
-    
-    'Make sure sigma and steps are valid
-    If (sigma <= 0) Then sigma = 0.01
+    'Make sure sigma and steps are not so small as to produce errors or invisible results
+    If (sigma <= 0#) Then sigma = 0.001
     If (numSteps <= 0) Then numSteps = 1
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
@@ -644,10 +642,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                 
                 'Filter down
                 For y = initY + 1 To finalY
-                    QuickY = (y - 1)
-                    rFloat(x, y) = rFloat(x, y) + nu * rFloat(x, QuickY)
-                    gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, QuickY)
-                    bFloat(x, y) = bFloat(x, y) + nu * bFloat(x, QuickY)
+                    quickY = (y - 1)
+                    rFloat(x, y) = rFloat(x, y) + nu * rFloat(x, quickY)
+                    gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, quickY)
+                    bFloat(x, y) = bFloat(x, y) + nu * bFloat(x, quickY)
                 Next y
                 
                 'Fix closing column values
@@ -657,10 +655,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                 
                 'Filter up
                 For y = finalY To 1 Step -1
-                    QuickY = y - 1
-                    rFloat(x, QuickY) = rFloat(x, QuickY) + nu * rFloat(x, y)
-                    gFloat(x, QuickY) = gFloat(x, QuickY) + nu * gFloat(x, y)
-                    bFloat(x, QuickY) = bFloat(x, QuickY) + nu * bFloat(x, y)
+                    quickY = y - 1
+                    rFloat(x, quickY) = rFloat(x, quickY) + nu * rFloat(x, y)
+                    gFloat(x, quickY) = gFloat(x, quickY) + nu * gFloat(x, y)
+                    bFloat(x, quickY) = bFloat(x, quickY) + nu * bFloat(x, y)
                 Next y
                 
                 'Handle alpha separately
@@ -675,8 +673,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                     aFloat(x, finalY) = aFloat(x, finalY) * boundaryScale
                     
                     For y = finalY To 1 Step -1
-                        QuickY = y - 1
-                        aFloat(x, QuickY) = aFloat(x, QuickY) + nu * aFloat(x, y)
+                        quickY = y - 1
+                        aFloat(x, quickY) = aFloat(x, quickY) + nu * aFloat(x, y)
                     Next y
                     
                 End If
