@@ -425,6 +425,21 @@ Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
     Loop
 End Sub
 
+Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
+    
+    Const QS_MOUSEMOVE = &H2
+    Const QS_MOUSEBUTTON = &H4
+    Const QS_MOUSE = (QS_MOUSEMOVE Or QS_MOUSEBUTTON)
+    Const QS_KEY = &H1
+    Const QS_INPUT = (QS_MOUSE Or QS_KEY)
+    Const PM_QS_INPUT = (QS_INPUT * (2 ^ 16))
+    
+    Dim tmpMsg As winMsg
+    Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1& Or PM_QS_INPUT)
+    Loop
+    
+End Sub
+
 Public Function FreeLib(ByVal hLib As Long) As Boolean
     If (hLib = 0) Then
         FreeLib = True

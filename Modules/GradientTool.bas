@@ -140,9 +140,6 @@ Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As L
 ' DIB is used to cache intermediate gradient results.
 Private m_PreviewDIB As pdDIB
 
-'Set to TRUE when a gradient is actively being rendered
-Private m_GradientRendering As Boolean
-
 'Universal gradient settings
 Public Function GetGradientAlphaMode() As PD_AlphaMode
     GetGradientAlphaMode = m_GradientAlphamode
@@ -245,8 +242,6 @@ End Sub
 Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
     If (Not PDImages.IsImageActive()) Then Exit Sub                 'No images loaded
-    If m_GradientRendering Then Exit Sub                            'Render already in progress
-    m_GradientRendering = True
     
     m_MouseX = srcX
     m_MouseY = srcY
@@ -415,8 +410,6 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     ' the standard (full-image-sized) one.
     If (g_ViewportPerformance >= PD_PERF_BALANCED) And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
     If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
-    
-    m_GradientRendering = False
     
 End Sub
 
@@ -1379,7 +1372,7 @@ End Sub
 
 'Want to commit your current gradient work?  Call this function to make the gradient results permanent.
 Public Sub CommitGradientResults()
-    
+        
     'This dummy string only exists to ensure that the processor name gets localized properly
     ' (as that text is used for Undo/Redo descriptions).  PD's translation engine will detect
     ' the TranslateMessage() call and produce a matching translation entry.
@@ -1392,8 +1385,8 @@ Public Sub CommitGradientResults()
     With tmpRectF
         .Left = 0
         .Top = 0
-        .Width = PDImages.GetActiveImage.ScratchLayer.GetLayerWidth
-        .Height = PDImages.GetActiveImage.ScratchLayer.GetLayerHeight
+        .Width = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBWidth
+        .Height = PDImages.GetActiveImage.ScratchLayer.layerDIB.GetDIBHeight
     End With
     
     Layers.CommitScratchLayer "Gradient tool", tmpRectF

@@ -485,7 +485,7 @@ Private Enum PD_ToolPanels
     TP_Gradient = 11
 End Enum
 
-Private Const NUM_OF_TOOL_PANELS As Long = 11
+Private Const NUM_OF_TOOL_PANELS As Long = TP_Gradient + 1
 
 #If False Then
     Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Selections = 3
