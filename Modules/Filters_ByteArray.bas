@@ -625,7 +625,7 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     Dim i As Long, j As Long
     Dim g As Long, newG As Long
-    Dim quickX As Long, QuickY As Long
+    Dim quickX As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -658,15 +658,15 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                QuickY = y + j
+                quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If QuickY > finalY Then GoTo NextDitheredPixel
+                If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
@@ -735,7 +735,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     ReDim dErrors(initX To finalX, initY To finalY) As Single
     
     Dim i As Long, j As Long
-    Dim quickX As Long, QuickY As Long
+    Dim quickX As Long, quickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -774,15 +774,15 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 If ditherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
                 quickX = x + i
-                QuickY = y + j
+                quickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
                 If quickX < initX Then GoTo NextDitheredPixel
                 If quickX > finalX Then GoTo NextDitheredPixel
-                If QuickY > finalY Then GoTo NextDitheredPixel
+                If quickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
+                dErrors(quickX, quickY) = dErrors(quickX, quickY) + (errorVal * (CSng(ditherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j

@@ -148,7 +148,7 @@ Public Sub GaussianBlurFilter(ByVal effectParams As String, Optional ByVal toPre
             Dim srcDIB As pdDIB
             Set srcDIB = New pdDIB
             srcDIB.CreateFromExistingDIB workingDIB
-            CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
+            Filters_Layers.CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
             Set srcDIB = Nothing
         
         'IIR Gaussian estimation

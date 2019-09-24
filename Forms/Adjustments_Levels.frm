@@ -398,9 +398,9 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Dim r As Long, g As Long, b As Long, l As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim RMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
+    Dim rMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
     Dim RMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
-    RMax = 0: gMax = 0: bMax = 0: lMax = 0
+    rMax = 0: gMax = 0: bMax = 0: lMax = 0
     RMin = 255: gMin = 255: bMin = 255: lMin = 255
     
     'Calculate a percentage to ignore at either end.  Photoshop defaults to 0.5%, but the actual value might need to vary on
@@ -517,7 +517,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            RMax = r
+            rMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -575,7 +575,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     bMin = bMin \ 2
     lMin = lMin \ 2
     
-    RMax = RMax + ((255 - RMax) \ 2)
+    rMax = rMax + ((255 - rMax) \ 2)
     gMax = gMax + ((255 - gMax) \ 2)
     bMax = bMax + ((255 - bMax) \ 2)
     lMax = lMax + ((255 - lMax) \ 2)
@@ -590,7 +590,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     With cParams
         .AddParam "redinputmin", RMin
         .AddParam "redinputmid", 0.5
-        .AddParam "redinputmax", RMax
+        .AddParam "redinputmax", rMax
         .AddParam "redoutputmin", 0
         .AddParam "redoutputmax", 255
         

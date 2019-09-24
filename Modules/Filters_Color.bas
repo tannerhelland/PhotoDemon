@@ -75,10 +75,10 @@ Public Sub MenuInvert()
     ProgressBars.SetProgBarMax finalY
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    Dim tmpSA1d As SafeArray1D, pxData As Long, pxStride As Long
-    workingDIB.WrapArrayAroundScanline imageData, tmpSA1d, initY
-    pxData = tmpSA1d.pvData
-    pxStride = tmpSA1d.cElements
+    Dim tmpSA1D As SafeArray1D, pxData As Long, pxStride As Long
+    workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, initY
+    pxData = tmpSA1D.pvData
+    pxStride = tmpSA1D.cElements
     
     'Images are always 32-bpp
     initX = initX * 4
@@ -86,7 +86,7 @@ Public Sub MenuInvert()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For y = initY To finalY
-        tmpSA1d.pvData = pxData + pxStride * y
+        tmpSA1D.pvData = pxData + pxStride * y
     For x = initX To finalX Step 4
         imageData(x) = 255 Xor imageData(x)
         imageData(x + 1) = 255 Xor imageData(x + 1)
@@ -399,8 +399,8 @@ Public Sub fxAutoEnhance()
     Message "Auto-enhancing color and lighting..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim imageData() As Byte, tmpSA2d As SafeArray2D, tmpSA1d As SafeArray1D
-    EffectPrep.PrepImageData tmpSA2d
+    Dim imageData() As Byte, tmpSA2D As SafeArray2D, tmpSA1D As SafeArray1D
+    EffectPrep.PrepImageData tmpSA2D
     
     Dim imgDepth As Long
     imgDepth = curDIBValues.BytesPerPixel
@@ -443,7 +443,7 @@ Public Sub fxAutoEnhance()
     
     'Apply the filter
     For y = initY To finalY
-        workingDIB.WrapArrayAroundScanline imageData, tmpSA1d, y
+        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step imgDepth
         
         b = imageData(x)

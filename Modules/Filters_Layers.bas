@@ -1396,11 +1396,11 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     If (numIterations = 3) Then
         Dim stdDev As Double
         stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2# * Log(1# / 255#)))
-        comparableRadius = Int(stdDev * 2.37997232 * 0.5)
+        comparableRadius = Int(stdDev * 2.37997232 * 0.5 + 0.5)
     Else
     
-        'For larger iterations, it's not worth the trouble to perform a fine estimation, as the repeat iterations will
-        ' eliminate any smaller discrepancies.  Use a quick-and-dirty computation to calculate radius:
+        'For larger iterations, it's not worth the trouble to perform a fine estimation, as repeat iterations
+        ' eliminate small discrepancies.  Use a quick-and-dirty computation to calculate radius:
         comparableRadius = Int(equivalentGaussianRadius / numIterations + 0.5)
     
     End If
@@ -1426,7 +1426,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
         ' and how many radii remain to be calculated)
         Else
             
-            thisRadii = equivalentGaussianRadius - netRadii
+            thisRadii = (equivalentGaussianRadius - netRadii)
             
             'If the remainder is <= 0, simply remove the final iteration of the blur to compensate
             If (thisRadii < 1) Then
@@ -1450,14 +1450,14 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     dstDIB.CreateFromExistingDIB gaussDIB
     
     'Iterate a box blur, switching between the gauss and destination DIBs as we go
-    For i = 1 To numIterations
-    
-        If CreateHorizontalBlurDIB(radiiTable(i - 1), radiiTable(i - 1), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i - 1)) + (gaussDIB.GetDIBHeight * (i - 1))) > 0 Then
-            If CreateVerticalBlurDIB(radiiTable(i - 1), radiiTable(i - 1), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * (i - 1))) = 0 Then
+    For i = 0 To numIterations - 1
+        
+        If (radiiTable(i) > 0) Then
+            If (CreateHorizontalBlurDIB(radiiTable(i), radiiTable(i), dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * i)) > 0) Then
+                If (CreateVerticalBlurDIB(radiiTable(i), radiiTable(i), gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i + 1)) + (gaussDIB.GetDIBHeight * i)) = 0) Then Exit For
+            Else
                 Exit For
             End If
-        Else
-            Exit For
         End If
     
     Next i
@@ -2124,7 +2124,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xStride As Long, QuickY As Long
+    Dim xStride As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2184,8 +2184,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         lbY = y - uRadius
         If (lbY > 0) Then
         
-            QuickY = lbY - 1
-            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            quickY = lbY - 1
+            srcSA1D.pvData = srcDibPointer + srcDibStride * quickY
             
             For x = initX To finalX
                 xStride = x * 4
@@ -2203,8 +2203,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         ubY = y + dRadius
         If (ubY <= finalY) Then
         
-            QuickY = ubY
-            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            quickY = ubY
+            srcSA1D.pvData = srcDibPointer + srcDibStride * quickY
             
             For x = initX To finalX
                 xStride = x * 4
@@ -2427,7 +2427,7 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xStride As Long, QuickY As Long
+    Dim xStride As Long, quickY As Long
     
     Dim yRadius As Long
     yRadius = finalY - initY
@@ -2478,8 +2478,8 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
         lbY = y - uRadius
         If (lbY > startY) Then
         
-            QuickY = lbY - 1
-            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            quickY = lbY - 1
+            srcSA1D.pvData = srcDibPointer + srcDibStride * quickY
             
             For x = initX To finalX
                 xStride = x * 4
@@ -2497,8 +2497,8 @@ Public Function VerticalBlur_SubRegion(ByVal uRadius As Long, ByVal dRadius As L
         ubY = y + dRadius
         If (ubY <= yLimit) Then
         
-            QuickY = ubY
-            srcSA1D.pvData = srcDibPointer + srcDibStride * QuickY
+            quickY = ubY
+            srcSA1D.pvData = srcDibPointer + srcDibStride * quickY
             
             For x = initX To finalX
                 xStride = x * 4

@@ -285,7 +285,7 @@ Public Sub StretchHistogram()
     Dim r As Long, g As Long, b As Long
     
     'Max and min values
-    Dim RMax As Long, gMax As Long, bMax As Long
+    Dim rMax As Long, gMax As Long, bMax As Long
     Dim RMin As Long, gMin As Long, bMin As Long
     RMin = 255
     gMin = 255
@@ -302,7 +302,7 @@ Public Sub StretchHistogram()
         b = imageData(quickVal, y)
         
         If r < RMin Then RMin = r
-        If r > RMax Then RMax = r
+        If r > rMax Then rMax = r
         If g < gMin Then gMin = g
         If g > gMax Then gMax = g
         If b < bMin Then bMin = b
@@ -314,7 +314,7 @@ Public Sub StretchHistogram()
     Message "Stretching histogram..."
     Dim rDif As Long, gDif As Long, bDif As Long
     
-    rDif = RMax - RMin
+    rDif = rMax - RMin
     gDif = gMax - gMin
     bDif = bMax - bMin
     

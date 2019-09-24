@@ -447,7 +447,7 @@ Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Lon
     Dim newEnergyMap() As Byte
     ReDim newEnergyMap(0 To finalX, 0 To finalY + numOfAddedSeams) As Byte
         
-    Dim quickX As Long, QuickY As Long, yOffset As Long
+    Dim quickX As Long, quickY As Long, yOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
     If m_SourceImage.GetDIBColorDepth = 32 Then
@@ -468,23 +468,23 @@ Private Sub GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Lon
         
             quickX = x * colorDepthOffset
             
-            QuickY = y + yOffset
+            quickY = y + yOffset
             
             'Copy pixels from the source image to the destination image, using the visibility map to duplicate pixels as necessary
             For i = 0 To visibilityMap(x, y)
                 
                 'Remap RGB data to the destination image
-                dstImageData(quickX, QuickY + i) = srcImageData(quickX, y)
-                dstImageData(quickX + 1, QuickY + i) = srcImageData(quickX + 1, y)
-                dstImageData(quickX + 2, QuickY + i) = srcImageData(quickX + 2, y)
+                dstImageData(quickX, quickY + i) = srcImageData(quickX, y)
+                dstImageData(quickX + 1, quickY + i) = srcImageData(quickX + 1, y)
+                dstImageData(quickX + 2, quickY + i) = srcImageData(quickX + 2, y)
                 
                 'If present, remap alpha data as well
                 If alphaPresent Then
-                    dstImageData(quickX + 3, QuickY + i) = srcImageData(quickX + 3, y)
+                    dstImageData(quickX + 3, quickY + i) = srcImageData(quickX + 3, y)
                 End If
                 
                 'Update the energy map as well
-                newEnergyMap(x, QuickY + i) = m_Energy(x, y)
+                newEnergyMap(x, quickY + i) = m_Energy(x, y)
                 
             Next i
             
