@@ -80,25 +80,20 @@ Private m_SourceExists As Boolean
 'The user can clone from a *different* source or *different* layer!  (Note that the layer setting can
 ' be overridden by the Sample Merged setting)
 Private m_SourceImageID As Long, m_SourceLayerID As Long
-Private m_SourcePoint As PointFloat, m_SourceSetThisClick As Boolean
-Private m_SourceOffsetX As Single, m_SourceOffsetY As Single
+Private m_SourcePoint As PointFloat, m_SourceSetThisClick As Boolean, m_FirstStroke As Boolean
+Private m_SourceOffsetX As Single, m_SourceOffsetY As Single, m_OrigSourceOffsetX As Single, m_OrigSourceOffsetY As Single
 Private m_SampleMerged As Boolean, m_SampleMergedCopy As pdDIB
 Private m_Sample As pdDIB, m_SampleUntouched As pdDIB
+Private m_Aligned As Boolean
 Private m_CtrlKeyDown As Boolean
-
-Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
-    If (g_ViewportPerformance = PD_PERF_FASTEST) Then
-        GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
-    ElseIf (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
-        GetBrushPreviewQuality_GDIPlus = GP_IM_HighQualityBicubic
-    Else
-        GetBrushPreviewQuality_GDIPlus = GP_IM_Bilinear
-    End If
-End Function
 
 'Universal brush settings, applicable for most sources.  (I say "most" because some settings can contradict each other;
 ' for example, a "locked" alpha mode + "erase" blend mode makes little sense, but it is technically possible to set
 ' those values simultaneously.)
+Public Function GetBrushAligned() As Boolean
+    GetBrushAligned = m_Aligned
+End Function
+
 Public Function GetBrushAlphaMode() As PD_AlphaMode
     GetBrushAlphaMode = m_BrushAlphamode
 End Function
@@ -143,8 +138,11 @@ Public Function GetBrushSpacing() As Single
     GetBrushSpacing = m_BrushSpacing
 End Function
 
-'Property set functions.  Note that not all brush properties are used by all styles.
-' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
+'Property set functions.
+Public Sub SetBrushAligned(Optional ByVal newState As Boolean = False)
+    m_Aligned = newState
+End Sub
+
 Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
     If (newAlphaMode <> m_BrushAlphamode) Then
         m_BrushAlphamode = newAlphaMode
@@ -568,7 +566,12 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     m_Paintbrush.NotifyBrushXY mouseButtonDown, Shift, srcX, srcY, mouseTimeStamp
     
     'Reset source-set mode
-    If m_Paintbrush.IsFirstDab And (Not m_CtrlKeyDown) Then m_SourceSetThisClick = False
+    If m_Paintbrush.IsFirstDab And (Not m_CtrlKeyDown) Then
+        If m_SourceSetThisClick Then m_FirstStroke = True
+        m_SourceSetThisClick = False
+    Else
+        m_FirstStroke = False
+    End If
     
     'Regardless of mouse button state (up *or* down), cache a local copy of mouse coords; we require these for
     ' rendering a brush outline.
@@ -605,8 +608,15 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         
         'Calculate an offset from the current point to the source point; this is maintained
         ' for the duration of this stroke.
-        m_SourceOffsetX = (m_SourcePoint.x - m_MouseX)
-        m_SourceOffsetY = (m_SourcePoint.y - m_MouseY)
+        If m_FirstStroke Or (Not m_Aligned) Then
+            m_SourceOffsetX = (m_SourcePoint.x - m_MouseX)
+            m_SourceOffsetY = (m_SourcePoint.y - m_MouseY)
+            m_OrigSourceOffsetX = m_SourceOffsetX
+            m_OrigSourceOffsetY = m_SourceOffsetY
+        Else
+            m_SourceOffsetX = m_OrigSourceOffsetX
+            m_SourceOffsetY = m_OrigSourceOffsetY
+        End If
         
         'Notify the central "color history" manager of the color currently being used
         If (m_BrushSource = BS_Color) Then UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
@@ -1051,7 +1061,10 @@ Private Sub EnsureSourceExists()
         End If
     
     End If
-
+    
+    'This is also a convenient place to reset anything related to the source existing
+    If (Not m_SourceExists) Then m_FirstStroke = False
+    
 End Sub
 
 'When the active image changes, we need to reset certain brush-related parameters

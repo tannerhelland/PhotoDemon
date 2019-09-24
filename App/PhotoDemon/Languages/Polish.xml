@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.115</langversion>
+<langversion>7.0.116</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -14305,7 +14305,12 @@ Przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może uczynić sk
 <translation>próbki wszystkich warstw</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>aligned</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Clone.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -16210,10 +16215,10 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2703</phrasecount>
+<phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4993 phrases. -->
-<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
-<!-- These 2703 phrases contain approximately 12708 total words. -->
+<!-- As of this build, PhotoDemon contains 4994 phrases. -->
+<!-- 2290 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- These 2704 phrases contain approximately 12709 total words. -->
 
 </pdData>

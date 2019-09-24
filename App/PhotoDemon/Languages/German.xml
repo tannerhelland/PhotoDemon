@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1414</langversion>
+<langversion>7.2.1440</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3610,12 +3610,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation></translation>
+<translation>Strg+Klick, um Klonquelle festzulegen</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp</original>
-<translation></translation>
+<translation>Klon-Stempel</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3681,7 +3681,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Paint stroke</original>
-<translation>Pinselstrich</translation>
+<translation>Farbstrich</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3692,7 +3692,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Pencil stroke</original>
-<translation></translation>
+<translation>Bleistiftstrich</translation>
 </phrase>
 
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4972,7 +4972,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>(enter text here)</original>
-<translation>(Hier Text eingeben)</translation>
+<translation>(Text hier eingeben)</translation>
 </phrase>
 
 <phrase>
@@ -6800,7 +6800,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Updates unavailable</original>
-<translation></translation>
+<translation>Updates nicht verfügbar</translation>
 </phrase>
 
 <phrase>
@@ -8284,7 +8284,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>(enter name here)</original>
-<translation>(Hier Namen eingeben)</translation>
+<translation>(Name hier eingeben)</translation>
 </phrase>
 
 <phrase>
@@ -13483,7 +13483,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</original>
-<translation>Nur Datumsangaben (YYYY: mm: dd HH: MM: SS [.ss] [/ -HH: MM])</translation>
+<translation>Nur Datumsangaben (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</translation>
 </phrase>
 
 <phrase>
@@ -14300,7 +14300,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation></translation>
+<translation>Klon-Stempel-Tool</translation>
 </phrase>
 
 <phrase>
@@ -14329,7 +14329,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 <translation>Alle Layer samplen</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>aligned</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Clone.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -15088,7 +15093,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
-<translation>STRG + Enter speichert automatisch und geht zur nächsten Textpassage weiter</translation>
+<translation>STRG+ENTER speichert automatisch und geht zur nächsten Textpassage weiter</translation>
 </phrase>
 
 <phrase>
@@ -16238,10 +16243,10 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2703</phrasecount>
+<phrasecount>2704</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4993 phrases. -->
-<!-- 2290 are duplicates, so only 2703 unique phrases have been written to file. -->
-<!-- These 2703 phrases contain approximately 12708 total words. -->
+<!-- As of this build, PhotoDemon contains 4994 phrases. -->
+<!-- 2290 are duplicates, so only 2704 unique phrases have been written to file. -->
+<!-- These 2704 phrases contain approximately 12709 total words. -->
 
 </pdData>

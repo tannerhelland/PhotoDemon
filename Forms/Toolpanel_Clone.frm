@@ -108,13 +108,23 @@ Begin VB.Form toolpanel_Clone
    End
    Begin PhotoDemon.pdCheckBox chkSampleMerged 
       Height          =   375
-      Left            =   6750
+      Left            =   10680
       TabIndex        =   5
-      Top             =   945
+      Top             =   120
       Width           =   3135
       _ExtentX        =   5530
       _ExtentY        =   450
       Caption         =   "sample all layers"
+   End
+   Begin PhotoDemon.pdCheckBox chkAligned 
+      Height          =   375
+      Left            =   10680
+      TabIndex        =   6
+      Top             =   480
+      Width           =   3135
+      _ExtentX        =   5530
+      _ExtentY        =   450
+      Caption         =   "aligned"
    End
 End
 Attribute VB_Name = "toolpanel_Clone"
@@ -165,6 +175,10 @@ Private Sub cboBrushSetting_Click(Index As Integer)
             
     End Select
     
+End Sub
+
+Private Sub chkAligned_Click()
+    Tools_Clone.SetBrushAligned chkAligned.Value
 End Sub
 
 Private Sub chkSampleMerged_Click()
@@ -251,6 +265,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Clone.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
+    Tools_Clone.SetBrushAligned chkAligned.Value
     'Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
     'If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
 End Sub
@@ -263,6 +278,7 @@ Public Sub SyncUIToAllPaintbrushSettings()
     cboBrushSetting(0).ListIndex = Tools_Clone.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Tools_Clone.GetBrushAlphaMode()
     chkSampleMerged.Value = Tools_Clone.GetBrushSampleMerged()
+    chkAligned.Value = Tools_Clone.GetBrushAligned()
     'sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
     'If (Tools_Clone.GetBrushSpacing() = 0#) Then
     '    btsSpacing.ListIndex = 0
