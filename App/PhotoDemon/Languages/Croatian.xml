@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.3422</langversion>
+<langversion>6.8.3423</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1057,13 +1057,13 @@ To omogućava podršku za ovaj format slike, molimo kopirajte FreeImage.dll dato
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>Tekstni sloj</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>Tipografski sloj</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14181,13 +14181,13 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>Tekst (osnovni)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>Tipografija (napredno)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14266,12 +14266,12 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>Text tool</original>
+<original>Basic text tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
+<original>Advanced text tool</original>
 <translation></translation>
 </phrase>
 
@@ -14857,8 +14857,8 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Ovaj je sloj tipografski sloj. Da biste ga uredili pomoću osnovnog alata za tekst, najprije ga morate pretvoriti u osnovni sloj teksta.</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14867,8 +14867,8 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>Kliknite ovdje da biste ovaj sloj pretvorili u osnovni sloj teksta.</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15008,13 +15008,13 @@ I iskreno se ispričavajte zbog ove neugodnosti, ali nažalost ne postoji ništa
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>Ovaj sloj je osnovni sloj teksta. Da biste ga uredili pomoću alata tipografije, prvo ga morate pretvoriti u sloj tipografije.</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>Kliknite ovdje da biste ovaj sloj pretvorili u sloj tipografije.</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16269,6 +16269,6 @@ If još uvijek odlučite onemogućiti ažuriranja, ne zaboravite posjetiti photo
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

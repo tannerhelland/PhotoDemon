@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.3422</langversion>
+<langversion>6.8.3423</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1058,13 +1058,13 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>lapisan teks</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>lapisan Typography</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14185,13 +14185,13 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>Teks (asas)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>Typography (lanjutan)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14270,12 +14270,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Text tool</original>
+<original>Basic text tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
+<original>Advanced text tool</original>
 <translation></translation>
 </phrase>
 
@@ -14861,8 +14861,8 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>lapisan ini adalah lapisan tipografi. Untuk mengedit dengan alat teks asas, anda perlu menukar kepada lapisan teks asas.</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14871,8 +14871,8 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>Klik di sini untuk menukar lapisan ini kepada lapisan teks asas.</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15012,13 +15012,13 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>lapisan ini adalah lapisan teks asas. Untuk mengeditnya dengan alat tipografi, anda perlu menukar kepada lapisan tipografi.</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>Klik di sini untuk menukar lapisan ini kepada lapisan tipografi.</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16273,6 +16273,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

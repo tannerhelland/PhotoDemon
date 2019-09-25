@@ -144,7 +144,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 If srcImage.IsSelectionActive Then srcImage.MainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
                     
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
-            ElseIf (g_CurrentTool = VECTOR_TEXT) Or (g_CurrentTool = VECTOR_FANCYTEXT) Then
+            ElseIf (g_CurrentTool = TEXT_BASIC) Or (g_CurrentTool = TEXT_ADVANCED) Then
                 
                 If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
                     Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer

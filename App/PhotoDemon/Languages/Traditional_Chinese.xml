@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.109</langversion>
+<langversion>7.0.110</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -1052,13 +1052,13 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>文字圖層</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>排版圖層</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14134,13 +14134,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>文字 (一般)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>排版 (進階)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14219,12 +14219,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Text tool</original>
+<original>Basic text tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
+<original>Advanced text tool</original>
 <translation></translation>
 </phrase>
 
@@ -14810,8 +14810,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>此圖層為排版圖層。若要使用一般文字工具進行編輯，您必須先將其轉換為一般文字圖層。</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14820,8 +14820,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>按一下此處以轉換此圖層為一般文字圖層。</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -14961,13 +14961,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>此圖層為一般文字圖層。若要使用排版工具進行編輯，您必須先將其轉換為排版圖層。</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>按一下此處以轉換此圖層為排版圖層。</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16214,6 +16214,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

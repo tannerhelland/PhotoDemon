@@ -45,14 +45,14 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Enum PD_LayerType
-    PDL_IMAGE = 0
-    PDL_TEXT = 1
-    PDL_TYPOGRAPHY = 2
-    PDL_ADJUSTMENT = 3
+    PDL_Image = 0
+    PDL_TextBasic = 1
+    PDL_TextAdvanced = 2
+    PDL_Adjustment = 3
 End Enum
 
 #If False Then
-    Const PDL_IMAGE = 0, PDL_TEXT = 1, PDL_TYPOGRAPHY = 2, PDL_ADJUSTMENT = 3
+    Const PDL_Image = 0, PDL_TextBasic = 1, PDL_TextAdvanced = 2, PDL_Adjustment = 3
 #End If
 
 'Layer type is set at creation time.  Once a layer has been created, its type should not be changed.
@@ -317,10 +317,10 @@ Friend Function IsLayerVector() As Boolean
 
     Select Case myLayerType
     
-        Case PDL_IMAGE
+        Case PDL_Image
             IsLayerVector = False
         
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             IsLayerVector = True
         
         Case Else
@@ -335,13 +335,14 @@ Friend Function IsLayerRaster() As Boolean
     IsLayerRaster = Not IsLayerVector()
 End Function
 
-'If a caller simply wants to determine text vs other layers, this helper function takes care of it.  Text layers currently include text and
-' typography layers, and may include additional types (e.g. "WordArt") in the future
+'If a caller simply wants to determine text vs other layers, this helper function takes care of it.
+' Text layers currently include basic and advanced text layers, and may include additional types
+' (e.g. "WordArt") in the future.
 Friend Function IsLayerText() As Boolean
 
     Select Case myLayerType
     
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             IsLayerText = True
         
         Case Else
@@ -362,7 +363,7 @@ Friend Sub RasterizeVectorData()
     End If
     
     'Rasterizing is a lot simpler than it looks.  Basically, we just change the layer type to PDL_IMAGE and discard any superfluous vector data.
-    myLayerType = PDL_IMAGE
+    myLayerType = PDL_Image
         
     'While possibly unnecessary for some vector layer types, rasterization is a serious enough change that it's wise to regenerate
     ' any/all internal caches.
@@ -451,7 +452,7 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
         .l_OffsetY = topLeftY
         
         'Image layers have their own base size, and a modifier is used to "stretch" that size accordingly
-        If (myLayerType = PDL_IMAGE) Then
+        If (myLayerType = PDL_Image) Then
             
             If (Me.GetLayerWidth(False) <> 0#) Then
                 Me.SetLayerCanvasXModifier (bottomRightX - topLeftX) / Me.GetLayerWidth(False)
@@ -466,7 +467,7 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
             End If
         
         'Text layers are simply resized, while their modifier is kept at 1.0
-        ElseIf (myLayerType = PDL_TEXT) Or (myLayerType = PDL_TYPOGRAPHY) Then
+        ElseIf (myLayerType = PDL_TextBasic) Or (myLayerType = PDL_TextAdvanced) Then
             Me.SetLayerWidth bottomRightX - topLeftX
             Me.SetLayerHeight bottomRightY - topLeftY
         End If
@@ -487,7 +488,7 @@ Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
     Select Case myLayerType
     
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
-        Case PDL_IMAGE
+        Case PDL_Image
             
             If (Not layerDIB Is Nothing) Then
         
@@ -504,7 +505,7 @@ Friend Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             GetLayerWidth = myVectorData.vd_Width
             If (GetLayerWidth < 1#) Then GetLayerWidth = 1#
             
@@ -518,7 +519,7 @@ Friend Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
     Select Case myLayerType
     
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
-        Case PDL_IMAGE
+        Case PDL_Image
             
             If (Not layerDIB Is Nothing) Then
         
@@ -535,7 +536,7 @@ Friend Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             GetLayerHeight = myVectorData.vd_Height
             If (GetLayerHeight < 1#) Then GetLayerHeight = 1#
     
@@ -549,14 +550,14 @@ Friend Sub SetLayerWidth(ByVal newSize As Single)
     If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
-    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
+    If (myLayerType <> PDL_Image) And (newSize <> myVectorData.vd_Width) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Width = newSize
         m_VectorDIBSynched = False
         
     Else
-        If (myLayerType = PDL_IMAGE) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (myLayerType = PDL_Image) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
@@ -567,14 +568,14 @@ Friend Sub SetLayerHeight(ByVal newSize As Single)
     If (newSize < 1!) Then newSize = 1!
     
     'Make sure the layer is a vector layer
-    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Height) Then
+    If (myLayerType <> PDL_Image) And (newSize <> myVectorData.vd_Height) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Height = newSize
         m_VectorDIBSynched = False
         
     Else
-        If (myLayerType = PDL_IMAGE) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (myLayerType = PDL_Image) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
@@ -597,10 +598,10 @@ Friend Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
     'Separate handling by layer type
     Select Case myLayerType
     
-        Case PDL_IMAGE
+        Case PDL_Image
             myLayerData.l_CanvasXModifier = newXModifier
             
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             myLayerData.l_CanvasXModifier = 1#
             Me.SetLayerWidth newXModifier * Me.GetLayerWidth(False)
     
@@ -616,10 +617,10 @@ Friend Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     'Separate handling by layer type
     Select Case myLayerType
     
-        Case PDL_IMAGE
+        Case PDL_Image
             myLayerData.l_CanvasYModifier = newYModifier
             
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             myLayerData.l_CanvasYModifier = 1#
             Me.SetLayerHeight newYModifier * Me.GetLayerHeight(False)
     
@@ -1395,7 +1396,7 @@ Friend Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
         End If
     
         'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-        myLayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_IMAGE)
+        myLayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_Image)
         
         'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
         ' added to the LayerData type.
@@ -1490,7 +1491,7 @@ Friend Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     'Additional vector data varies by layer type
     Select Case myLayerType
         
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             
             'pdTextRenderer serializes all its data to XML for us, making this step very simple
             xmlEngine.WriteGenericText myTextRenderer.GetAllFontSettingsAsXML()
@@ -1523,7 +1524,7 @@ Friend Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
         'Next, the vector tags we look for vary by layer type
         Select Case myLayerType
             
-            Case PDL_TEXT, PDL_TYPOGRAPHY
+            Case PDL_TextBasic, PDL_TextAdvanced
                 
                 'pdTextRenderer serializes all its data from XML for us, making this step very simple
                 myTextRenderer.SetAllFontSettingsFromXML xmlEngine.ReturnCurrentXMLString(True)
@@ -1638,17 +1639,17 @@ Friend Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     ' match the layer's vector contents.
     Select Case srcLayer.GetLayerType
     
-        Case PDL_IMAGE
+        Case PDL_Image
         
         'Vector layers copy additional vector-specific data
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             myVectorData.vd_Width = srcLayer.GetLayerWidth
             myVectorData.vd_Height = srcLayer.GetLayerHeight
             
             'Other vector-specific data can be transferred via XML, saving us the hassle of explicitly copying it here
             Me.CreateVectorDataFromXML srcLayer.GetVectorDataAsXML(True)
         
-        Case PDL_ADJUSTMENT
+        Case PDL_Adjustment
     
     End Select
     
@@ -2186,7 +2187,7 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     Select Case myLayerType
     
         'Image and text layers consider their corners to be points of interest
-        Case PDL_IMAGE, PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_Image, PDL_TextBasic, PDL_TextAdvanced
             
             'Manually populate the point of interest array with the layer's corner coordinates.
             ReDim poiList(0 To 7) As PointFloat
@@ -2305,7 +2306,7 @@ End Sub
 Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
-    If (myLayerType = PDL_IMAGE) Then
+    If (myLayerType = PDL_Image) Then
         SyncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
         Exit Function
     End If
@@ -2319,10 +2320,10 @@ Friend Function SyncInternalDIB(Optional ByVal levelOfDetail As PD_CompositorLOD
     'From here, the specific vector syncing process varies by vector layer type
     Select Case myLayerType
     
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             
-            'Set the text rendering engine according to the layer type (text vs typography)
-            If (myLayerType = PDL_TEXT) Then
+            'Set the text rendering engine according to the layer type (basic vs advanced)
+            If (myLayerType = PDL_TextBasic) Then
                 myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_WAPI
             Else
                 myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.439</langversion>
+<langversion>6.7.440</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -1058,13 +1058,13 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>Strato di testo</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>Strato di tipografia</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14183,13 +14183,13 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>Testo (base)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>Tipografia (avanzata)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14268,12 +14268,12 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Text tool</original>
+<original>Basic text tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
+<original>Advanced text tool</original>
 <translation></translation>
 </phrase>
 
@@ -14859,8 +14859,8 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Questo strato è un livello tipografico. Per modificarlo con lo strumento di testo di base, devi prima convertirlo in un livello di testo di base.</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14869,8 +14869,8 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>Fai clic qui per convertire questo livello in un livello di testo di base.</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15010,13 +15010,13 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>Questo livello è un livello di testo di base. Per modificarlo con lo strumento tipografia, devi prima convertirlo in un livello tipografico.</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>Fai clic qui per convertire questo livello in un livello tipografico.</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16270,6 +16270,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

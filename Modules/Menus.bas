@@ -2654,11 +2654,11 @@ Private Function PDA_ByName_NonMenu(ByRef srcMenuName As String) As Boolean
         Case "tool_select wand"
             toolbar_Toolbox.SelectNewTool SELECT_WAND, True, True
         
-        Case "tool_text"
-            toolbar_Toolbox.SelectNewTool VECTOR_TEXT, True, True
+        Case "tool_text_basic"
+            toolbar_Toolbox.SelectNewTool TEXT_BASIC, True, True
         
-        Case "tool_typography"
-            toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT, True, True
+        Case "tool_text_advanced"
+            toolbar_Toolbox.SelectNewTool TEXT_ADVANCED, True, True
         
         Case "tool_pencil"
             toolbar_Toolbox.SelectNewTool PAINT_PENCIL, True, True

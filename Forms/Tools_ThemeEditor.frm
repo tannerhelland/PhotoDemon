@@ -432,6 +432,7 @@ Private Sub cmdExport_Click()
         'Keep the existing filename, but strip the extension and replace it with "PDRC"
         ' (for... PhotoDemon Resource Collection, I guess?)
         targetResFile = UserPrefs.GetThemePath & Files.FileGetName(txtResourcePath.Text, True) & ".pdrc"
+        Files.FileDeleteIfExists targetResFile
         
         'Prep a pdPackage
         Dim cPackage As pdPackager

@@ -18,8 +18,8 @@ Attribute VB_Exposed = False
 'Last updated: 03/June/19
 'Last update: minor code clean-up and optimizations; reduce debug logging in stable code paths
 '
-'This class handles the messy business of font management for PD's text and typography layers.  It intermixes
-' GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
+'This class handles the messy business of font management for PD's basic and advanced text layers.
+' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
 '
 'I originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend (with
 ' Uniscribe stuff handled separately).  But there are complications with this.  GDI and GDI+ have different strengths

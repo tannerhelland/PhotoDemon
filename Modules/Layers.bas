@@ -30,11 +30,11 @@ Public Sub AddBlankLayer_XML(ByRef processParameters As String)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
-    Layers.AddBlankLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), cParams.GetLong("layertype", PDL_IMAGE)
+    Layers.AddBlankLayer cParams.GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), cParams.GetLong("layertype", PDL_Image)
 End Sub
 
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
-Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As PD_LayerType = PDL_IMAGE)
+Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As PD_LayerType = PDL_Image)
 
     'Validate the requested layer index
     If (dLayerIndex < 0) Then dLayerIndex = 0
@@ -75,7 +75,7 @@ Public Sub AddNewLayer_XML(ByRef processParameters As String)
     Set cParams = New pdParamXML
     cParams.SetParamString processParameters
     With cParams
-        Layers.AddNewLayer .GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_IMAGE), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
+        Layers.AddNewLayer .GetLong("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), .GetLong("layertype", PDL_Image), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
     End With
 End Sub
 
@@ -100,7 +100,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.  (Note that this is only relevant for raster layers.)
-    If (dLayerType = PDL_IMAGE) Then
+    If (dLayerType = PDL_Image) Then
     
         Select Case dLayerSubType
         
@@ -137,14 +137,14 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     
         Select Case dLayerType
         
-            Case PDL_IMAGE
+            Case PDL_Image
                 dLayerName = g_Language.TranslateMessage("Blank layer")
                 
-            Case PDL_TEXT
-                dLayerName = g_Language.TranslateMessage("Text layer")
+            Case PDL_TextBasic
+                dLayerName = g_Language.TranslateMessage("Basic text layer")
                 
-            Case PDL_TYPOGRAPHY
-                dLayerName = g_Language.TranslateMessage("Typography layer")
+            Case PDL_TextAdvanced
+                dLayerName = g_Language.TranslateMessage("Advanced text layer")
         
         End Select
         
@@ -160,10 +160,10 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As PD_LayerTy
     'Some layer types may require extra initialization steps in the future
     Select Case dLayerType
         
-        Case PDL_IMAGE
+        Case PDL_Image
         
         'Set an initial width/height of 1x1
-        Case PDL_TEXT, PDL_TYPOGRAPHY
+        Case PDL_TextBasic, PDL_TextAdvanced
             PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerWidth 1!
             PDImages.GetActiveImage.GetLayerByID(newLayerID).SetLayerHeight 1!
         
@@ -232,7 +232,7 @@ Public Sub AddLayerFromVisibleLayers()
     'Retrieve a composite of the current image
     Dim tmpDIB As pdDIB
     PDImages.GetActiveImage.GetCompositedImage tmpDIB, True
-    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Visible"), tmpDIB
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Visible"), tmpDIB
     
     'Make the blank layer the new active layer
     PDImages.GetActiveImage.SetActiveLayerByID newLayerID
@@ -285,9 +285,9 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If (LenB(customLayerName) = 0) Then
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, Trim$(Files.FileGetName(imagePath, True)), tmpDIB
             Else
-                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
+                PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, customLayerName, tmpDIB
             End If
             
             'Debug.Print "Layer created successfully (ID# " & PDImages.GetActiveImage.GetLayerByID(newLayerID).GetLayerName & ")"
@@ -336,14 +336,14 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
         Select Case PDImages.GetActiveImage.GetLayerByIndex(layerIndex).GetLayerType
         
             'For image layers, force the layer DIB to all zeroes
-            Case PDL_IMAGE
+            Case PDL_Image
                 With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     .layerDIB.CreateBlank .GetLayerWidth(False), .GetLayerHeight(False), 32, 0, 0
                 End With
             
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
             ' while retaining all text settings... I'm not sure of a better solution at present.)
-            Case PDL_TEXT, PDL_TYPOGRAPHY
+            Case PDL_TextBasic, PDL_TextAdvanced
                 With PDImages.GetActiveImage.GetLayerByIndex(layerIndex)
                     .SetTextLayerProperty ptp_Text, vbNullString
                 End With
@@ -997,7 +997,7 @@ Public Sub MergeImagesToLayers(Optional ByVal processParameters As String = vbNu
                     ' the new layer's position.  This provides maximum flexibility for the user.
                     Dim newLayerID As Long
                     newLayerID = srcImage.CreateBlankLayer(targetIndex)
-                    srcImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, listOfImages(i).srcLayerName, tmpDIB, True
+                    srcImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, listOfImages(i).srcLayerName, tmpDIB, True
                     Set tmpDIB = Nothing
                     
                     If (Not mustCreateNewLayer) Then Layers.DeleteLayer targetIndex, False
@@ -1230,7 +1230,7 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     PDImages.GetActiveImage.GetLayerByIndex(0).ResetLayerParameters
     
     'Overwrite the final layer with the composite DIB.
-    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, flattenedName, compositeDIB
+    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_Image, flattenedName, compositeDIB
     
     'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
     SetActiveLayerByIndex 0, False
@@ -1274,7 +1274,7 @@ Public Sub MergeVisibleLayers()
     Set tmpDIB = New pdDIB
     tmpDIB.CreateBlank PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, 32, 0
     tmpDIB.SetAlphaPremultiplication True
-    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
+    PDImages.GetActiveImage.GetLayerByIndex(0).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
     ' merging visible layers with the base layer, until all visible layers have been merged.
@@ -1397,7 +1397,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByRef resizePa
         
         'Raster and vector layers use different size descriptors.  (Vector layers use an absolute size; raster layers use the
         ' underlying DIB size, plus a fractional modifier.)
-        If (.GetLayerType = PDL_IMAGE) Then
+        If (.GetLayerType = PDL_Image) Then
             .SetLayerCanvasXModifier cParams.GetDouble("layer-modifierx")
             .SetLayerCanvasYModifier cParams.GetDouble("layer-modifiery")
         Else
@@ -1631,7 +1631,7 @@ End Sub
 'If a function must rasterize a vector or text layer, it needs to call this function first.  This function will display a dialog
 ' asking the user for permission to rasterize the layer(s) in question.  Note that CANCEL is a valid return, so any callers need
 ' to handle that case gracefully!
-Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_LayerType = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
+Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_LayerType = PDL_TextBasic, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
     
     Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, dialogTitle As String
     
@@ -1649,7 +1649,7 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_Laye
         'Generate customized question text based on layer type
         Select Case srcLayerType
     
-            Case PDL_TEXT, PDL_TYPOGRAPHY
+            Case PDL_TextBasic, PDL_TextAdvanced
                 questionText = g_Language.TranslateMessage("This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.")
                 questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
                 yesText = g_Language.TranslateMessage("Yes.  Please convert this text layer.")

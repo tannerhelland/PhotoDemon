@@ -743,10 +743,10 @@ Private Sub ReflowToolboxLayout()
     
     'Vector group
     PositionToolLabel 4, cmdTools(SELECT_WAND), hOffset, vOffset
-    ReflowButtonSet 4, True, VECTOR_TEXT, VECTOR_FANCYTEXT, hOffset, vOffset
+    ReflowButtonSet 4, True, TEXT_BASIC, TEXT_ADVANCED, hOffset, vOffset
     
     'Paint group
-    PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
+    PositionToolLabel 5, cmdTools(TEXT_ADVANCED), hOffset, vOffset
     ReflowButtonSet 5, True, PAINT_PENCIL, PAINT_GRADIENT, hOffset, vOffset
     
     'Macro recording message
@@ -994,13 +994,13 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Selections.hWnd
             
         'Vector tools
-        Case VECTOR_TEXT
+        Case TEXT_BASIC
             Load toolpanel_Text
             toolpanel_Text.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Text
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Text.hWnd
             
-        Case VECTOR_FANCYTEXT
+        Case TEXT_ADVANCED
             Load toolpanel_FancyText
             toolpanel_FancyText.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Typography
@@ -1338,8 +1338,8 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(SELECT_LASSO).AssignImage "select_lasso", , buttonImageSize, buttonImageSize
     cmdTools(SELECT_WAND).AssignImage "select_wand", , buttonImageSize, buttonImageSize
     
-    cmdTools(VECTOR_TEXT).AssignImage "text_basic", , buttonImageSize, buttonImageSize
-    cmdTools(VECTOR_FANCYTEXT).AssignImage "text_fancy", , buttonImageSize, buttonImageSize
+    cmdTools(TEXT_BASIC).AssignImage "text_basic", , buttonImageSize, buttonImageSize
+    cmdTools(TEXT_ADVANCED).AssignImage "text_fancy", , buttonImageSize, buttonImageSize
     
     cmdTools(PAINT_PENCIL).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
     cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
@@ -1407,10 +1407,10 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(SELECT_WAND).AssignTooltip shortcutText
     
     '...then vector tools...
-    shortcutText = g_Language.TranslateMessage("Text (basic)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
-    cmdTools(VECTOR_TEXT).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Typography (advanced)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
-    cmdTools(VECTOR_FANCYTEXT).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Basic Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    cmdTools(TEXT_BASIC).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Advanced Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    cmdTools(TEXT_ADVANCED).AssignTooltip shortcutText
     
     '...then paint tools...
     shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "P")
@@ -1460,11 +1460,11 @@ Public Sub UpdateAgainstCurrentTheme()
     m_ToolNames.AddString g_Language.TranslateMessage("Magic wand selection tool")
     m_ToolActions.AddString "tool_select wand"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Text tool")
-    m_ToolActions.AddString "tool_text"
+    m_ToolNames.AddString g_Language.TranslateMessage("Basic text tool")
+    m_ToolActions.AddString "tool_text_basic"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Typography tool")
-    m_ToolActions.AddString "tool_typography"
+    m_ToolNames.AddString g_Language.TranslateMessage("Advanced text tool")
+    m_ToolActions.AddString "tool_text_advanced"
     
     m_ToolNames.AddString g_Language.TranslateMessage("Pencil tool")
     m_ToolActions.AddString "tool_pencil"

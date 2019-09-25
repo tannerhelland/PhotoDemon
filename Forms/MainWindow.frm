@@ -2527,7 +2527,7 @@ Private Sub HotkeyManager_Accelerator(ByVal acceleratorIndex As Long)
         ElseIf Strings.StringsEqual(keyName, "tool_activate_selectwand", True) Then
             toolbar_Toolbox.SelectNewTool SELECT_WAND
         ElseIf Strings.StringsEqual(keyName, "tool_activate_text", True) Then
-            If (g_CurrentTool = VECTOR_TEXT) Then toolbar_Toolbox.SelectNewTool VECTOR_FANCYTEXT Else toolbar_Toolbox.SelectNewTool VECTOR_TEXT
+            If (g_CurrentTool = TEXT_BASIC) Then toolbar_Toolbox.SelectNewTool TEXT_ADVANCED Else toolbar_Toolbox.SelectNewTool TEXT_BASIC
         ElseIf Strings.StringsEqual(keyName, "tool_activate_pencil", True) Then
             toolbar_Toolbox.SelectNewTool PAINT_PENCIL
         ElseIf Strings.StringsEqual(keyName, "tool_activate_brush", True) Then
@@ -2936,11 +2936,11 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
         Unload toolpanel_Selections
         Set toolpanel_Selections = Nothing
-    ElseIf (g_CurrentTool = VECTOR_TEXT) Then
+    ElseIf (g_CurrentTool = TEXT_BASIC) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
         Unload toolpanel_Text
         Set toolpanel_Text = Nothing
-    ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
+    ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
         g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
         Unload toolpanel_FancyText
         Set toolpanel_FancyText = Nothing

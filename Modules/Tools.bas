@@ -609,9 +609,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
         'Some panels may still wish to redraw their contents, even if no images are loaded.  (Text panels use this
         ' opportunity to hide the "convert typography to text or vice-versa" panels that are visible by default.)
-        If (g_CurrentTool = VECTOR_TEXT) Then
+        If (g_CurrentTool = TEXT_BASIC) Then
             toolpanel_Text.UpdateAgainstCurrentLayer
-        ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
+        ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
             toolpanel_FancyText.UpdateAgainstCurrentLayer
         End If
         
@@ -633,15 +633,15 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             layerToolActive = True
         
         'Text layers only require a sync if the current layer is a text layer.
-        Case VECTOR_TEXT, VECTOR_FANCYTEXT
+        Case TEXT_BASIC, TEXT_ADVANCED
             If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
                 layerToolActive = True
             Else
             
                 'Hide the "convert to different type of text" panel prompts
-                If (g_CurrentTool = VECTOR_TEXT) Then
+                If (g_CurrentTool = TEXT_BASIC) Then
                     toolpanel_Text.UpdateAgainstCurrentLayer
-                ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
+                ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
                     toolpanel_FancyText.UpdateAgainstCurrentLayer
                 End If
             
@@ -674,7 +674,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
                 Tools.SetToolBusyState True
                 
-            Case VECTOR_TEXT
+            Case TEXT_BASIC
                 
                 With toolpanel_Text
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
@@ -694,7 +694,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 'Display the "convert to basic text layer" panel as necessary
                 toolpanel_Text.UpdateAgainstCurrentLayer
                 
-            Case VECTOR_FANCYTEXT
+            Case TEXT_ADVANCED
                 
                 With toolpanel_FancyText
                     .txtTextTool.Text = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_Text)
@@ -731,7 +731,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                     .sltCharSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
                 End With
                 
-                'Display the "convert to typography layer" panel as necessary
+                'Display the "convert to advanced text layer" panel as necessary
                 toolpanel_FancyText.UpdateAgainstCurrentLayer
         
         End Select
@@ -761,7 +761,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
         Case NAV_MOVE
             layerToolActive = True
         
-        Case VECTOR_TEXT, VECTOR_FANCYTEXT
+        Case TEXT_BASIC, TEXT_ADVANCED
             If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then layerToolActive = True
         
         Case Else
@@ -796,7 +796,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 PDImages.GetActiveImage.GetActiveLayer.SetLayerShearX toolpanel_MoveSize.sltLayerShearX.Value
                 PDImages.GetActiveImage.GetActiveLayer.SetLayerShearY toolpanel_MoveSize.sltLayerShearY.Value
             
-            Case VECTOR_TEXT
+            Case TEXT_BASIC
                 
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
@@ -817,7 +817,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                 ' This is because this property changes according to the active text tool.
                 PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, tre_WAPI
             
-            Case VECTOR_FANCYTEXT
+            Case TEXT_ADVANCED
                 
                 With PDImages.GetActiveImage.GetActiveLayer
                     .SetTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text

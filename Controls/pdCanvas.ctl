@@ -827,7 +827,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 Selections.NotifySelectionMouseDown Me, imgX, imgY
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
-            Case VECTOR_TEXT, VECTOR_FANCYTEXT
+            Case TEXT_BASIC, TEXT_ADVANCED
                 
                 'One of two things can happen when the mouse is clicked in text mode:
                 ' 1) The current layer is a text layer, and the user wants to edit it (move it around, resize, etc)
@@ -858,10 +858,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor,
                     ' as we don't want the delay associated with full Undo/Redo creation.
-                    If (g_CurrentTool = VECTOR_TEXT) Then
-                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, imgX, imgY, True
-                    ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
-                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, imgX, imgY, True
+                    If (g_CurrentTool = TEXT_BASIC) Then
+                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextBasic, 0, 0, 0, True, vbNullString, imgX, imgY, True
+                    ElseIf (g_CurrentTool = TEXT_ADVANCED) Then
+                        Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextAdvanced, 0, 0, 0, True, vbNullString, imgX, imgY, True
                     End If
                     
                     'Use a special initialization command that basically copies all existing text properties into the newly created layer.
@@ -986,7 +986,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 Selections.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Text layers are identical to the move tool
-            Case VECTOR_TEXT, VECTOR_FANCYTEXT
+            Case TEXT_BASIC, TEXT_ADVANCED
                 Message "Shift key: preserve layer aspect ratio"
                 Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask)
             
@@ -1037,7 +1037,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Text tools
-            Case VECTOR_TEXT, VECTOR_FANCYTEXT
+            Case TEXT_BASIC, TEXT_ADVANCED
             
             Case PAINT_PENCIL
                 Tools_Pencil.NotifyBrushXY m_LMBDown, Shift, imgX, imgY, timeStamp, Me
@@ -1115,7 +1115,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Selections.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
                 
             'Text layers
-            Case VECTOR_TEXT, VECTOR_FANCYTEXT
+            Case TEXT_BASIC, TEXT_ADVANCED
                 
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
                 
@@ -1141,7 +1141,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         End With
                         
                         'If the current text box is empty, set some new text to orient the user
-                        If (g_CurrentTool = VECTOR_TEXT) Then
+                        If (g_CurrentTool = TEXT_BASIC) Then
                             If (LenB(toolpanel_Text.txtTextTool.Text) = 0) Then toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         Else
                             If (LenB(toolpanel_FancyText.txtTextTool.Text) = 0) Then toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
@@ -1177,7 +1177,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     Interface.SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
-                    If (g_CurrentTool = VECTOR_TEXT) Then toolpanel_Text.txtTextTool.SelectAll Else toolpanel_FancyText.txtTextTool.SelectAll
+                    If (g_CurrentTool = TEXT_BASIC) Then toolpanel_Text.txtTextTool.SelectAll Else toolpanel_FancyText.txtTextTool.SelectAll
                     
                 'The user is simply editing an existing layer.
                 Else
@@ -1887,7 +1887,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
             End Select
         
-        Case VECTOR_TEXT, VECTOR_FANCYTEXT
+        Case TEXT_BASIC, TEXT_ADVANCED
 
             'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
             ' obviously quite different.

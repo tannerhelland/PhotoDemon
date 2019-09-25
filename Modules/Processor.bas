@@ -664,7 +664,7 @@ Public Sub SyncAllGenericLayerProperties(ByRef srcLayer As pdLayer)
     Next i
 End Sub
 
-'Want to synchronize all text/typography properties for a given layer?  Use this function to do so.
+'Want to synchronize all text properties for a given layer?  Use this function to do so.
 Public Sub SyncAllTextLayerProperties(ByRef srcLayer As pdLayer)
     If srcLayer.IsLayerText Then
         prevTextLayerID = srcLayer.GetLayerID
@@ -2168,9 +2168,9 @@ Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDial
             
             'Start by creating a new layer
             If Strings.StringsEqual(processID, "New text layer", True) Then
-                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, 0#, 0#, True
+                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextBasic, 0, 0, 0, True, vbNullString, 0#, 0#, True
             Else
-                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, 0#, 0#, True
+                Layers.AddNewLayer PDImages.GetActiveImage.GetActiveLayerIndex, PDL_TextAdvanced, 0, 0, 0, True, vbNullString, 0#, 0#, True
             End If
             
             'Text layer parameters can be precisely recreated in two steps:

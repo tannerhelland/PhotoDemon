@@ -1448,7 +1448,7 @@ End Sub
 Private Sub lblConvertLayerConfirm_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
-    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TYPOGRAPHY
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextAdvanced
     PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
@@ -1817,8 +1817,8 @@ Private Sub ChangeMainPanel()
     
 End Sub
 
-'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of
-' some type (e.g. basic text), an option will be displayed to convert the layer.
+'Outside functions can forcibly request an update against the current layer.  If the current layer is a basic text layer,
+' an option will be displayed to convert the layer to advanced text.
 Public Sub UpdateAgainstCurrentLayer()
     
     'Regardless of layer type, resize our containers to match the current window width.
@@ -1838,14 +1838,14 @@ Public Sub UpdateAgainstCurrentLayer()
     
         If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
         
-            'Check for non-typography layers.
-            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerType <> PDL_TYPOGRAPHY) Then
+            'Check for non-advanced-text layers.
+            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerType <> PDL_TextAdvanced) Then
             
                 Select Case PDImages.GetActiveImage.GetActiveLayer.GetLayerType
                 
-                    Case PDL_TEXT
+                    Case PDL_TextBasic
                         Dim newMessage As String
-                        newMessage = g_Language.TranslateMessage("This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.")
+                        newMessage = g_Language.TranslateMessage("This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.")
                         newMessage = newMessage & vbCrLf & g_Language.TranslateMessage("(This action is non-destructive.)")
                         Me.lblConvertLayer.Caption = newMessage
                         
@@ -1853,7 +1853,7 @@ Public Sub UpdateAgainstCurrentLayer()
                 
                 End Select
             
-                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to a typography layer.")
+                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to advanced text.")
                 
                 'Make the prompt panel the size of the tool window
                 Me.ctlGroupConvertLayer.SetPositionAndSize 0, 0, Me.ScaleWidth, Me.ScaleHeight

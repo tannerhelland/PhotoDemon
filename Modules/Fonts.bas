@@ -497,7 +497,7 @@ Public Function BuildFontCaches() As Long
     'Retrieve the current system LOGFONT conversion values
     UpdateLogFontValues
     
-    'Next, prep a full font list for the advanced typography tool.
+    'Next, prep a full font list for the advanced text tool.
     '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
     m_PDFontCache.ResetStack INITIAL_PDFONTCACHE_SIZE
     GetAllAvailableFonts

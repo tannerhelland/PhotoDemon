@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.142</langversion>
+<langversion>1.0.143</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1058,13 +1058,13 @@ T इस छवि प्रारूप के लिए समर्थन स
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>टेक्स्ट परत</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>टाइपोग्राफी परत</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14183,13 +14183,13 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>पाठ (मूल)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>टाइपोग्राफी (उन्नत)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14268,12 +14268,12 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>Text tool</original>
+<original>Basic text tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
+<original>Advanced text tool</original>
 <translation></translation>
 </phrase>
 
@@ -14859,8 +14859,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>यह परत एक टाइपोग्राफी परत है इसे मूल पाठ उपकरण के साथ संपादित करने के लिए, आपको इसे मूल पाठ परत पर पहले कन्वर्ट करना होगा।</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14869,8 +14869,8 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>इस परत को मूल पाठ परत में कनवर्ट करने के लिए यहां क्लिक करें।</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15010,13 +15010,13 @@ I में लोड करें, इस दुर्भावना के �
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>यह परत एक मूल पाठ परत है। इसे टाइपोग्राफी उपकरण के साथ संपादित करने के लिए, आपको पहले उसे टाइपोग्राफी परत में कन्वर्ट करना होगा।</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>इस परत को एक टाइपोग्राफी परत में कनवर्ट करने के लिए यहां क्लिक करें।</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16270,6 +16270,6 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1441</langversion>
+<langversion>7.2.1452</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1060,13 +1060,13 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 </phrase>
 
 <phrase>
-<original>Text layer</original>
-<translation>Text-Layer</translation>
+<original>Basic text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography layer</original>
-<translation>Typografie-Layer</translation>
+<original>Advanced text layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3011,7 +3011,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 2) the file location provided to PhotoDemon is correct.</original>
 <translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
-2) der angegebene Dateiort in PhotoDemon korrekt ist.</translation>
+2) der in PhotoDemon angegebene Dateiort korrekt ist.</translation>
 </phrase>
 
 <phrase>
@@ -3075,7 +3075,7 @@ Beschreibung: %2
 
 <phrase>
 <original>blend mode</original>
-<translation>Überblendungsmodus</translation>
+<translation>Überblendungs-Modus</translation>
 </phrase>
 
 <phrase>
@@ -13363,7 +13363,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation>Metadaten-Support wird von der Open-Source-ExifTool-Library bereitgestellt.</translation>
+<translation>Metadaten-Support wird bereitgestellt von der Open-Source-ExifTool-Library.</translation>
 </phrase>
 
 <phrase>
@@ -14110,7 +14110,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>Sie haben den "sicheren" Speichermodus spezifiziert. Dies bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateinamen erstellen wird.</translation>
+<translation>Sie haben den "sicheren" Speicher-Modus spezifiziert. Dies bedeutet, dass jedes Speichern eine neue Datei mit einem auto-inkrementierten Dateinamen erstellen wird.</translation>
 </phrase>
 
 <phrase>
@@ -14189,13 +14189,13 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Text (basic)</original>
-<translation>Text (grundlegend)</translation>
+<original>Basic Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography (advanced)</original>
-<translation>Typografie (erweitert)</translation>
+<original>Advanced Text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14274,13 +14274,13 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Text tool</original>
-<translation>Text-Tool</translation>
+<original>Basic text tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Typography tool</original>
-<translation>Typografie-Tool</translation>
+<original>Advanced text tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14316,12 +14316,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>source settings</original>
-<translation></translation>
+<translation>Quelleinstellungen</translation>
 </phrase>
 
 <phrase>
 <original>pattern mode</original>
-<translation></translation>
+<translation>Muster-Modus</translation>
 </phrase>
 
 <phrase>
@@ -14341,7 +14341,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>aligned</original>
-<translation></translation>
+<translation>Ausgerichtet</translation>
 </phrase>
 
 <phrase>
@@ -14351,22 +14351,22 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>tile</original>
-<translation></translation>
+<translation>Kacheln</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip horizontal</original>
-<translation></translation>
+<translation>Kacheln + Horizontal spiegeln</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip vertical</original>
-<translation></translation>
+<translation>Kacheln + Vertikal spiegeln</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip both</original>
-<translation></translation>
+<translation>Kacheln + Beides spiegeln</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -14865,8 +14865,8 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation>Dieser Layer ist ein Typografie-Layer. Um ihn mit dem Grundtext-Tool zu bearbeiten, müssen Sie ihn zuerst in einen Grundtext-Layer konvertieren.</translation>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14875,8 +14875,8 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a basic text layer.</original>
-<translation>Klick hier, um diesen Layer in einen Grundtext-Layer zu konvertieren.</translation>
+<original>Click here to convert this layer to basic text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15016,13 +15016,13 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 </phrase>
 
 <phrase>
-<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>Dieser Layer ist ein Grundtext-Layer. Um ihn mit dem Typografie-Tool zu bearbeiten, müssen Sie ihn zuerst in einen Typografie-Layer konvertieren.</translation>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click here to convert this layer to a typography layer.</original>
-<translation>Klick hier, um diesen Layer in einen Typografie-Layer zu konvertieren.</translation>
+<original>Click here to convert this layer to advanced text.</original>
+<translation></translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -16277,6 +16277,6 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- As of this build, PhotoDemon contains 5002 phrases. -->
 <!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
-<!-- These 2710 phrases contain approximately 12723 total words. -->
+<!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

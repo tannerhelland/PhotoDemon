@@ -595,7 +595,7 @@ Private Sub Form_Load()
         cboTextFontFace.InitializeFontList
         cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(Fonts.GetUIFontName(), vbBinaryCompare)
         
-        'Antialiasing options behave slightly differently from the typography tool
+        'Antialiasing options behave slightly differently from the advanced text tool
         cboTextRenderingHint.SetAutomaticRedraws False
         cboTextRenderingHint.Clear
         cboTextRenderingHint.AddItem "None", 0
@@ -642,7 +642,7 @@ End Sub
 Private Sub lblConvertLayerConfirm_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
-    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TEXT
+    PDImages.GetActiveImage.GetActiveLayer.SetLayerType PDL_TextBasic
     PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, PDImages.GetActiveImage.GetActiveLayerIndex
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
@@ -745,8 +745,8 @@ Private Sub txtTextTool_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
-'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-basic-text text layer of
-' some type (e.g. typography), an option will be displayed to convert the layer over.
+'Outside functions can forcibly request an update against the current layer.  If the current layer is a
+' non-basic text layer, an option will be displayed to convert the layer.
 Public Sub UpdateAgainstCurrentLayer()
     
     'Regardless of layer type, resize our containers to match the current window width.
@@ -767,13 +767,13 @@ Public Sub UpdateAgainstCurrentLayer()
         If PDImages.GetActiveImage.GetActiveLayer.IsLayerText Then
         
             'Check for non-basic-text layers.
-            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerType <> PDL_TEXT) Then
+            If (PDImages.GetActiveImage.GetActiveLayer.GetLayerType <> PDL_TextBasic) Then
             
-                Select Case PDImages.GetActiveImage.GetActiveLayer.GetLayerType
+                Select Case PDImages.GetActiveImage.GetActiveLayer.GetLayerType()
                 
-                    Case PDL_TYPOGRAPHY
+                    Case PDL_TextAdvanced
                         Dim newMessage As String
-                        newMessage = g_Language.TranslateMessage("This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.")
+                        newMessage = g_Language.TranslateMessage("This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.")
                         newMessage = newMessage & vbCrLf & g_Language.TranslateMessage("(This action is non-destructive.)")
                         Me.lblConvertLayer.Caption = newMessage
                         
@@ -781,7 +781,7 @@ Public Sub UpdateAgainstCurrentLayer()
                 
                 End Select
             
-                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to a basic text layer.")
+                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to basic text.")
                 
                 'Make the prompt panel the size of the tool window
                 Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
