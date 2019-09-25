@@ -545,7 +545,7 @@ Public Function StringFromUTF8Ptr(ByVal srcUtf8Ptr As Long, ByVal srcUTF8Len As 
     lenWideString = MultiByteToWideChar(CP_UTF8, 0, srcUtf8Ptr, srcUTF8Len, 0, 0)
     
     If (lenWideString = 0) Then
-        InternalError "Strings.StringFromUTF8Ptr() failed because MultiByteToWideChar did not return a valid buffer length (#" & Err.LastDllError & ")."
+        InternalError "Strings.StringFromUTF8Ptr() failed because MultiByteToWideChar did not return a valid buffer length (#" & Err.LastDllError & "); passed buffer length was " & srcUTF8Len & "."
         StringFromUTF8Ptr = vbNullString
     Else
         StringFromUTF8Ptr = String$(lenWideString, 0)

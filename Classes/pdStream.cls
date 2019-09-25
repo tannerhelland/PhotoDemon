@@ -693,6 +693,8 @@ Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As
                     InternalStreamError "ReadBytes_PointerOnly failed; const pdFileMM for details."
                 End If
                 
+            Else
+                InternalStreamError "ReadBytes_PointerOnly doesn't have a valid m_FileMM object!"
             End If
         End If
         

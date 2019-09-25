@@ -199,7 +199,7 @@ Friend Function LoadPaletteFromFile(ByRef srcFile As String, Optional ByVal remo
     ' to subsequent load functions.
     Dim cStream As pdStream
     Set cStream = New pdStream
-    If cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadOnly, srcFile) Then
+    If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
         
         'Although we parse files using pdStream, note that we still pass the source filename (and path) to all
         ' load functions.  Many palette formats are primitive, and they may require validation against things like
@@ -1469,6 +1469,7 @@ BadLineColor:
             End If
             
         Else
+            InternalProblem "LoadPalettePhotoDemon failed to read the source stream as a UTF-8 buffer"
             LoadPalettePhotoDemon = False
         End If
         
