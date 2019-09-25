@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_Clone
    ClientHeight    =   1515
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   16650
+   ClientWidth     =   15345
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -23,13 +23,34 @@ Begin VB.Form toolpanel_Clone
    MinButton       =   0   'False
    ScaleHeight     =   101
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1110
+   ScaleWidth      =   1023
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Left            =   10380
+      Top             =   15
+      Width           =   4335
+      _ExtentX        =   7646
+      _ExtentY        =   556
+      Caption         =   "source settings"
+   End
+   Begin PhotoDemon.pdDropDown cboBrushSetting 
+      Height          =   735
+      Index           =   2
+      Left            =   10380
+      TabIndex        =   7
+      Top             =   690
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   1296
+      Caption         =   "pattern mode"
+      FontSizeCaption =   10
+   End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
-      Left            =   4080
+      Left            =   7800
       TabIndex        =   2
       Top             =   0
       Width           =   2295
@@ -79,7 +100,7 @@ Begin VB.Form toolpanel_Clone
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   375
       Index           =   1
-      Left            =   4185
+      Left            =   7905
       TabIndex        =   3
       Top             =   900
       Width           =   2190
@@ -91,7 +112,7 @@ Begin VB.Form toolpanel_Clone
       CausesValidation=   0   'False
       Height          =   690
       Index           =   2
-      Left            =   6720
+      Left            =   3960
       TabIndex        =   4
       Top             =   0
       Width           =   3750
@@ -107,24 +128,42 @@ Begin VB.Form toolpanel_Clone
       NotchValueCustom=   100
    End
    Begin PhotoDemon.pdCheckBox chkSampleMerged 
-      Height          =   375
-      Left            =   10680
+      Height          =   345
+      Left            =   12240
       TabIndex        =   5
-      Top             =   120
-      Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   450
+      Top             =   345
+      Width           =   3000
+      _ExtentX        =   5292
+      _ExtentY        =   609
       Caption         =   "sample all layers"
    End
    Begin PhotoDemon.pdCheckBox chkAligned 
-      Height          =   375
-      Left            =   10680
+      Height          =   345
+      Left            =   10470
       TabIndex        =   6
-      Top             =   480
-      Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   450
+      Top             =   345
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   609
       Caption         =   "aligned"
+   End
+   Begin PhotoDemon.pdSlider sltBrushSetting 
+      CausesValidation=   0   'False
+      Height          =   690
+      Index           =   3
+      Left            =   3960
+      TabIndex        =   8
+      Top             =   660
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "flow"
+      FontSizeCaption =   10
+      Max             =   100
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
 End
 Attribute VB_Name = "toolpanel_Clone"
@@ -172,7 +211,11 @@ Private Sub cboBrushSetting_Click(Index As Integer)
         'Alpha mode
         Case 1
             Tools_Clone.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
-            
+        
+        'Wrap mode
+        Case 2
+            Tools_Clone.SetBrushWrapMode GetWrapModeFromIndex(cboBrushSetting(Index).ListIndex)
+        
     End Select
     
 End Sub
@@ -190,6 +233,15 @@ Private Sub Form_Load()
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
+    
+    cboBrushSetting(2).SetAutomaticRedraws False
+    cboBrushSetting(2).AddItem "off", 0
+    cboBrushSetting(2).AddItem "tile", 1
+    cboBrushSetting(2).AddItem "tile + flip horizontal", 2
+    cboBrushSetting(2).AddItem "tile + flip vertical", 3
+    cboBrushSetting(2).AddItem "tile + flip both", 4
+    cboBrushSetting(2).ListIndex = 0
+    cboBrushSetting(2).SetAutomaticRedraws True, True
     
     ''Populate any other list-style UI elements
     'btsSpacing.AddItem "auto", 0
@@ -248,9 +300,9 @@ Private Sub sltBrushSetting_Change(Index As Integer)
         Case 2
             Tools_Clone.SetBrushHardness sltBrushSetting(Index).Value
             
-        ''Flow
-        'Case 3
-        '    Tools_Clone.SetBrushFlow sltBrushSetting(Index).Value
+        'Flow
+        Case 3
+            Tools_Clone.SetBrushFlow sltBrushSetting(Index).Value
     
     End Select
     
@@ -266,7 +318,8 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Clone.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     Tools_Clone.SetBrushSampleMerged chkSampleMerged.Value
     Tools_Clone.SetBrushAligned chkAligned.Value
-    'Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
+    Tools_Clone.SetBrushWrapMode GetWrapModeFromIndex(cboBrushSetting(2).ListIndex)
+    Tools_Clone.SetBrushFlow sltBrushSetting(3).Value
     'If (btsSpacing.ListIndex = 0) Then Tools_Clone.SetBrushSpacing 0# Else Tools_Clone.SetBrushSpacing sldSpacing.Value
 End Sub
 
@@ -279,7 +332,8 @@ Public Sub SyncUIToAllPaintbrushSettings()
     cboBrushSetting(1).ListIndex = Tools_Clone.GetBrushAlphaMode()
     chkSampleMerged.Value = Tools_Clone.GetBrushSampleMerged()
     chkAligned.Value = Tools_Clone.GetBrushAligned()
-    'sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
+    cboBrushSetting(2).ListIndex = GetIndexFromWrapMode(Tools_Clone.GetBrushWrapMode())
+    sltBrushSetting(3).Value = Tools_Clone.GetBrushFlow()
     'If (Tools_Clone.GetBrushSpacing() = 0#) Then
     '    btsSpacing.ListIndex = 0
     'Else
@@ -287,6 +341,47 @@ Public Sub SyncUIToAllPaintbrushSettings()
     '    sldSpacing.Value = Tools_Clone.GetBrushSpacing()
     'End If
 End Sub
+
+'Helper functions to translate between dropdown "pattern mode" index and PD_2D_WrapMode enum
+Private Function GetWrapModeFromIndex(ByVal srcIndex As Long) As PD_2D_WrapMode
+
+    If (srcIndex = 0) Then
+        GetWrapModeFromIndex = P2_WM_Clamp
+    ElseIf (srcIndex = 1) Then
+        GetWrapModeFromIndex = P2_WM_Tile
+    ElseIf (srcIndex = 2) Then
+        GetWrapModeFromIndex = P2_WM_TileFlipX
+    ElseIf (srcIndex = 3) Then
+        GetWrapModeFromIndex = P2_WM_TileFlipY
+    ElseIf (srcIndex = 4) Then
+        GetWrapModeFromIndex = P2_WM_TileFlipXY
+    
+    'Failsafe only; should never trigger
+    Else
+        GetWrapModeFromIndex = P2_WM_Clamp
+    End If
+    
+End Function
+
+Private Function GetIndexFromWrapMode(ByVal srcMode As PD_2D_WrapMode) As Long
+
+    If (srcMode = P2_WM_Clamp) Then
+        GetIndexFromWrapMode = 0
+    ElseIf (srcMode = P2_WM_Tile) Then
+        GetIndexFromWrapMode = 1
+    ElseIf (srcMode = P2_WM_TileFlipX) Then
+        GetIndexFromWrapMode = 2
+    ElseIf (srcMode = P2_WM_TileFlipY) Then
+        GetIndexFromWrapMode = 3
+    ElseIf (srcMode = P2_WM_TileFlipXY) Then
+        GetIndexFromWrapMode = 4
+    
+    'Failsafe only; should never trigger
+    Else
+        GetIndexFromWrapMode = 0
+    End If
+
+End Function
 
 'Private Sub UpdateSpacingVisibility()
 '    If (btsSpacing.ListIndex = 0) Then

@@ -84,7 +84,7 @@ Private m_SourcePoint As PointFloat, m_SourceSetThisClick As Boolean, m_FirstStr
 Private m_SourceOffsetX As Single, m_SourceOffsetY As Single, m_OrigSourceOffsetX As Single, m_OrigSourceOffsetY As Single
 Private m_SampleMerged As Boolean, m_SampleMergedCopy As pdDIB
 Private m_Sample As pdDIB, m_SampleUntouched As pdDIB
-Private m_Aligned As Boolean
+Private m_Aligned As Boolean, m_WrapMode As PD_2D_WrapMode
 Private m_CtrlKeyDown As Boolean
 
 'Universal brush settings, applicable for most sources.  (I say "most" because some settings can contradict each other;
@@ -136,6 +136,10 @@ End Function
 
 Public Function GetBrushSpacing() As Single
     GetBrushSpacing = m_BrushSpacing
+End Function
+
+Public Function GetBrushWrapMode() As PD_2D_WrapMode
+    GetBrushWrapMode = m_WrapMode
 End Function
 
 'Property set functions.
@@ -220,6 +224,10 @@ Public Sub SetBrushSpacing(ByVal newSpacing As Single)
         m_BrushSpacing = newSpacing
         m_BrushIsReady = False
     End If
+End Sub
+
+Public Sub SetBrushWrapMode(ByVal newMode As PD_2D_WrapMode)
+    m_WrapMode = newMode
 End Sub
 
 Public Function GetBrushProperty(ByVal bProperty As PD_BrushAttributes) As Variant
@@ -801,7 +809,34 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
             
             'Retrieve the relevant portion of the source image, then make an *untouched* copy of it
             m_Sample.SetInitialAlphaPremultiplicationState True
-            GDI.BitBltWrapper m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcDIB.GetDIBDC, srcRectL.Left, srcRectL.Top
+            If (m_WrapMode = P2_WM_Clamp) Then
+                GDI.BitBltWrapper m_Sample.GetDIBDC, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height, srcDIB.GetDIBDC, srcRectL.Left, srcRectL.Top
+            Else
+            
+                'Create a matching texture brush, using the source image as our texture
+                Dim cBrush As pd2DBrush
+                Set cBrush = New pd2DBrush
+                cBrush.SetBrushMode P2_BM_Texture
+                cBrush.SetBrushTextureFromDIB srcDIB
+                cBrush.SetBrushTextureWrapMode m_WrapMode
+                cBrush.CreateBrush
+                
+                'Create a transformation matrix that ensure the source texture offset is in the correct
+                ' position for this brush stroke.
+                Dim cTransform As pd2DTransform
+                Set cTransform = New pd2DTransform
+                cTransform.ApplyTranslation -1 * srcRectL.Left, -1 * srcRectL.Top
+                cBrush.SetBrushTextureTransform cTransform
+                
+                'Finally, paint the texture onto the brush image
+                Dim dstSurface As pd2DSurface
+                Drawing2D.QuickCreateSurfaceFromDIB dstSurface, m_Sample, False
+                PD2D.FillRectangleF dstSurface, cBrush, dstRectL.Left, dstRectL.Top, dstRectL.Width, dstRectL.Height
+                
+                Set cBrush = Nothing: Set cTransform = Nothing: Set dstSurface = Nothing
+                
+            End If
+            
             Set srcDIB = Nothing
             
             If (m_SampleUntouched Is Nothing) Then Set m_SampleUntouched = New pdDIB
@@ -819,21 +854,44 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
                 fLookup(x) = CSng(x) / 255!
             Next x
             
-            Dim xStart As Long, xEnd As Long, yStart As Long, yEnd As Long
+            Dim xStart As Long, xEnd As Long, yStart As Long, yEnd As Long, srcMaskByte As Byte
             xStart = dstRectL.Left
             xEnd = dstRectL.Left + dstRectL.Width - 1
             yStart = dstRectL.Top
             yEnd = dstRectL.Top + dstRectL.Height - 1
             
+            Dim dstPtr As Long, dstStride As Long, srcPtr As Long, srcStride As Long
+            m_Sample.WrapArrayAroundScanline pxSample, sampleSA, 0
+            dstPtr = m_Sample.GetDIBPointer
+            dstStride = m_Sample.GetDIBStride
+            
             For y = yStart To yEnd
-                m_Sample.WrapArrayAroundScanline pxSample, sampleSA, y
+                sampleSA.pvData = dstPtr + (y * dstStride)
             For x = xStart To xEnd
+            
                 xStride = x * 4
-                tmpFloat = fLookup(m_Mask(x, y))
-                pxSample(xStride) = pxSample(xStride) * tmpFloat
-                pxSample(xStride + 1) = pxSample(xStride + 1) * tmpFloat
-                pxSample(xStride + 2) = pxSample(xStride + 2) * tmpFloat
-                pxSample(xStride + 3) = pxSample(xStride + 3) * tmpFloat
+                srcMaskByte = m_Mask(x, y)
+                
+                'Because large chunks of the brush will always be transparent (e.g. outside the brush circle)
+                ' or solid (e.g. inside the brush hardness radius), we can shortcut this inner loop by
+                ' checking 0/255 values before performing floating-point math.  Profiling showed performance
+                ' improvements of ~200% for a brush with hardness 50, and even larger gains as brush
+                ' hardness increases.
+                If (srcMaskByte < 255) Then
+                    If (srcMaskByte = 0) Then
+                        pxSample(xStride) = 0
+                        pxSample(xStride + 1) = 0
+                        pxSample(xStride + 2) = 0
+                        pxSample(xStride + 3) = 0
+                    Else
+                        tmpFloat = fLookup(srcMaskByte)
+                        pxSample(xStride) = pxSample(xStride) * tmpFloat
+                        pxSample(xStride + 1) = pxSample(xStride + 1) * tmpFloat
+                        pxSample(xStride + 2) = pxSample(xStride + 2) * tmpFloat
+                        pxSample(xStride + 3) = pxSample(xStride + 3) * tmpFloat
+                    End If
+                End If
+                
             Next x
             Next y
             
@@ -923,30 +981,36 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         ' we don't populate them until the end of this function
     End With
     
-    'Next, perform boundary checks on the source rectangle, and modify *both* rectangles to account for any changes
-    Dim tmpOffset As Long
-    If (srcRectL.Left < 0) Then
-        tmpOffset = srcRectL.Left
-        srcRectL.Left = 0
-        dstRectL.Left = dstRectL.Left - tmpOffset
-        srcRectL.Width = srcRectL.Width + tmpOffset
-    End If
-    
-    If (srcRectL.Top < 0) Then
-        tmpOffset = srcRectL.Top
-        srcRectL.Top = 0
-        dstRectL.Top = dstRectL.Top - tmpOffset
-        srcRectL.Height = srcRectL.Height + tmpOffset
-    End If
-    
-    If (srcRectL.Left + srcRectL.Width > srcDIB.GetDIBWidth) Then
-        tmpOffset = (srcRectL.Left + srcRectL.Width) - srcDIB.GetDIBWidth
-        srcRectL.Width = srcRectL.Width - tmpOffset
-    End If
-    
-    If (srcRectL.Top + srcRectL.Height > srcDIB.GetDIBHeight) Then
-        tmpOffset = (srcRectL.Top + srcRectL.Height) - srcDIB.GetDIBHeight
-        srcRectL.Height = srcRectL.Height - tmpOffset
+    'Next, calculate overlap.  Note that source overlap is *only* calculated if the current wrap mode
+    ' is set to NONE.  (Otherwise, we'll wrap the source at boundaries, so we don't want to crop the rect.)
+    If (m_WrapMode = P2_WM_Clamp) Then
+        
+        'Next, perform boundary checks on the source rectangle, and modify *both* rectangles to account for any changes
+        Dim tmpOffset As Long
+        If (srcRectL.Left < 0) Then
+            tmpOffset = srcRectL.Left
+            srcRectL.Left = 0
+            dstRectL.Left = dstRectL.Left - tmpOffset
+            srcRectL.Width = srcRectL.Width + tmpOffset
+        End If
+        
+        If (srcRectL.Top < 0) Then
+            tmpOffset = srcRectL.Top
+            srcRectL.Top = 0
+            dstRectL.Top = dstRectL.Top - tmpOffset
+            srcRectL.Height = srcRectL.Height + tmpOffset
+        End If
+        
+        If (srcRectL.Left + srcRectL.Width > srcDIB.GetDIBWidth) Then
+            tmpOffset = (srcRectL.Left + srcRectL.Width) - srcDIB.GetDIBWidth
+            srcRectL.Width = srcRectL.Width - tmpOffset
+        End If
+        
+        If (srcRectL.Top + srcRectL.Height > srcDIB.GetDIBHeight) Then
+            tmpOffset = (srcRectL.Top + srcRectL.Height) - srcDIB.GetDIBHeight
+            srcRectL.Height = srcRectL.Height - tmpOffset
+        End If
+        
     End If
     
     'As a convenience, let's also calculate out-of-bounds destination pixels (which use scratch layer boundaries)
@@ -959,7 +1023,10 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = dstX
         dstX = 0
         dstRectL.Left = dstRectL.Left - tmpOffset
-        srcRectL.Left = srcRectL.Left - tmpOffset
+        
+        'If we are wrapping the source texture (e.g. treating it like a pattern), we do *not* want to modify
+        ' the source left value - it will be automatically handled correctly, according to the current wrap mode.
+        If (m_WrapMode = P2_WM_Clamp) Then srcRectL.Left = srcRectL.Left - tmpOffset
         srcRectL.Width = srcRectL.Width + tmpOffset
     End If
     
@@ -967,7 +1034,9 @@ Private Function CalculateSrcDstRects(ByVal srcX As Long, ByVal srcY As Long, By
         tmpOffset = dstY
         dstY = 0
         dstRectL.Top = dstRectL.Top - tmpOffset
-        srcRectL.Top = srcRectL.Top - tmpOffset
+        
+        'See the previous wrap mode note for an explanation of this If/Then statement
+        If (m_WrapMode = P2_WM_Clamp) Then srcRectL.Top = srcRectL.Top - tmpOffset
         srcRectL.Height = srcRectL.Height + tmpOffset
     End If
     
@@ -1326,6 +1395,9 @@ Public Sub InitializeBrushEngine()
     'Note that the current brush has *not* been created yet!
     m_BrushIsReady = False
     m_BrushCreatedAtLeastOnce = False
+    
+    'Wrap mode is now available, effectively making this a clone stamp *and* pattern stamp brush!
+    m_WrapMode = P2_WM_Clamp
     
     'Flow and spacing are *not* currently available to the user (in the tool UI).  They may be restored
     ' in a future update, and as such, no work is required to integrate them - the values are "ready to go".

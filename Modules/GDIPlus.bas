@@ -1198,6 +1198,7 @@ Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics A
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
+Private Declare Function GdipSetTextureTransform Lib "gdiplus" (ByVal hBrush As Long, ByVal hMatrix As Long) As GP_Result
 Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetWorldTransform Lib "gdiplus" (ByVal hGraphics As Long, ByVal hMatrix As Long) As GP_Result
 
@@ -4507,6 +4508,10 @@ Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
         InternalGDIPlusError "SetGDIPlusPenProperty Error", "Null pen handle"
     End If
     
+End Function
+
+Public Function GDIPlus_SetTextureBrushTransform(ByVal hBrush As Long, ByVal hTransform As Long) As Boolean
+    GDIPlus_SetTextureBrushTransform = (GdipSetTextureTransform(hBrush, hTransform) = GP_OK)
 End Function
 
 'All generic draw and fill functions follow

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>italiano</langname>
-<langversion>6.7.438</langversion>
+<langversion>6.7.439</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock (7.0 updates from Google Translate)</author>
@@ -14309,6 +14309,16 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <!-- BEGIN text for Toolpanel_Clone.frm (toolpanel_Clone) -->
 
 <phrase>
+<original>source settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pattern mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>blend / alpha mode</original>
 <translation>miscela</translation>
 </phrase>
@@ -14328,7 +14338,32 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>flow</original>
+<translation>flusso</translation>
+</phrase>
+
+<phrase>
+<original>tile</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tile + flip horizontal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tile + flip vertical</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tile + flip both</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Clone.frm-->
 
@@ -14365,12 +14400,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>spaziatura</translation>
 </phrase>
 
-<phrase>
-<original>flow</original>
-<translation>flusso</translation>
-</phrase>
-
-<!-- Toolpanel_Eraser.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Toolpanel_Eraser.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Toolpanel_Eraser.frm-->
 
@@ -16236,10 +16266,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2704</phrasecount>
+<phrasecount>2710</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4994 phrases. -->
-<!-- 2290 are duplicates, so only 2704 unique phrases have been written to file. -->
-<!-- These 2704 phrases contain approximately 12709 total words. -->
+<!-- As of this build, PhotoDemon contains 5002 phrases. -->
+<!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
+<!-- These 2710 phrases contain approximately 12723 total words. -->
 
 </pdData>

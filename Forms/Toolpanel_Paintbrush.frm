@@ -28,7 +28,7 @@ Begin VB.Form toolpanel_Paintbrush
    Visible         =   0   'False
    Begin PhotoDemon.pdSlider sldSpacing 
       Height          =   495
-      Left            =   10560
+      Left            =   10320
       TabIndex        =   6
       Top             =   960
       Width           =   3015
@@ -44,7 +44,7 @@ Begin VB.Form toolpanel_Paintbrush
    End
    Begin PhotoDemon.pdButtonStrip btsSpacing 
       Height          =   855
-      Left            =   10560
+      Left            =   10320
       TabIndex        =   5
       Top             =   0
       Width           =   3015
@@ -56,7 +56,7 @@ Begin VB.Form toolpanel_Paintbrush
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
-      Left            =   4080
+      Left            =   7800
       TabIndex        =   2
       Top             =   0
       Width           =   2295
@@ -106,7 +106,7 @@ Begin VB.Form toolpanel_Paintbrush
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   375
       Index           =   1
-      Left            =   4185
+      Left            =   7905
       TabIndex        =   3
       Top             =   900
       Width           =   2190
@@ -118,7 +118,7 @@ Begin VB.Form toolpanel_Paintbrush
       CausesValidation=   0   'False
       Height          =   690
       Index           =   2
-      Left            =   6720
+      Left            =   3960
       TabIndex        =   4
       Top             =   0
       Width           =   3750
@@ -137,7 +137,7 @@ Begin VB.Form toolpanel_Paintbrush
       CausesValidation=   0   'False
       Height          =   690
       Index           =   3
-      Left            =   6720
+      Left            =   3960
       TabIndex        =   7
       Top             =   660
       Width           =   3750

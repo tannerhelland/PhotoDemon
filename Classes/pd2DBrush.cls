@@ -264,6 +264,17 @@ Friend Sub SetBrushTextureFromDIB(ByRef srcDIB As pdDIB)
     m_TextureSrc.CreateFromExistingDIB srcDIB
 End Sub
 
+'Unlike other brush functions, this one requires that the brush has already been created.
+' (This is due to the way the transform handle is cached, and our inability to ensure the lifetime
+' of the source transform object.)
+Friend Sub SetBrushTextureTransform(ByRef srcTransform As pd2DTransform)
+    If (m_BrushHandle <> 0) Then
+        If (Not GDI_Plus.GDIPlus_SetTextureBrushTransform(m_BrushHandle, srcTransform.GetHandle)) Then InternalError "SetBrushTextureTransform failed"
+    Else
+        InternalError "Brush must exist before calling SetBrushTextureTransform"
+    End If
+End Sub
+
 Friend Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
     
     m_TextureWrapMode = newSetting
