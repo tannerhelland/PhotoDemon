@@ -196,7 +196,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
     
         'Check the download state.  If the download was incomplete, we might be able to detect it here, rather than
         ' having to rely on the error handler.
-        If AsyncProp.StatusCode <> vbAsyncStatusCodeEndDownloadData Then
+        If (AsyncProp.StatusCode <> vbAsyncStatusCodeEndDownloadData) Then
             
             'Download failed.  Populate struct elements anyway, then raise a completion event with the FAIL flag set.
             With m_DownloadList(itemIndex)
@@ -245,7 +245,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             Dim checkSumPassed As Boolean
             checkSumPassed = True
             
-            If m_DownloadList(itemIndex).ExpectedChecksum <> 0 Then
+            If (m_DownloadList(itemIndex).ExpectedChecksum <> 0) Then
                 
                 'Use pdPackagerLegacy to checksum the retrieved data
                 Dim cPackage As pdPackagerLegacy

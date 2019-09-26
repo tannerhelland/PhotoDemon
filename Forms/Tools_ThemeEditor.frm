@@ -296,16 +296,6 @@ Begin VB.Form FormThemeEditor
       Caption         =   "custom menu color"
       FontSize        =   10
    End
-   Begin PhotoDemon.pdCheckBox chkCompressHS 
-      Height          =   375
-      Left            =   4200
-      TabIndex        =   20
-      Top             =   7920
-      Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   661
-      Caption         =   "use LZ4 compression"
-   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -356,7 +346,6 @@ Private Type PD_Resource
     ResSupportsColoration As Boolean
     ResCustomMenuColor As Boolean
     MarkedForDeletion As Boolean    'Resource deletion is very primitive at present; it may not work as expected
-    UseHighSpeedCompression As Boolean
 End Type
 
 Private m_NumOfResources As Long
@@ -418,12 +407,13 @@ End Sub
 'Export the current resource collection to an actual resource file.  This is a one-way conversion.
 Private Sub cmdExport_Click()
     
-    'At present, resources are saved to the App/PhotoDemon/Themes subfolder.  Before release, we should
-    ' default to the user's /Data folder instead.
-    ' TODO 7.0: make sure this doesn't overwrite the core PD resource file.
+    'At present, resources are saved to the App/PhotoDemon/Themes subfolder.  This resource file is
+    ' ultimately compiled into the .exe, so this location should be considered "temporary" only.
+    ' (PD will preferentially load this resource file, if it exists, instead of the embedded .exe
+    ' copy - this is done as a convenience for testing, and should not be relied upon in a stable
+    ' release!)
     Dim targetResFile As String
-    
-    If (Len(txtResourcePath.Text) <> 0) Then
+    If (LenB(txtResourcePath.Text) <> 0) Then
         
         'Provide minimal UI feedback
         lblExport.Visible = True
@@ -527,8 +517,9 @@ Private Sub cmdExport_Click()
                     'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
                     cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
                     
-                    'Figure out what compression engine to use for the bitmap data itself
-                    If m_Resources(i).UseHighSpeedCompression Then thisNodeCompression = cf_Lz4hc Else thisNodeCompression = resCompFormat
+                    'All nodes now use zstd (previously lz4 could be selected, but given zstd's perf improvements
+                    ' over the past few years, there's no longer any point to this for tiny resource files)
+                    thisNodeCompression = resCompFormat
                     
                     'Write the actual bitmap data to the second half of the node.  Note that we use two
                     ' different strategies here.
@@ -560,8 +551,8 @@ Private Sub cmdExport_Click()
                             Dim totalData() As Byte, totalDataSize As Long
                             totalDataSize = (cCount * 4) + (tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight)
                             ReDim totalData(0 To totalDataSize - 1) As Byte
-                            CopyMemory ByVal VarPtr(totalData(0)), ByVal VarPtr(testPalette(0)), 4 * cCount
-                            CopyMemory ByVal VarPtr(totalData(4 * cCount)), ByVal VarPtr(testPixels(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
+                            CopyMemoryStrict VarPtr(totalData(0)), VarPtr(testPalette(0)), 4 * cCount
+                            CopyMemoryStrict VarPtr(totalData(4 * cCount)), VarPtr(testPixels(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
                         
                         Else
@@ -720,7 +711,6 @@ Private Sub SaveWorkingFile()
                     End If
                     cXML.WriteTag "SupportsCustomMenuColor", .ResCustomMenuColor
                     If .ResCustomMenuColor Then cXML.WriteTag "ColorMenu", .ResColorMenu
-                    If .UseHighSpeedCompression Then cXML.WriteTag "UseLZ4Compression", "True" Else cXML.WriteTag "UseLZ4Compression", "False"
                 End With
                 
                 cXML.CloseTag CStr(numResourcesWritten + 1)
@@ -856,7 +846,6 @@ Private Sub LoadResourceFromFile()
                             .ResCustomMenuColor = cXML.GetUniqueTag_Boolean("SupportsCustomMenuColor", False, tagPos)
                             If .ResCustomMenuColor Then .ResColorMenu = cXML.GetUniqueTag_Long("ColorMenu", 0, tagPos)
                             .MarkedForDeletion = False
-                            If Strings.StringsEqual(cXML.GetUniqueTag_String("UseLZ4Compression", "False", tagPos), "True") Then .UseHighSpeedCompression = True
                         End With
                         
                         lstResources.AddItem m_Resources(i).ResourceName
@@ -897,8 +886,6 @@ Private Sub SyncResourceAgainstCurrentUI()
             If (.ResType = PDRT_Image) Then .ResCustomMenuColor = chkCustomMenuColor.Value
             If .ResCustomMenuColor Then .ResColorMenu = csMenu.Color
             
-            .UseHighSpeedCompression = chkCompressHS.Value
-            
             'To delete a resource, you have to click the delete button, save the resource file,
             ' then exit and re-enter the dialog.  (Sorry; deletion is not really meant to be used often.)
             .MarkedForDeletion = chkDelete.Value
@@ -935,7 +922,6 @@ Private Sub SyncUIAgainstCurrentResource()
                 chkCustomMenuColor.Value = False
             End If
             
-            chkCompressHS.Value = .UseHighSpeedCompression
             chkDelete.Value = .MarkedForDeletion
             
             m_SuspendUpdates = False

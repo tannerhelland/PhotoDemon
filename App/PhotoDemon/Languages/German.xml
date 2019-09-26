@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1452</langversion>
+<langversion>7.2.1455</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1061,12 +1061,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Basic text layer</original>
-<translation></translation>
+<translation>Grundtext-Layer</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text layer</original>
-<translation></translation>
+<translation>Erweiterter Text-Layer</translation>
 </phrase>
 
 <phrase>
@@ -3610,7 +3610,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Strg+Klick, um Klonquelle festzulegen</translation>
+<translation>Strg+Mausklick, um Klonquelle festzulegen</translation>
 </phrase>
 
 <phrase>
@@ -14190,12 +14190,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Basic Text</original>
-<translation></translation>
+<translation>Grundtext</translation>
 </phrase>
 
 <phrase>
 <original>Advanced Text</original>
-<translation></translation>
+<translation>Erweiterter Text</translation>
 </phrase>
 
 <phrase>
@@ -14275,12 +14275,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Basic text tool</original>
-<translation></translation>
+<translation>Grundtext-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation></translation>
+<translation>Erweitertes Text-Tool</translation>
 </phrase>
 
 <phrase>
@@ -14866,7 +14866,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation></translation>
+<translation>Dies ist ein erweiterter Text-Layer. Um ihn mit dem Grundtext-Tool zu bearbeiten, müssen Sie diesen zuerst in einen Grundtext-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
@@ -14876,7 +14876,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>Click here to convert this layer to basic text.</original>
-<translation></translation>
+<translation>Klicken Sie hier, um diesen Layer in Grundtext zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15017,12 +15017,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen, aber unglü
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation></translation>
+<translation>Dies ist ein Grundtext-Layer. Um ihn mit dem erweiterten Text-Tool zu bearbeiten, müssen Sie diesen zuerst in einen erweiterten Text-Layer konvertieren.</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to advanced text.</original>
-<translation></translation>
+<translation>Klicken Sie hier, um diesen Layer in erweiterten Text zu konvertieren.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->

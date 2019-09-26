@@ -19,11 +19,11 @@ Attribute VB_Exposed = False
 'Last update: spin off similar pdPackage ideas into a chunk-based format, which can be more easily updated
 '             with new/modified features as PD evolves
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
-'              - pdFSO class from photodemon.org (Unicode-friendly file operations)
+'              - pdFSO class from photodemon.org (Unicode-aware file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
 '              - VBHacks module from photodemon.org (optimized workarounds for lacking VB functionality)
 '              - If you want compression support, one or more 3rd-party compression libraries
-'                (e.g. zstd, libdeflate) are also required.
+'                (e.g. zstd, zlib) are also required.
 '
 'This class provides an interface for creating and reading chunk-based pdPackage files.  pdPackage is
 ' the file format originally developed for PhotoDemon (www.photodemon.org), and as the program
@@ -36,8 +36,8 @@ Attribute VB_Exposed = False
 'Chunk-based systems carry many benefits:
 ' 1) Decoders can skip over any chunks they can't/don't support, making forward- and backward-compatibility
 '    very straightforward.
-' 2) Changes to one chunk do not affect other chunks; nothing is based on relative offsets
-' 3) No need for a central directory (like zip files) that needs to be updated during writes
+' 2) Changes to one chunk do not affect other chunks; nothing is based on relative offsets (unlike JPEG/TIFF/etc)
+' 3) No need for a central directory (like zip files) that needs to be updated after changes
 ' 4) Individual chunks can be individually compressed and/or encrypted using custom per-chunk settings,
 '    without affecting any neighboring chunks.
 '
@@ -90,13 +90,13 @@ Attribute VB_Exposed = False
 '    (Said another way, only the data portion of the embedded chunk is compressed - the 4-byte ASCII ID
 '    and chunk size are stored here, separate from the data.)
 ' 3) A 4-byte ASCII string defining the compression format used.  Valid compression types include:
-'  - "none" (no compression)
-'  - "zstd" (zstandard)
-'  - "defl" (deflate)
+'    - "none" (no compression)
+'    - "zstd" (zstandard)
+'    - "defl" (deflate)
 '    Other compression types may be used, but encoders/decoders are not required to implement them.
 '    For example, internal PhotoDemon files (like autosave data) use the lz4 compression format,
-'    with an "lz4 " descriptor - but these files are not exposed externally, and 3rd-party support isn't
-'    required or even desired.
+'    with an "lz4 " descriptor - but these files are not exposed externally, and 3rd-party support
+'    isn't required (or even desired).
 ' 4) A 4-byte signed integer describing the size of the compressed data that follows.  This value
 '    could theoretically be inferred by taking the size of this "COMP" chunk minus 12 (for the preceding
 '    3x4 byte requirements), but clarifying the value here allows writers to pad overall "COMP" chunk
@@ -105,6 +105,8 @@ Attribute VB_Exposed = False
 ' 5) The compressed data stream follows.  It must be the same size described by (4), above, but it need
 '    not consume the entire remaining length of the "COMP" chunk.
 ' 6) Any unused bytes beyond the end of (5) are considered "undefined" and should be ignored.
+' 7) COMP chunks cannot be nested; each COMP chunk must contain one (and exactly one) non-COMP chunk
+'    inside it.
 '
 'Finally, to be absolutely clear: "COMP" chunks are allowed to store any type of chunk *except "PEND"
 ' end-of-package chunks*. "PEND" chunks must always be stored as-is, without compression.
@@ -120,6 +122,10 @@ Attribute VB_Exposed = False
 'Final thoughts:
 '
 'No other formal limitations are placed upon this format.
+'
+'It is expected that data formats built atop this format (e.g. PhotoDemon's many custom file types)
+' can and will impose their own format restrictions; this is fine, so long as the produced file doesn't
+' violate any of the predefined requirements of this spec.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -148,10 +154,10 @@ Private m_TmpChunkSrc As pdStream, m_TmpChunkDst As pdStream
 Private m_TmpChunkID As String
 
 'When opening an existing package, this class automatically "peeks" at the next chunk in line.
-' This means that the current stream pointer *ALWAYS* points at the data segment of the current
-' chunk.  The current chunk's metadata should be retrieved from m_PeekData, as required.
-' (This approach provides meaningful perf improvements as we can read the file fully
-' sequentially, without ever needing to back-up the stream pointer to maintain chunk alignment.)
+' This means that the current stream pointer *ALWAYS* points at the data segment of the current chunk.
+' The current chunk's metadata should be retrieved from m_PeekData, as required. (This provides
+' meaningful perf improvements as we can read the file fully sequentially, without ever needing to
+' back-up the stream pointer to maintain chunk alignment.)
 Private Type PackageChunkPeek
     peekActive As Boolean
     peekName As String
