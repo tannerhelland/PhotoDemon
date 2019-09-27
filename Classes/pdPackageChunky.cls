@@ -12,13 +12,13 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon "pdPackageChunky" v1.0 Interface (e.g. chunk-based archive handler)
+'PhotoDemon "pdPackageChunky" v2.0 Interface (e.g. chunk-based archive handler)
 'Copyright 2014-2019 by Tanner Helland
-'Created: 05/April/14
-'Last updated: 03/June/19
-'Last update: spin off similar pdPackage ideas into a chunk-based format, which can be more easily updated
-'             with new/modified features as PD evolves
-'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
+'Created: 03/June/19
+'Last updated: 27/September/19
+'Last update: finalize 2.0 API
+'Dependencies: - pdPackaging module from photodemon.org (defines public enums and structs)
+'              - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-aware file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
 '              - VBHacks module from photodemon.org (optimized workarounds for lacking VB functionality)
@@ -34,98 +34,94 @@ Attribute VB_Exposed = False
 ' (This design is similar to the PNG file format, among others.)
 '
 'Chunk-based systems carry many benefits:
-' 1) Decoders can skip over any chunks they can't/don't support, making forward- and backward-compatibility
-'    very straightforward.
-' 2) Changes to one chunk do not affect other chunks; nothing is based on relative offsets (unlike JPEG/TIFF/etc)
-' 3) No need for a central directory (like zip files) that needs to be updated after changes
-' 4) Individual chunks can be individually compressed and/or encrypted using custom per-chunk settings,
-'    without affecting any neighboring chunks.
+' 1) Decoders can skip over any chunks they can't/don't support, making forward- and
+'    backward-compatibility very straightforward.
+' 2) Changes to one chunk do not affect neighboring chunks; nothing is based on relative offsets
+'    (unlike JPEG/TIFF/etc)
+' 3) No need for a central directory (like zip files)
+' 4) Individual chunks can be individually compressed using custom per-chunk settings without
+'    affecting neighboring chunks.  Compressed and uncompressed chunks can be freely intermixed.
 '
-'The file format itself is very simple.  A few universal notes before I document it:
+'The file format itself is very simple.  A few universal notes:
 ' - All numeric data types are little-endian.
 ' - Individual chunks must be 2 GB or less in size.  To store larger amounts of data, spread it across
 '   multiple chunks.
-' - Unless otherwise noted, all string data is in UTF-8 format.  (The term "ASCII" is also used for
-'   various bits, and as you hopefully know if you're a developer, UTF-8 and ASCII are identical
-'   for code points on the range [0, 127] - so any distinction for chars on this range is primarily
-'   pedantic.)
+' - Unless otherwise noted, all string data is in UTF-8 format WITHOUT BOM.  (The only strings
+'   documented here actually use ASCII-safe chars, but the expectation is that user-defined chunks
+'   can use any valid UTF-8 string.)
 '
 'Files begin with a hard-coded 8-byte "magic string", identifying the file as a chunky pdPackage:
-' "PDPKCHNK" (8-byte ASCII string)
+' "PDPKCHNK" (8-byte UTF-8 string)
 '
 'This is followed by a 4-byte unsigned integer describing the encoder software version.  This value can
 ' be used to identify files that may contain new, possibly unsupported features.  At the time of this
-' writing, only a version value of "1" (0x00000001) is defined.
+' writing, only a version value of "2" (0x00000002) is defined.
 '
-'The remainder of the file is comprised of zero or more chunks.  Chunks follow a predefined format:
-' - 4 byte ASCII string defining the chunk's type.  (This string is case-sensitive.)
-' - 4 byte signed integer defining the size of this chunk.  For compatibility purposes, this value
-'   must be >= 0, which limits its max size to 2 GB.  Importantly, note that this size value
-'   does *not* include the 8 bytes required for the ASCII string identifier and chunk size; thus an
-'   empty chunk (consisting of just a 4-byte ID and 4-byte size value) would have a size of 0.
+'The remainder of the file is comprised of one or more chunks.  (Zero chunks is not allowed; there must
+' be at least one chunk in the file.)
 '
-'Chunks must be iterated until an "PEND" (package end) chunk is reached.  This chunk always has a size
-' of 0, and no chunks may appear after it.  (In fact, any data whatsoever past the "PEND" chunk *must
-' be ignored*.)
+'Chunks follow a predefined format:
+' - 4 byte UTF-8 string defining the chunk's ID.  (This string is case-sensitive, and it is suggested
+'   - but not required - that the string use uppercase characters.)
+' - 4 byte signed integer defining the total size of this chunk.  For compatibility purposes, this
+'   value must be >= 0, which limits its max size to 2 GB.  Importantly, note that this size value
+'   does *not* include the 8 bytes required for the 4-byte ASCII chunk identifier and the 4 bytes
+'   required for this chunk size value; thus an empty chunk (consisting of just a 4-byte ID and a
+'   4-byte chunk size) would have a stated size of 0.
 '
-'For the most part, chunk names and definitions are left up to individual programs.  This spec only
-' defines a handful of protected chunk names.
+'It a chunk size is *not* zero, it MUST be >= 12.  This is because a non-zero-length chunk must
+' - immediately following the chunk size described above - provide 12 bytes of data further describing
+' the contents of the chunk.  (These 12 bytes are *not* used in a zero-length chunk, as that would be
+' wasteful and silly).
 '
-'Including the "PEND" chunk (described above), the following chunk names are protected and *must not*
-' be used except as described in this document.
+'If a chunk's size is non-zero, the next 12 bytes are defined as follows.  (These 12 bytes are
+' mandatory, meaning they must ALWAYS be present for a chunk of non-zero size.)
+' - 4 byte UTF-8 string defining the chunk's compression format, if any.  This string is case-sensitive.
+'   Currently defined compression formats include:
+'   - "none" (no compression)
+'   - "zstd" (zstandard)
+'   - "defl" (deflate)
+'   - "zlib" (zlib)
+'   PhotoDemon uses some other compression types internally (e.g. "lz4 " for the lz4 compression
+'   library, which PhotoDemon uses for real-time compression of large binary data), but such
+'   compression types will never be used in externally accessible files.
+' - 4 byte signed integer defining the *uncompressed* size of this chunk's data.  This value must be
+'   greater than 0.
+' - 4 byte signed integer defining the *compressed* size of the chunk's data.  This value must be
+'   greater than 0, and less than or equal to "chunk size - 12 bytes".  Also, if the compressed size
+'   would somehow be LARGER than the uncompressed size, please just write an uncompressed chunk;
+'   this spec does not formally require this, but you are a bad developer if you do otherwise.
 '
-'"COMP" chunk: compression
+'Note that this last value - a 4-byte signed integer defining the compressed size of this chunk's data -
+' could theoretically be inferred from the chunk's size, e.g. "chunk size - 8 bytes (for compression
+' type and uncompressed size)".  However, it is the observation of this author that many data formats
+' struggle to gracefully handle padding and/or arbitrary data alignment.  To provide flexibility, this
+' spec requires that the compressed size always be stated explicitly.  This allows chunks to be
+' arbitrarily padded to specific alignments as convenient for a specific use-case (e.g. perhaps to
+' achieve 32-bit or 64-bit alignment).  This spec does NOT make any formal requirements regarding
+' padding, and compatible decoders must handle any arbitrary alignment (or lack thereof) between chunks,
+' even if inconvenient for their platform.
 '
-'The "COMP" ID defines a compressed chunk.  "COMP" chunks are unique because they wrap another
-' (entire) chunk inside themselves.  "COMP" chunks allow any individual chunk to be compressed,
-' regardless of contents.
+'Note that even if a chunk is NOT compressed (e.g. compression type = "none"), it MUST still supply
+' valid uncompressed and compressed sizes.  These sizes will simply be equal to each other.  These
+' sizes do NOT however need to align with the chunk size itself, which means uncompressed chunks can
+' still be arbitrarily padded at your convenience.
 '
-'After the required 4-byte ASCII ID and 4-byte size descriptor, a COMP chunk contains the following:
-' 1) 4-byte ASCII ID of the chunk that has been compressed.  As with a normal chunk, decoders can use this
-'    to determine whether or not they support (or care about) the contents of the compressed chunk -
-'    and thus, whether to perform decompression or skip it entirely.
-' 2) 4-byte signed integer describing the *uncompressed size* of the chunk that has been compressed.
-'    This *does not* include the 8-bytes that would normally be required for the 4-byte ASCII ID and
-'    4-byte chunk size descriptor, because those 8-bytes are *not* part of the compression stream.
-'    (Said another way, only the data portion of the embedded chunk is compressed - the 4-byte ASCII ID
-'    and chunk size are stored here, separate from the data.)
-' 3) A 4-byte ASCII string defining the compression format used.  Valid compression types include:
-'    - "none" (no compression)
-'    - "zstd" (zstandard)
-'    - "defl" (deflate)
-'    Other compression types may be used, but encoders/decoders are not required to implement them.
-'    For example, internal PhotoDemon files (like autosave data) use the lz4 compression format,
-'    with an "lz4 " descriptor - but these files are not exposed externally, and 3rd-party support
-'    isn't required (or even desired).
-' 4) A 4-byte signed integer describing the size of the compressed data that follows.  This value
-'    could theoretically be inferred by taking the size of this "COMP" chunk minus 12 (for the preceding
-'    3x4 byte requirements), but clarifying the value here allows writers to pad overall "COMP" chunk
-'    length to a multiple or 4 (or any other value) as desired, independent of actual compressed
-'    data size.
-' 5) The compressed data stream follows.  It must be the same size described by (4), above, but it need
-'    not consume the entire remaining length of the "COMP" chunk.
-' 6) Any unused bytes beyond the end of (5) are considered "undefined" and should be ignored.
-' 7) COMP chunks cannot be nested; each COMP chunk must contain one (and exactly one) non-COMP chunk
-'    inside it.
+'IMPORTANTLY: the offset between adjacent chunks MUST be calculated using the first chunk size value
+' (the 4-byte signed integer that immediately follows the 4-byte chunk ID).  Any bytes in a chunk that
+' lie beyond the stated *compressed* size (regardless of compression type) but before the next chunk
+' in the file should be considered "undefined" and MUST be skipped during parsing.  (The author
+' suggests that such bytes always be set to 0 by an encoder, but this not a requirement.)
 '
-'Finally, to be absolutely clear: "COMP" chunks are allowed to store any type of chunk *except "PEND"
-' end-of-package chunks*. "PEND" chunks must always be stored as-is, without compression.
+'Chunks in the file must be iterated until an "PEND" (package end) chunk is reached.  This chunk always
+' has a chunk size of 0.  No chunks may appear after it.  (In fact, any data whatsoever past the "PEND"
+' chunk MUST be ignored.)
 '
-'"ENCR" chunk: encryption
-'
-'"ENCR" chunks behave similarly to "COMP" chunks.  They wrap another chunk inside themselves, using some
-' manner of encryption.
-'
-'The details of "ENCR" chunks have not been finalized, but the "ENCR" chunk name remains reserved for
-' this purpose in the future.  Don't use it for your own chunks.
+'Besides the "PEND" chunk, chunk names and definitions are left up to individual programs.
 '
 'Final thoughts:
 '
 'No other formal limitations are placed upon this format.
-'
-'It is expected that data formats built atop this format (e.g. PhotoDemon's many custom file types)
-' can and will impose their own format restrictions; this is fine, so long as the produced file doesn't
-' violate any of the predefined requirements of this spec.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
@@ -135,7 +131,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Current package manager version
-Private Const PACKAGE_VERSION As Long = &H1
+Private Const PACKAGE_VERSION As Long = &H2&
 
 'Hard-coded chunky pdPackage file identifier
 Private Const CHUNKY_PDPACKAGE_ID As String = "PDPKCHNK"
@@ -146,7 +142,8 @@ Private m_Stream As pdStream
 'When writing chunks in pieces (whether compressed or otherwise), we need temporary holders for
 ' chunk data.  Persistent temporary streams are used, and by default, their memory is *not* deallocated
 ' between chunks.  This prevents cache thrashing when writing a bunch of similarly-sized chunks in a row
-' (with or without compression).
+' (with or without compression).  Two streams are used because one stores the uncompressed data as
+' received from the caller, while the second stream stores the compressed data stream.
 Private m_TmpChunkSrc As pdStream, m_TmpChunkDst As pdStream
 
 'When writing a chunk in pieces, we need to remember the chunk ID (because it's specified in the
@@ -159,16 +156,15 @@ Private m_TmpChunkID As String
 ' meaningful perf improvements as we can read the file fully sequentially, without ever needing to
 ' back-up the stream pointer to maintain chunk alignment.)
 Private Type PackageChunkPeek
-    peekActive As Boolean
+    peekOffset As Long
     peekName As String
     peekSize As Long
-    peekOffset As Long
-    'The following members are only used for COMP (compression) chunks
-    peekCompName As String
+    
+    'The following members are only used if the chunk has a non-zero size
     peekCompType As PD_CompressionFormat
-    peekCompCompressedSize As Long
-    peekCompUncompressedSize As Long
-    peekCompDataOffset As Long
+    peekCompressedSize As Long
+    peekUncompressedSize As Long
+    
 End Type
 
 Private m_PeekData As PackageChunkPeek
@@ -183,10 +179,47 @@ Friend Function AddChunk_WholeFromPtr(ByVal chunkID As String, ByVal ptrChunkDat
     End If
     
     'Always start by validating the nodeID - it must be a 4-byte ASCII string.
-    If (Len(chunkID) <> 4) Then chunkID = ValidateChunkID(chunkID)
+    If (Len(chunkID) <> 4) Then chunkID = PDPackaging.ValidateChunkID(chunkID)
     
     'The rest of the write process is handled by a dedicated function
     AddChunk_WholeFromPtr = WriteChunkFromPtr_Safe(chunkID, ptrChunkData, chunkDataLength, cmpFormat, cmpLevel)
+    
+End Function
+
+'PhotoDemon often needs to store multi-part data pieces - e.g. an image layer's XML header, followed by
+' one or more binary blobs with actual layer pixel data.  This convenience-only function accepts two sets
+' of data, and it will automatically create (n) valid chunks in the package, in the order the source headers
+' are supplied.  The source array MUST have an LBound of 0; its UBound doesn't matter, but if you don't want
+' the full array of structs written, you MUST pass the number of chunks to use (1-based).
+Friend Function AddChunks(ByRef srcChunks() As PDPackage_ChunkData, Optional ByVal numOfChunks As Long = -1) As Boolean
+    
+    AddChunks = True
+    If (numOfChunks <= 0) Then numOfChunks = UBound(srcChunks) + 1
+    
+    Dim tmpBytes() As Byte, tmpBytesSize As Long
+    
+    Dim i As Long
+    For i = 0 To numOfChunks - 1
+        
+        With srcChunks(i)
+            
+            'Convert the source data into a standard byte stream, as required.
+            
+            'If the source data is a string, convert it from UTF-16 to UTF-8.
+            If (.chunkDataFormat = dt_StringToUTF8) Then
+                AddChunks = AddChunks And Strings.UTF8FromStrPtr(.ptrChunkData, .chunkDataLength \ 2, tmpBytes, tmpBytesSize)
+                If AddChunks Then
+                    .ptrChunkData = VarPtr(tmpBytes(0))
+                    .chunkDataLength = tmpBytesSize
+                End If
+            End If
+            
+            'Add the chunk to the collection
+            If AddChunks Then AddChunks = AddChunks And WriteChunkFromPtr_Safe(.chunkID, .ptrChunkData, .chunkDataLength, .chunkCompressionFormat, .chunkCompressionLevel)
+            
+        End With
+        
+    Next i
     
 End Function
 
@@ -205,7 +238,7 @@ Friend Function EndChunk(Optional ByVal cmpFormat As PD_CompressionFormat = cf_N
         'Always start by validating the nodeID - it must be a 4-byte ASCII string.
         Dim chunkID As String
         chunkID = m_TmpChunkID
-        If (Len(chunkID) <> 4) Then chunkID = ValidateChunkID(chunkID)
+        If (Len(chunkID) <> 4) Then chunkID = PDPackaging.ValidateChunkID(chunkID)
         
         'The actual write is handled by a dedicated function
         EndChunk = WriteChunkFromPtr_Safe(chunkID, m_TmpChunkSrc.Peek_PointerOnly(0), m_TmpChunkSrc.GetStreamSize(), cmpFormat, cmpLevel)
@@ -255,21 +288,13 @@ End Function
 'Return the name of the next chunk in line.  Note that this does *not* permanently move the
 ' stream pointer (by design)!
 Friend Function GetChunkName() As String
-    If (m_PeekData.peekName = "COMP") Then
-        GetChunkName = m_PeekData.peekCompName
-    Else
-        GetChunkName = m_PeekData.peekName
-    End If
+    GetChunkName = m_PeekData.peekName
 End Function
 
 'Return the size of the next chunk in line.  Note that this does *not* permanently move the
 ' stream pointer (by design)!
 Friend Function GetChunkSize() As Long
-    If (m_PeekData.peekName = "COMP") Then
-        GetChunkSize = m_PeekData.peekCompUncompressedSize
-    Else
-        GetChunkSize = m_PeekData.peekSize
-    End If
+    GetChunkSize = m_PeekData.peekSize
 End Function
 
 Friend Function GetPackageSize() As Long
@@ -281,7 +306,9 @@ End Function
 ' "PEND" results in a FALSE return, by design, even though dstChunkName/Size will still be set and returned correctly.)
 ' Note: the destination stream may not be the same size reported by dstChunkSize.  This is especially true if you're
 ' using the same pdStream object multiple times in a row, as this class will attempt to reuse previous memory
-' allocations whenever possible.
+' allocations whenever possible.  You *must* use dstChunkSize to handle the data correctly.
+'
+'If the chunk is compressed, this function will automatically decompress it for you.
 Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As Long, Optional ByRef dstChunkStream As pdStream, Optional ByVal loadToThisPtrInstead As Long = 0) As Boolean
     
     GetNextChunk = GetNextChunk_Helper(dstChunkName, dstChunkSize)
@@ -297,11 +324,10 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
         End If
         
         'Compressed chunk (must be decompressed before returning it)
-        If (dstChunkName = "COMP") Then
+        If (m_PeekData.peekCompType <> cf_None) Then
             
-            'Overwrite the returned name and size with the name and *uncompressed* size of the compressed chunk
-            dstChunkName = m_PeekData.peekCompName
-            dstChunkSize = m_PeekData.peekCompUncompressedSize
+            'Overwrite the returned size with the *uncompressed* size of the compressed chunk
+            dstChunkSize = m_PeekData.peekUncompressedSize
             
             'Next is the compression format
             Dim cmpFormat As PD_CompressionFormat
@@ -320,35 +346,36 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
             
             If (m_Stream.GetStreamMode = PD_SM_FileBacked) Then
                 ReadyTmpChunkSrc
-                m_Stream.ReadBytesToStream m_TmpChunkSrc, m_PeekData.peekCompCompressedSize
+                m_Stream.ReadBytesToStream m_TmpChunkSrc, m_PeekData.peekCompressedSize
                 ptrSrcComp = m_TmpChunkSrc.Peek_PointerOnly(0)
             Else
-                ptrSrcComp = m_Stream.Peek_PointerOnly(, m_PeekData.peekCompCompressedSize)
+                ptrSrcComp = m_Stream.Peek_PointerOnly(, m_PeekData.peekCompressedSize)
             End If
             
+            'Perform decompression.  If a destination pointer was supplied, presume the caller knows what
+            ' they're doing and they have already prepared sufficient space for us.
             If (loadToThisPtrInstead <> 0) Then
-                GetNextChunk = Compression.DecompressPtrToPtr(loadToThisPtrInstead, dstChunkSize, ptrSrcComp, m_PeekData.peekCompCompressedSize, cmpFormat)
+                GetNextChunk = Compression.DecompressPtrToPtr(loadToThisPtrInstead, dstChunkSize, ptrSrcComp, m_PeekData.peekCompressedSize, cmpFormat)
             Else
-                GetNextChunk = Compression.DecompressPtrToPtr(dstChunkStream.Peek_PointerOnly(0), dstChunkSize, ptrSrcComp, m_PeekData.peekCompCompressedSize, cmpFormat)
+                GetNextChunk = Compression.DecompressPtrToPtr(dstChunkStream.Peek_PointerOnly(0), dstChunkSize, ptrSrcComp, m_PeekData.peekCompressedSize, cmpFormat)
             End If
-            
-            'Move the pointer in the source data to the next chunk, then peek the next chunk
-            m_Stream.SetPosition m_PeekData.peekOffset + m_PeekData.peekSize + 8, FILE_BEGIN
-            PeekNextChunk
             
         'Anything else is a normal chunk.  If the underlying stream is file-based, copy the relevant bytes into the
         ' destination stream.  If the underlying stream is memory-based, simply wrap a "fake" array around the source
         ' bytes, to avoid the need for a copy.
         Else
-            If (dstChunkSize <> 0) Then
-                If (loadToThisPtrInstead <> 0) Then
-                    GetNextChunk = m_Stream.ReadBytesToBarePointer(loadToThisPtrInstead, dstChunkSize)
-                Else
-                    GetNextChunk = m_Stream.ReadBytesToStream(dstChunkStream, dstChunkSize)
-                End If
+            
+            If (loadToThisPtrInstead <> 0) Then
+                GetNextChunk = m_Stream.ReadBytesToBarePointer(loadToThisPtrInstead, dstChunkSize)
+            Else
+                GetNextChunk = m_Stream.ReadBytesToStream(dstChunkStream, dstChunkSize)
             End If
-            PeekNextChunk
+            
         End If
+        
+        'Always end by ensuring our stream pointer is aligned, then peeking the next chunk's data.
+        m_Stream.SetPosition m_PeekData.peekOffset + m_PeekData.peekSize + 8, FILE_BEGIN
+        PeekNextChunk
         
     End If
     
@@ -367,6 +394,13 @@ Private Function GetNextChunk_Helper(ByRef dstChunkName As String, ByRef dstChun
     'Failsafe check to ensure chunk size doesn't extend past EOF
     If (m_PeekData.peekOffset + dstChunkSize + 8 > m_Stream.GetStreamSize()) Or (dstChunkSize < 0) Then
         InternalError "GetNextChunk", "Bad chunk size; it extends past EOF"
+        GetNextChunk_Helper = False
+        Exit Function
+    End If
+    
+    'Handle invalid sizes
+    If (m_PeekData.peekSize > 0) And (m_PeekData.peekSize < 12) Then
+        InternalError "GetNextChunk", "Bad chunk size; non-zero chunks must be at least 12-bytes long"
         GetNextChunk_Helper = False
         Exit Function
     End If
@@ -517,18 +551,15 @@ Private Sub PeekNextChunk()
     
     'Peek the new data
     With m_PeekData
-        .peekActive = True
         .peekOffset = m_Stream.GetPosition()
         .peekName = m_Stream.ReadString_ASCII(4)
         .peekSize = m_Stream.ReadLong()
         
-        'Compressed chunks have extra data; it is useful to read this in advance
-        If (.peekName = "COMP") Then
-            .peekCompName = m_Stream.ReadString_ASCII(4)
-            .peekCompUncompressedSize = m_Stream.ReadLong()
+        'Non-zero-sized chunks must report compression data
+        If (.peekSize <> 0) Then
             .peekCompType = GetCompressionFormatFromName(m_Stream.ReadString_ASCII(4))
-            .peekCompCompressedSize = m_Stream.ReadLong()
-            .peekCompDataOffset = m_Stream.GetPosition()
+            .peekUncompressedSize = m_Stream.ReadLong()
+            .peekCompressedSize = m_Stream.ReadLong()
         End If
         
     End With
@@ -556,22 +587,9 @@ Private Sub ReadyTmpChunkSrc(Optional ByVal ensureBytesAvailable As Long = 0)
     If (ensureBytesAvailable <> 0) Then m_TmpChunkSrc.EnsureBufferSpaceAvailable ensureBytesAvailable
 End Sub
 
-Private Function ValidateChunkID(ByRef srcID As String) As String
-    If (Len(srcID) = 4) Then
-        ValidateChunkID = srcID
-    ElseIf (Len(srcID) > 4) Then
-        InternalError "ValidateChunkID", srcID & " is an invalid chunk ID - only 4 chars allowed.  Truncating now."
-        ValidateChunkID = Left$(srcID, 4)
-    
-    'Lengths less than 4 are fine; they're just extended with spaces
-    Else
-        ValidateChunkID = srcID & String$(4 - Len(srcID), " ")
-    End If
-End Function
-
 'After opening a package (either from memory or file), call this function to validate its contents.
 ' RETURNS: boolean TRUE if package appears valid; FALSE otherwise.
-Private Function ValidateExternalPackage(Optional ByRef srcPackageVersion As Long = 1) As Boolean
+Private Function ValidateExternalPackage(Optional ByRef srcPackageVersion As Long = 2) As Boolean
     m_Stream.SetPosition 0, FILE_BEGIN
     ValidateExternalPackage = (m_Stream.ReadString_ASCII(8) = "PDPKCHNK")
     If ValidateExternalPackage Then srcPackageVersion = m_Stream.ReadLong()
@@ -589,7 +607,7 @@ Private Function WriteChunkFromPtr_Safe(ByRef chunkID As String, ByVal ptrChunkD
     Dim useCompression As Boolean
     useCompression = (cmpFormat <> cf_None)
     
-    If useCompression Then
+    If useCompression And (chunkDataLength > 0) And (ptrChunkData <> 0) Then
     
         'When compression *is* in use, we have to create a temporary copy of the source data, as we don't
         ' know its final, compressed size until actually compress it.
@@ -603,15 +621,19 @@ Private Function WriteChunkFromPtr_Safe(ByRef chunkID As String, ByVal ptrChunkD
         ' than the worst-case size!)
         If Compression.CompressPtrToPtr(m_TmpChunkDst.Peek_PointerOnly(0), finalSize, ptrChunkData, chunkDataLength, cmpFormat, cmpLevel) Then
             
-            'Compression worked!  Write a full COMP chunk.
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII("COMP")
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(finalSize + 16)
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(chunkID)
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength)
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(GetNameFromCompressionFormat(cmpFormat))
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(finalSize)
-            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And (m_Stream.WriteBytesFromPointer(m_TmpChunkDst.Peek_PointerOnly(0), finalSize) <> 0)
-            
+            'Compression worked!  If the data's size shrunk, write out a compressed data stream.
+            If (finalSize < chunkDataLength) Then
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(chunkID)
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(finalSize + 12)
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(GetNameFromCompressionFormat(cmpFormat))
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength)
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(finalSize)
+                WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And (m_Stream.WriteBytesFromPointer(m_TmpChunkDst.Peek_PointerOnly(0), finalSize) <> 0)
+            Else
+                PDDebug.LogAction "Compression didn't improve chunk size (" & finalSize & " vs " & chunkDataLength & "); writing uncompressed chunk instead."
+                useCompression = False
+            End If
+                
         Else
             InternalError "WriteChunkFromPtr_Safe", "Compression failed; writing node uncompressed instead"
             useCompression = False
@@ -621,10 +643,23 @@ Private Function WriteChunkFromPtr_Safe(ByRef chunkID As String, ByVal ptrChunkD
     
     'If compression failed, or the user doesn't want compression, write the chunk data as-is
     If (Not useCompression) Then
+    
         WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(chunkID)
-        WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength)
-        WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And (m_Stream.WriteBytesFromPointer(ptrChunkData, chunkDataLength) <> 0)
+        
+        If (chunkDataLength = 0) Then
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(0)
+        Else
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength + 12)
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteString_ASCII(GetNameFromCompressionFormat(cf_None))
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength) 'Uncompressed and compressed sizes are identical
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And m_Stream.WriteLong(chunkDataLength)
+            WriteChunkFromPtr_Safe = WriteChunkFromPtr_Safe And (m_Stream.WriteBytesFromPointer(ptrChunkData, chunkDataLength) <> 0)
+        End If
+        
     End If
+    
+    'If, in the future, we decide to align chunks, we must ensure the stream pointer is aligned correctly before exiting.
+    'If (chunkDataLength <> 0) Then...
     
 End Function
 
