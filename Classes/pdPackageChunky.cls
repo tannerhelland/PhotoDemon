@@ -70,9 +70,8 @@ Attribute VB_Exposed = False
 '   4-byte chunk size) would have a stated size of 0.
 '
 'It a chunk size is *not* zero, it MUST be >= 12.  This is because a non-zero-length chunk must
-' - immediately following the chunk size described above - provide 12 bytes of data further describing
-' the contents of the chunk.  (These 12 bytes are *not* used in a zero-length chunk, as that would be
-' wasteful and silly).
+' provide 12 bytes of data further describing the contents of the chunk.  (These 12 bytes are *not*
+' used in a zero-length chunk, because that would be wasteful and silly).
 '
 'If a chunk's size is non-zero, the next 12 bytes are defined as follows.  (These 12 bytes are
 ' mandatory, meaning they must ALWAYS be present for a chunk of non-zero size.)
@@ -110,7 +109,7 @@ Attribute VB_Exposed = False
 'IMPORTANTLY: the offset between adjacent chunks MUST be calculated using the first chunk size value
 ' (the 4-byte signed integer that immediately follows the 4-byte chunk ID).  Any bytes in a chunk that
 ' lie beyond the stated *compressed* size (regardless of compression type) but before the next chunk
-' in the file should be considered "undefined" and MUST be skipped during parsing.  (The author
+' in the file should be considered "undefined" and MUST be skipped during parsing.  (This author
 ' suggests that such bytes always be set to 0 by an encoder, but this not a requirement.)
 '
 'Chunks in the file must be iterated until an "PEND" (package end) chunk is reached.  This chunk always
@@ -150,28 +149,90 @@ Private m_TmpChunkSrc As pdStream, m_TmpChunkDst As pdStream
 ' StartChunk() function, but not actually written until the EndChunk() function)
 Private m_TmpChunkID As String
 
-'When opening an existing package, this class automatically "peeks" at the next chunk in line.
-' This means that the current stream pointer *ALWAYS* points at the data segment of the current chunk.
-' The current chunk's metadata should be retrieved from m_PeekData, as required. (This provides
-' meaningful perf improvements as we can read the file fully sequentially, without ever needing to
-' back-up the stream pointer to maintain chunk alignment.)
-Private Type PackageChunkPeek
-    peekOffset As Long
-    peekName As String
-    peekSize As Long
+'When opening an existing package, this class automatically builds a table of chunks "as it goes".
+' If the caller is accessing the package sequentially, this doesn't incur any reward or penalty,
+' but if the caller ever accesses chunks out-of-order, having a (partially) constructed table helps
+' a lot!  Building it as-we-go also ensures there is no additional penalty to accessing the package
+' this way.
+Private Type PackageChunk
+    
+    '0-based offset to this chunk's ID, from the start of the file
+    chnkOffset As Long
+    chnkName As String
+    chnkSize As Long
     
     'The following members are only used if the chunk has a non-zero size
-    peekCompType As PD_CompressionFormat
-    peekCompressedSize As Long
-    peekUncompressedSize As Long
+    chnkCompType As PD_CompressionFormat
+    chnkCompressedSize As Long
+    chnkUncompressedSize As Long
+    
+    'This offset points directly at the data segment of the chunk (whether compressed or not).
+    ' It is a 0-based offset from the start of the file.
+    chnkOffsetData As Long
     
 End Type
 
-Private m_PeekData As PackageChunkPeek
+Private Const INIT_CHUNK_TABLE_SIZE As Long = 8
+Private m_Chunks() As PackageChunk, m_numChunksRead As Long
+
+'Add a single chunk to this package, using a full package descriptor.
+'Returns: TRUE if successful; FALSE otherwise.
+Friend Function AddChunk(ByRef srcChunk As PDPackage_ChunkData) As Boolean
+    
+    AddChunk = True
+    
+    With srcChunk
+        
+        'Convert the source data into a standard byte stream, as required.
+        Dim tmpBytes() As Byte, tmpBytesSize As Long
+    
+        'If the source data is a string, convert it from UTF-16 to UTF-8.
+        If (.chunkDataFormat = dt_StringToUTF8) Then
+            AddChunk = AddChunk And Strings.UTF8FromStrPtr(.ptrChunkData, .chunkDataLength \ 2, tmpBytes, tmpBytesSize)
+            If AddChunk Then
+                .ptrChunkData = VarPtr(tmpBytes(0))
+                .chunkDataLength = tmpBytesSize
+            End If
+        End If
+        
+        'Add the chunk to the collection
+        If AddChunk Then AddChunk = WriteChunkFromPtr_Safe(.chunkID, .ptrChunkData, .chunkDataLength, .chunkCompressionFormat, .chunkCompressionLevel)
+        
+    End With
+        
+End Function
+
+'PhotoDemon often likes to write data "dictionary-style", e.g. a name/value pair.  The name is some short string
+' and the value is an arbitrary chunk of binary data.  To simplify the process of adding such nodes to a package,
+' you can use this helper function.  It automatically assumes that the name string should *not* be compressed
+' (due to its expected short length), while the compression status of the value chunk is controllable by param.
+' Chunk IDs for the name and value can match or not - the choice is entirely up to you.
+Friend Function AddChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameText As String, ByVal dataChunkID As String, ByVal ptrToData As Long, ByVal srcDataLength As Long, Optional ByVal dataCompressionFormat As PD_CompressionFormat = cf_None, Optional ByVal dataCompressionLevel As Long = -1) As Boolean
+
+    'Use chunk descriptors to help with the write process
+    Dim tmpChunk As PDPackage_ChunkData
+    
+    'Add the name chunk first, as a UTF-8 string
+    With tmpChunk
+        .chunkID = nameChunkID
+        .ptrChunkData = StrPtr(nameText)
+        .chunkDataFormat = dt_StringToUTF8
+        .chunkDataLength = LenB(nameText)
+        .chunkCompressionFormat = cf_None
+    End With
+    AddChunk_NameValuePair = Me.AddChunk(tmpChunk)
+    
+    If AddChunk_NameValuePair Then
+        AddChunk_NameValuePair = AddChunk_NameValuePair And AddChunk_WholeFromPtr(dataChunkID, ptrToData, srcDataLength, dataCompressionFormat, dataCompressionLevel)
+    Else
+        InternalError "AddChunk_NameValuePair", "Failed to write name text as UTF-8 string"
+    End If
+
+End Function
 
 'Add a full chunk to the current package in one fell swoop.  This is the fastest way to write a chunk,
 ' but note that it requires the data to already exist externally in a contiguous, ready-to-go state.
-Friend Function AddChunk_WholeFromPtr(ByVal chunkID As String, ByVal ptrChunkData As Long, ByVal chunkDataLength As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_None, Optional ByVal cmpLevel As Long = -1) As Boolean
+Friend Function AddChunk_WholeFromPtr(ByVal chunkID As String, ByVal ptrToData As Long, ByVal srcDataLengthInBytes As Long, Optional ByVal dataCompressionFormat As PD_CompressionFormat = cf_None, Optional ByVal dataCompressionLevel As Long = -1) As Boolean
     
     If (Not m_Stream.IsOpen()) Then
         InternalError "AddChunk_WholeFromPtr", "you haven't called StartNewPackage yet!"
@@ -182,43 +243,23 @@ Friend Function AddChunk_WholeFromPtr(ByVal chunkID As String, ByVal ptrChunkDat
     If (Len(chunkID) <> 4) Then chunkID = PDPackaging.ValidateChunkID(chunkID)
     
     'The rest of the write process is handled by a dedicated function
-    AddChunk_WholeFromPtr = WriteChunkFromPtr_Safe(chunkID, ptrChunkData, chunkDataLength, cmpFormat, cmpLevel)
+    AddChunk_WholeFromPtr = WriteChunkFromPtr_Safe(chunkID, ptrToData, srcDataLengthInBytes, dataCompressionFormat, dataCompressionLevel)
     
 End Function
 
 'PhotoDemon often needs to store multi-part data pieces - e.g. an image layer's XML header, followed by
-' one or more binary blobs with actual layer pixel data.  This convenience-only function accepts two sets
-' of data, and it will automatically create (n) valid chunks in the package, in the order the source headers
-' are supplied.  The source array MUST have an LBound of 0; its UBound doesn't matter, but if you don't want
-' the full array of structs written, you MUST pass the number of chunks to use (1-based).
+' one or more binary blobs with actual layer pixel data.  This convenience-only function accepts a list of
+' chunk descriptors, and it will automatically create (n) valid chunks in the package, in the order the
+' descriptors are supplied.  The source array MUST have an LBound of 0; its UBound doesn't matter,
+' but if you don't want the full array of structs written, you MUST pass the number of chunks to use (1-based).
 Friend Function AddChunks(ByRef srcChunks() As PDPackage_ChunkData, Optional ByVal numOfChunks As Long = -1) As Boolean
     
     AddChunks = True
     If (numOfChunks <= 0) Then numOfChunks = UBound(srcChunks) + 1
     
-    Dim tmpBytes() As Byte, tmpBytesSize As Long
-    
     Dim i As Long
     For i = 0 To numOfChunks - 1
-        
-        With srcChunks(i)
-            
-            'Convert the source data into a standard byte stream, as required.
-            
-            'If the source data is a string, convert it from UTF-16 to UTF-8.
-            If (.chunkDataFormat = dt_StringToUTF8) Then
-                AddChunks = AddChunks And Strings.UTF8FromStrPtr(.ptrChunkData, .chunkDataLength \ 2, tmpBytes, tmpBytesSize)
-                If AddChunks Then
-                    .ptrChunkData = VarPtr(tmpBytes(0))
-                    .chunkDataLength = tmpBytesSize
-                End If
-            End If
-            
-            'Add the chunk to the collection
-            If AddChunks Then AddChunks = AddChunks And WriteChunkFromPtr_Safe(.chunkID, .ptrChunkData, .chunkDataLength, .chunkCompressionFormat, .chunkCompressionLevel)
-            
-        End With
-        
+        AddChunks = AddChunks And Me.AddChunk(srcChunks(i))
     Next i
     
 End Function
@@ -226,7 +267,13 @@ End Function
 'If this function returns TRUE, there are more chunks in the file.  Only valid and relevant during
 ' package reading; it always returns FALSE during package writing.
 Friend Function ChunksRemain() As Boolean
-    ChunksRemain = (m_PeekData.peekName <> "PEND")
+    If (m_numChunksRead > 0) Then
+        ChunksRemain = (m_Chunks(m_numChunksRead - 1).chnkName <> "PEND")
+    
+    'Failsafe check only; the first chunk always gets "pre-loaded"
+    Else
+        ChunksRemain = m_Stream.GetPosition() < m_Stream.GetStreamSize()
+    End If
 End Function
 
 'After calling StartChunk() and GetInProgressChunk() one or more times, call EndChunk() to commit the
@@ -248,6 +295,11 @@ Friend Function EndChunk(Optional ByVal cmpFormat As PD_CompressionFormat = cf_N
         Exit Function
     End If
     
+End Function
+
+
+Friend Function FindChunk_NameValuePair() As Boolean
+
 End Function
 
 'Finish the current package.  If the current package is being written to file, the file will be closed.
@@ -288,13 +340,23 @@ End Function
 'Return the name of the next chunk in line.  Note that this does *not* permanently move the
 ' stream pointer (by design)!
 Friend Function GetChunkName() As String
-    GetChunkName = m_PeekData.peekName
+    If (m_numChunksRead > 0) Then
+        GetChunkName = m_Chunks(m_numChunksRead - 1).chnkName
+    Else
+        InternalError "GetChunkName", "no chunks loaded!"
+        GetChunkName = vbNullString
+    End If
 End Function
 
 'Return the size of the next chunk in line.  Note that this does *not* permanently move the
 ' stream pointer (by design)!
 Friend Function GetChunkSize() As Long
-    GetChunkSize = m_PeekData.peekSize
+    If (m_numChunksRead > 0) Then
+        GetChunkSize = m_Chunks(m_numChunksRead - 1).chnkSize
+    Else
+        InternalError "GetChunkSize", "no chunks loaded!"
+        GetChunkSize = 0
+    End If
 End Function
 
 Friend Function GetPackageSize() As Long
@@ -324,14 +386,14 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
         End If
         
         'Compressed chunk (must be decompressed before returning it)
-        If (m_PeekData.peekCompType <> cf_None) Then
+        If (m_Chunks(m_numChunksRead - 1).chnkCompType <> cf_None) Then
             
             'Overwrite the returned size with the *uncompressed* size of the compressed chunk
-            dstChunkSize = m_PeekData.peekUncompressedSize
+            dstChunkSize = m_Chunks(m_numChunksRead - 1).chnkUncompressedSize
             
             'Next is the compression format
             Dim cmpFormat As PD_CompressionFormat
-            cmpFormat = m_PeekData.peekCompType
+            cmpFormat = m_Chunks(m_numChunksRead - 1).chnkCompType
             
             'Prep the destination stream
             If (loadToThisPtrInstead = 0) Then
@@ -346,18 +408,18 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
             
             If (m_Stream.GetStreamMode = PD_SM_FileBacked) Then
                 ReadyTmpChunkSrc
-                m_Stream.ReadBytesToStream m_TmpChunkSrc, m_PeekData.peekCompressedSize
+                m_Stream.ReadBytesToStream m_TmpChunkSrc, m_Chunks(m_numChunksRead - 1).chnkCompressedSize
                 ptrSrcComp = m_TmpChunkSrc.Peek_PointerOnly(0)
             Else
-                ptrSrcComp = m_Stream.Peek_PointerOnly(, m_PeekData.peekCompressedSize)
+                ptrSrcComp = m_Stream.Peek_PointerOnly(, m_Chunks(m_numChunksRead - 1).chnkCompressedSize)
             End If
             
             'Perform decompression.  If a destination pointer was supplied, presume the caller knows what
             ' they're doing and they have already prepared sufficient space for us.
             If (loadToThisPtrInstead <> 0) Then
-                GetNextChunk = Compression.DecompressPtrToPtr(loadToThisPtrInstead, dstChunkSize, ptrSrcComp, m_PeekData.peekCompressedSize, cmpFormat)
+                GetNextChunk = Compression.DecompressPtrToPtr(loadToThisPtrInstead, dstChunkSize, ptrSrcComp, m_Chunks(m_numChunksRead - 1).chnkCompressedSize, cmpFormat)
             Else
-                GetNextChunk = Compression.DecompressPtrToPtr(dstChunkStream.Peek_PointerOnly(0), dstChunkSize, ptrSrcComp, m_PeekData.peekCompressedSize, cmpFormat)
+                GetNextChunk = Compression.DecompressPtrToPtr(dstChunkStream.Peek_PointerOnly(0), dstChunkSize, ptrSrcComp, m_Chunks(m_numChunksRead - 1).chnkCompressedSize, cmpFormat)
             End If
             
         'Anything else is a normal chunk.  If the underlying stream is file-based, copy the relevant bytes into the
@@ -374,7 +436,7 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
         End If
         
         'Always end by ensuring our stream pointer is aligned, then peeking the next chunk's data.
-        m_Stream.SetPosition m_PeekData.peekOffset + m_PeekData.peekSize + 8, FILE_BEGIN
+        m_Stream.SetPosition m_Chunks(m_numChunksRead - 1).chnkOffset + m_Chunks(m_numChunksRead - 1).chnkSize + 8, FILE_BEGIN
         PeekNextChunk
         
     End If
@@ -388,18 +450,18 @@ Private Function GetNextChunk_Helper(ByRef dstChunkName As String, ByRef dstChun
     
     'Chunk data has already been "peeked" and the stream pointer already points at the
     ' data segment of this chunk.  Return name and size values from our cache.
-    dstChunkName = m_PeekData.peekName
-    dstChunkSize = m_PeekData.peekSize
+    dstChunkName = m_Chunks(m_numChunksRead - 1).chnkName
+    dstChunkSize = m_Chunks(m_numChunksRead - 1).chnkSize
     
     'Failsafe check to ensure chunk size doesn't extend past EOF
-    If (m_PeekData.peekOffset + dstChunkSize + 8 > m_Stream.GetStreamSize()) Or (dstChunkSize < 0) Then
+    If (m_Chunks(m_numChunksRead - 1).chnkOffset + dstChunkSize + 8 > m_Stream.GetStreamSize()) Or (dstChunkSize < 0) Then
         InternalError "GetNextChunk", "Bad chunk size; it extends past EOF"
         GetNextChunk_Helper = False
         Exit Function
     End If
     
     'Handle invalid sizes
-    If (m_PeekData.peekSize > 0) And (m_PeekData.peekSize < 12) Then
+    If (m_Chunks(m_numChunksRead - 1).chnkSize > 0) And (m_Chunks(m_numChunksRead - 1).chnkSize < 12) Then
         InternalError "GetNextChunk", "Bad chunk size; non-zero chunks must be at least 12-bytes long"
         GetNextChunk_Helper = False
         Exit Function
@@ -453,10 +515,12 @@ End Function
 ' for this purpose, as the resulting package will likely be invalid!  Use the .EndPackage() function instead!
 Friend Sub Reset()
     Set m_Stream = New pdStream
+    ReDim m_Chunks(0 To INIT_CHUNK_TABLE_SIZE - 1) As PackageChunk
+    m_numChunksRead = 0
 End Sub
 
 Friend Sub SkipToNextChunk()
-    m_Stream.SetPosition m_PeekData.peekOffset + m_PeekData.peekSize + 8, FILE_BEGIN
+    m_Stream.SetPosition m_Chunks(m_numChunksRead - 1).chnkOffset + m_Chunks(m_numChunksRead - 1).chnkSize + 8, FILE_BEGIN
     PeekNextChunk
 End Sub
 
@@ -476,12 +540,16 @@ End Sub
 ' RETURNS:
 ' - Boolean: TRUE if destination file handle was created successfully; FALSE otherwise.
 Friend Function StartNewPackage_File(ByRef dstFilename As String, Optional ByVal isTempFile As Boolean = False, Optional ByVal estimateOfInitialSize As Long = 2 ^ 16) As Boolean
+    
     Me.Reset
+    
     Dim fFlags As PD_FILE_ACCESS_OPTIMIZE
     fFlags = OptimizeSequentialAccess
     If isTempFile Then fFlags = fFlags Or OptimizeTempFile
     StartNewPackage_File = m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFilename, estimateOfInitialSize, optimizeAccess:=fFlags)
+    
     If StartNewPackage_File Then WriteFileHeader
+    
 End Function
 
 'Start a new in-memory pdPackage.
@@ -490,9 +558,12 @@ End Function
 ' RETURNS:
 ' - Boolean: TRUE if an initial memory allocation was successful; FALSE otherwise.
 Friend Function StartNewPackage_Memory(Optional ByVal initMemoryAllocation As Long = 0) As Boolean
+    
     Me.Reset
+    
     StartNewPackage_Memory = m_Stream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , initMemoryAllocation)
     If StartNewPackage_Memory Then WriteFileHeader
+    
 End Function
 
 Private Sub WriteFileHeader()
@@ -548,21 +619,31 @@ End Function
 ' peeked chunk's data segment, so subsequent read functions will need to note this and
 ' adjust their parsing accordingly.
 Private Sub PeekNextChunk()
+        
+    'Ensure we have room in our running chunk table
+    If (m_numChunksRead > UBound(m_Chunks)) Then ReDim Preserve m_Chunks(0 To m_numChunksRead * 2 - 1) As PackageChunk
     
     'Peek the new data
-    With m_PeekData
-        .peekOffset = m_Stream.GetPosition()
-        .peekName = m_Stream.ReadString_ASCII(4)
-        .peekSize = m_Stream.ReadLong()
+    With m_Chunks(m_numChunksRead)
+    
+        .chnkOffset = m_Stream.GetPosition()
+        .chnkName = m_Stream.ReadString_ASCII(4)
+        .chnkSize = m_Stream.ReadLong()
         
         'Non-zero-sized chunks must report compression data
-        If (.peekSize <> 0) Then
-            .peekCompType = GetCompressionFormatFromName(m_Stream.ReadString_ASCII(4))
-            .peekUncompressedSize = m_Stream.ReadLong()
-            .peekCompressedSize = m_Stream.ReadLong()
+        If (.chnkSize <> 0) Then
+            .chnkCompType = GetCompressionFormatFromName(m_Stream.ReadString_ASCII(4))
+            .chnkUncompressedSize = m_Stream.ReadLong()
+            .chnkCompressedSize = m_Stream.ReadLong()
         End If
         
+        'Note the current position as the position of this chunk's data segment, and - importantly - LEAVE
+        ' THE STREAM POINTER HERE.
+        .chnkOffsetData = m_Stream.GetPosition()
+        
     End With
+    
+    m_numChunksRead = m_numChunksRead + 1
     
 End Sub
 
