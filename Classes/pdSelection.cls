@@ -3272,7 +3272,7 @@ Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional igno
     'Check for modern format first (legacy format is still supported)
     Dim packageIsModern As Boolean, cPackage As pdPackageChunky
     Set cPackage = New pdPackageChunky
-    packageIsModern = cPackage.OpenPackage_File(srcFilename)
+    packageIsModern = cPackage.OpenPackage_File(srcFilename, "PDSF")
     Set cPackage = Nothing
     
     If packageIsModern Then
@@ -3294,7 +3294,7 @@ Friend Function ReadSelectionFromFile_New(ByRef srcFilename As String, Optional 
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackageChunky
     Set cPackage = New pdPackageChunky
-    If cPackage.OpenPackage_File(srcFilename) Then
+    If cPackage.OpenPackage_File(srcFilename, "PDSF") Then
     
         'Reset some of our internal trackers prior to reading the selection data
         
@@ -3576,7 +3576,7 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     
     Dim cPackage As pdPackageChunky
     Set cPackage = New pdPackageChunky
-    cPackage.StartNewPackage_File dstFilename
+    cPackage.StartNewPackage_File dstFilename, packageID:="PDSF"
     
     'Selection files are pdPackage (chunky) files with three pieces of data:
     ' 1) A standard vector selection descriptor.  This is an XML string, used internally by PD, that holds

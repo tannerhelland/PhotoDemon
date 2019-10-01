@@ -53,18 +53,19 @@ Attribute VB_Exposed = False
 'Files begin with a hard-coded 8-byte "magic string", identifying the file as a chunky pdPackage:
 ' "PDPKCHNK" (8-byte UTF-8 string)
 '
-'This is followed by a 4-byte unsigned integer describing the encoder software version.  This value can
-' be used to identify files that may contain new, possibly unsupported features.  At the time of this
-' writing, only a version value of "2" (0x00000002) is defined.
+'This is immediately followed by a 4-byte string describing the encoder software.  This value can be
+' used to associate a package with a particular piece of software, or to identify files that may
+' contain unique, possibly unsupported features.  If this identifier is not needed by your application,
+' this spec recommends (but does not require) writing the four-character string "    " (four spaces).
 '
-'The remainder of the file is comprised of one or more chunks.  (Zero chunks is not allowed; there must
-' be at least one chunk in the file.)
+'The remainder of the file is comprised of one or more chunks.  Zero chunks is not allowed; there must
+' be at least one chunk in the file.
 '
 'Chunks follow a predefined format:
 ' - 4 byte UTF-8 string defining the chunk's ID.  (This string is case-sensitive, and it is suggested
 '   - but not required - that the string use uppercase characters.)
 ' - 4 byte signed integer defining the total size of this chunk.  For compatibility purposes, this
-'   value must be >= 0, which limits its max size to 2 GB.  Importantly, note that this size value
+'   value must be >= 0, which limits its max size to 2 GB.  Importantly, note that this value
 '   does *not* include the 8 bytes required for the 4-byte ASCII chunk identifier and the 4 bytes
 '   required for this chunk size value; thus an empty chunk (consisting of just a 4-byte ID and a
 '   4-byte chunk size) would have a stated size of 0.
@@ -81,9 +82,9 @@ Attribute VB_Exposed = False
 '   - "zstd" (zstandard)
 '   - "defl" (deflate)
 '   - "zlib" (zlib)
-'   PhotoDemon uses some other compression types internally (e.g. "lz4 " for the lz4 compression
+'   PhotoDemon uses some other compression formats internally (e.g. "lz4 " for the lz4 compression
 '   library, which PhotoDemon uses for real-time compression of large binary data), but such
-'   compression types will never be used in externally accessible files.
+'   compression formats will never be used in externally accessible files.
 ' - 4 byte signed integer defining the *uncompressed* size of this chunk's data.  This value must be
 '   greater than 0.
 ' - 4 byte signed integer defining the *compressed* size of the chunk's data.  This value must be
@@ -92,8 +93,8 @@ Attribute VB_Exposed = False
 '   this spec does not formally require this, but you are a bad developer if you do otherwise.
 '
 'Note that this last value - a 4-byte signed integer defining the compressed size of this chunk's data -
-' could theoretically be inferred from the chunk's size, e.g. "chunk size - 8 bytes (for compression
-' type and uncompressed size)".  However, it is the observation of this author that many data formats
+' could theoretically be inferred from the chunk's size, e.g. "chunk size - 8 bytes" (for compression
+' type and uncompressed size).  However, it is the observation of this author that many data formats
 ' struggle to gracefully handle padding and/or arbitrary data alignment.  To provide flexibility, this
 ' spec requires that the compressed size always be stated explicitly.  This allows chunks to be
 ' arbitrarily padded to specific alignments as convenient for a specific use-case (e.g. perhaps to
@@ -129,11 +130,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Current package manager version
-Private Const PACKAGE_VERSION As Long = &H2&
-
 'Hard-coded chunky pdPackage file identifier
 Private Const CHUNKY_PDPACKAGE_ID As String = "PDPKCHNK"
+
+'Each file has 4 bytes set aside for a versioning or ID string; when opening a package file, this string
+' (if any) will be stored here.
+Private m_PackageID As String
 
 'Convenience hard-coded constant for the first chunk offset in the file; this is hard-coded, based on
 ' the 8-byte "package ID" above, and the 4-byte "package version" number.
@@ -508,6 +510,10 @@ Friend Function GetChunkSize() As Long
     End If
 End Function
 
+Friend Function GetPackageID() As String
+    GetPackageID = m_PackageID
+End Function
+
 Friend Function GetPackageSize() As Long
     GetPackageSize = m_Stream.GetStreamSize()
 End Function
@@ -639,20 +645,20 @@ End Function
 'Open an existing chunky pdPackage file.  The file will automatically be validated and the file pointer moved to the
 ' start of the first chunk in the file.  You can also pass a long to srcPackageVersion to verify the version of the
 ' embedded file (but for the most part, the package manager will handle that kind of low-level data for you).
-Friend Function OpenPackage_File(ByRef srcFilename As String, Optional ByRef srcPackageVersion As Long = 1) As Boolean
+Friend Function OpenPackage_File(ByRef srcFilename As String, Optional ByRef packageID As String = vbNullString) As Boolean
     
     Me.Reset
-    If m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFilename, optimizeAccess:=OptimizeSequentialAccess) Then OpenPackage_File = ValidateExternalPackage(srcPackageVersion)
+    If m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFilename, optimizeAccess:=OptimizeSequentialAccess) Then OpenPackage_File = ValidateExternalPackage(packageID)
     
     'If the file validates, pre-load the first chunk's information
     If OpenPackage_File Then PeekNextChunk
     
 End Function
 
-Friend Function OpenPackage_Memory(ByVal ptrData As Long, ByVal dataLength As Long, Optional ByRef srcPackageVersion As Long = 1) As Boolean
+Friend Function OpenPackage_Memory(ByVal ptrData As Long, ByVal dataLength As Long, Optional ByRef packageID As String = vbNullString) As Boolean
     
     Me.Reset
-    If m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , dataLength, ptrData) Then OpenPackage_Memory = ValidateExternalPackage(srcPackageVersion)
+    If m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , dataLength, ptrData) Then OpenPackage_Memory = ValidateExternalPackage(packageID)
     
     'If the file validates, pre-load the first chunk's information
     If OpenPackage_Memory Then PeekNextChunk
@@ -689,7 +695,7 @@ End Sub
 ' - isTempFile: set to TRUE for temp files; controls the FILE_ATTRIBUTE_TEMPORARY flag used with CreateFile
 ' RETURNS:
 ' - Boolean: TRUE if destination file handle was created successfully; FALSE otherwise.
-Friend Function StartNewPackage_File(ByRef dstFilename As String, Optional ByVal isTempFile As Boolean = False, Optional ByVal estimateOfInitialSize As Long = 2 ^ 16) As Boolean
+Friend Function StartNewPackage_File(ByRef dstFilename As String, Optional ByVal isTempFile As Boolean = False, Optional ByVal estimateOfInitialSize As Long = 2 ^ 16, Optional ByRef packageID As String = vbNullString) As Boolean
     
     Me.Reset
     
@@ -698,7 +704,7 @@ Friend Function StartNewPackage_File(ByRef dstFilename As String, Optional ByVal
     If isTempFile Then fFlags = fFlags Or OptimizeTempFile
     StartNewPackage_File = m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFilename, estimateOfInitialSize, optimizeAccess:=fFlags)
     
-    If StartNewPackage_File Then WriteFileHeader
+    If StartNewPackage_File Then WriteFileHeader packageID
     
 End Function
 
@@ -707,18 +713,22 @@ End Function
 ' OPTIONAL PARAMETERS: none
 ' RETURNS:
 ' - Boolean: TRUE if an initial memory allocation was successful; FALSE otherwise.
-Friend Function StartNewPackage_Memory(Optional ByVal initMemoryAllocation As Long = 0) As Boolean
+Friend Function StartNewPackage_Memory(Optional ByVal initMemoryAllocation As Long = 0, Optional ByRef packageID As String = vbNullString) As Boolean
     
     Me.Reset
     
     StartNewPackage_Memory = m_Stream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , initMemoryAllocation)
-    If StartNewPackage_Memory Then WriteFileHeader
+    If StartNewPackage_Memory Then WriteFileHeader packageID
     
 End Function
 
-Private Sub WriteFileHeader()
+Private Sub WriteFileHeader(Optional ByVal packageID As String = vbNullString)
     m_Stream.WriteString_ASCII CHUNKY_PDPACKAGE_ID
-    m_Stream.WriteLong PACKAGE_VERSION
+    If (packageID = vbNullString) Then
+        m_Stream.WriteString_UTF8 "    "
+    Else
+        m_Stream.WriteString_UTF8 PDPackaging.ValidateChunkID(packageID)
+    End If
 End Sub
 
 Private Sub Class_Initialize()
@@ -836,10 +846,11 @@ End Sub
 
 'After opening a package (either from memory or file), call this function to validate its contents.
 ' RETURNS: boolean TRUE if package appears valid; FALSE otherwise.
-Private Function ValidateExternalPackage(Optional ByRef srcPackageVersion As Long = 2) As Boolean
+Private Function ValidateExternalPackage(Optional ByRef packageID As String = vbNullString) As Boolean
     m_Stream.SetPosition 0, FILE_BEGIN
     ValidateExternalPackage = (m_Stream.ReadString_ASCII(8) = "PDPKCHNK")
-    If ValidateExternalPackage Then srcPackageVersion = m_Stream.ReadLong()
+    If ValidateExternalPackage Then m_PackageID = PDPackaging.ValidateChunkID(m_Stream.ReadString_UTF8(4))
+    If (Len(packageID) <> 0) Then ValidateExternalPackage = Strings.StringsEqual(m_PackageID, PDPackaging.ValidateChunkID(packageID))
 End Function
 
 'Given a source pointer, write the contents as a new chunk.  Any/all validation needs to be performed
