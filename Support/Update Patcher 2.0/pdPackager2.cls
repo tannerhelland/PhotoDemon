@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
-'Copyright 2014-2018 by Tanner Helland
+'Copyright 2014-2019 by Tanner Helland
 'Created: 05/April/14
 'Last updated: 23/September/17
 'Last update: revert to writing original, uncompressed data if compression doesn't reduce data size
@@ -21,7 +21,7 @@ Attribute VB_Exposed = False
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
 '              - VBHacks module from photodemon.org (optimized workarounds for lacking VB functionality)
-'              - Compression module and any attached plugin modules (e.g. Plugin_zlib, Plugin_lz4) from photodemon.org
+'              - Compression module and any attached plugin modules (e.g. Plugin_zstd, Plugin_lz4) from photodemon.org
 '                 (if you want compression support)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
@@ -31,10 +31,10 @@ Attribute VB_Exposed = False
 ' improvements over v1.0.
 '
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
-' with only minor modifications.  Note that compression support requires an explicit path to an STDCALL (sometimes
-' called WAPI) variant of either zlib, zstandard (zstd), or lz4/lz4-hc, with the expected filename of "zlibwapi.dll",
-' "libzstd.dll", or "liblz4.dll", respectively.  pdPackage can also be used without compression, though its benefits
-' are greatly reduced.  (And obviously, you will not be able to open compressed archives from other sources.)
+' with only minor modifications.  Note that compression support requires an explicit path to libdeflate,
+' zstandard (zstd), or lz4/lz4-hc, with the expected filename of "libdeflate.dll", "libzstd.dll", or "liblz4.dll",
+' respectively.  pdPackage can also be used without compression, though its benefits are greatly reduced.
+' (And obviously, you will not be able to open compressed archives from other sources.)
 '
 'While pdPackages have many similarities to ZIP files, THEY ARE NOT ACTUAL ZIP FILES, and this class cannot read or
 ' write actual ZIP files.  pdPackages are, by design, much simpler than ZIP files, and their structure and layout
@@ -48,8 +48,7 @@ Attribute VB_Exposed = False
 '     write pdPackages "as we go", which greatly improves both memory usage and performance.
 ' 3) Fixed-width directory entries.  This allows the entire archive directory to be read in a single operation,
 '     rather than manually parsing variable-width directory entries until all have been located.
-' 4) Support for compression on a per-node basis.  zLib and zstd are both supported, with zstd being recommended
-'     whenever possible (due to better performance and compression ratios).
+' 4) Support for compression on a per-node basis.
 ' 5) Support for two data "entries" per node, typically a header chunk and an actual data chunk.  These two structs
 '     don't need to be used (one or the other or neither is just fine), but I greatly appreciate the simplicity of
 '     storing two pieces of data per node.  For example, when using pdPackage's automatic file and folder compression
@@ -64,12 +63,12 @@ Attribute VB_Exposed = False
 ' 1) At present, pdPackage files are not easily editable.  Once created, there is no interface for adding new nodes,
 '     erasing existing nodes, or modifying any of the pdPackage settings (compression, etc).  There's nothing in the format
 '     design that prevents these actions, but I haven't written edit functions because I have no reason to do so in PhotoDemon.
-' 2) As noted above, external libraries (zLib, zstd, and/or lz4/lz4-hc) are required for compression.  pdPackages are designed
-'     in a way that makes it easy to use any compression functions (or other modification functions, e.g. encryption) of your
-'     choosing, or to ignore compression entirely if you don't require it.  That said, if you want to use the class without a
-'     compression library, but you intend to work with pdPackage files from other sources (which may use compression), you need
-'     to make use of the GetPackageFlag() function and the accompanying PDPF2_(library-name)_REQUIRED flags.  These will
-'     identify files your software cannot process without compression libraries.
+' 2) As noted above, external libraries are required for compression.  pdPackages are designed in a way that makes it easy
+'     to use any compression functions (or other modification functions, e.g. encryption) of your choosing, or to ignore
+'     compression entirely if you don't require it.  That said, if you want to use the class without a compression library,
+'     but you intend to work with pdPackage files from other sources (which may use compression), you need to make use of
+'     the GetPackageFlag() function and the accompanying PDPF2_(library-name)_REQUIRED flags.  These will identify files
+'     your software cannot process without compression libraries.
 ' 3) Up to 2GB of data is theoretically supported, but you won't be able to reach that amount from within VB.  The
 '     rear-loaded directory format makes it possible to support larger file sizes, but I have not yet done the work to
 '     implement this.  Sorry.  (Patches welcome!)
@@ -110,24 +109,6 @@ End Enum
     Private Const PDP_SN_Filename = 0, PDP_SN_FilenameAndRelativePath = 1
 #End If
 
-'The number of flags PD supports is relatively thin at present.  This is by design, as I don't want to use them for trivial shit.
-' Note that in an effort to keep flags as simple as possible, they are referred to by bit ordinal position [0, 31] rather than raw hex value.
-' Also note that at present, the same flags are used for all possible flag locations (directory, data, and individual nodes).  Future flags
-' don't have to be used this way, but at present, each location shares enough properties to warrant use of the same flag values.
-
-'FYI: flags can be stored in the directory and data chunks, as well as individual nodes.  When checking flags (e.g. after a load operation),
-' the caller can specify which flag location they want checked.
-Public Enum PDP_FLAG_LOCATION
-    PDP_LOCATION_ANY = -1
-    PDP_LOCATION_DIRECTORY = 0
-    PDP_LOCATION_DATA = 1
-    PDP_LOCATION_INDIVIDUALNODE = 2
-End Enum
-
-#If False Then
-    Const PDP_LOCATION_ANY = -1, PDP_LOCATION_DIRECTORY = 0, PDP_LOCATION_DATA = 1, PDP_LOCATION_INDIVIDUALNODE = 2
-#End If
-
 'Each pdPackage file has a short file header.  This header is separate from the directory chunk, and it contains all information
 ' necessary to prepare a node directory array.
 Private Type PDP_HEADER
@@ -165,6 +146,24 @@ Private Type PDP_HEADER
     Reserved As Long                        'Reserved for future use; no relevance at present.
     
 End Type
+
+'The number of flags PD supports is relatively thin at present.  This is by design, as I don't want to use them for trivial shit.
+' Note that in an effort to keep flags as simple as possible, they are referred to by bit ordinal position [0, 31] rather than raw hex value.
+' Also note that at present, the same flags are used for all possible flag locations (directory, data, and individual nodes).  Future flags
+' don't have to be used this way, but at present, each location shares enough properties to warrant use of the same flag values.
+
+'FYI: flags can be stored in the directory and data chunks, as well as individual nodes.  When checking flags (e.g. after a load operation),
+' the caller can specify which flag location they want checked.
+Public Enum PDP_FLAG_LOCATION
+    PDP_LOCATION_ANY = -1
+    PDP_LOCATION_DIRECTORY = 0
+    PDP_LOCATION_DATA = 1
+    PDP_LOCATION_INDIVIDUALNODE = 2
+End Enum
+
+#If False Then
+    Const PDP_LOCATION_ANY = -1, PDP_LOCATION_DIRECTORY = 0, PDP_LOCATION_DATA = 1, PDP_LOCATION_INDIVIDUALNODE = 2
+#End If
 
 'The number of flags PD supports is relatively thin at present.  This is by design, as I don't want to use them for trivial shit.
 ' Note that in an effort to keep flags as simple as possible, they are referred to by bit ordinal position [0, 31] rather than raw hex value.
@@ -412,7 +411,7 @@ End Function
 '    0 (uncompressed) to 9 (best possible compression).  zstd allows a value from 1 (fast, leaner compression) to 22 (slow,
 '    very intense compression).  The default value of -1 means "use default compression", and PD will choose an appropriate
 '    value for the given library.
-Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PD_CompressionFormat = cf_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_numOfNodes - 1) Then
@@ -422,12 +421,12 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     End If
     
     'If compression is requested, make sure a matching compression engine is available
-    If ((compressData = PD_CE_ZLib) And (Not Compression.IsCompressionEngineAvailable(PD_CE_ZLib))) Then compressData = PD_CE_NoCompression
-    If ((compressData = PD_CE_Zstd) And (Not Compression.IsCompressionEngineAvailable(PD_CE_Zstd))) Then compressData = PD_CE_NoCompression
-    If (((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) And (Not Compression.IsCompressionEngineAvailable(PD_CE_Lz4))) Then compressData = PD_CE_NoCompression
+    If ((compressData = cf_Zlib) And (Not Compression.IsFormatSupported(cf_Zlib))) Then compressData = cf_None
+    If ((compressData = cf_Zstd) And (Not Compression.IsFormatSupported(cf_Zstd))) Then compressData = cf_None
+    If (((compressData = cf_Lz4) Or (compressData = cf_Lz4hc)) And (Not Compression.IsFormatSupported(cf_Lz4))) Then compressData = cf_None
     
-    'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
-    If (compressData <> PD_CE_NoCompression) Then SetCompressionFlag nodeIndex, useHeaderBuffer, compressData, True, True
+    'If compression is requested, update the "[compression name] required" flag for both the file as a whole, and this specific node.
+    If (compressData <> cf_None) Then SetCompressionFlag nodeIndex, useHeaderBuffer, compressData, True, True
     
     'Update the pre-compression values for this data chunk.
     If useHeaderBuffer Then
@@ -445,7 +444,7 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
     ' because the data is simply added to the pdPackages data chunk.  Order of writing is irrelevant.
-    If (compressData = PD_CE_NoCompression) Then
+    If (compressData = cf_None) Then
     
         m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
         
@@ -507,23 +506,23 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     
 End Function
 
-Private Sub SetCompressionFlag(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal compressData As PD_CompressionEngine, ByVal newState As Boolean, Optional ByVal updateFileHeaderToo As Boolean = True)
+Private Sub SetCompressionFlag(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal compressData As PD_CompressionFormat, ByVal newState As Boolean, Optional ByVal updateFileHeaderToo As Boolean = True)
 
-    If (compressData = PD_CE_Zstd) Then
+    If (compressData = cf_Zstd) Then
         If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZstdRequired, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
             SetBitFlag PDP_NF2_ZstdRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         Else
             SetBitFlag PDP_NF2_ZstdRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
-    ElseIf (compressData = PD_CE_ZLib) Then
+    ElseIf (compressData = cf_Zlib) Then
         If updateFileHeaderToo Then SetBitFlag PDP_HF2_ZlibRequired, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
             SetBitFlag PDP_NF2_ZlibRequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         Else
             SetBitFlag PDP_NF2_ZlibRequired, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
-    ElseIf ((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) Then
+    ElseIf ((compressData = cf_Lz4) Or (compressData = cf_Lz4hc)) Then
         If updateFileHeaderToo Then SetBitFlag PDP_HF2_Lz4Required, newState, m_FileHeader.DataFlags(0)
         If useHeaderBuffer Then
             SetBitFlag PDP_NF2_Lz4RequiredH, newState, m_NodeDirectory(nodeIndex).NodeFlags(0)
@@ -535,12 +534,12 @@ Private Sub SetCompressionFlag(ByVal nodeIndex As Long, ByVal useHeaderBuffer As
 End Sub
 
 'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
-Friend Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_CompressionFormat = cf_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     AddNodeDataFromByteArray = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel)
 End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
-Friend Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_CompressionEngine = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_CompressionFormat = cf_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     If (LenB(srcDataString) <> 0) Then
         AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel)
     End If
@@ -593,7 +592,7 @@ Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             End If
             
             'Write the file contents out to the second node
-            AutoAddNodeFromFile = AutoAddNodeFromFile And AddNodeDataFromByteArray(nodeIndex, False, fileContents, PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd))
+            AutoAddNodeFromFile = AutoAddNodeFromFile And AddNodeDataFromByteArray(nodeIndex, False, fileContents)
             
             'Mark a special flag bit in this node, to identify it as an auto-added file entry.  This simplifies the extraction process later,
             ' and also provides a failsafe against the user adding their own nodes called "PDPFILE".
@@ -666,7 +665,7 @@ Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
             If preserveFolders Then
                 
                 'Folder preservation is active.  Find the appropriate relative base, per the caller's supplied path(s).
-                If (LenB(useCustomRelativeFolderBase) <> 0) Then
+                If (Len(useCustomRelativeFolderBase) <> 0) Then
                     relativeFilePath = m_File.GenerateRelativePath(useCustomRelativeFolderBase, curFile)
                 Else
                     relativeFilePath = m_File.GenerateRelativePath(srcFolder, curFile)
@@ -751,7 +750,6 @@ Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             
                 'Construct a relative path
                 relativePath = m_File.GenerateRelativePath(relativeFolderBase, curFile)
-                Debug.Print "Compressing " & curFile & "..."
                 autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType, relativePath)
                 
             Else
@@ -783,11 +781,15 @@ End Function
 '
 'The only required parameter is the destination filename.
 '
-'Two optional parameters exist for this function:
+'Several optional parameters exist for this function:
 ' - secondPassDirectoryCompression: compress the directory chunk before writing it out to file.
 ' - thisIsATempFile: special WAPI flags related to temp files will be set.  Note that this flag does not affect file correctness in
 '                    any way; it simply specifies hints related to file caching.
-Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
+' - compressionLevel: only relevant if secondPassDirectoryCompression is TRUE
+' - dstFinalSize: optional [out] parameter to report the final stream size.  This is helpful as the actual
+'                 file contents will be written asynchronously, if possible, so attempting to measure
+'                 file size shortly after calling this function brings a high chance of failure.
+Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_CompressionFormat = cf_None, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByRef dstFinalSize As Long) As Boolean
     
     'If memory is tight, you may choose to free any temporary compression buffers here, as they are no longer needed.
     ' (In PD, we keep them around as we may reuse a pdPackage instance for multiple writes.)
@@ -822,11 +824,11 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, compressionLevel, True) Then
         m_FileHeader.DirectoryChunkSizePacked = compressedSize
         
-        If ((secondPassDirectoryCompression = PD_CE_Zstd) And (originalSize <> compressedSize)) Then
+        If ((secondPassDirectoryCompression = cf_Zstd) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_HF2_ZstdRequired, True, m_FileHeader.DirectoryFlags(0)
-        ElseIf ((secondPassDirectoryCompression = PD_CE_ZLib) And (originalSize <> compressedSize)) Then
+        ElseIf ((secondPassDirectoryCompression = cf_Zlib) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_HF2_ZlibRequired, True, m_FileHeader.DirectoryFlags(0)
-        ElseIf (((secondPassDirectoryCompression = PD_CE_Lz4) Or (secondPassDirectoryCompression = PD_CE_Lz4HC)) And (originalSize <> compressedSize)) Then
+        ElseIf (((secondPassDirectoryCompression = cf_Lz4) Or (secondPassDirectoryCompression = cf_Lz4hc)) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_HF2_Lz4Required, True, m_FileHeader.DirectoryFlags(0)
         End If
         
@@ -847,10 +849,11 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     ' thing from scratch).
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         If m_File.FileExists(dstFilename) Then m_File.FileDelete dstFilename
-    
+        
     'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
-    ' and the dictionary.  Close the stream.
+    ' and the directory.  Close the stream.
     Else
+        dstFinalSize = m_DataBuffer.GetStreamSize()
         m_DataBuffer.StopStream
     End If
     
@@ -878,14 +881,14 @@ Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             'First, attempt to write out the package using a memory-mapped file.  This can be faster (comparable to
             ' an asynchronous write) vs raw WriteData calls.
             totalWriteSize = LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked + m_FileHeader.DirectoryChunkSizePacked
+            dstFinalSize = totalWriteSize
             
             Dim useMemMapMode As Boolean
             useMemMapMode = m_File.FileConvertHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize)
             
             If useMemMapMode Then
     
-                'Write out the file data using good ol' CopyMemoryStrict!
-                
+                'Write out the file data using good ol' RtlMoveMemory!
                 mmapOffset = LenB(m_FileHeader)
                 
                 'File header...
@@ -953,7 +956,7 @@ End Function
 ' uncompressed copy of the data.  The returned BOOLEAN reports whether or not compression was actually used, NOT whether or not the
 ' function was successful.  (It is assumed the function is always successful, because if compression fails, the default uncompressed
 ' array will still be returned, and the caller can proceed normally with that data.)
-Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_CompressionEngine = PD_CE_NoCompression, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_CompressionFormat = cf_None, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
     CopyPtrToArray = Compression.CompressPtrToDstArray(dstArray, dstSize, srcPointer, srcSize, useCompression, compressionLevel, , trimDestinationArray)
 End Function
 
@@ -1068,18 +1071,18 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
                 'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
-                Dim cmpEngine As PD_CompressionEngine: cmpEngine = PD_CE_NoCompression
+                Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_None
                 If GetBitFlag(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_Zstd
+                    cmpFormat = cf_Zstd
                 ElseIf GetBitFlag(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_ZLib
+                    cmpFormat = cf_Zlib
                 ElseIf GetBitFlag(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_Lz4
+                    cmpFormat = cf_Lz4
                 End If
                 
-                If Compression.IsCompressionEngineAvailable(cmpEngine) Then
+                If Compression.IsFormatSupported(cmpFormat) Then
                 
-                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
+                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpFormat)
                 
                     'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
                     ' than the one flagged in the file.)  Try again using a different compression method.
@@ -1087,8 +1090,8 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                         InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
-                        Dim i As PD_CompressionEngine
-                        For i = PD_CE_ZLib To PD_CE_Lz4
+                        Dim i As PD_CompressionFormat
+                        For i = cf_Zlib To cf_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(VarPtr(m_CompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
                             If decompressionResult Then
                                 InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
@@ -1271,18 +1274,18 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
                 
                 'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
-                Dim cmpEngine As PD_CompressionEngine: cmpEngine = PD_CE_NoCompression
+                Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_None
                 If GetBitFlag(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_Zstd
+                    cmpFormat = cf_Zstd
                 ElseIf GetBitFlag(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_ZLib
+                    cmpFormat = cf_Zlib
                 ElseIf GetBitFlag(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
-                    cmpEngine = PD_CE_Lz4
+                    cmpFormat = cf_Lz4
                 End If
                 
-                If Compression.IsCompressionEngineAvailable(cmpEngine) Then
+                If Compression.IsFormatSupported(cmpFormat) Then
                 
-                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
+                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpFormat)
                 
                     'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
                     ' than the one flagged in the file.)  Try again using a different compression method.
@@ -1290,8 +1293,8 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
                     
                         InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
-                        Dim i As PD_CompressionEngine
-                        For i = PD_CE_ZLib To PD_CE_Lz4
+                        Dim i As PD_CompressionFormat
+                        For i = cf_Zlib To cf_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
                             If decompressionResult Then
                                 InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
@@ -1409,32 +1412,38 @@ Friend Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
 End Function
 
-'Shortcut function for extracting a node's contents directly to file.  This function requires the data to have been added via the dedicated
-' AutoAddNodeFromFile() function, above, as that function automatically populates all necessary fields for file extraction.
+'Shortcut function for extracting a node's contents directly to file.  This function requires the data to
+' have been added via the dedicated AutoAddNodeFromFile() function, above, as that function automatically
+' populates all necessary fields for file extraction.
 '
-'In the future, additional functions will be added for extracting all files in the pdPackage, but for this function, a source filename
-' (WITH EXTENSION) is required.  This filename is case-sensitive.  If the desired file was originally added using a relative path, YOU MUST
-' INCLUDE THE RELATIVE PATH in the filename sent to this function.  This is required as a pdPackage may contain something like
-' "\Subfolder1\Filename.txt" and "\Subfolder2\Filename.txt", and if extracting by filename, it can't differentiate between these two unless
+'A source filename (WITH EXTENSION) is required.  This filename is case-sensitive.  If the desired file was
+' originally added using a relative path, YOU MUST INCLUDE THE RELATIVE PATH in the filename sent to this
+' function.  This is required as a pdPackage may contain something like "\Subfolder1\Filename.txt" and
+' "\Subfolder2\Filename.txt", and if extracting by filename, it can't differentiate between these two unless
 ' you provide the relative path.
 '
-'If the requested file was originally added with a relative path (e.g. "/Subfolder/Filename.txt") then two things should be noted:
+'If the requested file was originally added with a relative path (e.g. "/Subfolder/Filename.txt") then two
+' things should be noted:
 ' 1) Again, the full original filename PLUS PATH must be supplied as srcFilename
-' 2) When writing out the file, any relative folders will be forcibly created, as necessary.  If they cannot be created, the file write will
-'    (obviously) fail.
-' 3) If you don't want to reconstruct the file's relative path, simply supply your own custom path+filename in dstPath, then set the
-'    optional dstPathIncludesFilename to TRUE.  This will cause pdPackage to ignore the original relative path and filename information.
+' 2) When writing out the file, any relative folders will be forcibly created, as necessary.  If they cannot
+'    be created, the file write will (obviously) fail.
+' 3) If you don't want to reconstruct the file's relative path, simply supply your own custom path+filename
+'    in dstPath, then set the optional dstPathIncludesFilename to TRUE.  This will cause pdPackage to ignore
+'    the original relative path and filename information.
 '
 'If you don't want to mess with relative paths, you have two choices:
 ' 1) Simply supply bare filenames to the autoAddNodeFromFile function in the first place (duh).
-' 2) Set the optional ignoreRelativePathIfPresent parameter to TRUE.  Note that this parameter does not change the requirement for passing a
-'    relative path in as srcFilename; all it does is strip the relative path(s) prior to writing the file.
+' 2) Set the optional ignoreRelativePathIfPresent parameter to TRUE.  Note that this parameter does not change
+'    the requirement for passing a relative path in as srcFilename; all it does is strip the relative path(s)
+'    prior to writing the file.
 '
-'As a convenience, this function also provides built-in file rename functionality.  If the dstPathIncludesFilename value is set to TRUE, the
-' file's original name (AND ANY RELATIVE PATHS, if included), will be ignored in favor of the supplied dstPath string.  Obviously, if using
-' this feature, make sure dstPath includes the filename and extension, e.g. dstPath = "C:\newFilename.ext"
+'As a convenience, this function also provides built-in file rename functionality.  If the dstPathIncludesFilename
+' value is set to TRUE, the file's original name (AND ANY RELATIVE PATHS, if included), will be ignored in favor
+' of the supplied dstPath string.  Obviously, if using this feature, make sure dstPath includes the filename and
+' extension, e.g. dstPath = "C:\newFilename.ext".
 '
-'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path was successfully constructed.
+'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path
+' was successfully constructed.
 Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the file node type identifier to 32 chars.
@@ -1445,20 +1454,15 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     'If this node contains a relative path, we'll detect it automatically
     Dim thisNodeType As PDP_SPECIAL_NODE_TYPE
     
-    'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
-    Dim filenameArray() As Byte
-    ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
-    CopyMemoryStrict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
-    
     'Start searching the node array for matches
     Dim retBytes() As Byte
-    Dim i As Long, nodeIndex As Long, nodeFound As Boolean
+    Dim i As Long, nodeIndex As Long, nodeFound As Boolean, testFilename As String
     nodeIndex = -1
     nodeFound = False
     
     For i = 0 To UBound(m_NodeDirectory)
     
-        'Look for two types of node names: bare filenames, and filenames with relative paths attached.
+        'Look for two types of noded: bare filenames, and filenames with relative paths attached.
         ' (pdPackage handles both types automatically)
         If Strings.StringsEqual(nodeName32_1, m_NodeDirectory(i).nodeName, False) Then
             nodeFound = True
@@ -1486,10 +1490,10 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 If nodeFound Then
                     
                     'Extract the header array, which will contain the filename of this file
-                    If GetNodeDataByIndex(i, True, retBytes) Then
-                    
+                    If Me.GetNodeDataByIndex_String(i, True, testFilename) Then
+                        
                         'If this byte array equals the source filename, we have a match (DING DING DING).
-                        If CheckArrayEquality(filenameArray, retBytes) Then
+                        If Strings.StringsEqual(srcFilename, testFilename) Then
                             nodeFound = True
                             nodeIndex = i
                             Exit For
@@ -1588,6 +1592,7 @@ Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         End If
         
     Else
+        InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile couldn't find the requested source file: " & srcFilename
         AutoExtractSingleFile = False
     End If
 
@@ -1753,20 +1758,6 @@ Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
     
     'Report success.  allNodesSuccessful will be TRUE IFF there were no failures or errors during extraction.
     AutoExtractAllFiles = allNodesSuccessful
-
-End Function
-
-'Are two byte arrays equal?
-Private Function CheckArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2() As Byte) As Boolean
-    
-    'Check bounds first
-    If (UBound(srcArray1) <> UBound(srcArray2)) Then
-        CheckArrayEquality = False
-    
-    'Array bounds are equal, so an actual per-element test is required
-    Else
-        CheckArrayEquality = VBHacks.MemCmp(VarPtr(srcArray1(0)), VarPtr(srcArray2(0)), UBound(srcArray1) + 1)
-    End If
 
 End Function
 
@@ -2012,28 +2003,28 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         'Figure out which decompression library was used for the original compression.
         ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
-        Dim cmpEngine As PD_CompressionEngine: cmpEngine = PD_CE_Zstd
+        Dim cmpFormat As PD_CompressionFormat: cmpFormat = cf_Zstd
         If useHeaderBuffer Then
             If GetBitFlag(PDP_NF2_ZstdRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_Zstd
+                cmpFormat = cf_Zstd
             ElseIf GetBitFlag(PDP_NF2_ZlibRequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_ZLib
+                cmpFormat = cf_Zlib
             ElseIf GetBitFlag(PDP_NF2_Lz4RequiredH, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_Lz4
+                cmpFormat = cf_Lz4
             End If
         Else
             If GetBitFlag(PDP_NF2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_Zstd
+                cmpFormat = cf_Zstd
             ElseIf GetBitFlag(PDP_NF2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_ZLib
+                cmpFormat = cf_Zlib
             ElseIf GetBitFlag(PDP_NF2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-                cmpEngine = PD_CE_Lz4
+                cmpFormat = cf_Lz4
             End If
         End If
         
-        If Compression.IsCompressionEngineAvailable(cmpEngine) Then
+        If Compression.IsFormatSupported(cmpFormat) Then
             
-            Dim i As PD_CompressionEngine
+            Dim i As PD_CompressionFormat
             
             'I'm not happy about this, but for the moment, we have to split handling here.  In file-backed mode, we can't currently
             ' read file data from blind pointers - instead, we need to load the compressed data into a temporary buffer, then decompress
@@ -2042,7 +2033,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             'Memory mode doesn't require a temporary buffer; just decompress immediately
             If (m_StreamMode = PD_SM_MemoryBacked) Then
             
-                decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
+                decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpFormat)
                 
                 'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
                 ' than the one flagged in the file.)  Try again using a different compression method.
@@ -2050,7 +2041,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                 
                     InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                     
-                    For i = PD_CE_ZLib To PD_CE_Lz4
+                    For i = cf_Zlib To cf_Lz4
                         decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, i)
                         If decompressionResult Then
                             InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
@@ -2080,7 +2071,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                 'Retrieve the compressed data, then perform immediate decompression
                 If (m_DataBuffer.ReadBytes(m_CompressionBuffer, dataPackedSize, False) <> 0) Then
                     
-                    decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, cmpEngine)
+                    decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, cmpFormat)
                     
                     'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
                     ' than the one flagged in the file.)  Try again using a different compression method.
@@ -2088,8 +2079,8 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                     
                         InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                         
-                        For i = PD_CE_ZLib To PD_CE_Lz4
-                            decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, cmpEngine)
+                        For i = cf_Zlib To cf_Lz4
+                            decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, i)
                             If decompressionResult Then
                                 InternalErrorMsg "Node may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
                                 Exit For
@@ -2266,9 +2257,9 @@ End Sub
 Private Sub InternalErrorMsg(ByVal msgString As String, ParamArray ExtraText() As Variant)
         
     If (UBound(ExtraText) >= LBound(ExtraText)) Then
-        Debug.Print msgString & " (extra parameters were supplied)"
+        'PDDebug.LogAction msgString & " (extra parameters were supplied)"
     Else
-        Debug.Print msgString
+        'PDDebug.LogAction msgString
     End If
     
 End Sub

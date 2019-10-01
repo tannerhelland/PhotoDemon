@@ -204,29 +204,37 @@ Private Sub tmrCheck_Timer()
         'Prepare a generic process reference
         uProcess.dwSize = Len(uProcess)
         hSnapShot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
-        rProcessFound = ProcessFirst(hSnapShot, uProcess)
-        
-        'Iterate through all running processes, looking for PhotoDemon instances
-        Do While rProcessFound
-    
-            'Retrieve the EXE name of this process
-            i = InStr(1, uProcess.szExeFile, Chr(0))
-            szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
+        If (hSnapShot <> 0) Then
             
-            'If the process name is "PhotoDemon.exe", note it
-            If Right$(szExename, Len("PhotoDemon.exe")) = "PhotoDemon.exe" Then
-                pdFound = True
-                Exit Do
-            End If
+            rProcessFound = ProcessFirst(hSnapShot, uProcess)
             
-            'Find the next process, then continue
-            rProcessFound = ProcessNext(hSnapShot, uProcess)
+            'Iterate through all running processes, looking for PhotoDemon instances
+            Do While (rProcessFound <> 0)
         
-        Loop
-    
-        'Release our generic process snapshot
-        CloseHandle hSnapShot
-    
+                'Retrieve the EXE name of this process
+                i = InStr(1, uProcess.szExeFile, Chr(0))
+                If (i > 1) Then
+                    
+                    szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
+                    
+                    'If the process name is "PhotoDemon.exe", note it
+                    If Right$(szExename, Len("PhotoDemon.exe")) = "PhotoDemon.exe" Then
+                        pdFound = True
+                        Exit Do
+                    End If
+                    
+                End If
+                
+                'Find the next process, then continue
+                rProcessFound = ProcessNext(hSnapShot, uProcess)
+            
+            Loop
+        
+            'Release our generic process snapshot
+            CloseHandle hSnapShot
+            
+        End If
+        
         'If PD was found, do nothing.  Otherwise, start patching the program.
         If (Not pdFound) Then
             
@@ -244,7 +252,7 @@ Private Sub tmrCheck_Timer()
     End If
     
 PDDetectionError:
-    TextOut "Unknown error occurred while waiting for PhotoDemon to close.  Checking again..."
+    TextOut "Error occurred while waiting for PhotoDemon to close (#" & Err.Number & ": " & Err.Description & ").  Checking again..."
 
 End Sub
 
@@ -274,7 +282,7 @@ Private Function StartPatching() As Boolean
     Set cFile = New pdFSO
     
     'Initialize a zstd decompressor
-    Compression.InitializeCompressionEngine PD_CE_Zstd, m_PluginPath
+    Compression.StartCompressionEngines m_PluginPath
     
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
     Dim cPackage As pdPackager
@@ -506,7 +514,7 @@ Private Sub FinishPatching()
     End If
     
     'Shut down any open compression engines
-    Compression.ShutDownCompressionEngine PD_CE_Zstd
+    Compression.StopCompressionEngines
     
     TextOut "Writing final log and shutting down update patcher."
     

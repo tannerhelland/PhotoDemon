@@ -1,11 +1,10 @@
 Attribute VB_Name = "Plugin_lz4"
 '***************************************************************************
 'Lz4 Compression Library Interface
-'Copyright 2016-2018 by Tanner Helland
+'Copyright 2016-2019 by Tanner Helland
 'Created: 04/December/16
-'Last updated: 07/December/16
-'Last update: add LZ4_HC compression algorithm.  (LZ4_HC has no special decompression algorithm;
-'             it uses an identical LZ4 frame and block format, so standard LZ4 decompression can be used.)
+'Last updated: 08/March/19
+'Last update: switch to callconv-agnostic implementation (so we can use "official" binaries)
 '
 'Per its documentation (available at https://github.com/lz4/lz4), lz4 is...
 '
@@ -48,14 +47,40 @@ Private Const LZ4HC_MIN_CLEVEL As Long = 3
 Private Const LZ4HC_DEFAULT_CLEVEL As Long = 9
 Private Const LZ4HC_MAX_CLEVEL As Long = 12
 
-Private Declare Function LZ4_versionNumber Lib "liblz4" Alias "_LZ4_versionNumber@0" () As Long
-Private Declare Function LZ4_compress_fast Lib "liblz4" Alias "_LZ4_compress_fast@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cAccelerationLevel As Long) As Long
-Private Declare Function LZ4_compress_HC Lib "liblz4" Alias "_LZ4_compress_HC@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cCompressionLevel As Long) As Long
-Private Declare Function LZ4_decompress_safe Lib "liblz4" Alias "_LZ4_decompress_safe@16" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long) As Long
-Private Declare Function LZ4_compressBound Lib "liblz4" Alias "_LZ4_compressBound@4" (ByVal inputSizeInBytes As Long) As Long 'Maximum compressed size in worst case scenario; use this to size your input array
+'The following functions are used in this module, but instead of being called directly, calls are routed
+' through DispCallFunc (which allows us to use the prebuilt release DLLs provided by the library authors):
+'Private Declare Function LZ4_versionNumber Lib "liblz4" Alias "_LZ4_versionNumber@0" () As Long
+'Private Declare Function LZ4_compress_fast Lib "liblz4" Alias "_LZ4_compress_fast@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cAccelerationLevel As Long) As Long
+'Private Declare Function LZ4_compress_HC Lib "liblz4" Alias "_LZ4_compress_HC@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cCompressionLevel As Long) As Long
+'Private Declare Function LZ4_decompress_safe Lib "liblz4" Alias "_LZ4_decompress_safe@16" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long) As Long
+'Private Declare Function LZ4_compressBound Lib "liblz4" Alias "_LZ4_compressBound@4" (ByVal inputSizeInBytes As Long) As Long 'Maximum compressed size in worst case scenario; use this to size your input array
 
 'A single lz4 handle is maintained for the life of a PD instance; see InitializeLz4 and ReleaseLz4, below.
 Private m_Lz4Handle As Long
+
+'lz4 has very specific compiler needs in order to produce maximum perf code, so rather than
+' recompile myself, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc
+Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+
+'At load-time, we cache a number of proc addresses (required for passing through DispCallFunc).
+' This saves us a little time vs calling GetProcAddress on each call.
+Private Enum LZ4_ProcAddress
+    LZ4_versionNumber
+    LZ4_compress_fast
+    LZ4_compress_HC
+    LZ4_decompress_safe
+    LZ4_compressBound
+    [last_address]
+End Enum
+
+Private m_ProcAddresses() As Long
+
+'Rather than allocate new memory on each DispCallFunc invoke, just reuse a set of temp arrays declared
+' to the maximum relevant size (see InitializeEngine, below).
+Private Const MAX_PARAM_COUNT As Long = 8
+Private m_vType() As Integer, m_vPtr() As Long
+
 
 'Initialize lz4.  Do not call this until you have verified its existence (typically via the PluginManager module)
 Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
@@ -68,10 +93,24 @@ Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
     
     'If we initialized the library successfully, cache some lz4-specific data
     If InitializeLz4 Then
-        Debug.Print "lz4 and lz4hc compression engines are ready."
+    
+        'Pre-load all relevant proc addresses
+        ReDim m_ProcAddresses(0 To [last_address] - 1) As Long
+        m_ProcAddresses(LZ4_versionNumber) = GetProcAddress(m_Lz4Handle, "LZ4_versionNumber")
+        m_ProcAddresses(LZ4_compress_fast) = GetProcAddress(m_Lz4Handle, "LZ4_compress_fast")
+        m_ProcAddresses(LZ4_compress_HC) = GetProcAddress(m_Lz4Handle, "LZ4_compress_HC")
+        m_ProcAddresses(LZ4_decompress_safe) = GetProcAddress(m_Lz4Handle, "LZ4_decompress_safe")
+        m_ProcAddresses(LZ4_compressBound) = GetProcAddress(m_Lz4Handle, "LZ4_compressBound")
+        
+        'Initialize all module-level arrays
+        ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
+        ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
+        
+        'PDDebug.LogAction "lz4 and lz4hc compression engines are ready."
+        
     Else
-        Debug.Print "WARNING!  LoadLibrary failed to load lz4.  Last DLL error: " & Err.LastDllError
-        Debug.Print "(FYI, the attempted path was: " & lz4Path & ")"
+        'PDDebug.LogAction "WARNING!  LoadLibrary failed to load lz4.  Last DLL error: " & Err.LastDllError
+        'PDDebug.LogAction "(FYI, the attempted path was: " & lz4Path & ")"
     End If
     
 End Function
@@ -86,7 +125,7 @@ End Sub
 
 Public Function GetLz4Version() As String
     Dim ptrVersion As Long
-    ptrVersion = LZ4_versionNumber()
+    ptrVersion = CallCDeclW(LZ4_versionNumber, vbLong)
     GetLz4Version = ptrVersion
 End Function
 
@@ -97,7 +136,7 @@ End Function
 'Determine the maximum possible size required by a compression operation.  The destination buffer should be at least
 ' this large (and if it's even bigger, that's okay too).
 Public Function Lz4GetMaxCompressedSize(ByVal srcSize As Long) As Long
-    Lz4GetMaxCompressedSize = LZ4_compressBound(srcSize)
+    Lz4GetMaxCompressedSize = CallCDeclW(LZ4_compressBound, vbLong, srcSize)
 End Function
 
 'Compress some arbitrary source pointer + length into a destination array.  Pass the optional "dstArrayIsReady" as TRUE
@@ -122,7 +161,7 @@ Public Function Lz4CompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As
     
     'Perform the compression
     Dim finalSize As Long
-    finalSize = LZ4_compress_fast(ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, dstArraySizeInBytes, compressionAcceleration)
+    finalSize = CallCDeclW(LZ4_compress_fast, vbLong, ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, dstArraySizeInBytes, compressionAcceleration)
     
     Lz4CompressArray = finalSize
 
@@ -133,7 +172,7 @@ End Function
 Public Function Lz4CompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionAcceleration As Long = -1) As Boolean
     
     Dim finalSize As Long
-    finalSize = LZ4_compress_fast(srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionAcceleration)
+    finalSize = CallCDeclW(LZ4_compress_fast, vbLong, srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionAcceleration)
     
     'Check for error returns
     Lz4CompressNakedPointers = (finalSize <> 0)
@@ -163,7 +202,7 @@ Public Function Lz4HCCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData 
     
     'Perform the compression
     Dim finalSize As Long
-    finalSize = LZ4_compress_HC(ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, dstArraySizeInBytes, compressionLevel)
+    finalSize = CallCDeclW(LZ4_compress_HC, vbLong, ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, dstArraySizeInBytes, compressionLevel)
     
     Lz4HCCompressArray = finalSize
 
@@ -173,7 +212,7 @@ End Function
 Public Function Lz4HCCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     Dim finalSize As Long
-    finalSize = LZ4_compress_HC(srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionLevel)
+    finalSize = CallCDeclW(LZ4_compress_HC, vbLong, srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionLevel)
     
     'Check for error returns
     Lz4HCCompressNakedPointers = (finalSize <> 0)
@@ -202,11 +241,11 @@ Public Function Lz4DecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData 
     
     'Perform decompression
     Dim finalSize As Long
-    finalSize = LZ4_decompress_safe(ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, knownUncompressedSize)
+    finalSize = CallCDeclW(LZ4_decompress_safe, vbLong, ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, knownUncompressedSize)
     
     'Check for error returns
     If (finalSize <= 0) Then
-        Debug.Print "lz4_decompress_safe failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        'PDDebug.LogAction "lz4_decompress_safe failure inputs: " & VarPtr(dstArray(0)) & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "lz4_decompress failed", finalSize
         finalSize = 0
     End If
@@ -219,11 +258,11 @@ Public Function Lz4Decompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal know
     
     'Perform decompression
     Dim finalSize As Long
-    finalSize = LZ4_decompress_safe(ptrToSrcData, ptrToDstBuffer, srcDataSize, knownUncompressedSize)
+    finalSize = CallCDeclW(LZ4_decompress_safe, vbLong, ptrToSrcData, ptrToDstBuffer, srcDataSize, knownUncompressedSize)
     
     'Check for error returns
     If (finalSize <= 0) Then
-        Debug.Print "lz4_decompress_safe failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
+        'PDDebug.LogAction "lz4_decompress_safe failure inputs: " & ptrToDstBuffer & ", " & knownUncompressedSize & ", " & ptrToSrcData & ", " & srcDataSize
         InternalError "lz4_decompress failed", finalSize
         finalSize = 0
     End If
@@ -256,10 +295,37 @@ Public Function Lz4HC_GetMaxCompressionLevel() As Long
     Lz4HC_GetMaxCompressionLevel = LZ4HC_MAX_CLEVEL
 End Function
 
+'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
+' for a link to his original, unmodified version
+Private Function CallCDeclW(ByVal lProc As LZ4_ProcAddress, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
+
+    Dim i As Long, pFunc As Long, vTemp() As Variant, hResult As Long
+    
+    Dim numParams As Long
+    If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
+    
+    If IsMissing(pa) Then
+        ReDim vTemp(0) As Variant
+    Else
+        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    End If
+    
+    For i = 0 To numParams - 1
+        If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
+        m_vType(i) = VarType(vTemp(i))
+        m_vPtr(i) = VarPtr(vTemp(i))
+    Next i
+    
+    Const CC_CDECL As Long = 1
+    hResult = DispCallFunc(0, m_ProcAddresses(lProc), CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
+    If hResult Then Err.Raise hResult
+    
+End Function
+
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As Long = 256)
     If (faultyReturnCode <> 256) Then
-        Debug.Print "lz4 returned an error code: " & faultyReturnCode
+        'PDDebug.LogAction "lz4 returned an error code: " & faultyReturnCode, PDM_External_Lib
     Else
-        Debug.Print "lz4 experienced an error; additional explanation may be: " & errString
+        'PDDebug.LogAction "lz4 experienced an error; additional explanation may be: " & errString, PDM_External_Lib
     End If
 End Sub
