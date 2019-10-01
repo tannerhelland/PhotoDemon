@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE)</langname>
-<langversion>7.2.1455</langversion>
+<langversion>7.2.1456</langversion>
 <langstatus>Up-to-Date</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -747,7 +747,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -16271,12 +16271,18 @@ Wenn Sie trotzdem Updates deaktivieren möchten, vergessen Sie nicht, photodemon
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2710</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5002 phrases. -->
-<!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4999 phrases. -->
+<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
 <!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

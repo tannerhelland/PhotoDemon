@@ -6,7 +6,7 @@
 
 <langid>hi-IN</langid>
 <langname>हिंदी</langname>
-<langversion>1.0.143</langversion>
+<langversion>1.0.144</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -745,7 +745,7 @@ T इस छवि प्रारूप के लिए समर्थन स
 <translation>चयनित फाइल पीडीआई प्रारूप में नहीं है लोड छोड़ दिया।</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -16264,12 +16264,18 @@ IFI आप अभी भी अपडेट अक्षम करने के 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2710</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5002 phrases. -->
-<!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4999 phrases. -->
+<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
 <!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>polski</langname>
-<langversion>7.0.118</langversion>
+<langversion>7.0.119</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -739,7 +739,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>Wybrany plik nie jest w formacie PDI. Ładowanie przerwano.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -16243,12 +16243,18 @@ Jeśli nadal zdecydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedz
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2710</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5002 phrases. -->
-<!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4999 phrases. -->
+<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
 <!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

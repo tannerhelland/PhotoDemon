@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.440</langversion>
+<langversion>6.7.441</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers (7.0 updates by Google Translate)</author>
@@ -745,7 +745,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier
 <translation>Fichier sélectionné n'est pas au format PDI. Charge abandonnée.</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -16267,12 +16267,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for PDPackaging.bas -->
+
+<!-- PDPackaging.bas contains 0 phrases. -->
+
+<!-- END text for PDPackaging.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2710</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5002 phrases. -->
-<!-- 2292 are duplicates, so only 2710 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4999 phrases. -->
+<!-- 2289 are duplicates, so only 2710 unique phrases have been written to file. -->
 <!-- These 2710 phrases contain approximately 12725 total words. -->
 
 </pdData>

@@ -635,7 +635,7 @@ Private Function LoadBackupTheme(ByVal themeFilename As String, ByRef dstXML As 
         
             Dim tmpString As String
             tmpString = Space$(tmpArraySize \ 2)
-            CopyMemory ByVal StrPtr(tmpString), ByVal VarPtr(tmpArray(0)), tmpArraySize
+            CopyMemoryStrict StrPtr(tmpString), VarPtr(tmpArray(0)), tmpArraySize
             
             LoadBackupTheme = dstXML.LoadXMLFromString(tmpString)
         
