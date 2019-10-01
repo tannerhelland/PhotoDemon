@@ -1287,8 +1287,13 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
                     srcX = m_MouseX + m_SourceOffsetX
                     srcY = m_MouseY + m_SourceOffsetY
                 Else
-                    srcX = m_SourcePoint.x
-                    srcY = m_SourcePoint.y
+                    If m_Aligned And (Not m_SourceSetThisClick) Then
+                        srcX = m_MouseX + m_SourceOffsetX
+                        srcY = m_MouseY + m_SourceOffsetY
+                    Else
+                        srcX = m_SourcePoint.x
+                        srcY = m_SourcePoint.y
+                    End If
                 End If
             End If
             
