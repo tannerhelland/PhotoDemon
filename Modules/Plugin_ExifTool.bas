@@ -29,8 +29,8 @@ Attribute VB_Name = "ExifTool"
 'Those code bits have long since been replaced with custom-built implementations, but I thought it worthwhile
 ' to mention them in case others want a (much simpler!) look at how you might interact with ExifTool from VB6.
 '
-'This project is periodically tested against the newest v 10.XX build of ExifTool.  You should always be able
-' to drop-in the latest 10.XX build of ExifTool's Windows EXE release without probems.
+'This project is periodically tested against the newest v 11.XX build of ExifTool.  You should always be able
+' to drop-in the latest 11.XX build of ExifTool's Windows EXE release without probems.
 '
 'Additional documentation regarding the use of ExifTool can be found in the official ExifTool package,
 ' downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/
@@ -1302,18 +1302,17 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     Dim lBytesRead As Long
     
     'This pipe buffer size is effectively arbitrary, but I haven't had any problems with 1024
-    Const BUFSIZE = 1024
+    Const BUFFER_SIZE As Long = 1024
 
     dstString = vbNullString
-    
-    ReDim baOutput(BUFSIZE - 1) As Byte
+    ReDim baOutput(0 To BUFFER_SIZE - 1) As Byte
 
     With sa
         .nLength = Len(sa)
         .bInheritHandle = 1
     End With
 
-    If CreatePipe(hPipeRead, hPipeWrite, sa, BUFSIZE) = 0 Then
+    If CreatePipe(hPipeRead, hPipeWrite, sa, BUFFER_SIZE) = 0 Then
         ShellExecuteCapture = False
         Message "Failed to start plugin service (couldn't create pipe)."
         Exit Function
@@ -1346,7 +1345,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         hPipeWrite = 0
         
         Do
-            If (ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0) Then Exit Do
+            If (ReadFile(hPipeRead, baOutput(0), BUFFER_SIZE, lBytesRead, ByVal 0&) = 0) Then Exit Do
             sNewOutput = StrConv(baOutput, vbUnicode)
             dstString = dstString & Left$(sNewOutput, lBytesRead)
         Loop
@@ -1374,7 +1373,7 @@ Public Sub KillStrandedExifToolInstances()
     
     'Prepare to purge all running ExifTool instances
     Const TH32CS_SNAPPROCESS As Long = 2&
-    Const PROCESS_ALL_ACCESS = 0
+    Const PROCESS_ALL_ACCESS As Long = 0&
     Dim uProcess As PROCESSENTRY32
     Dim rProcessFound As Long, hSnapShot As Long, myProcess As Long
     Dim szExename As String
@@ -1394,22 +1393,26 @@ Public Sub KillStrandedExifToolInstances()
     
         'Retrieve the EXE name of this process
         i = InStr(1, uProcess.szExeFile, ChrW$(0))
-        szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
-        
-        'If the process name is "exiftool.exe", terminate it
-        If Strings.StringsEqual(Right$(szExename, Len("exiftool.exe")), "exiftool.exe", True) Then
+        If (i > 1) Then
             
-            'Retrieve a handle to the ExifTool instance
-            myProcess = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
+            szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
             
-            'Attempt to kill it
-            If KillProcess(uProcess.th32ProcessID, 0) Then
-                PDDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
-                numProcessesTerminated = numProcessesTerminated + 1
-            Else
-                PDDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
+            'If the process name is "exiftool.exe", terminate it
+            If Strings.StringsEqual(Right$(szExename, Len("exiftool.exe")), "exiftool.exe", True) Then
+                
+                'Retrieve a handle to the ExifTool instance
+                myProcess = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
+                
+                'Attempt to kill it
+                If KillProcess(uProcess.th32ProcessID, 0) Then
+                    PDDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
+                    numProcessesTerminated = numProcessesTerminated + 1
+                Else
+                    PDDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
+                End If
+                 
             End If
-             
+            
         End If
         
         'Find the next process, then continue
@@ -1436,7 +1439,7 @@ Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) 
     Dim tp As TOKEN_PRIVILEGES
      
     'Any number of things can cause the termination process to fail, unfortunately.  Check several known issues in advance.
-    If OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, hToken) = 0 Then GoTo CleanUp
+    If (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, hToken) = 0) Then GoTo CleanUp
     
     Dim privName As String
     privName = "SeDebugPrivilege"
@@ -1445,13 +1448,13 @@ Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) 
     tp.PrivilegeCount = 1
     tp.Attributes = SE_PRIVILEGE_ENABLED
      
-    If AdjustTokenPrivileges(hToken, False, tp, 0, ByVal 0&, ByVal 0&) = 0 Then GoTo CleanUp
+    If (AdjustTokenPrivileges(hToken, False, tp, 0, ByVal 0&, ByVal 0&) = 0) Then GoTo CleanUp
      
     'Try to access the ExifTool process
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, hProcessID)
     
     'Access granted!  Terminate the process
-    If hProcess Then
+    If (hProcess <> 0) Then
         KillProcess = (TerminateProcess(hProcess, exitCode) <> 0)
         CloseHandle hProcess
     End If
@@ -1463,7 +1466,7 @@ Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) 
 CleanUp:
     
     'Free our privilege handle
-    If hToken Then CloseHandle hToken
+    If (hToken <> 0) Then CloseHandle hToken
     
 End Function
 
