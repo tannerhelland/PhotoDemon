@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackageChunky" v2.0 Interface (e.g. chunk-based archive handler)
 'Copyright 2014-2019 by Tanner Helland
 'Created: 03/June/19
-'Last updated: 27/September/19
-'Last update: finalize 2.0 API
+'Last updated: 03/October/19
+'Last update: allow packages loaded from memory to cache the source data locally; this allows for
+'             lightweight "self-contained" resource packages
 'Dependencies: - pdPackaging module from photodemon.org (defines public enums and structs)
 '              - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-aware file operations)
@@ -273,13 +274,8 @@ End Function
 'If this function returns TRUE, there are more chunks in the file.  Only valid and relevant during
 ' package reading; it always returns FALSE during package writing.
 Friend Function ChunksRemain() As Boolean
-    If (m_chunkIndex > 0) Then
-        ChunksRemain = (m_Chunks(m_chunkIndex - 1).chnkName <> "PEND")
-    
-    'Failsafe check only; the first chunk always gets "pre-loaded"
-    Else
-        ChunksRemain = m_Stream.GetPosition() < m_Stream.GetStreamSize()
-    End If
+    If (m_chunkIndex = 0) Then PeekNextChunk
+    ChunksRemain = (m_Chunks(m_chunkIndex - 1).chnkName <> "PEND")
 End Function
 
 'After calling StartChunk() and GetInProgressChunk() one or more times, call EndChunk() to commit the
@@ -317,8 +313,8 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
     backupChunkIndex = m_chunkIndex
     
     'Validate any chunk IDs we were passed, and get a UTF-8 representation of the name text
-    If (Len(nameChunkID) <> 4) Then nameChunkID = PDPackaging.ValidateChunkID(nameChunkID)
-    If (Len(dataChunkID) <> 4) Then dataChunkID = PDPackaging.ValidateChunkID(dataChunkID)
+    nameChunkID = PDPackaging.ValidateChunkID(nameChunkID)
+    dataChunkID = PDPackaging.ValidateChunkID(dataChunkID)
     
     Dim nameBytes() As Byte, lenNameBytes As Long
     If (Not Strings.UTF8FromString(nameText, nameBytes, lenNameBytes)) Then
@@ -381,11 +377,12 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
                 ' UTF-8 data and the passed name's data, but WE HAVE ALREADY ENSURED THESE ARE THE SAME
                 ' (see code above).
                 If VBHacks.MemCmp(ptrData, VarPtr(nameBytes(0)), PDMath.Min2Int(lenData, lenNameBytes)) Then
-                
+                    
                     'Ensure another chunk exists in the file
                     m_Stream.SetPosition .chnkOffset + .chnkSize + 8
                     PeekNextChunk
                     keepSearching = Me.ChunksRemain()
+                    
                     If keepSearching Then
                     
                         'Compare chunk IDs
@@ -407,11 +404,18 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
                             End If
                             
                             'Peform decompression
-                            chunkFound = Compression.DecompressPtrToPtr(dstPtr, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, m_Stream.Peek_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkOffsetData, m_Chunks(m_chunkIndex - 1).chnkCompressedSize), m_Chunks(m_chunkIndex - 1).chnkCompressedSize, m_Chunks(m_chunkIndex - 1).chnkCompType)
+                            m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffsetData
+                            chunkFound = Compression.DecompressPtrToPtr(dstPtr, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, m_Stream.ReadBytes_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkCompressedSize), m_Chunks(m_chunkIndex - 1).chnkCompressedSize, m_Chunks(m_chunkIndex - 1).chnkCompType)
                             
                             'Exit immediately if successful; otherwise, warn the user and keep searching
                             If chunkFound Then
+                                
+                                'Be good and align the pointer before exiting the inner loop.  (This is not explicitly
+                                ' required as this function self-corrects at the end, but this provides an extra
+                                ' failsafe against future changes.)
+                                m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffset + m_Chunks(m_chunkIndex - 1).chnkSize + 8
                                 Exit Do
+                                
                             Else
                                 InternalError "FindChunk_NameValuePair", "chunk found but decompression failed"
                             End If
@@ -429,7 +433,7 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
                 '/End memcmp didn't match
                 End If
             
-            '/End chunk names didn't match
+            '/End chunk IDs didn't match
             End If
         
         End With
@@ -655,10 +659,23 @@ Friend Function OpenPackage_File(ByRef srcFilename As String, Optional ByRef pac
     
 End Function
 
-Friend Function OpenPackage_Memory(ByVal ptrData As Long, ByVal dataLength As Long, Optional ByRef packageID As String = vbNullString) As Boolean
+Friend Function OpenPackage_Memory(ByVal ptrData As Long, ByVal dataLength As Long, Optional ByRef packageID As String = vbNullString, Optional ByVal cacheMemoryLocally As Boolean = False) As Boolean
     
     Me.Reset
-    If m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , dataLength, ptrData) Then OpenPackage_Memory = ValidateExternalPackage(packageID)
+    
+    Dim openedOK As Boolean
+    
+    'For some use-cases (e.g. long-lived packages), it is preferably to just cache the memory locally,
+    ' so we don't have to manually keep open the source data.  That makes this package entirely self-contained.
+    If cacheMemoryLocally Then
+        openedOK = m_Stream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , dataLength)
+        m_Stream.WriteBytesFromPointer ptrData, dataLength
+        m_Stream.SetPosition 0, FILE_BEGIN
+    Else
+        openedOK = m_Stream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, , dataLength, ptrData)
+    End If
+    
+    If openedOK Then OpenPackage_Memory = ValidateExternalPackage(packageID)
     
     'If the file validates, pre-load the first chunk's information
     If OpenPackage_Memory Then PeekNextChunk
@@ -786,12 +803,21 @@ Private Sub PeekNextChunk()
     ' next chunk!
     If (m_chunkIndex < m_maxChunksRead) Then
     
-        'Increment the current chunk pointer; that's all we need to do
+        'Increment the current chunk index and move the stream pointer into its expected position
+        m_Stream.SetPosition m_Chunks(m_chunkIndex).chnkOffsetData
         m_chunkIndex = m_chunkIndex + 1
-    
+        
     'If the number of chunks read is the same as the max number of chunks read, we have no choice but to
     ' manually parse the next chunk directly from the source stream.
     Else
+        
+        'Failsafe check for EOF; should never be triggered
+        If (m_maxChunksRead > 0) Then
+            If (m_Chunks(m_chunkIndex - 1).chnkName = "PEND") Then
+                InternalError "PeekNextChunk", "EOF reached!"
+                Exit Sub
+            End If
+        End If
         
         'Ensure we have room in our running chunk table
         If (m_chunkIndex > UBound(m_Chunks)) Then ReDim Preserve m_Chunks(0 To m_chunkIndex * 2 - 1) As PackageChunk
@@ -810,12 +836,13 @@ Private Sub PeekNextChunk()
                 .chnkCompressedSize = m_Stream.ReadLong()
             End If
             
-            'Note the current position as the position of this chunk's data segment, and - importantly - LEAVE
-            ' THE STREAM POINTER HERE.
+            'Note the current position as the position of this chunk's data segment, and - importantly -
+            ' LEAVE THE STREAM POINTER HERE.
             .chnkOffsetData = m_Stream.GetPosition()
             
         End With
         
+        'Increment the chunk index and "chunks read" counter
         m_chunkIndex = m_chunkIndex + 1
         If (m_chunkIndex > m_maxChunksRead) Then m_maxChunksRead = m_chunkIndex
         

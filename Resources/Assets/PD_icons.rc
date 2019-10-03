@@ -10,8 +10,5 @@ AAA				ICON		PHOTO_all.ico
 // (These are things that PD requires for a successful run - this does *not* include stuff like translation files,
 //  which are "nice to have" but not "essential".)
 
-//Core resource collection (UI icons, etc)
+//Core resource collection (UI icons, themes, etc)
 MAINRES			CUSTOM		Core_Icons.pdrc
-
-//Core theme files
-MAINTHEME		CUSTOM		Core_Themes.pdrc

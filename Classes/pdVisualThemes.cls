@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Visual Theming class
 'Copyright 2013-2019 by Tanner Helland
 'Created: 23/October/13
-'Last updated: 11/February/17
-'Last update: add many new theme accent color options
+'Last updated: 03/October/19
+'Last update: switch to new pdPackage format for theme backups
 '
 'As of release 7.0, PhotoDemon supports the notion of "visual themes".  These themes are XML files that modify
 ' the program's appearance.
@@ -155,9 +155,9 @@ Private m_SubclassedHWnds As pdDictionary
 ' module to do it, because it appends a language ID to this value.
 Private m_CurrentThemeID As String
 
-'Failsafe copies of all theme files are embedded inside PhotoDemon.exe's resource segment.  We drop back to these if something
-' goes wrong with the normal theme files.
-Private m_ThemeBackup As pdPackager
+'Failsafe copies of all theme files are embedded inside PhotoDemon.exe's resource segment.  We drop back to these
+' if something goes wrong with the normal theme files.
+Private m_ThemeBackup As pdPackageChunky
 
 Friend Function GetCurrentThemeID() As String
     GetCurrentThemeID = m_CurrentThemeID
@@ -613,34 +613,40 @@ Private Function CacheBackupThemes() As Boolean
     
         RaiseThemingError "Generating backup theme cache...", True
         
-        Set m_ThemeBackup = New pdPackager
+        Set m_ThemeBackup = New pdPackageChunky
         
         Dim tmpBytes() As Byte
-        tmpBytes = LoadResData("MAINTHEME", "CUSTOM")
-        CacheBackupThemes = m_ThemeBackup.ReadPackageFromMemory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1, PD_RES_IDENTIFIER)
+        If g_Resources.LoadGenericResource("themes_core", tmpBytes) Then
+            CacheBackupThemes = m_ThemeBackup.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1, "THMS", True)
+            If (Not CacheBackupThemes) Then RaiseThemingError "Backup theme cache corrupt"
+        Else
+            RaiseThemingError "Backup theme cache doesn't exist"
+        End If
         
+        'If the cache somehow failed, release the backup copy
+        If (Not CacheBackupThemes) Then Set m_ThemeBackup = Nothing
+    
+    'If the theme backup exists, we also know it contains valid data (see above)
     Else
-        CacheBackupThemes = (m_ThemeBackup.GetNumOfNodes() <> 0)
+        CacheBackupThemes = True
     End If
 
 End Function
 
-Private Function LoadBackupTheme(ByVal themeFilename As String, ByRef dstXML As pdXML) As Boolean
+Private Function LoadBackupTheme(ByRef themeFilename As String, ByRef dstXML As pdXML) As Boolean
     
     If (Not m_ThemeBackup Is Nothing) Then
-    
-        Dim tmpArray() As Byte, tmpArraySize As Long
         
-        If m_ThemeBackup.GetNodeDataByName(themeFilename, True, tmpArray, False, tmpArraySize) Then
-        
-            Dim tmpString As String
-            tmpString = Space$(tmpArraySize \ 2)
-            CopyMemoryStrict StrPtr(tmpString), VarPtr(tmpArray(0)), tmpArraySize
-            
-            LoadBackupTheme = dstXML.LoadXMLFromString(tmpString)
-        
+        'Load the source theme data (in UTF-8 format) into the destination XML object
+        Dim tmpStream As pdStream
+        If m_ThemeBackup.FindChunk_NameValuePair("TNAM", themeFilename, "TDAT", tmpStream) Then
+            LoadBackupTheme = dstXML.LoadXMLFromString(tmpStream.ReadString_UTF8(tmpStream.GetStreamSize))
+        Else
+            RaiseThemingError "Backup theme wasn't found: " & themeFilename
         End If
-    
+        
+    Else
+        RaiseThemingError "Theme backup failed"
     End If
 
 End Function
@@ -833,44 +839,49 @@ End Function
 ' folder goes missing.
 Friend Sub BuildThemePackage()
 
-    'This pdPackage instance does most the heavy lifting
-    Dim tmpPackage As pdPackager
-    Set tmpPackage = New pdPackager
+    'A pdPackage instance does all the heavy lifting
+    Dim tmpPackage As pdPackageChunky
+    Set tmpPackage = New pdPackageChunky
     
     'Prep a new package
     Dim dstFilename As String
     dstFilename = UserPrefs.GetThemePath(False) & "Core_Themes.pdrc"
-    tmpPackage.PrepareNewPackage , PD_RES_IDENTIFIER, , PD_SM_MemoryBacked
+    tmpPackage.StartNewPackage_File dstFilename, packageID:="THMS"
     
-    'Add each file in turn
+    'Retrieve a list of all theme files
     Dim listOfFiles As pdStringStack
     Files.RetrieveAllFiles UserPrefs.GetThemePath(False), listOfFiles, False, False, "xml"
     
+    'Add each file to the package
     Dim tmpFilename As String
     Do While listOfFiles.PopString(tmpFilename)
         AddThemeFileToPackage tmpPackage, tmpFilename
     Loop
     
-    'With all files added, finalize the package
-    tmpPackage.WritePackageToFile dstFilename, cf_Zstd, , Compression.GetMaxCompressionLevel(cf_Zstd)
+    'With all files added, finalize and close the package
+    tmpPackage.FinishPackage
     
 End Sub
 
 'Helper for BuildThemePackage(), above.  Not intended or designed for any other use.
-Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef srcFilename As String)
+Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackageChunky, ByRef srcFilename As String)
     
     'Pull the source file into a string
     Dim tmpString As String
     Files.FileLoadAsString srcFilename, tmpString
     
-    'Copy that string into the packager
-    Dim tmpNode As Long
-    tmpNode = dstPackager.AddNode(Files.FileGetName(srcFilename))
-    dstPackager.AddNodeDataFromString tmpNode, True, tmpString, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
-
+    'Convert the XML data to UTF-8 and add it to the package
+    Dim tmpBytes() As Byte, numBytes As Long
+    If Strings.UTF8FromString(tmpString, tmpBytes, numBytes, trimTrailingNulls:=True) Then
+        dstPackager.AddChunk_NameValuePair "TNAM", Files.FileGetName(srcFilename), "TDAT", VarPtr(tmpBytes(0)), numBytes, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+    Else
+        RaiseThemingError "pdTheme.AddThemeFileToPackage couldn't create UTF-8 data"
+    End If
+    
 End Sub
 
 Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
+    
     If PDMain.IsProgramRunning() Then
         
         'If we're not already subclassing this hWnd (something that shouldn't be possible, but better safe than sorry),
@@ -881,6 +892,7 @@ Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
         End If
         
     End If
+    
 End Sub
 
 Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
