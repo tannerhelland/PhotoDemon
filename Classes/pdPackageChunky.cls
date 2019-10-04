@@ -177,6 +177,13 @@ Private Type PackageChunk
     ' It is a 0-based offset from the start of the file.
     chnkOffsetData As Long
     
+    'The following entries are *only* used conditionally, by the FindChunk_NameValuePair() function.
+    ' Their contents are purely for optimization purposes, and they should *never* be directly read from
+    ' or written to a package.
+    chnkUtf8Bytes() As Byte
+    chnkUtf8Ptr As Long
+    chnkLenUtf8 As Long
+    
 End Type
 
 Private Const INIT_CHUNK_TABLE_SIZE As Long = 8
@@ -306,7 +313,7 @@ End Function
 
 'RETURNS: TRUE if text is found; FALSE otherwise
 Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameText As String, ByVal dataChunkID As String, ByRef dstStream As pdStream, Optional ByVal loadToThisPointerInstead As Long = 0&) As Boolean
-
+    
     'Before doing anything, back up the current stream pointer and chunk index.
     Dim backupStreamPointer As Long, backupChunkIndex As Long
     backupStreamPointer = m_Stream.GetPosition()
@@ -327,10 +334,6 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
     m_Stream.SetPosition OFFSET_OF_FIRST_CHUNK, FILE_BEGIN
     PeekNextChunk
     
-    'Name chunks aren't supposed to be compressed (as it slows search time) but as the spec doesn't
-    ' outright ban this, we support it "just in case".
-    Dim tmpData() As Byte, lenData As Long, ptrData As Long
-    
     'We now want to search until the desired name text is found (within a matching chunk ID for both
     ' the data and name chunks, as well, obviously).
     Dim keepSearching As Boolean, chunkFound As Boolean
@@ -340,106 +343,114 @@ Friend Function FindChunk_NameValuePair(ByVal nameChunkID As String, ByRef nameT
     Do While keepSearching
     
         'See if this chunk ID matches the specified name chunk ID
-        With m_Chunks(m_chunkIndex - 1)
+        If (m_Chunks(m_chunkIndex - 1).chnkName = nameChunkID) Then
             
-            If (PDPackaging.ValidateChunkID(.chnkName) = nameChunkID) Then
-            
-                'It matches!  If the chunk needs to be decompressed (it shouldn't but we're thorough),
-                ' do so now.
-                If (.chnkCompType <> cf_None) Then
+            'It matches!  To improve performance, cache pointers and lengths for each name;
+            ' this greatly improves matching performance when loading large batches of data (e.g. resources).
+            If (m_Chunks(m_chunkIndex - 1).chnkLenUtf8 = 0) Then
+                
+                'Name chunks should be uncompressed, but we cover both cases "just in case".
+                If (m_Chunks(m_chunkIndex - 1).chnkCompType = cf_None) Then
                     
-                    'Before decompressing anything, ensure decompressed size matches
-                    lenData = .chnkUncompressedSize
-                    If (lenData <> lenNameBytes) Then GoTo KeepLooking
+                    'Retrieve (and cache) UTF-8 data length.  Note that compressed or uncompressed
+                    ' size will work; the spec requires them to be the same for an uncompressed chunk.
+                    m_Chunks(m_chunkIndex - 1).chnkLenUtf8 = m_Chunks(m_chunkIndex - 1).chnkCompressedSize
                     
-                    'Decompressed size matches; decompress the data
-                    ReDim tmpData(0 To lenData - 1) As Byte
-                    If Compression.DecompressPtrToDstArray(tmpData, .chnkUncompressedSize, m_Stream.Peek_PointerOnly(.chnkOffsetData, .chnkCompressedSize), .chnkCompressedSize, .chnkCompType, True) Then
-                        ptrData = VarPtr(tmpData(0))
-                    Else
-                        InternalError "FindChunk_NameValuePair", "couldn't decompress"
-                        GoTo KeepLooking
-                    End If
-                    
+                    'Retrieve a pointer to the UTF-8 data.  Even though we may not need it immediately,
+                    ' this will improve performance on subsequent passes.  (Note that this only works
+                    ' because the underlying stream is *never* modified when reading resource data;
+                    ' if it were, we'd need to repopulate these pointers on every call.)
+                    m_Chunks(m_chunkIndex - 1).chnkUtf8Ptr = m_Stream.Peek_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkOffsetData, m_Chunks(m_chunkIndex - 1).chnkLenUtf8)
+                
+                'If compressed, let's decompress and cache a copy of the source UTF-8 name so we don't have
+                ' to jump through these hoops again.
                 Else
                 
-                    'Ensure data length matches before doing anything else (note that compressed or uncompressed
-                    ' size will work; the spec requires them to be the same for an uncompressed chunk).
-                    lenData = PDMath.Min2Int(.chnkCompressedSize, .chnkUncompressedSize)
-                    If (lenData <> lenNameBytes) Then GoTo KeepLooking
+                    'Cache the uncompressed size and prepare a persistent cache
+                    m_Chunks(m_chunkIndex - 1).chnkLenUtf8 = m_Chunks(m_chunkIndex - 1).chnkUncompressedSize
+                    ReDim m_Chunks(m_chunkIndex - 1).chnkUtf8Bytes(0 To m_Chunks(m_chunkIndex - 1).chnkLenUtf8 - 1) As Byte
                     
-                    'Length matches; get a pointer to the required data
-                    ptrData = m_Stream.Peek_PointerOnly(.chnkOffsetData, lenData)
+                    'Decompress the data
+                    If Compression.DecompressPtrToPtr(VarPtr(m_Chunks(m_chunkIndex - 1).chnkUtf8Bytes(0)), m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, m_Stream.Peek_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkOffsetData, m_Chunks(m_chunkIndex - 1).chnkCompressedSize), m_Chunks(m_chunkIndex - 1).chnkCompressedSize, m_Chunks(m_chunkIndex - 1).chnkCompType) Then
+                        m_Chunks(m_chunkIndex - 1).chnkUtf8Ptr = VarPtr(m_Chunks(m_chunkIndex - 1).chnkUtf8Bytes(0))
+                    Else
+                        InternalError "FindChunk_NameValuePair", "couldn't decompress"
+                        m_Chunks(m_chunkIndex - 1).chnkLenUtf8 = 0
+                        m_Chunks(m_chunkIndex - 1).chnkUtf8Ptr = 0
+                    End If
                     
                 End If
                 
-                'Compare bytes.  Note that (as a failsafe) we use the smaller of the length of this chunk's
-                ' UTF-8 data and the passed name's data, but WE HAVE ALREADY ENSURED THESE ARE THE SAME
-                ' (see code above).
-                If VBHacks.MemCmp(ptrData, VarPtr(nameBytes(0)), PDMath.Min2Int(lenData, lenNameBytes)) Then
-                    
-                    'Ensure another chunk exists in the file
-                    m_Stream.SetPosition .chnkOffset + .chnkSize + 8
-                    PeekNextChunk
-                    keepSearching = Me.ChunksRemain()
-                    
-                    If keepSearching Then
-                    
-                        'Compare chunk IDs
-                        chunkFound = Strings.StringsEqual(PDPackaging.ValidateChunkID(m_Chunks(m_chunkIndex - 1).chnkName), dataChunkID)
-                        If chunkFound Then
-                            
-                            'We have successfully matched the name/value pair!
-                            
-                            'Prepare the destination stream (if required; the caller can optionally ask us to
-                            ' decompress directly to a destination pointer).
-                            Dim dstPtr As Long
-                            If (loadToThisPointerInstead = 0) Then
-                                If (dstStream Is Nothing) Then Set dstStream = New pdStream
-                                dstStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, reuseExistingBuffer:=True
-                                dstStream.SetSizeExternally m_Chunks(m_chunkIndex - 1).chnkUncompressedSize
-                                dstPtr = dstStream.Peek_PointerOnly(0, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize)
-                            Else
-                                dstPtr = loadToThisPointerInstead
-                            End If
-                            
-                            'Peform decompression
-                            m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffsetData
-                            chunkFound = Compression.DecompressPtrToPtr(dstPtr, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, m_Stream.ReadBytes_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkCompressedSize), m_Chunks(m_chunkIndex - 1).chnkCompressedSize, m_Chunks(m_chunkIndex - 1).chnkCompType)
-                            
-                            'Exit immediately if successful; otherwise, warn the user and keep searching
-                            If chunkFound Then
-                                
-                                'Be good and align the pointer before exiting the inner loop.  (This is not explicitly
-                                ' required as this function self-corrects at the end, but this provides an extra
-                                ' failsafe against future changes.)
-                                m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffset + m_Chunks(m_chunkIndex - 1).chnkSize + 8
-                                Exit Do
-                                
-                            Else
-                                InternalError "FindChunk_NameValuePair", "chunk found but decompression failed"
-                            End If
+            End If
+            
+            'Compare names.  Start by comparing length, and *only* compare actual UTF-8 bytes if the
+            ' length matches.
+            If (m_Chunks(m_chunkIndex - 1).chnkLenUtf8 = lenNameBytes) Then
+            If VBHacks.MemCmp(m_Chunks(m_chunkIndex - 1).chnkUtf8Ptr, VarPtr(nameBytes(0)), lenNameBytes) Then
+                
+                'Ensure another chunk exists in the file
+                m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffset + m_Chunks(m_chunkIndex - 1).chnkSize + 8
+                PeekNextChunk
+                keepSearching = Me.ChunksRemain()
+                
+                If keepSearching Then
+                
+                    'Compare chunk IDs
+                    If (m_Chunks(m_chunkIndex - 1).chnkName = dataChunkID) Then
                         
+                        'We have successfully matched the name/value pair!
+                        
+                        'Prepare the destination stream (if required; the caller can optionally ask us to
+                        ' decompress directly to a destination pointer).
+                        Dim dstPtr As Long
+                        If (loadToThisPointerInstead = 0) Then
+                            If (dstStream Is Nothing) Then Set dstStream = New pdStream Else dstStream.StopStream False
+                            dstStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, reuseExistingBuffer:=True
+                            dstStream.SetSizeExternally m_Chunks(m_chunkIndex - 1).chnkUncompressedSize
+                            dstPtr = dstStream.Peek_PointerOnly(0, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize)
+                        Else
+                            dstPtr = loadToThisPointerInstead
                         End If
                         
-                    Else
-                        chunkFound = False
+                        'Peform decompression
+                        m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffsetData
+                        chunkFound = Compression.DecompressPtrToPtr(dstPtr, m_Chunks(m_chunkIndex - 1).chnkUncompressedSize, m_Stream.ReadBytes_PointerOnly(m_Chunks(m_chunkIndex - 1).chnkCompressedSize), m_Chunks(m_chunkIndex - 1).chnkCompressedSize, m_Chunks(m_chunkIndex - 1).chnkCompType)
+                        
+                        'Exit immediately if successful; otherwise, warn the user and keep searching
+                        If chunkFound Then
+                            
+                            'Be good and align the pointer before exiting the inner loop.  (This is not explicitly
+                            ' required as this function self-corrects at the end, but this provides an extra
+                            ' failsafe against future changes.)
+                            m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffset + m_Chunks(m_chunkIndex - 1).chnkSize + 8
+                            Exit Do
+                            
+                        Else
+                            InternalError "FindChunk_NameValuePair", "chunk found but decompression failed"
+                        End If
+                    
+                    '/end data chunk IDs don't match
                     End If
                     
-                    'If we *didn't* find the chunk, reset the current index.
-                    ' (It will have been incremented by the call to PeekNextChunk(), above.)
-                    m_chunkIndex = m_chunkIndex - 1
-                    
-                '/End memcmp didn't match
+                '/ran out of chunks to check
+                Else
+                    chunkFound = False
                 End If
-            
-            '/End chunk IDs didn't match
+                
+                'If we *didn't* find the chunk, reset the current index.
+                ' (It will have been incremented by the call to PeekNextChunk(), above.)
+                m_chunkIndex = m_chunkIndex - 1
+                
+            '/End memcmp didn't match
+            End If
+            '/End name length didn't match
             End If
         
-        End With
+        '/End chunk IDs didn't match
+        End If
         
-KeepLooking:
-
+        'If we're still here, we didn't find a match.
+        
         'Manually move the stream pointer into position.
         m_Stream.SetPosition m_Chunks(m_chunkIndex - 1).chnkOffset + m_Chunks(m_chunkIndex - 1).chnkSize + 8
         
@@ -668,7 +679,7 @@ Friend Function OpenPackage_Memory(ByVal ptrData As Long, ByVal dataLength As Lo
     'For some use-cases (e.g. long-lived packages), it is preferably to just cache the memory locally,
     ' so we don't have to manually keep open the source data.  That makes this package entirely self-contained.
     If cacheMemoryLocally Then
-        openedOK = m_Stream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , dataLength)
+        openedOK = m_Stream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, , dataLength, , , True)
         m_Stream.WriteBytesFromPointer ptrData, dataLength
         m_Stream.SetPosition 0, FILE_BEGIN
     Else
@@ -804,7 +815,7 @@ Private Sub PeekNextChunk()
     If (m_chunkIndex < m_maxChunksRead) Then
     
         'Increment the current chunk index and move the stream pointer into its expected position
-        m_Stream.SetPosition m_Chunks(m_chunkIndex).chnkOffsetData
+        m_Stream.SetPosition m_Chunks(m_chunkIndex).chnkOffsetData, FILE_BEGIN
         m_chunkIndex = m_chunkIndex + 1
         
     'If the number of chunks read is the same as the max number of chunks read, we have no choice but to

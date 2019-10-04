@@ -873,7 +873,7 @@ Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackageChunky, ByRef sr
     'Convert the XML data to UTF-8 and add it to the package
     Dim tmpBytes() As Byte, numBytes As Long
     If Strings.UTF8FromString(tmpString, tmpBytes, numBytes, trimTrailingNulls:=True) Then
-        dstPackager.AddChunk_NameValuePair "TNAM", Files.FileGetName(srcFilename), "TDAT", VarPtr(tmpBytes(0)), numBytes, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+        dstPackager.AddChunk_NameValuePair "TNAM", Files.FileGetName(srcFilename), "TDAT", VarPtr(tmpBytes(0)), numBytes, cf_None
     Else
         RaiseThemingError "pdTheme.AddThemeFileToPackage couldn't create UTF-8 data"
     End If

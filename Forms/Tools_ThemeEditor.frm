@@ -425,16 +425,23 @@ Private Sub cmdExport_Click()
         Files.FileDeleteIfExists targetResFile
         
         'Prep a pdPackage
-        Dim cPackage As pdPackager
-        Set cPackage = New pdPackager
-        cPackage.PrepareNewPackage lstResources.ListCount, PD_RES_IDENTIFIER, , PD_SM_FileBacked, targetResFile
+        Dim cPackage As pdPackageChunky
+        Set cPackage = New pdPackageChunky
+        cPackage.StartNewPackage_File targetResFile, packageID:="PDRS"
         
-        'By default, zstd is used for compression, as it yields the best compression ratios.  However, large resources
-        ' (or resources used in performance-sensitive scenarios) can manually specify LZ4HC compression instead.
-        Dim resCompFormat As PD_CompressionFormat
-        resCompFormat = cf_Zstd
+        'Images are actually stored in their own two "special" packages.  Why?  Better compression.
+        ' PD's image resources each require two separate streams: image headers (XML describing image contents)
+        ' and pixel buffers.  Rather than individually compressing a bunch of tiny standalone files, we instead
+        ' split XML bits and pixel bits into separate, dedicated packages, and compress each *entire* collection
+        ' at once.  This maximizes compression by sharing tables across files, and the end result is 20-30%
+        ' smaller than compressing each file individually.
+        Dim cImageHeaders As pdPackageChunky
+        Set cImageHeaders = New pdPackageChunky
+        cImageHeaders.StartNewPackage_Memory packageID:="IMGH"
         
-        Dim thisNodeCompression As PD_CompressionFormat
+        Dim cImagePixels As pdPackageChunky
+        Set cImagePixels = New pdPackageChunky
+        cImagePixels.StartNewPackage_Memory packageID:="IMGP"
         
         'We're also going to use a quick trick to significantly reduce file size of bitmap data.
         ' In our icons, we force all transparency values to be a multiple of 5.  This reduces net entropy
@@ -468,12 +475,10 @@ Private Sub cmdExport_Click()
             lblExport.Caption = "Writing resource #" & CStr(i + 1) & " of " & CStr(m_NumOfResources)
             lblExport.RequestRefresh
             
-            nodeIndex = cPackage.AddNode(m_Resources(i).ResourceName)
-            
             'Prep the XML packet for this resource.  For image-type entries, this stores things like the original
             ' resource image size (w/h), coloration behavior, and any other special instructions.
             If (m_Resources(i).ResType = PDRT_Image) Then
-            
+                
                 cXML.PrepareNewXML PD_RES_NODE_ID_IMG
                 
                 Dim cCount As Long, testPalette() As RGBQuad, testPixels() As Byte
@@ -489,6 +494,7 @@ Private Sub cmdExport_Click()
                     cXML.WriteTag "bpp", tmpDIB.GetDIBColorDepth
                     
                     If m_Resources(i).ResSupportsColoration Then
+                        
                         cXML.WriteTag "rt-clr", "True"
                         cXML.WriteTag "clr-l", m_Resources(i).ResColorLight
                         cXML.WriteTag "clr-d", m_Resources(i).ResColorDark
@@ -496,7 +502,9 @@ Private Sub cmdExport_Click()
                             cXML.WriteTag "rt-clrmenu", "True"
                             cXML.WriteTag "clr-m", m_Resources(i).ResColorMenu
                         End If
+                        
                     Else
+                    
                         cXML.WriteTag "rt-clr", "False"
                         
                         'See how many colors this DIB has.  If it's 256 or less, we can write it to file
@@ -515,11 +523,10 @@ Private Sub cmdExport_Click()
                     End If
                     
                     'Write this data to the first half of the node. (Note that zstd is always used to compress headers.)
-                    cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
-                    
-                    'All nodes now use zstd (previously lz4 could be selected, but given zstd's perf improvements
-                    ' over the past few years, there's no longer any point to this for tiny resource files)
-                    thisNodeCompression = resCompFormat
+                    'cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompFormat, Compression.GetMaxCompressionLevel(resCompFormat)
+                    Dim tmpXmlCopy As String, tmpXmlBytes() As Byte, lenXmlBytes As Long
+                    Strings.UTF8FromString cXML.ReturnCurrentXMLString(True), tmpXmlBytes, lenXmlBytes, , True
+                    cImageHeaders.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(tmpXmlBytes(0)), lenXmlBytes, cf_None
                     
                     'Write the actual bitmap data to the second half of the node.  Note that we use two
                     ' different strategies here.
@@ -538,7 +545,7 @@ Private Sub cmdExport_Click()
                             Next x
                             Next y
                             
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
+                            cImagePixels.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, cf_None
                             
                         End If
                     
@@ -553,12 +560,13 @@ Private Sub cmdExport_Click()
                             ReDim totalData(0 To totalDataSize - 1) As Byte
                             CopyMemoryStrict VarPtr(totalData(0)), VarPtr(testPalette(0)), 4 * cCount
                             CopyMemoryStrict VarPtr(totalData(4 * cCount)), VarPtr(testPixels(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
-                        
+                            
+                            cImagePixels.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(totalData(0)), totalDataSize, cf_None
+                            
                         Else
                             PDDebug.LogAction "WARNING!  A palette was not detected for source image (" & m_Resources(i).ResFileLocation & ") - revisit to improve compression ratio"
                             tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
-                            cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, thisNodeCompression, Compression.GetMaxCompressionLevel(thisNodeCompression)
+                            cImagePixels.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", tmpDIBPointer, tmpDIBSize, cf_None
                         End If
                         
                     End If
@@ -570,7 +578,7 @@ Private Sub cmdExport_Click()
             ElseIf (m_Resources(i).ResType = PDRT_Other) Then
                 Dim otherResBytes() As Byte
                 If Files.FileLoadAsByteArray(m_Resources(i).ResFileLocation, otherResBytes) Then
-                    cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(otherResBytes(0)), UBound(otherResBytes) + 1, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+                    cPackage.AddChunk_NameValuePair "NAME", m_Resources(i).ResourceName, "DATA", VarPtr(otherResBytes(0)), UBound(otherResBytes) + 1, cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
                 Else
                     PDDebug.LogAction "WARNING!  Other resource (" & m_Resources(i).ResFileLocation & ") wasn't loaded successfully."
                 End If
@@ -578,11 +586,20 @@ Private Sub cmdExport_Click()
             
         Next i
         
-        lblExport.Caption = "Writing final directory..."
+        lblExport.Caption = "Finalizing package..."
         lblExport.RequestRefresh
         
+        'Add the final image packages to the master package
+        Dim tmpStream As pdStream
+        cImageHeaders.FinishPackage tmpStream
+        cPackage.AddChunk_NameValuePair "NAME", "final_img_headers", "DATA", tmpStream.Peek_PointerOnly(0, tmpStream.GetStreamSize()), tmpStream.GetStreamSize(), cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+        
+        Set tmpStream = Nothing
+        cImagePixels.FinishPackage tmpStream
+        cPackage.AddChunk_NameValuePair "NAME", "final_img_pixels", "DATA", tmpStream.Peek_PointerOnly(0, tmpStream.GetStreamSize()), tmpStream.GetStreamSize(), cf_Zstd, Compression.GetMaxCompressionLevel(cf_Zstd)
+        
         'With the package complete, write it out to file!
-        cPackage.WritePackageToFile targetResFile, resCompFormat, False, Compression.GetMaxCompressionLevel(resCompFormat)
+        cPackage.FinishPackage
         
         lblExport.Caption = "Resource export complete."
         lblExport.RequestRefresh

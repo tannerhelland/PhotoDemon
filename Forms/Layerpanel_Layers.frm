@@ -473,9 +473,11 @@ Private Sub ReflowInterface()
         buttonAreaWidth = Interface.FixDPI(4 * 36 + 3 * 8)
         buttonAreaLeft = (ctlGroupLayerButtons.GetWidth - buttonAreaWidth) \ 2
         
+        sizeCheck = Interface.FixDPIFloat(44)
+        
         Dim i As Long
         For i = 0 To cmdLayerAction.Count - 1
-            cmdLayerAction(i).SetLeft buttonAreaLeft + (i * Interface.FixDPIFloat(44))
+            cmdLayerAction(i).SetLeft buttonAreaLeft + (i * sizeCheck)
         Next i
     
     End If
@@ -489,7 +491,7 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-        
+    
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(26)

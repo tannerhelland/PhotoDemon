@@ -974,17 +974,16 @@ Private Sub RedrawBackBuffer()
         Dim scrollOffset As Long
         scrollOffset = m_ScrollValue
         
-        Dim layerFont As pdFont
         Dim layerIndex As Long, offsetX As Long, offsetY As Long, paintColor As Long
         Dim layerHoverIndex As Long, layerSelectedIndex As Long, layerIsHovered As Boolean, layerIsSelected As Boolean
         layerHoverIndex = -1: layerSelectedIndex = -1
         
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
-        If (Not PDImages.IsImageActive()) Then
-            zeroLayers = True
-        Else
+        If PDImages.IsImageActive() Then
             zeroLayers = (PDImages.GetActiveImage.GetNumOfLayers <= 0)
+        Else
+            zeroLayers = True
         End If
         
         'If we are not in "zero layers" mode, proceed with drawing the various list items
@@ -1013,6 +1012,7 @@ Private Sub RedrawBackBuffer()
             fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
             
             'Retrieve a font object that we can use for rendering layer names
+            Dim layerFont As pdFont
             Set layerFont = Fonts.GetMatchingUIFont(10!)
             layerFont.AttachToDC bufferDC
             layerFont.SetTextAlignment vbLeftJustify
@@ -1230,13 +1230,9 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     If (Not PDImages.IsImageActive()) Then
         GetLayerAtPosition = -1
     Else
-    
-        'TODO: track this value internally
-        Dim vOffset As Long
-        vOffset = m_ScrollValue
-    
+        
         Dim tmpLayerCheck As Long
-        tmpLayerCheck = (y + vOffset) \ Interface.FixDPI(LAYER_BLOCK_HEIGHT)
+        tmpLayerCheck = (y + m_ScrollValue) \ Interface.FixDPI(LAYER_BLOCK_HEIGHT)
     
         'It's a bit counterintuitive, but we draw the layer box in reverse order: layer 0 (the image's first layer)
         ' is at the BOTTOM of our box, while layer(max) is at the TOP.  Because of this, all layer positioning checks
@@ -1331,7 +1327,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         
         If PDMain.IsProgramRunning() Then
             Dim iconSize As Long
-            iconSize = FixDPI(16)
+            iconSize = Interface.FixDPI(16)
             LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
             LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize
         End If
