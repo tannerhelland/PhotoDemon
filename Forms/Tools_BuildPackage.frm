@@ -76,23 +76,28 @@ Begin VB.Form FormPackage
       _ExtentX        =   19923
       _ExtentY        =   1296
    End
-   Begin PhotoDemon.pdCheckBox chkOptions 
-      Height          =   375
-      Index           =   1
-      Left            =   7560
-      TabIndex        =   5
-      Top             =   6240
-      Width           =   3615
-      _ExtentX        =   6376
-      _ExtentY        =   661
-      Caption         =   "also compress directory"
-   End
 End
 Attribute VB_Name = "FormPackage"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'Developer package construction dialog
+'Copyright 2019-2019 by Tanner Helland
+'Created: 04/March/19
+'Last updated: 14/October/19
+'Last update: use the new pdPackageChunky format for resource collections
+'
+'As of v7.2, PD ships with some resource collections (e.g. prebuilt gradients).  These have to be stored in PD's
+' resource segment, and it is helpful to package such collections into their own sub-archives.  This dialog
+' helps you construct such sub-archives.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit https://photodemon.org/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 Private Sub cmdAdd_Click()
@@ -157,11 +162,6 @@ End Sub
 
 Private Sub cmdSave_Click()
 
-    'Start a new pdPackage object; it does all the heavy lifting for us.
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
-    cPackage.PrepareNewPackage
-    
     'Set compression options for individual files (settable by the user)
     Dim cmpType As PD_CompressionFormat, cmpLevel As Long
     If chkOptions(0).Value Then
@@ -172,18 +172,6 @@ Private Sub cmdSave_Click()
         cmpLevel = Compression.GetDefaultCompressionLevel(cf_None)
     End If
     
-    'Load all file data into the package
-    Dim i As Long, idxNode As Long, tmpBytes() As Byte
-    For i = 0 To lstFiles.ListCount - 1
-        idxNode = cPackage.AddNode(vbNullString, i)
-        If Files.FileLoadAsByteArray(lstFiles.List(i), tmpBytes) Then
-            cPackage.AddNodeDataFromString idxNode, True, Files.FileGetName(lstFiles.List(i)), cmpType, cmpLevel
-            cPackage.AddNodeDataFromByteArray idxNode, False, tmpBytes, cmpType, cmpLevel
-        Else
-            Debug.Print "WARNING!  Couldn't load file: " & lstFiles.List(i)
-        End If
-    Next i
-    
     'Save the package using any additional settings supplied by the user
     Dim cDialog As pdOpenSaveDialog
     Set cDialog = New pdOpenSaveDialog
@@ -191,24 +179,29 @@ Private Sub cmdSave_Click()
     Dim dstFile As String
     If cDialog.GetSaveFileName(dstFile, , True, , , UserPrefs.GetAppPath, "Save pdPackage", "pdp", Me.hWnd) Then
     
-        If chkOptions(1).Value Then
-            cmpType = cf_Zstd
-            cmpLevel = Compression.GetMaxCompressionLevel(cf_Zstd)
-        Else
-            cmpType = cf_None
-            cmpLevel = Compression.GetDefaultCompressionLevel(cf_None)
+        'Start a new pdPackage; it does all the heavy lifting for us
+        Dim cPackage As pdPackageChunky
+        Set cPackage = New pdPackageChunky
+        If cPackage.StartNewPackage_File(dstFile) Then
+            
+            'Load each file as raw binary data, then add it to the running package collection
+            Dim i As Long, tmpBytes() As Byte
+            For i = 0 To lstFiles.ListCount - 1
+                If Files.FileLoadAsByteArray(lstFiles.List(i), tmpBytes) Then
+                    If (Not cPackage.AddChunk_NameValuePair("NAME", Files.FileGetName(lstFiles.List(i)), "DATA", VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1, cmpType, cmpLevel)) Then Debug.Print "WARNING!  Couldn't add chunk: " & lstFiles.List(i)
+                Else
+                    Debug.Print "WARNING!  Couldn't load file: " & lstFiles.List(i)
+                End If
+            Next i
+        
         End If
         
-        cPackage.WritePackageToFile dstFile, cmpType, False, cmpLevel
-    
     End If
 
 End Sub
 
 Private Sub Form_Load()
-
     Interface.ApplyThemeAndTranslations Me
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

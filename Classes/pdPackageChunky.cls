@@ -597,10 +597,13 @@ Friend Function GetNextChunk(ByRef dstChunkName As String, ByRef dstChunkSize As
         ' bytes, to avoid the need for a copy.
         Else
             
+            dstChunkSize = m_Chunks(m_chunkIndex - 1).chnkUncompressedSize
+            
             If (loadToThisPtrInstead <> 0) Then
                 GetNextChunk = m_Stream.ReadBytesToBarePointer(loadToThisPtrInstead, dstChunkSize)
             Else
                 GetNextChunk = m_Stream.ReadBytesToStream(dstChunkStream, dstChunkSize)
+                dstChunkStream.SetPosition 0, FILE_BEGIN
             End If
             
         End If
@@ -623,9 +626,15 @@ Private Function GetNextChunk_Helper(ByRef dstChunkName As String, ByRef dstChun
     dstChunkName = m_Chunks(m_chunkIndex - 1).chnkName
     dstChunkSize = m_Chunks(m_chunkIndex - 1).chnkSize
     
+    'Look for EOF
+    If (m_Chunks(m_chunkIndex - 1).chnkOffset >= m_Stream.GetStreamSize()) Then
+        GetNextChunk_Helper = False
+        Exit Function
+    End If
+    
     'Failsafe check to ensure chunk size doesn't extend past EOF
     If (m_Chunks(m_chunkIndex - 1).chnkOffset + dstChunkSize + 8 > m_Stream.GetStreamSize()) Or (dstChunkSize < 0) Then
-        InternalError "GetNextChunk", "Bad chunk size; it extends past EOF"
+        InternalError "GetNextChunk", "Bad chunk size; it extends past EOF: " & m_Chunks(m_chunkIndex - 1).chnkOffset & " + " & m_Chunks(m_chunkIndex - 1).chnkSize & " > " & m_Stream.GetStreamSize()
         GetNextChunk_Helper = False
         Exit Function
     End If

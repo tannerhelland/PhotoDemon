@@ -153,41 +153,64 @@ End Function
 ' in the /Data subfolder.  Note that already extracted assets will *not* be re-extracted.
 Friend Function ExtractDefaultAssets() As Boolean
     
-    'Assets are typically stored as embedded pdPackage instances.
-    Dim tmpBytes() As Byte, tmpFileBytes() As Byte, tmpFileBytesSize As Long
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
+    'Assets are stored as embedded pdPackageChunky instances.
+    Dim cPackage As pdPackageChunky
+    Set cPackage = New pdPackageChunky
     
     Dim i As Long, dstFilename As String
     
     'Extract the default gradient collection (but only if it's never been extracted before).
     If (Not UserPrefs.GetPref_Boolean("Assets", "ExtractedGradients", False)) Then
+    
         PDDebug.LogAction "Gradient collection has never been extracted before.  Extracting now..."
+        
+        Dim tmpBytes() As Byte
         If Me.LoadGenericResource("gradients", tmpBytes) Then
-            If cPackage.ReadPackageFromMemory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
             
-                'Extract all nodes to their proper file destination
-                For i = 0 To cPackage.GetNumOfNodes - 1
-                    If cPackage.GetNodeDataByIndex_String(i, True, dstFilename) Then
-                        dstFilename = UserPrefs.GetGradientPath() & dstFilename
-                        If (Not Files.FileExists(dstFilename)) Then
-                            If cPackage.GetNodeDataByIndex(i, False, tmpFileBytes, False, tmpFileBytesSize) Then
-                                Files.FileCreateFromByteArray tmpFileBytes, dstFilename, False, False, tmpFileBytesSize
-                            Else
-                                RaiseResourceError "ExtractDefaultAssets: no bytes found for target asset"
+            'Load the byte array into a temporary package manager
+            If cPackage.OpenPackage_Memory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1) Then
+                
+                'Gradient chunks are stored as name-value pairs
+                Dim tmpStream As pdStream, tmpChunkName As String, tmpChunkSize As Long, tmpFilename As String
+                Do While cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream)
+                
+                    'Ensure the chunk name is actually a "NAME" chunk
+                    If (tmpChunkName = "NAME") Then
+                        
+                        'Convert the filename to a full path into the user's gradient folder
+                        dstFilename = UserPrefs.GetGradientPath(True) & tmpStream.ReadString_UTF8(tmpChunkSize)
+                        
+                        'Extract the chunk's data
+                        If cPackage.GetNextChunk(tmpChunkName, tmpChunkSize, tmpStream) Then
+                            
+                            'Ensure the chunk data is a "DATA" chunk
+                            If (tmpChunkName = "DATA") Then
+                                
+                                'Write the chunk's contents to file
+                                If (Not Files.FileCreateFromPtr(tmpStream.Peek_PointerOnly(0, tmpChunkSize), tmpChunkSize, dstFilename, True)) Then
+                                    RaiseResourceError "ExtractDefaultAssets: failed to create target file " & dstFilename
+                                End If
+                                
                             End If
+                            
+                        Else
+                            RaiseResourceError "bad gradient data: " & tmpChunkName
                         End If
+                        
                     Else
-                        RaiseResourceError "ExtractDefaultAssets: no filename found for target asset"
+                        RaiseResourceError "bad gradient name: " & tmpChunkName
                     End If
-                Next i
-            
+                
+                'Iterate all remaining package items
+                Loop
+                
             Else
                 RaiseResourceError "ExtractDefaultAssets: failed to extract gradient resource chunk"
             End If
+            
         End If
         
-        'Update the preference to ensure we do not extract these files again
+        'Update the stored preference to ensure we do not extract these files again
         UserPrefs.SetPref_Boolean "Assets", "ExtractedGradients", True
         
     End If
