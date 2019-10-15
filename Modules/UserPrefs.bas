@@ -42,7 +42,9 @@ Private m_DataPath As String
 Private m_ThemePath As String
 Private m_LanguagePath As String
 
-'/Data subfolders come next.
+'/Data subfolders come next.  Note that some of these can be modified at run-time by user behavior (e.g. palettes
+' do not currently ship with a prebuilt collection, so that path changes as the user loads/saves palettes from
+' standalone palette files).
 Private m_MacroPath As String
 Private m_PreferencesPath As String
 Private m_TempPath As String
@@ -50,7 +52,7 @@ Private m_IconPath As String
 
 Private m_ColorProfilePath As String
 Private m_UserLanguagePath As String
-Private m_GradientPath As String
+Private m_GradientPathDefault As String, m_GradientPathUser As String
 Private m_PalettePath As String
 Private m_SelectionPath As String
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
@@ -160,13 +162,22 @@ Public Sub SetColorProfilePath(ByRef newPath As String)
     SetPref_String "Paths", "ColorProfiles", m_ColorProfilePath
 End Sub
 
-Public Function GetGradientPath() As String
-    GetGradientPath = m_GradientPath
+Public Function GetGradientPath(Optional ByVal useDefaultLocation As Boolean = False) As String
+    If useDefaultLocation Then
+        GetGradientPath = m_GradientPathDefault
+    Else
+        GetGradientPath = m_GradientPathUser
+    End If
 End Function
 
+'There are two gradient paths at present; a "default" one that marks PD's gradient collection folder
+' (hard-coded to /Data/Gradients), and a user-editable one that auto-updates when individual gradients
+' are imported/exported from standalone files - e.g. the equivalent of a "last-used gradient" path.
+'
+'This function sets the "last-used gradient" path.
 Public Sub SetGradientPath(ByRef newPath As String)
-    m_GradientPath = Files.PathAddBackslash(Files.FileGetPath(newPath))
-    SetPref_String "Paths", "Gradient", m_GradientPath
+    m_GradientPathUser = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "Gradients", m_GradientPathUser
 End Sub
 
 Public Function GetPalettePath() As String
@@ -405,8 +416,9 @@ Public Function InitializePaths() As Boolean
     m_DebugPath = m_DataPath & "Debug\"
     If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
     
-    m_GradientPath = m_DataPath & "Gradients\"
-    If (Not Files.PathExists(m_GradientPath)) Then Files.PathCreate m_GradientPath
+    m_GradientPathDefault = m_DataPath & "Gradients\"
+    m_GradientPathUser = m_GradientPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
+    If (Not Files.PathExists(m_GradientPathDefault)) Then Files.PathCreate m_GradientPathDefault
     
     m_IconPath = m_DataPath & "Icons\"
     If (Not Files.PathExists(m_IconPath)) Then Files.PathCreate m_IconPath
@@ -510,7 +522,7 @@ Public Sub LoadUserSettings()
             
         'Pull all other stored paths
         m_ColorProfilePath = GetPref_String("Paths", "ColorProfiles", m_ColorProfilePath)
-        m_GradientPath = GetPref_String("Paths", "Gradient", m_GradientPath)
+        m_GradientPathUser = GetPref_String("Paths", "Gradients", m_GradientPathDefault)
         m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
         m_PalettePath = GetPref_String("Paths", "Palettes", m_PalettePath)
         m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)

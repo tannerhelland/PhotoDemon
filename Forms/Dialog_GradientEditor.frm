@@ -1240,7 +1240,7 @@ Private Sub cmdFile_Click(Index As Integer)
                 Dim dstFilename As String
                 
                 If nameIsUnique Then
-                    dstFilename = Files.IncrementFilename(UserPrefs.GetGradientPath, txtName.Text, "svg") & ".svg"
+                    dstFilename = Files.IncrementFilename(UserPrefs.GetGradientPath(), txtName.Text, "svg") & ".svg"
                     
                 'If the name is *not* unique, provide an overwrite prompt.
                 Else
@@ -1253,7 +1253,7 @@ Private Sub cmdFile_Click(Index As Integer)
                 End If
                 
                 'Kill the existing file, if any
-                dstFilename = UserPrefs.GetGradientPath & dstFilename
+                dstFilename = UserPrefs.GetGradientPath() & dstFilename
                 Files.FileDeleteIfExists dstFilename
                 
                 'Make sure all gradient settings are up-to-date
@@ -1324,7 +1324,7 @@ Private Sub ImportGradientFile()
     Set openDialog = New pdOpenSaveDialog
     
     Dim srcFilename As String
-    If openDialog.GetOpenFileName(srcFilename, , True, False, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath, cdTitle, , GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(srcFilename, , True, False, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath(), cdTitle, , GetModalOwner().hWnd) Then
         
         'Update preferences
         UserPrefs.SetGradientPath Files.FileGetPath(srcFilename)
@@ -1400,7 +1400,7 @@ Private Sub ExportGradientFile()
     'Display a common save dialog
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
-    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath, cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(dstFilename, , True, cdFilter.ToString(), cdIndex, UserPrefs.GetGradientPath(), cdTitle, cdFilterExtensions.ToString(), GetModalOwner().hWnd) Then
     
         'Update preferences
         UserPrefs.SetGradientPath Files.FileGetPath(dstFilename)
@@ -1486,7 +1486,7 @@ Private Sub Form_Load()
     cmdFile(1).AssignImage "file_open", , buttonImgSize, buttonImgSize
     cmdFile(2).AssignImage "file_saveas", , buttonImgSize, buttonImgSize
     
-    lblCollection.Caption = g_Language.TranslateMessage("Your gradient collection is stored in the ""%1"" folder", UserPrefs.GetGradientPath)
+    lblCollection.Caption = g_Language.TranslateMessage("Your gradient collection is stored in the ""%1"" folder", UserPrefs.GetGradientPath(True))
     lblCollection.AssignTooltip "click to open the gradient collection folder in Windows Explorer"
     
     chkGamma.AssignTooltip "When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance."
@@ -1610,7 +1610,7 @@ Private Sub BuildGradientCollection()
     Next i
     
     Dim srcFiles As pdStringStack
-    If cFSO.RetrieveAllFiles(UserPrefs.GetGradientPath, srcFiles, True, True, "ggr|svg") Then
+    If cFSO.RetrieveAllFiles(UserPrefs.GetGradientPath(True), srcFiles, True, True, "ggr|svg") Then
         
         Dim tmpString As String
         For i = 0 To srcFiles.GetNumOfStrings - 1
@@ -1763,7 +1763,7 @@ End Sub
 
 Private Sub lblCollection_Click()
     Dim filePath As String, shellCommand As String
-    filePath = UserPrefs.GetGradientPath
+    filePath = UserPrefs.GetGradientPath()
     shellCommand = "explorer.exe """ & filePath & """"
     Shell shellCommand, vbNormalFocus
 End Sub
@@ -1850,7 +1850,7 @@ Private Sub LoadGradientCollectionPreview(ByVal itemIndex As Long)
     With m_GradientCollection(itemIndex)
         If .gcLoadAttempted Then Exit Sub
         Set .gcGradient = New pd2DGradient
-        .gcGradientLoadedOK = .gcGradient.LoadGradientFromFile(UserPrefs.GetGradientPath & .gcPath)
+        .gcGradientLoadedOK = .gcGradient.LoadGradientFromFile(UserPrefs.GetGradientPath(True) & .gcPath)
         .gcLoadAttempted = True
     End With
     
