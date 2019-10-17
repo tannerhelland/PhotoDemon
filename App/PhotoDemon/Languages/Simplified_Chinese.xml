@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>7.1.1176</langversion>
+<langversion>7.2.1494</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -157,17 +157,17 @@
 
 <phrase>
 <original>Cut special</original>
-<translation></translation>
+<translation>特殊切割</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation></translation>
+<translation>特殊复制</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation></translation>
+<translation>特殊粘贴</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -661,12 +661,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation></translation>
+<translation>保存动画帧  %1 / %2</translation>
 </phrase>
 
 <phrase>
 <original>Finalizing image</original>
-<translation></translation>
+<translation>正在完成图像</translation>
 </phrase>
 
 <phrase>
@@ -1059,12 +1059,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Basic text layer</original>
-<translation></translation>
+<translation>基本文本层</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text layer</original>
-<translation></translation>
+<translation>高级文本层</translation>
 </phrase>
 
 <phrase>
@@ -1084,17 +1084,17 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Copying layer</original>
-<translation></translation>
+<translation>复制层</translation>
 </phrase>
 
 <phrase>
 <original>Conversion complete.</original>
-<translation></translation>
+<translation>转换完成。</translation>
 </phrase>
 
 <phrase>
 <original>Adding image</original>
-<translation></translation>
+<translation>添加图像</translation>
 </phrase>
 
 <phrase>
@@ -1522,12 +1522,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Export animated GIF</original>
-<translation></translation>
+<translation>导出动画GIF</translation>
 </phrase>
 
 <phrase>
 <original>Export animated PNG</original>
-<translation></translation>
+<translation>导出动画PNG</translation>
 </phrase>
 
 <phrase>
@@ -1617,7 +1617,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation></translation>
+<translation>修剪空白图片边框</translation>
 </phrase>
 
 <phrase>
@@ -1717,22 +1717,22 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Go to top layer</original>
-<translation></translation>
+<translation>转到顶层</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer above</original>
-<translation></translation>
+<translation>转到上方的图层</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation></translation>
+<translation>转到下面的图层</translation>
 </phrase>
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation></translation>
+<translation>转到底层</translation>
 </phrase>
 
 <phrase>
@@ -1757,32 +1757,32 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Reverse layer order</original>
-<translation></translation>
+<translation>反转图层顺序</translation>
 </phrase>
 
 <phrase>
 <original>Toggle layer visibility</original>
-<translation></translation>
+<translation>切换图层可见性</translation>
 </phrase>
 
 <phrase>
 <original>Show only this layer</original>
-<translation></translation>
+<translation>仅显示此层</translation>
 </phrase>
 
 <phrase>
 <original>Hide only this layer</original>
-<translation></translation>
+<translation>仅隐藏此层</translation>
 </phrase>
 
 <phrase>
 <original>Show all layers</original>
-<translation></translation>
+<translation>显示所有层</translation>
 </phrase>
 
 <phrase>
 <original>Hide all layers</original>
-<translation></translation>
+<translation>隐藏所有层</translation>
 </phrase>
 
 <phrase>
@@ -1792,12 +1792,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Pad layer to image size</original>
-<translation></translation>
+<translation>按图像大小填充层</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation></translation>
+<translation>修剪空图层边框</translation>
 </phrase>
 
 <phrase>
@@ -1872,17 +1872,17 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Split layer into image</original>
-<translation></translation>
+<translation>将层拆分为图像</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation></translation>
+<translation>将图层拆分为图像</translation>
 </phrase>
 
 <phrase>
 <original>Split images into layers</original>
-<translation></translation>
+<translation>将图像分割成层</translation>
 </phrase>
 
 <phrase>
@@ -2427,12 +2427,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Clouds</original>
-<translation></translation>
+<translation>云</translation>
 </phrase>
 
 <phrase>
 <original>Fibers</original>
-<translation></translation>
+<translation>纤维</translation>
 </phrase>
 
 <phrase>
@@ -3355,17 +3355,17 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>This is a still image (only one frame of animation).</original>
-<translation></translation>
+<translation>这是一个静止图像（只有一帧动画）。</translation>
 </phrase>
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation></translation>
+<translation>您可以继续，但图像将保存为静态图像，而不是动画图像。</translation>
 </phrase>
 
 <phrase>
 <original>Export animation</original>
-<translation></translation>
+<translation>导出动画</translation>
 </phrase>
 
 <!-- Saving.bas contains 39 phrases. 32 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -3600,12 +3600,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation></translation>
+<translation>Ctrl+Click 设置克隆源</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp</original>
-<translation></translation>
+<translation>克隆标记</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3682,7 +3682,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Pencil stroke</original>
-<translation></translation>
+<translation>笔划</translation>
 </phrase>
 
 <!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -4670,12 +4670,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation></translation>
+<translation>优化动画帧 %1 / %2</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation></translation>
+<translation>分析动画帧 %1 / %2</translation>
 </phrase>
 
 <!-- pdPNG.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -5498,12 +5498,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation></translation>
+<translation>在1x和重复预览之间切换</translation>
 </phrase>
 
 <phrase>
 <original>Current frame: %1</original>
-<translation></translation>
+<translation>当前帧：%1</translation>
 </phrase>
 
 <!-- pdNavigator.ctl contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -5921,12 +5921,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated GIF</original>
-<translation></translation>
+<translation>GIF动画</translation>
 </phrase>
 
 <phrase>
 <original>Animated PNG</original>
-<translation></translation>
+<translation>PNG动画</translation>
 </phrase>
 
 <phrase>
@@ -5996,7 +5996,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Special</original>
-<translation></translation>
+<translation>特别</translation>
 </phrase>
 
 <phrase>
@@ -6151,7 +6151,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Move layer to top</original>
-<translation></translation>
+<translation>将图层移到顶部</translation>
 </phrase>
 
 <phrase>
@@ -6166,27 +6166,27 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Move layer to bottom</original>
-<translation></translation>
+<translation>将图层移到底部</translation>
 </phrase>
 
 <phrase>
 <original>Reverse</original>
-<translation></translation>
+<translation>反转</translation>
 </phrase>
 
 <phrase>
 <original>Visibility</original>
-<translation></translation>
+<translation>可见度</translation>
 </phrase>
 
 <phrase>
 <original>Show this layer</original>
-<translation></translation>
+<translation>显示此层</translation>
 </phrase>
 
 <phrase>
 <original>Pad to image size</original>
-<translation></translation>
+<translation>按图像大小填充</translation>
 </phrase>
 
 <phrase>
@@ -6251,22 +6251,22 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Split</original>
-<translation></translation>
+<translation>分割</translation>
 </phrase>
 
 <phrase>
 <original>Current layer into standalone image</original>
-<translation></translation>
+<translation>当前层到独立图像</translation>
 </phrase>
 
 <phrase>
 <original>All layers into standalone images</original>
-<translation></translation>
+<translation>所有层都成独立的图像</translation>
 </phrase>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation></translation>
+<translation>此图像中的其他打开图像（作为层）</translation>
 </phrase>
 
 <phrase>
@@ -6476,7 +6476,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Render</original>
-<translation></translation>
+<translation>渲染</translation>
 </phrase>
 
 <phrase>
@@ -6788,7 +6788,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Updates unavailable</original>
-<translation></translation>
+<translation>更新不可用</translation>
 </phrase>
 
 <phrase>
@@ -9154,37 +9154,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use merged image</original>
-<translation></translation>
+<translation>使用合并的图像</translation>
 </phrase>
 
 <phrase>
 <original>available formats</original>
-<translation></translation>
+<translation>可用格式</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Image</original>
-<translation></translation>
+<translation>PhotoDemon 图像</translation>
 </phrase>
 
 <phrase>
 <original>Bitmap</original>
-<translation></translation>
+<translation>位图</translation>
 </phrase>
 
 <phrase>
 <original>DIB</original>
-<translation></translation>
+<translation>DIB</translation>
 </phrase>
 
 <phrase>
 <original>DIB v5</original>
-<translation></translation>
+<translation>DIB v5</translation>
 </phrase>
 
 <phrase>
 <original>PNG</original>
-<translation></translation>
+<translation>PNG</translation>
 </phrase>
 
 <!-- Edit_Clipboard.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -9521,7 +9521,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>adaptive coloring</original>
-<translation></translation>
+<translation>自适应着色</translation>
 </phrase>
 
 <phrase>
@@ -10801,12 +10801,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>generator</original>
-<translation></translation>
+<translation>生成器</translation>
 </phrase>
 
 <phrase>
 <original>Rendering clouds</original>
-<translation></translation>
+<translation>渲染云</translation>
 </phrase>
 
 <phrase>
@@ -10816,17 +10816,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Perlin</original>
-<translation></translation>
+<translation>柏林噪声</translation>
 </phrase>
 
 <phrase>
 <original>Simplex</original>
-<translation></translation>
+<translation>单一模式</translation>
 </phrase>
 
 <phrase>
 <original>OpenSimplex</original>
-<translation></translation>
+<translation>OpenSimplex</translation>
 </phrase>
 
 <!-- Effects_Render_Clouds.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -10837,7 +10837,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>length</original>
-<translation></translation>
+<translation>长度</translation>
 </phrase>
 
 <phrase>
@@ -10847,7 +10847,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Rendering fibers</original>
-<translation></translation>
+<translation>渲染纤维</translation>
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11947,7 +11947,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Animation export options</original>
-<translation></translation>
+<translation>动画导出选项</translation>
 </phrase>
 
 <phrase>
@@ -11957,7 +11957,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>matte</original>
-<translation></translation>
+<translation>磨砂</translation>
 </phrase>
 
 <phrase>
@@ -11972,12 +11972,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>repeat count</original>
-<translation></translation>
+<translation>重复计数</translation>
 </phrase>
 
 <phrase>
 <original>animation speed</original>
-<translation></translation>
+<translation>动画速度</translation>
 </phrase>
 
 <phrase>
@@ -11987,32 +11987,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>forever</original>
-<translation></translation>
+<translation>永远</translation>
 </phrase>
 
 <phrase>
 <original>fixed</original>
-<translation></translation>
+<translation>固定</translation>
 </phrase>
 
 <phrase>
 <original>pull from layer names</original>
-<translation></translation>
+<translation>从图层名中提取</translation>
 </phrase>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation></translation>
+<translation>此按钮仅影响上面的预览。右侧的重复设置将由导出的图像文件使用。</translation>
 </phrase>
 
 <phrase>
 <original>frame time (in ms)</original>
-<translation></translation>
+<translation>帧时间（以毫秒为单位）</translation>
 </phrase>
 
 <phrase>
 <original>frame time for undefined layers (in ms)</original>
-<translation></translation>
+<translation>未定义图层的帧时间（以毫秒为单位）</translation>
 </phrase>
 
 <!-- File_Export_AnimatedGIF.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -13753,67 +13753,67 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>after importing source images</original>
-<translation></translation>
+<translation>导入源图像后</translation>
 </phrase>
 
 <phrase>
 <original>canvas size</original>
-<translation></translation>
+<translation>画布大小</translation>
 </phrase>
 
 <phrase>
 <original>align imported layers</original>
-<translation></translation>
+<translation>对齐导入的图层</translation>
 </phrase>
 
 <phrase>
 <original>if imported layer names match existing layer names</original>
-<translation></translation>
+<translation>如果导入的层名称与现有的层名称匹配</translation>
 </phrase>
 
 <phrase>
 <original>destination image</original>
-<translation></translation>
+<translation>目标图像</translation>
 </phrase>
 
 <phrase>
 <original>source image(s)</original>
-<translation></translation>
+<translation>源图像</translation>
 </phrase>
 
 <phrase>
 <original>keep current size</original>
-<translation></translation>
+<translation>保持当前大小</translation>
 </phrase>
 
 <phrase>
 <original>resize to fit imported layers</original>
-<translation></translation>
+<translation>调整大小以适应导入的图层</translation>
 </phrase>
 
 <phrase>
 <original>replace existing layers with imported ones</original>
-<translation></translation>
+<translation>用导入的替换现有的层</translation>
 </phrase>
 
 <phrase>
 <original>add duplicates as new layers</original>
-<translation></translation>
+<translation>将重复项添加为新图层</translation>
 </phrase>
 
 <phrase>
 <original>leave images open</original>
-<translation></translation>
+<translation>保持图像打开</translation>
 </phrase>
 
 <phrase>
 <original>close images normally (prompt for unsaved changes)</original>
-<translation></translation>
+<translation>正常关闭图像（提示未保存的更改）</translation>
 </phrase>
 
 <phrase>
 <original>close images without prompting</original>
-<translation></translation>
+<translation>无提示关闭图像</translation>
 </phrase>
 
 <!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -14179,12 +14179,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Basic Text</original>
-<translation></translation>
+<translation>基本文本</translation>
 </phrase>
 
 <phrase>
 <original>Advanced Text</original>
-<translation></translation>
+<translation>高级文本</translation>
 </phrase>
 
 <phrase>
@@ -14264,12 +14264,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Basic text tool</original>
-<translation></translation>
+<translation>基本文本工具</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation></translation>
+<translation>高级文本工具</translation>
 </phrase>
 
 <phrase>
@@ -14289,7 +14289,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation></translation>
+<translation>克隆标记工具</translation>
 </phrase>
 
 <phrase>
@@ -14305,12 +14305,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>source settings</original>
-<translation></translation>
+<translation>源设置</translation>
 </phrase>
 
 <phrase>
 <original>pattern mode</original>
-<translation></translation>
+<translation>模型模式</translation>
 </phrase>
 
 <phrase>
@@ -14330,7 +14330,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>aligned</original>
-<translation></translation>
+<translation>对齐</translation>
 </phrase>
 
 <phrase>
@@ -14340,22 +14340,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>tile</original>
-<translation></translation>
+<translation>平铺</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip horizontal</original>
-<translation></translation>
+<translation>平铺+水平翻转</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip vertical</original>
-<translation></translation>
+<translation>平铺+垂直翻转</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip both</original>
-<translation></translation>
+<translation>平铺+翻转</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -14855,7 +14855,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation></translation>
+<translation>这是一个高级文本层。 要使用基本文本工具进行编辑，必须首先将其转换为基本文本层。</translation>
 </phrase>
 
 <phrase>
@@ -14865,7 +14865,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Click here to convert this layer to basic text.</original>
-<translation></translation>
+<translation>单击此处将此层转换为基本文本。</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 21 phrases. 11 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -15006,12 +15006,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation></translation>
+<translation>这是基本的文字层。 要使用高级文本工具进行编辑，必须首先将其转换为高级文本层。</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to advanced text.</original>
-<translation></translation>
+<translation>单击此处将此层转换为高级文本。</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
@@ -15112,7 +15112,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>CTRL+ENTER automatically saves and proceeds to next phrase</original>
-<translation></translation>
+<translation>CTRL+ENTER 自动保存并继续翻译下一个短语</translation>
 </phrase>
 
 <phrase>
