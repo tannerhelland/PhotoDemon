@@ -51,7 +51,7 @@ Public Sub SetProgBarVal(ByVal pbVal As Double)
         
         'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
         ' when PD is in the midst of a long-running action.
-        VBHacks.DoEvents_SingleHwnd FormMain.hWnd
+        VBHacks.DoEvents_PaintOnly
         
     End If
     

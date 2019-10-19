@@ -414,9 +414,25 @@ Public Sub DoEventsTimersOnly()
     Loop
 End Sub
 
+'PD sometimes wants to yield for paint events (e.g. updating a status bar) without risking
+' reentrancy from input events.
+Public Sub DoEvents_PaintOnly(Optional ByVal alsoPurgeInputEvents As Boolean = True)
+    
+    Dim tmpMsg As winMsg
+    Const QS_PAINT As Long = &H20&
+    Const PM_QS_PAINT As Long = (QS_PAINT * (2& ^ 16&))
+    Do While PeekMessageA(tmpMsg, 0&, 0&, 0&, &H1& Or PM_QS_PAINT)
+        TranslateMessage tmpMsg
+        DispatchMessageA tmpMsg
+    Loop
+    
+    If alsoPurgeInputEvents Then VBHacks.PurgeInputMessages FormMain.hWnd
+    
+End Sub
+
 Public Sub PurgeTimerMessagesByID(ByVal nIDEvent As Long)
     Dim tmpMsg As winMsg
-    Const WM_TIMER As Long = &H113
+    Const WM_TIMER As Long = &H113&
     Do While PeekMessageA(tmpMsg, 0&, WM_TIMER, WM_TIMER, &H1&)
         If (tmpMsg.wParam <> nIDEvent) Then
             TranslateMessage tmpMsg
@@ -432,7 +448,7 @@ Public Sub PurgeInputMessages(ByVal srcHwnd As Long)
     Const QS_MOUSE = (QS_MOUSEMOVE Or QS_MOUSEBUTTON)
     Const QS_KEY = &H1
     Const QS_INPUT = (QS_MOUSE Or QS_KEY)
-    Const PM_QS_INPUT = (QS_INPUT * (2 ^ 16))
+    Const PM_QS_INPUT = (QS_INPUT * (2& ^ 16&))
     
     Dim tmpMsg As winMsg
     Do While PeekMessageW(tmpMsg, srcHwnd, 0&, 0&, &H1& Or PM_QS_INPUT)
