@@ -162,7 +162,7 @@ End Function
 
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
-Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
+Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
     If (newAlphaMode <> m_BrushAlphamode) Then
         m_BrushAlphamode = newAlphaMode
         m_BrushIsReady = False
@@ -176,7 +176,7 @@ Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialia
     End If
 End Sub
 
-Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BL_NORMAL)
+Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_Normal)
     If (newBlendMode <> m_BrushBlendmode) Then
         m_BrushBlendmode = newBlendMode
         m_BrushIsReady = False
@@ -454,16 +454,28 @@ Private Sub CreateSoftBrushReference_PD()
         m_SrcPenDIB.ResetDIB 0
     End If
     
+    Tools_Paint.CreateBrushMask_SolidColor m_SrcPenDIB, m_BrushSourceColor, m_BrushSize, m_BrushHardness, m_BrushFlow
+    
+End Sub
+
+'Create a brush mask using passed color, radius, hardness, and flow.
+' IMPORTANTLY: this function does NOT size the destination DIB; you must handle that manually,
+' which is necessary in PD as different tools have different padding requirements.
+Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor As Long, ByVal brushSize As Single, ByVal brushHardness As Single, Optional ByVal brushFlow As Single = 100#) As Boolean
+
+    'At present, there are no fail states for this function
+    CreateBrushMask_SolidColor = True
+    
     'Next, check for a few special cases.  First, brushes with maximum hardness don't need to be rendered manually.
     ' Instead, just plot an antialiased circle and call it good.
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-    If (m_BrushHardness = 1#) Then
+    If (brushHardness = 1#) Then
         
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SrcPenDIB.GetDIBDC, True
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
-        Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor, m_BrushFlow
-        PD2D.FillCircleF cSurface, cBrush, m_BrushSize * 0.5, m_BrushSize * 0.5, m_BrushSize * 0.5
+        Drawing2D.QuickCreateSolidBrush cBrush, srcColor, brushFlow
+        PD2D.FillCircleF cSurface, cBrush, brushSize * 0.5, brushSize * 0.5, brushSize * 0.5
         
         Set cBrush = Nothing: Set cSurface = Nothing
     
@@ -475,44 +487,44 @@ Private Sub CreateSoftBrushReference_PD()
         ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
         ' setting each byte individually.
         Dim tmpR As Long, tmpG As Long, tmpB As Long
-        tmpR = Colors.ExtractRed(m_BrushSourceColor)
-        tmpG = Colors.ExtractGreen(m_BrushSourceColor)
-        tmpB = Colors.ExtractBlue(m_BrushSourceColor)
+        tmpR = Colors.ExtractRed(srcColor)
+        tmpG = Colors.ExtractGreen(srcColor)
+        tmpB = Colors.ExtractBlue(srcColor)
         
         Dim cLookup() As Long
         ReDim cLookup(0 To 255) As Long
         
         'Calculate brush flow (which controls the opacity of individual dabs)
         Dim normMult As Single, flowMult As Single
-        flowMult = m_BrushFlow * 0.01
+        flowMult = brushFlow * 0.01
         normMult = (1# / 255#) * flowMult
         
         Dim x As Long, y As Long, tmpMult As Single
         For x = 0 To 255
             tmpMult = CSng(x) * normMult
-            cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x * flowMult)
+            cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, CSng(x) * flowMult)
         Next x
+        
+        'Because the top entry in the lookup table is accessed the most (for very hard brushes, anyway),
+        ' it is faster to cache it, as array lookups are slow in VB
+        Dim cLookupMax As Long
+        cLookupMax = cLookup(255)
         
         'Next, we're going to do something weird.  If this brush is quite small, it's very difficult to plot subpixel
         ' data accurately.  Instead of messing with specialized calculations, we're just going to plot a larger
         ' temporary brush, then resample it down to the target size.  This is the least of many evils.
-        Dim tmpBrushRequired As Boolean, tmpDIB As pdDIB
+        Dim tmpBrushRequired As Boolean
         Const BRUSH_SIZE_MIN_CUTOFF As Long = 15
-        tmpBrushRequired = (m_BrushSize < BRUSH_SIZE_MIN_CUTOFF)
+        tmpBrushRequired = (brushSize < BRUSH_SIZE_MIN_CUTOFF)
         
         'Prep manual per-pixel loop variables
-        Dim dstImageData() As Long
-        Dim tmpSA As SafeArray2D
+        Dim tmpDIB As pdDIB
+        Dim dstImageData() As Long, tmpSA As SafeArray1D
         
         If tmpBrushRequired Then
             Set tmpDIB = New pdDIB
             tmpDIB.CreateBlank BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, 32, 0, 0
-            PrepSafeArray_Long tmpSA, tmpDIB
-        Else
-            PrepSafeArray_Long tmpSA, m_SrcPenDIB
         End If
-        
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
         Dim initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
@@ -524,15 +536,9 @@ Private Sub CreateSoftBrushReference_PD()
             finalX = tmpDIB.GetDIBWidth - 1
             finalY = tmpDIB.GetDIBHeight - 1
         Else
-            finalX = m_SrcPenDIB.GetDIBWidth - 1
-            finalY = m_SrcPenDIB.GetDIBHeight - 1
+            finalX = dstDIB.GetDIBWidth - 1
+            finalY = dstDIB.GetDIBHeight - 1
         End If
-        
-        'After a good deal of testing, I've decided that I don't like the MyPaint system for calculating brush hardness.
-        ' Their system behaves ridiculously at low "hardness" values, causing huge spacing issues for the brush.
-        ' Instead, I'm using a system similar to PD's "vignette" tool, which yields much better results for beginners, IMO.
-        Dim brushHardness As Single
-        brushHardness = m_BrushHardness
         
         'Calculate interior and exterior brush radii.  Any pixels...
         ' - OUTSIDE the EXTERIOR radius are guaranteed to be fully transparent
@@ -543,24 +549,29 @@ Private Sub CreateSoftBrushReference_PD()
         If tmpBrushRequired Then
             brushRadius = CSng(BRUSH_SIZE_MIN_CUTOFF) * 0.5
         Else
-            brushRadius = m_BrushSize * 0.5
+            brushRadius = brushSize * 0.5
         End If
         brushRadiusSquare = brushRadius * brushRadius
         
         Dim innerRadius As Single, innerRadiusSquare As Single
-        innerRadius = (brushRadius - 1) * (brushHardness * 0.99)
+        innerRadius = (brushRadius - 1!) * (brushHardness * 0.99!)
         innerRadiusSquare = innerRadius * innerRadius
         
         Dim radiusDifference As Single
         radiusDifference = (brushRadiusSquare - innerRadiusSquare)
-        If (radiusDifference < 0.00001) Then radiusDifference = 0.00001
-        radiusDifference = (1# / radiusDifference)
+        If (radiusDifference < 0.00001!) Then radiusDifference = 0.00001!
+        radiusDifference = (1! / radiusDifference)
         
         Dim cx As Single, cy As Single
         Dim pxDistance As Single, pxOpacity As Single
         
         'Loop through each pixel in the image, calculating per-pixel brush values as we go
         For y = initY To finalY
+            If tmpBrushRequired Then
+                tmpDIB.WrapLongArrayAroundScanline dstImageData, tmpSA, y
+            Else
+                dstDIB.WrapLongArrayAroundScanline dstImageData, tmpSA, y
+            End If
         For x = initX To finalX
         
             'Calculate distance between this point and the idealized "center" of the brush
@@ -574,7 +585,7 @@ Private Sub CreateSoftBrushReference_PD()
                 
                 'If pixels lie *inside* the inner radius, set them to maximum opacity
                 If (pxDistance <= innerRadiusSquare) Then
-                    dstImageData(x, y) = cLookup(255)
+                    dstImageData(x) = cLookupMax
                 
                 'If pixels lie somewhere between the inner radius and the brush radius, feather them appropriately
                 Else
@@ -583,11 +594,11 @@ Private Sub CreateSoftBrushReference_PD()
                     ' of feathering this hardness value provides), and the outer radius (the actual brush radius)
                     pxOpacity = (brushRadiusSquare - pxDistance) * radiusDifference
                     
-                    'Cube the result to produce a more gaussian-like fade
+                    'Cube the result to produce a better fade
                     pxOpacity = pxOpacity * pxOpacity * pxOpacity
                     
                     'Pull the matching result from our lookup table
-                    dstImageData(x, y) = cLookup(pxOpacity * 255#)
+                    dstImageData(x) = cLookup(pxOpacity * 255!)
                     
                 End If
                 
@@ -597,17 +608,24 @@ Private Sub CreateSoftBrushReference_PD()
         Next y
         
         'Safely deallocate imageData()
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        If tmpBrushRequired Then
+            tmpDIB.UnwrapLongArrayFromDIB dstImageData
+        Else
+            dstDIB.UnwrapLongArrayFromDIB dstImageData
+        End If
         
         'If a temporary brush was required (because the target brush is so small), downscale it to its
         ' final size now.
         If tmpBrushRequired Then
-            GDI_Plus.GDIPlus_StretchBlt m_SrcPenDIB, 0#, 0#, m_BrushSize, m_BrushSize, tmpDIB, 0#, 0#, BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, , GP_IM_HighQualityBilinear, , , True, True
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0#, 0#, brushSize, brushSize, tmpDIB, 0#, 0#, BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, , GP_IM_HighQualityBilinear, , , True, True
         End If
         
     End If
-
-End Sub
+    
+    'Brushes are always premultiplied
+    dstDIB.SetInitialAlphaPremultiplicationState True
+    
+End Function
 
 'As part of rendering the current brush, we also need to render a brush outline onto the canvas at the current
 ' mouse location.  The specific outline technique used varies by brush engine.
