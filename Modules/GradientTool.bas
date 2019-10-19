@@ -140,6 +140,10 @@ Private m_GradLookup() As Long, m_LookupResolution As Long, m_LastGradColor As L
 ' DIB is used to cache intermediate gradient results.
 Private m_PreviewDIB As pdDIB
 
+'Set to TRUE when a gradient is actively being rendered; we use this to skip rendering intermediate
+' steps during _MouseMove events.
+Private m_GradientRendering As Boolean
+
 'Universal gradient settings
 Public Function GetGradientAlphaMode() As PD_AlphaMode
     GetGradientAlphaMode = m_GradientAlphamode
@@ -171,7 +175,7 @@ End Function
 
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
-Public Sub SetGradientAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = LA_NORMAL)
+Public Sub SetGradientAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
     If (newAlphaMode <> m_GradientAlphamode) Then m_GradientAlphamode = newAlphaMode
 End Sub
 
@@ -179,7 +183,7 @@ Public Sub SetGradientAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antia
     If (newAntialiasing <> m_GradientAntialiasing) Then m_GradientAntialiasing = newAntialiasing
 End Sub
 
-Public Sub SetGradientBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BL_NORMAL)
+Public Sub SetGradientBlendMode(Optional ByVal newBlendMode As PD_BlendMode = BM_Normal)
     If (newBlendMode <> m_GradientBlendmode) Then m_GradientBlendmode = newBlendMode
 End Sub
 
@@ -241,7 +245,15 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
-    If (Not PDImages.IsImageActive()) Then Exit Sub                 'No images loaded
+    'Failsafe check: no images loaded
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    
+    'If a render is already in progress, we typically want to exit immediately
+    ' (as the previous render needs to finish).  If we don't do this, mouse events raised
+    ' while the final gradient is rendering will trigger this sub again, causing reentrancy
+    ' nightmares.
+    If m_GradientRendering Then Exit Sub
+    m_GradientRendering = True
     
     m_MouseX = srcX
     m_MouseY = srcY
@@ -410,6 +422,9 @@ Public Sub NotifyToolXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftCo
     ' the standard (full-image-sized) one.
     If (g_ViewportPerformance >= PD_PERF_BALANCED) And (Not isLastStroke) Then tmpViewportParams.ptrToAlternateScratch = ObjPtr(m_PreviewDIB)
     If mouseButtonDown Then ViewportEngine.Stage2_CompositeAllLayers PDImages.GetActiveImage(), srcCanvas, VarPtr(tmpViewportParams)
+    
+    'We can mark rendering as "complete" now
+    m_GradientRendering = False
     
 End Sub
 
